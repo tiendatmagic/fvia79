@@ -1,0 +1,89 @@
+import { Component, inject, OnInit } from '@angular/core';
+import { CommonModule } from '@angular/common';
+import { FormsModule } from '@angular/forms';
+import { ModalRef, MODAL_DATA } from '@core/services/modal-ref';
+import { StateService } from '@core/services/state.service';
+import { CustomInputComponent } from '@shared/components/custom-input/custom-input.component';
+import { CustomSelectComponent } from '@shared/components/custom-select/custom-select.component';
+import { ButtonComponent } from '@shared/components/button/button.component';
+
+@Component({
+  selector: 'app-product-form-modal',
+  standalone: true,
+  imports: [
+    CommonModule,
+    FormsModule,
+    CustomInputComponent,
+    CustomSelectComponent,
+    ButtonComponent
+  ],
+  templateUrl: './product-form-modal.component.html',
+  styles: [`
+    :host {
+      display: block;
+    }
+  `]
+})
+export class ProductFormModalComponent implements OnInit {
+  private readonly modalRef = inject(ModalRef);
+  private readonly modalData = inject(MODAL_DATA);
+  public readonly state = inject(StateService);
+
+  public isEditMode = false;
+  public editingId: any = null; // Hỗ trợ cả string UUID và number
+  public name = '';
+  public slug = '';
+  public description = '';
+  public price = 0;
+  public status = 'active';
+
+  public statusOptions = [
+    { label: 'Hoạt động (Active)', value: 'active' },
+    { label: 'Tạm ngưng (Inactive)', value: 'inactive' }
+  ];
+
+  ngOnInit() {
+    if (this.modalData) {
+      this.isEditMode = true;
+      this.editingId = this.modalData.id;
+      this.name = this.modalData.name;
+      this.slug = this.modalData.slug;
+      this.description = this.modalData.description || '';
+      this.price = this.modalData.price;
+      this.status = this.modalData.status;
+    }
+  }
+
+  public onClose() {
+    this.modalRef.close(false);
+  }
+
+  public onSubmit() {
+    if (!this.name || this.price < 0) {
+      this.state.showToast('Vui lòng điền thông tin hợp lệ!', 'error');
+      return;
+    }
+
+    const data = {
+      name: this.name,
+      slug: this.slug || undefined,
+      description: this.description,
+      price: this.price,
+      status: this.status
+    };
+
+    if (this.isEditMode && this.editingId) {
+      this.state.productStore.updateProduct(this.editingId, data).subscribe((res) => {
+        if (res !== null) {
+          this.modalRef.close(true);
+        }
+      });
+    } else {
+      this.state.productStore.createProduct(data).subscribe((res) => {
+        if (res !== null) {
+          this.modalRef.close(true);
+        }
+      });
+    }
+  }
+}

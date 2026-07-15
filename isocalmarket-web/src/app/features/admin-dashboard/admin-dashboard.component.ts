@@ -2,7 +2,6 @@ import { Component, OnInit, inject, signal } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { ApiService } from '@core/services/api.service';
 import { StateService } from '@core/services/state.service';
-import { SkeletonLoaderComponent } from '@shared/components/skeleton-loader/skeleton-loader.component';
 import { RouterModule } from '@angular/router';
 
 @Component({
@@ -10,7 +9,6 @@ import { RouterModule } from '@angular/router';
   standalone: true,
   imports: [
     CommonModule,
-    SkeletonLoaderComponent,
     RouterModule
   ],
   templateUrl: './admin-dashboard.component.html',
@@ -33,7 +31,7 @@ export class AdminDashboardComponent implements OnInit {
 
   public loadStats() {
     this.loading.set(true);
-    this.apiService.get<any>('admin/dashboard-stats').subscribe({
+    this.apiService.get<any>('v1/admin/dashboard-stats').subscribe({
       next: (res) => {
         this.stats.set(res);
         this.loading.set(false);

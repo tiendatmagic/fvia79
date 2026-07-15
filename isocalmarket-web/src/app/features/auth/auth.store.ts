@@ -2,8 +2,8 @@ import { Injectable, inject, signal, computed } from '@angular/core';
 import { ApiService } from '@core/services/api.service';
 import { ToastService } from '@core/services/toast.service';
 import { Router } from '@angular/router';
-import { tap, catchError, finalize } from 'rxjs/operators';
-import { of } from 'rxjs';
+import { tap, catchError, finalize, map, shareReplay } from 'rxjs/operators';
+import { of, Observable } from 'rxjs';
 
 @Injectable({
   providedIn: 'root'
@@ -20,6 +20,8 @@ export class AuthStore {
   // Computed Signals
   public readonly isAuthenticated = computed(() => this.currentUser() !== null);
   public readonly isAdmin = computed(() => this.currentUser()?.role === 'admin');
+
+  private checkMeObservable$: Observable<any> | null = null;
 
   public login(credentials: { email: string; password: string }, returnUrl: string = '/') {
     this.authLoading.set(true);
@@ -58,18 +60,30 @@ export class AuthStore {
     // Check trạng thái login indicator trước để tránh gọi API thừa khi chưa đăng nhập
     const isLocalLoggedIn = typeof document !== 'undefined' && document.cookie.includes('auth_logged_in=true');
     if (!isLocalLoggedIn) {
+      this.currentUser.set(null);
       return of(null);
     }
 
-    return this.api.get<any>('v1/auth/me').pipe(
-      tap((res) => {
-        this.currentUser.set(res.user);
+    if (this.checkMeObservable$) {
+      return this.checkMeObservable$;
+    }
+
+    this.checkMeObservable$ = this.api.get<any>('v1/auth/me').pipe(
+      map((res) => res?.user || null),
+      tap((user) => {
+        this.currentUser.set(user);
       }),
       catchError(() => {
         this.currentUser.set(null);
         return of(null);
+      }),
+      shareReplay(1),
+      finalize(() => {
+        this.checkMeObservable$ = null;
       })
     );
+
+    return this.checkMeObservable$;
   }
 
   public logout() {

@@ -22,8 +22,12 @@
 
   <!-- Skeleton loading -->
   <div *ngIf="loading()" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
-    <div *ngFor="let i of [1,2,3,4]" class="bg-white dark:bg-slate-950 p-6 rounded-2xl border border-slate-200/50 dark:border-slate-900/50 shadow-sm h-32">
-      <app-skeleton-loader [type]="'list'" [rows]="2" [showHeader]="false" />
+    <div *ngFor="let i of [1,2,3,4]" class="relative overflow-hidden bg-white dark:bg-slate-950 p-6 rounded-2xl border border-slate-200/50 dark:border-slate-900/50 shadow-sm flex items-center justify-between h-32">
+      <div class="space-y-3 w-2/3 animate-pulse">
+        <div class="h-3 bg-slate-200 dark:bg-slate-800 rounded-md w-3/4"></div>
+        <div class="h-6 bg-slate-200 dark:bg-slate-800 rounded-xl w-full"></div>
+      </div>
+      <div class="w-12 h-12 bg-slate-200 dark:bg-slate-800 rounded-xl animate-pulse shrink-0"></div>
     </div>
   </div>
 

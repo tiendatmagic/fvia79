@@ -1,7 +1,7 @@
-import { Component, inject } from '@angular/core';
+import { Component, inject, effect } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
-import { RouterModule } from '@angular/router';
+import { RouterModule, Router } from '@angular/router';
 import { StateService } from '@core/services/state.service';
 import { CustomInputComponent } from '@shared/components/custom-input/custom-input.component';
 import { ButtonComponent } from '@shared/components/button/button.component';
@@ -19,11 +19,22 @@ import { ButtonComponent } from '@shared/components/button/button.component';
 })
 export class RegisterComponent {
   public readonly state = inject(StateService);
+  private readonly router = inject(Router);
 
   public name = '';
   public email = '';
   public password = '';
   public passwordConfirmation = '';
+
+  constructor() {
+    // Tự động chuyển hướng nếu phát hiện trạng thái đã đăng nhập
+    effect(() => {
+      if (this.state.isAuthenticated()) {
+        const dest = this.state.isAdmin() ? '/admin/dashboard' : '/storefront';
+        this.router.navigateByUrl(dest);
+      }
+    });
+  }
 
   public onSubmit() {
     if (!this.name || !this.email || !this.password || !this.passwordConfirmation) {

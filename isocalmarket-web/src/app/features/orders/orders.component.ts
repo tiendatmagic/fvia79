@@ -1,19 +1,18 @@
 import { Component, OnInit, inject, signal } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { FormsModule } from '@angular/forms';
 import { StateService } from '@core/services/state.service';
 import { SkeletonLoaderComponent } from '@shared/components/skeleton-loader/skeleton-loader.component';
 import { ButtonComponent } from '@shared/components/button/button.component';
 import { PaginationComponent } from '@shared/components/pagination/pagination.component';
+import { ModalService } from '@core/services/modal.service';
+import { OrderDetailModalComponent } from './order-detail-modal/order-detail-modal.component';
 
 @Component({
   selector: 'app-orders',
   standalone: true,
   imports: [
     CommonModule,
-    FormsModule,
     SkeletonLoaderComponent,
-    ButtonComponent,
     PaginationComponent
   ],
   templateUrl: './orders.component.html',
@@ -25,9 +24,7 @@ import { PaginationComponent } from '@shared/components/pagination/pagination.co
 })
 export class OrdersComponent implements OnInit {
   public readonly state = inject(StateService);
-
-  // Trạng thái Drawer chi tiết
-  public showDetailDrawer = false;
+  private readonly modalService = inject(ModalService);
   
   public readonly currentPage = signal<number>(1);
   public readonly limit = 10;
@@ -41,45 +38,13 @@ export class OrdersComponent implements OnInit {
     this.state.orderStore.fetchOrders(page, this.limit).subscribe();
   }
 
-
   public openDetailDrawer(order: any) {
-    this.state.orderStore.fetchOrderDetail(order.id).subscribe((res) => {
-      if (res) {
-        this.showDetailDrawer = true;
+    this.modalService.open(OrderDetailModalComponent, {
+      title: 'Chi Tiết Đơn Hàng',
+      size: '2xl', // Đặt size 2xl cho rộng rãi dễ nhìn danh sách accounts
+      data: {
+        orderId: order.id
       }
     });
-  }
-
-  public closeDetailDrawer() {
-    this.showDetailDrawer = false;
-  }
-
-  public copyToClipboard(text: string) {
-    if (typeof window !== 'undefined' && navigator.clipboard) {
-      navigator.clipboard.writeText(text).then(() => {
-        this.state.showToast('Đã copy thông tin tài khoản!', 'success');
-      }).catch(() => {
-        this.state.showToast('Không thể copy tự động!', 'error');
-      });
-    }
-  }
-
-  public downloadAccounts() {
-    const detail = this.state.orderStore.currentOrderDetail();
-    if (!detail || !detail.accounts || detail.accounts.length === 0) return;
-
-    const content = detail.accounts.map((acc: any) => acc.data).join('\n');
-    const blob = new Blob([content], { type: 'text/plain;charset=utf-8' });
-    const url = URL.createObjectURL(blob);
-    
-    const a = document.createElement('a');
-    a.href = url;
-    a.download = `isocalmarket_${detail.order_code}_accounts.txt`;
-    document.body.appendChild(a);
-    a.click();
-    
-    document.body.removeChild(a);
-    URL.revokeObjectURL(url);
-    this.state.showToast('Đã tải xuống danh sách tài khoản dạng .txt!', 'success');
   }
 }

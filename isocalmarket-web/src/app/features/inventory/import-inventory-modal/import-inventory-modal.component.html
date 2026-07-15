@@ -1,0 +1,45 @@
+<div class="space-y-6 pb-2">
+  <div class="form-field">
+    <label class="text-[11px] font-black text-slate-400 uppercase tracking-wider block mb-2">Sản phẩm đích</label>
+    <app-custom-select
+      [options]="productOptions"
+      [(value)]="importProductId"
+    />
+  </div>
+
+  <div class="form-field">
+    <label class="text-[11px] font-black text-slate-400 uppercase tracking-wider block mb-2">Dữ liệu tài nguyên (Nhập theo từng dòng)</label>
+    <textarea
+      class="w-full p-3 rounded-xl border border-slate-200/40 dark:border-slate-800/40 bg-slate-50 dark:bg-slate-950/40 text-xs font-mono text-slate-800 dark:text-white focus:border-[var(--color-primary)] outline-none min-h-[200px]"
+      [placeholder]="'Nhập thông tin tài nguyên, mỗi dòng một tài khoản. Ví dụ:\nuid1|pass1|2fa1\nuid2|pass2|2fa2'"
+      [(ngModel)]="rawData"
+      name="rawData"
+    ></textarea>
+  </div>
+  
+  <!-- Hướng dẫn định dạng -->
+  <div class="bg-amber-500/5 border border-amber-500/10 rounded-xl p-4 text-xs font-semibold text-amber-600 dark:text-amber-500 space-y-1">
+    <p class="font-extrabold uppercase">💡 Lưu ý quan trọng:</p>
+    <p class="font-medium">Mỗi dòng text sẽ được mã hóa an toàn và lưu trữ thành một Inventory Item riêng biệt trong database. Đơn giá sẽ tự động thừa hưởng từ cấu hình sản phẩm.</p>
+  </div>
+
+  <!-- Footer buttons -->
+  <div class="pt-6 border-t border-slate-100 dark:border-slate-800/60 flex items-center justify-end gap-3 shrink-0">
+    <button
+      app-button
+      (click)="onClose()"
+      [variant]="'cancel'"
+      class="py-2.5 px-4 rounded-xl text-xs font-bold"
+    >
+      Hủy bỏ
+    </button>
+    <button
+      app-button
+      (click)="onSubmit()"
+      [variant]="'primary'"
+      class="py-2.5 px-4 rounded-xl bg-gradient-to-r from-[var(--color-primary)] to-[var(--color-secondary)] text-white text-xs font-extrabold active:scale-95 shadow-sm shadow-[var(--color-primary)]/10 cursor-pointer"
+    >
+      Bắt đầu Import
+    </button>
+  </div>
+</div>

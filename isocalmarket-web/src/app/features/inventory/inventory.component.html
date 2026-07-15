@@ -61,9 +61,11 @@
         </thead>
         <tbody>
           <!-- Skeleton Loading -->
-          <ng-container *ngIf="state.inventoryStore.loading()">
-            <app-skeleton-loader [type]="'table'" [rows]="5" />
-          </ng-container>
+          <tr *ngIf="state.inventoryStore.loading()">
+            <td colspan="6" class="p-6">
+              <app-skeleton-loader [type]="'table'" [rows]="5" [showHeader]="false" />
+            </td>
+          </tr>
 
           <!-- Empty State -->
           <tr *ngIf="!state.inventoryStore.loading() && state.inventoryStore.items().length === 0">
@@ -73,51 +75,53 @@
           </tr>
 
           <!-- Data rows -->
-          <tr
-            *ngFor="let item of state.inventoryStore.items()"
-            class="border-b border-slate-200/30 dark:border-slate-800/30 hover:bg-slate-50/30 dark:hover:bg-slate-950/10 transition-colors"
-          >
-            <td class="py-4 px-6 text-xs font-mono font-bold text-[var(--color-primary)]">#{{ item.id }}</td>
-            <td class="py-4 px-6">
-              <span class="text-sm font-extrabold text-slate-800 dark:text-white">
-                {{ getProductName(item.product_id) }}
-              </span>
-            </td>
-            <td class="py-4 px-6">
-              <div class="flex items-center gap-2 max-w-xs md:max-w-md">
-                <code class="text-xs font-mono bg-slate-50 dark:bg-slate-950 px-2 py-1 rounded border border-slate-200/40 dark:border-slate-800/40 text-slate-700 dark:text-slate-300 truncate" title="{{ item.data }}">
-                  {{ item.data }}
-                </code>
-              </div>
-            </td>
-            <td class="py-4 px-6 text-center">
-              <span
-                [ngClass]="{
-                  'bg-emerald-50 dark:bg-emerald-950/20 text-emerald-600 dark:text-emerald-400 border-emerald-500/10': item.status === 'available',
-                  'bg-amber-50 dark:bg-amber-950/20 text-amber-600 dark:text-amber-400 border-amber-500/10': item.status === 'reserved',
-                  'bg-slate-100 dark:bg-slate-800 text-slate-500 border-slate-200/40 dark:border-slate-700/40': item.status === 'sold'
-                }"
-                class="text-[10px] font-bold uppercase tracking-wider px-2 py-1 rounded-md border"
-              >
-                {{ item.status }}
-              </span>
-            </td>
-            <td class="py-4 px-6 text-center">
-              <span *ngIf="item.order_id" class="text-xs font-mono font-bold text-slate-500 bg-slate-50 dark:bg-slate-950 px-2 py-1 rounded border">
-                #{{ item.order_id }}
-              </span>
-              <span *ngIf="!item.order_id" class="text-xs text-slate-400 font-semibold">-</span>
-            </td>
-            <td class="py-4 px-6 text-right">
-              <button
-                (click)="confirmDeleteItem(item)"
-                [disabled]="item.status === 'sold'"
-                class="text-xs font-bold px-3 py-1.5 rounded-lg border border-red-500/10 hover:bg-red-50 dark:hover:bg-red-950/20 text-red-500 hover:scale-105 active:scale-95 transition-all cursor-pointer disabled:opacity-50 disabled:pointer-events-none"
-              >
-                Xóa
-              </button>
-            </td>
-          </tr>
+          @if (!state.inventoryStore.loading()) {
+            <tr
+              *ngFor="let item of state.inventoryStore.items()"
+              class="border-b border-slate-200/30 dark:border-slate-800/30 hover:bg-slate-50/30 dark:hover:bg-slate-950/10 transition-colors"
+            >
+              <td class="py-4 px-6 text-xs font-mono font-bold text-[var(--color-primary)]">#{{ item.id }}</td>
+              <td class="py-4 px-6">
+                <span class="text-sm font-extrabold text-slate-800 dark:text-white">
+                  {{ getProductName(item.product_id) }}
+                </span>
+              </td>
+              <td class="py-4 px-6">
+                <div class="flex items-center gap-2 max-w-xs md:max-w-md">
+                  <code class="text-xs font-mono bg-slate-50 dark:bg-slate-950 px-2 py-1 rounded border border-slate-200/40 dark:border-slate-800/40 text-slate-700 dark:text-slate-300 truncate" title="{{ item.data }}">
+                    {{ item.data }}
+                  </code>
+                </div>
+              </td>
+              <td class="py-4 px-6 text-center">
+                <span
+                  [ngClass]="{
+                    'bg-emerald-50 dark:bg-emerald-950/20 text-emerald-600 dark:text-emerald-400 border-emerald-500/10': item.status === 'available',
+                    'bg-amber-50 dark:bg-amber-950/20 text-amber-600 dark:text-amber-400 border-amber-500/10': item.status === 'reserved',
+                    'bg-slate-100 dark:bg-slate-800 text-slate-500 border-slate-200/40 dark:border-slate-700/40': item.status === 'sold'
+                  }"
+                  class="text-[10px] font-bold uppercase tracking-wider px-2 py-1 rounded-md border"
+                >
+                  {{ item.status }}
+                </span>
+              </td>
+              <td class="py-4 px-6 text-center">
+                <span *ngIf="item.order_id" class="text-xs font-mono font-bold text-slate-500 bg-slate-50 dark:bg-slate-950 px-2 py-1 rounded border">
+                  #{{ item.order_id }}
+                </span>
+                <span *ngIf="!item.order_id" class="text-xs text-slate-400 font-semibold">-</span>
+              </td>
+              <td class="py-4 px-6 text-right">
+                <button
+                  (click)="confirmDeleteItem(item)"
+                  [disabled]="item.status === 'sold'"
+                  class="text-xs font-bold px-3 py-1.5 rounded-lg border border-red-500/10 hover:bg-red-50 dark:hover:bg-red-950/20 text-red-500 hover:scale-105 active:scale-95 transition-all cursor-pointer disabled:opacity-50 disabled:pointer-events-none"
+                >
+                  Xóa
+                </button>
+              </td>
+            </tr>
+          }
         </tbody>
       </table>
     <!-- Pagination -->
@@ -135,80 +139,4 @@
 </div>
 
 
-<!-- Drawer Import Kho (Side panel) -->
-<div
-  [ngClass]="showImportDrawer ? 'pointer-events-auto' : 'pointer-events-none'"
-  class="fixed inset-0 z-50 flex justify-end transition-all duration-300 pointer-events-none"
->
-  <!-- Backdrop (Dark overlay, no blur) -->
-  <div
-    (click)="closeImportDrawer()"
-    [ngClass]="showImportDrawer ? 'opacity-100' : 'opacity-0'"
-    class="absolute inset-0 bg-black/40 transition-opacity duration-300"
-  ></div>
 
-  <!-- Sider Content Drawer -->
-  <div
-    [ngClass]="showImportDrawer ? 'translate-x-0' : 'translate-x-full'"
-    class="relative w-full max-w-md bg-white dark:bg-slate-950 border-l border-slate-200/50 dark:border-slate-800/50 shadow-2xl h-full flex flex-col justify-between transition-transform duration-300 ease-out"
-  >
-    <!-- Header -->
-    <div class="p-6 border-b border-slate-200/40 dark:border-slate-800/40 flex items-center justify-between">
-      <h3 class="text-lg font-black text-slate-900 dark:text-white">
-        Import Tài Nguyên Số
-      </h3>
-      <button (click)="closeImportDrawer()" class="text-slate-400 hover:text-slate-500">
-        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2.5" stroke="currentColor" class="w-6 h-6">
-          <path stroke-linecap="round" stroke-linejoin="round" d="M6 18 18 6M6 6l12 12" />
-        </svg>
-      </button>
-    </div>
-
-    <!-- Body Form -->
-    <div class="flex-1 overflow-y-auto p-6 space-y-6">
-      <div class="form-field">
-        <label>Sản phẩm đích</label>
-        <app-custom-select
-          [options]="productOptions"
-          [(value)]="importProductId"
-        />
-      </div>
-
-      <div class="form-field">
-        <label>Dữ liệu tài nguyên (Nhập theo từng dòng)</label>
-        <textarea
-          class="form-textarea w-full p-3 rounded-xl border border-slate-200/40 dark:border-slate-800/40 bg-slate-50 dark:bg-slate-950/40 text-xs font-mono text-slate-800 dark:text-white focus:border-[var(--color-primary)] outline-none min-h-[250px]"
-          [placeholder]="'Nhập thông tin tài nguyên, mỗi dòng một tài khoản. Ví dụ:\nuid1|pass1|2fa1\nuid2|pass2|2fa2'"
-          [(ngModel)]="rawData"
-          name="rawData"
-        ></textarea>
-      </div>
-      
-      <!-- Hướng dẫn định dạng -->
-      <div class="bg-amber-500/5 border border-amber-500/10 rounded-xl p-4 text-xs font-semibold text-amber-600 dark:text-amber-500 space-y-1">
-        <p class="font-extrabold uppercase">💡 Lưu ý quan trọng:</p>
-        <p class="font-medium">Mỗi dòng text sẽ được mã hóa an toàn và lưu trữ thành một Inventory Item riêng biệt trong database. Đơn giá sẽ tự động thừa hưởng từ cấu hình sản phẩm.</p>
-      </div>
-    </div>
-
-    <!-- Footer buttons -->
-    <div class="p-6 border-t border-slate-200/40 dark:border-slate-800/40 bg-slate-50/50 dark:bg-slate-900/30 flex items-center justify-end gap-3">
-      <button
-        app-button
-        (click)="closeImportDrawer()"
-        [variant]="'cancel'"
-        class="py-2.5 px-4 rounded-xl text-xs font-bold"
-      >
-        Hủy bỏ
-      </button>
-      <button
-        app-button
-        (click)="onImportSubmit()"
-        [variant]="'primary'"
-        class="py-2.5 px-4 rounded-xl bg-gradient-to-r from-[var(--color-primary)] to-[var(--color-secondary)] text-white text-xs font-extrabold active:scale-95 shadow-sm shadow-[var(--color-primary)]/10 cursor-pointer"
-      >
-        Bắt đầu Import
-      </button>
-    </div>
-  </div>
-</div>

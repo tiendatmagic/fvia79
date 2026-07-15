@@ -1,22 +1,17 @@
-import { Component, OnInit, inject, signal } from '@angular/core';
+import { Component, OnInit, inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { FormsModule } from '@angular/forms';
 import { StateService } from '@core/services/state.service';
 import { SkeletonLoaderComponent } from '@shared/components/skeleton-loader/skeleton-loader.component';
-import { CustomInputComponent } from '@shared/components/custom-input/custom-input.component';
-import { CustomSelectComponent } from '@shared/components/custom-select/custom-select.component';
 import { ButtonComponent } from '@shared/components/button/button.component';
 import { ModalService } from '@core/services/modal.service';
+import { ProductFormModalComponent } from './product-form-modal/product-form-modal.component';
 
 @Component({
   selector: 'app-products',
   standalone: true,
   imports: [
     CommonModule,
-    FormsModule,
     SkeletonLoaderComponent,
-    CustomInputComponent,
-    CustomSelectComponent,
     ButtonComponent
   ],
   templateUrl: './products.component.html',
@@ -30,77 +25,32 @@ export class ProductsComponent implements OnInit {
   public readonly state = inject(StateService);
   private readonly modalService = inject(ModalService);
 
-  // Trạng thái Drawer
-  public showDrawer = false;
-  public isEditMode = false;
-
-  // Form Fields
-  public editingId: number | null = null;
-  public name = '';
-  public slug = '';
-  public description = '';
-  public price = 0;
-  public status = 'active';
-
-  // Lựa chọn trạng thái sản phẩm
-  public statusOptions = [
-    { label: 'Hoạt động (Active)', value: 'active' },
-    { label: 'Tạm ngưng (Inactive)', value: 'inactive' }
-  ];
-
   ngOnInit() {
     this.state.productStore.fetchProducts().subscribe();
   }
 
   public openCreateDrawer() {
-    this.isEditMode = false;
-    this.editingId = null;
-    this.name = '';
-    this.slug = '';
-    this.description = '';
-    this.price = 0;
-    this.status = 'active';
-    this.showDrawer = true;
+    this.modalService.open(ProductFormModalComponent, {
+      title: 'Thêm Sản Phẩm Mới',
+      size: 'md',
+      data: null
+    }).afterClosed$.subscribe((success) => {
+      if (success) {
+        this.state.productStore.fetchProducts().subscribe();
+      }
+    });
   }
 
   public openEditDrawer(product: any) {
-    this.isEditMode = true;
-    this.editingId = product.id;
-    this.name = product.name;
-    this.slug = product.slug;
-    this.description = product.description || '';
-    this.price = product.price;
-    this.status = product.status;
-    this.showDrawer = true;
-  }
-
-  public closeDrawer() {
-    this.showDrawer = false;
-  }
-
-  public onSubmit() {
-    if (!this.name || this.price < 0) {
-      this.state.showToast('Vui lòng điền thông tin hợp lệ!', 'error');
-      return;
-    }
-
-    const data = {
-      name: this.name,
-      slug: this.slug || undefined,
-      description: this.description,
-      price: this.price,
-      status: this.status
-    };
-
-    if (this.isEditMode && this.editingId) {
-      this.state.productStore.updateProduct(this.editingId, data).subscribe((res) => {
-        if (res !== null) this.closeDrawer();
-      });
-    } else {
-      this.state.productStore.createProduct(data).subscribe((res) => {
-        if (res !== null) this.closeDrawer();
-      });
-    }
+    this.modalService.open(ProductFormModalComponent, {
+      title: 'Cập Nhật Sản Phẩm',
+      size: 'md',
+      data: product
+    }).afterClosed$.subscribe((success) => {
+      if (success) {
+        this.state.productStore.fetchProducts().subscribe();
+      }
+    });
   }
 
   public confirmDelete(product: any) {

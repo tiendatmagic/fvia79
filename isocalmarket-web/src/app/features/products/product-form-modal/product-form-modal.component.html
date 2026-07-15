@@ -1,0 +1,71 @@
+<div class="space-y-6 pb-2">
+  <div class="form-field">
+    <label class="text-[11px] font-black text-slate-400 uppercase tracking-wider block mb-2">Tên sản phẩm</label>
+    <app-custom-input
+      [placeholder]="'Ví dụ: Facebook VIA US'"
+      [(ngModel)]="name"
+      name="name"
+      type="text"
+      required
+    />
+  </div>
+
+  <div class="form-field">
+    <label class="text-[11px] font-black text-slate-400 uppercase tracking-wider block mb-2">Slug (Đường dẫn tĩnh)</label>
+    <app-custom-input
+      [placeholder]="'Tự động tạo từ tên nếu để trống'"
+      [(ngModel)]="slug"
+      name="slug"
+      type="text"
+    />
+  </div>
+
+  <div class="form-field">
+    <label class="text-[11px] font-black text-slate-400 uppercase tracking-wider block mb-2">Đơn giá (VND)</label>
+    <app-custom-input
+      [placeholder]="'Nhập đơn giá'"
+      [(ngModel)]="price"
+      name="price"
+      type="number"
+      required
+    />
+  </div>
+
+  <div class="form-field">
+    <label class="text-[11px] font-black text-slate-400 uppercase tracking-wider block mb-2">Mô tả chi tiết</label>
+    <textarea
+      class="w-full p-3 rounded-xl border border-slate-200/40 dark:border-slate-800/40 bg-slate-50 dark:bg-slate-950/40 text-sm font-semibold text-slate-800 dark:text-white focus:border-[var(--color-primary)] outline-none min-h-[100px]"
+      [placeholder]="'Nhập mô tả sản phẩm...'"
+      [(ngModel)]="description"
+      name="description"
+    ></textarea>
+  </div>
+
+  <div class="form-field">
+    <label class="text-[11px] font-black text-slate-400 uppercase tracking-wider block mb-2">Trạng thái</label>
+    <app-custom-select
+      [options]="statusOptions"
+      [(value)]="status"
+    />
+  </div>
+
+  <!-- Footer buttons -->
+  <div class="pt-6 border-t border-slate-100 dark:border-slate-800/60 flex items-center justify-end gap-3 shrink-0">
+    <button
+      app-button
+      (click)="onClose()"
+      [variant]="'cancel'"
+      class="py-2.5 px-4 rounded-xl text-xs font-bold"
+    >
+      Hủy bỏ
+    </button>
+    <button
+      app-button
+      (click)="onSubmit()"
+      [variant]="'primary'"
+      class="py-2.5 px-4 rounded-xl bg-gradient-to-r from-[var(--color-primary)] to-[var(--color-secondary)] text-white text-xs font-extrabold active:scale-95 shadow-sm shadow-[var(--color-primary)]/10 cursor-pointer"
+    >
+      Lưu thông tin
+    </button>
+  </div>
+</div>

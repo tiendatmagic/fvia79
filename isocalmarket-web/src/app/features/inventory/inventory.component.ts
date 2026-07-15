@@ -7,6 +7,7 @@ import { CustomSelectComponent } from '@shared/components/custom-select/custom-s
 import { ButtonComponent } from '@shared/components/button/button.component';
 import { ModalService } from '@core/services/modal.service';
 import { PaginationComponent } from '@shared/components/pagination/pagination.component';
+import { ImportInventoryModalComponent } from './import-inventory-modal/import-inventory-modal.component';
 
 @Component({
   selector: 'app-inventory',
@@ -33,13 +34,6 @@ export class InventoryComponent implements OnInit {
   // Bộ lọc
   public selectedProductFilter = '';
   public selectedStatusFilter = '';
-
-  // Trạng thái Drawer Import
-  public showImportDrawer = false;
-
-  // Import Fields
-  public importProductId = '';
-  public rawData = '';
 
   public readonly currentPage = signal<number>(1);
   public readonly limit = 15;
@@ -96,30 +90,18 @@ export class InventoryComponent implements OnInit {
   }
 
   public openImportDrawer() {
-    this.importProductId = this.selectedProductFilter || '';
-    this.rawData = '';
-    this.showImportDrawer = true;
-  }
-
-  public closeImportDrawer() {
-    this.showImportDrawer = false;
-  }
-
-  public onImportSubmit() {
-    if (!this.importProductId || !this.rawData.trim()) {
-      this.state.showToast('Vui lòng chọn sản phẩm và nhập dữ liệu tài nguyên!', 'error');
-      return;
-    }
-
-    this.state.inventoryStore.importItems(
-      Number(this.importProductId),
-      this.rawData
-    ).subscribe((res) => {
-      // Khi thành công, đóng drawer và refresh danh sách
-      this.closeImportDrawer();
-      // Đồng thời cập nhật lại danh sách sản phẩm để refresh số lượng tồn kho khả dụng
-      this.state.productStore.fetchProducts().subscribe();
-      this.fetchFilteredItems();
+    this.modalService.open(ImportInventoryModalComponent, {
+      title: 'Import Tài Nguyên Số',
+      size: 'md',
+      data: {
+        selectedProductId: this.selectedProductFilter || '',
+        productOptions: this.productOptions
+      }
+    }).afterClosed$.subscribe((success) => {
+      if (success) {
+        this.state.productStore.fetchProducts().subscribe();
+        this.fetchFilteredItems();
+      }
     });
   }
 
