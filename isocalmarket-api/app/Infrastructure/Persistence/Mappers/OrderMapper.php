@@ -14,7 +14,7 @@ class OrderMapper
         $items = [];
         if ($model->relationLoaded('items')) {
             foreach ($model->items as $itemModel) {
-                $productName = $itemModel->product ? $itemModel->product->name : 'Sản phẩm đã bị xóa';
+                $productName = $itemModel->product_name ?: ($itemModel->product ? $itemModel->product->name : 'Sản phẩm đã bị xóa');
                 $items[] = new OrderItem(
                     $itemModel->id,
                     $itemModel->order_id,
@@ -26,6 +26,7 @@ class OrderMapper
             }
         }
 
+        $userEmail = $model->relationLoaded('user') && $model->user ? $model->user->email : null;
         return new Order(
             $model->id,
             $model->user_id,
@@ -33,7 +34,8 @@ class OrderMapper
             $model->total_price,
             $model->status,
             $items,
-            new \DateTime($model->created_at->toDateTimeString())
+            new \DateTime($model->created_at->toDateTimeString()),
+            $userEmail
         );
     }
 

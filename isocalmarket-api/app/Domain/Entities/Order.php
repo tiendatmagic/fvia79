@@ -12,6 +12,7 @@ class Order
     /** @var OrderItem[] */
     private array $items;
     private ?\DateTime $createdAt;
+    private ?string $userEmail;
 
     public function __construct(
         ?string $id,
@@ -20,7 +21,8 @@ class Order
         float $totalPrice,
         string $status = 'pending',
         array $items = [],
-        ?\DateTime $createdAt = null
+        ?\DateTime $createdAt = null,
+        ?string $userEmail = null
     ) {
         $this->id = $id;
         $this->userId = $userId;
@@ -29,6 +31,7 @@ class Order
         $this->status = $status;
         $this->items = $items;
         $this->createdAt = $createdAt;
+        $this->userEmail = $userEmail;
     }
 
     public function getId(): ?string
@@ -67,6 +70,11 @@ class Order
     public function getCreatedAt(): ?\DateTime
     {
         return $this->createdAt;
+    }
+
+    public function getUserEmail(): ?string
+    {
+        return $this->userEmail;
     }
 
     public function isPaid(): bool

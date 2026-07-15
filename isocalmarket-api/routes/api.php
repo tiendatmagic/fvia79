@@ -24,6 +24,8 @@ Route::prefix('v1')->group(function () {
         Route::get('/orders/{id}', ['App\Http\Controllers\OrderController', 'show']);
 
         Route::middleware(['admin'])->group(function () {
+            Route::get('/admin/dashboard-stats', ['App\Http\Controllers\DashboardController', 'stats']);
+
             Route::post('/products', ['App\Http\Controllers\ProductController', 'store']);
             Route::put('/products/{id}', ['App\Http\Controllers\ProductController', 'update']);
             Route::delete('/products/{id}', ['App\Http\Controllers\ProductController', 'destroy']);

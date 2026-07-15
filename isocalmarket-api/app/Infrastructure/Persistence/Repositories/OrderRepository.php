@@ -54,9 +54,12 @@ class OrderRepository implements OrderRepositoryInterface
         return $models->map(fn($m) => OrderMapper::toDomain($m))->toArray();
     }
 
-    public function findByUserIdPaginated(string $userId, int $page, int $limit): array
+    public function findByUserIdPaginated(string $userId, int $page, int $limit, ?string $status = null): array
     {
         $query = OrderModel::where('user_id', $userId);
+        if ($status) {
+            $query->where('status', $status);
+        }
         $total = $query->count();
         $models = $query->with(['items.product'])
             ->orderBy('created_at', 'desc')
@@ -79,9 +82,12 @@ class OrderRepository implements OrderRepositoryInterface
         return $models->map(fn($m) => OrderMapper::toDomain($m))->toArray();
     }
 
-    public function findAllPaginated(int $page, int $limit): array
+    public function findAllPaginated(int $page, int $limit, ?string $status = null): array
     {
         $query = OrderModel::query();
+        if ($status) {
+            $query->where('status', $status);
+        }
         $total = $query->count();
         $models = $query->with(['items.product', 'user'])
             ->orderBy('created_at', 'desc')

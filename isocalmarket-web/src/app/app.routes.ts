@@ -21,7 +21,11 @@ export const routes: Routes = [
     path: 'admin',
     canActivate: [AuthGuard, AdminGuard],
     children: [
-      { path: '', redirectTo: 'products', pathMatch: 'full' },
+      { path: '', redirectTo: 'dashboard', pathMatch: 'full' },
+      {
+        path: 'dashboard',
+        loadComponent: () => import('@features/admin-dashboard/admin-dashboard.component').then(m => m.AdminDashboardComponent)
+      },
       {
         path: 'products',
         loadComponent: () => import('@features/products/products.component').then(m => m.ProductsComponent)
@@ -29,6 +33,10 @@ export const routes: Routes = [
       {
         path: 'inventory',
         loadComponent: () => import('@features/inventory/inventory.component').then(m => m.InventoryComponent)
+      },
+      {
+        path: 'orders',
+        loadComponent: () => import('@features/admin-orders/admin-orders.component').then(m => m.AdminOrdersComponent)
       }
     ]
   },

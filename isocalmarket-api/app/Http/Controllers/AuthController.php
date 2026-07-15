@@ -51,6 +51,8 @@ class AuthController extends Controller
             $accessToken = $this->authService->generateAccessToken($user);
             $refreshToken = $this->authService->generateRefreshToken($user);
 
+            $isProduction = config('app.env') === 'production';
+
             // Access token cookie: 30 phút
             $accessTokenCookie = cookie(
                 'access_token',
@@ -58,7 +60,7 @@ class AuthController extends Controller
                 30,
                 '/',
                 null,
-                false, // set false ở local, production dùng true
+                $isProduction,
                 true,  // HttpOnly
                 false,
                 'Lax'
@@ -71,7 +73,7 @@ class AuthController extends Controller
                 10080,
                 '/api/v1/auth/refresh',
                 null,
-                false,
+                $isProduction,
                 true,  // HttpOnly
                 false,
                 'Lax'
@@ -84,7 +86,7 @@ class AuthController extends Controller
                 10080,
                 '/',
                 null,
-                false,
+                $isProduction,
                 false, // Không HttpOnly để JS đọc được
                 false,
                 'Lax'
@@ -120,13 +122,15 @@ class AuthController extends Controller
             return response()->json(['message' => 'Unauthorized. Invalid or expired refresh token.'], 401);
         }
 
+        $isProduction = config('app.env') === 'production';
+
         $accessTokenCookie = cookie(
             'access_token',
             $result['access_token'],
             30,
             '/',
             null,
-            false,
+            $isProduction,
             true,
             false,
             'Lax'
@@ -138,7 +142,7 @@ class AuthController extends Controller
             10080,
             '/api/v1/auth/refresh',
             null,
-            false,
+            $isProduction,
             true,
             false,
             'Lax'

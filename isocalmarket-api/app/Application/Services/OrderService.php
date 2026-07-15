@@ -117,9 +117,9 @@ class OrderService
         return $this->orderRepository->findByUserId($userId);
     }
 
-    public function getOrdersByUserPaginated(string $userId, int $page, int $limit): array
+    public function getOrdersByUserPaginated(string $userId, int $page, int $limit, ?string $status = null): array
     {
-        return $this->orderRepository->findByUserIdPaginated($userId, $page, $limit);
+        return $this->orderRepository->findByUserIdPaginated($userId, $page, $limit, $status);
     }
 
     public function getAllOrders(): array
@@ -127,8 +127,8 @@ class OrderService
         return $this->orderRepository->findAll();
     }
 
-    public function getAllOrdersPaginated(int $page, int $limit): array
+    public function getAllOrdersPaginated(int $page, int $limit, ?string $status = null): array
     {
-        return $this->orderRepository->findAllPaginated($page, $limit);
+        return $this->orderRepository->findAllPaginated($page, $limit, $status);
     }
 }

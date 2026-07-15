@@ -47,12 +47,13 @@ class OrderController extends Controller
             $user = Auth::user();
             $page = $request->query('page');
             $limit = $request->query('limit', 10); // Mặc định 10 đơn hàng/trang
+            $status = $request->query('status'); // Lọc theo trạng thái đơn hàng
 
             if ($page) {
                 if ($user->role === 'admin') {
-                    $result = $this->orderService->getAllOrdersPaginated((int)$page, (int)$limit);
+                    $result = $this->orderService->getAllOrdersPaginated((int)$page, (int)$limit, $status);
                 } else {
-                    $result = $this->orderService->getOrdersByUserPaginated($user->id, (int)$page, (int)$limit);
+                    $result = $this->orderService->getOrdersByUserPaginated($user->id, (int)$page, (int)$limit, $status);
                 }
                 
                 $orders = $result['items'];
@@ -62,6 +63,7 @@ class OrderController extends Controller
                     return [
                         'id' => $order->getId(),
                         'order_code' => $order->getOrderCode(),
+                        'customer_email' => $order->getUserEmail(),
                         'total_price' => $order->getTotalPrice(),
                         'status' => $order->getStatus(),
                         'created_at' => $order->getCreatedAt()?->format('Y-m-d H:i:s'),
@@ -90,6 +92,7 @@ class OrderController extends Controller
                 return [
                     'id' => $order->getId(),
                     'order_code' => $order->getOrderCode(),
+                    'customer_email' => $order->getUserEmail(),
                     'total_price' => $order->getTotalPrice(),
                     'status' => $order->getStatus(),
                     'created_at' => $order->getCreatedAt()?->format('Y-m-d H:i:s'),
