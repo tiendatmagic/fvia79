@@ -29,6 +29,8 @@
       <label>Bộ lọc Sản phẩm</label>
       <app-custom-select
         [options]="productFilterOptions"
+        valueKey="value"
+        labelKey="label"
         [(value)]="selectedProductFilter"
         (valueChange)="fetchFilteredItems(1)"
       />
@@ -38,6 +40,8 @@
       <label>Bộ lọc Trạng thái</label>
       <app-custom-select
         [options]="statusFilterOptions"
+        valueKey="value"
+        labelKey="label"
         [(value)]="selectedStatusFilter"
         (valueChange)="fetchFilteredItems(1)"
       />

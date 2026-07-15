@@ -19,7 +19,7 @@ class ProductController extends Controller
     {
         try {
             $page = $request->query('page');
-            $limit = $request->query('limit', 12); // Mặc định 12 sản phẩm/trang
+            $limit = $request->query('limit', 10); // Mặc định 10 sản phẩm/trang
 
             if ($page) {
                 $result = $this->productService->getActiveProductsPaginated((int)$page, (int)$limit);

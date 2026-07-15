@@ -40,7 +40,7 @@ class InventoryController extends Controller
             ];
 
             $page = $request->query('page');
-            $limit = $request->query('limit', 15); // Mặc định 15 item/trang trong admin quản lý kho
+            $limit = $request->query('limit', 10); // Mặc định 10 item/trang trong admin quản lý kho
 
             if ($page) {
                 $result = $this->inventoryService->getItemsPaginated($filters, (int)$page, (int)$limit);

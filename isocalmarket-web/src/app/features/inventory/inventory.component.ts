@@ -36,7 +36,7 @@ export class InventoryComponent implements OnInit {
   public selectedStatusFilter = '';
 
   public readonly currentPage = signal<number>(1);
-  public readonly limit = 15;
+  public readonly limit = 10;
 
   // Lựa chọn trạng thái để lọc
   public statusFilterOptions = [

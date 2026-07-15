@@ -45,6 +45,8 @@
     <label class="text-[11px] font-black text-slate-400 uppercase tracking-wider block mb-2">Trạng thái</label>
     <app-custom-select
       [options]="statusOptions"
+      valueKey="value"
+      labelKey="label"
       [(value)]="status"
     />
   </div>

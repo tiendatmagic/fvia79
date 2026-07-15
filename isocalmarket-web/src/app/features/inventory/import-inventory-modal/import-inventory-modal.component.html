@@ -3,6 +3,8 @@
     <label class="text-[11px] font-black text-slate-400 uppercase tracking-wider block mb-2">Sản phẩm đích</label>
     <app-custom-select
       [options]="productOptions"
+      valueKey="value"
+      labelKey="label"
       [(value)]="importProductId"
     />
   </div>

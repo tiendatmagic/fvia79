@@ -78,14 +78,15 @@ export class CustomSelectComponent implements ControlValueAccessor, AfterViewChe
   @Output() valueChange = new EventEmitter<any>();
 
   @Input() options: any[] = [];
-  @Input() valueKey: string = '';
-  @Input() labelKey: string = '';
+  @Input() valueKey: string = 'value';
+  @Input() labelKey: string = 'label';
   @Input() placeholder: string = 'Chọn...';
   @Input() disabled: boolean = false;
   @Input() placement: 'bottom' | 'top' | 'auto' = 'auto';
   @Input() showSearch: boolean = false;
   @Input() containerClass: string = 'w-full';
   @Input() triggerClass: string = 'w-full form-input';
+  @Input() maxDisplay: number = 50;
 
   @ViewChild('triggerBtn', { static: false }) triggerBtn!: ElementRef<HTMLButtonElement>;
 
@@ -226,6 +227,18 @@ export class CustomSelectComponent implements ControlValueAccessor, AfterViewChe
       const label = String(this.getOptionLabel(opt)).toLowerCase();
       return label.includes(query);
     });
+  });
+
+  public readonly shouldShowSearch = computed(() => {
+    return this.showSearch || (this.options || []).length > 8;
+  });
+
+  public readonly displayedOptions = computed(() => {
+    const filtered = this.filteredOptions();
+    if (filtered.length <= this.maxDisplay) {
+      return filtered;
+    }
+    return filtered.slice(0, this.maxDisplay);
   });
 
   // ControlValueAccessor

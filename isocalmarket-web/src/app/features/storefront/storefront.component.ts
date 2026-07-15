@@ -52,7 +52,7 @@ export class StorefrontComponent implements OnInit {
   }
   
   public readonly currentPage = signal<number>(1);
-  public readonly limit = 12;
+  public readonly limit = 10;
 
   // Tìm kiếm sản phẩm
   public readonly filteredProducts = computed(() => {
