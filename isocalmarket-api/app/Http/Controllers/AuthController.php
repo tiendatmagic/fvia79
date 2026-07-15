@@ -101,8 +101,8 @@ class AuthController extends Controller
                     'role' => $user->getRole()
                 ]
             ])->withCookie($accessTokenCookie)
-              ->withCookie($refreshTokenCookie)
-              ->withCookie($loggedInCookie);
+                ->withCookie($refreshTokenCookie)
+                ->withCookie($loggedInCookie);
         } catch (\Exception $e) {
             return response()->json(['message' => $e->getMessage()], 500);
         }
@@ -119,7 +119,7 @@ class AuthController extends Controller
         $result = $this->authService->refresh($refreshToken);
 
         if (!$result) {
-            return response()->json(['message' => 'Unauthorized. Invalid or expired refresh token.'], 401);
+            return response()->json(['message' => 'Unauthorized.'], 401);
         }
 
         $isProduction = config('app.env') === 'production';

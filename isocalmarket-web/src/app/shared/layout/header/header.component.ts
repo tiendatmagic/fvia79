@@ -1,11 +1,13 @@
-import { Component, inject } from '@angular/core';
+import { Component, inject, signal, HostListener } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { RouterModule, Router } from '@angular/router';
 import { StateService } from '@core/services/state.service';
 import { IconComponent } from '@shared/components/icon/icon.component';
 import { ButtonComponent } from '@shared/components/button/button.component';
 import { LogoComponent } from '@shared/components/logo/logo.component';
-import { ThemeSwitcherComponent } from '@shared/components/theme-switcher/theme-switcher.component';
+import { CartStore } from '@features/storefront/cart.store';
+import { ModalService } from '@core/services/modal.service';
+import { CartModalComponent } from '@features/storefront/cart-modal/cart-modal.component';
 
 @Component({
   selector: 'app-header',
@@ -15,8 +17,7 @@ import { ThemeSwitcherComponent } from '@shared/components/theme-switcher/theme-
     IconComponent,
     ButtonComponent,
     RouterModule,
-    LogoComponent,
-    ThemeSwitcherComponent
+    LogoComponent
   ],
   templateUrl: './header.component.html',
   styles: [
@@ -30,6 +31,10 @@ import { ThemeSwitcherComponent } from '@shared/components/theme-switcher/theme-
 export class HeaderComponent {
   public stateService = inject(StateService);
   public router = inject(Router);
+  public cart = inject(CartStore);
+  private modalService = inject(ModalService);
+
+  public showUserDropdown = signal(false);
 
   public openMobileMenu() {
     this.stateService.showMobileMenu.set(true);
@@ -37,5 +42,44 @@ export class HeaderComponent {
 
   public isAuthPage(): boolean {
     return this.router.url.includes('/auth/');
+  }
+
+  public isStorefrontPage(): boolean {
+    return !this.router.url.includes('/admin') && !this.router.url.includes('/auth/');
+  }
+
+  public toggleUserDropdown(event: Event) {
+    event.stopPropagation();
+    this.showUserDropdown.update(v => !v);
+  }
+
+  @HostListener('document:click')
+  public closeDropdown() {
+    this.showUserDropdown.set(false);
+  }
+
+  public openCart() {
+    this.modalService.open(CartModalComponent, {
+      title: 'Giỏ hàng của bạn',
+      size: 'lg'
+    }).afterClosed$.subscribe((result) => {
+      if (result === 'login') {
+        this.router.navigate(['/auth/login'], { queryParams: { returnUrl: '/storefront' } });
+      } else if (result === 'success') {
+        this.router.navigate(['/orders']);
+      }
+    });
+  }
+
+  /** Lấy chữ cái đầu của tên để làm avatar */
+  public getUserInitial(): string {
+    const name = this.stateService.currentUser()?.name || '';
+    return name.charAt(0).toUpperCase();
+  }
+
+  /** Định dạng số dư (VND) */
+  public formatBalance(balance: number | undefined): string {
+    if (!balance) return '0 ₫';
+    return new Intl.NumberFormat('vi-VN', { style: 'currency', currency: 'VND' }).format(balance);
   }
 }
