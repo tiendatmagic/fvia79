@@ -36,6 +36,7 @@
     <button
       app-button
       (click)="onSubmit()"
+      [loading]="isSubmitting"
       [variant]="'primary'"
       class="py-2.5 px-4 rounded-xl bg-gradient-to-r from-[var(--color-primary)] to-[var(--color-secondary)] text-white text-xs font-extrabold active:scale-95 shadow-sm shadow-[var(--color-primary)]/10 cursor-pointer"
     >

@@ -114,8 +114,11 @@ export class InventoryComponent implements OnInit {
       confirmButtonClass: 'btn-danger'
     }).afterClosed$.subscribe((confirmed?: boolean) => {
       if (confirmed) {
-        this.state.inventoryStore.deleteItem(item.id, this.selectedProductFilter).subscribe(() => {
-          this.state.productStore.fetchProducts().subscribe();
+        this.state.inventoryStore.deleteItem(item.id, this.selectedProductFilter).subscribe((res) => {
+          if (res !== null) {
+            this.state.productStore.fetchProducts().subscribe();
+            this.fetchFilteredItems(this.currentPage());
+          }
         });
       }
     });

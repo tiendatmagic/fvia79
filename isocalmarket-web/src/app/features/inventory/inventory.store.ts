@@ -63,7 +63,6 @@ export class InventoryStore {
     return this.api.post<any>('v1/inventory/import', { product_id: productId, raw_data: rawData }).pipe(
       tap((res) => {
         this.toast.showToast(res.message || 'Import kho thành công!', 'success');
-        this.fetchItems({ product_id: String(productId) }).subscribe();
       }),
       catchError((err) => {
         const msg = err.error?.message || 'Import kho thất bại!';
@@ -79,7 +78,6 @@ export class InventoryStore {
     return this.api.delete<any>(`v1/inventory/items/${id}`).pipe(
       tap(() => {
         this.toast.showToast('Xóa tài nguyên kho thành công!', 'success');
-        this.fetchItems(productIdFilter ? { product_id: productIdFilter } : {}).subscribe();
       }),
       catchError((err) => {
         const msg = err.error?.message || 'Xóa thất bại!';

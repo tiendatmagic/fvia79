@@ -6,6 +6,7 @@ import { StateService } from '@core/services/state.service';
 import { CustomInputComponent } from '@shared/components/custom-input/custom-input.component';
 import { CustomSelectComponent } from '@shared/components/custom-select/custom-select.component';
 import { ButtonComponent } from '@shared/components/button/button.component';
+import { finalize } from 'rxjs/operators';
 
 @Component({
   selector: 'app-product-form-modal',
@@ -36,6 +37,7 @@ export class ProductFormModalComponent implements OnInit {
   public description = '';
   public price = 0;
   public status = 'active';
+  public isSubmitting = false;
 
   public statusOptions = [
     { label: 'Hoạt động (Active)', value: 'active' },
@@ -59,6 +61,7 @@ export class ProductFormModalComponent implements OnInit {
   }
 
   public onSubmit() {
+    if (this.isSubmitting) return;
     if (!this.name || this.price < 0) {
       this.state.showToast('Vui lòng điền thông tin hợp lệ!', 'error');
       return;
@@ -72,14 +75,19 @@ export class ProductFormModalComponent implements OnInit {
       status: this.status
     };
 
+    this.isSubmitting = true;
     if (this.isEditMode && this.editingId) {
-      this.state.productStore.updateProduct(this.editingId, data).subscribe((res) => {
+      this.state.productStore.updateProduct(this.editingId, data).pipe(
+        finalize(() => this.isSubmitting = false)
+      ).subscribe((res) => {
         if (res !== null) {
           this.modalRef.close(true);
         }
       });
     } else {
-      this.state.productStore.createProduct(data).subscribe((res) => {
+      this.state.productStore.createProduct(data).pipe(
+        finalize(() => this.isSubmitting = false)
+      ).subscribe((res) => {
         if (res !== null) {
           this.modalRef.close(true);
         }

@@ -62,7 +62,11 @@ export class ProductsComponent implements OnInit {
       confirmButtonClass: 'btn-danger'
     }).afterClosed$.subscribe((confirmed?: boolean) => {
       if (confirmed) {
-        this.state.productStore.deleteProduct(product.id).subscribe();
+        this.state.productStore.deleteProduct(product.id).subscribe((res) => {
+          if (res !== null) {
+            this.state.productStore.fetchProducts().subscribe();
+          }
+        });
       }
     });
   }

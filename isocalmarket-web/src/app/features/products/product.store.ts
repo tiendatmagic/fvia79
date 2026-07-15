@@ -57,7 +57,6 @@ export class ProductStore {
     return this.api.post<any>('v1/products', data).pipe(
       tap((res) => {
         this.toast.showToast('Tạo sản phẩm thành công!', 'success');
-        this.fetchProducts().subscribe();
       }),
       catchError((err) => {
         const msg = err.error?.message || 'Tạo sản phẩm thất bại!';
@@ -73,7 +72,6 @@ export class ProductStore {
     return this.api.put<any>(`v1/products/${id}`, data).pipe(
       tap(() => {
         this.toast.showToast('Cập nhật sản phẩm thành công!', 'success');
-        this.fetchProducts().subscribe();
       }),
       catchError((err) => {
         const msg = err.error?.message || 'Cập nhật thất bại!';
@@ -89,7 +87,6 @@ export class ProductStore {
     return this.api.delete<any>(`v1/products/${id}`).pipe(
       tap(() => {
         this.toast.showToast('Xóa sản phẩm thành công!', 'success');
-        this.fetchProducts().subscribe();
       }),
       catchError((err) => {
         const msg = err.error?.message || 'Xóa sản phẩm thất bại!';

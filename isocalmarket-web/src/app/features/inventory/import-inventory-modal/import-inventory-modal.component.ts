@@ -5,6 +5,7 @@ import { ModalRef, MODAL_DATA } from '@core/services/modal-ref';
 import { StateService } from '@core/services/state.service';
 import { CustomSelectComponent } from '@shared/components/custom-select/custom-select.component';
 import { ButtonComponent } from '@shared/components/button/button.component';
+import { finalize } from 'rxjs/operators';
 
 @Component({
   selector: 'app-import-inventory-modal',
@@ -30,6 +31,7 @@ export class ImportInventoryModalComponent implements OnInit {
   public importProductId = '';
   public rawData = '';
   public productOptions: any[] = [];
+  public isSubmitting = false;
 
   ngOnInit() {
     if (this.modalData) {
@@ -43,15 +45,18 @@ export class ImportInventoryModalComponent implements OnInit {
   }
 
   public onSubmit() {
+    if (this.isSubmitting) return;
     if (!this.importProductId || !this.rawData.trim()) {
       this.state.showToast('Vui lòng chọn sản phẩm và nhập dữ liệu tài nguyên!', 'error');
       return;
     }
 
-    // Truyền trực tiếp importProductId dạng string/any để tránh lỗi NaN khi dùng UUID
+    this.isSubmitting = true;
     this.state.inventoryStore.importItems(
       this.importProductId as any,
       this.rawData
+    ).pipe(
+      finalize(() => this.isSubmitting = false)
     ).subscribe((res) => {
       this.modalRef.close(true);
     });
