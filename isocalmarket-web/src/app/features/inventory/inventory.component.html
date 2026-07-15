@@ -51,12 +51,12 @@
       <table class="w-full text-left border-collapse">
         <thead>
           <tr class="border-b border-slate-200/30 dark:border-slate-800/30 bg-slate-50/50 dark:bg-slate-950/20">
-            <th class="py-4 px-6 text-xs font-bold text-slate-400 uppercase tracking-wider">ID</th>
-            <th class="py-4 px-6 text-xs font-bold text-slate-400 uppercase tracking-wider">Tên sản phẩm</th>
-            <th class="py-4 px-6 text-xs font-bold text-slate-400 uppercase tracking-wider">Dữ liệu tài nguyên</th>
-            <th class="py-4 px-6 text-xs font-bold text-slate-400 uppercase tracking-wider text-center">Trạng thái</th>
-            <th class="py-4 px-6 text-xs font-bold text-slate-400 uppercase tracking-wider text-center">Đơn hàng đã mua</th>
-            <th class="py-4 px-6 text-xs font-bold text-slate-400 uppercase tracking-wider text-right">Thao tác</th>
+            <th class="py-4 px-6 text-xs font-bold text-slate-400 uppercase tracking-wider whitespace-nowrap">ID</th>
+            <th class="py-4 px-6 text-xs font-bold text-slate-400 uppercase tracking-wider whitespace-nowrap">Tên sản phẩm</th>
+            <th class="py-4 px-6 text-xs font-bold text-slate-400 uppercase tracking-wider whitespace-nowrap">Dữ liệu tài nguyên</th>
+            <th class="py-4 px-6 text-xs font-bold text-slate-400 uppercase tracking-wider text-center whitespace-nowrap">Trạng thái</th>
+            <th class="py-4 px-6 text-xs font-bold text-slate-400 uppercase tracking-wider text-center whitespace-nowrap">Đơn hàng đã mua</th>
+            <th class="py-4 px-6 text-xs font-bold text-slate-400 uppercase tracking-wider text-right whitespace-nowrap">Thao tác</th>
           </tr>
         </thead>
         <tbody>
@@ -80,20 +80,20 @@
               *ngFor="let item of state.inventoryStore.items()"
               class="border-b border-slate-200/30 dark:border-slate-800/30 hover:bg-slate-50/30 dark:hover:bg-slate-950/10 transition-colors"
             >
-              <td class="py-4 px-6 text-xs font-mono font-bold text-[var(--color-primary)]">#{{ item.id }}</td>
-              <td class="py-4 px-6">
+              <td class="py-4 px-6 text-xs font-mono font-bold text-[var(--color-primary)] whitespace-nowrap">#{{ item.id }}</td>
+              <td class="py-4 px-6 whitespace-nowrap">
                 <span class="text-sm font-extrabold text-slate-800 dark:text-white">
                   {{ getProductName(item.product_id) }}
                 </span>
               </td>
-              <td class="py-4 px-6">
+              <td class="py-4 px-6 min-w-[200px]">
                 <div class="flex items-center gap-2 max-w-xs md:max-w-md">
                   <code class="text-xs font-mono bg-slate-50 dark:bg-slate-950 px-2 py-1 rounded border border-slate-200/40 dark:border-slate-800/40 text-slate-700 dark:text-slate-300 truncate" title="{{ item.data }}">
                     {{ item.data }}
                   </code>
                 </div>
               </td>
-              <td class="py-4 px-6 text-center">
+              <td class="py-4 px-6 text-center whitespace-nowrap">
                 <span
                   [ngClass]="{
                     'bg-emerald-50 dark:bg-emerald-950/20 text-emerald-600 dark:text-emerald-400 border-emerald-500/10': item.status === 'available',
@@ -105,20 +105,22 @@
                   {{ item.status }}
                 </span>
               </td>
-              <td class="py-4 px-6 text-center">
+              <td class="py-4 px-6 text-center whitespace-nowrap">
                 <span *ngIf="item.order_id" class="text-xs font-mono font-bold text-slate-500 bg-slate-50 dark:bg-slate-950 px-2 py-1 rounded border">
                   #{{ item.order_id }}
                 </span>
                 <span *ngIf="!item.order_id" class="text-xs text-slate-400 font-semibold">-</span>
               </td>
-              <td class="py-4 px-6 text-right">
-                <button
-                  (click)="confirmDeleteItem(item)"
-                  [disabled]="item.status === 'sold'"
-                  class="text-xs font-bold px-3 py-1.5 rounded-lg border border-red-500/10 hover:bg-red-50 dark:hover:bg-red-950/20 text-red-500 hover:scale-105 active:scale-95 transition-all cursor-pointer disabled:opacity-50 disabled:pointer-events-none"
-                >
-                  Xóa
-                </button>
+              <td class="py-4 px-6 text-right whitespace-nowrap">
+                <div class="flex items-center justify-end gap-2 whitespace-nowrap">
+                  <button
+                    (click)="confirmDeleteItem(item)"
+                    [disabled]="item.status === 'sold'"
+                    class="text-xs font-bold px-3 py-1.5 rounded-lg border border-red-500/10 hover:bg-red-50 dark:hover:bg-red-950/20 text-red-500 hover:scale-105 active:scale-95 transition-all cursor-pointer disabled:opacity-50 disabled:pointer-events-none"
+                  >
+                    Xóa
+                  </button>
+                </div>
               </td>
             </tr>
           }
