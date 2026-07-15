@@ -67,7 +67,7 @@ export class ModalService {
     return this.open(ConfirmModalComponent, {
       title: config.title || 'Xác nhận hành động',
       size: 'sm',
-      closeOnBackdropClick: false,
+      closeOnBackdropClick: true,
       showHeader: false,
       data: config
     });
