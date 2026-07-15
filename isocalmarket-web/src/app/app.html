@@ -1,0 +1,134 @@
+<!-- DESKTOP SIDEBAR (chỉ hiện >= md) -->
+<app-sidebar></app-sidebar>
+
+<!-- MOBILE SIDEBAR DRAWER (chỉ hiện < md khi bấm hamburger) -->
+<div
+  [ngClass]="stateService.showMobileMenu() ? 'pointer-events-auto' : 'pointer-events-none'"
+  class="fixed inset-0 z-[60] flex md:hidden transition-all duration-300"
+>
+  <!-- Backdrop -->
+  <div
+    (click)="stateService.showMobileMenu.set(false)"
+    [ngClass]="stateService.showMobileMenu() ? 'opacity-100' : 'opacity-0'"
+    class="absolute inset-0 bg-black/40 transition-opacity duration-300"
+  ></div>
+
+  <!-- Drawer panel -->
+  <aside
+    [ngClass]="stateService.showMobileMenu() ? 'translate-x-0' : '-translate-x-full'"
+    class="relative w-72 h-full bg-white dark:bg-slate-950 border-r border-slate-200/50 dark:border-slate-900/50 flex flex-col shadow-2xl transition-transform duration-300 ease-out"
+  >
+    <!-- LOGO & Close Button -->
+    <div class="flex items-center justify-between px-6 py-6 border-b border-slate-100 dark:border-slate-800/60">
+      <a routerLink="/" (click)="stateService.showMobileMenu.set(false)" class="flex items-center gap-3 select-none cursor-pointer">
+        <app-logo class="w-9 h-9 shrink-0" />
+        <div class="flex flex-col">
+          <span class="text-sm font-black tracking-tight leading-none text-slate-800 dark:text-white mb-1">
+            <span class="text-primary">Isocal</span><span class="text-secondary">market</span>
+          </span>
+          <span class="text-[9px] font-bold text-slate-400 uppercase tracking-widest">Digital Inventory</span>
+        </div>
+      </a>
+
+      <button (click)="stateService.showMobileMenu.set(false)" class="text-slate-400 hover:text-slate-600 dark:hover:text-slate-200 transition-colors">
+        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2.5" stroke="currentColor" class="w-6 h-6">
+          <path stroke-linecap="round" stroke-linejoin="round" d="M6 18 18 6M6 6l12 12" />
+        </svg>
+      </button>
+    </div>
+
+    <!-- MENU LINKS -->
+    <nav class="flex-1 px-4 py-6 space-y-1.5 overflow-y-auto">
+      <a
+        routerLink="/storefront"
+        routerLinkActive="!bg-primary/10 !text-primary !font-extrabold"
+        (click)="stateService.showMobileMenu.set(false)"
+        class="flex items-center gap-3.5 px-4 py-3 rounded-xl hover:bg-slate-100 dark:hover:bg-slate-800/50 text-slate-600 dark:text-slate-400 font-semibold text-sm transition-colors duration-200 cursor-pointer"
+      >
+        <app-icon name="home" class="w-5 h-5 flex-shrink-0" />
+        <span>Cửa hàng</span>
+      </a>
+
+      <a
+        *ngIf="stateService.isAuthenticated()"
+        routerLink="/orders"
+        routerLinkActive="!bg-primary/10 !text-primary !font-extrabold"
+        (click)="stateService.showMobileMenu.set(false)"
+        class="flex items-center gap-3.5 px-4 py-3 rounded-xl hover:bg-slate-100 dark:hover:bg-slate-800/50 text-slate-600 dark:text-slate-400 font-semibold text-sm transition-colors duration-200 cursor-pointer"
+      >
+        <app-icon name="info" class="w-5 h-5 flex-shrink-0" />
+        <span>Đơn hàng đã mua</span>
+      </a>
+
+      <div *ngIf="stateService.isAdmin()" class="pt-4 pb-2">
+        <span class="px-4 text-[10px] font-bold text-slate-400 uppercase tracking-wider select-none">
+          Quản trị hệ thống
+        </span>
+      </div>
+
+      <a
+        *ngIf="stateService.isAdmin()"
+        routerLink="/admin/products"
+        routerLinkActive="!bg-primary/10 !text-primary !font-extrabold"
+        (click)="stateService.showMobileMenu.set(false)"
+        class="flex items-center gap-3.5 px-4 py-3 rounded-xl hover:bg-slate-100 dark:hover:bg-slate-800/50 text-slate-600 dark:text-slate-400 font-semibold text-sm transition-colors duration-200 cursor-pointer"
+      >
+        <app-icon name="send" class="w-5 h-5 flex-shrink-0" />
+        <span>Quản lý sản phẩm</span>
+      </a>
+
+      <a
+        *ngIf="stateService.isAdmin()"
+        routerLink="/admin/inventory"
+        routerLinkActive="!bg-primary/10 !text-primary !font-extrabold"
+        (click)="stateService.showMobileMenu.set(false)"
+        class="flex items-center gap-3.5 px-4 py-3 rounded-xl hover:bg-slate-100 dark:hover:bg-slate-800/50 text-slate-600 dark:text-slate-400 font-semibold text-sm transition-colors duration-200 cursor-pointer"
+      >
+        <app-icon name="send" class="w-5 h-5 flex-shrink-0" />
+        <span>Quản lý kho hàng</span>
+      </a>
+    </nav>
+
+    <!-- BOTTOM AUTH SECTION -->
+    <div class="px-5 py-4 border-t border-slate-100 dark:border-slate-800/60 bg-slate-50/30 dark:bg-slate-900/10 space-y-3">
+      <div *ngIf="stateService.isAuthenticated()" class="flex items-center justify-between p-3 rounded-xl bg-slate-100/50 dark:bg-slate-900 border border-slate-200/30 dark:border-slate-800/30">
+        <div class="flex flex-col">
+          <span class="text-xs font-bold text-slate-800 dark:text-white truncate max-w-[140px]">
+            {{ stateService.currentUser()?.name }}
+          </span>
+          <span class="text-[9px] font-bold text-slate-400 uppercase tracking-wide">
+            {{ stateService.currentUser()?.role }}
+          </span>
+        </div>
+        <button
+          (click)="stateService.authStore.logout().subscribe(); stateService.showMobileMenu.set(false)"
+          class="text-xs font-extrabold text-red-500 hover:text-red-600 cursor-pointer"
+        >
+          Thoát
+        </button>
+      </div>
+
+      <a
+        *ngIf="!stateService.isAuthenticated()"
+        routerLink="/auth/login"
+        (click)="stateService.showMobileMenu.set(false)"
+        class="w-full py-2.5 flex items-center justify-center rounded-xl text-white text-xs font-extrabold cursor-pointer"
+        style="background: linear-gradient(to right, var(--color-primary), var(--color-secondary))"
+      >
+        Đăng nhập
+      </a>
+
+      <app-theme-switcher />
+    </div>
+  </aside>
+</div>
+
+<!-- HEADER MENU -->
+<app-header></app-header>
+
+<div class="md:pl-72 min-h-screen transition-all duration-300">
+  <router-outlet></router-outlet>
+</div>
+
+<!-- TOAST NOTIFICATION CONTAINER -->
+<app-toast></app-toast>

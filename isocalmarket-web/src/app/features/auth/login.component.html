@@ -1,0 +1,68 @@
+<div class="min-h-[80vh] flex items-center justify-center px-4">
+  <div class="w-full max-w-md bg-white/60 dark:bg-slate-900/60 backdrop-blur-md border border-slate-200/50 dark:border-slate-800/50 shadow-xl rounded-2xl p-8 space-y-6">
+    
+    <!-- Logo/Title -->
+    <div class="text-center space-y-2">
+      <h2 class="text-3xl font-black tracking-tight text-slate-900 dark:text-white">
+        Isocalmarket
+      </h2>
+      <p class="text-sm text-slate-500 font-semibold">
+        Hệ thống Quản lý Tài nguyên Số Doanh nghiệp
+      </p>
+    </div>
+
+    <!-- Form -->
+    <form (ngSubmit)="onSubmit()" class="space-y-5">
+      <div class="form-field">
+        <label>Email hoặc Tài khoản</label>
+        <app-custom-input
+          [placeholder]="'Nhập email hoặc admin'"
+          [(ngModel)]="email"
+          name="email"
+          type="text"
+          required
+        />
+      </div>
+
+      <div class="form-field">
+        <label>Mật khẩu</label>
+        <app-custom-input
+          [placeholder]="'Nhập mật khẩu'"
+          [(ngModel)]="password"
+          name="password"
+          type="password"
+          required
+        />
+      </div>
+
+      <div class="pt-2">
+        <button app-button
+          [variant]="'primary'"
+          [loading]="state.authStore.authLoading()"
+          class="w-full py-3 text-base rounded-xl bg-gradient-to-r from-[var(--color-primary)] to-[var(--color-secondary)] text-white font-extrabold shadow-md shadow-[var(--color-primary)]/20 active:scale-[0.98] transition-all"
+          type="submit"
+        >
+          Đăng Nhập
+        </button>
+      </div>
+    </form>
+
+    <!-- Footer Links -->
+    <div class="text-center text-xs font-semibold text-slate-500">
+      Chưa có tài khoản? 
+      <a routerLink="/auth/register" class="text-[var(--color-primary)] hover:underline ml-1 font-bold">
+        Đăng ký ngay
+      </a>
+    </div>
+
+    <!-- Mẹo/Thông tin admin -->
+    <div class="bg-slate-50 dark:bg-slate-950/40 border border-slate-100 dark:border-slate-800/50 rounded-xl p-4 text-xs text-slate-400 dark:text-slate-500 font-medium">
+      <p class="font-bold text-slate-500 dark:text-slate-400 mb-1">Tài khoản thử nghiệm:</p>
+      <ul class="list-disc pl-4 space-y-1">
+        <li>Admin: <code class="font-mono text-[var(--color-primary)]">admin</code> / <code class="font-mono">admin</code></li>
+        <li>Khách hàng: <code class="font-mono">customer1&#64;example.com</code> / <code class="font-mono">123456</code></li>
+      </ul>
+    </div>
+
+  </div>
+</div>

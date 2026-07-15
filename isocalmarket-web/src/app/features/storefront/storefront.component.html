@@ -1,0 +1,228 @@
+<div class="max-w-[1530px] mx-auto w-full px-4 sm:px-6 py-6 space-y-6">
+
+  <!-- Header Banner Section (Glassmorphism) -->
+  <div class="relative bg-gradient-to-r from-[var(--color-primary)]/10 to-[var(--color-secondary)]/10 backdrop-blur-md border border-slate-200/50 dark:border-slate-800/50 rounded-2xl p-6 sm:p-10 flex flex-col md:flex-row md:items-center justify-between gap-6 overflow-hidden">
+    <div class="space-y-3 z-10">
+      <h1 class="text-3xl sm:text-4xl font-black text-slate-900 dark:text-white leading-tight">
+        Khám Phá Chợ Tài Nguyên Số Lớn Nhất
+      </h1>
+      <p class="text-sm sm:text-base text-slate-500 font-semibold max-w-xl">
+        Cung cấp tài khoản VIA Facebook, Gmail cổ, Netflix Premium, ChatGPT Plus, Proxy sạch 100% tốc độ cao và các dịch vụ bản quyền số an toàn, bảo mật.
+      </p>
+      
+      <!-- Search bar -->
+      <div class="max-w-md pt-2">
+        <app-custom-search-input
+          [placeholder]="'Tìm kiếm tài nguyên số...'"
+          [(ngModel)]="searchQuery"
+          name="searchQuery"
+        />
+      </div>
+    </div>
+
+    <!-- Giỏ hàng nổi bật -->
+    <div class="flex items-center gap-4 z-10">
+      <button
+        (click)="showCartDrawer = true"
+        class="relative flex items-center justify-center p-4 rounded-xl bg-white dark:bg-slate-900 border border-slate-200/50 dark:border-slate-800/50 shadow-md hover:scale-[1.05] active:scale-[0.95] transition-all cursor-pointer"
+      >
+        <!-- Icon Cart SVG -->
+        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" class="w-6 h-6 text-[var(--color-primary)]">
+          <path stroke-linecap="round" stroke-linejoin="round" d="M15.75 10.5V6a3.75 3.75 0 1 0-7.5 0v4.5m11.356-1.993 1.263 12c.07.665-.45 1.243-1.119 1.243H4.25a1.125 1.125 0 0 1-1.12-1.243l1.264-12A1.125 1.125 0 0 1 5.513 7.5h12.974c.576 0 1.059.435 1.119 1.007ZM8.625 10.5a.375.375 0 1 1-.75 0 .375.375 0 0 1 .75 0Zm7.5 0a.375.375 0 1 1-.75 0 .375.375 0 0 1 .75 0Z" />
+        </svg>
+        <span *ngIf="cart.totalItems() > 0" class="absolute -top-2 -right-2 flex h-6 w-6 items-center justify-center rounded-full bg-[var(--color-primary)] text-white text-xs font-black">
+          {{ cart.totalItems() }}
+        </span>
+      </button>
+    </div>
+
+    <!-- Background decoration glow -->
+    <div class="absolute -right-16 -top-16 w-64 h-64 bg-[var(--color-primary)]/10 blur-[80px] rounded-full"></div>
+    <div class="absolute -left-16 -bottom-16 w-64 h-64 bg-[var(--color-secondary)]/10 blur-[80px] rounded-full"></div>
+  </div>
+
+  <!-- Products Section -->
+  <div class="space-y-6">
+    <div class="flex items-center justify-between border-b border-slate-200/40 dark:border-slate-800/40 pb-4">
+      <h3 class="text-xl font-black text-slate-800 dark:text-white">
+        Danh Sách Tài Nguyên Khả Dụng
+      </h3>
+      <span class="text-xs font-bold text-slate-400 bg-slate-100 dark:bg-slate-900 px-3 py-1.5 rounded-lg border border-slate-200/40 dark:border-slate-800/40">
+        {{ state.productStore.totalProducts() }} Sản phẩm
+      </span>
+    </div>
+
+    <!-- Skeleton loading state -->
+    <div *ngIf="state.productStore.loading()" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
+      <app-skeleton-loader [type]="'card-grid'" [cards]="4" />
+    </div>
+
+    <!-- Empty state -->
+    <div *ngIf="!state.productStore.loading() && filteredProducts().length === 0" class="text-center py-12 bg-white dark:bg-slate-950/30 border border-slate-200/40 dark:border-slate-800/40 rounded-2xl">
+      <p class="text-sm font-semibold text-slate-400">Không tìm thấy sản phẩm nào phù hợp!</p>
+    </div>
+
+    <!-- Product list -->
+    <div *ngIf="!state.productStore.loading() && filteredProducts().length > 0" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
+      <div
+        *ngFor="let p of filteredProducts()"
+        class="bg-white dark:bg-slate-900/60 border border-slate-200/50 dark:border-slate-800/50 rounded-2xl p-5 space-y-4 hover:scale-[1.01] hover:shadow-lg hover:shadow-[var(--color-primary)]/5 transition-all duration-300 flex flex-col justify-between"
+      >
+        <!-- Product Header -->
+        <div class="space-y-2">
+          <div class="flex items-start justify-between gap-4">
+            <h4 class="text-base font-extrabold text-slate-800 dark:text-white line-clamp-2">
+              {{ p.name }}
+            </h4>
+            <!-- Tag Category / Tồn kho -->
+            <span
+              [ngClass]="p.available_count > 0 ? 'bg-emerald-50 dark:bg-emerald-950/30 text-emerald-600 dark:text-emerald-400' : 'bg-red-50 dark:bg-red-950/30 text-red-600 dark:text-red-400'"
+              class="text-[10px] font-bold uppercase tracking-wider px-2 py-1 rounded-md border border-emerald-500/10 shrink-0"
+            >
+              {{ p.available_count > 0 ? 'Còn hàng' : 'Hết hàng' }}
+            </span>
+          </div>
+
+          <p class="text-xs text-slate-400 dark:text-slate-500 font-semibold line-clamp-3">
+            {{ p.description || 'Chưa có mô tả chi tiết cho sản phẩm này.' }}
+          </p>
+
+          <div class="text-[11px] font-extrabold text-slate-400 pt-1 flex items-center gap-1.5">
+            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2.5" stroke="currentColor" class="w-3.5 h-3.5 text-emerald-500">
+              <path stroke-linecap="round" stroke-linejoin="round" d="M9 12.75 11.25 15 15 9.75M21 12a9 9 0 1 1-18 0 9 9 0 0 1 18 0Z" />
+            </svg>
+            <span>Còn lại: <strong class="text-slate-700 dark:text-slate-200">{{ p.available_count }}</strong> sản phẩm</span>
+          </div>
+        </div>
+
+        <!-- Product Footer (Price + Button) -->
+        <div class="pt-4 border-t border-slate-100 dark:border-slate-800/40 flex items-center justify-between gap-4">
+          <div class="space-y-0.5">
+            <span class="text-xs text-slate-400 dark:text-slate-500 font-bold uppercase tracking-wider">Đơn giá</span>
+            <p class="text-lg font-black text-[var(--color-primary)]">
+              {{ p.price | number:'1.0-0' }} <span class="text-xs font-bold">VND</span>
+            </p>
+          </div>
+
+          <button app-button
+            (click)="addToCart(p)"
+            [disabled]="p.available_count <= 0"
+            [variant]="'primary'"
+            class="py-2 px-4 rounded-xl bg-gradient-to-r from-[var(--color-primary)] to-[var(--color-secondary)] text-white text-xs font-extrabold active:scale-95 transition-all shadow-sm shadow-[var(--color-primary)]/10 cursor-pointer disabled:opacity-50 disabled:pointer-events-none"
+          >
+            Mua Ngay
+          </button>
+        </div>
+      </div>
+    </div>
+
+    <!-- Pagination -->
+    <div class="flex justify-center pt-6" *ngIf="state.productStore.lastPage() > 1">
+      <app-pagination
+        [currentPage]="state.productStore.currentPage()"
+        [totalPages]="state.productStore.lastPage()"
+        [totalItems]="state.productStore.totalProducts()"
+        [itemsPerPage]="limit"
+        [itemName]="'sản phẩm'"
+        (pageChange)="fetchPage($event)"
+      />
+    </div>
+  </div>
+</div>
+
+
+<!-- Cart Drawer (Side Modal) - Always in DOM, animate via CSS transform -->
+<div
+  [ngClass]="showCartDrawer ? 'pointer-events-auto' : 'pointer-events-none'"
+  class="fixed inset-0 z-50 flex justify-end"
+>
+  <!-- Backdrop -->
+  <div
+    (click)="showCartDrawer = false"
+    [ngClass]="showCartDrawer ? 'opacity-100' : 'opacity-0'"
+    class="absolute inset-0 bg-black/40 transition-opacity duration-300"
+  ></div>
+
+  <!-- Content Drawer -->
+  <div
+    [ngClass]="showCartDrawer ? 'translate-x-0' : 'translate-x-full'"
+    class="relative w-full max-w-md bg-white dark:bg-slate-950 border-l border-slate-200/50 dark:border-slate-800/50 shadow-2xl h-full flex flex-col justify-between transition-transform duration-300 ease-out"
+  >
+    <!-- Header -->
+    <div class="p-6 border-b border-slate-200/40 dark:border-slate-800/40 flex items-center justify-between">
+      <div class="flex items-center gap-3">
+        <h3 class="text-lg font-black text-slate-800 dark:text-white">Giỏ Hàng Của Bạn</h3>
+        <span class="text-xs font-bold px-2 py-1 rounded bg-[var(--color-primary)]/10 text-[var(--color-primary)]">
+          {{ cart.totalItems() }} Món
+        </span>
+      </div>
+      <button (click)="showCartDrawer = false" class="text-slate-400 hover:text-slate-500 dark:hover:text-slate-300">
+        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2.5" stroke="currentColor" class="w-6 h-6">
+          <path stroke-linecap="round" stroke-linejoin="round" d="M6 18 18 6M6 6l12 12" />
+        </svg>
+      </button>
+    </div>
+
+    <!-- Items list -->
+    <div class="flex-1 overflow-y-auto p-6 space-y-4">
+      <div *ngIf="cart.items().length === 0" class="text-center py-12 space-y-2">
+        <p class="text-sm font-semibold text-slate-400">Giỏ hàng của bạn đang trống!</p>
+        <button app-button (click)="showCartDrawer = false" [variant]="'cancel'" class="text-xs py-2 px-4 rounded-xl">Tiếp tục xem</button>
+      </div>
+
+      <div
+        *ngFor="let item of cart.items()"
+        class="flex items-center justify-between gap-4 p-4 bg-slate-50 dark:bg-slate-900/50 border border-slate-200/30 dark:border-slate-800/30 rounded-xl"
+      >
+        <div class="space-y-1">
+          <h5 class="text-sm font-extrabold text-slate-800 dark:text-white">{{ item.name }}</h5>
+          <p class="text-xs font-black text-[var(--color-primary)]">
+            {{ item.price | number:'1.0-0' }} VND
+          </p>
+          
+          <!-- Quantity controls -->
+          <div class="flex items-center gap-2 pt-2">
+            <button
+              (click)="cart.updateQuantity(item.id, item.quantity - 1)"
+              [disabled]="item.quantity <= 1"
+              class="w-7 h-7 flex items-center justify-center rounded-lg bg-white dark:bg-slate-800 border border-slate-200/40 dark:border-slate-700/40 hover:scale-105 active:scale-95 transition-all text-sm font-bold text-slate-500 disabled:opacity-50"
+            >-</button>
+            <span class="text-xs font-black text-slate-800 dark:text-white px-2">{{ item.quantity }}</span>
+            <button
+              (click)="cart.updateQuantity(item.id, item.quantity + 1)"
+              [disabled]="item.quantity >= item.available_count"
+              class="w-7 h-7 flex items-center justify-center rounded-lg bg-white dark:bg-slate-800 border border-slate-200/40 dark:border-slate-700/40 hover:scale-105 active:scale-95 transition-all text-sm font-bold text-slate-500 disabled:opacity-50"
+            >+</button>
+          </div>
+        </div>
+
+        <button (click)="cart.removeFromCart(item.id)" class="text-red-400 hover:text-red-500 hover:scale-105 active:scale-95 transition-all">
+          <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" class="w-5 h-5">
+            <path stroke-linecap="round" stroke-linejoin="round" d="m14.74 9-.346 9m-4.788 0L9.26 9m9.968-3.21c.342.052.682.107 1.022.166m-1.022-.165L18.16 19.673a2.25 2.25 0 0 1-2.244 2.077H8.084a2.25 2.25 0 0 1-2.244-2.077L4.772 5.79m14.456 0a48.108 48.108 0 0 0-3.478-.397m-12 .562c.34-.059.68-.114 1.022-.165m0 0a48.11 48.11 0 0 1 3.478-.397m7.5 0v-.916c0-1.18-.91-2.164-2.09-2.201a51.964 51.964 0 0 0-3.32 0c-1.18.037-2.09 1.022-2.09 2.201v.916m7.5 0a48.667 48.667 0 0 0-7.5 0" />
+          </svg>
+        </button>
+      </div>
+    </div>
+
+    <!-- Footer Summary & Checkout -->
+    <div class="p-6 border-t border-slate-200/40 dark:border-slate-800/40 bg-slate-50/50 dark:bg-slate-900/30 space-y-4">
+      <div class="flex items-center justify-between">
+        <span class="text-sm text-slate-500 font-bold">Tổng số tiền:</span>
+        <span class="text-xl font-black text-[var(--color-primary)]">
+          {{ cart.totalAmount() | number:'1.0-0' }} VND
+        </span>
+      </div>
+
+      <button app-button
+        (click)="handleCheckout()"
+        [disabled]="cart.items().length === 0"
+        [variant]="'primary'"
+        class="w-full py-3 text-base rounded-xl bg-gradient-to-r from-[var(--color-primary)] to-[var(--color-secondary)] text-white font-extrabold shadow-md shadow-[var(--color-primary)]/20 active:scale-[0.98] transition-all cursor-pointer"
+      >
+        Thanh Toán Ngay
+      </button>
+    </div>
+  </div>
+</div>
+
+

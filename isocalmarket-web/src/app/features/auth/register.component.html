@@ -1,0 +1,81 @@
+<div class="min-h-[80vh] flex items-center justify-center px-4">
+  <div class="w-full max-w-md bg-white/60 dark:bg-slate-900/60 backdrop-blur-md border border-slate-200/50 dark:border-slate-800/50 shadow-xl rounded-2xl p-8 space-y-6">
+    
+    <!-- Title -->
+    <div class="text-center space-y-2">
+      <h2 class="text-3xl font-black tracking-tight text-slate-900 dark:text-white">
+        Đăng Ký
+      </h2>
+      <p class="text-sm text-slate-500 font-semibold">
+        Tạo tài khoản khách hàng để mua sắm
+      </p>
+    </div>
+
+    <!-- Form -->
+    <form (ngSubmit)="onSubmit()" class="space-y-5">
+      <div class="form-field">
+        <label>Họ và Tên</label>
+        <app-custom-input
+          [placeholder]="'Nhập họ và tên'"
+          [(ngModel)]="name"
+          name="name"
+          type="text"
+          required
+        />
+      </div>
+
+      <div class="form-field">
+        <label>Email</label>
+        <app-custom-input
+          [placeholder]="'Nhập địa chỉ email'"
+          [(ngModel)]="email"
+          name="email"
+          type="email"
+          required
+        />
+      </div>
+
+      <div class="form-field">
+        <label>Mật khẩu</label>
+        <app-custom-input
+          [placeholder]="'Nhập mật khẩu (tối thiểu 6 ký tự)'"
+          [(ngModel)]="password"
+          name="password"
+          type="password"
+          required
+        />
+      </div>
+
+      <div class="form-field">
+        <label>Xác nhận mật khẩu</label>
+        <app-custom-input
+          [placeholder]="'Nhập lại mật khẩu'"
+          [(ngModel)]="passwordConfirmation"
+          name="passwordConfirmation"
+          type="password"
+          required
+        />
+      </div>
+
+      <div class="pt-2">
+        <button app-button
+          [variant]="'primary'"
+          [loading]="state.authStore.authLoading()"
+          class="w-full py-3 text-base rounded-xl bg-gradient-to-r from-[var(--color-primary)] to-[var(--color-secondary)] text-white font-extrabold shadow-md shadow-[var(--color-primary)]/20 active:scale-[0.98] transition-all"
+          type="submit"
+        >
+          Đăng Ký Tài Khoản
+        </button>
+      </div>
+    </form>
+
+    <!-- Footer Links -->
+    <div class="text-center text-xs font-semibold text-slate-500">
+      Đã có tài khoản? 
+      <a routerLink="/auth/login" class="text-[var(--color-primary)] hover:underline ml-1 font-bold">
+        Đăng nhập
+      </a>
+    </div>
+
+  </div>
+</div>

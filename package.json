@@ -1,0 +1,14 @@
+{
+  "name": "isocalmarket",
+  "version": "1.0.0",
+  "description": "Thư mục gốc quản lý dự án Isocalmarket",
+  "scripts": {
+    "start": "npx concurrently --kill-others \"npm run be\" \"npm run fe\"",
+    "be": "cd isocalmarket-api && php artisan serve",
+    "fe": "cd isocalmarket-web && npm start",
+    "build": "cd isocalmarket-web && npm run build"
+  },
+  "devDependencies": {
+    "concurrently": "^8.2.2"
+  }
+}
