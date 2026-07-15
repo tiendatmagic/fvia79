@@ -74,10 +74,9 @@ export class AuthStore {
         this.currentUser.set(user);
       }),
       catchError(() => {
+        // authInterceptor sẽ tự xử lý: refresh token → retry → hoặc redirect về /auth/login
+        // Ở đây chỉ cần reset signal về null
         this.currentUser.set(null);
-        if (typeof document !== 'undefined') {
-          document.cookie = 'auth_logged_in=; path=/; expires=Thu, 01 Jan 1970 00:00:00 GMT';
-        }
         return of(null);
       }),
       shareReplay(1),
