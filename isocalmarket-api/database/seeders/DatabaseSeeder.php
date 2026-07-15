@@ -18,7 +18,7 @@ class DatabaseSeeder extends Seeder
     {
         // 1. Tạo Users
         $admin = UserModel::create([
-            'name'     => 'Admin Manager',
+            'name'     => 'admin',
             'email'    => 'admin@isocalmarket.com',
             'password' => Hash::make('admin'),
             'role'     => 'admin'

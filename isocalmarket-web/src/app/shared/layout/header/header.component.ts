@@ -1,6 +1,6 @@
 import { Component, inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { RouterModule } from '@angular/router';
+import { RouterModule, Router } from '@angular/router';
 import { StateService } from '@core/services/state.service';
 import { IconComponent } from '@shared/components/icon/icon.component';
 import { ButtonComponent } from '@shared/components/button/button.component';
@@ -29,8 +29,13 @@ import { ThemeSwitcherComponent } from '@shared/components/theme-switcher/theme-
 })
 export class HeaderComponent {
   public stateService = inject(StateService);
+  public router = inject(Router);
 
   public openMobileMenu() {
     this.stateService.showMobileMenu.set(true);
+  }
+
+  public isAuthPage(): boolean {
+    return this.router.url.includes('/auth/');
   }
 }

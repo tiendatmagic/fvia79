@@ -48,7 +48,7 @@
         <!-- Nút đăng nhập/đăng xuất -->
         <button
           app-button
-          *ngIf="!stateService.isAuthenticated()"
+          *ngIf="!stateService.isAuthenticated() && !isAuthPage()"
           [routerLink]="['/auth/login']"
           [variant]="'primary'"
           class="py-2 px-4 text-xs rounded-xl bg-gradient-to-r from-[var(--color-primary)] to-[var(--color-secondary)] text-white font-extrabold cursor-pointer"
@@ -75,7 +75,7 @@
         </div>
 
         <a
-          *ngIf="!stateService.isAuthenticated()"
+          *ngIf="!stateService.isAuthenticated() && !isAuthPage()"
           routerLink="/auth/login"
           class="text-xs font-extrabold px-3 py-2 rounded-xl text-white cursor-pointer"
           style="background: linear-gradient(to right, var(--color-primary), var(--color-secondary))"

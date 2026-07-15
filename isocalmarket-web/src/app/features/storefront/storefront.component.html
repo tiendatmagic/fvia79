@@ -133,8 +133,8 @@
 
 <!-- Cart Drawer (Side Modal) - Always in DOM, animate via CSS transform -->
 <div
-  [ngClass]="showCartDrawer ? 'pointer-events-auto' : 'pointer-events-none'"
-  class="fixed inset-0 z-50 flex justify-end"
+  [ngClass]="showCartDrawer ? 'visible pointer-events-auto' : 'invisible pointer-events-none'"
+  class="fixed inset-0 z-50 flex justify-end transition-all duration-300"
 >
   <!-- Backdrop -->
   <div
