@@ -2,30 +2,30 @@
   <!-- Section Title -->
   <div class="border-b border-slate-100 dark:border-slate-800/60 pb-3">
     <h3 class="text-lg font-black text-slate-800 dark:text-slate-200">Thông tin cá nhân</h3>
-    <p class="text-xs text-slate-400 dark:text-slate-500 font-bold mt-0.5">Cập nhật thông tin liên hệ của bạn.</p>
+    <p class="text-xs text-slate-400 dark:text-slate-500 font-bold mt-0.5">
+      Cập nhật thông tin liên hệ của bạn.
+    </p>
   </div>
 
   <form (ngSubmit)="onSave()" class="space-y-5">
     <div class="form-field">
-      <label class="text-xs font-bold text-slate-500 uppercase tracking-wider block mb-1.5">Tên tài khoản (Không thể sửa)</label>
-      <app-custom-input
-        [(ngModel)]="name"
-        name="name"
-        [disabled]="true"
-      />
+      <label class="text-xs font-bold text-slate-500 uppercase tracking-wider block mb-1.5"
+        >Tên tài khoản</label
+      >
+      <app-custom-input [(ngModel)]="name" name="name" [disabled]="true" />
     </div>
 
     <div class="form-field">
-      <label class="text-xs font-bold text-slate-500 uppercase tracking-wider block mb-1.5">Email (Không thể sửa)</label>
-      <app-custom-input
-        [(ngModel)]="email"
-        name="email"
-        [disabled]="true"
-      />
+      <label class="text-xs font-bold text-slate-500 uppercase tracking-wider block mb-1.5"
+        >Email</label
+      >
+      <app-custom-input [(ngModel)]="email" name="email" [disabled]="true" />
     </div>
 
     <div class="form-field">
-      <label class="text-xs font-bold text-slate-500 uppercase tracking-wider block mb-1.5">Số điện thoại</label>
+      <label class="text-xs font-bold text-slate-500 uppercase tracking-wider block mb-1.5"
+        >Số điện thoại</label
+      >
       <app-custom-input
         [(ngModel)]="phone"
         name="phone"
