@@ -1,4 +1,4 @@
-import { Component, inject, OnInit } from '@angular/core';
+import { Component, inject, OnInit, computed } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { ModalRef, MODAL_DATA } from '@core/services/modal-ref';
@@ -32,6 +32,7 @@ export class ProductFormModalComponent implements OnInit {
 
   public isEditMode = false;
   public editingId: any = null; // Hỗ trợ cả string UUID và number
+  public categoryId = '';
   public name = '';
   public slug = '';
   public description = '';
@@ -45,10 +46,20 @@ export class ProductFormModalComponent implements OnInit {
     { label: 'Ngưng hoạt động', value: 'inactive' }
   ];
 
+  public categoryOptions = computed(() => {
+    const list = this.state.productStore.categories();
+    return [
+      { label: '-- Không thuộc danh mục nào --', value: '' },
+      ...list.map(cat => ({ label: cat.name, value: cat.id }))
+    ];
+  });
+
   ngOnInit() {
+    this.state.productStore.fetchCategories().subscribe();
     if (this.modalData) {
       this.isEditMode = true;
       this.editingId = this.modalData.id;
+      this.categoryId = this.modalData.category_id || '';
       this.name = this.modalData.name;
       this.slug = this.modalData.slug;
       this.description = this.modalData.description || '';
@@ -83,6 +94,7 @@ export class ProductFormModalComponent implements OnInit {
       description: this.description,
       price: this.price,
       status: this.status,
+      category_id: this.categoryId || null,
       attributes: this.attributes.filter(attr => attr.label.trim() !== '' && attr.value.trim() !== '')
     };
 

@@ -23,6 +23,10 @@ class AppServiceProvider extends ServiceProvider
             \App\Infrastructure\Persistence\Repositories\ProductRepository::class
         );
         $this->app->bind(
+            \App\Domain\Repositories\CategoryRepositoryInterface::class,
+            \App\Infrastructure\Persistence\Repositories\CategoryRepository::class
+        );
+        $this->app->bind(
             \App\Domain\Repositories\InventoryItemRepositoryInterface::class,
             \App\Infrastructure\Persistence\Repositories\InventoryItemRepository::class
         );

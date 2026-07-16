@@ -21,6 +21,16 @@
   </div>
 
   <div class="form-field">
+    <label class="text-[11px] font-black text-slate-400 uppercase tracking-wider block mb-2">Danh mục sản phẩm</label>
+    <app-custom-select
+      [options]="categoryOptions()"
+      valueKey="value"
+      labelKey="label"
+      [(value)]="categoryId"
+    />
+  </div>
+
+  <div class="form-field">
     <label class="text-[11px] font-black text-slate-400 uppercase tracking-wider block mb-2">Đơn giá (VND)</label>
     <app-custom-input
       [placeholder]="'Nhập đơn giá'"

@@ -8,7 +8,7 @@ use Illuminate\Database\Eloquent\Attributes\Fillable;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Support\Str;
 
-#[Fillable(['name', 'slug', 'description', 'price', 'status', 'attributes'])]
+#[Fillable(['category_id', 'name', 'slug', 'description', 'price', 'status', 'attributes'])]
 class ProductModel extends Model
 {
     use HasUuids;
@@ -26,6 +26,11 @@ class ProductModel extends Model
             'price' => 'float',
             'attributes' => 'array',
         ];
+    }
+
+    public function category(): \Illuminate\Database\Eloquent\Relations\BelongsTo
+    {
+        return $this->belongsTo(CategoryModel::class, 'category_id');
     }
 
     public function inventoryItems(): HasMany

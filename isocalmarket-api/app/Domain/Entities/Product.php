@@ -5,6 +5,7 @@ namespace App\Domain\Entities;
 class Product
 {
     private ?string $id;
+    private ?string $categoryId;
     private string $name;
     private string $slug;
     private ?string $description;
@@ -21,9 +22,11 @@ class Product
         float $price,
         string $status = 'active',
         int $availableCount = 0,
-        ?array $attributes = null
+        ?array $attributes = null,
+        ?string $categoryId = null
     ) {
         $this->id = $id;
+        $this->categoryId = $categoryId;
         $this->name = $name;
         $this->slug = $slug;
         $this->description = $description;
@@ -36,6 +39,11 @@ class Product
     public function getId(): ?string
     {
         return $this->id;
+    }
+
+    public function getCategoryId(): ?string
+    {
+        return $this->categoryId;
     }
 
     public function getName(): string

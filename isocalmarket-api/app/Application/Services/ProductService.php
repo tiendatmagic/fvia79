@@ -15,14 +15,14 @@ class ProductService
         $this->productRepository = $productRepository;
     }
 
-    public function getAllActiveProducts(): array
+    public function getAllActiveProducts(?string $categoryId = null): array
     {
-        return $this->productRepository->findAllActive();
+        return $this->productRepository->findAllActive($categoryId);
     }
 
-    public function getActiveProductsPaginated(int $page, int $limit): array
+    public function getActiveProductsPaginated(int $page, int $limit, ?string $categoryId = null): array
     {
-        return $this->productRepository->findAllActivePaginated($page, $limit);
+        return $this->productRepository->findAllActivePaginated($page, $limit, $categoryId);
     }
 
     public function getProductById(string $id): ?Product
@@ -30,7 +30,7 @@ class ProductService
         return $this->productRepository->findById($id);
     }
 
-    public function createProduct(string $name, ?string $slug, ?string $description, float $price, string $status = 'active', ?array $attributes = null): Product
+    public function createProduct(string $name, ?string $slug, ?string $description, float $price, string $status = 'active', ?array $attributes = null, ?string $categoryId = null): Product
     {
         $finalSlug = $slug ?: Str::slug($name);
         $existing = $this->productRepository->findBySlug($finalSlug);
@@ -38,11 +38,11 @@ class ProductService
             $finalSlug .= '-' . time();
         }
 
-        $product = new Product(null, $name, $finalSlug, $description, $price, $status, 0, $attributes);
+        $product = new Product(null, $name, $finalSlug, $description, $price, $status, 0, $attributes, $categoryId);
         return $this->productRepository->save($product);
     }
 
-    public function updateProduct(string $id, string $name, ?string $slug, ?string $description, float $price, string $status, ?array $attributes = null): Product
+    public function updateProduct(string $id, string $name, ?string $slug, ?string $description, float $price, string $status, ?array $attributes = null, ?string $categoryId = null): Product
     {
         $product = $this->productRepository->findById($id);
         if (!$product) {
@@ -57,7 +57,7 @@ class ProductService
             }
         }
 
-        $updatedProduct = new Product($id, $name, $finalSlug, $description, $price, $status, 0, $attributes);
+        $updatedProduct = new Product($id, $name, $finalSlug, $description, $price, $status, 0, $attributes, $categoryId);
         return $this->productRepository->save($updatedProduct);
     }
 

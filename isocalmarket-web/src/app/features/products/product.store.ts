@@ -14,12 +14,27 @@ export class ProductStore {
 
   // State Signals
   public readonly products = signal<any[]>([]);
+  public readonly categories = signal<any[]>([]);
   public readonly loading = signal<boolean>(false);
   public readonly totalProducts = signal<number>(0);
   public readonly currentPage = signal<number>(1);
   public readonly lastPage = signal<number>(1);
 
-  public fetchProducts(page?: number, limit?: number) {
+  public fetchCategories() {
+    return this.api.get<any[]>('v1/categories').pipe(
+      tap((res) => {
+        if (res) {
+          this.categories.set(res);
+        }
+      }),
+      catchError((err) => {
+        this.toast.showToast('Không thể tải danh sách danh mục!', 'error');
+        return of([]);
+      })
+    );
+  }
+
+  public fetchProducts(page?: number, limit?: number, categoryId?: string) {
     this.loading.set(true);
     let params = new HttpParams();
     if (page !== undefined) {
@@ -27,6 +42,9 @@ export class ProductStore {
     }
     if (limit !== undefined) {
       params = params.set('limit', limit.toString());
+    }
+    if (categoryId) {
+      params = params.set('category_id', categoryId);
     }
 
     return this.api.get<any>('v1/products', params).pipe(
@@ -51,7 +69,6 @@ export class ProductStore {
     );
   }
 
-
   public createProduct(data: any) {
     this.loading.set(true);
     return this.api.post<any>('v1/products', data).pipe(
@@ -67,7 +84,7 @@ export class ProductStore {
     );
   }
 
-  public updateProduct(id: number, data: any) {
+  public updateProduct(id: string, data: any) {
     this.loading.set(true);
     return this.api.put<any>(`v1/products/${id}`, data).pipe(
       tap(() => {
@@ -82,7 +99,7 @@ export class ProductStore {
     );
   }
 
-  public deleteProduct(id: number) {
+  public deleteProduct(id: string) {
     this.loading.set(true);
     return this.api.delete<any>(`v1/products/${id}`).pipe(
       tap(() => {

@@ -57,8 +57,8 @@ export class StorefrontComponent implements OnInit {
     });
   }
   
-  public readonly currentPage = signal<number>(1);
-  public readonly limit = 10;
+  public readonly limit = 12;
+  public readonly categoryPages = signal<{ [catId: string]: number }>({});
 
   // Tìm kiếm sản phẩm
   public readonly filteredProducts = computed(() => {
@@ -71,13 +71,51 @@ export class StorefrontComponent implements OnInit {
     );
   });
 
+  // Gom nhóm sản phẩm theo Danh mục
+  public readonly groupedProducts = computed(() => {
+    const list = this.filteredProducts();
+    const categories = this.state.productStore.categories();
+    
+    const groups: { [key: string]: any[] } = {};
+    list.forEach(p => {
+      const catId = p.category_id || 'other';
+      if (!groups[catId]) {
+        groups[catId] = [];
+      }
+      groups[catId].push(p);
+    });
+
+    return categories.map(cat => ({
+      id: cat.id,
+      name: cat.name,
+      description: cat.description,
+      products: groups[cat.id] || []
+    })).filter(g => g.products.length > 0);
+  });
+
   ngOnInit() {
-    this.fetchPage(1);
+    this.state.productStore.fetchCategories().subscribe();
+    this.state.productStore.fetchProducts().subscribe(); // Load toàn bộ sản phẩm để gom nhóm ở client
   }
 
-  public fetchPage(page: number) {
-    this.currentPage.set(page);
-    this.state.productStore.fetchProducts(page, this.limit).subscribe();
+  public getCategoryPage(catId: string): number {
+    return this.categoryPages()[catId] || 1;
+  }
+
+  public getPaginatedProductsForCategory(products: any[], catId: string): any[] {
+    const page = this.getCategoryPage(catId);
+    return products.slice((page - 1) * this.limit, page * this.limit);
+  }
+
+  public onCategoryPageChange(catId: string, page: number) {
+    this.categoryPages.update(prev => ({
+      ...prev,
+      [catId]: page
+    }));
+  }
+
+  public getTotalPages(totalItems: number): number {
+    return Math.ceil(totalItems / this.limit);
   }
 
   public addToCart(product: any) {

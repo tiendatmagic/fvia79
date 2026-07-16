@@ -10,9 +10,13 @@ use App\Infrastructure\Persistence\Mappers\ProductMapper;
 
 class ProductRepository implements ProductRepositoryInterface
 {
-    public function findAllActive(): array
+    public function findAllActive(?string $categoryId = null): array
     {
-        $models = ProductModel::where('status', 'active')->get();
+        $query = ProductModel::where('status', 'active');
+        if ($categoryId) {
+            $query->where('category_id', $categoryId);
+        }
+        $models = $query->get();
         $products = [];
         foreach ($models as $model) {
             $availableCount = InventoryItemModel::where('product_id', $model->id)
@@ -23,9 +27,12 @@ class ProductRepository implements ProductRepositoryInterface
         return $products;
     }
 
-    public function findAllActivePaginated(int $page, int $limit): array
+    public function findAllActivePaginated(int $page, int $limit, ?string $categoryId = null): array
     {
         $query = ProductModel::where('status', 'active');
+        if ($categoryId) {
+            $query->where('category_id', $categoryId);
+        }
         $total = $query->count();
         $models = $query->orderBy('created_at', 'desc')
             ->skip(($page - 1) * $limit)

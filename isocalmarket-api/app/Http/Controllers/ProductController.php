@@ -19,16 +19,18 @@ class ProductController extends Controller
     {
         try {
             $page = $request->query('page');
-            $limit = $request->query('limit', 10); // Mặc định 10 sản phẩm/trang
+            $limit = $request->query('limit', 10);
+            $categoryId = $request->query('category_id');
 
             if ($page) {
-                $result = $this->productService->getActiveProductsPaginated((int)$page, (int)$limit);
+                $result = $this->productService->getActiveProductsPaginated((int)$page, (int)$limit, $categoryId);
                 $products = $result['items'];
                 $total = $result['total'];
 
                 $data = array_map(function ($product) {
                     return [
                         'id' => $product->getId(),
+                        'category_id' => $product->getCategoryId(),
                         'name' => $product->getName(),
                         'slug' => $product->getSlug(),
                         'description' => $product->getDescription(),
@@ -50,11 +52,12 @@ class ProductController extends Controller
                 ]);
             }
 
-            $products = $this->productService->getAllActiveProducts();
+            $products = $this->productService->getAllActiveProducts($categoryId);
             
             $data = array_map(function ($product) {
                 return [
                     'id' => $product->getId(),
+                    'category_id' => $product->getCategoryId(),
                     'name' => $product->getName(),
                     'slug' => $product->getSlug(),
                     'description' => $product->getDescription(),
@@ -82,6 +85,7 @@ class ProductController extends Controller
 
             return response()->json([
                 'id' => $product->getId(),
+                'category_id' => $product->getCategoryId(),
                 'name' => $product->getName(),
                 'slug' => $product->getSlug(),
                 'description' => $product->getDescription(),
@@ -104,13 +108,15 @@ class ProductController extends Controller
                 $request->description,
                 (float)$request->price,
                 $request->status,
-                $request->attributes
+                $request->attributes,
+                $request->category_id
             );
 
             return response()->json([
                 'message' => 'Product created successfully.',
                 'product' => [
                     'id' => $product->getId(),
+                    'category_id' => $product->getCategoryId(),
                     'name' => $product->getName(),
                     'slug' => $product->getSlug(),
                     'description' => $product->getDescription(),
@@ -134,13 +140,15 @@ class ProductController extends Controller
                 $request->description,
                 (float)$request->price,
                 $request->status,
-                $request->attributes
+                $request->attributes,
+                $request->category_id
             );
 
             return response()->json([
                 'message' => 'Product updated successfully.',
                 'product' => [
                     'id' => $product->getId(),
+                    'category_id' => $product->getCategoryId(),
                     'name' => $product->getName(),
                     'slug' => $product->getSlug(),
                     'description' => $product->getDescription(),

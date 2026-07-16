@@ -15,6 +15,7 @@ Route::prefix('v1')->group(function () {
     // Public routes — ai cũng xem được danh sách sản phẩm
     Route::get('/products', ['App\Http\Controllers\ProductController', 'index']);
     Route::get('/products/{id}', ['App\Http\Controllers\ProductController', 'show']);
+    Route::get('/categories', ['App\Http\Controllers\CategoryController', 'index']);
 
     Route::middleware(['jwt.auth'])->group(function () {
         Route::post('/auth/logout', ['App\Http\Controllers\AuthController', 'logout']);

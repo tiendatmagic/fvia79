@@ -425,7 +425,10 @@
       3. Thiết kế & Căn chỉnh nút Auth trên Header:
          - Cập nhật kích thước nút Đăng nhập và Đăng ký trên Header thành `h-10 px-5` kèm flex layout để căn giữa dọc/ngang hoàn hảo.
          - Thêm hiệu ứng `hover:scale-[1.05] active:scale-[0.95]` và bóng mờ nhẹ để đồng bộ 100% với nút giỏ hàng.
-      4. Đã chạy build biên dịch frontend thành công 100% không phát sinh lỗi.
+      - Đã chạy kiểm tra build Angular frontend thành công 100% không lỗi.
+  - **[SEED DỮ LIỆU DEMO LỚN]**:
+    - Đã viết lại `DatabaseSeeder.php` để sinh ra dữ liệu phong phú: 10 tài khoản khách hàng, 10 sản phẩm (có attributes đầy đủ), 400 tài nguyên kho hàng (40 tài nguyên mỗi sản phẩm), và 50 đơn hàng mẫu với ngày tạo, trạng thái ngẫu nhiên (paid, pending, cancelled) phân bổ chuẩn nghiệp vụ.
+    - Đã chạy lại `php artisan migrate:fresh --seed` thành công.
   - **[TỐI ƯU THIẾT KẾ VÀ PHÂN QUYỀN USER DROPDOWN MENU]**:
     - Nhận diện vấn đề: Menu dropdown của tài khoản Web2 chưa đồng bộ màu sắc thương hiệu (sử dụng màu xanh emerald thay vì Teal), trigger button thiếu trạng thái active trực quan khi dropdown mở ra, và thiếu các liên kết tắt quan trọng để người dùng điều hướng nhanh chóng (Trang quản trị đối với Admin, Lịch sử đơn hàng đối với Khách hàng).
     - Giải pháp khắc phục:
@@ -465,4 +468,15 @@
       3. Tích hợp tìm kiếm & làm mới:
          - Backend: Bổ sung bộ lọc tìm kiếm `search` vào các repository `InventoryItemRepository` (lọc `id`, `data`) và `OrderRepository` (lọc `order_code`, email/name user) và cập nhật Controllers tương ứng.
          - Frontend: Cấu hình `InventoryStore` và `OrderStore` hỗ trợ query param `search`. Thêm ô `<app-custom-search-input>` và nút Tải lại (Làm mới) vào các trang Sản phẩm, Kho hàng, Đơn hàng Admin và Lịch sử đơn hàng Khách hàng.
-      4. Đã chạy build frontend Angular thành công 100% không phát sinh lỗi.
+       4. Đã chạy build frontend Angular thành công 100% không phát sinh lỗi.
+  - **[PHÂN LOẠI DANH MỤC (CATEGORIES) & CHIA SECTION STOREFRONT]**:
+    - Đã tạo bảng `categories` (UUIDv7) và liên kết khóa ngoại `category_id` vào `products` trong Database.
+    - Triển khai đầy đủ mô hình DDD backend cho Category: Domain Entity, Eloquent Model, Mapper, Repository, controller, public API endpoint `GET /v1/categories`.
+    - Cập nhật API Products hỗ trợ lọc theo query parameter `category_id`.
+    - Cập nhật `DatabaseSeeder.php` tạo 12 danh mục chính xác từ web mẫu và phân bổ 51 sản phẩm MMO thực tế. Đã chạy lại `php artisan migrate:fresh --seed` thành công.
+    - Cập nhật frontend: `ProductStore` lấy categories và truyền `category_id` khi tải sản phẩm.
+    - Sửa storefront limit phân trang thành **12 sản phẩm/trang** theo yêu cầu.
+    - Thiết kế giao diện storefront hiển thị sản phẩm chia theo từng danh mục (Section) riêng biệt nằm dọc từ trên xuống dưới. Mỗi danh mục tự quản lý trang hiện tại của nó độc lập.
+    - Tích hợp dropdown chọn danh mục cho sản phẩm trong `ProductFormModal` của admin.
+    - Tuân thủ quy tắc "Clean SVG Overrides" ở `.agent/`: Loại bỏ hoàn toàn các emoji thô (như `📂`) khỏi giao diện storefront và thay thế bằng icon hệ thống sạch sẽ (`list-bullet`).
+    - Đã chạy build frontend Angular thành công 100% không phát sinh lỗi.

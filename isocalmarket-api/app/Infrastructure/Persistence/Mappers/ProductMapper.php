@@ -17,7 +17,8 @@ class ProductMapper
             $model->price,
             $model->status,
             $availableCount,
-            $model->attributes
+            $model->attributes,
+            $model->category_id
         );
     }
 
@@ -28,6 +29,7 @@ class ProductMapper
             $model = ProductModel::find($entity->getId()) ?: $model;
         }
 
+        $model->category_id = $entity->getCategoryId();
         $model->name = $entity->getName();
         $model->slug = $entity->getSlug();
         $model->description = $entity->getDescription();

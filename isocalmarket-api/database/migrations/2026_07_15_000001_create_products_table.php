@@ -10,6 +10,7 @@ return new class extends Migration
     {
         Schema::create('products', function (Blueprint $table) {
             $table->uuid('id')->primary();
+            $table->foreignUuid('category_id')->nullable()->constrained('categories')->onDelete('set null');
             $table->string('name');
             $table->string('slug')->unique();
             $table->text('description')->nullable();
@@ -18,9 +19,10 @@ return new class extends Migration
             $table->json('attributes')->nullable();
             $table->timestamps();
 
-            // Index tối ưu lọc theo trạng thái và giá
+            // Index tối ưu lọc theo trạng thái, giá và danh mục
             $table->index('status');
             $table->index('price');
+            $table->index('category_id');
         });
     }
 
