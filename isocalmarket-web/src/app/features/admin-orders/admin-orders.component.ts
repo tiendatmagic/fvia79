@@ -11,6 +11,7 @@ import { CardComponent } from '@shared/components/card/card.component';
 import { PageHeaderComponent } from '@shared/components/page-header/page-header.component';
 import { IconComponent } from '@shared/components/icon/icon.component';
 import { HttpParams } from '@angular/common/http';
+import { CustomSearchInputComponent } from '@shared/components/custom-search-input/custom-search-input.component';
 
 @Component({
   selector: 'app-admin-orders',
@@ -24,6 +25,7 @@ import { HttpParams } from '@angular/common/http';
     CardComponent,
     PageHeaderComponent,
     IconComponent,
+    CustomSearchInputComponent,
   ],
   templateUrl: './admin-orders.component.html',
   styles: [`
@@ -45,6 +47,8 @@ export class AdminOrdersComponent implements OnInit {
   public readonly currentPage = signal<number>(1);
   public readonly limit = 10;
   public readonly selectedStatus = signal<string>('');
+  public searchQuery = '';
+  private readonly _searchQuery = signal('');
 
   ngOnInit() {
     this.fetchOrders(1);
@@ -62,6 +66,10 @@ export class AdminOrdersComponent implements OnInit {
       params = params.set('status', this.selectedStatus());
     }
 
+    if (this._searchQuery().trim()) {
+      params = params.set('search', this._searchQuery().trim());
+    }
+
     this.apiService.get<any>('v1/orders', params).subscribe({
       next: (res) => {
         this.orders.set(res.data || []);
@@ -77,6 +85,11 @@ export class AdminOrdersComponent implements OnInit {
     });
   }
 
+  public onSearch(query: string) {
+    this._searchQuery.set(query);
+    this.fetchOrders(1);
+  }
+
   public onStatusChange(status: string) {
     this.selectedStatus.set(status);
     this.fetchOrders(1);
@@ -84,5 +97,12 @@ export class AdminOrdersComponent implements OnInit {
 
   public viewDetail(orderId: string) {
     this.router.navigate(['/orders', orderId]);
+  }
+
+  public copyToClipboard(text: string, message: string) {
+    navigator.clipboard.writeText(text).then(
+      () => this.stateService.showToast(message, 'success'),
+      () => this.stateService.showToast('Không thể sao chép!', 'error')
+    );
   }
 }

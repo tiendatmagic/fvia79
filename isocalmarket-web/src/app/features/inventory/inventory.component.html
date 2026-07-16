@@ -2,6 +2,21 @@
   <!-- Header -->
   <app-page-header title="Quản Lý Kho Hàng Số" description="Import tài khoản hàng loạt và kiểm soát trạng thái của từng tài nguyên kỹ thuật số.">
     <ng-container actions>
+      <app-custom-search-input
+        [placeholder]="'Tìm kiếm kho hàng...'"
+        [(ngModel)]="searchQuery"
+        name="searchQuery"
+        (valueChange)="onSearch($event)"
+        [debounce]="300"
+        containerClass="w-48 sm:w-64"
+      />
+      <button
+        (click)="fetchFilteredItems(currentPage())"
+        class="px-4 py-2.5 text-sm font-extrabold text-slate-600 dark:text-slate-400 hover:text-primary border border-slate-200/60 dark:border-slate-800/80 rounded-xl hover:bg-slate-50 dark:hover:bg-slate-900 transition-all cursor-pointer flex items-center gap-1.5"
+      >
+        <app-icon name="sync" class="w-4 h-4" />
+        Tải lại
+      </button>
       <button
         app-button
         (click)="openImportDrawer()"
@@ -102,24 +117,44 @@
               *ngFor="let item of state.inventoryStore.items()"
               class="border-b border-slate-200/30 dark:border-slate-800/30 hover:bg-slate-50/30 dark:hover:bg-slate-950/10 transition-colors"
             >
-              <td
-                class="py-4 px-6 text-xs font-mono font-bold text-[var(--color-primary)] whitespace-nowrap"
-              >
-                #{{ item.id }}
+              <td class="py-4 px-6 text-xs whitespace-nowrap">
+                <div class="flex items-center gap-1.5">
+                  <span 
+                    [title]="item.id" 
+                    class="cursor-help font-mono font-bold text-[var(--color-primary)] border-b border-dashed border-slate-300 dark:border-slate-700 pb-0.5"
+                  >
+                    #{{ item.id | slice:0:8 }}...{{ item.id | slice:-4 }}
+                  </span>
+                  <button 
+                    (click)="copyToClipboard(item.id, 'Đã sao chép mã tài nguyên!'); $event.stopPropagation()" 
+                    class="p-1 hover:bg-slate-100 dark:hover:bg-slate-800 rounded transition-colors text-slate-400 hover:text-slate-600 dark:hover:text-slate-200 cursor-pointer"
+                    title="Sao chép ID đầy đủ"
+                  >
+                    <app-icon name="copy" class="w-3.5 h-3.5" />
+                  </button>
+                </div>
               </td>
               <td class="py-4 px-6 whitespace-nowrap">
                 <span class="text-sm font-extrabold text-slate-800 dark:text-white">
                   {{ getProductName(item.product_id) }}
                 </span>
               </td>
-              <td class="py-4 px-6 min-w-[200px]">
-                <div class="flex items-center gap-2 max-w-xs md:max-w-md">
+              <td class="py-4 px-6 min-w-[150px]">
+                <div class="flex items-center gap-2 max-w-[200px]">
                   <code
-                    class="text-xs font-mono bg-slate-50 dark:bg-slate-950 px-2 py-1 rounded border border-slate-200/40 dark:border-slate-800/40 text-slate-700 dark:text-slate-300 truncate"
-                    title="{{ item.data }}"
+                    class="text-xs font-mono bg-slate-50 dark:bg-slate-950 px-2 py-1 rounded border border-slate-200/40 dark:border-slate-800/40 text-slate-700 dark:text-slate-300 truncate cursor-pointer hover:border-[var(--color-primary)]/50 transition-colors"
+                    (click)="showItemData(item)"
+                    title="Click để xem chi tiết và sao chép"
                   >
-                    {{ item.data }}
+                    {{ item.data | slice:0:15 }}...
                   </code>
+                  <button 
+                    (click)="copyToClipboard(item.data, 'Đã sao chép dữ liệu tài nguyên!'); $event.stopPropagation()" 
+                    class="p-1 hover:bg-slate-100 dark:hover:bg-slate-800 rounded transition-colors text-slate-400 hover:text-slate-600 dark:hover:text-slate-200 cursor-pointer"
+                    title="Sao chép nhanh"
+                  >
+                    <app-icon name="copy" class="w-3.5 h-3.5" />
+                  </button>
                 </div>
               </td>
               <td class="py-4 px-6 text-center whitespace-nowrap">
@@ -128,16 +163,25 @@
                   size="sm"
                   rounded="md"
                 >
-                  {{ item.status }}
+                  {{ item.status === 'available' ? 'Sẵn có' : item.status === 'reserved' ? 'Tạm giữ' : 'Đã bán' }}
                 </app-badge>
               </td>
               <td class="py-4 px-6 text-center whitespace-nowrap">
-                <span
-                  *ngIf="item.order_id"
-                  class="text-xs font-mono font-bold text-slate-500 bg-slate-50 dark:bg-slate-950 px-2 py-1 rounded border"
-                >
-                  #{{ item.order_id }}
-                </span>
+                <div *ngIf="item.order_id" class="flex items-center justify-center gap-1.5">
+                  <span 
+                    [title]="item.order_id" 
+                    class="cursor-help text-xs font-mono font-bold text-slate-500 bg-slate-50 dark:bg-slate-950 px-2 py-1 rounded border border-b border-dashed border-slate-300 dark:border-slate-700 pb-0.5"
+                  >
+                    #{{ item.order_id | slice:0:8 }}...{{ item.order_id | slice:-4 }}
+                  </span>
+                  <button 
+                    (click)="copyToClipboard(item.order_id, 'Đã sao chép mã đơn hàng!'); $event.stopPropagation()" 
+                    class="p-1 hover:bg-slate-100 dark:hover:bg-slate-800 rounded transition-colors text-slate-400 hover:text-slate-600 dark:hover:text-slate-200 cursor-pointer"
+                    title="Sao chép mã đơn hàng"
+                  >
+                    <app-icon name="copy" class="w-3.5 h-3.5" />
+                  </button>
+                </div>
                 <span *ngIf="!item.order_id" class="text-xs text-slate-400 font-semibold">-</span>
               </td>
               <td class="py-4 px-6 text-right whitespace-nowrap">

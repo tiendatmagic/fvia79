@@ -99,4 +99,11 @@ export class ProductsComponent implements OnInit {
       }
     });
   }
+
+  public copyToClipboard(text: string, message: string) {
+    navigator.clipboard.writeText(text).then(
+      () => this.state.showToast(message, 'success'),
+      () => this.state.showToast('Không thể sao chép!', 'error')
+    );
+  }
 }

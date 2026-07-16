@@ -20,7 +20,7 @@ export class OrderStore {
   public readonly currentPage = signal<number>(1);
   public readonly lastPage = signal<number>(1);
 
-  public fetchOrders(page?: number, limit?: number) {
+  public fetchOrders(page?: number, limit?: number, search?: string) {
     this.loading.set(true);
     let params = new HttpParams();
     if (page !== undefined) {
@@ -28,6 +28,9 @@ export class OrderStore {
     }
     if (limit !== undefined) {
       params = params.set('limit', limit.toString());
+    }
+    if (search) {
+      params = params.set('search', search);
     }
 
     return this.api.get<any>('v1/orders', params).pipe(

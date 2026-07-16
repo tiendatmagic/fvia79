@@ -241,3 +241,31 @@
       5. Chạy build biên dịch Angular frontend (`npm run build`) thành công 100% không có lỗi.
 
 
+  - **[TỐI ƯU HÓA BẢNG BIỂU & VIỆT HÓA TRẠNG THÁI]**:
+    - Yêu cầu:
+      1. Rút gọn các mã định danh UUIDv7 dài trên các bảng để tối ưu hiển thị.
+      2. Tối ưu hiển thị dữ liệu tài nguyên cực dài trong quản lý kho hàng.
+      3. Việt hóa toàn bộ các cột trạng thái trên mọi trang (sản phẩm, kho hàng, đơn hàng, dashboard).
+    - Thực hiện triển khai & Kết quả:
+      1. Rút gọn UUIDv7: Áp dụng format `#{{ id | slice:0:8 }}...{{ id | slice:-4 }}` cho ID sản phẩm, tài nguyên, đơn hàng trong các bảng. Thêm tooltip hiển thị ID đầy đủ khi hover, và tích hợp icon Copy nhanh hiển thị toast tiếng Việt khi sao chép thành công.
+      2. Tối ưu dữ liệu tài nguyên kho: Rút gọn hiển thị trên dòng còn 15 ký tự kèm `...`. Tích hợp nút copy nhanh trên dòng. Khi click vào dữ liệu tài nguyên hoặc bấm icon Xem chi tiết, hệ thống mở modal confirm hiển thị đầy đủ chuỗi text trong khung `.font-mono` dễ đọc kèm nút "Sao chép dữ liệu" và nút "Đóng".
+      3. Việt hóa trạng thái:
+         - Trang Sản phẩm: `Active` -> `Hoạt động`, `Inactive` -> `Ngưng hoạt động`.
+         - Trang Kho hàng: `available` -> `Sẵn có`, `reserved` -> `Tạm giữ`, `sold` -> `Đã bán`. Việt hóa cả nhãn lọc trạng thái.
+         - Dashboard: Đổi nhãn `Items` thành `Tài nguyên` trong thẻ thống kê tồn kho khả dụng.
+      4. Trang Chi tiết đơn hàng: Thêm nút copy nhanh cho mã đơn hàng.
+      5. Đã chạy biên dịch frontend thành công 100% không phát sinh lỗi.
+  - **[ĐỒNG BỘ GIỎ HÀNG, SỬA RESPONSIVE HEADER & TÍCH HỢP TÌM KIẾM + LÀM MỚI]**:
+    - Yêu cầu:
+      1. Cho hiện giỏ hàng trên tất cả các trang, không phân biệt admin hay khách hàng.
+      2. Sửa lỗi responsive tiêu đề trang bị bép nghẹt/xuống dòng thô.
+      3. Tích hợp ô tìm kiếm và nút làm mới (Tải lại) cho toàn bộ các trang danh sách dữ liệu (Kho hàng, Sản phẩm, Đơn hàng Admin, Lịch sử đơn hàng Khách).
+    - Thực hiện triển khai & Kết quả:
+      1. Đồng bộ giỏ hàng: Gỡ điều kiện ẩn nút giỏ hàng trên trang `/admin` ở `header.component.html` để giỏ hàng hiển thị đồng nhất.
+      2. Sửa lỗi responsive:
+         - Bọc tiêu đề page-header bằng class `flex-1 min-w-0` giúp flexbox dàn đều không gian.
+         - Đổi breakpoint default trong `PageHeaderComponent` sang `md` để tự động xếp dọc ngăn nắp trên mobile/tablet dọc.
+      3. Tích hợp tìm kiếm & làm mới:
+         - Backend: Bổ sung bộ lọc tìm kiếm `search` vào các repository `InventoryItemRepository` (lọc `id`, `data`) và `OrderRepository` (lọc `order_code`, email/name user) và cập nhật Controllers tương ứng.
+         - Frontend: Cấu hình `InventoryStore` và `OrderStore` hỗ trợ query param `search`. Thêm ô `<app-custom-search-input>` và nút Tải lại (Làm mới) vào các trang Sản phẩm, Kho hàng, Đơn hàng Admin và Lịch sử đơn hàng Khách hàng.
+      4. Đã chạy build frontend Angular thành công 100% không phát sinh lỗi.

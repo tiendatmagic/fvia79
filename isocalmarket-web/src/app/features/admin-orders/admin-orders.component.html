@@ -3,10 +3,18 @@
   <!-- Tiêu đề trang -->
   <app-page-header title="Quản Lý Đơn Hàng" description="Xem toàn bộ lịch sử mua hàng, chi tiết sản phẩm và tài nguyên đã cung cấp.">
     <ng-container actions>
+      <app-custom-search-input
+        [placeholder]="'Tìm kiếm đơn hàng...'"
+        [(ngModel)]="searchQuery"
+        name="searchQuery"
+        (valueChange)="onSearch($event)"
+        [debounce]="300"
+        containerClass="w-48 sm:w-64"
+      />
       <!-- Refresh button -->
       <button
         (click)="fetchOrders(currentPage())"
-        class="px-4 py-2 text-xs font-extrabold text-slate-600 dark:text-slate-400 hover:text-primary border border-slate-200/60 dark:border-slate-800/80 rounded-xl hover:bg-slate-50 dark:hover:bg-slate-900 transition-all cursor-pointer flex items-center gap-1.5"
+        class="px-4 py-2.5 text-sm font-extrabold text-slate-600 dark:text-slate-400 hover:text-primary border border-slate-200/60 dark:border-slate-800/80 rounded-xl hover:bg-slate-50 dark:hover:bg-slate-900 transition-all cursor-pointer flex items-center gap-1.5"
       >
         <app-icon name="sync" class="w-4 h-4" />
         Tải lại
@@ -83,13 +91,23 @@
         <tbody class="divide-y divide-slate-100 dark:divide-slate-900/50">
           <tr *ngFor="let order of orders()" class="text-sm font-semibold text-slate-600 dark:text-slate-300 hover:bg-slate-50/30 dark:hover:bg-slate-900/5">
             <!-- Mã đơn -->
-            <td class="py-4 px-6 whitespace-nowrap">
-              <button
-                (click)="viewDetail(order.id)"
-                class="font-bold text-[var(--color-primary)] hover:underline underline-offset-2 font-mono tracking-wider cursor-pointer transition-opacity hover:opacity-80"
-              >
-                {{ order.order_code }}
-              </button>
+            <td class="py-4 px-6 text-xs whitespace-nowrap">
+              <div class="flex items-center gap-1.5">
+                <button
+                  (click)="viewDetail(order.id)"
+                  [title]="order.order_code"
+                  class="cursor-help font-mono font-bold text-[var(--color-primary)] hover:underline underline-offset-2 transition-opacity hover:opacity-80 pb-0.5 border-b border-dashed border-slate-300 dark:border-slate-700"
+                >
+                  #{{ order.order_code | slice:0:8 }}...{{ order.order_code | slice:-4 }}
+                </button>
+                <button 
+                  (click)="copyToClipboard(order.order_code, 'Đã sao chép mã đơn hàng!'); $event.stopPropagation()" 
+                  class="p-1 hover:bg-slate-100 dark:hover:bg-slate-800 rounded transition-colors text-slate-400 hover:text-slate-600 dark:hover:text-slate-200 cursor-pointer"
+                  title="Sao chép mã đơn hàng"
+                >
+                  <app-icon name="copy" class="w-3.5 h-3.5" />
+                </button>
+              </div>
             </td>
             <!-- Khách hàng -->
             <td class="py-4 px-6 text-slate-500 dark:text-slate-400 whitespace-nowrap">

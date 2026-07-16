@@ -12,6 +12,7 @@ import { IconComponent } from '@shared/components/icon/icon.component';
 import { ModalService } from '@core/services/modal.service';
 import { PaginationComponent } from '@shared/components/pagination/pagination.component';
 import { ImportInventoryModalComponent } from './import-inventory-modal/import-inventory-modal.component';
+import { CustomSearchInputComponent } from '@shared/components/custom-search-input/custom-search-input.component';
 
 @Component({
   selector: 'app-inventory',
@@ -26,7 +27,8 @@ import { ImportInventoryModalComponent } from './import-inventory-modal/import-i
     CardComponent,
     PageHeaderComponent,
     IconComponent,
-    PaginationComponent
+    PaginationComponent,
+    CustomSearchInputComponent,
   ],
   templateUrl: './inventory.component.html',
   styles: [`
@@ -39,19 +41,20 @@ export class InventoryComponent implements OnInit {
   public readonly state = inject(StateService);
   private readonly modalService = inject(ModalService);
 
-  // Bộ lọc
+  // Bộ lọc và tìm kiếm
   public selectedProductFilter = '';
   public selectedStatusFilter = '';
+  public searchQuery = '';
+  private readonly _searchQuery = signal('');
 
   public readonly currentPage = signal<number>(1);
   public readonly limit = 10;
 
-  // Lựa chọn trạng thái để lọc
   public statusFilterOptions = [
     { label: 'Tất cả trạng thái', value: '' },
-    { label: 'Sẵn sàng (Available)', value: 'available' },
-    { label: 'Tạm giữ (Reserved)', value: 'reserved' },
-    { label: 'Đã bán (Sold)', value: 'sold' }
+    { label: 'Sẵn có', value: 'available' },
+    { label: 'Tạm giữ', value: 'reserved' },
+    { label: 'Đã bán', value: 'sold' }
   ];
 
   // Map danh sách sản phẩm cho Select
@@ -83,8 +86,14 @@ export class InventoryComponent implements OnInit {
     this.currentPage.set(page);
     this.state.inventoryStore.fetchItems({
       product_id: this.selectedProductFilter || undefined,
-      status: this.selectedStatusFilter || undefined
+      status: this.selectedStatusFilter || undefined,
+      search: this._searchQuery().trim() || undefined
     }, page, this.limit).subscribe();
+  }
+
+  public onSearch(query: string) {
+    this._searchQuery.set(query);
+    this.fetchFilteredItems(1);
   }
 
   public fetchPage(page: number) {
@@ -128,6 +137,27 @@ export class InventoryComponent implements OnInit {
             this.fetchFilteredItems(this.currentPage());
           }
         });
+      }
+    });
+  }
+
+  public copyToClipboard(text: string, message: string = 'Đã sao chép!') {
+    navigator.clipboard.writeText(text).then(
+      () => this.state.showToast(message, 'success'),
+      () => this.state.showToast('Không thể sao chép!', 'error')
+    );
+  }
+
+  public showItemData(item: any) {
+    this.modalService.confirm({
+      title: 'Chi tiết Dữ liệu Tài nguyên',
+      descriptionHtml: `<div class="mt-2 text-left bg-slate-50 dark:bg-slate-950 p-4 rounded-xl border border-slate-200/50 dark:border-slate-800/80 font-mono text-xs break-all max-h-[300px] overflow-y-auto">${item.data}</div>`,
+      confirmText: 'Sao chép dữ liệu',
+      cancelText: 'Đóng',
+      confirmButtonClass: 'btn-primary'
+    }).afterClosed$.subscribe((confirmed?: boolean) => {
+      if (confirmed) {
+        this.copyToClipboard(item.data, 'Đã sao chép dữ liệu tài nguyên!');
       }
     });
   }

@@ -40,8 +40,8 @@ export class ProductFormModalComponent implements OnInit {
   public isSubmitting = false;
 
   public statusOptions = [
-    { label: 'Hoạt động (Active)', value: 'active' },
-    { label: 'Tạm ngưng (Inactive)', value: 'inactive' }
+    { label: 'Hoạt động', value: 'active' },
+    { label: 'Ngưng hoạt động', value: 'inactive' }
   ];
 
   ngOnInit() {

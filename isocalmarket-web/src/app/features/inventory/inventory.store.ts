@@ -19,7 +19,7 @@ export class InventoryStore {
   public readonly currentPage = signal<number>(1);
   public readonly lastPage = signal<number>(1);
 
-  public fetchItems(filters: { product_id?: string; status?: string } = {}, page?: number, limit?: number) {
+  public fetchItems(filters: { product_id?: string; status?: string; search?: string } = {}, page?: number, limit?: number) {
     this.loading.set(true);
     let params = new HttpParams();
     if (filters.product_id) {
@@ -27,6 +27,9 @@ export class InventoryStore {
     }
     if (filters.status) {
       params = params.set('status', filters.status);
+    }
+    if (filters.search) {
+      params = params.set('search', filters.search);
     }
     if (page !== undefined) {
       params = params.set('page', page.toString());

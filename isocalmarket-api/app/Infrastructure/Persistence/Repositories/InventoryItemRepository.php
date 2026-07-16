@@ -90,6 +90,14 @@ class InventoryItemRepository implements InventoryItemRepositoryInterface
             $query->where('status', $filters['status']);
         }
 
+        if (!empty($filters['search'])) {
+            $search = $filters['search'];
+            $query->where(function ($q) use ($search) {
+                $q->where('id', 'like', "%{$search}%")
+                  ->orWhere('data', 'like', "%{$search}%");
+            });
+        }
+
         $total = $query->count();
         $models = $query->orderBy('created_at', 'desc')
             ->skip(($page - 1) * $limit)

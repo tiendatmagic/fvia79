@@ -54,11 +54,16 @@ class OrderRepository implements OrderRepositoryInterface
         return $models->map(fn($m) => OrderMapper::toDomain($m))->toArray();
     }
 
-    public function findByUserIdPaginated(string $userId, int $page, int $limit, ?string $status = null): array
+    public function findByUserIdPaginated(string $userId, int $page, int $limit, ?string $status = null, ?string $search = null): array
     {
         $query = OrderModel::where('user_id', $userId);
         if ($status) {
             $query->where('status', $status);
+        }
+        if ($search) {
+            $query->where(function ($q) use ($search) {
+                $q->where('order_code', 'like', "%{$search}%");
+            });
         }
         $total = $query->count();
         $models = $query->with(['items.product'])
@@ -82,11 +87,20 @@ class OrderRepository implements OrderRepositoryInterface
         return $models->map(fn($m) => OrderMapper::toDomain($m))->toArray();
     }
 
-    public function findAllPaginated(int $page, int $limit, ?string $status = null): array
+    public function findAllPaginated(int $page, int $limit, ?string $status = null, ?string $search = null): array
     {
         $query = OrderModel::query();
         if ($status) {
             $query->where('status', $status);
+        }
+        if ($search) {
+            $query->where(function ($q) use ($search) {
+                $q->where('order_code', 'like', "%{$search}%")
+                  ->orWhereHas('user', function ($qu) use ($search) {
+                      $qu->where('email', 'like', "%{$search}%")
+                         ->orWhere('name', 'like', "%{$search}%");
+                  });
+            });
         }
         $total = $query->count();
         $models = $query->with(['items.product', 'user'])

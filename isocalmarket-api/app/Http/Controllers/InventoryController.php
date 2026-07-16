@@ -36,7 +36,8 @@ class InventoryController extends Controller
         try {
             $filters = [
                 'product_id' => $request->query('product_id'),
-                'status' => $request->query('status')
+                'status' => $request->query('status'),
+                'search' => $request->query('search')
             ];
 
             $page = $request->query('page');
