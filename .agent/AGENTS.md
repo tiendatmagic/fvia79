@@ -500,3 +500,13 @@
       4. **Cập nhật `login.component.html` & `register.component.html`:** Thêm error banner màu đỏ với icon cảnh báo SVG, hiển thị ngay dưới tiêu đề form khi có lỗi. Thêm `(ngModelChange)` vào các input để tự động xóa lỗi khi người dùng gõ lại.
     - Đã chạy build frontend Angular thành công 100% không phát sinh lỗi.
 
+  - **[TÍNH NĂNG] MODAL THÔNG BÁO HỆ THỐNG SAU ĐĂNG NHẬP**:
+    - **Yêu cầu:** Sau khi đăng nhập thành công, hiển thị modal thông báo hệ thống (tuyên bố miễn trừ trách nhiệm). Modal có checkbox "Không hỏi lại trong 7 ngày" (mặc định tích). Đóng được bằng backdrop click, nút X trên header, hoặc nút "Đã hiểu & Đóng".
+    - **Giải pháp thiết kế:**
+      1. Tạo `WelcomeNoticeModalComponent` tại `features/auth/welcome-notice-modal/`. Component standalone, inject `ModalRef` để tự đóng.
+      2. Export hàm helper `shouldShowWelcomeNotice()` kiểm tra `localStorage` key `welcome_notice_suppressed_until` (so sánh timestamp hiện tại với timestamp hết hạn).
+      3. Khi đóng modal, `savePreference()` lưu timestamp `Date.now() + 7 ngày` nếu checkbox tích, hoặc xóa key nếu không tích.
+      4. Inject `ModalService` vào `AuthStore`, thêm method private `openWelcomeNoticeIfNeeded()`: gọi sau `login()` và `login2Fa()` thành công, dùng `setTimeout(400ms)` để đợi router navigation xong trước khi mở modal.
+      5. Tái sử dụng hoàn toàn `ModalService.open()` + `ModalWrapperComponent` (dynamic modal pattern đã có sẵn). Title modal: `"🔔 Thông Báo Hệ Thống"`, size `sm`, `closeOnBackdropClick: true`.
+    - Đã chạy build Angular thành công 100% không phát sinh lỗi.
+

@@ -1,9 +1,11 @@
 import { Injectable, inject, signal, computed } from '@angular/core';
 import { ApiService } from '@core/services/api.service';
 import { ToastService } from '@core/services/toast.service';
+import { ModalService } from '@core/services/modal.service';
 import { Router } from '@angular/router';
 import { tap, catchError, finalize, map, shareReplay } from 'rxjs/operators';
 import { of, Observable } from 'rxjs';
+import { shouldShowWelcomeNotice, WelcomeNoticeModalComponent } from './welcome-notice-modal/welcome-notice-modal.component';
 
 @Injectable({
   providedIn: 'root'
@@ -12,6 +14,7 @@ export class AuthStore {
   private readonly api = inject(ApiService);
   private readonly toast = inject(ToastService);
   private readonly router = inject(Router);
+  private readonly modalService = inject(ModalService);
 
   // State Signals
   public readonly currentUser = signal<any | null>(null);
@@ -80,6 +83,7 @@ export class AuthStore {
         this.currentUser.set(res.user);
         this.toast.showToast('Đăng nhập thành công!', 'success');
         this.router.navigateByUrl(returnUrl);
+        this.openWelcomeNoticeIfNeeded();
       }),
       catchError((err) => {
         const msg = this.translateAuthError(err, 'Đăng nhập thất bại. Vui lòng thử lại!');
@@ -165,6 +169,7 @@ export class AuthStore {
         this.currentUser.set(res.user);
         this.toast.showToast('Đăng nhập thành công!', 'success');
         this.router.navigateByUrl(returnUrl);
+        this.openWelcomeNoticeIfNeeded();
       }),
       catchError((err) => {
         const msg = err.error?.message || 'Mã xác thực không đúng hoặc đã hết hạn!';
@@ -251,5 +256,18 @@ export class AuthStore {
       }),
       finalize(() => this.authLoading.set(false))
     );
+  }
+
+  /** Hiển thị modal thông báo chào mừng nếu người dùng chưa chọn "Không hỏi lại trong 7 ngày" */
+  private openWelcomeNoticeIfNeeded(): void {
+    if (!shouldShowWelcomeNotice()) return;
+    // Trì hoãn nhẹ để router navigation hoàn tất trước khi mở modal
+    setTimeout(() => {
+      this.modalService.open(WelcomeNoticeModalComponent, {
+        title: '🔔 Thông Báo Hệ Thống',
+        size: 'sm',
+        closeOnBackdropClick: true,
+      });
+    }, 400);
   }
 }
