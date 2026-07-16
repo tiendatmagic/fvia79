@@ -1,19 +1,13 @@
 <div class="max-w-[1530px] mx-auto w-full p-4 sm:p-6 space-y-6">
 
   <!-- Header -->
-  <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4 border-b border-slate-200/40 dark:border-slate-800/40 pb-5">
-    <div class="space-y-1">
-      <h3 class="text-2xl font-black text-slate-800 dark:text-white">
-        Lịch Sử Đơn Hàng
-      </h3>
-      <p class="text-xs text-slate-500 font-semibold">
-        {{ state.isAdmin() ? 'Quản lý toàn bộ lịch sử đơn hàng trên hệ thống.' : 'Xem danh sách các đơn hàng và lấy tài nguyên số đã đặt mua.' }}
-      </p>
-    </div>
-  </div>
+  <app-page-header
+    title="Lịch Sử Đơn Hàng"
+    [description]="state.isAdmin() ? 'Quản lý toàn bộ lịch sử đơn hàng trên hệ thống.' : 'Xem danh sách các đơn hàng và lấy tài nguyên số đã đặt mua.'"
+  />
 
   <!-- Main table card -->
-  <div class="bg-white dark:bg-slate-900/60 border border-slate-200/50 dark:border-slate-800/50 rounded-2xl shadow-xl overflow-hidden">
+  <div app-card class="overflow-hidden !p-0">
     <div class="overflow-x-auto">
       <table class="w-full text-left border-collapse">
         <thead>
@@ -61,16 +55,13 @@
                 {{ o.total_price | number:'1.0-0' }} VND
               </td>
               <td class="py-4 px-6 text-center whitespace-nowrap">
-                <span
-                  [ngClass]="{
-                    'bg-emerald-50 dark:bg-emerald-950/20 text-emerald-600 dark:text-emerald-400 border-emerald-500/10': o.status === 'paid',
-                    'bg-amber-50 dark:bg-amber-950/20 text-amber-600 dark:text-amber-400 border-amber-500/10': o.status === 'pending',
-                    'bg-rose-50 dark:bg-rose-950/20 text-rose-600 dark:text-rose-400 border-rose-500/10': o.status === 'cancelled'
-                  }"
-                  class="text-[10px] font-bold uppercase tracking-wider px-2.5 py-1 rounded-md border"
+                <app-badge
+                  [variant]="o.status === 'paid' ? 'success' : o.status === 'pending' ? 'warning' : 'danger'"
+                  size="sm"
+                  rounded="full"
                 >
                   {{ o.status === 'paid' ? 'Đã thanh toán' : o.status === 'pending' ? 'Chờ thanh toán' : 'Đã hủy' }}
-                </span>
+                </app-badge>
               </td>
               <td class="py-4 px-6 text-right whitespace-nowrap">
                 <div class="flex items-center justify-end gap-2 whitespace-nowrap">
@@ -100,6 +91,3 @@
     </div>
   </div>
 </div>
-
-
-

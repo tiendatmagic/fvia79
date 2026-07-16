@@ -4,6 +4,9 @@ import { ActivatedRoute, Router, RouterModule } from '@angular/router';
 import { StateService } from '@core/services/state.service';
 import { ApiService } from '@core/services/api.service';
 import { SkeletonLoaderComponent } from '@shared/components/skeleton-loader/skeleton-loader.component';
+import { BadgeComponent } from '@shared/components/badge/badge.component';
+import { CardComponent } from '@shared/components/card/card.component';
+import { IconComponent } from '@shared/components/icon/icon.component';
 
 @Component({
   selector: 'app-order-detail',
@@ -11,7 +14,10 @@ import { SkeletonLoaderComponent } from '@shared/components/skeleton-loader/skel
   imports: [
     CommonModule,
     RouterModule,
-    SkeletonLoaderComponent
+    SkeletonLoaderComponent,
+    BadgeComponent,
+    CardComponent,
+    IconComponent
   ],
   templateUrl: './order-detail.component.html',
   styles: [`

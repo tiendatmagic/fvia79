@@ -2,11 +2,14 @@ import { Component, inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { RouterModule } from '@angular/router';
 import { StateService } from '@core/services/state.service';
+import { CardComponent } from '@shared/components/card/card.component';
+import { PageHeaderComponent } from '@shared/components/page-header/page-header.component';
+import { IconComponent } from '@shared/components/icon/icon.component';
 
 @Component({
   selector: 'app-profile',
   standalone: true,
-  imports: [CommonModule, RouterModule],
+  imports: [CommonModule, RouterModule, CardComponent, PageHeaderComponent, IconComponent],
   templateUrl: './profile.component.html',
   styles: [`
     :host {

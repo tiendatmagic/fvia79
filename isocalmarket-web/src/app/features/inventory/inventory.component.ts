@@ -5,6 +5,10 @@ import { StateService } from '@core/services/state.service';
 import { SkeletonLoaderComponent } from '@shared/components/skeleton-loader/skeleton-loader.component';
 import { CustomSelectComponent } from '@shared/components/custom-select/custom-select.component';
 import { ButtonComponent } from '@shared/components/button/button.component';
+import { BadgeComponent } from '@shared/components/badge/badge.component';
+import { CardComponent } from '@shared/components/card/card.component';
+import { PageHeaderComponent } from '@shared/components/page-header/page-header.component';
+import { IconComponent } from '@shared/components/icon/icon.component';
 import { ModalService } from '@core/services/modal.service';
 import { PaginationComponent } from '@shared/components/pagination/pagination.component';
 import { ImportInventoryModalComponent } from './import-inventory-modal/import-inventory-modal.component';
@@ -18,6 +22,10 @@ import { ImportInventoryModalComponent } from './import-inventory-modal/import-i
     SkeletonLoaderComponent,
     CustomSelectComponent,
     ButtonComponent,
+    BadgeComponent,
+    CardComponent,
+    PageHeaderComponent,
+    IconComponent,
     PaginationComponent
   ],
   templateUrl: './inventory.component.html',

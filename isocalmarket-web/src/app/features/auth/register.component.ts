@@ -5,11 +5,12 @@ import { RouterModule, Router } from '@angular/router';
 import { StateService } from '@core/services/state.service';
 import { CustomInputComponent } from '@shared/components/custom-input/custom-input.component';
 import { ButtonComponent } from '@shared/components/button/button.component';
+import { CardComponent } from '@shared/components/card/card.component';
 
 @Component({
   selector: 'app-register',
   standalone: true,
-  imports: [CommonModule, FormsModule, RouterModule, CustomInputComponent, ButtonComponent],
+  imports: [CommonModule, FormsModule, RouterModule, CustomInputComponent, ButtonComponent, CardComponent],
   templateUrl: './register.component.html',
   styles: [`
     :host {

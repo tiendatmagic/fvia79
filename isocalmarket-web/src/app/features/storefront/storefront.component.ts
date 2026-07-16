@@ -7,6 +7,9 @@ import { CartStore } from './cart.store';
 import { SkeletonLoaderComponent } from '@shared/components/skeleton-loader/skeleton-loader.component';
 import { CustomSearchInputComponent } from '@shared/components/custom-search-input/custom-search-input.component';
 import { ButtonComponent } from '@shared/components/button/button.component';
+import { BadgeComponent } from '@shared/components/badge/badge.component';
+import { CardComponent } from '@shared/components/card/card.component';
+import { IconComponent } from '@shared/components/icon/icon.component';
 import { PaginationComponent } from '@shared/components/pagination/pagination.component';
 import { ModalService } from '@core/services/modal.service';
 import { CartModalComponent } from './cart-modal/cart-modal.component';
@@ -21,6 +24,9 @@ import { CartModalComponent } from './cart-modal/cart-modal.component';
     SkeletonLoaderComponent,
     CustomSearchInputComponent,
     ButtonComponent,
+    BadgeComponent,
+    CardComponent,
+    IconComponent,
     PaginationComponent
   ],
   templateUrl: './storefront.component.html',

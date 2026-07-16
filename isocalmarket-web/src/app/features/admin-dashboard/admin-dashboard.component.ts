@@ -3,13 +3,21 @@ import { CommonModule } from '@angular/common';
 import { ApiService } from '@core/services/api.service';
 import { StateService } from '@core/services/state.service';
 import { RouterModule } from '@angular/router';
+import { BadgeComponent } from '@shared/components/badge/badge.component';
+import { CardComponent } from '@shared/components/card/card.component';
+import { PageHeaderComponent } from '@shared/components/page-header/page-header.component';
+import { IconComponent } from '@shared/components/icon/icon.component';
 
 @Component({
   selector: 'app-admin-dashboard',
   standalone: true,
   imports: [
     CommonModule,
-    RouterModule
+    RouterModule,
+    BadgeComponent,
+    CardComponent,
+    PageHeaderComponent,
+    IconComponent,
   ],
   templateUrl: './admin-dashboard.component.html',
   styles: [`

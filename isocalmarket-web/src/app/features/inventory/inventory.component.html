@@ -1,38 +1,18 @@
 <div class="max-w-[1530px] mx-auto w-full p-4 sm:p-6 space-y-6">
   <!-- Header -->
-  <div
-    class="flex flex-col sm:flex-row sm:items-center justify-between gap-4 border-b border-slate-200/40 dark:border-slate-800/40 pb-5"
-  >
-    <div class="space-y-1">
-      <h3 class="text-2xl font-black text-slate-800 dark:text-white">Quản Lý Kho Hàng Số</h3>
-      <p class="text-xs text-slate-500 font-semibold">
-        Import tài khoản hàng loạt và kiểm soát trạng thái của từng tài nguyên kỹ thuật số.
-      </p>
-    </div>
-
-    <button
-      app-button
-      (click)="openImportDrawer()"
-      [variant]="'primary'"
-      class="py-2.5 px-4 rounded-xl bg-gradient-to-r from-[var(--color-primary)] to-[var(--color-secondary)] text-white font-extrabold shadow-md shadow-[var(--color-primary)]/15 active:scale-95 transition-all text-sm flex items-center gap-2 cursor-pointer"
-    >
-      <svg
-        xmlns="http://www.w3.org/2000/svg"
-        fill="none"
-        viewBox="0 0 24 24"
-        stroke-width="2.5"
-        stroke="currentColor"
-        class="w-5 h-5"
+  <app-page-header title="Quản Lý Kho Hàng Số" description="Import tài khoản hàng loạt và kiểm soát trạng thái của từng tài nguyên kỹ thuật số.">
+    <ng-container actions>
+      <button
+        app-button
+        (click)="openImportDrawer()"
+        variant="primary"
+        class="flex items-center gap-2 py-2.5 px-4 rounded-xl bg-gradient-to-r from-[var(--color-primary)] to-[var(--color-secondary)] text-white font-extrabold shadow-md shadow-[var(--color-primary)]/15 active:scale-95 transition-all text-sm cursor-pointer"
       >
-        <path
-          stroke-linecap="round"
-          stroke-linejoin="round"
-          d="M3 16.5v2.25A2.25 2.25 0 0 0 5.25 21h13.5A2.25 2.25 0 0 0 21 18.75V16.5m-13.5-9L12 3m0 0 4.5 4.5M12 3v13.5"
-        />
-      </svg>
-      Import Kho Hàng
-    </button>
-  </div>
+        <app-icon name="upload" class="w-5 h-5" />
+        Import Kho Hàng
+      </button>
+    </ng-container>
+  </app-page-header>
 
   <!-- Filters Section -->
   <div
@@ -62,9 +42,7 @@
   </div>
 
   <!-- Main table card -->
-  <div
-    class="bg-white dark:bg-slate-900/60 border border-slate-200/50 dark:border-slate-800/50 rounded-2xl shadow-xl overflow-hidden"
-  >
+  <div app-card class="overflow-hidden !p-0">
     <div class="overflow-x-auto">
       <table class="w-full text-left border-collapse">
         <thead>
@@ -145,19 +123,13 @@
                 </div>
               </td>
               <td class="py-4 px-6 text-center whitespace-nowrap">
-                <span
-                  [ngClass]="{
-                    'bg-emerald-50 dark:bg-emerald-950/20 text-emerald-600 dark:text-emerald-400 border-emerald-500/10':
-                      item.status === 'available',
-                    'bg-amber-50 dark:bg-amber-950/20 text-amber-600 dark:text-amber-400 border-amber-500/10':
-                      item.status === 'reserved',
-                    'bg-slate-100 dark:bg-slate-800 text-slate-500 border-slate-200/40 dark:border-slate-700/40':
-                      item.status === 'sold',
-                  }"
-                  class="text-[10px] font-bold uppercase tracking-wider px-2 py-1 rounded-md border"
+                <app-badge
+                  [variant]="item.status === 'available' ? 'success' : item.status === 'reserved' ? 'warning' : 'neutral'"
+                  size="sm"
+                  rounded="md"
                 >
                   {{ item.status }}
-                </span>
+                </app-badge>
               </td>
               <td class="py-4 px-6 text-center whitespace-nowrap">
                 <span

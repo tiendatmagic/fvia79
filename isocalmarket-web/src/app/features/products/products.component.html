@@ -1,30 +1,29 @@
 <div class="max-w-[1530px] mx-auto w-full p-4 sm:p-6 space-y-6">
 
   <!-- Header -->
-  <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4 border-b border-slate-200/40 dark:border-slate-800/40 pb-5">
-    <div class="space-y-1">
-      <h3 class="text-2xl font-black text-slate-800 dark:text-white">
-        Danh Mục Sản Phẩm Số
-      </h3>
-      <p class="text-xs text-slate-500 font-semibold">
-        Quản lý danh sách các loại tài nguyên kỹ thuật số phân phối trên hệ thống.
-      </p>
-    </div>
-    
-    <button app-button
-      (click)="openCreateDrawer()"
-      [variant]="'primary'"
-      class="py-2.5 px-4 rounded-xl bg-gradient-to-r from-[var(--color-primary)] to-[var(--color-secondary)] text-white font-extrabold shadow-md shadow-[var(--color-primary)]/15 active:scale-95 transition-all text-sm flex items-center gap-2 cursor-pointer"
-    >
-      <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2.5" stroke="currentColor" class="w-5 h-5">
-        <path stroke-linecap="round" stroke-linejoin="round" d="M12 4.5v15m7.5-7.5h-15" />
-      </svg>
-      Thêm Sản Phẩm
-    </button>
-  </div>
+  <app-page-header title="Danh Mục Sản Phẩm Số" description="Quản lý danh sách các loại tài nguyên kỹ thuật số phân phối trên hệ thống.">
+    <ng-container actions>
+      <app-custom-search-input
+        [placeholder]="'Tìm kiếm sản phẩm...'"
+        [(ngModel)]="searchQuery"
+        name="searchQuery"
+        (valueChange)="onSearch($event)"
+        [debounce]="300"
+        containerClass="w-48 sm:w-64"
+      />
+      <button app-button
+        (click)="openCreateDrawer()"
+        variant="primary"
+        class="flex items-center gap-2 py-2.5 px-4 rounded-xl bg-gradient-to-r from-[var(--color-primary)] to-[var(--color-secondary)] text-white font-extrabold shadow-md shadow-[var(--color-primary)]/15 active:scale-95 transition-all text-sm cursor-pointer"
+      >
+        <app-icon name="plus" class="w-5 h-5" />
+        Thêm Sản Phẩm
+      </button>
+    </ng-container>
+  </app-page-header>
 
   <!-- Main table card -->
-  <div class="bg-white dark:bg-slate-900/60 border border-slate-200/50 dark:border-slate-800/50 rounded-2xl shadow-xl overflow-hidden">
+  <div app-card class="overflow-hidden !p-0">
     <div class="overflow-x-auto">
       <table class="w-full text-left border-collapse">
         <thead>
@@ -47,7 +46,7 @@
           </tr>
 
           <!-- Empty State -->
-          <tr *ngIf="!state.productStore.loading() && state.productStore.products().length === 0">
+          <tr *ngIf="!state.productStore.loading() && filteredProducts().length === 0">
             <td colspan="7" class="py-12 text-center text-sm font-semibold text-slate-400">
               Chưa có sản phẩm nào. Nhấp vào nút "Thêm Sản Phẩm" để bắt đầu!
             </td>
@@ -56,7 +55,7 @@
           <!-- Data rows -->
           @if (!state.productStore.loading()) {
             <tr
-              *ngFor="let p of state.productStore.products()"
+              *ngFor="let p of filteredProducts()"
               class="border-b border-slate-200/30 dark:border-slate-800/30 hover:bg-slate-50/30 dark:hover:bg-slate-950/10 transition-colors"
             >
               <td class="py-4 px-6 text-xs font-mono font-bold text-[var(--color-primary)] whitespace-nowrap">#{{ p.id }}</td>
@@ -71,20 +70,22 @@
                 {{ p.price | number:'1.0-0' }}
               </td>
               <td class="py-4 px-6 text-center whitespace-nowrap">
-                <span
-                  [ngClass]="p.available_count > 0 ? 'bg-emerald-50 dark:bg-emerald-950/20 text-emerald-600 dark:text-emerald-400 border-emerald-500/10' : 'bg-rose-50 dark:bg-rose-950/20 text-rose-600 dark:text-rose-400 border-rose-500/10'"
-                  class="text-xs font-black px-2.5 py-1 rounded-lg border"
+                <app-badge
+                  [variant]="p.available_count > 0 ? 'success' : 'danger'"
+                  size="md"
+                  rounded="md"
                 >
                   {{ p.available_count }}
-                </span>
+                </app-badge>
               </td>
               <td class="py-4 px-6 text-center whitespace-nowrap">
-                <span
-                  [ngClass]="p.status === 'active' ? 'bg-emerald-50 dark:bg-emerald-950/20 text-emerald-600 dark:text-emerald-400' : 'bg-slate-100 dark:bg-slate-800 text-slate-500'"
-                  class="text-[10px] font-bold uppercase tracking-wider px-2 py-1 rounded-md"
+                <app-badge
+                  [variant]="p.status === 'active' ? 'success' : 'neutral'"
+                  size="sm"
+                  rounded="md"
                 >
                   {{ p.status === 'active' ? 'Active' : 'Inactive' }}
-                </span>
+                </app-badge>
               </td>
               <td class="py-4 px-6 text-right whitespace-nowrap">
                 <div class="flex items-center justify-end gap-2 whitespace-nowrap">
@@ -109,4 +110,3 @@
     </div>
   </div>
 </div>
-

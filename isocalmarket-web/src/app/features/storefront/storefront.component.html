@@ -9,7 +9,7 @@
       <p class="text-sm sm:text-base text-slate-500 font-semibold max-w-xl">
         Cung cấp tài khoản VIA Facebook, Gmail cổ, Netflix Premium, ChatGPT Plus, Proxy sạch 100% tốc độ cao và các dịch vụ bản quyền số an toàn, bảo mật.
       </p>
-      
+
       <!-- Search bar -->
       <div class="max-w-md pt-2">
         <app-custom-search-input
@@ -31,24 +31,26 @@
       <h3 class="text-xl font-black text-slate-800 dark:text-white">
         Danh Sách Tài Nguyên Khả Dụng
       </h3>
-      <span class="text-xs font-bold text-slate-400 bg-slate-100 dark:bg-slate-900 px-3 py-1.5 rounded-lg border border-slate-200/40 dark:border-slate-800/40">
+      <app-badge variant="neutral" size="md" rounded="lg">
         {{ state.productStore.totalProducts() }} Sản phẩm
-      </span>
+      </app-badge>
     </div>
 
     <!-- Skeleton loading state -->
     <app-skeleton-loader *ngIf="state.productStore.loading()" [type]="'card-grid'" [cards]="4" />
 
     <!-- Empty state -->
-    <div *ngIf="!state.productStore.loading() && filteredProducts().length === 0" class="text-center py-12 bg-white dark:bg-slate-950/30 border border-slate-200/40 dark:border-slate-800/40 rounded-2xl">
+    <div *ngIf="!state.productStore.loading() && filteredProducts().length === 0" app-card class="text-center py-12">
       <p class="text-sm font-semibold text-slate-400">Không tìm thấy sản phẩm nào phù hợp!</p>
     </div>
 
     <!-- Product list -->
     <div *ngIf="!state.productStore.loading() && filteredProducts().length > 0" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
       <div
+        app-card
+        [interactive]="true"
         *ngFor="let p of filteredProducts()"
-        class="bg-white dark:bg-slate-900/60 border border-slate-200/50 dark:border-slate-800/50 rounded-2xl p-5 space-y-4 hover:scale-[1.01] hover:shadow-lg hover:shadow-[var(--color-primary)]/5 transition-all duration-300 flex flex-col justify-between"
+        class="p-5 space-y-4 flex flex-col justify-between"
       >
         <!-- Product Header -->
         <div class="space-y-2">
@@ -56,13 +58,15 @@
             <h4 class="text-base font-extrabold text-slate-800 dark:text-white line-clamp-2">
               {{ p.name }}
             </h4>
-            <!-- Tag Category / Tồn kho -->
-            <span
-              [ngClass]="p.available_count > 0 ? 'bg-emerald-50 dark:bg-emerald-950/30 text-emerald-600 dark:text-emerald-400' : 'bg-red-50 dark:bg-red-950/30 text-red-600 dark:text-red-400'"
-              class="text-[10px] font-bold uppercase tracking-wider px-2 py-1 rounded-md border border-emerald-500/10 shrink-0"
+            <!-- Tag tồn kho -->
+            <app-badge
+              [variant]="p.available_count > 0 ? 'success' : 'danger'"
+              size="sm"
+              rounded="md"
+              class="shrink-0"
             >
               {{ p.available_count > 0 ? 'Còn hàng' : 'Hết hàng' }}
-            </span>
+            </app-badge>
           </div>
 
           <p class="text-xs text-slate-400 dark:text-slate-500 font-semibold line-clamp-3">
@@ -70,9 +74,7 @@
           </p>
 
           <div class="text-[11px] font-extrabold text-slate-400 pt-1 flex items-center gap-1.5">
-            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2.5" stroke="currentColor" class="w-3.5 h-3.5 text-emerald-500">
-              <path stroke-linecap="round" stroke-linejoin="round" d="M9 12.75 11.25 15 15 9.75M21 12a9 9 0 1 1-18 0 9 9 0 0 1 18 0Z" />
-            </svg>
+            <app-icon name="check-circle" class="w-3.5 h-3.5 text-emerald-500" />
             <span>Còn lại: <strong class="text-slate-700 dark:text-slate-200">{{ p.available_count }}</strong> sản phẩm</span>
           </div>
         </div>
@@ -89,7 +91,7 @@
           <button app-button
             (click)="addToCart(p)"
             [disabled]="p.available_count <= 0"
-            [variant]="'primary'"
+            variant="primary"
             class="py-2 px-4 rounded-xl bg-gradient-to-r from-[var(--color-primary)] to-[var(--color-secondary)] text-white text-xs font-extrabold active:scale-95 transition-all shadow-sm shadow-[var(--color-primary)]/10 cursor-pointer disabled:opacity-50 disabled:pointer-events-none"
           >
             Mua Ngay
@@ -111,6 +113,3 @@
     </div>
   </div>
 </div>
-
-
-

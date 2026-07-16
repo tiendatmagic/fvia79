@@ -1,18 +1,15 @@
 <div class="max-w-[1200px] mx-auto px-4 py-8 space-y-6">
   <!-- Page Header -->
-  <div class="space-y-1">
-    <h1 class="text-3xl font-black tracking-tight text-slate-900 dark:text-white">
-      Tài Khoản Cá Nhân
-    </h1>
-    <p class="text-sm text-slate-500 font-semibold">
-      Quản lý thông tin cá nhân, cập nhật mật khẩu và thiết lập bảo mật hai lớp.
-    </p>
-  </div>
+  <app-page-header
+    title="Tài Khoản Cá Nhân"
+    description="Quản lý thông tin cá nhân, cập nhật mật khẩu và thiết lập bảo mật hai lớp."
+  />
 
   <div class="grid grid-cols-1 md:grid-cols-12 gap-6">
     <!-- Sidebar / Navigation Tabs -->
     <div
-      class="col-span-12 lg:col-span-4 xl:col-span-3 space-y-4 bg-white/60 dark:bg-slate-900/60 backdrop-blur-md border border-slate-200/50 dark:border-slate-800/50 rounded-2xl p-4 shadow-sm"
+      app-card
+      class="col-span-12 lg:col-span-4 xl:col-span-3 p-4"
     >
       <!-- Menu links container -->
       <div
@@ -25,20 +22,7 @@
           [routerLinkActiveOptions]="{ exact: true }"
           class="flex items-center gap-3 px-4 py-3 text-sm font-semibold text-slate-600 dark:text-slate-400 hover:bg-slate-50 dark:hover:bg-slate-800/10 border-l-4 border-transparent rounded-xl transition-all cursor-pointer whitespace-nowrap"
         >
-          <svg
-            xmlns="http://www.w3.org/2000/svg"
-            fill="none"
-            viewBox="0 0 24 24"
-            stroke-width="2"
-            stroke="currentColor"
-            class="w-[18px] h-[18px] shrink-0"
-          >
-            <path
-              stroke-linecap="round"
-              stroke-linejoin="round"
-              d="M15.75 6a3.75 3.75 0 1 1-7.5 0 3.75 3.75 0 0 1 7.5 0ZM4.501 20.118a7.5 7.5 0 0 1 14.998 0A17.933 17.933 0 0 1 12 21.75c-2.676 0-5.216-.584-7.499-1.632Z"
-            />
-          </svg>
+          <app-icon name="user" class="w-[18px] h-[18px] shrink-0" />
           <span class="whitespace-nowrap">Thông tin cơ bản</span>
         </a>
 
@@ -48,20 +32,7 @@
           routerLinkActive="bg-[var(--color-primary)]/5 dark:bg-[var(--color-primary)]/10 border-l-4 border-[var(--color-primary)] text-[var(--color-primary)] font-extrabold"
           class="flex items-center gap-3 px-4 py-3 text-sm font-semibold text-slate-600 dark:text-slate-400 hover:bg-slate-50 dark:hover:bg-slate-800/10 border-l-4 border-transparent rounded-xl transition-all cursor-pointer whitespace-nowrap"
         >
-          <svg
-            xmlns="http://www.w3.org/2000/svg"
-            fill="none"
-            viewBox="0 0 24 24"
-            stroke-width="2"
-            stroke="currentColor"
-            class="w-[18px] h-[18px]"
-          >
-            <path
-              stroke-linecap="round"
-              stroke-linejoin="round"
-              d="M15.75 5.25a3 3 0 0 1 3 3m3 0a6 6 0 0 1-7.029 5.912c-.563-.097-1.159.026-1.563.43L10.5 17.25H8.25v2.25H6v2.25H2.25v-2.818c0-.597.237-1.17.659-1.591l6.499-6.499c.404-.404.527-1 .43-1.563A6 6 0 1 1 21.75 8.25Z"
-            />
-          </svg>
+          <app-icon name="key" class="w-[18px] h-[18px]" />
           <span class="whitespace-nowrap">Đổi mật khẩu</span>
         </a>
 
@@ -71,20 +42,7 @@
           routerLinkActive="bg-[var(--color-primary)]/5 dark:bg-[var(--color-primary)]/10 border-l-4 border-[var(--color-primary)] text-[var(--color-primary)] font-extrabold"
           class="flex items-center gap-3 px-4 py-3 text-sm font-semibold text-slate-600 dark:text-slate-400 hover:bg-slate-50 dark:hover:bg-slate-800/10 border-l-4 border-transparent rounded-xl transition-all cursor-pointer whitespace-nowrap"
         >
-          <svg
-            xmlns="http://www.w3.org/2000/svg"
-            fill="none"
-            viewBox="0 0 24 24"
-            stroke-width="2"
-            stroke="currentColor"
-            class="w-[18px] h-[18px]"
-          >
-            <path
-              stroke-linecap="round"
-              stroke-linejoin="round"
-              d="M9 12.75 11.25 15 15 9.75m-3-7.036A11.959 11.959 0 0 1 3.598 6 11.99 11.99 0 0 0 3 9.749c0 5.592 3.824 10.29 9 11.623 5.176-1.332 9-6.03 9-11.622 0-1.31-.21-2.57-.598-3.751h-.152c-3.196 0-6.1-1.248-8.25-3.285Z"
-            />
-          </svg>
+          <app-icon name="shield-check" class="w-[18px] h-[18px]" />
           <span class="whitespace-nowrap">Bảo mật 2FA</span>
         </a>
       </div>
@@ -92,7 +50,8 @@
 
     <!-- Main Content Container -->
     <div
-      class="col-span-12 lg:col-span-8 xl:col-span-9 bg-white/60 dark:bg-slate-900/60 backdrop-blur-md border border-slate-200/50 dark:border-slate-800/50 rounded-2xl p-4 shadow-sm"
+      app-card
+      class="col-span-12 lg:col-span-8 xl:col-span-9 p-4"
     >
       <router-outlet></router-outlet>
     </div>

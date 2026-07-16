@@ -6,6 +6,10 @@ import { ApiService } from '@core/services/api.service';
 import { StateService } from '@core/services/state.service';
 import { SkeletonLoaderComponent } from '@shared/components/skeleton-loader/skeleton-loader.component';
 import { PaginationComponent } from '@shared/components/pagination/pagination.component';
+import { BadgeComponent } from '@shared/components/badge/badge.component';
+import { CardComponent } from '@shared/components/card/card.component';
+import { PageHeaderComponent } from '@shared/components/page-header/page-header.component';
+import { IconComponent } from '@shared/components/icon/icon.component';
 import { HttpParams } from '@angular/common/http';
 
 @Component({
@@ -15,7 +19,11 @@ import { HttpParams } from '@angular/common/http';
     CommonModule,
     FormsModule,
     SkeletonLoaderComponent,
-    PaginationComponent
+    PaginationComponent,
+    BadgeComponent,
+    CardComponent,
+    PageHeaderComponent,
+    IconComponent,
   ],
   templateUrl: './admin-orders.component.html',
   styles: [`

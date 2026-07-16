@@ -1,28 +1,21 @@
 <div class="p-6 md:p-8 max-w-[1530px] mx-auto w-full space-y-8">
+
   <!-- Tiêu đề trang -->
-  <div class="flex items-center justify-between">
-    <div>
-      <h1 class="text-2xl font-black text-slate-800 dark:text-white tracking-tight">
-        Tổng Quan Dashboard
-      </h1>
-      <p class="text-sm font-semibold text-slate-400 mt-1">
-        Thống kê hiệu suất kinh doanh & Tình trạng kho hàng số.
-      </p>
-    </div>
-    <button
-      (click)="loadStats()"
-      class="px-4 py-2 text-xs font-extrabold text-slate-600 dark:text-slate-400 hover:text-primary border border-slate-200/60 dark:border-slate-800/80 rounded-xl hover:bg-slate-50 dark:hover:bg-slate-900 transition-all cursor-pointer flex items-center gap-2"
-    >
-      <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2.5" stroke="currentColor" class="w-4 h-4">
-        <path stroke-linecap="round" stroke-linejoin="round" d="M16.023 9.348h4.992v-.001M2.985 19.644v-4.992m0 0h4.992m-4.993 0 3.181 3.183a8.25 8.25 0 0 0 13.803-3.7M4.031 9.865a8.25 8.25 0 0 1 13.803-3.7l3.181 3.182m0-4.991v4.99" />
-      </svg>
-      Làm mới
-    </button>
-  </div>
+  <app-page-header title="Tổng Quan Dashboard" description="Thống kê hiệu suất kinh doanh & Tình trạng kho hàng số.">
+    <ng-container actions>
+      <button
+        (click)="loadStats()"
+        class="px-4 py-2 text-xs font-extrabold text-slate-600 dark:text-slate-400 hover:text-primary border border-slate-200/60 dark:border-slate-800/80 rounded-xl hover:bg-slate-50 dark:hover:bg-slate-900 transition-all cursor-pointer flex items-center gap-2"
+      >
+        <app-icon name="sync" class="w-4 h-4" />
+        Làm mới
+      </button>
+    </ng-container>
+  </app-page-header>
 
   <!-- Skeleton loading -->
   <div *ngIf="loading()" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
-    <div *ngFor="let i of [1,2,3,4]" class="relative overflow-hidden bg-white dark:bg-slate-950 p-6 rounded-2xl border border-slate-200/50 dark:border-slate-900/50 shadow-sm flex items-center justify-between h-32">
+    <div app-card *ngFor="let i of [1,2,3,4]" class="flex items-center justify-between h-32">
       <div class="space-y-3 w-2/3 animate-pulse">
         <div class="h-3 bg-slate-200 dark:bg-slate-800 rounded-md w-3/4"></div>
         <div class="h-6 bg-slate-200 dark:bg-slate-800 rounded-xl w-full"></div>
@@ -33,73 +26,65 @@
 
   <!-- Thẻ Thống Kê (Grid 4 cột) -->
   <div *ngIf="!loading() && stats()" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
-    <!-- Doanh thu (Xanh dương #006dd0) -->
-    <div class="relative overflow-hidden bg-white dark:bg-slate-950 p-6 rounded-2xl border border-slate-200/50 dark:border-slate-900/50 shadow-sm flex items-center justify-between">
+    <!-- Doanh thu -->
+    <div app-card class="p-6 flex items-center justify-between relative overflow-hidden">
       <div class="space-y-2">
         <span class="text-xs font-bold text-slate-400 uppercase tracking-widest block">Tổng Doanh Thu</span>
         <h2 class="text-2xl font-black text-slate-800 dark:text-white tracking-tight">
           {{ stats().total_revenue | number }} <span class="text-sm font-extrabold text-slate-500">VND</span>
         </h2>
-        <span class="text-[10px] font-bold text-emerald-500 bg-emerald-50 dark:bg-emerald-950/30 px-2 py-0.5 rounded-md inline-block">Đã thanh toán</span>
+        <app-badge variant="success" size="sm" rounded="md">Đã thanh toán</app-badge>
       </div>
-      <div class="w-12 h-12 rounded-xl bg-blue-50 dark:bg-blue-950/30 flex items-center justify-center text-[#006dd0] shrink-0">
-        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" class="w-6 h-6">
-          <path stroke-linecap="round" stroke-linejoin="round" d="M12 6v12m-3-2.818.879.659c1.171.879 3.07.879 4.242 0 1.172-.879 1.172-2.303 0-3.182C13.536 12.219 12.768 12 12 12c-.725 0-1.45-.22-2.003-.659-1.106-.879-1.106-2.303 0-3.182s2.9-.879 4.006 0l.415.33M21 12a9 9 0 1 1-18 0 9 9 0 0 1 18 0Z" />
-        </svg>
+      <div class="w-12 h-12 rounded-xl bg-blue-50 dark:bg-blue-950/30 flex items-center justify-center text-[var(--color-primary)] shrink-0">
+        <app-icon name="cash" class="w-6 h-6" />
       </div>
     </div>
 
-    <!-- Đơn hàng (Xám/Xanh dương) -->
-    <div class="relative overflow-hidden bg-white dark:bg-slate-950 p-6 rounded-2xl border border-slate-200/50 dark:border-slate-900/50 shadow-sm flex items-center justify-between">
+    <!-- Đơn hàng -->
+    <div app-card class="p-6 flex items-center justify-between relative overflow-hidden">
       <div class="space-y-2">
         <span class="text-xs font-bold text-slate-400 uppercase tracking-widest block">Tổng Đơn Hàng</span>
         <h2 class="text-2xl font-black text-slate-800 dark:text-white tracking-tight">
           {{ stats().total_orders | number }} <span class="text-sm font-extrabold text-slate-500">Đơn</span>
         </h2>
-        <span class="text-[10px] font-bold text-slate-400 bg-slate-100 dark:bg-slate-900 px-2 py-0.5 rounded-md inline-block">Toàn hệ thống</span>
+        <app-badge variant="neutral" size="sm" rounded="md">Toàn hệ thống</app-badge>
       </div>
       <div class="w-12 h-12 rounded-xl bg-slate-50 dark:bg-slate-900 flex items-center justify-center text-slate-500 shrink-0">
-        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" class="w-6 h-6">
-          <path stroke-linecap="round" stroke-linejoin="round" d="M15.75 10.5V6a3.75 3.75 0 1 0-7.5 0v4.5m11.356-1.993 1.263 12c.07.665-.45 1.243-1.119 1.243H4.25a1.125 1.125 0 0 1-1.12-1.243l1.264-12A1.125 1.125 0 0 1 5.513 7.5h12.974c.576 0 1.059.435 1.119 1.007ZM8.625 10.5a.375.375 0 1 1-.75 0 .375.375 0 0 1 .75 0Zm7.5 0a.375.375 0 1 1-.75 0 .375.375 0 0 1 .75 0Z" />
-        </svg>
+        <app-icon name="orders" class="w-6 h-6" />
       </div>
     </div>
 
-    <!-- Sản phẩm active (Xanh lục #0d9488) -->
-    <div class="relative overflow-hidden bg-white dark:bg-slate-950 p-6 rounded-2xl border border-slate-200/50 dark:border-slate-900/50 shadow-sm flex items-center justify-between">
+    <!-- Sản phẩm active -->
+    <div app-card class="p-6 flex items-center justify-between relative overflow-hidden">
       <div class="space-y-2">
         <span class="text-xs font-bold text-slate-400 uppercase tracking-widest block">Danh mục Sản phẩm</span>
         <h2 class="text-2xl font-black text-slate-800 dark:text-white tracking-tight">
           {{ stats().total_products | number }} <span class="text-sm font-extrabold text-slate-500">Mục</span>
         </h2>
-        <span class="text-[10px] font-bold text-[#0d9488] bg-teal-50 dark:bg-teal-950/30 px-2 py-0.5 rounded-md inline-block">Đang hoạt động</span>
+        <app-badge variant="secondary" size="sm" rounded="md">Đang hoạt động</app-badge>
       </div>
-      <div class="w-12 h-12 rounded-xl bg-teal-50 dark:bg-teal-950/30 flex items-center justify-center text-[#0d9488] shrink-0">
-        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" class="w-6 h-6">
-          <path stroke-linecap="round" stroke-linejoin="round" d="M6 6h12M6 12h12m-12 6h12" />
-        </svg>
+      <div class="w-12 h-12 rounded-xl bg-teal-50 dark:bg-teal-950/30 flex items-center justify-center text-[var(--color-secondary)] shrink-0">
+        <app-icon name="list-bullet" class="w-6 h-6" />
       </div>
     </div>
 
-    <!-- Tồn kho khả dụng (Cam) -->
-    <div class="relative overflow-hidden bg-white dark:bg-slate-950 p-6 rounded-2xl border border-slate-200/50 dark:border-slate-900/50 shadow-sm flex items-center justify-between">
+    <!-- Tồn kho khả dụng -->
+    <div app-card class="p-6 flex items-center justify-between relative overflow-hidden">
       <div class="space-y-2">
         <span class="text-xs font-bold text-slate-400 uppercase tracking-widest block">Tồn Kho Khả Dụng</span>
         <h2 class="text-2xl font-black text-slate-800 dark:text-white tracking-tight">
           {{ stats().total_available_inventory | number }} <span class="text-sm font-extrabold text-slate-500">Items</span>
         </h2>
-        <span class="text-[10px] font-bold text-amber-500 bg-amber-50 dark:bg-amber-950/30 px-2 py-0.5 rounded-md inline-block">Sẵn sàng bán</span>
+        <app-badge variant="warning" size="sm" rounded="md">Sẵn sàng bán</app-badge>
       </div>
       <div class="w-12 h-12 rounded-xl bg-amber-50 dark:bg-amber-950/30 flex items-center justify-center text-amber-500 shrink-0">
-        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" class="w-6 h-6">
-          <path stroke-linecap="round" stroke-linejoin="round" d="M2.25 13.5h3.86a2.25 2.25 0 0 1 2.008 1.24l.885 1.77a2.25 2.25 0 0 0 2.007 1.24h1.98a2.25 2.25 0 0 0 2.007-1.24l.885-1.77a2.25 2.25 0 0 1 2.007-1.24h3.86m-18 0h18a2.25 2.25 0 0 0 2.25-2.25V6.75A2.25 2.25 0 0 0 19.5 4.5h-15a2.25 2.25 0 0 0-2.25 2.25v4.5A2.25 2.25 0 0 0 2.25 13.5Z" />
-        </svg>
+        <app-icon name="inventory" class="w-6 h-6" />
       </div>
     </div>
   </div>
 
   <!-- Cảnh báo sản phẩm tồn kho thấp -->
-  <div *ngIf="!loading() && stats()" class="bg-white dark:bg-slate-950 rounded-2xl border border-slate-200/50 dark:border-slate-900/50 shadow-sm p-6 space-y-6">
+  <div *ngIf="!loading() && stats()" app-card class="p-6 space-y-6">
     <div class="flex items-center justify-between">
       <div class="flex items-center gap-2">
         <div class="w-2.5 h-2.5 rounded-full bg-red-500 animate-ping"></div>
@@ -107,17 +92,13 @@
           Cảnh Báo Tồn Kho Thấp (&lt; 5 items)
         </h3>
       </div>
-      <span class="text-xs font-bold text-red-500 bg-red-50 dark:bg-red-950/20 px-3 py-1 rounded-full">
-        Cần nhập hàng gấp
-      </span>
+      <app-badge variant="danger" size="sm" rounded="full" [pulse]="true">Cần nhập hàng gấp</app-badge>
     </div>
 
     <!-- Không có cảnh báo -->
     <div *ngIf="stats().low_stock_products.length === 0" class="flex flex-col items-center justify-center py-8 text-center space-y-2">
       <div class="w-12 h-12 bg-emerald-50 dark:bg-emerald-950/30 text-emerald-500 rounded-full flex items-center justify-center">
-        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2.5" stroke="currentColor" class="w-6 h-6">
-          <path stroke-linecap="round" stroke-linejoin="round" d="M9 12.75 11.25 15 15 9.75M21 12a9 9 0 1 1-18 0 9 9 0 0 1 18 0Z" />
-        </svg>
+        <app-icon name="check-circle" class="w-6 h-6" />
       </div>
       <p class="text-sm font-bold text-slate-700 dark:text-slate-300">Tuyệt vời! Kho hàng đầy đủ.</p>
       <p class="text-xs text-slate-400">Không có sản phẩm nào nằm dưới ngưỡng cảnh báo 5 tài nguyên.</p>
@@ -139,16 +120,17 @@
             <td class="py-4 px-4 font-bold text-slate-800 dark:text-slate-100">{{ item.name }}</td>
             <td class="py-4 px-4 text-right">{{ item.price | number }} VND</td>
             <td class="py-4 px-4 text-center">
-              <span class="px-2.5 py-1 rounded-full text-xs font-bold bg-red-50 dark:bg-red-950/30 text-red-500">
+              <app-badge variant="danger" size="sm" rounded="full">
                 Còn lại: {{ item.available_count }}
-              </span>
+              </app-badge>
             </td>
             <td class="py-4 px-4 text-right">
               <a
                 routerLink="/admin/inventory"
                 [queryParams]="{ product_id: item.id }"
-                class="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-[#006dd0] text-white text-xs font-extrabold hover:scale-105 active:scale-95 transition-all shadow-sm shadow-blue-500/10 cursor-pointer"
+                class="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-[var(--color-primary)] text-white text-xs font-extrabold hover:scale-105 active:scale-95 transition-all shadow-sm shadow-blue-500/10 cursor-pointer"
               >
+                <app-icon name="upload" class="w-3.5 h-3.5" />
                 Nhập kho
               </a>
             </td>

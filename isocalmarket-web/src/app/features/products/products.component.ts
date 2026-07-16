@@ -1,8 +1,14 @@
-import { Component, OnInit, inject } from '@angular/core';
+import { Component, OnInit, inject, signal, computed } from '@angular/core';
 import { CommonModule } from '@angular/common';
+import { FormsModule } from '@angular/forms';
 import { StateService } from '@core/services/state.service';
 import { SkeletonLoaderComponent } from '@shared/components/skeleton-loader/skeleton-loader.component';
 import { ButtonComponent } from '@shared/components/button/button.component';
+import { BadgeComponent } from '@shared/components/badge/badge.component';
+import { CardComponent } from '@shared/components/card/card.component';
+import { PageHeaderComponent } from '@shared/components/page-header/page-header.component';
+import { IconComponent } from '@shared/components/icon/icon.component';
+import { CustomSearchInputComponent } from '@shared/components/custom-search-input/custom-search-input.component';
 import { ModalService } from '@core/services/modal.service';
 import { ProductFormModalComponent } from './product-form-modal/product-form-modal.component';
 
@@ -11,8 +17,14 @@ import { ProductFormModalComponent } from './product-form-modal/product-form-mod
   standalone: true,
   imports: [
     CommonModule,
+    FormsModule,
     SkeletonLoaderComponent,
-    ButtonComponent
+    ButtonComponent,
+    BadgeComponent,
+    CardComponent,
+    PageHeaderComponent,
+    IconComponent,
+    CustomSearchInputComponent,
   ],
   templateUrl: './products.component.html',
   styles: [`
@@ -25,8 +37,25 @@ export class ProductsComponent implements OnInit {
   public readonly state = inject(StateService);
   private readonly modalService = inject(ModalService);
 
+  public searchQuery = '';
+  private readonly _searchQuery = signal('');
+
+  public readonly filteredProducts = computed(() => {
+    const q = this._searchQuery().trim().toLowerCase();
+    const products = this.state.productStore.products();
+    if (!q) return products;
+    return products.filter(p =>
+      p.name?.toLowerCase().includes(q) ||
+      p.slug?.toLowerCase().includes(q)
+    );
+  });
+
   ngOnInit() {
     this.state.productStore.fetchProducts().subscribe();
+  }
+
+  public onSearch(query: string) {
+    this._searchQuery.set(query);
   }
 
   public openCreateDrawer() {

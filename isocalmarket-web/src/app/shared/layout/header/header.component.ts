@@ -15,7 +15,6 @@ import { CartModalComponent } from '@features/storefront/cart-modal/cart-modal.c
   imports: [
     CommonModule,
     IconComponent,
-    ButtonComponent,
     RouterModule,
     LogoComponent
   ],

@@ -5,13 +5,15 @@ import { CartStore } from '../cart.store';
 import { StateService } from '@core/services/state.service';
 import { ApiService } from '@core/services/api.service';
 import { ButtonComponent } from '@shared/components/button/button.component';
+import { IconComponent } from '@shared/components/icon/icon.component';
 
 @Component({
   selector: 'app-cart-modal',
   standalone: true,
   imports: [
     CommonModule,
-    ButtonComponent
+    ButtonComponent,
+    IconComponent
   ],
   templateUrl: './cart-modal.component.html',
   styles: [`

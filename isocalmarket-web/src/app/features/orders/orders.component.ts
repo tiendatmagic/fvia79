@@ -4,6 +4,9 @@ import { Router } from '@angular/router';
 import { StateService } from '@core/services/state.service';
 import { SkeletonLoaderComponent } from '@shared/components/skeleton-loader/skeleton-loader.component';
 import { PaginationComponent } from '@shared/components/pagination/pagination.component';
+import { BadgeComponent } from '@shared/components/badge/badge.component';
+import { CardComponent } from '@shared/components/card/card.component';
+import { PageHeaderComponent } from '@shared/components/page-header/page-header.component';
 
 @Component({
   selector: 'app-orders',
@@ -11,7 +14,10 @@ import { PaginationComponent } from '@shared/components/pagination/pagination.co
   imports: [
     CommonModule,
     SkeletonLoaderComponent,
-    PaginationComponent
+    PaginationComponent,
+    BadgeComponent,
+    CardComponent,
+    PageHeaderComponent,
   ],
   templateUrl: './orders.component.html',
   styles: [`
