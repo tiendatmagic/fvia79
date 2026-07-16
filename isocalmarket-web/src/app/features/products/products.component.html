@@ -9,7 +9,7 @@
         name="searchQuery"
         (valueChange)="onSearch($event)"
         [debounce]="300"
-        containerClass="w-48 sm:w-64"
+        containerClass="w-full md:w-64"
       />
       <button
         (click)="state.productStore.fetchProducts().subscribe()"
