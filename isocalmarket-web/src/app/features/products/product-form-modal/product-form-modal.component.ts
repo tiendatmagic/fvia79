@@ -6,6 +6,7 @@ import { StateService } from '@core/services/state.service';
 import { CustomInputComponent } from '@shared/components/custom-input/custom-input.component';
 import { CustomSelectComponent } from '@shared/components/custom-select/custom-select.component';
 import { ButtonComponent } from '@shared/components/button/button.component';
+import { IconComponent } from '@shared/components/icon/icon.component';
 import { finalize } from 'rxjs/operators';
 
 @Component({
@@ -16,7 +17,8 @@ import { finalize } from 'rxjs/operators';
     FormsModule,
     CustomInputComponent,
     CustomSelectComponent,
-    ButtonComponent
+    ButtonComponent,
+    IconComponent
   ],
   templateUrl: './product-form-modal.component.html',
   styles: [`

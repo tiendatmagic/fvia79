@@ -509,4 +509,5 @@
       4. Inject `ModalService` vào `AuthStore`, thêm method private `openWelcomeNoticeIfNeeded()`: gọi sau `login()` và `login2Fa()` thành công, dùng `setTimeout(400ms)` để đợi router navigation xong trước khi mở modal.
       5. Tái sử dụng hoàn toàn `ModalService.open()` + `ModalWrapperComponent` (dynamic modal pattern đã có sẵn). Title modal: `"🔔 Thông Báo Hệ Thống"`, size `sm`, `closeOnBackdropClick: true`.
     - Đã chạy build Angular thành công 100% không phát sinh lỗi.
+    - **Cập nhật dọn dẹp (Refactor):** Thay thế toàn bộ các emoji (như ❌) và các thẻ `<svg>` inline viết trực tiếp trong các template HTML (`welcome-notice-modal.component.html`, `login.component.html`, `register.component.html`, `accordion-item.component.html`, `product-form-modal.component.html`, `custom-checkbox.component.html`) bằng việc gọi qua component dùng chung `<app-icon>`. Import `IconComponent` vào các component tương ứng. Loại bỏ emoji khỏi chuỗi title modal trong `auth.store.ts`. Biên dịch hệ thống thành công không lỗi.
 

@@ -260,14 +260,23 @@ export class AuthStore {
 
   /** Hiển thị modal thông báo chào mừng nếu người dùng chưa chọn "Không hỏi lại trong 7 ngày" */
   private openWelcomeNoticeIfNeeded(): void {
-    if (!shouldShowWelcomeNotice()) return;
+    const show = shouldShowWelcomeNotice();
+    console.log('[AuthStore] Checking welcome notice. Should show?', show);
+    if (!show) return;
+    
     // Trì hoãn nhẹ để router navigation hoàn tất trước khi mở modal
     setTimeout(() => {
-      this.modalService.open(WelcomeNoticeModalComponent, {
-        title: '🔔 Thông Báo Hệ Thống',
-        size: 'sm',
-        closeOnBackdropClick: true,
-      });
+      console.log('[AuthStore] Opening welcome notice modal now...');
+      try {
+        const ref = this.modalService.open(WelcomeNoticeModalComponent, {
+          title: 'Thông Báo Hệ Thống',
+          size: 'sm',
+          closeOnBackdropClick: true,
+        });
+        console.log('[AuthStore] Modal opened successfully', ref);
+      } catch (err) {
+        console.error('[AuthStore] Error opening welcome notice modal:', err);
+      }
     }, 400);
   }
 }

@@ -6,11 +6,12 @@ import { StateService } from '@core/services/state.service';
 import { CustomInputComponent } from '@shared/components/custom-input/custom-input.component';
 import { ButtonComponent } from '@shared/components/button/button.component';
 import { CardComponent } from '@shared/components/card/card.component';
+import { IconComponent } from '@shared/components/icon/icon.component';
 
 @Component({
   selector: 'app-register',
   standalone: true,
-  imports: [CommonModule, FormsModule, RouterModule, CustomInputComponent, ButtonComponent, CardComponent],
+  imports: [CommonModule, FormsModule, RouterModule, CustomInputComponent, ButtonComponent, CardComponent, IconComponent],
   templateUrl: './register.component.html',
   styles: [`
     :host {
