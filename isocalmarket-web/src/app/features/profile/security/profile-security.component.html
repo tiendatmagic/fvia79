@@ -31,8 +31,8 @@
     </span>
   </div>
 
-  <!-- 2FA not enabled & not in activation steps -->
-  <div *ngIf="!state.currentUser()?.google2fa_enabled && !showActivationSteps" class="text-center py-6 space-y-4">
+  <!-- 2FA not enabled -->
+  <div *ngIf="!state.currentUser()?.google2fa_enabled" class="text-center py-6 space-y-4">
     <p class="text-sm text-slate-500 font-semibold max-w-sm mx-auto">
       Kích hoạt bảo mật 2 lớp qua Google Authenticator giúp phòng tránh truy cập trái phép ngay cả khi mật khẩu đăng nhập bị lộ.
     </p>
@@ -47,64 +47,8 @@
     </button>
   </div>
 
-  <!-- 2FA Activation Steps -->
-  <div *ngIf="showActivationSteps" class="border border-slate-200/60 dark:border-slate-800/60 rounded-xl p-5 bg-slate-50/50 dark:bg-slate-900/30 space-y-5 animate-fadeIn">
-    <div class="text-center space-y-2">
-      <h5 class="font-bold text-slate-800 dark:text-slate-200 text-sm">Quét mã QR để lấy mã xác nhận</h5>
-      <p class="text-xs text-slate-500 font-semibold max-w-xs mx-auto">
-        Mở ứng dụng Google Authenticator trên điện thoại của bạn, chọn quét mã QR.
-      </p>
-    </div>
-
-    <!-- QR Code component -->
-    <div class="flex justify-center py-2">
-      <qr-code
-        [value]="qrCodeUrl"
-        [size]="180"
-        class="block p-2 bg-white rounded-lg border border-slate-200 shadow-sm"
-      />
-    </div>
-
-    <!-- Key manual entry -->
-    <div class="bg-white dark:bg-slate-950 border border-slate-200/50 dark:border-slate-800/60 rounded-xl p-3 text-center space-y-1">
-      <span class="text-[10px] uppercase font-black text-slate-400 block tracking-wider">Hoặc nhập mã khóa thủ công</span>
-      <code class="text-sm font-black text-[var(--color-primary)] font-mono tracking-widest block select-all">{{ secretKey }}</code>
-    </div>
-
-    <!-- Verification Input -->
-    <div class="form-field space-y-1.5">
-      <label class="text-xs font-bold text-slate-500 uppercase tracking-wider block">Mã xác nhận 6 số (OTP)</label>
-      <app-custom-input
-        [(ngModel)]="otpConfirmCode"
-        name="otpConfirmCode"
-        [placeholder]="'Nhập 6 số hiển thị trên app'"
-        maxlength="6"
-      />
-    </div>
-
-    <div class="flex gap-3 pt-2">
-      <button
-        app-button
-        [variant]="'secondary'"
-        (click)="cancel2FaActivation()"
-        class="flex-1 py-2.5 rounded-xl font-bold"
-      >
-        Hủy bỏ
-      </button>
-      <button
-        app-button
-        [variant]="'primary'"
-        [loading]="isSubmitting"
-        (click)="confirm2FaActivation()"
-        class="flex-[2] py-2.5 rounded-xl font-bold bg-[var(--color-primary)] text-white shadow-md shadow-[var(--color-primary)]/10"
-      >
-        Xác nhận kích hoạt
-      </button>
-    </div>
-  </div>
-
-  <!-- 2FA is enabled & not in disable steps -->
-  <div *ngIf="state.currentUser()?.google2fa_enabled && !showDisableConfirm" class="text-center py-6 space-y-4">
+  <!-- 2FA is enabled -->
+  <div *ngIf="state.currentUser()?.google2fa_enabled" class="text-center py-6 space-y-4">
     <p class="text-sm text-slate-500 font-semibold max-w-sm mx-auto">
       Tài khoản đang được bảo vệ bằng chế độ 2 lớp cực kỳ an toàn. Vui lòng không tắt chức năng này để bảo vệ tài sản của bạn.
     </p>
@@ -116,46 +60,5 @@
     >
       Hủy kích hoạt 2FA
     </button>
-  </div>
-
-  <!-- 2FA Disable Confirmation -->
-  <div *ngIf="showDisableConfirm" class="border border-rose-200/50 dark:border-rose-900/30 rounded-xl p-5 bg-rose-50/10 dark:bg-rose-950/10 space-y-5 animate-fadeIn">
-    <div class="text-center space-y-2">
-      <h5 class="font-bold text-rose-600 dark:text-rose-400 text-sm">Xác nhận hủy kích hoạt 2FA</h5>
-      <p class="text-xs text-slate-500 font-semibold max-w-xs mx-auto">
-        Vui lòng nhập mật khẩu hiện tại của bạn để tắt bảo mật 2 lớp.
-      </p>
-    </div>
-
-    <!-- Password Input -->
-    <div class="form-field space-y-1.5">
-      <label class="text-xs font-bold text-slate-500 uppercase tracking-wider block">Mật khẩu của bạn</label>
-      <app-custom-input
-        [(ngModel)]="confirmPasswordForDisable"
-        name="confirmPasswordForDisable"
-        type="password"
-        [placeholder]="'Nhập mật khẩu tài khoản hiện tại'"
-      />
-    </div>
-
-    <div class="flex gap-3 pt-2">
-      <button
-        app-button
-        [variant]="'secondary'"
-        (click)="cancel2FaDisable()"
-        class="flex-1 py-2.5 rounded-xl font-bold"
-      >
-        Hủy bỏ
-      </button>
-      <button
-        app-button
-        [variant]="'primary'"
-        [loading]="isSubmitting"
-        (click)="confirm2FaDisable()"
-        class="flex-[2] py-2.5 rounded-xl font-bold bg-rose-600 text-white shadow-md shadow-rose-600/10"
-      >
-        Xác nhận tắt 2FA
-      </button>
-    </div>
   </div>
 </div>
