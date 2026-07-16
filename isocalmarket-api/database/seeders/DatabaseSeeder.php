@@ -19,22 +19,22 @@ class DatabaseSeeder extends Seeder
         // 1. Tạo Users
         $admin = UserModel::create([
             'name'     => 'admin',
-            'email'    => 'admin@isocalmarket.com',
-            'password' => Hash::make('admin'),
+            'email'    => env('SEED_ADMIN_EMAIL', 'admin@isocalmarket.com'),
+            'password' => Hash::make(env('SEED_ADMIN_PASSWORD') ?? throw new \RuntimeException('SEED_ADMIN_PASSWORD must be set in .env before seeding.')),
             'role'     => 'admin'
         ]);
 
         $customer1 = UserModel::create([
             'name'     => 'Nguyễn Văn A',
-            'email'    => 'customer1@example.com',
-            'password' => Hash::make('123456'),
+            'email'    => env('SEED_CUSTOMER1_EMAIL', 'customer1@isocalmarket.com'),
+            'password' => Hash::make(env('SEED_CUSTOMER_PASSWORD') ?? throw new \RuntimeException('SEED_CUSTOMER_PASSWORD must be set in .env before seeding.')),
             'role'     => 'customer'
         ]);
 
         $customer2 = UserModel::create([
             'name'     => 'Trần Thị B',
-            'email'    => 'customer2@example.com',
-            'password' => Hash::make('123456'),
+            'email'    => env('SEED_CUSTOMER2_EMAIL', 'customer2@isocalmarket.com'),
+            'password' => Hash::make(env('SEED_CUSTOMER_PASSWORD') ?? throw new \RuntimeException('SEED_CUSTOMER_PASSWORD must be set in .env before seeding.')),
             'role'     => 'customer'
         ]);
 

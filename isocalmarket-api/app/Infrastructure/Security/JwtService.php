@@ -8,7 +8,11 @@ class JwtService
 
     public function __construct()
     {
-        $this->secret = config('app.key') ?: 'fallback-jwt-secret-key-12345678';
+        $key = config('app.key');
+        if (empty($key)) {
+            throw new \RuntimeException('APP_KEY is not set. Run `php artisan key:generate` before using JWT authentication.');
+        }
+        $this->secret = $key;
     }
 
     /**
