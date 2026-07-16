@@ -184,15 +184,18 @@ export class AuthStore {
     );
   }
 
-  public disable2Fa(password: string) {
+  public disable2Fa(code: string) {
     this.authLoading.set(true);
-    return this.api.post<any>('v1/profile/2fa/disable', { password }).pipe(
+    return this.api.post<any>('v1/profile/2fa/disable', { code }).pipe(
       tap((res) => {
         this.currentUser.set(res.user);
         this.toast.showToast('Đã hủy kích hoạt bảo mật 2FA!', 'success');
       }),
       catchError((err) => {
-        const msg = err.error?.message || 'Hủy kích hoạt 2FA thất bại!';
+        const rawMsg = err.error?.message;
+        const msg = rawMsg === 'Invalid 2FA verification code.'
+          ? 'Mã xác thực 2FA không chính xác!'
+          : (rawMsg || 'Hủy kích hoạt 2FA thất bại!');
         this.toast.showToast(msg, 'error');
         return of(null);
       }),

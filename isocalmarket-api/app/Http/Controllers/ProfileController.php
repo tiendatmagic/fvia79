@@ -133,13 +133,10 @@ class ProfileController extends Controller
         ]);
     }
 
-    /**
-     * Hủy kích hoạt 2FA
-     */
     public function disable2Fa(Request $request)
     {
         $request->validate([
-            'password' => 'required|string',
+            'code' => 'required|string',
         ]);
 
         $userModel = Auth::user();
@@ -147,8 +144,13 @@ class ProfileController extends Controller
             return response()->json(['message' => 'Unauthorized.'], 401);
         }
 
-        if (!Hash::check($request->password, $userModel->password)) {
-            return response()->json(['message' => 'Confirmation password is incorrect.'], 400);
+        if (!$userModel->google2fa_secret) {
+            return response()->json(['message' => '2FA is not enabled.'], 400);
+        }
+
+        $verified = Google2FA::verifyCode($userModel->google2fa_secret, $request->code);
+        if (!$verified) {
+            return response()->json(['message' => 'Invalid 2FA verification code.'], 400);
         }
 
         $userModel->google2fa_enabled = false;

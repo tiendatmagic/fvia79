@@ -22,7 +22,7 @@ export class Disable2faModalComponent {
   private readonly modalRef = inject(ModalRef);
   public readonly state = inject(StateService);
 
-  public password = '';
+  public code = '';
   public isSubmitting = false;
 
   public onClose() {
@@ -30,13 +30,18 @@ export class Disable2faModalComponent {
   }
 
   public onConfirm() {
-    if (!this.password) {
-      this.state.showToast('Vui lòng nhập mật khẩu xác nhận!', 'error');
+    if (!this.code) {
+      this.state.showToast('Vui lòng nhập mã xác thực 2FA!', 'error');
+      return;
+    }
+
+    if (this.code.length !== 6 || isNaN(Number(this.code))) {
+      this.state.showToast('Mã xác thực phải gồm 6 chữ số!', 'error');
       return;
     }
 
     this.isSubmitting = true;
-    this.state.authStore.disable2Fa(this.password)
+    this.state.authStore.disable2Fa(this.code)
       .pipe(finalize(() => this.isSubmitting = false))
       .subscribe((res) => {
         if (res) {

@@ -1,18 +1,18 @@
 <div class="space-y-5">
   <div class="text-center space-y-2">
     <p class="text-xs text-slate-500 font-semibold max-w-xs mx-auto">
-      Để bảo vệ tài khoản, vui lòng nhập mật khẩu hiện tại để tắt bảo mật hai lớp.
+      Để bảo vệ tài khoản, vui lòng nhập mã xác thực 6 số từ ứng dụng Google Authenticator để tắt bảo mật hai lớp.
     </p>
   </div>
 
-  <!-- Password Input -->
+  <!-- Code Input -->
   <div class="form-field space-y-1.5">
-    <label class="text-xs font-bold text-slate-500 uppercase tracking-wider block">Mật khẩu xác nhận</label>
+    <label class="text-xs font-bold text-slate-500 uppercase tracking-wider block">Mã xác thực 2FA</label>
     <app-custom-input
-      [(ngModel)]="password"
-      name="password"
-      type="password"
-      [placeholder]="'Nhập mật khẩu đăng nhập'"
+      [(ngModel)]="code"
+      name="code"
+      type="text"
+      [placeholder]="'Nhập mã OTP 6 số'"
     />
   </div>
 
