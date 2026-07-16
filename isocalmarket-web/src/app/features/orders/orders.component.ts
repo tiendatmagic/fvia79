@@ -1,11 +1,9 @@
 import { Component, OnInit, inject, signal } from '@angular/core';
 import { CommonModule } from '@angular/common';
+import { Router } from '@angular/router';
 import { StateService } from '@core/services/state.service';
 import { SkeletonLoaderComponent } from '@shared/components/skeleton-loader/skeleton-loader.component';
-import { ButtonComponent } from '@shared/components/button/button.component';
 import { PaginationComponent } from '@shared/components/pagination/pagination.component';
-import { ModalService } from '@core/services/modal.service';
-import { OrderDetailModalComponent } from './order-detail-modal/order-detail-modal.component';
 
 @Component({
   selector: 'app-orders',
@@ -24,8 +22,8 @@ import { OrderDetailModalComponent } from './order-detail-modal/order-detail-mod
 })
 export class OrdersComponent implements OnInit {
   public readonly state = inject(StateService);
-  private readonly modalService = inject(ModalService);
-  
+  private readonly router = inject(Router);
+
   public readonly currentPage = signal<number>(1);
   public readonly limit = 10;
 
@@ -38,13 +36,7 @@ export class OrdersComponent implements OnInit {
     this.state.orderStore.fetchOrders(page, this.limit).subscribe();
   }
 
-  public openDetailDrawer(order: any) {
-    this.modalService.open(OrderDetailModalComponent, {
-      title: 'Chi Tiết Đơn Hàng',
-      size: '2xl', // Đặt size 2xl cho rộng rãi dễ nhìn danh sách accounts
-      data: {
-        orderId: order.id
-      }
-    });
+  public viewDetail(order: any) {
+    this.router.navigate(['/orders', order.id]);
   }
 }

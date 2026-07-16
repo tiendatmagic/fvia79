@@ -91,8 +91,13 @@
         <tbody class="divide-y divide-slate-100 dark:divide-slate-900/50">
           <tr *ngFor="let order of orders()" class="text-sm font-semibold text-slate-600 dark:text-slate-300 hover:bg-slate-50/30 dark:hover:bg-slate-900/5">
             <!-- Mã đơn -->
-            <td class="py-4 px-6 font-bold text-slate-800 dark:text-slate-100 whitespace-nowrap">
-              {{ order.order_code }}
+            <td class="py-4 px-6 whitespace-nowrap">
+              <button
+                (click)="viewDetail(order.id)"
+                class="font-bold text-[#006dd0] hover:underline underline-offset-2 font-mono tracking-wider cursor-pointer transition-opacity hover:opacity-80"
+              >
+                {{ order.order_code }}
+              </button>
             </td>
             <!-- Khách hàng -->
             <td class="py-4 px-6 text-slate-500 dark:text-slate-400 whitespace-nowrap">
@@ -135,7 +140,7 @@
             <td class="py-4 px-6 text-center whitespace-nowrap">
               <div class="flex items-center justify-center whitespace-nowrap">
                 <button
-                  (click)="openDetailDrawer(order.id)"
+                  (click)="viewDetail(order.id)"
                   class="text-xs font-bold px-3 py-1.5 rounded-lg border border-teal-500/20 dark:border-teal-500/30 hover:bg-teal-100 dark:hover:bg-teal-950/40 text-teal-600 dark:text-teal-400 bg-teal-50 dark:bg-teal-950/20 hover:scale-105 active:scale-95 transition-all cursor-pointer flex items-center gap-1"
                   title="Xem chi tiết"
                 >

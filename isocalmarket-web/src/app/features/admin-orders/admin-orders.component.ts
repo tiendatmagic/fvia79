@@ -1,13 +1,12 @@
 import { Component, OnInit, inject, signal } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
+import { Router } from '@angular/router';
 import { ApiService } from '@core/services/api.service';
 import { StateService } from '@core/services/state.service';
 import { SkeletonLoaderComponent } from '@shared/components/skeleton-loader/skeleton-loader.component';
 import { PaginationComponent } from '@shared/components/pagination/pagination.component';
 import { HttpParams } from '@angular/common/http';
-import { ModalService } from '@core/services/modal.service';
-import { OrderDetailModalComponent } from '../orders/order-detail-modal/order-detail-modal.component';
 
 @Component({
   selector: 'app-admin-orders',
@@ -28,7 +27,7 @@ import { OrderDetailModalComponent } from '../orders/order-detail-modal/order-de
 export class AdminOrdersComponent implements OnInit {
   private readonly apiService = inject(ApiService);
   public readonly stateService = inject(StateService);
-  private readonly modalService = inject(ModalService);
+  private readonly router = inject(Router);
 
   public readonly orders = signal<any[]>([]);
   public readonly total = signal<number>(0);
@@ -37,7 +36,7 @@ export class AdminOrdersComponent implements OnInit {
 
   public readonly currentPage = signal<number>(1);
   public readonly limit = 10;
-  public readonly selectedStatus = signal<string>(''); // '' đại diện cho Tất cả
+  public readonly selectedStatus = signal<string>('');
 
   ngOnInit() {
     this.fetchOrders(1);
@@ -63,7 +62,7 @@ export class AdminOrdersComponent implements OnInit {
         this.totalPages.set(Math.ceil(totalCount / this.limit));
         this.loading.set(false);
       },
-      error: (err) => {
+      error: () => {
         this.stateService.showToast('Không thể lấy danh sách đơn hàng!', 'error');
         this.loading.set(false);
       }
@@ -75,13 +74,7 @@ export class AdminOrdersComponent implements OnInit {
     this.fetchOrders(1);
   }
 
-  public openDetailDrawer(orderId: string) {
-    this.modalService.open(OrderDetailModalComponent, {
-      title: 'Chi Tiết Đơn Hàng',
-      size: '2xl',
-      data: {
-        orderId: orderId
-      }
-    });
+  public viewDetail(orderId: string) {
+    this.router.navigate(['/orders', orderId]);
   }
 }
