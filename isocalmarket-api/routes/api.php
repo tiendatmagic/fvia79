@@ -7,6 +7,7 @@ Route::prefix('v1')->group(function () {
     Route::middleware(['throttle:auth'])->group(function () {
         Route::post('/auth/register', ['App\Http\Controllers\AuthController', 'register']);
         Route::post('/auth/login', ['App\Http\Controllers\AuthController', 'login']);
+        Route::post('/auth/login/2fa', ['App\Http\Controllers\AuthController', 'login2Fa']);
     });
 
     Route::post('/auth/refresh', ['App\Http\Controllers\AuthController', 'refresh']);
@@ -18,6 +19,13 @@ Route::prefix('v1')->group(function () {
     Route::middleware(['jwt.auth'])->group(function () {
         Route::post('/auth/logout', ['App\Http\Controllers\AuthController', 'logout']);
         Route::get('/auth/me', ['App\Http\Controllers\AuthController', 'me']);
+
+        // Profile routes
+        Route::put('/profile', ['App\Http\Controllers\ProfileController', 'update']);
+        Route::put('/profile/password', ['App\Http\Controllers\ProfileController', 'changePassword']);
+        Route::post('/profile/2fa/enable', ['App\Http\Controllers\ProfileController', 'enable2Fa']);
+        Route::post('/profile/2fa/confirm', ['App\Http\Controllers\ProfileController', 'confirm2Fa']);
+        Route::post('/profile/2fa/disable', ['App\Http\Controllers\ProfileController', 'disable2Fa']);
 
         Route::post('/orders', ['App\Http\Controllers\OrderController', 'store']);
         Route::get('/orders', ['App\Http\Controllers\OrderController', 'index']);

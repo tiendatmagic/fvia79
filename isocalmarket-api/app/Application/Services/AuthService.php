@@ -107,4 +107,28 @@ class AuthService
             $this->userRepository->save($user);
         }
     }
+
+    public function generateTemp2FaToken(User $user): string
+    {
+        $payload = [
+            'sub' => $user->getId(),
+            'scope' => '2fa'
+        ];
+        // Hết hạn sau 5 phút
+        return $this->jwtService->generateToken($payload, 300);
+    }
+
+    public function validateTemp2FaToken(string $tempToken): ?string
+    {
+        $payload = $this->jwtService->validateToken($tempToken);
+        if (!$payload || empty($payload['sub']) || ($payload['scope'] ?? '') !== '2fa') {
+            return null;
+        }
+        return $payload['sub'];
+    }
+
+    public function getUserById(string $id): ?User
+    {
+        return $this->userRepository->findById($id);
+    }
 }

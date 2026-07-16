@@ -1,30 +1,43 @@
 <div class="max-w-[1530px] mx-auto w-full p-4 sm:p-6 space-y-6">
-
   <!-- Header -->
-  <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4 border-b border-slate-200/40 dark:border-slate-800/40 pb-5">
+  <div
+    class="flex flex-col sm:flex-row sm:items-center justify-between gap-4 border-b border-slate-200/40 dark:border-slate-800/40 pb-5"
+  >
     <div class="space-y-1">
-      <h3 class="text-2xl font-black text-slate-800 dark:text-white">
-        Quản Lý Kho Hàng Số
-      </h3>
+      <h3 class="text-2xl font-black text-slate-800 dark:text-white">Quản Lý Kho Hàng Số</h3>
       <p class="text-xs text-slate-500 font-semibold">
         Import tài khoản hàng loạt và kiểm soát trạng thái của từng tài nguyên kỹ thuật số.
       </p>
     </div>
-    
-    <button app-button
+
+    <button
+      app-button
       (click)="openImportDrawer()"
       [variant]="'primary'"
       class="py-2.5 px-4 rounded-xl bg-gradient-to-r from-[var(--color-primary)] to-[var(--color-secondary)] text-white font-extrabold shadow-md shadow-[var(--color-primary)]/15 active:scale-95 transition-all text-sm flex items-center gap-2 cursor-pointer"
     >
-      <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2.5" stroke="currentColor" class="w-5 h-5">
-        <path stroke-linecap="round" stroke-linejoin="round" d="M3 16.5v2.25A2.25 2.25 0 0 0 5.25 21h13.5A2.25 2.25 0 0 0 21 18.75V16.5m-13.5-9L12 3m0 0 4.5 4.5M12 3v13.5" />
+      <svg
+        xmlns="http://www.w3.org/2000/svg"
+        fill="none"
+        viewBox="0 0 24 24"
+        stroke-width="2.5"
+        stroke="currentColor"
+        class="w-5 h-5"
+      >
+        <path
+          stroke-linecap="round"
+          stroke-linejoin="round"
+          d="M3 16.5v2.25A2.25 2.25 0 0 0 5.25 21h13.5A2.25 2.25 0 0 0 21 18.75V16.5m-13.5-9L12 3m0 0 4.5 4.5M12 3v13.5"
+        />
       </svg>
       Import Kho Hàng
     </button>
   </div>
 
   <!-- Filters Section -->
-  <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4 bg-slate-50 dark:bg-slate-900/40 border border-slate-200/30 dark:border-slate-800/30 rounded-2xl p-4 sm:p-5">
+  <div
+    class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4 bg-slate-50 dark:bg-slate-900/40 border border-slate-200/30 dark:border-slate-800/30 rounded-2xl p-4 sm:p-5"
+  >
     <div class="form-field">
       <label>Bộ lọc Sản phẩm</label>
       <app-custom-select
@@ -48,19 +61,46 @@
     </div>
   </div>
 
-
   <!-- Main table card -->
-  <div class="bg-white dark:bg-slate-900/60 border border-slate-200/50 dark:border-slate-800/50 rounded-2xl shadow-xl overflow-hidden">
+  <div
+    class="bg-white dark:bg-slate-900/60 border border-slate-200/50 dark:border-slate-800/50 rounded-2xl shadow-xl overflow-hidden"
+  >
     <div class="overflow-x-auto">
       <table class="w-full text-left border-collapse">
         <thead>
-          <tr class="border-b border-slate-200/30 dark:border-slate-800/30 bg-slate-50/50 dark:bg-slate-950/20">
-            <th class="py-4 px-6 text-xs font-bold text-slate-400 uppercase tracking-wider whitespace-nowrap">ID</th>
-            <th class="py-4 px-6 text-xs font-bold text-slate-400 uppercase tracking-wider whitespace-nowrap">Tên sản phẩm</th>
-            <th class="py-4 px-6 text-xs font-bold text-slate-400 uppercase tracking-wider whitespace-nowrap">Dữ liệu tài nguyên</th>
-            <th class="py-4 px-6 text-xs font-bold text-slate-400 uppercase tracking-wider text-center whitespace-nowrap">Trạng thái</th>
-            <th class="py-4 px-6 text-xs font-bold text-slate-400 uppercase tracking-wider text-center whitespace-nowrap">Đơn hàng đã mua</th>
-            <th class="py-4 px-6 text-xs font-bold text-slate-400 uppercase tracking-wider text-right whitespace-nowrap">Thao tác</th>
+          <tr
+            class="border-b border-slate-200/30 dark:border-slate-800/30 bg-slate-50/50 dark:bg-slate-950/20"
+          >
+            <th
+              class="py-4 px-6 text-xs font-bold text-slate-400 uppercase tracking-wider whitespace-nowrap"
+            >
+              ID
+            </th>
+            <th
+              class="py-4 px-6 text-xs font-bold text-slate-400 uppercase tracking-wider whitespace-nowrap"
+            >
+              Tên sản phẩm
+            </th>
+            <th
+              class="py-4 px-6 text-xs font-bold text-slate-400 uppercase tracking-wider whitespace-nowrap"
+            >
+              Dữ liệu tài nguyên
+            </th>
+            <th
+              class="py-4 px-6 text-xs font-bold text-slate-400 uppercase tracking-wider text-center whitespace-nowrap"
+            >
+              Trạng thái
+            </th>
+            <th
+              class="py-4 px-6 text-xs font-bold text-slate-400 uppercase tracking-wider text-center whitespace-nowrap"
+            >
+              Lịch sử đơn hàng
+            </th>
+            <th
+              class="py-4 px-6 text-xs font-bold text-slate-400 uppercase tracking-wider text-right whitespace-nowrap"
+            >
+              Thao tác
+            </th>
           </tr>
         </thead>
         <tbody>
@@ -84,7 +124,11 @@
               *ngFor="let item of state.inventoryStore.items()"
               class="border-b border-slate-200/30 dark:border-slate-800/30 hover:bg-slate-50/30 dark:hover:bg-slate-950/10 transition-colors"
             >
-              <td class="py-4 px-6 text-xs font-mono font-bold text-[var(--color-primary)] whitespace-nowrap">#{{ item.id }}</td>
+              <td
+                class="py-4 px-6 text-xs font-mono font-bold text-[var(--color-primary)] whitespace-nowrap"
+              >
+                #{{ item.id }}
+              </td>
               <td class="py-4 px-6 whitespace-nowrap">
                 <span class="text-sm font-extrabold text-slate-800 dark:text-white">
                   {{ getProductName(item.product_id) }}
@@ -92,7 +136,10 @@
               </td>
               <td class="py-4 px-6 min-w-[200px]">
                 <div class="flex items-center gap-2 max-w-xs md:max-w-md">
-                  <code class="text-xs font-mono bg-slate-50 dark:bg-slate-950 px-2 py-1 rounded border border-slate-200/40 dark:border-slate-800/40 text-slate-700 dark:text-slate-300 truncate" title="{{ item.data }}">
+                  <code
+                    class="text-xs font-mono bg-slate-50 dark:bg-slate-950 px-2 py-1 rounded border border-slate-200/40 dark:border-slate-800/40 text-slate-700 dark:text-slate-300 truncate"
+                    title="{{ item.data }}"
+                  >
                     {{ item.data }}
                   </code>
                 </div>
@@ -100,9 +147,12 @@
               <td class="py-4 px-6 text-center whitespace-nowrap">
                 <span
                   [ngClass]="{
-                    'bg-emerald-50 dark:bg-emerald-950/20 text-emerald-600 dark:text-emerald-400 border-emerald-500/10': item.status === 'available',
-                    'bg-amber-50 dark:bg-amber-950/20 text-amber-600 dark:text-amber-400 border-amber-500/10': item.status === 'reserved',
-                    'bg-slate-100 dark:bg-slate-800 text-slate-500 border-slate-200/40 dark:border-slate-700/40': item.status === 'sold'
+                    'bg-emerald-50 dark:bg-emerald-950/20 text-emerald-600 dark:text-emerald-400 border-emerald-500/10':
+                      item.status === 'available',
+                    'bg-amber-50 dark:bg-amber-950/20 text-amber-600 dark:text-amber-400 border-amber-500/10':
+                      item.status === 'reserved',
+                    'bg-slate-100 dark:bg-slate-800 text-slate-500 border-slate-200/40 dark:border-slate-700/40':
+                      item.status === 'sold',
                   }"
                   class="text-[10px] font-bold uppercase tracking-wider px-2 py-1 rounded-md border"
                 >
@@ -110,7 +160,10 @@
                 </span>
               </td>
               <td class="py-4 px-6 text-center whitespace-nowrap">
-                <span *ngIf="item.order_id" class="text-xs font-mono font-bold text-slate-500 bg-slate-50 dark:bg-slate-950 px-2 py-1 rounded border">
+                <span
+                  *ngIf="item.order_id"
+                  class="text-xs font-mono font-bold text-slate-500 bg-slate-50 dark:bg-slate-950 px-2 py-1 rounded border"
+                >
                   #{{ item.order_id }}
                 </span>
                 <span *ngIf="!item.order_id" class="text-xs text-slate-400 font-semibold">-</span>
@@ -130,19 +183,20 @@
           }
         </tbody>
       </table>
-    <!-- Pagination -->
-    <div class="p-4 border-t border-slate-200/30 dark:border-slate-800/30 flex justify-center bg-slate-50/20 dark:bg-slate-950/10" *ngIf="state.inventoryStore.lastPage() > 1">
-      <app-pagination
-        [currentPage]="state.inventoryStore.currentPage()"
-        [totalPages]="state.inventoryStore.lastPage()"
-        [totalItems]="state.inventoryStore.totalItems()"
-        [itemsPerPage]="limit"
-        [itemName]="'tài nguyên'"
-        (pageChange)="fetchPage($event)"
-      />
+      <!-- Pagination -->
+      <div
+        class="p-4 border-t border-slate-200/30 dark:border-slate-800/30 flex justify-center bg-slate-50/20 dark:bg-slate-950/10"
+        *ngIf="state.inventoryStore.lastPage() > 1"
+      >
+        <app-pagination
+          [currentPage]="state.inventoryStore.currentPage()"
+          [totalPages]="state.inventoryStore.lastPage()"
+          [totalItems]="state.inventoryStore.totalItems()"
+          [itemsPerPage]="limit"
+          [itemName]="'tài nguyên'"
+          (pageChange)="fetchPage($event)"
+        />
+      </div>
     </div>
   </div>
 </div>
-
-
-

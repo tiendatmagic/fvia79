@@ -25,6 +25,9 @@ export class LoginComponent {
   public email = '';
   public password = '';
   
+  public requires2Fa = signal<boolean>(false);
+  public otpCode = '';
+  private tempToken = '';
   private returnUrl = '/';
 
   constructor() {
@@ -40,11 +43,26 @@ export class LoginComponent {
   }
 
   public onSubmit() {
+    if (this.requires2Fa()) {
+      if (!this.otpCode || this.otpCode.length !== 6) {
+        this.state.showToast('Vui lòng nhập mã xác thực OTP gồm 6 chữ số!', 'error');
+        return;
+      }
+      this.state.authStore.login2Fa(this.tempToken, this.otpCode, this.returnUrl).subscribe();
+      return;
+    }
+
     if (!this.email || !this.password) {
       this.state.showToast('Vui lòng điền đầy đủ email và mật khẩu!', 'error');
       return;
     }
 
-    this.state.authStore.login({ email: this.email, password: this.password }, this.returnUrl).subscribe();
+    this.state.authStore.login({ email: this.email, password: this.password }, this.returnUrl).subscribe((res: any) => {
+      if (res && res.requires_2fa) {
+        this.requires2Fa.set(true);
+        this.tempToken = res.temp_token;
+        this.state.showToast('Tài khoản đã kích hoạt 2FA. Vui lòng nhập mã OTP để tiếp tục.', 'success');
+      }
+    });
   }
 }

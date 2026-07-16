@@ -16,7 +16,10 @@ class UserMapper
             $model->password,
             $model->role,
             $model->refresh_token_hash,
-            $model->refresh_token_expired_at ? new \DateTime($model->refresh_token_expired_at->toDateTimeString()) : null
+            $model->refresh_token_expired_at ? new \DateTime($model->refresh_token_expired_at->toDateTimeString()) : null,
+            $model->phone,
+            $model->google2fa_secret,
+            $model->google2fa_enabled
         );
     }
 
@@ -29,10 +32,13 @@ class UserMapper
 
         $model->name = $entity->getName();
         $model->email = $entity->getEmail();
+        $model->phone = $entity->getPhone();
         $model->password = $entity->getPassword();
         $model->role = $entity->getRole();
         $model->refresh_token_hash = $entity->getRefreshTokenHash();
         $model->refresh_token_expired_at = $entity->getRefreshTokenExpiredAt();
+        $model->google2fa_secret = $entity->getGoogle2faSecret();
+        $model->google2fa_enabled = $entity->isGoogle2faEnabled();
 
         return $model;
     }

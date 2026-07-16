@@ -27,6 +27,9 @@ export class AuthStore {
     this.authLoading.set(true);
     return this.api.post<any>('v1/auth/login', credentials).pipe(
       tap((res) => {
+        if (res && res.requires_2fa) {
+          return;
+        }
         this.currentUser.set(res.user);
         this.toast.showToast('Đăng nhập thành công!', 'success');
         this.router.navigateByUrl(returnUrl);
@@ -99,6 +102,98 @@ export class AuthStore {
       catchError(() => {
         this.currentUser.set(null);
         this.router.navigate(['/storefront']);
+        return of(null);
+      }),
+      finalize(() => this.authLoading.set(false))
+    );
+  }
+
+  public login2Fa(tempToken: string, code: string, returnUrl: string = '/') {
+    this.authLoading.set(true);
+    return this.api.post<any>('v1/auth/login/2fa', { temp_token: tempToken, code }).pipe(
+      tap((res) => {
+        this.currentUser.set(res.user);
+        this.toast.showToast('Đăng nhập thành công!', 'success');
+        this.router.navigateByUrl(returnUrl);
+      }),
+      catchError((err) => {
+        const msg = err.error?.message || 'Mã xác thực không đúng hoặc đã hết hạn!';
+        this.toast.showToast(msg, 'error');
+        return of(null);
+      }),
+      finalize(() => this.authLoading.set(false))
+    );
+  }
+
+  public updateProfile(phone: string) {
+    this.authLoading.set(true);
+    return this.api.put<any>('v1/profile', { phone }).pipe(
+      tap((res) => {
+        this.currentUser.set(res.user);
+        this.toast.showToast('Cập nhật thông tin thành công!', 'success');
+      }),
+      catchError((err) => {
+        const msg = err.error?.message || 'Cập nhật thông tin thất bại!';
+        this.toast.showToast(msg, 'error');
+        return of(null);
+      }),
+      finalize(() => this.authLoading.set(false))
+    );
+  }
+
+  public changePassword(data: any) {
+    this.authLoading.set(true);
+    return this.api.put<any>('v1/profile/password', data).pipe(
+      tap(() => {
+        this.toast.showToast('Đổi mật khẩu thành công!', 'success');
+      }),
+      catchError((err) => {
+        const msg = err.error?.message || 'Đổi mật khẩu thất bại!';
+        this.toast.showToast(msg, 'error');
+        return of(null);
+      }),
+      finalize(() => this.authLoading.set(false))
+    );
+  }
+
+  public enable2Fa() {
+    this.authLoading.set(true);
+    return this.api.post<any>('v1/profile/2fa/enable', {}).pipe(
+      catchError((err) => {
+        const msg = err.error?.message || 'Không thể khởi tạo 2FA!';
+        this.toast.showToast(msg, 'error');
+        return of(null);
+      }),
+      finalize(() => this.authLoading.set(false))
+    );
+  }
+
+  public confirm2Fa(code: string) {
+    this.authLoading.set(true);
+    return this.api.post<any>('v1/profile/2fa/confirm', { code }).pipe(
+      tap((res) => {
+        this.currentUser.set(res.user);
+        this.toast.showToast('Đã kích hoạt bảo mật 2FA thành công!', 'success');
+      }),
+      catchError((err) => {
+        const msg = err.error?.message || 'Mã xác thực OTP không chính xác!';
+        this.toast.showToast(msg, 'error');
+        return of(null);
+      }),
+      finalize(() => this.authLoading.set(false))
+    );
+  }
+
+  public disable2Fa(password: string) {
+    this.authLoading.set(true);
+    return this.api.post<any>('v1/profile/2fa/disable', { password }).pipe(
+      tap((res) => {
+        this.currentUser.set(res.user);
+        this.toast.showToast('Đã hủy kích hoạt bảo mật 2FA!', 'success');
+      }),
+      catchError((err) => {
+        const msg = err.error?.message || 'Hủy kích hoạt 2FA thất bại!';
+        this.toast.showToast(msg, 'error');
         return of(null);
       }),
       finalize(() => this.authLoading.set(false))

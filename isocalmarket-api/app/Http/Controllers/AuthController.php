@@ -48,6 +48,15 @@ class AuthController extends Controller
                 return response()->json(['message' => 'Invalid email/username or password.'], 401);
             }
 
+            // Kiểm tra 2FA
+            if ($user->isGoogle2faEnabled()) {
+                $tempToken = $this->authService->generateTemp2FaToken($user);
+                return response()->json([
+                    'requires_2fa' => true,
+                    'temp_token' => $tempToken
+                ]);
+            }
+
             $accessToken = $this->authService->generateAccessToken($user);
             $refreshToken = $this->authService->generateRefreshToken($user);
 
@@ -98,7 +107,91 @@ class AuthController extends Controller
                     'id' => $user->getId(),
                     'name' => $user->getName(),
                     'email' => $user->getEmail(),
-                    'role' => $user->getRole()
+                    'phone' => $user->getPhone(),
+                    'role' => $user->getRole(),
+                    'google2fa_enabled' => $user->isGoogle2faEnabled()
+                ]
+            ])->withCookie($accessTokenCookie)
+                ->withCookie($refreshTokenCookie)
+                ->withCookie($loggedInCookie);
+        } catch (\Exception $e) {
+            return response()->json(['message' => $e->getMessage()], 500);
+        }
+    }
+
+    public function login2Fa(Request $request)
+    {
+        $request->validate([
+            'temp_token' => 'required|string',
+            'code' => 'required|string|size:6',
+        ]);
+
+        try {
+            $userId = $this->authService->validateTemp2FaToken($request->temp_token);
+            if (!$userId) {
+                return response()->json(['message' => 'Invalid or expired verification token.'], 401);
+            }
+
+            $user = $this->authService->getUserById($userId);
+            if (!$user) {
+                return response()->json(['message' => 'User not found.'], 404);
+            }
+
+            $verified = \App\Infrastructure\Security\Google2FA::verifyCode($user->getGoogle2faSecret(), $request->code);
+            if (!$verified) {
+                return response()->json(['message' => 'Invalid OTP code. Please try again.'], 400);
+            }
+
+            $accessToken = $this->authService->generateAccessToken($user);
+            $refreshToken = $this->authService->generateRefreshToken($user);
+
+            $isProduction = config('app.env') === 'production';
+
+            $accessTokenCookie = cookie(
+                'access_token',
+                $accessToken,
+                30,
+                '/',
+                null,
+                $isProduction,
+                true,
+                false,
+                'Lax'
+            );
+
+            $refreshTokenCookie = cookie(
+                'refresh_token',
+                $refreshToken,
+                10080,
+                '/api/v1/auth/refresh',
+                null,
+                $isProduction,
+                true,
+                false,
+                'Lax'
+            );
+
+            $loggedInCookie = cookie(
+                'auth_logged_in',
+                'true',
+                10080,
+                '/',
+                null,
+                $isProduction,
+                false,
+                false,
+                'Lax'
+            );
+
+            return response()->json([
+                'message' => 'Login successful.',
+                'user' => [
+                    'id' => $user->getId(),
+                    'name' => $user->getName(),
+                    'email' => $user->getEmail(),
+                    'phone' => $user->getPhone(),
+                    'role' => $user->getRole(),
+                    'google2fa_enabled' => $user->isGoogle2faEnabled()
                 ]
             ])->withCookie($accessTokenCookie)
                 ->withCookie($refreshTokenCookie)
@@ -156,7 +249,9 @@ class AuthController extends Controller
                 'id' => $user->getId(),
                 'name' => $user->getName(),
                 'email' => $user->getEmail(),
-                'role' => $user->getRole()
+                'phone' => $user->getPhone(),
+                'role' => $user->getRole(),
+                'google2fa_enabled' => $user->isGoogle2faEnabled()
             ]
         ])->withCookie($accessTokenCookie)->withCookie($refreshTokenCookie);
     }
@@ -191,7 +286,9 @@ class AuthController extends Controller
                 'id' => $userModel->id,
                 'name' => $userModel->name,
                 'email' => $userModel->email,
-                'role' => $userModel->role
+                'phone' => $userModel->phone,
+                'role' => $userModel->role,
+                'google2fa_enabled' => $userModel->google2fa_enabled
             ]
         ]);
     }

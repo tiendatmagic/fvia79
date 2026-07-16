@@ -11,6 +11,9 @@ class User
     private string $role;
     private ?string $refreshTokenHash;
     private ?\DateTime $refreshTokenExpiredAt;
+    private ?string $phone;
+    private ?string $google2faSecret;
+    private bool $google2faEnabled;
 
     public function __construct(
         ?string $id,
@@ -19,7 +22,10 @@ class User
         string $password,
         string $role = 'customer',
         ?string $refreshTokenHash = null,
-        ?\DateTime $refreshTokenExpiredAt = null
+        ?\DateTime $refreshTokenExpiredAt = null,
+        ?string $phone = null,
+        ?string $google2faSecret = null,
+        bool $google2faEnabled = false
     ) {
         $this->id = $id;
         $this->name = $name;
@@ -28,6 +34,9 @@ class User
         $this->role = $role;
         $this->refreshTokenHash = $refreshTokenHash;
         $this->refreshTokenExpiredAt = $refreshTokenExpiredAt;
+        $this->phone = $phone;
+        $this->google2faSecret = $google2faSecret;
+        $this->google2faEnabled = $google2faEnabled;
     }
 
     public function getId(): ?string
@@ -63,6 +72,41 @@ class User
     public function getRefreshTokenExpiredAt(): ?\DateTime
     {
         return $this->refreshTokenExpiredAt;
+    }
+
+    public function getPhone(): ?string
+    {
+        return $this->phone;
+    }
+
+    public function setPhone(?string $phone): void
+    {
+        $this->phone = $phone;
+    }
+
+    public function getGoogle2faSecret(): ?string
+    {
+        return $this->google2faSecret;
+    }
+
+    public function setGoogle2faSecret(?string $secret): void
+    {
+        $this->google2faSecret = $secret;
+    }
+
+    public function isGoogle2faEnabled(): bool
+    {
+        return $this->google2faEnabled;
+    }
+
+    public function setGoogle2faEnabled(bool $enabled): void
+    {
+        $this->google2faEnabled = $enabled;
+    }
+
+    public function setPassword(string $password): void
+    {
+        $this->password = $password;
     }
 
     public function isAdmin(): bool
