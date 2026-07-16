@@ -184,9 +184,9 @@
         </div>
       } @else {
         <!-- Nút Đăng nhập/Đăng ký (chưa đăng nhập) -->
-        @if (router.url.includes('/auth/login')) {
+        @if (router.url.includes('/login')) {
           <a
-            routerLink="/auth/register"
+            routerLink="/register"
             class="relative flex items-center justify-center h-10 px-5 rounded-xl text-xs font-extrabold text-white cursor-pointer hover:scale-[1.05] active:scale-[0.95] transition-all shadow-sm shadow-[var(--color-primary)]/10"
             style="
               background: linear-gradient(to right, var(--color-primary), var(--color-secondary));
@@ -196,7 +196,7 @@
           </a>
         } @else {
           <a
-            routerLink="/auth/login"
+            routerLink="/login"
             class="relative flex items-center justify-center h-10 px-5 rounded-xl text-xs font-extrabold text-white cursor-pointer hover:scale-[1.05] active:scale-[0.95] transition-all shadow-sm shadow-[var(--color-primary)]/10"
             style="
               background: linear-gradient(to right, var(--color-primary), var(--color-secondary));

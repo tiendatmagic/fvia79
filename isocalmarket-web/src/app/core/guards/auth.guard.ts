@@ -21,13 +21,13 @@ export const AuthGuard: CanActivateFn = (route, state) => {
         if (user) {
           return true;
         }
-        router.navigate(['/auth/login'], { queryParams: { returnUrl: state.url } });
+        router.navigate(['/login'], { queryParams: { returnUrl: state.url } });
         return false;
       })
     );
   }
 
   // Nếu chưa đăng nhập và không có cookie, chuyển hướng sang màn hình login
-  router.navigate(['/auth/login'], { queryParams: { returnUrl: state.url } });
+  router.navigate(['/login'], { queryParams: { returnUrl: state.url } });
   return of(false);
 };

@@ -63,7 +63,7 @@ export class HeaderComponent {
       size: 'lg'
     }).afterClosed$.subscribe((result) => {
       if (result === 'login') {
-        this.router.navigate(['/auth/login'], { queryParams: { returnUrl: '/storefront' } });
+        this.router.navigate(['/login'], { queryParams: { returnUrl: '/storefront' } });
       } else if (result === 'success') {
         this.router.navigate(['/orders']);
       }

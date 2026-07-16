@@ -8,10 +8,20 @@ export const routes: Routes = [
     path: 'storefront',
     loadComponent: () => import('@features/storefront/storefront.component').then(m => m.StorefrontComponent)
   },
+
+  // Auth — route ngắn gọn: /login, /register
+  { path: 'auth', redirectTo: 'login', pathMatch: 'full' },
+  { path: 'auth/login', redirectTo: 'login', pathMatch: 'full' },
+  { path: 'auth/register', redirectTo: 'register', pathMatch: 'full' },
   {
-    path: 'auth',
-    loadChildren: () => import('@features/auth/auth.routes').then(m => m.AUTH_ROUTES)
+    path: 'login',
+    loadComponent: () => import('@features/auth/login.component').then(m => m.LoginComponent)
   },
+  {
+    path: 'register',
+    loadComponent: () => import('@features/auth/register.component').then(m => m.RegisterComponent)
+  },
+
   {
     path: 'orders',
     canActivate: [AuthGuard],
@@ -56,4 +66,3 @@ export const routes: Routes = [
   },
   { path: '**', redirectTo: 'storefront' }
 ];
-

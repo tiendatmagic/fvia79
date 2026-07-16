@@ -154,7 +154,7 @@
 
       <a
         *ngIf="!stateService.isAuthenticated()"
-        routerLink="/auth/login"
+        routerLink="/login"
         (click)="stateService.showMobileMenu.set(false)"
         class="w-full py-2.5 flex items-center justify-center rounded-xl text-white text-xs font-extrabold cursor-pointer"
         style="background: linear-gradient(to right, var(--color-primary), var(--color-secondary))"

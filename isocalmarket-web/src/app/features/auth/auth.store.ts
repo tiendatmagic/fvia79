@@ -23,8 +23,55 @@ export class AuthStore {
 
   private checkMeObservable$: Observable<any> | null = null;
 
+  // Signal lưu lỗi inline để hiển thị ngay trong form (không chỉ toast)
+  public readonly loginError = signal<string>('');
+  public readonly registerError = signal<string>('');
+
+  /** Dịch thông báo lỗi từ API (tiếng Anh) sang tiếng Việt thân thiện */
+  private translateAuthError(err: any, fallback: string): string {
+    const raw: string = err?.error?.message || err?.message || '';
+    const status: number = err?.status || 0;
+
+    // Map message cụ thể từ backend
+    const messageMap: Record<string, string> = {
+      'Invalid email/username or password.': 'Tài khoản hoặc mật khẩu không chính xác!',
+      'Unauthorized.': 'Phiên đăng nhập không hợp lệ. Vui lòng đăng nhập lại!',
+      'Too Many Attempts.': 'Bạn đã thử quá nhiều lần. Vui lòng chờ vài phút rồi thử lại!',
+      'The email has already been taken.': 'Email này đã được sử dụng. Vui lòng chọn email khác!',
+      'The name has already been taken.': 'Tên tài khoản này đã tồn tại. Vui lòng chọn tên khác!',
+      'The email field must be a valid email address.': 'Địa chỉ email không đúng định dạng!',
+      'The password field must be at least 6 characters.': 'Mật khẩu phải có ít nhất 6 ký tự!',
+      'Invalid or expired verification token.': 'Mã xác thực đã hết hạn. Vui lòng đăng nhập lại từ đầu!',
+      'Invalid OTP code. Please try again.': 'Mã OTP không chính xác. Vui lòng thử lại!',
+      'Invalid 2FA verification code.': 'Mã xác thực 2FA không chính xác!',
+      'User not found.': 'Tài khoản không tồn tại trong hệ thống!',
+    };
+
+    if (messageMap[raw]) return messageMap[raw];
+
+    // Map theo status code nếu không có message cụ thể
+    if (status === 401) return 'Tài khoản hoặc mật khẩu không chính xác!';
+    if (status === 422) {
+      // Laravel validation errors — thường có `errors` object
+      const firstField = err?.error?.errors;
+      if (firstField) {
+        const firstKey = Object.keys(firstField)[0];
+        if (firstKey && firstField[firstKey]?.[0]) {
+          return this.translateAuthError({ message: firstField[firstKey][0] }, fallback);
+        }
+      }
+      return 'Thông tin nhập vào không hợp lệ. Vui lòng kiểm tra lại!';
+    }
+    if (status === 429) return 'Bạn đã thử quá nhiều lần. Vui lòng chờ vài phút rồi thử lại!';
+    if (status === 500) return 'Lỗi máy chủ. Vui lòng thử lại sau!';
+    if (status === 0) return 'Không thể kết nối máy chủ. Vui lòng kiểm tra mạng!';
+
+    return raw || fallback;
+  }
+
   public login(credentials: { email: string; password: string }, returnUrl: string = '/') {
     this.authLoading.set(true);
+    this.loginError.set('');
     return this.api.post<any>('v1/auth/login', credentials).pipe(
       tap((res) => {
         if (res && res.requires_2fa) {
@@ -35,7 +82,8 @@ export class AuthStore {
         this.router.navigateByUrl(returnUrl);
       }),
       catchError((err) => {
-        const msg = err.error?.message || 'Đăng nhập thất bại. Vui lòng kiểm tra lại!';
+        const msg = this.translateAuthError(err, 'Đăng nhập thất bại. Vui lòng thử lại!');
+        this.loginError.set(msg);
         this.toast.showToast(msg, 'error');
         return of(null);
       }),
@@ -45,13 +93,15 @@ export class AuthStore {
 
   public register(data: any) {
     this.authLoading.set(true);
+    this.registerError.set('');
     return this.api.post<any>('v1/auth/register', data).pipe(
       tap(() => {
         this.toast.showToast('Đăng ký tài khoản thành công! Vui lòng đăng nhập.', 'success');
-        this.router.navigate(['/auth/login']);
+        this.router.navigate(['/login']);
       }),
       catchError((err) => {
-        const msg = err.error?.message || 'Đăng ký thất bại. Vui lòng thử lại!';
+        const msg = this.translateAuthError(err, 'Đăng ký thất bại. Vui lòng thử lại!');
+        this.registerError.set(msg);
         this.toast.showToast(msg, 'error');
         return of(null);
       }),
@@ -77,7 +127,7 @@ export class AuthStore {
         this.currentUser.set(user);
       }),
       catchError(() => {
-        // authInterceptor sẽ tự xử lý: refresh token → retry → hoặc redirect về /auth/login
+        // authInterceptor sẽ tự xử lý: refresh token → retry → hoặc redirect về /login
         // Ở đây chỉ cần reset signal về null
         this.currentUser.set(null);
         return of(null);

@@ -29,11 +29,13 @@ export const authInterceptor: HttpInterceptorFn = (
   return next(req).pipe(
     catchError((error: HttpErrorResponse) => {
       // Chỉ xử lý lỗi 401 từ API của dự án (bỏ qua các request bên ngoài)
-      // Và không xử lý lỗi 401 từ chính endpoint refresh (tránh vòng lặp vô hạn)
+      // Bỏ qua auth endpoints: login/register/2fa trả về 401 khi sai thông tin → không phải token hết hạn
       const isApiRequest = req.url.includes(environment.apiBaseUrl);
       const isRefreshRequest = req.url.includes('/auth/refresh');
+      const isAuthEndpoint = req.url.includes('/auth/login') || req.url.includes('/auth/register')
+        || req.url.includes('/v1/auth/login') || req.url.includes('/v1/auth/register');
 
-      if (error.status === 401 && isApiRequest && !isRefreshRequest) {
+      if (error.status === 401 && isApiRequest && !isRefreshRequest && !isAuthEndpoint) {
         return handle401Error(req, next, http, router);
       }
 
@@ -74,7 +76,7 @@ function handle401Error(
           document.cookie = 'auth_logged_in=; path=/; expires=Thu, 01 Jan 1970 00:00:00 GMT';
         }
 
-        router.navigate(['/auth/login']);
+        router.navigate(['/login']);
         return throwError(() => refreshError);
       })
     );

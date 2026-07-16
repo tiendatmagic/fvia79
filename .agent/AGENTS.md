@@ -489,3 +489,14 @@
     - **Nguyên nhân:** Do Toolbar cha chứa select dropdown có class `backdrop-blur-md` (kích hoạt `backdrop-filter` trong CSS). Theo tiêu chuẩn CSS, việc áp dụng filter/backdrop-filter tạo ra một containing block mới cho các phần tử con, khiến phần tử `position: fixed` của select dropdown bị định vị sai lệch hoàn toàn khỏi viewport và biến mất.
     - **Khắc phục:** Loại bỏ lớp `backdrop-blur-md` khỏi Toolbar trong [storefront.component.html](file:///d:/git/isocalmarket/isocalmarket-web/src/app/features/storefront/storefront.component.html), chuyển sang nền đục phẳng chuẩn thương hiệu (`bg-white` và `dark:bg-slate-900` với viền xám nhẹ `/80`). Giúp dropdown menu khôi phục viewport containing block và định vị chuẩn xác dưới trigger button khi mở.
     - Đã chạy build frontend Angular thành công 100% không phát sinh lỗi.
+
+  - **[SỬA LỖI ĐĂNG NHẬP HIỂN THỊ "UNAUTHORIZED." & CẢI THIỆN THÔNG BÁO LỖI]**:
+    - **Nhận diện lỗi:** Khi người dùng nhập sai mật khẩu, form đăng nhập hiển thị thông báo thô `"Unauthorized."` thay vì thông báo lỗi rõ ràng bằng tiếng Việt.
+    - **Nguyên nhân gốc rễ (Root Cause):** `AuthInterceptor` bắt mọi lỗi 401 từ tất cả API endpoints, kể cả endpoint `/auth/login`. Khi đăng nhập sai mật khẩu, backend trả về 401 đúng (sai thông tin) — Interceptor nhầm đây là token hết hạn, gọi thêm `/auth/refresh`. Refresh thất bại trả về 401 khác với message `"Unauthorized."` — message này ghi đè lên lỗi gốc và được hiển thị ra UI.
+    - **Giải pháp:**
+      1. **Sửa `auth.interceptor.ts`:** Thêm điều kiện `isAuthEndpoint` để bỏ qua việc xử lý 401 cho các endpoint `/auth/login` và `/auth/register`. Các endpoint này trả về 401 khi sai thông tin (expected), không phải do token hết hạn.
+      2. **Thêm `translateAuthError()` vào `auth.store.ts`:** Hàm private map tất cả message tiếng Anh từ API sang tiếng Việt rõ ràng. Hỗ trợ cả map theo message cụ thể và theo HTTP status code (401 → "Sai tài khoản/mật khẩu", 422 → parse validation errors, 429 → rate limit, 500/0 → lỗi máy chủ/mạng).
+      3. **Thêm signals `loginError` & `registerError`:** Lưu thông báo lỗi inline để hiển thị trực tiếp trong form (không chỉ Toast). Reset về chuỗi rỗng khi bắt đầu gọi API mới.
+      4. **Cập nhật `login.component.html` & `register.component.html`:** Thêm error banner màu đỏ với icon cảnh báo SVG, hiển thị ngay dưới tiêu đề form khi có lỗi. Thêm `(ngModelChange)` vào các input để tự động xóa lỗi khi người dùng gõ lại.
+    - Đã chạy build frontend Angular thành công 100% không phát sinh lỗi.
+
