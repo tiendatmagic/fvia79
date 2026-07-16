@@ -11,6 +11,7 @@ import { BadgeComponent } from '@shared/components/badge/badge.component';
 import { CardComponent } from '@shared/components/card/card.component';
 import { IconComponent } from '@shared/components/icon/icon.component';
 import { PaginationComponent } from '@shared/components/pagination/pagination.component';
+import { CustomSelectComponent } from '@shared/components/custom-select/custom-select.component';
 import { ModalService } from '@core/services/modal.service';
 import { CartModalComponent } from './cart-modal/cart-modal.component';
 
@@ -23,6 +24,7 @@ import { CartModalComponent } from './cart-modal/cart-modal.component';
     RouterModule,
     SkeletonLoaderComponent,
     CustomSearchInputComponent,
+    CustomSelectComponent,
     ButtonComponent,
     BadgeComponent,
     CardComponent,
@@ -59,6 +61,14 @@ export class StorefrontComponent implements OnInit {
   
   public readonly limit = 12;
   public readonly categoryPages = signal<{ [catId: string]: number }>({});
+  public readonly viewMode = signal<'card' | 'list'>('card');
+  public readonly categorySort = signal<'az' | 'za' | 'default'>('az');
+
+  public readonly sortOptions = [
+    { label: 'Tên danh mục (A - Z)', value: 'az' },
+    { label: 'Tên danh mục (Z - A)', value: 'za' },
+    { label: 'Thứ tự mặc định', value: 'default' }
+  ];
 
   // Tìm kiếm sản phẩm
   public readonly filteredProducts = computed(() => {
@@ -71,7 +81,7 @@ export class StorefrontComponent implements OnInit {
     );
   });
 
-  // Gom nhóm sản phẩm theo Danh mục
+  // Gom nhóm sản phẩm theo Danh mục & Sắp xếp danh mục
   public readonly groupedProducts = computed(() => {
     const list = this.filteredProducts();
     const categories = this.state.productStore.categories();
@@ -85,12 +95,21 @@ export class StorefrontComponent implements OnInit {
       groups[catId].push(p);
     });
 
-    return categories.map(cat => ({
+    const mapped = categories.map(cat => ({
       id: cat.id,
       name: cat.name,
       description: cat.description,
       products: groups[cat.id] || []
     })).filter(g => g.products.length > 0);
+
+    const sortVal = this.categorySort();
+    if (sortVal === 'az') {
+      mapped.sort((a, b) => a.name.localeCompare(b.name, 'vi', { sensitivity: 'base' }));
+    } else if (sortVal === 'za') {
+      mapped.sort((a, b) => b.name.localeCompare(a.name, 'vi', { sensitivity: 'base' }));
+    }
+
+    return mapped;
   });
 
   ngOnInit() {

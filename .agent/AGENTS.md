@@ -480,3 +480,12 @@
     - Tích hợp dropdown chọn danh mục cho sản phẩm trong `ProductFormModal` của admin.
     - Tuân thủ quy tắc "Clean SVG Overrides" ở `.agent/`: Loại bỏ hoàn toàn các emoji thô (như `📂`) khỏi giao diện storefront và thay thế bằng icon hệ thống sạch sẽ (`list-bullet`).
     - Đã chạy build frontend Angular thành công 100% không phát sinh lỗi.
+  - **[SẮP XẾP DANH MỤC & CHẾ ĐỘ XEM CARD/LIST Ở STOREFRONT]**:
+    - **Sắp xếp danh mục:** Tích hợp bộ chọn sắp xếp danh mục (Dropdown CustomSelect ở Toolbar phía bên phải) cho phép lựa chọn thứ tự sắp xếp danh mục: "Tên danh mục (A - Z)" (mặc định), "Tên danh mục (Z - A)" và "Thứ tự mặc định". Sử dụng hàm `localeCompare` tiếng Việt trong computed signal để sắp xếp mượt mà.
+    - **Chế độ xem Card/List:** Tích hợp bộ chuyển đổi chế độ xem (View Mode Toggle ở Toolbar phía bên trái) giữa **Dạng Card** (mặc định, hiển thị dạng Grid 4 cột) và **Dạng List** (hiển thị dạng Table chuyên nghiệp tối ưu không gian).
+    - Dạng List Table hiển thị đầy đủ thông tin: Tên sản phẩm, các tag thuộc tính động, đơn giá, tồn kho (với badge tương ứng), và nút "Mua Ngay" gọn gàng.
+    - Đã chạy build frontend Angular thành công 100% không phát sinh lỗi.
+  - **[SỬA LỖI CUSTOM-SELECT UI BỊ ẨN TRÊN TOOLBAR]**:
+    - **Nguyên nhân:** Do Toolbar cha chứa select dropdown có class `backdrop-blur-md` (kích hoạt `backdrop-filter` trong CSS). Theo tiêu chuẩn CSS, việc áp dụng filter/backdrop-filter tạo ra một containing block mới cho các phần tử con, khiến phần tử `position: fixed` của select dropdown bị định vị sai lệch hoàn toàn khỏi viewport và biến mất.
+    - **Khắc phục:** Loại bỏ lớp `backdrop-blur-md` khỏi Toolbar trong [storefront.component.html](file:///d:/git/isocalmarket/isocalmarket-web/src/app/features/storefront/storefront.component.html), chuyển sang nền đục phẳng chuẩn thương hiệu (`bg-white` và `dark:bg-slate-900` với viền xám nhẹ `/80`). Giúp dropdown menu khôi phục viewport containing block và định vị chuẩn xác dưới trigger button khi mở.
+    - Đã chạy build frontend Angular thành công 100% không phát sinh lỗi.
