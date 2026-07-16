@@ -30,7 +30,7 @@ class ProductService
         return $this->productRepository->findById($id);
     }
 
-    public function createProduct(string $name, ?string $slug, ?string $description, float $price, string $status = 'active'): Product
+    public function createProduct(string $name, ?string $slug, ?string $description, float $price, string $status = 'active', ?array $attributes = null): Product
     {
         $finalSlug = $slug ?: Str::slug($name);
         $existing = $this->productRepository->findBySlug($finalSlug);
@@ -38,11 +38,11 @@ class ProductService
             $finalSlug .= '-' . time();
         }
 
-        $product = new Product(null, $name, $finalSlug, $description, $price, $status);
+        $product = new Product(null, $name, $finalSlug, $description, $price, $status, 0, $attributes);
         return $this->productRepository->save($product);
     }
 
-    public function updateProduct(string $id, string $name, ?string $slug, ?string $description, float $price, string $status): Product
+    public function updateProduct(string $id, string $name, ?string $slug, ?string $description, float $price, string $status, ?array $attributes = null): Product
     {
         $product = $this->productRepository->findById($id);
         if (!$product) {
@@ -57,7 +57,7 @@ class ProductService
             }
         }
 
-        $updatedProduct = new Product($id, $name, $finalSlug, $description, $price, $status);
+        $updatedProduct = new Product($id, $name, $finalSlug, $description, $price, $status, 0, $attributes);
         return $this->productRepository->save($updatedProduct);
     }
 

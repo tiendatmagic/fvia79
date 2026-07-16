@@ -15,6 +15,7 @@ return new class extends Migration
             $table->text('description')->nullable();
             $table->decimal('price', 15, 2);
             $table->enum('status', ['active', 'inactive'])->default('active');
+            $table->json('attributes')->nullable();
             $table->timestamps();
 
             // Index tối ưu lọc theo trạng thái và giá

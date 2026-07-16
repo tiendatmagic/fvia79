@@ -16,7 +16,8 @@ class ProductMapper
             $model->description,
             $model->price,
             $model->status,
-            $availableCount
+            $availableCount,
+            $model->attributes
         );
     }
 
@@ -32,6 +33,7 @@ class ProductMapper
         $model->description = $entity->getDescription();
         $model->price = $entity->getPrice();
         $model->status = $entity->getStatus();
+        $model->attributes = $entity->getAttributes();
 
         return $model;
     }

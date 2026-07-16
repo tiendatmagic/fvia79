@@ -11,6 +11,7 @@ class Product
     private float $price;
     private string $status;
     private int $availableCount;
+    private ?array $attributes;
 
     public function __construct(
         ?string $id,
@@ -19,7 +20,8 @@ class Product
         ?string $description,
         float $price,
         string $status = 'active',
-        int $availableCount = 0
+        int $availableCount = 0,
+        ?array $attributes = null
     ) {
         $this->id = $id;
         $this->name = $name;
@@ -28,6 +30,7 @@ class Product
         $this->price = $price;
         $this->status = $status;
         $this->availableCount = $availableCount;
+        $this->attributes = $attributes;
     }
 
     public function getId(): ?string
@@ -63,6 +66,11 @@ class Product
     public function getAvailableCount(): int
     {
         return $this->availableCount;
+    }
+
+    public function getAttributes(): ?array
+    {
+        return $this->attributes;
     }
 
     public function isActive(): bool

@@ -8,7 +8,7 @@ use Illuminate\Database\Eloquent\Attributes\Fillable;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Support\Str;
 
-#[Fillable(['name', 'slug', 'description', 'price', 'status'])]
+#[Fillable(['name', 'slug', 'description', 'price', 'status', 'attributes'])]
 class ProductModel extends Model
 {
     use HasUuids;
@@ -24,6 +24,7 @@ class ProductModel extends Model
     {
         return [
             'price' => 'float',
+            'attributes' => 'array',
         ];
     }
 

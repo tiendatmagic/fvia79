@@ -44,7 +44,12 @@ class DatabaseSeeder extends Seeder
             'slug'        => 'facebook-via-us-co-2018-2020',
             'description' => 'VIA US ngâm lâu năm, có sẵn 2FA, thích hợp chạy ads, bao back 7 ngày.',
             'price'       => 150000,
-            'status'      => 'active'
+            'status'      => 'active',
+            'attributes'  => [
+                ['label' => 'Quốc gia', 'value' => 'US (Mỹ)'],
+                ['label' => 'Loại', 'value' => 'Via Cổ (2018-2020)'],
+                ['label' => 'Đặc tính', 'value' => 'Live Ads + Có 2FA']
+            ]
         ]);
 
         $p2 = ProductModel::create([
@@ -52,7 +57,11 @@ class DatabaseSeeder extends Seeder
             'slug'        => 'gmail-ngoai-da-xac-minh-sdt',
             'description' => 'Gmail reg bằng IP US/EU, đã verify phone, ngâm trên 30 ngày.',
             'price'       => 5000,
-            'status'      => 'active'
+            'status'      => 'active',
+            'attributes'  => [
+                ['label' => 'Quốc gia', 'value' => 'Ngoại (IP US/EU)'],
+                ['label' => 'Đặc tính', 'value' => 'Đã verify phone (Ngâm > 30 ngày)']
+            ]
         ]);
 
         $p3 = ProductModel::create([
@@ -60,7 +69,11 @@ class DatabaseSeeder extends Seeder
             'slug'        => 'netflix-premium-1-thang-uhd',
             'description' => 'Tài khoản Netflix Premium xem phim Ultra HD chất lượng cao, hạn dùng 30 ngày.',
             'price'       => 80000,
-            'status'      => 'active'
+            'status'      => 'active',
+            'attributes'  => [
+                ['label' => 'Thời hạn', 'value' => '30 ngày'],
+                ['label' => 'Chất lượng', 'value' => 'Ultra HD (4K)']
+            ]
         ]);
 
         $p4 = ProductModel::create([
@@ -68,7 +81,11 @@ class DatabaseSeeder extends Seeder
             'slug'        => 'chatgpt-plus-tai-khoan-dung-chung',
             'description' => 'Tài khoản ChatGPT Plus có sẵn GPT-4o, dùng chung 4 người, hạn dùng 30 ngày.',
             'price'       => 120000,
-            'status'      => 'active'
+            'status'      => 'active',
+            'attributes'  => [
+                ['label' => 'Thời hạn', 'value' => '30 ngày'],
+                ['label' => 'Phiên bản', 'value' => 'GPT-4o (Plus)']
+            ]
         ]);
 
         $p5 = ProductModel::create([
@@ -76,7 +93,37 @@ class DatabaseSeeder extends Seeder
             'slug'        => 'proxy-ipv4-private-us-sach-100',
             'description' => 'Proxy cá nhân IP US, tốc độ 100Mbps, không giới hạn băng thông.',
             'price'       => 45000,
-            'status'      => 'active'
+            'status'      => 'active',
+            'attributes'  => [
+                ['label' => 'Quốc gia', 'value' => 'US (Mỹ)'],
+                ['label' => 'Băng thông', 'value' => 'Không giới hạn (100Mbps)']
+            ]
+        ]);
+
+        $p6 = ProductModel::create([
+            'name'        => 'Via Kháng 902 & Chat Support',
+            'slug'        => 'via-khang-902-chat-support',
+            'description' => 'Tài khoản VIA đã kháng link 902 cực trâu, có sẵn nút Chat Support với Facebook để khiếu nại.',
+            'price'       => 280000,
+            'status'      => 'active',
+            'attributes'  => [
+                ['label' => 'Loại Via', 'value' => 'Kháng 902'],
+                ['label' => 'Hỗ trợ', 'value' => 'Chat Support trực tiếp'],
+                ['label' => 'Bảo hành', 'value' => 'Bao login, bao camp 24h']
+            ]
+        ]);
+
+        $p7 = ProductModel::create([
+            'name'        => 'Via Chuyên Set Camp',
+            'slug'        => 'via-chuyen-set-camp',
+            'description' => 'Tài khoản chuyên dùng để lên chiến dịch quảng cáo. Tỉ lệ tụt, hold, die hoặc need thấp.',
+            'price'       => 180000,
+            'status'      => 'active',
+            'attributes'  => [
+                ['label' => 'Đặc tính', 'value' => 'Chuyên Set Camp'],
+                ['label' => 'Tỉ lệ lỗi', 'value' => 'Tụt, Hold, Die, Need cực thấp'],
+                ['label' => 'Bảo hành', 'value' => 'Bao camp 24h']
+            ]
         ]);
 
         // 3. Tạo Inventory Items (data được mã hóa)
@@ -121,6 +168,24 @@ class DatabaseSeeder extends Seeder
             InventoryItemModel::create([
                 'product_id' => $p5->id,
                 'data'       => Crypt::encryptString('45.122.134.' . (10 + $i) . ":8080:user_proxy_{$i}:pass_proxy_{$i}"),
+                'status'     => 'available'
+            ]);
+        }
+
+        // Via Kháng 902 — 10 items
+        for ($i = 1; $i <= 10; $i++) {
+            InventoryItemModel::create([
+                'product_id' => $p6->id,
+                'data'       => Crypt::encryptString("1000998822110{$i}|pass_via_902_{$i}|2FA_SECRET_902_XYZ{$i}|mail_902_{$i}@example.com|pass_mail_{$i}"),
+                'status'     => 'available'
+            ]);
+        }
+
+        // Via Chuyên Set Camp — 10 items
+        for ($i = 1; $i <= 10; $i++) {
+            InventoryItemModel::create([
+                'product_id' => $p7->id,
+                'data'       => Crypt::encryptString("1000776655440{$i}|pass_set_camp_{$i}|2FA_SECRET_CAMP_XYZ{$i}|mail_camp_{$i}@example.com|pass_mail_{$i}"),
                 'status'     => 'available'
             ]);
         }

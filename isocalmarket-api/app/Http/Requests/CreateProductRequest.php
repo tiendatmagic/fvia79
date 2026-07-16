@@ -19,6 +19,9 @@ class CreateProductRequest extends FormRequest
             'description' => 'nullable|string',
             'price' => 'required|numeric|min:0',
             'status' => 'required|in:active,inactive',
+            'attributes' => 'nullable|array',
+            'attributes.*.label' => 'required|string|max:100',
+            'attributes.*.value' => 'required|string|max:255',
         ];
     }
 }

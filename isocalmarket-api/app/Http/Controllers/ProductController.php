@@ -34,7 +34,8 @@ class ProductController extends Controller
                         'description' => $product->getDescription(),
                         'price' => $product->getPrice(),
                         'status' => $product->getStatus(),
-                        'available_count' => $product->getAvailableCount()
+                        'available_count' => $product->getAvailableCount(),
+                        'attributes' => $product->getAttributes()
                     ];
                 }, $products);
 
@@ -59,7 +60,8 @@ class ProductController extends Controller
                     'description' => $product->getDescription(),
                     'price' => $product->getPrice(),
                     'status' => $product->getStatus(),
-                    'available_count' => $product->getAvailableCount()
+                    'available_count' => $product->getAvailableCount(),
+                    'attributes' => $product->getAttributes()
                 ];
             }, $products);
 
@@ -85,7 +87,8 @@ class ProductController extends Controller
                 'description' => $product->getDescription(),
                 'price' => $product->getPrice(),
                 'status' => $product->getStatus(),
-                'available_count' => $product->getAvailableCount()
+                'available_count' => $product->getAvailableCount(),
+                'attributes' => $product->getAttributes()
             ]);
         } catch (\Exception $e) {
             return response()->json(['message' => $e->getMessage()], 500);
@@ -100,7 +103,8 @@ class ProductController extends Controller
                 $request->slug,
                 $request->description,
                 (float)$request->price,
-                $request->status
+                $request->status,
+                $request->attributes
             );
 
             return response()->json([
@@ -111,7 +115,8 @@ class ProductController extends Controller
                     'slug' => $product->getSlug(),
                     'description' => $product->getDescription(),
                     'price' => $product->getPrice(),
-                    'status' => $product->getStatus()
+                    'status' => $product->getStatus(),
+                    'attributes' => $product->getAttributes()
                 ]
             ], 201);
         } catch (\Exception $e) {
@@ -128,7 +133,8 @@ class ProductController extends Controller
                 $request->slug,
                 $request->description,
                 (float)$request->price,
-                $request->status
+                $request->status,
+                $request->attributes
             );
 
             return response()->json([
@@ -139,7 +145,8 @@ class ProductController extends Controller
                     'slug' => $product->getSlug(),
                     'description' => $product->getDescription(),
                     'price' => $product->getPrice(),
-                    'status' => $product->getStatus()
+                    'status' => $product->getStatus(),
+                    'attributes' => $product->getAttributes()
                 ]
             ]);
         } catch (\Exception $e) {

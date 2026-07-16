@@ -38,6 +38,7 @@ export class ProductFormModalComponent implements OnInit {
   public price = 0;
   public status = 'active';
   public isSubmitting = false;
+  public attributes: { label: string, value: string }[] = [];
 
   public statusOptions = [
     { label: 'Hoạt động', value: 'active' },
@@ -53,7 +54,16 @@ export class ProductFormModalComponent implements OnInit {
       this.description = this.modalData.description || '';
       this.price = this.modalData.price;
       this.status = this.modalData.status;
+      this.attributes = this.modalData.attributes ? JSON.parse(JSON.stringify(this.modalData.attributes)) : [];
     }
+  }
+
+  public addAttribute() {
+    this.attributes.push({ label: '', value: '' });
+  }
+
+  public removeAttribute(index: number) {
+    this.attributes.splice(index, 1);
   }
 
   public onClose() {
@@ -72,7 +82,8 @@ export class ProductFormModalComponent implements OnInit {
       slug: this.slug || undefined,
       description: this.description,
       price: this.price,
-      status: this.status
+      status: this.status,
+      attributes: this.attributes.filter(attr => attr.label.trim() !== '' && attr.value.trim() !== '')
     };
 
     this.isSubmitting = true;

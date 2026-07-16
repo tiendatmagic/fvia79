@@ -73,6 +73,17 @@
             {{ p.description || 'Chưa có mô tả chi tiết cho sản phẩm này.' }}
           </p>
 
+          <!-- Thuộc tính động của VIA/BM/Clone -->
+          @if (p.attributes && p.attributes.length > 0) {
+            <div class="flex flex-wrap gap-1.5 pt-1">
+              @for (attr of p.attributes; track $index) {
+                <span class="inline-flex items-center text-[10px] font-extrabold px-2 py-0.5 rounded bg-[var(--color-primary)]/5 dark:bg-[var(--color-primary)]/10 text-[var(--color-primary)] border border-[var(--color-primary)]/15">
+                  {{ attr.value }}
+                </span>
+              }
+            </div>
+          }
+
           <div class="text-[11px] font-extrabold text-slate-400 pt-1 flex items-center gap-1.5">
             <app-icon name="check-circle" class="w-3.5 h-3.5 text-emerald-500" />
             <span>Còn lại: <strong class="text-slate-700 dark:text-slate-200">{{ p.available_count }}</strong> sản phẩm</span>
