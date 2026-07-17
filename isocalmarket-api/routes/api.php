@@ -38,6 +38,10 @@ Route::prefix('v1')->group(function () {
             Route::put('/products/{id}', ['App\Http\Controllers\ProductController', 'update']);
             Route::delete('/products/{id}', ['App\Http\Controllers\ProductController', 'destroy']);
 
+            Route::post('/categories', ['App\Http\Controllers\CategoryController', 'store']);
+            Route::put('/categories/{id}', ['App\Http\Controllers\CategoryController', 'update']);
+            Route::delete('/categories/{id}', ['App\Http\Controllers\CategoryController', 'destroy']);
+
             Route::post('/inventory/import', ['App\Http\Controllers\InventoryController', 'import']);
             Route::get('/inventory/items', ['App\Http\Controllers\InventoryController', 'index']);
             Route::get('/inventory/items/{id}', ['App\Http\Controllers\InventoryController', 'show']);

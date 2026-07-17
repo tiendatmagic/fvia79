@@ -112,4 +112,49 @@ export class ProductStore {
       finalize(() => this.loading.set(false))
     );
   }
+
+  public createCategory(data: any) {
+    this.loading.set(true);
+    return this.api.post<any>('v1/categories', data).pipe(
+      tap(() => {
+        this.toast.showToast('Tạo danh mục thành công!', 'success');
+      }),
+      catchError((err) => {
+        const msg = err.error?.message || 'Tạo danh mục thất bại!';
+        this.toast.showToast(msg, 'error');
+        return of(null);
+      }),
+      finalize(() => this.loading.set(false))
+    );
+  }
+
+  public updateCategory(id: string, data: any) {
+    this.loading.set(true);
+    return this.api.put<any>(`v1/categories/${id}`, data).pipe(
+      tap(() => {
+        this.toast.showToast('Cập nhật danh mục thành công!', 'success');
+      }),
+      catchError((err) => {
+        const msg = err.error?.message || 'Cập nhật danh mục thất bại!';
+        this.toast.showToast(msg, 'error');
+        return of(null);
+      }),
+      finalize(() => this.loading.set(false))
+    );
+  }
+
+  public deleteCategory(id: string) {
+    this.loading.set(true);
+    return this.api.delete<any>(`v1/categories/${id}`).pipe(
+      tap(() => {
+        this.toast.showToast('Xóa danh mục thành công!', 'success');
+      }),
+      catchError((err) => {
+        const msg = err.error?.message || 'Xóa danh mục thất bại!';
+        this.toast.showToast(msg, 'error');
+        return of(null);
+      }),
+      finalize(() => this.loading.set(false))
+    );
+  }
 }

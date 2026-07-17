@@ -1,0 +1,129 @@
+<div class="max-w-[1530px] mx-auto w-full p-4 sm:p-6 space-y-6">
+  <app-page-header
+    title="Quản Lý Danh Mục"
+    description="Quản lý danh sách các loại danh mục sản phẩm MMO của hệ thống."
+  >
+    <ng-container actions>
+      <app-custom-search-input
+        [placeholder]="'Tìm kiếm danh mục...'"
+        [(ngModel)]="searchQuery"
+        name="searchQuery"
+        (valueChange)="onSearch($event)"
+        [debounce]="300"
+        containerClass="w-full md:w-64"
+      />
+      <button
+        (click)="fetchCategories()"
+        class="px-4 py-2.5 text-sm font-extrabold text-slate-600 dark:text-slate-400 hover:text-primary bg-white dark:bg-slate-950 border border-slate-200/60 dark:border-slate-800/80 rounded-xl hover:bg-slate-50 dark:hover:bg-slate-900 transition-all cursor-pointer flex items-center gap-1.5"
+      >
+        <app-icon name="sync" class="w-4 h-4" />
+        Tải lại
+      </button>
+      <button
+        app-button
+        (click)="openCreateModal()"
+        variant="primary"
+        class="flex items-center gap-2 py-2.5 px-4 rounded-xl bg-gradient-to-r from-[var(--color-primary)] to-[var(--color-secondary)] text-white font-extrabold shadow-md shadow-[var(--color-primary)]/15 active:scale-95 transition-all text-sm cursor-pointer"
+      >
+        <app-icon name="plus" class="w-5 h-5" />
+        Thêm Danh Mục
+      </button>
+    </ng-container>
+  </app-page-header>
+
+  <div app-card class="overflow-hidden !p-0">
+    <div class="overflow-x-auto">
+      <table class="w-full text-left border-collapse">
+        <thead>
+          <tr
+            class="border-b border-slate-200/30 dark:border-slate-800/30 bg-slate-50/50 dark:bg-slate-950/20"
+          >
+            <th
+              class="py-4 px-6 text-xs font-bold text-slate-400 uppercase tracking-wider whitespace-nowrap"
+            >
+              ID
+            </th>
+            <th
+              class="py-4 px-6 text-xs font-bold text-slate-400 uppercase tracking-wider whitespace-nowrap"
+            >
+              Tên danh mục
+            </th>
+            <th
+              class="py-4 px-6 text-xs font-bold text-slate-400 uppercase tracking-wider whitespace-nowrap"
+            >
+              Slug
+            </th>
+            <th
+              class="py-4 px-6 text-xs font-bold text-slate-400 uppercase tracking-wider whitespace-nowrap"
+            >
+              Mô tả chi tiết
+            </th>
+            <th
+              class="py-4 px-6 text-xs font-bold text-slate-400 uppercase tracking-wider text-right whitespace-nowrap"
+            >
+              Thao tác
+            </th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr *ngIf="state.productStore.loading()">
+            <td colspan="5" class="p-6">
+              <app-skeleton-loader [type]="'table'" [rows]="5" [showHeader]="false" />
+            </td>
+          </tr>
+
+          <tr *ngIf="!state.productStore.loading() && filteredCategories().length === 0">
+            <td colspan="5" class="py-12 text-center text-sm font-semibold text-slate-400">
+              Chưa có danh mục nào. Nhấp vào nút "Thêm Danh Mục" để bắt đầu!
+            </td>
+          </tr>
+
+          @if (!state.productStore.loading()) {
+            <tr
+              *ngFor="let c of filteredCategories()"
+              class="border-b border-slate-200/30 dark:border-slate-800/30 hover:bg-slate-50/30 dark:hover:bg-slate-950/10 transition-colors"
+            >
+              <td class="py-4 px-6 text-xs whitespace-nowrap">
+                <div class="flex items-center gap-1.5">
+                  <span
+                    [appTooltip]="c.id"
+                    class="cursor-help font-mono font-bold text-[var(--color-primary)] border-b border-dashed border-slate-300 dark:border-slate-700 pb-0.5"
+                  >
+                    #{{ c.id | slice: 0 : 8 }}...{{ c.id | slice: -4 }}
+                  </span>
+                </div>
+              </td>
+              <td class="py-4 px-6 text-sm font-extrabold text-slate-700 dark:text-slate-200">
+                {{ c.name }}
+              </td>
+              <td class="py-4 px-6 text-sm font-mono text-slate-500 dark:text-slate-400 whitespace-nowrap">
+                {{ c.slug }}
+              </td>
+              <td class="py-4 px-6 text-sm text-slate-500 dark:text-slate-400 min-w-[200px] max-w-[400px] truncate" [appTooltip]="c.description">
+                {{ c.description || '-' }}
+              </td>
+              <td class="py-4 px-6 text-right whitespace-nowrap">
+                <div class="flex items-center justify-end gap-2 whitespace-nowrap">
+                  <button
+                    (click)="openEditModal(c)"
+                    class="p-2.5 rounded-xl border border-[var(--color-primary)]/20 bg-[var(--color-primary)]/5 text-[var(--color-primary)] hover:bg-[var(--color-primary)]/10 dark:hover:bg-[var(--color-primary)]/20 transition-colors cursor-pointer flex items-center justify-center shrink-0"
+                    [appTooltip]="'Chỉnh sửa'"
+                  >
+                    <app-icon name="edit" class="h-4.5 w-4.5" />
+                  </button>
+                  <button
+                    (click)="confirmDelete(c)"
+                    class="p-2.5 rounded-xl border border-rose-500/20 bg-rose-50 dark:bg-rose-950/20 text-rose-600 dark:text-rose-500 hover:bg-rose-100 dark:hover:bg-rose-900/40 transition-colors cursor-pointer flex items-center justify-center shrink-0"
+                    [appTooltip]="'Xóa danh mục'"
+                  >
+                    <app-icon name="trash" class="h-4.5 w-4.5" />
+                  </button>
+                </div>
+              </td>
+            </tr>
+          }
+        </tbody>
+      </table>
+    </div>
+  </div>
+</div>

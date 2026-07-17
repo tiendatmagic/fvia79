@@ -621,3 +621,13 @@
   - **[HOÀN THÀNH] Tối ưu hiển thị mô tả sản phẩm ở trang Quản lý sản phẩm**:
     - Yêu cầu: Giới hạn mô tả sản phẩm hiển thị tối đa 2 dòng, nếu dài hơn thì hiển thị 3 chấm (...).
     - Giải pháp: Thay thế class `truncate max-w-xs block` bằng `line-clamp-2 max-w-xs` cho thẻ mô tả sản phẩm `<p>` dưới cột Tên sản phẩm trong file [products.component.html](file:///d:/git/isocalmarket/isocalmarket-web/src/app/features/products/products.component.html). Điều này cho phép hiển thị tối đa 2 dòng mô tả và tự động thêm 3 chấm nếu văn bản vượt quá 2 dòng.
+  - **[HOÀN THÀNH] Triển khai Chức năng Quản lý Danh mục (CRUD Category)**:
+    - Yêu cầu: Bổ sung chức năng quản lý danh mục (thêm, sửa, xóa) ở cả Backend và Frontend.
+    - Phân tích & Kế hoạch: Đã xây dựng `implementation_plan.md` chi tiết và nhận được sự phê duyệt.
+    - Thực hiện triển khai & Kết quả:
+      1. Backend: Tạo [CreateCategoryRequest.php](file:///d:/git/isocalmarket/isocalmarket-api/app/Http/Requests/CreateCategoryRequest.php) validate dữ liệu; tạo [CategoryService.php](file:///d:/git/isocalmarket/isocalmarket-api/app/Application/Services/CategoryService.php) xử lý CRUD và chặn xóa danh mục chứa sản phẩm; cập nhật [CategoryController.php](file:///d:/git/isocalmarket/isocalmarket-api/app/Http/Controllers/CategoryController.php) và [api.php](file:///d:/git/isocalmarket/isocalmarket-api/routes/api.php) khai báo API routes quản trị.
+      2. Frontend Store: Bổ sung các phương thức `createCategory`, `updateCategory` và `deleteCategory` vào [ProductStore](file:///d:/git/isocalmarket/isocalmarket-web/src/app/features/products/product.store.ts).
+      3. Frontend Routing & Navigation: Đăng ký route `/admin/categories` trong [app.routes.ts](file:///d:/git/isocalmarket/isocalmarket-web/src/app/app.routes.ts), thêm menu liên kết trong [sidebar.component.html](file:///d:/git/isocalmarket/isocalmarket-web/src/app/shared/layout/sidebar/sidebar.component.html) và [app.html](file:///d:/git/isocalmarket/isocalmarket-web/src/app/app.html) với icon `tag`.
+      4. Frontend Components: Tạo [CategoryFormModalComponent](file:///d:/git/isocalmarket/isocalmarket-web/src/app/features/admin-categories/category-form-modal/category-form-modal.component.ts) xử lý form thêm/sửa, và [AdminCategoriesComponent](file:///d:/git/isocalmarket/isocalmarket-web/src/app/features/admin-categories/admin-categories.component.ts) làm trang giao diện chính.
+      5. Kết quả kiểm tra: Dự án biên dịch (`npm run build`) thành công 100% không phát sinh bất kỳ lỗi TS/HTML compile nào. Gỡ bỏ hoàn toàn cảnh báo IconComponent không sử dụng.
+

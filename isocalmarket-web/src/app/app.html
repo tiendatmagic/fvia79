@@ -99,6 +99,17 @@
 
       <a
         *ngIf="stateService.isAdmin()"
+        routerLink="/admin/categories"
+        routerLinkActive="!bg-primary/10 !text-primary !font-extrabold"
+        (click)="stateService.showMobileMenu.set(false)"
+        class="flex items-center gap-3.5 px-4 py-3 rounded-xl hover:bg-slate-100 dark:hover:bg-slate-800/50 text-slate-600 dark:text-slate-400 font-semibold text-sm transition-colors duration-200 cursor-pointer"
+      >
+        <app-icon name="tag" class="w-5 h-5 flex-shrink-0" />
+        <span>Quản lý danh mục</span>
+      </a>
+
+      <a
+        *ngIf="stateService.isAdmin()"
         routerLink="/admin/inventory"
         routerLinkActive="!bg-primary/10 !text-primary !font-extrabold"
         (click)="stateService.showMobileMenu.set(false)"
