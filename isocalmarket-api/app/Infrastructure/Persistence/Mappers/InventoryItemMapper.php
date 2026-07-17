@@ -36,7 +36,7 @@ class InventoryItemMapper
         }
 
         $model->product_id = $entity->getProductId();
-        $model->data = Crypt::encryptString($entity->getData());
+        $model->data = $entity->getData();
         $model->status = $entity->getStatus();
         $model->order_id = $entity->getOrderId();
 

@@ -181,6 +181,12 @@
               <td class="py-4 px-6 text-right whitespace-nowrap">
                 <div class="flex items-center justify-end gap-2 whitespace-nowrap">
                   <button
+                    (click)="openEditModal(item)"
+                    class="text-xs font-bold px-3 py-1.5 rounded-lg border border-[var(--color-primary)]/20 hover:bg-[var(--color-primary)]/10 text-[var(--color-primary)] bg-[var(--color-primary)]/5 hover:scale-105 active:scale-95 transition-all cursor-pointer"
+                  >
+                    Sửa
+                  </button>
+                  <button
                     (click)="confirmDeleteItem(item)"
                     [disabled]="item.status === 'sold'"
                     class="text-xs font-bold px-3 py-1.5 rounded-lg border border-rose-500/20 dark:border-rose-500/30 hover:bg-rose-100 dark:hover:bg-rose-950/40 text-rose-600 dark:text-rose-400 bg-rose-50 dark:bg-rose-950/20 hover:scale-105 active:scale-95 transition-all cursor-pointer disabled:opacity-50 disabled:pointer-events-none"

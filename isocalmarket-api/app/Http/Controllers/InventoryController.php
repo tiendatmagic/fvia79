@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Http\Requests\ImportInventoryRequest;
+use App\Http\Requests\UpdateInventoryRequest;
 use App\Application\Services\InventoryService;
 use Illuminate\Http\Request;
 
@@ -87,6 +88,29 @@ class InventoryController extends Controller
         }
     }
 
+
+    public function update(UpdateInventoryRequest $request, $id)
+    {
+        try {
+            $updated = $this->inventoryService->updateItem($id, $request->validated());
+            if (!$updated) {
+                return response()->json(['message' => 'Inventory item not found.'], 404);
+            }
+
+            return response()->json([
+                'message' => 'Inventory item updated successfully.',
+                'data' => [
+                    'id' => $updated->getId(),
+                    'product_id' => $updated->getProductId(),
+                    'data' => $updated->getData(),
+                    'status' => $updated->getStatus(),
+                    'order_id' => $updated->getOrderId()
+                ]
+            ]);
+        } catch (\Exception $e) {
+            return response()->json(['message' => $e->getMessage()], 400);
+        }
+    }
 
     public function destroy($id)
     {

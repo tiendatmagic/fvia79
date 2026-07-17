@@ -74,6 +74,21 @@ export class InventoryStore {
     );
   }
 
+  public updateItem(id: string, payload: { product_id: string; data: string; status: string }) {
+    this.loading.set(true);
+    return this.api.put<any>(`v1/inventory/items/${id}`, payload).pipe(
+      tap((res) => {
+        this.toast.showToast(res.message || 'Cập nhật tài nguyên thành công!', 'success');
+      }),
+      catchError((err) => {
+        const msg = err.error?.message || 'Cập nhật tài nguyên thất bại!';
+        this.toast.showToast(msg, 'error');
+        return of(null);
+      }),
+      finalize(() => this.loading.set(false))
+    );
+  }
+
   public deleteItem(id: number, productIdFilter?: string) {
     this.loading.set(true);
     return this.api.delete<any>(`v1/inventory/items/${id}`).pipe(

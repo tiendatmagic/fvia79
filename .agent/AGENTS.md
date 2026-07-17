@@ -551,3 +551,22 @@
     - **Nguyên nhân:** Hàm `ngOnInit()` trong `InventoryComponent` được gọi tuần tự (waterfall), đợi API tải danh sách sản phẩm `fetchProducts()` xong rồi mới gọi API tải danh sách kho `fetchFilteredItems(1)`. Trong lúc chờ API sản phẩm phản hồi, biến `inventoryStore.loading()` vẫn là `false` nên giao diện render dữ liệu cũ lưu trong store cache.
     - **Khắc phục:** Thay đổi cách gọi API trong `ngOnInit()` thành gọi song song và độc lập. Gọi `fetchFilteredItems(1)` ngay lập tức giúp `inventoryStore.loading()` chuyển sang `true` trước khi render, giúp hiển thị skeleton loader ngay từ đầu.
     - **Kiểm thử:** Chạy `npm run build` biên dịch thành công 100% không phát sinh bất kỳ lỗi nào.
+
+  - **[HOÀN THÀNH] LOẠI BỎ MÃ HÓA KHO HÀNG & THÊM TÍNH NĂNG CHỈNH SỬA TÀI NGUYÊN**:
+    - **Yêu cầu:** 
+      1. Bỏ cơ chế mã hóa cột `data` trong bảng `inventory_items` để lưu trữ và hiển thị dạng văn bản thô (plain text).
+      2. Xây dựng chức năng chỉnh sửa (sửa dữ liệu) cho các tài nguyên kho hàng hiện có.
+    - **Thực hiện:**
+      - **Backend (Laravel):**
+        1. Cập nhật `InventoryItemMapper.php` để lưu trực tiếp `$entity->getData()` vào `$model->data` trong `toPersistence` mà không dùng `Crypt::encryptString`. Giữ cơ chế giải mã fallback bằng try-catch tại `toDomain` để tương thích ngược.
+        2. Cập nhật `DatabaseSeeder.php` để tạo tài nguyên mẫu dạng thô không mã hóa.
+        3. Tạo Form Request `UpdateInventoryRequest.php` và thêm phương thức `updateItem` trong `InventoryService` cùng API endpoint `update` trong `InventoryController`. Đăng ký route `PUT /api/v1/inventory/items/{id}`.
+        4. Chạy `php artisan migrate:fresh --seed` để thiết lập lại database với dữ liệu mẫu không mã hóa.
+      - **Frontend (Angular):**
+        1. Cập nhật `inventory.store.ts` thêm phương thức `updateItem` gọi API PUT.
+        2. Tạo component Modal `EditInventoryModalComponent` (ts & html) hiển thị form chỉnh sửa sản phẩm, trạng thái và dữ liệu tài nguyên (dùng component `app-custom-select` và `app-button`).
+        3. Cập nhật `inventory.component.ts` để mở `EditInventoryModalComponent` qua `ModalService` và tải lại dữ liệu khi lưu thành công.
+        4. Thêm nút **Sửa** (kiểu dáng thương hiệu `text-[var(--color-primary)] bg-[var(--color-primary)]/5`) cạnh nút **Xóa** ở cột thao tác trong `inventory.component.html`.
+        5. Cập nhật warning lưu ý trong `import-inventory-modal.component.html` bỏ từ khóa "mã hóa".
+      - **Kiểm thử:** Chạy build frontend Angular (`npm run build`) thành công 100% không cảnh báo/lỗi compiler.
+

@@ -12,6 +12,7 @@ import { IconComponent } from '@shared/components/icon/icon.component';
 import { ModalService } from '@core/services/modal.service';
 import { PaginationComponent } from '@shared/components/pagination/pagination.component';
 import { ImportInventoryModalComponent } from './import-inventory-modal/import-inventory-modal.component';
+import { EditInventoryModalComponent } from './edit-inventory-modal/edit-inventory-modal.component';
 import { CustomSearchInputComponent } from '@shared/components/custom-search-input/custom-search-input.component';
 
 @Component({
@@ -112,6 +113,27 @@ export class InventoryComponent implements OnInit {
       if (success) {
         this.state.productStore.fetchProducts().subscribe();
         this.fetchFilteredItems();
+      }
+    });
+  }
+
+  public openEditModal(item: any) {
+    const cleanProductOptions = this.state.productStore.products().map(p => ({
+      label: p.name,
+      value: String(p.id)
+    }));
+
+    this.modalService.open(EditInventoryModalComponent, {
+      title: 'Chỉnh sửa tài nguyên',
+      size: 'md',
+      data: {
+        item: item,
+        productOptions: cleanProductOptions
+      }
+    }).afterClosed$.subscribe((success) => {
+      if (success) {
+        this.state.productStore.fetchProducts().subscribe();
+        this.fetchFilteredItems(this.currentPage());
       }
     });
   }

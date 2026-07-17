@@ -63,6 +63,31 @@ class InventoryService
         return $this->inventoryRepository->findAllPaginated($filters, $page, $limit);
     }
 
+    public function updateItem(string $id, array $data): ?InventoryItem
+    {
+        $item = $this->inventoryRepository->findById($id);
+        if (!$item) {
+            return null;
+        }
+
+        $productId = $data['product_id'] ?? $item->getProductId();
+        $itemData = $data['data'];
+        $status = $data['status'];
+        $orderId = ($status === 'sold') ? ($data['order_id'] ?? $item->getOrderId()) : null;
+        if (empty($orderId)) {
+            $orderId = null;
+        }
+
+        $updatedItem = new InventoryItem(
+            $item->getId(),
+            $productId,
+            $itemData,
+            $status,
+            $orderId
+        );
+
+        return $this->inventoryRepository->save($updatedItem);
+    }
 
     public function deleteItem(string $id): bool
     {

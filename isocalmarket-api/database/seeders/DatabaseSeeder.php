@@ -524,7 +524,7 @@ class DatabaseSeeder extends Seeder
                 $rawText = str_replace('{i}', $i, $template);
                 InventoryItemModel::create([
                     'product_id' => $p->id,
-                    'data'       => Crypt::encryptString($rawText),
+                    'data'       => $rawText,
                     'status'     => 'available'
                 ]);
             }

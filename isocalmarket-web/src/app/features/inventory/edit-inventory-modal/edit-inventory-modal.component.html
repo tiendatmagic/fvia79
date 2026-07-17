@@ -1,0 +1,53 @@
+<div class="space-y-6 pb-2">
+  <div class="grid grid-cols-1 sm:grid-cols-2 gap-6">
+    <div class="form-field">
+      <label class="text-[11px] font-black text-slate-400 uppercase tracking-wider block mb-2">Sản phẩm</label>
+      <app-custom-select
+        [options]="productOptions"
+        valueKey="value"
+        labelKey="label"
+        [(value)]="editProductId"
+      />
+    </div>
+
+    <div class="form-field">
+      <label class="text-[11px] font-black text-slate-400 uppercase tracking-wider block mb-2">Trạng thái</label>
+      <app-custom-select
+        [options]="statusOptions"
+        valueKey="value"
+        labelKey="label"
+        [(value)]="status"
+      />
+    </div>
+  </div>
+
+  <div class="form-field">
+    <label class="text-[11px] font-black text-slate-400 uppercase tracking-wider block mb-2">Dữ liệu tài nguyên</label>
+    <textarea
+      class="w-full p-3 rounded-xl border border-slate-200/40 dark:border-slate-800/40 bg-slate-50 dark:bg-slate-950/40 text-xs font-mono text-slate-800 dark:text-white focus:border-[var(--color-primary)] outline-none min-h-[150px]"
+      placeholder="Nhập thông tin tài nguyên kỹ thuật số..."
+      [(ngModel)]="rawData"
+      name="rawData"
+    ></textarea>
+  </div>
+
+  <div class="pt-6 border-t border-slate-100 dark:border-slate-800/60 flex items-center justify-end gap-3 shrink-0">
+    <button
+      app-button
+      (click)="onClose()"
+      [variant]="'cancel'"
+      class="py-2.5 px-4 rounded-xl text-xs font-bold"
+    >
+      Hủy bỏ
+    </button>
+    <button
+      app-button
+      (click)="onSubmit()"
+      [loading]="isSubmitting"
+      [variant]="'primary'"
+      class="py-2.5 px-4 rounded-xl bg-gradient-to-r from-[var(--color-primary)] to-[var(--color-secondary)] text-white text-xs font-extrabold active:scale-95 shadow-sm shadow-[var(--color-primary)]/10 cursor-pointer"
+    >
+      Lưu thay đổi
+    </button>
+  </div>
+</div>
