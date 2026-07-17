@@ -16,7 +16,7 @@ class ProductRepository implements ProductRepositoryInterface
         if ($categoryId) {
             $query->where('category_id', $categoryId);
         }
-        $models = $query->get();
+        $models = $query->orderBy('created_at', 'desc')->get();
         $products = [];
         foreach ($models as $model) {
             $availableCount = InventoryItemModel::where('product_id', $model->id)

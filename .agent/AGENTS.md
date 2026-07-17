@@ -533,5 +533,16 @@
       3. **SCSS/CSS:** Loại bỏ toàn bộ các comment block trong `styles.scss` và các styles cục bộ.
       4. **Kiểm thử:** Chạy `npm run build` biên dịch thành công 100% không lỗi biên dịch.
 
+  - **[SỬA LỖI] Lỗi ParameterBag khi thêm/sửa sản phẩm**:
+    - **Nhận diện lỗi:** Khi thêm hoặc sửa sản phẩm, hệ thống trả về lỗi 500 do `ProductService::createProduct()` nhận đối tượng `Symfony\Component\HttpFoundation\ParameterBag` thay vì một mảng `?array` cho tham số `$attributes`.
+    - **Nguyên nhân:** Do Laravel Request kế thừa từ Symfony Request có thuộc tính public là `$attributes` (là một `ParameterBag` chứa các route parameters, custom attributes,...). Vì vậy, khi gọi `$request->attributes` để lấy input field tên là `'attributes'`, PHP sẽ truy cập trực tiếp vào thuộc tính public của base class Symfony thay vì gọi magic getter `__get` của Laravel Request.
+    - **Khắc phục:** Đã sửa đổi `$request->attributes` thành `$request->input('attributes')` tại cả hai phương thức `store` và `update` trong [ProductController.php](file:///d:/git/isocalmarket/isocalmarket-api/app/Http/Controllers/ProductController.php).
+    - **Kiểm thử:** Đã chạy `php artisan test` và kiểm tra toàn bộ suite thành công 100%.
 
+  - **[TỐI ƯU] Đồng bộ sắp xếp dữ liệu mới nhất lên hàng đầu**:
+    - **Yêu cầu:** Tất cả danh sách dữ liệu (sản phẩm, kho hàng, đơn hàng) phải được sắp xếp theo thứ tự mới nhất đến cũ nhất (mới tạo hiển thị lên đầu).
+    - **Thực hiện:**
+      - Đã kiểm tra và đảm bảo các repository `OrderRepository` và `InventoryItemRepository` đã sắp xếp chuẩn `created_at` DESC.
+      - Phát hiện hàm `findAllActive` trong `ProductRepository` chưa sắp xếp. Đã bổ sung `orderBy('created_at', 'desc')` vào hàm này trong [ProductRepository.php](file:///d:/git/isocalmarket/isocalmarket-api/app/Infrastructure/Persistence/Repositories/ProductRepository.php) để các sản phẩm không phân trang (như trang quản trị sản phẩm tải đầy đủ) luôn hiển thị sản phẩm mới tạo lên trên cùng.
+      - Chạy test backend thành công 100%.
 

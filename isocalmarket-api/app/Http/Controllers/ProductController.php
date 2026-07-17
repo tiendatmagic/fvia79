@@ -108,7 +108,7 @@ class ProductController extends Controller
                 $request->description,
                 (float)$request->price,
                 $request->status,
-                $request->attributes,
+                $request->input('attributes'),
                 $request->category_id
             );
 
@@ -140,7 +140,7 @@ class ProductController extends Controller
                 $request->description,
                 (float)$request->price,
                 $request->status,
-                $request->attributes,
+                $request->input('attributes'),
                 $request->category_id
             );
 
