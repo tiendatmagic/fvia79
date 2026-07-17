@@ -22,7 +22,7 @@
       <a
         routerLink="/"
         (click)="stateService.showMobileMenu.set(false)"
-        class="flex items-center gap-3 select-none cursor-pointer"
+        class="flex items-center gap-3 cursor-pointer"
       >
         <app-logo class="w-9 h-9 shrink-0" />
         <div class="flex flex-col">
@@ -31,7 +31,7 @@
           >
             <span class="text-primary">Isocal</span><span class="text-secondary">market</span>
           </span>
-          <span class="text-[9px] font-bold text-slate-400 uppercase tracking-widest"
+          <span class="text-xs font-bold text-slate-400 uppercase tracking-widest"
             >Digital Inventory</span
           >
         </div>
@@ -69,7 +69,7 @@
 
       <div *ngIf="stateService.isAdmin()" class="pt-4 pb-2">
         <span
-          class="px-4 text-[10px] font-bold text-slate-400 uppercase tracking-wider select-none"
+          class="px-4 text-xs font-bold text-slate-400 uppercase tracking-wider"
         >
           Quản trị hệ thống
         </span>
@@ -131,7 +131,7 @@
           <span class="text-xs font-bold text-slate-800 dark:text-white truncate max-w-[140px]">
             {{ stateService.currentUser()?.name }}
           </span>
-          <span class="text-[9px] font-bold text-slate-400 uppercase tracking-wide">
+          <span class="text-xs font-bold text-slate-400 uppercase tracking-wide">
             {{ stateService.currentUser()?.role }}
           </span>
         </div>

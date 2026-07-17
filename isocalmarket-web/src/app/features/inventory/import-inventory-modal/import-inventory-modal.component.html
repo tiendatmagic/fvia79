@@ -1,7 +1,7 @@
 <div class="space-y-6 pb-2">
   <div class="grid grid-cols-1 sm:grid-cols-2 gap-6">
     <div class="form-field">
-      <label class="text-[11px] font-black text-slate-400 uppercase tracking-wider block mb-2">Sản phẩm đích</label>
+      <label class="text-xs font-black text-slate-400 uppercase tracking-wider block mb-2">Sản phẩm đích</label>
       <app-custom-select
         [options]="productOptions"
         valueKey="value"
@@ -11,7 +11,7 @@
     </div>
 
     <div class="form-field">
-      <label class="text-[11px] font-black text-slate-400 uppercase tracking-wider block mb-2">Tên Lô Hàng</label>
+      <label class="text-xs font-black text-slate-400 uppercase tracking-wider block mb-2">Tên Lô Hàng</label>
       <input
         type="text"
         class="w-full p-3 rounded-xl border border-slate-200/40 dark:border-slate-800/40 bg-slate-50 dark:bg-slate-950/40 text-xs text-slate-800 dark:text-white focus:border-[var(--color-primary)] outline-none"
@@ -23,7 +23,7 @@
   </div>
 
   <div class="form-field">
-    <label class="text-[11px] font-black text-slate-400 uppercase tracking-wider block mb-2">Dữ liệu tài nguyên (Nhập theo từng dòng)</label>
+    <label class="text-xs font-black text-slate-400 uppercase tracking-wider block mb-2">Dữ liệu tài nguyên (Nhập theo từng dòng)</label>
     <textarea
       class="w-full p-3 rounded-xl border border-slate-200/40 dark:border-slate-800/40 bg-slate-50 dark:bg-slate-950/40 text-xs font-mono text-slate-800 dark:text-white focus:border-[var(--color-primary)] outline-none min-h-[200px]"
       [placeholder]="'Nhập thông tin tài nguyên, mỗi dòng một tài khoản. Ví dụ:\nuid1|pass1|2fa1\nuid2|pass2|2fa2'"

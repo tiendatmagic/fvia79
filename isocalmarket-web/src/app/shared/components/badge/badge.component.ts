@@ -88,7 +88,7 @@ export class BadgeComponent {
 
     switch (this.size) {
       case 'sm':
-        classes.push('text-[10px] px-1.5 py-0.5');
+        classes.push('text-xs px-1.5 py-0.5');
         break;
       case 'md':
         classes.push('text-xs px-2.5 py-0.5');

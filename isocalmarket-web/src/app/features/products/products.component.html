@@ -84,7 +84,7 @@
                   @if (p.attributes && p.attributes.length > 0) {
                     <div class="flex flex-wrap gap-1 mt-1.5">
                       @for (attr of p.attributes; track $index) {
-                        <span class="inline-flex items-center text-[10px] font-black px-1.5 py-0.5 rounded-md bg-[var(--color-primary)]/5 dark:bg-[var(--color-primary)]/10 text-[var(--color-primary)] border border-[var(--color-primary)]/10">
+                        <span class="inline-flex items-center text-xs font-black px-1.5 py-0.5 rounded-md bg-[var(--color-primary)]/5 dark:bg-[var(--color-primary)]/10 text-[var(--color-primary)] border border-[var(--color-primary)]/10">
                           {{ attr.label }}: {{ attr.value }}
                         </span>
                       }

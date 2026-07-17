@@ -43,7 +43,7 @@ export class TooltipDirective implements OnDestroy {
       'z-[9999]',
       'px-2.5',
       'py-1.5',
-      'text-[11px]',
+      'text-xs',
       'font-bold',
       'text-slate-100',
       'dark:text-slate-200',

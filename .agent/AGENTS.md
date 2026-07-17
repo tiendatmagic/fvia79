@@ -572,3 +572,33 @@
         4. Cập nhật bảng hiển thị ở `inventory.component.html` hiển thị: ID Lô, Tên sản phẩm, Tên lô hàng, Số lượng (Khả dụng / Ban đầu), Trạng thái lô hàng, và các nút Sửa/Xóa.
       - **Kiểm thử:** Chạy build frontend Angular (`npm run build`) thành công 100% không phát sinh lỗi hay cảnh báo.
 
+  - **[HOÀN THÀNH] NÂNG FONT-SIZE TỐI THIỂU 12PX (TEXT-XS) TOÀN HỆ THỐNG**:
+    - **Yêu cầu:** Rà soát toàn bộ source code frontend, đảm bảo font-size nhỏ nhất là 12px, không có trường hợp nào dưới 12px.
+    - **Thực hiện:**
+      1. Rà soát toàn bộ project `isocalmarket-web` bằng grep regex `text-\[([1-9]|10|11)(\.[0-9]+)?px\]` để tìm các class Tailwind chỉ định font-size nhỏ hơn 12px.
+      2. Kiểm tra và xác nhận không có file CSS/SCSS nào tự định nghĩa thuộc tính `font-size: Xpx/rem/em` thủ công.
+      3. Đã chỉnh sửa tổng cộng 13 file (bao gồm các components, layouts và directive) để chuyển đổi toàn bộ các class `text-[9px]`, `text-[10px]`, `text-[11px]` và `text-[10px] md:text-xs` sang class `text-xs` (tương đương 12px):
+         - `sidebar.component.html` (chuyển `text-[9px]`, `text-[10px]`)
+         - `header.component.html` (chuyển `text-[10px]`, `text-[11px]`)
+         - `app.html` (chuyển `text-[9px]`, `text-[10px]`)
+         - `tx-speed-selector.component.html` (chuyển `text-[10px]`)
+         - `tooltip.directive.ts` (chuyển `text-[11px]`)
+         - `theme-switcher.component.html` (chuyển `text-[11px]`)
+         - `tab-group.component.html` (chuyển `text-[10px]`)
+         - `kbd.component.ts` (chuyển `text-[10px]`)
+         - `custom-select.component.html` (chuyển `text-[10px]`)
+         - `custom-radio.component.html` (chuyển `text-[10px]`)
+         - `custom-date-time-range.component.html` (chuyển `text-[10px]`, `text-[11px]`)
+         - `custom-checkbox.component.html` (chuyển `text-[10px]`)
+         - `custom-date-picker.component.html` (chuyển `text-[11px]`)
+         - `badge.component.ts` (chuyển `text-[10px]`)
+         - `storefront.component.html` (chuyển `text-[9px]`, `text-[10px]`, `text-[11px]`)
+         - `enable-2fa-modal.component.html` (chuyển `text-[10px]`)
+         - `products.component.html` (chuyển `text-[10px]`)
+         - `product-form-modal.component.html` (chuyển `text-[11px]`)
+         - `order-detail.component.html` (chuyển `text-[10px]`)
+         - `import-inventory-modal.component.html` (chuyển `text-[11px]`)
+         - `edit-inventory-modal.component.html` (chuyển `text-[11px]`)
+         - `admin-dashboard.component.html` (chuyển `text-[10px] md:text-xs`)
+      4. Chạy biên dịch dự án kiểm tra thành công.
+
