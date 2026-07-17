@@ -11,9 +11,18 @@ use Illuminate\Support\Str;
 #[Fillable(['product_id', 'batch_name', 'keys_pool', 'initial_count', 'sold_count', 'status'])]
 class InventoryBatchModel extends Model
 {
-    use HasUuids;
+    use HasUuids, NormalizeTextTrait;
 
     protected $table = 'inventory_batches';
+
+    protected static function booted()
+    {
+        static::saving(function ($model) {
+            if ($model->isDirty('batch_name')) {
+                $model->normalized_batch_name = self::normalizeText($model->batch_name);
+            }
+        });
+    }
 
     public function newUniqueId(): string
     {

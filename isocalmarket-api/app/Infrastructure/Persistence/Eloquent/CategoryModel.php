@@ -11,9 +11,18 @@ use Illuminate\Support\Str;
 #[Fillable(['name', 'slug', 'description'])]
 class CategoryModel extends Model
 {
-    use HasUuids;
+    use HasUuids, NormalizeTextTrait;
 
     protected $table = 'categories';
+
+    protected static function booted()
+    {
+        static::saving(function ($model) {
+            if ($model->isDirty('name')) {
+                $model->normalized_name = self::normalizeText($model->name);
+            }
+        });
+    }
 
     public function newUniqueId(): string
     {

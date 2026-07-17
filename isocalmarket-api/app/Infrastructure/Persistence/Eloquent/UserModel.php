@@ -14,9 +14,18 @@ use Illuminate\Support\Str;
 #[Hidden(['password', 'remember_token'])]
 class UserModel extends Authenticatable
 {
-    use HasFactory, Notifiable, HasUuids;
+    use HasFactory, Notifiable, HasUuids, NormalizeTextTrait;
 
     protected $table = 'users';
+
+    protected static function booted()
+    {
+        static::saving(function ($model) {
+            if ($model->isDirty('name')) {
+                $model->normalized_name = self::normalizeText($model->name);
+            }
+        });
+    }
 
     public function newUniqueId(): string
     {

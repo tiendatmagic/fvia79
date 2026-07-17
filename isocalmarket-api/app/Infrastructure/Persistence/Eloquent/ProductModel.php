@@ -11,9 +11,18 @@ use Illuminate\Support\Str;
 #[Fillable(['category_id', 'name', 'slug', 'description', 'price', 'status', 'attributes'])]
 class ProductModel extends Model
 {
-    use HasUuids;
+    use HasUuids, NormalizeTextTrait;
 
     protected $table = 'products';
+
+    protected static function booted()
+    {
+        static::saving(function ($model) {
+            if ($model->isDirty('name')) {
+                $model->normalized_name = self::normalizeText($model->name);
+            }
+        });
+    }
 
     public function newUniqueId(): string
     {

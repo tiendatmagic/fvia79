@@ -664,4 +664,11 @@
       1. Cập nhật `ProductStore` khai báo các signals phân trang riêng cho danh mục (`paginatedCategories`, `totalCategories`, `currentCategoryPage`, `lastCategoryPage`) và hàm `fetchCategoriesPaginated`.
       2. Cập nhật `AdminCategoriesComponent` và `ProductsComponent` định cấu hình biến signal `currentPage`, giới hạn `limit = 10`, và phương thức `fetchPage()`.
       3. Thêm component UI `<app-pagination>` vào cuối bảng dữ liệu ở cả hai trang [products.component.html](file:///d:/git/isocalmarket/isocalmarket-web/src/app/features/products/products.component.html) và [admin-categories.component.html](file:///d:/git/isocalmarket/isocalmarket-web/src/app/features/admin-categories/admin-categories.component.html).
-      4. Chạy `php artisan test` và `npm run build` thành công.
+  - **[HOÀN THÀNH] Tối ưu tìm kiếm qua Database Index & Chuẩn hóa tên không dấu**:
+    - Yêu cầu: Nâng cấp tìm kiếm Accent-Insensitive tối ưu hơn bằng cách tạo các cột chuẩn hóa sẵn ở DB và đánh Index, giúp tránh dùng SQL REPLACE động gây Full Table Scan, đồng thời tăng tính độc lập với hệ cơ sở dữ liệu.
+    - Thực hiện Backend:
+      1. Tạo migration `2026_07_17_114012_add_normalized_columns_to_tables.php` bổ sung `normalized_name` / `normalized_batch_name` có `index()` vào các bảng `categories`, `products`, `inventory_batches`, `users`. Kèm hàm xử lý backfill dữ liệu cũ không dấu tiếng Việt hoàn toàn bằng PHP.
+      2. Tạo `NormalizeTextTrait` xử lý chuẩn hóa toàn bộ nguyên âm tiếng Việt có dấu về dạng không dấu (`á, à, ả... -> a`, `đ, Đ -> d`).
+      3. Tích hợp `booted()` hook gọi `static::saving()` trong các Eloquent Models (`CategoryModel`, `ProductModel`, `InventoryBatchModel`, `UserModel`) để tự động gán giá trị chuẩn hóa khi tạo mới hoặc cập nhật.
+      4. Cập nhật `AccentInsensitiveSearchTrait` để ánh xạ trực tiếp cột tìm kiếm sang cột normalized (`name -> normalized_name`, `batch_name -> normalized_batch_name`) và truy vấn thuần bằng Eloquent `like` mà không dùng hàm SQL raw REPLACE.
+    - Kết quả: Chạy `php artisan migrate:fresh --seed` và `php artisan test` vượt qua 100%. Giao diện hoạt động trơn tru với hiệu năng tối ưu.
