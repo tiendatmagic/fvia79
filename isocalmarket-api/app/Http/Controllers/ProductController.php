@@ -23,20 +23,21 @@ class ProductController extends Controller
             $categoryId = $request->query('category_id');
             $search = $request->query('search');
             $status = $request->query('status');
+            $filterDeleted = $request->query('filter_deleted', 'active');
 
             // Default behavior for storefront / guest is to show active status only
-            $user = null;
-            try {
-                $user = auth('api')->user();
-            } catch (\Exception $e) {}
+            $user = $this->getAuthenticatedUser($request);
 
             $isAdmin = $user && $user->role === 'admin';
-            if (!$isAdmin && !$status) {
-                $status = 'active';
+            if (!$isAdmin) {
+                $filterDeleted = 'active';
+                if (!$status) {
+                    $status = 'active';
+                }
             }
 
             if ($page) {
-                $result = $this->productService->getActiveProductsPaginated((int)$page, (int)$limit, $categoryId, $status, $search);
+                $result = $this->productService->getActiveProductsPaginated((int)$page, (int)$limit, $categoryId, $status, $search, $filterDeleted);
                 $products = $result['items'];
                 $total = $result['total'];
 
@@ -50,7 +51,9 @@ class ProductController extends Controller
                         'price' => $product->getPrice(),
                         'status' => $product->getStatus(),
                         'available_count' => $product->getAvailableCount(),
-                        'attributes' => $product->getAttributes()
+                        'attributes' => $product->getAttributes(),
+                        'deleted_at' => $product->getDeletedAt() ? $product->getDeletedAt()->format('Y-m-d H:i:s') : null,
+                        'is_deleted' => $product->isDeleted()
                     ];
                 }, $products);
 
@@ -65,7 +68,7 @@ class ProductController extends Controller
                 ]);
             }
 
-            $products = $this->productService->getAllActiveProducts($categoryId, $status, $search);
+            $products = $this->productService->getAllActiveProducts($categoryId, $status, $search, $filterDeleted);
             
             $data = array_map(function ($product) {
                 return [
@@ -77,13 +80,15 @@ class ProductController extends Controller
                     'price' => $product->getPrice(),
                     'status' => $product->getStatus(),
                     'available_count' => $product->getAvailableCount(),
-                    'attributes' => $product->getAttributes()
+                    'attributes' => $product->getAttributes(),
+                    'deleted_at' => $product->getDeletedAt() ? $product->getDeletedAt()->format('Y-m-d H:i:s') : null,
+                    'is_deleted' => $product->isDeleted()
                 ];
             }, $products);
 
             return response()->json($data);
         } catch (\Exception $e) {
-            return response()->json(['message' => $e->getMessage()], 500);
+            return response()->json(['message' => 'Cannot fetch products: ' . $e->getMessage()], 500);
         }
     }
 
@@ -96,6 +101,13 @@ class ProductController extends Controller
                 return response()->json(['message' => 'Product not found.'], 404);
             }
 
+            // Bảo mật: Nếu sản phẩm đã bị xóa mềm, chỉ cho phép admin xem chi tiết
+            $user = $this->getAuthenticatedUser($request);
+            $isAdmin = $user && $user->role === 'admin';
+            if ($product->isDeleted() && !$isAdmin) {
+                return response()->json(['message' => 'Product not found.'], 404);
+            }
+
             return response()->json([
                 'id' => $product->getId(),
                 'category_id' => $product->getCategoryId(),
@@ -105,7 +117,9 @@ class ProductController extends Controller
                 'price' => $product->getPrice(),
                 'status' => $product->getStatus(),
                 'available_count' => $product->getAvailableCount(),
-                'attributes' => $product->getAttributes()
+                'attributes' => $product->getAttributes(),
+                'deleted_at' => $product->getDeletedAt() ? $product->getDeletedAt()->format('Y-m-d H:i:s') : null,
+                'is_deleted' => $product->isDeleted()
             ]);
         } catch (\Exception $e) {
             return response()->json(['message' => $e->getMessage()], 500);
@@ -187,5 +201,44 @@ class ProductController extends Controller
         } catch (\Exception $e) {
             return response()->json(['message' => $e->getMessage()], 500);
         }
+    }
+
+    public function restore($id)
+    {
+        try {
+            $restored = $this->productService->restoreProduct($id);
+            if (!$restored) {
+                return response()->json(['message' => 'Product not found or restore failed.'], 404);
+            }
+
+            return response()->json(['message' => 'Product restored successfully.']);
+        } catch (\Exception $e) {
+            return response()->json(['message' => $e->getMessage()], 500);
+        }
+    }
+
+    private function getAuthenticatedUser(Request $request)
+    {
+        $token = $request->cookie('access_token');
+        if (!$token) {
+            $authHeader = $request->header('Authorization');
+            if ($authHeader && preg_match('/Bearer\s(\S+)/', $authHeader, $matches)) {
+                $token = $matches[1];
+            }
+        }
+
+        if (!$token) {
+            return null;
+        }
+
+        try {
+            $jwtService = app(\App\Infrastructure\Security\JwtService::class);
+            $payload = $jwtService->validateToken($token);
+            if ($payload && !empty($payload['sub'])) {
+                return \App\Infrastructure\Persistence\Eloquent\UserModel::find($payload['sub']);
+            }
+        } catch (\Exception $e) {}
+
+        return null;
     }
 }

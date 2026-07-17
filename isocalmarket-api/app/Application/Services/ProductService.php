@@ -15,14 +15,14 @@ class ProductService
         $this->productRepository = $productRepository;
     }
 
-    public function getAllActiveProducts(?string $categoryId = null, ?string $status = null, ?string $search = null): array
+    public function getAllActiveProducts(?string $categoryId = null, ?string $status = null, ?string $search = null, ?string $filterDeleted = 'active'): array
     {
-        return $this->productRepository->findAllActive($categoryId, $status, $search);
+        return $this->productRepository->findAllActive($categoryId, $status, $search, $filterDeleted);
     }
 
-    public function getActiveProductsPaginated(int $page, int $limit, ?string $categoryId = null, ?string $status = null, ?string $search = null): array
+    public function getActiveProductsPaginated(int $page, int $limit, ?string $categoryId = null, ?string $status = null, ?string $search = null, ?string $filterDeleted = 'active'): array
     {
-        return $this->productRepository->findAllActivePaginated($page, $limit, $categoryId, $status, $search);
+        return $this->productRepository->findAllActivePaginated($page, $limit, $categoryId, $status, $search, $filterDeleted);
     }
 
     public function getProductById(string $id): ?Product
@@ -64,5 +64,10 @@ class ProductService
     public function deleteProduct(string $id): bool
     {
         return $this->productRepository->delete($id);
+    }
+
+    public function restoreProduct(string $id): bool
+    {
+        return $this->productRepository->restore($id);
     }
 }

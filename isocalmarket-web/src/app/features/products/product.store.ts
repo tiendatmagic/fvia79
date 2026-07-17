@@ -73,7 +73,7 @@ export class ProductStore {
     );
   }
 
-  public fetchProducts(page?: number, limit?: number, categoryId?: string, search?: string, status?: string) {
+  public fetchProducts(page?: number, limit?: number, categoryId?: string, search?: string, status?: string, filterDeleted?: string) {
     this.loading.set(true);
     let params = new HttpParams();
     if (page !== undefined) {
@@ -90,6 +90,9 @@ export class ProductStore {
     }
     if (status) {
       params = params.set('status', status);
+    }
+    if (filterDeleted) {
+      params = params.set('filter_deleted', filterDeleted);
     }
 
     return this.api.get<any>('v1/products', params).pipe(
@@ -152,6 +155,21 @@ export class ProductStore {
       }),
       catchError((err) => {
         const msg = err.error?.message || 'Xóa sản phẩm thất bại!';
+        this.toast.showToast(msg, 'error');
+        return of(null);
+      }),
+      finalize(() => this.loading.set(false))
+    );
+  }
+
+  public restoreProduct(id: string) {
+    this.loading.set(true);
+    return this.api.post<any>(`v1/products/${id}/restore`, {}).pipe(
+      tap(() => {
+        this.toast.showToast('Khôi phục sản phẩm thành công!', 'success');
+      }),
+      catchError((err) => {
+        const msg = err.error?.message || 'Khôi phục sản phẩm thất bại!';
         this.toast.showToast(msg, 'error');
         return of(null);
       }),

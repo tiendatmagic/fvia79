@@ -6,12 +6,13 @@ use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Concerns\HasUuids;
 use Illuminate\Database\Eloquent\Attributes\Fillable;
 use Illuminate\Database\Eloquent\Relations\HasMany;
+use Illuminate\Database\Eloquent\SoftDeletes;
 use Illuminate\Support\Str;
 
 #[Fillable(['category_id', 'name', 'slug', 'description', 'price', 'status', 'attributes'])]
 class ProductModel extends Model
 {
-    use HasUuids, NormalizeTextTrait;
+    use HasUuids, NormalizeTextTrait, SoftDeletes;
 
     protected $table = 'products';
 

@@ -13,6 +13,7 @@ class Product
     private string $status;
     private int $availableCount;
     private ?array $attributes;
+    private ?\DateTimeInterface $deletedAt;
 
     public function __construct(
         ?string $id,
@@ -23,7 +24,8 @@ class Product
         string $status = 'active',
         int $availableCount = 0,
         ?array $attributes = null,
-        ?string $categoryId = null
+        ?string $categoryId = null,
+        ?\DateTimeInterface $deletedAt = null
     ) {
         $this->id = $id;
         $this->categoryId = $categoryId;
@@ -34,6 +36,7 @@ class Product
         $this->status = $status;
         $this->availableCount = $availableCount;
         $this->attributes = $attributes;
+        $this->deletedAt = $deletedAt;
     }
 
     public function getId(): ?string
@@ -84,5 +87,15 @@ class Product
     public function isActive(): bool
     {
         return $this->status === 'active';
+    }
+
+    public function getDeletedAt(): ?\DateTimeInterface
+    {
+        return $this->deletedAt;
+    }
+
+    public function isDeleted(): bool
+    {
+        return $this->deletedAt !== null;
     }
 }

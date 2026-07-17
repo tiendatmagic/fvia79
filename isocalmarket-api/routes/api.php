@@ -37,6 +37,7 @@ Route::prefix('v1')->group(function () {
             Route::post('/products', ['App\Http\Controllers\ProductController', 'store']);
             Route::put('/products/{id}', ['App\Http\Controllers\ProductController', 'update']);
             Route::delete('/products/{id}', ['App\Http\Controllers\ProductController', 'destroy']);
+            Route::post('/products/{id}/restore', ['App\Http\Controllers\ProductController', 'restore']);
 
             Route::post('/categories', ['App\Http\Controllers\CategoryController', 'store']);
             Route::put('/categories/{id}', ['App\Http\Controllers\CategoryController', 'update']);

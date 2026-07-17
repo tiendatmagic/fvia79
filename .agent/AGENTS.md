@@ -773,3 +773,47 @@
       3. **Tối ưu màu trạng thái "Hoàn thành"**:
          - Cập nhật [inventory.component.html](file:///d:/git/isocalmarket/isocalmarket-web/src/app/features/inventory/inventory.component.html): Thay đổi variant của trạng thái `completed` (Hoàn thành) của lô hàng từ màu xám (`neutral`) sang xanh dương chủ đạo (`primary`) theo feedback của người dùng.
       4. **Xác minh & Build**: Chạy build frontend (`npm run build`) hoàn tất thành công 100% không phát sinh lỗi biên dịch.
+
+  - **[TÍCH HỢP SOFT DELETE SẢN PHẨM & TÍNH NĂNG KHÔI PHỤC]**:
+    - Yêu cầu: Chuyển cơ chế xóa sản phẩm từ Hard Delete sang Soft Delete. Trang quản trị mặc định ẩn sản phẩm đã xóa, hỗ trợ lọc xem sản phẩm đã xóa, hiển thị gạch ngang (strike-through) mờ trên toàn dòng và hiển thị nút Khôi phục để phục hồi sản phẩm.
+    - Giải pháp & Triển khai:
+      1. **Database Migration**: Tạo migration [2026_07_18_000001_add_soft_deletes_to_products_table.php](file:///d:/git/isocalmarket/isocalmarket-api/database/migrations/2026_07_18_000001_add_soft_deletes_to_products_table.php) và chạy thành công để thêm cột `deleted_at` vào bảng `products`.
+      2. **Backend Domain & Persistence**:
+         - Cập nhật [ProductModel.php](file:///d:/git/isocalmarket/isocalmarket-api/app/Infrastructure/Persistence/Eloquent/ProductModel.php) khai báo `use SoftDeletes;`.
+         - Bổ sung thuộc tính `deletedAt` và các getter tương ứng vào Domain Entity [Product.php](file:///d:/git/isocalmarket/isocalmarket-api/app/Domain/Entities/Product.php).
+         - Cập nhật [ProductMapper.php](file:///d:/git/isocalmarket/isocalmarket-api/app/Infrastructure/Persistence/Mappers/ProductMapper.php) map `deleted_at` và hỗ trợ `withTrashed()` khi lưu dữ liệu.
+      3. **Backend Repositories & Services**:
+         - Cập nhật [ProductRepositoryInterface.php](file:///d:/git/isocalmarket/isocalmarket-api/app/Domain/Repositories/ProductRepositoryInterface.php) và [ProductRepository.php](file:///d:/git/isocalmarket/isocalmarket-api/app/Infrastructure/Persistence/Repositories/ProductRepository.php) bổ sung tham số `$filterDeleted` (giá trị: `active`, `deleted`, `all`) trong các hàm query và định nghĩa phương thức `restore()`.
+         - Cập nhật [ProductService.php](file:///d:/git/isocalmarket/isocalmarket-api/app/Application/Services/ProductService.php) gọi các phương thức tương ứng và bổ sung phương thức `restoreProduct()`.
+      4. **Backend Controllers & Routes**:
+         - Cập nhật index action của [ProductController.php](file:///d:/git/isocalmarket/isocalmarket-api/app/Http/Controllers/ProductController.php) tiếp nhận `filter_deleted` qua URL query, map và serialize trường `deleted_at` và `is_deleted` trong JSON response.
+         - Thêm action `restore($id)` trong [ProductController.php](file:///d:/git/isocalmarket/isocalmarket-api/app/Http/Controllers/ProductController.php) và đăng ký route `POST /v1/products/{id}/restore` trong [api.php](file:///d:/git/isocalmarket/isocalmarket-api/routes/api.php).
+      5. **Frontend API & Store**:
+         - Cập nhật [product.store.ts](file:///d:/git/isocalmarket/isocalmarket-web/src/app/features/products/product.store.ts) thêm tham số `filterDeleted` vào `fetchProducts` và định nghĩa phương thức API call `restoreProduct(id)`.
+      6. **Frontend Component & HTML**:
+         - Cập nhật [products.component.ts](file:///d:/git/isocalmarket/isocalmarket-web/src/app/features/products/products.component.ts): Thêm lựa chọn *"Đã xóa"* (`value: 'deleted'`) vào `statusOptions`, cập nhật logic `fetchFilteredProducts` để phân biệt logic status và soft deletes, đồng thời triển khai hàm `restoreProduct(product)` mở modal xác thực.
+         - Cập nhật [products.component.html](file:///d:/git/isocalmarket/isocalmarket-web/src/app/features/products/products.component.html) bọc thêm class `line-through text-slate-400 dark:text-slate-500 opacity-60 bg-slate-50/50 dark:bg-slate-950/20` cho hàng dữ liệu có `p.is_deleted`. Đồng thời hiển thị nút **Khôi phục** (màu xanh lá) thay thế cho nút Sửa/Xóa.
+      7. **Xác minh & Build**: Chạy build frontend hoàn tất không phát sinh lỗi biên dịch.
+
+  - **[BẢO MẬT & PHÂN QUYỀN SẢN PHẨM SOFT DELETED]**:
+    - Yêu cầu: Ngăn chặn hoàn toàn khách hàng vãng lai/user thường xem sản phẩm đã xóa ở trang cửa hàng (Storefront) hoặc API chi tiết sản phẩm. Ngăn chặn tuyệt đối việc mua các sản phẩm này tại khâu checkout đơn hàng.
+    - Giải pháp & Triển khai:
+      1. **Bảo mật danh sách**: Cập nhật index action của [ProductController.php](file:///d:/git/isocalmarket/isocalmarket-api/app/Http/Controllers/ProductController.php), nếu yêu cầu không phải là Admin, tự động ép buộc `filterDeleted = 'active'`, ngăn chặn việc truyền parameter lên query string để rà quét.
+      2. **Bảo mật chi tiết**: Cập nhật show action của [ProductController.php](file:///d:/git/isocalmarket/isocalmarket-api/app/Http/Controllers/ProductController.php), nếu sản phẩm đã bị soft deleted (`$product->isDeleted()`) và không phải là Admin yêu cầu, trả về ngay lỗi `404 Not Found`.
+      3. **Bảo mật Checkout (Mua hàng)**: Cập nhật hàm tạo đơn hàng `createOrder()` trong [OrderService.php](file:///d:/git/isocalmarket/isocalmarket-api/app/Application/Services/OrderService.php). Nếu sản phẩm được đặt mua có trạng thái `isDeleted() = true`, ném ngoại lệ ngăn cản tạo đơn hàng: *"Sản phẩm không khả dụng hoặc đã bị ngừng kinh doanh."*
+      4. **Xác minh & Build**: Chạy build frontend hoàn tất không phát sinh lỗi biên dịch.
+
+  - **[MẶC ĐỊNH BỘ LỌC TRẠNG THÁI SẢN PHẨM]**:
+    - Yêu cầu: Đặt giá trị mặc định cho bộ lọc Trạng thái tại trang Quản lý sản phẩm luôn là "Đang hoạt động" khi mới tải trang.
+    - Giải pháp & Triển khai: Đổi giá trị khởi tạo của signal `selectedStatusFilter` trong [products.component.ts](file:///d:/git/isocalmarket/isocalmarket-web/src/app/features/products/products.component.ts) từ `''` (Tất cả trạng thái) thành `'active'` (Đang hoạt động).
+    - Kết quả: Khi người dùng truy cập trang, hệ thống tự động lọc sản phẩm đang hoạt động, đồng thời vẫn cho phép admin chuyển đổi linh hoạt sang bộ lọc Đã xóa hoặc Ngừng hoạt động.
+
+  - **[Badge trạng thái của sản phẩm soft-deleted]**:
+    - Yêu cầu: Khắc phục việc sản phẩm đã bị soft-deleted vẫn hiển thị trạng thái "Hoạt động" (màu xanh lá).
+    - Giải pháp & Triển khai: Cập nhật [products.component.html](file:///d:/git/isocalmarket/isocalmarket-web/src/app/features/products/products.component.html) bọc điều kiện `@if (p.is_deleted)` để kết xuất Badge trạng thái màu đỏ (variant="danger") và hiển thị chữ "Đã xóa".
+    - Kết quả: Badge trạng thái hiển thị chuẩn xác trực quan.
+
+  - **[BỘ LỌC TẤT CẢ TRẠNG THÁI BAO GỒM SẢN PHẨM SOFT-DELETED]**:
+    - Yêu cầu: Khi chọn bộ lọc là "Tất cả trạng thái" (rỗng), hệ thống phải nạp tất cả các sản phẩm đang hoạt động, ngừng hoạt động và cả các sản phẩm đã bị xóa mềm (soft-deleted).
+    - Giải pháp & Triển khai: Cập nhật logic trong phương thức `fetchFilteredProducts` tại [products.component.ts](file:///d:/git/isocalmarket/isocalmarket-web/src/app/features/products/products.component.ts). Nếu `statusVal === ''`, gán `filterDeleted = 'all'` và truyền lên API Backend.
+    - Kết quả: Khi chọn Tất cả trạng thái, admin xem được toàn bộ sản phẩm (kể cả sản phẩm bị xóa mềm được gạch ngang dòng mờ).

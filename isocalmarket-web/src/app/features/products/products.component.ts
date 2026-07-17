@@ -47,7 +47,7 @@ export class ProductsComponent implements OnInit {
   private readonly _searchQuery = signal('');
 
   public readonly selectedCategoryFilter = signal<string>('');
-  public readonly selectedStatusFilter = signal<string>('');
+  public readonly selectedStatusFilter = signal<string>('active');
   public readonly currentPage = signal<number>(1);
   public readonly limit = 10;
 
@@ -63,6 +63,7 @@ export class ProductsComponent implements OnInit {
     { label: 'Tất cả trạng thái', value: '' },
     { label: 'Đang hoạt động', value: 'active' },
     { label: 'Ngừng hoạt động', value: 'inactive' },
+    { label: 'Đã xóa', value: 'deleted' },
   ];
 
   public readonly filteredProducts = computed(() => {
@@ -76,12 +77,27 @@ export class ProductsComponent implements OnInit {
 
   public fetchFilteredProducts(page: number = 1) {
     this.currentPage.set(page);
+    const statusVal = this.selectedStatusFilter();
+    
+    let filterDeleted = 'active';
+    let actualStatus: string | undefined = undefined;
+
+    if (statusVal === '') {
+      filterDeleted = 'all';
+    } else if (statusVal === 'deleted') {
+      filterDeleted = 'deleted';
+    } else {
+      filterDeleted = 'active';
+      actualStatus = statusVal;
+    }
+
     this.state.productStore.fetchProducts(
       page,
       this.limit,
       this.selectedCategoryFilter() || undefined,
       this._searchQuery().trim() || undefined,
-      this.selectedStatusFilter() || undefined
+      actualStatus,
+      filterDeleted
     ).subscribe();
   }
 
@@ -131,7 +147,7 @@ export class ProductsComponent implements OnInit {
   public confirmDelete(product: any) {
     this.modalService.confirm({
       title: 'Xác nhận xóa sản phẩm',
-      description: `Bạn có chắc chắn muốn xóa sản phẩm '${product.name}'? Hành động này không thể hoàn tác.`,
+      description: `Bạn có chắc chắn muốn xóa sản phẩm '${product.name}'? Sản phẩm bị xóa sẽ được chuyển vào mục lưu trữ đã xóa.`,
       confirmText: 'Xóa sản phẩm',
       cancelText: 'Hủy',
       confirmButtonClass: 'btn-danger'
@@ -139,7 +155,25 @@ export class ProductsComponent implements OnInit {
       if (confirmed) {
         this.state.productStore.deleteProduct(product.id).subscribe((res) => {
           if (res !== null) {
-            this.state.productStore.fetchProducts().subscribe();
+            this.fetchFilteredProducts(this.currentPage());
+          }
+        });
+      }
+    });
+  }
+
+  public restoreProduct(product: any) {
+    this.modalService.confirm({
+      title: 'Xác nhận khôi phục sản phẩm',
+      description: `Bạn có chắc chắn muốn khôi phục sản phẩm '${product.name}'?`,
+      confirmText: 'Khôi phục',
+      cancelText: 'Hủy',
+      confirmButtonClass: 'btn-primary'
+    }).afterClosed$.subscribe((confirmed?: boolean) => {
+      if (confirmed) {
+        this.state.productStore.restoreProduct(product.id).subscribe((res) => {
+          if (res !== null) {
+            this.fetchFilteredProducts(this.currentPage());
           }
         });
       }

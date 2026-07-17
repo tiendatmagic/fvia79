@@ -42,8 +42,8 @@ class OrderService
                     throw new \Exception('Quantity must be greater than 0.');
                 }
                 $product = $this->productRepository->findById($productId);
-                if (!$product) {
-                    throw new \Exception("Product ID {$productId} not found.");
+                if (!$product || $product->isDeleted()) {
+                    throw new \Exception("Sản phẩm không khả dụng hoặc đã bị ngừng kinh doanh.");
                 }
 
                 $availableCount = $this->inventoryRepository->countAvailableByProductId($productId);

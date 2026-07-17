@@ -18,7 +18,8 @@ class ProductMapper
             $model->status,
             $availableCount,
             $model->attributes,
-            $model->category_id
+            $model->category_id,
+            $model->deleted_at
         );
     }
 
@@ -26,7 +27,7 @@ class ProductMapper
     {
         $model = new ProductModel();
         if ($entity->getId()) {
-            $model = ProductModel::find($entity->getId()) ?: $model;
+            $model = ProductModel::withTrashed()->find($entity->getId()) ?: $model;
         }
 
         $model->category_id = $entity->getCategoryId();

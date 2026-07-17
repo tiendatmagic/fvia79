@@ -28,14 +28,21 @@ class ProductRepository implements ProductRepositoryInterface
         return $total;
     }
 
-    public function findAllActive(?string $categoryId = null, ?string $status = null, ?string $search = null): array
+    public function findAllActive(?string $categoryId = null, ?string $status = null, ?string $search = null, ?string $filterDeleted = 'active'): array
     {
         $query = ProductModel::query();
+        if ($filterDeleted === 'deleted') {
+            $query->onlyTrashed();
+        } elseif ($filterDeleted === 'all') {
+            $query->withTrashed();
+        }
+
         if ($status) {
             $query->where('status', $status);
-        } else {
+        } elseif ($filterDeleted !== 'deleted') {
             $query->where('status', 'active');
         }
+
         if ($categoryId) {
             $query->where('category_id', $categoryId);
         }
@@ -53,14 +60,21 @@ class ProductRepository implements ProductRepositoryInterface
         return $products;
     }
 
-    public function findAllActivePaginated(int $page, int $limit, ?string $categoryId = null, ?string $status = null, ?string $search = null): array
+    public function findAllActivePaginated(int $page, int $limit, ?string $categoryId = null, ?string $status = null, ?string $search = null, ?string $filterDeleted = 'active'): array
     {
         $query = ProductModel::query();
+        if ($filterDeleted === 'deleted') {
+            $query->onlyTrashed();
+        } elseif ($filterDeleted === 'all') {
+            $query->withTrashed();
+        }
+
         if ($status) {
             $query->where('status', $status);
-        } else {
+        } elseif ($filterDeleted !== 'deleted') {
             $query->where('status', 'active');
         }
+
         if ($categoryId) {
             $query->where('category_id', $categoryId);
         }
@@ -89,7 +103,7 @@ class ProductRepository implements ProductRepositoryInterface
 
     public function findById(string $id): ?Product
     {
-        $model = ProductModel::find($id);
+        $model = ProductModel::withTrashed()->find($id);
         if (!$model) return null;
 
         $availableCount = $this->getAvailableCount($model->id);
@@ -116,9 +130,18 @@ class ProductRepository implements ProductRepositoryInterface
 
     public function delete(string $id): bool
     {
-        $model = ProductModel::find($id);
+        $model = ProductModel::withTrashed()->find($id);
         if ($model) {
             return (bool) $model->delete();
+        }
+        return false;
+    }
+
+    public function restore(string $id): bool
+    {
+        $model = ProductModel::onlyTrashed()->find($id);
+        if ($model) {
+            return (bool) $model->restore();
         }
         return false;
     }
