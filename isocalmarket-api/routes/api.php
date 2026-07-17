@@ -31,6 +31,14 @@ Route::prefix('v1')->group(function () {
         Route::get('/orders', ['App\Http\Controllers\OrderController', 'index']);
         Route::get('/orders/{id}', ['App\Http\Controllers\OrderController', 'show']);
 
+        // Deposit routes
+        Route::get('/deposit/rate', ['App\Http\Controllers\DepositController', 'getRate']);
+        Route::post('/deposit', ['App\Http\Controllers\DepositController', 'create']);
+        Route::get('/deposit/history', ['App\Http\Controllers\DepositController', 'history']);
+        Route::get('/deposit/invoice/{id}', ['App\Http\Controllers\DepositController', 'showInvoice']);
+        Route::post('/deposit/invoice/{id}/cancel', ['App\Http\Controllers\DepositController', 'cancelInvoice']);
+        Route::post('/deposit/invoice/{id}/check', ['App\Http\Controllers\DepositController', 'checkTransaction']);
+
         Route::middleware(['admin'])->group(function () {
             Route::get('/admin/dashboard-stats', ['App\Http\Controllers\DashboardController', 'stats']);
 

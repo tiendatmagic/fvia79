@@ -34,6 +34,10 @@ class AppServiceProvider extends ServiceProvider
             \App\Domain\Repositories\OrderRepositoryInterface::class,
             \App\Infrastructure\Persistence\Repositories\OrderRepository::class
         );
+        $this->app->bind(
+            \App\Domain\Repositories\DepositRepositoryInterface::class,
+            \App\Infrastructure\Persistence\Repositories\DepositRepository::class
+        );
     }
 
     /**

@@ -9,6 +9,7 @@ class User
     private string $email;
     private string $password;
     private string $role;
+    private float $balance;
     private ?string $refreshTokenHash;
     private ?\DateTime $refreshTokenExpiredAt;
     private ?string $phone;
@@ -21,6 +22,7 @@ class User
         string $email,
         string $password,
         string $role = 'customer',
+        float $balance = 0.0,
         ?string $refreshTokenHash = null,
         ?\DateTime $refreshTokenExpiredAt = null,
         ?string $phone = null,
@@ -32,6 +34,7 @@ class User
         $this->email = $email;
         $this->password = $password;
         $this->role = $role;
+        $this->balance = $balance;
         $this->refreshTokenHash = $refreshTokenHash;
         $this->refreshTokenExpiredAt = $refreshTokenExpiredAt;
         $this->phone = $phone;
@@ -118,5 +121,20 @@ class User
     {
         $this->refreshTokenHash = $hash;
         $this->refreshTokenExpiredAt = $expiredAt;
+    }
+
+    public function getBalance(): float
+    {
+        return $this->balance;
+    }
+
+    public function setBalance(float $balance): void
+    {
+        $this->balance = $balance;
+    }
+
+    public function addBalance(float $amount): void
+    {
+        $this->balance += $amount;
     }
 }

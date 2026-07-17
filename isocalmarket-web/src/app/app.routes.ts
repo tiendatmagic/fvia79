@@ -41,6 +41,24 @@ export const routes: Routes = [
     canActivate: [AuthGuard]
   },
   {
+    path: 'deposit',
+    canActivate: [AuthGuard],
+    children: [
+      {
+        path: '',
+        loadComponent: () => import('@features/deposit/deposit.component').then(m => m.DepositComponent)
+      },
+      {
+        path: 'history',
+        loadComponent: () => import('@features/deposit-history/deposit-history.component').then(m => m.DepositHistoryComponent)
+      },
+      {
+        path: 'invoice/:id',
+        loadComponent: () => import('@features/deposit-invoice/deposit-invoice.component').then(m => m.DepositInvoiceComponent)
+      }
+    ]
+  },
+  {
     path: 'admin',
     canActivate: [AuthGuard, AdminGuard],
     children: [

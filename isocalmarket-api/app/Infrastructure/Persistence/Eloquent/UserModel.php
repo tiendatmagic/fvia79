@@ -10,7 +10,7 @@ use Illuminate\Database\Eloquent\Attributes\Fillable;
 use Illuminate\Database\Eloquent\Attributes\Hidden;
 use Illuminate\Support\Str;
 
-#[Fillable(['name', 'email', 'phone', 'password', 'role', 'refresh_token_hash', 'refresh_token_expired_at', 'google2fa_secret', 'google2fa_enabled'])]
+#[Fillable(['name', 'email', 'phone', 'password', 'role', 'balance', 'refresh_token_hash', 'refresh_token_expired_at', 'google2fa_secret', 'google2fa_enabled'])]
 #[Hidden(['password', 'remember_token'])]
 class UserModel extends Authenticatable
 {
@@ -39,6 +39,7 @@ class UserModel extends Authenticatable
             'password' => 'hashed',
             'refresh_token_expired_at' => 'datetime',
             'google2fa_enabled' => 'boolean',
+            'balance' => 'float',
         ];
     }
 }

@@ -15,6 +15,7 @@ class UserMapper
             $model->email,
             $model->password,
             $model->role,
+            (float) $model->balance,
             $model->refresh_token_hash,
             $model->refresh_token_expired_at ? new \DateTime($model->refresh_token_expired_at->toDateTimeString()) : null,
             $model->phone,
@@ -35,6 +36,7 @@ class UserMapper
         $model->phone = $entity->getPhone();
         $model->password = $entity->getPassword();
         $model->role = $entity->getRole();
+        $model->balance = $entity->getBalance();
         $model->refresh_token_hash = $entity->getRefreshTokenHash();
         $model->refresh_token_expired_at = $entity->getRefreshTokenExpiredAt();
         $model->google2fa_secret = $entity->getGoogle2faSecret();
