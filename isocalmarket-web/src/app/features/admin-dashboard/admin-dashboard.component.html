@@ -15,12 +15,10 @@
   </app-page-header>
 
   <div
-    class="bg-slate-50 dark:bg-slate-900/40 border border-slate-200/30 dark:border-slate-800/30 rounded-2xl p-4 sm:p-5 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4"
+    class="grid grid-cols-1 md:grid-cols-3 gap-4 bg-slate-50 dark:bg-slate-900/40 border border-slate-200/30 dark:border-slate-800/30 rounded-2xl p-4 sm:p-5"
   >
-    <div class="flex-1 max-w-sm w-full form-field !space-y-1.5">
-      <label class="text-xs font-bold text-slate-400 dark:text-slate-500 uppercase tracking-wider"
-        >Bộ lọc Khoảng thời gian</label
-      >
+    <div class="form-field">
+      <label>Bộ lọc Khoảng thời gian</label>
       <app-custom-date-time-range
         [(ngModel)]="selectedDateRange"
         (ngModelChange)="loadStats()"
@@ -30,8 +28,8 @@
       />
     </div>
 
-    <div class="text-xs text-slate-400 dark:text-slate-500 font-medium">
-      * Số liệu doanh thu và số đơn hàng sẽ được thống kê trong khoảng thời gian này.
+    <div class="flex items-center md:col-span-2 text-xs text-slate-400 dark:text-slate-500 font-medium md:pt-6">
+      <span>* Số liệu doanh thu và số đơn hàng sẽ được thống kê trong khoảng thời gian này.</span>
     </div>
   </div>
 

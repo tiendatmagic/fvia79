@@ -699,14 +699,15 @@
       4. Biên dịch lại toàn bộ ứng dụng Frontend (`npm run build`) thành công 100% không phát sinh lỗi.
 
   - **[HOÀN THÀNH] Đồng bộ giao diện bộ lọc (Filter Bars) và di chuyển Thanh tìm kiếm xuống dưới**:
-    - Yêu cầu: Đồng bộ hóa cách sắp xếp các bộ lọc trên tất cả các trang quản trị và lịch sử. Bộ lọc trạng thái phải luôn nằm ở phía bên phải. Cấu trúc grid của các bộ lọc phải nhất quán. Đồng thời đưa thanh tìm kiếm từ header xuống filter bar nằm bên phải các bộ lọc để thuận tiện thao tác và giải phóng không gian header.
+    - Yêu cầu: Đồng bộ hóa cách sắp xếp các bộ lọc trên tất cả các trang quản trị, dashboard và lịch sử. Bộ lọc trạng thái phải luôn nằm ở phía bên phải. Cấu trúc grid của các bộ lọc phải nhất quán. Đồng thời đưa thanh tìm kiếm từ header xuống filter bar nằm bên phải các bộ lọc để thuận tiện thao tác và giải phóng không gian header.
     - Giải pháp & Triển khai:
-      1. **Sắp xếp lại vị trí**: Đã đảo vị trí của "Bộ lọc Trạng thái" và "Bộ lọc Khoảng thời gian" trong [orders.component.html](file:///d:/git/isocalmarket/isocalmarket-web/src/app/features/orders/orders.component.html) và [admin-orders.component.html](file:///d:/git/isocalmarket/isocalmarket-web/src/app/features/admin-orders/admin-orders.component.html) để đảm bộ bộ lọc trạng thái luôn nằm bên phải.
+      1. **Sắp xếp lại vị trí**: Đã đảo vị trí của "Bộ lọc Trạng thái" và "Bộ lọc Khoảng thời gian" trong [orders.component.html](file:///d:/git/isocalmarket/isocalmarket-web/src/app/features/orders/orders.component.html) and [admin-orders.component.html](file:///d:/git/isocalmarket/isocalmarket-web/src/app/features/admin-orders/admin-orders.component.html) để đảm bộ bộ lọc trạng thái luôn nằm bên phải.
       2. **Chuyển Thanh tìm kiếm xuống Filter Bar**: Đã xóa `app-custom-search-input` trong slot `actions` ở `<app-page-header>` và đưa xuống làm cột thứ 3 bên phải các bộ lọc trong grid 3 cột (`grid-cols-1 sm:grid-cols-2 md:grid-cols-3`) tại các trang:
          - [products.component.html](file:///d:/git/isocalmarket/isocalmarket-web/src/app/features/products/products.component.html)
          - [admin-categories.component.html](file:///d:/git/isocalmarket/isocalmarket-web/src/app/features/admin-categories/admin-categories.component.html)
          - [inventory.component.html](file:///d:/git/isocalmarket/isocalmarket-web/src/app/features/inventory/inventory.component.html) (Cũng đồng thời đổi cấu trúc grid từ 3 cột bị trống sang 3 cột có chứa ô tìm kiếm)
          - [orders.component.html](file:///d:/git/isocalmarket/isocalmarket-web/src/app/features/orders/orders.component.html)
          - [admin-orders.component.html](file:///d:/git/isocalmarket/isocalmarket-web/src/app/features/admin-orders/admin-orders.component.html)
-      3. **Tối ưu trải nghiệm**: Đặt `containerClass="w-full"` cho ô tìm kiếm giúp nó co giãn khít đều cột thứ 3 trên màn hình lớn. Bổ sung nhãn `<label>Tìm kiếm</label>` viết hoa tự động đồng bộ theo design system.
-      4. **Xác minh biên dịch**: Đã chạy build frontend hoàn tất thành công 100% không phát sinh lỗi.
+      3. **Đồng bộ Dashboard**: Đã chuyển cấu hình flex của hộp lọc trên trang Dashboard [admin-dashboard.component.html](file:///d:/git/isocalmarket/isocalmarket-web/src/app/features/admin-dashboard/admin-dashboard.component.html) sang dạng grid 3 cột (`grid-cols-1 md:grid-cols-3`) đồng bộ. Bộ lọc khoảng thời gian chiếm đúng 1 cột trái (độ rộng 1/3 tương ứng các bộ lọc của các trang khác), 2 cột còn lại dành cho phần chú giải trải dài thông thoáng, được căn gióng thẳng hàng đẹp mắt (`md:pt-6`).
+      4. **Tối ưu trải nghiệm**: Đặt `containerClass="w-full"` cho ô tìm kiếm giúp nó co giãn khít đều cột thứ 3 trên màn hình lớn. Bổ sung nhãn `<label>Tìm kiếm</label>` viết hoa tự động đồng bộ theo design system.
+      5. **Xác minh biên dịch**: Đã chạy build frontend hoàn tất thành công 100% không phát sinh lỗi.
