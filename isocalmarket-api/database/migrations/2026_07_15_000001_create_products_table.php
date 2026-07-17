@@ -10,7 +10,7 @@ return new class extends Migration
     {
         Schema::create('products', function (Blueprint $table) {
             $table->uuid('id')->primary();
-            $table->foreignUuid('category_id')->nullable()->constrained('categories')->onDelete('set null');
+            $table->foreignUuid('category_id')->nullable()->constrained('categories')->onDelete('restrict');
             $table->string('name');
             $table->string('slug')->unique();
             $table->text('description')->nullable();

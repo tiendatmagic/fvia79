@@ -196,7 +196,14 @@ export class ProductStore {
         this.toast.showToast('Xóa danh mục thành công!', 'success');
       }),
       catchError((err) => {
-        const msg = err.error?.message || 'Xóa danh mục thất bại!';
+        let msg = err.error?.message || 'Xóa danh mục thất bại!';
+        if (
+          msg.includes('Cannot delete category containing active products') ||
+          msg.includes('foreign key constraint fails') ||
+          msg.includes('Integrity constraint violation')
+        ) {
+          msg = 'Không thể xóa danh mục này vì hiện đang có sản phẩm thuộc danh mục!';
+        }
         this.toast.showToast(msg, 'error');
         return of(null);
       }),
