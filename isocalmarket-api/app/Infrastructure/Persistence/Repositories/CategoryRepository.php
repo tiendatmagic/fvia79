@@ -13,7 +13,7 @@ class CategoryRepository implements CategoryRepositoryInterface
 
     public function findAll(?string $search = null): array
     {
-        $query = CategoryModel::query();
+        $query = CategoryModel::query()->withCount('products');
         if ($search) {
             $query->where(function ($q) use ($search) {
                 $this->applyAccentInsensitiveSearch($q, 'name', $search);
@@ -29,7 +29,7 @@ class CategoryRepository implements CategoryRepositoryInterface
 
     public function findAllPaginated(int $page, int $limit, ?string $search = null): array
     {
-        $query = CategoryModel::query();
+        $query = CategoryModel::query()->withCount('products');
         if ($search) {
             $query->where(function ($q) use ($search) {
                 $this->applyAccentInsensitiveSearch($q, 'name', $search);

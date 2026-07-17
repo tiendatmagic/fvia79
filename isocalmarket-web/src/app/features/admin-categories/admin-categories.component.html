@@ -89,6 +89,11 @@
               Mô tả chi tiết
             </th>
             <th
+              class="py-4 px-6 text-xs font-bold text-slate-400 uppercase tracking-wider text-center whitespace-nowrap"
+            >
+              Số sản phẩm
+            </th>
+            <th
               class="py-4 px-6 text-xs font-bold text-slate-400 uppercase tracking-wider whitespace-nowrap"
             >
               Ngày tạo
@@ -102,13 +107,13 @@
         </thead>
         <tbody>
           <tr *ngIf="state.productStore.loading()">
-            <td colspan="6" class="p-6">
+            <td colspan="7" class="p-6">
               <app-skeleton-loader [type]="'table'" [rows]="5" [showHeader]="false" />
             </td>
           </tr>
 
           <tr *ngIf="!state.productStore.loading() && filteredCategories().length === 0">
-            <td colspan="6" class="py-12 text-center text-sm font-semibold text-slate-400">
+            <td colspan="7" class="py-12 text-center text-sm font-semibold text-slate-400">
               Chưa có danh mục nào. Nhấp vào nút "Thêm Danh Mục" để bắt đầu!
             </td>
           </tr>
@@ -147,6 +152,16 @@
                 [appTooltip]="c.description || 'Không có mô tả.'"
               >
                 {{ c.description || '-' }}
+              </td>
+              <td class="py-4 px-6 text-sm font-extrabold text-center whitespace-nowrap">
+                <span
+                  [ngClass]="{
+                    'text-rose-600 dark:text-rose-400': c.products_count === 0,
+                    'text-emerald-600 dark:text-emerald-400': c.products_count > 0
+                  }"
+                >
+                  {{ c.products_count ?? 0 }}
+                </span>
               </td>
               <td
                 class="py-4 px-6 text-sm text-slate-500 dark:text-slate-400 whitespace-nowrap"

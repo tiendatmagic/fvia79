@@ -38,6 +38,7 @@ class CategoryController extends Controller
                         'name' => $cat->getName(),
                         'slug' => $cat->getSlug(),
                         'description' => $cat->getDescription(),
+                        'products_count' => $cat->getProductsCount() ?? 0,
                         'created_at' => $cat->getCreatedAt() ? $cat->getCreatedAt()->format('Y-m-d H:i:s') : null
                     ];
                 }, $categories);
@@ -60,6 +61,7 @@ class CategoryController extends Controller
                     'name' => $cat->getName(),
                     'slug' => $cat->getSlug(),
                     'description' => $cat->getDescription(),
+                    'products_count' => $cat->getProductsCount() ?? 0,
                     'created_at' => $cat->getCreatedAt() ? $cat->getCreatedAt()->format('Y-m-d H:i:s') : null
                 ];
             }, $categories);

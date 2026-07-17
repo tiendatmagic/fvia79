@@ -14,7 +14,8 @@ class CategoryMapper
             $model->name,
             $model->slug,
             $model->description,
-            $model->created_at
+            $model->created_at,
+            $model->products_count ?? null
         );
     }
 
