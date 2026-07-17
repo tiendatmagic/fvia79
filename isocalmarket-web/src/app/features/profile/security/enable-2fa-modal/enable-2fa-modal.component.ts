@@ -41,6 +41,7 @@ export class Enable2faModalComponent implements OnInit {
   }
 
   public onConfirm() {
+    if (this.isSubmitting) return;
     if (!this.otpConfirmCode || this.otpConfirmCode.length !== 6) {
       this.state.showToast('Vui lòng nhập mã xác thực OTP gồm 6 chữ số!', 'error');
       return;

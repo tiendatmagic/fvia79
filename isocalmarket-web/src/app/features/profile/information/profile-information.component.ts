@@ -35,6 +35,7 @@ export class ProfileInformationComponent implements OnInit {
   }
 
   public onSave() {
+    if (this.isSubmitting) return;
     this.isSubmitting = true;
     this.state.authStore.updateProfile(this.phone)
       .pipe(finalize(() => this.isSubmitting = false))

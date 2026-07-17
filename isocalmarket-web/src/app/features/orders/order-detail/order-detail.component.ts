@@ -123,6 +123,7 @@ export class OrderDetailComponent implements OnInit {
   }
 
   public get2FAOtp(secret: string, index: number) {
+    if (this.loadingOtp()) return;
     this.activeOtpIndex.set(index);
     this.currentOtpCode.set('');
     this.loadingOtp.set(true);

@@ -27,6 +27,7 @@ export class ProfileSecurityComponent {
   public isSubmitting = false;
 
   public startEnable2Fa() {
+    if (this.isSubmitting) return;
     this.isSubmitting = true;
     this.state.authStore.enable2Fa()
       .pipe(finalize(() => this.isSubmitting = false))

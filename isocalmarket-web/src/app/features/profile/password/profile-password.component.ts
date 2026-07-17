@@ -26,6 +26,7 @@ export class ProfilePasswordComponent {
   public isSubmitting = false;
 
   public onSubmit() {
+    if (this.isSubmitting) return;
     if (!this.currentPassword || !this.newPassword || !this.newPasswordConfirmation) {
       this.state.showToast('Vui lòng điền đầy đủ thông tin mật khẩu!', 'error');
       return;

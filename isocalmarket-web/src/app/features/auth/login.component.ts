@@ -44,6 +44,8 @@ export class LoginComponent {
   }
 
   public onSubmit() {
+    if (this.state.authStore.authLoading()) return;
+
     if (this.requires2Fa()) {
       if (!this.otpCode || this.otpCode.length !== 6) {
         this.state.showToast('Vui lòng nhập mã xác thực OTP gồm 6 chữ số!', 'error');

@@ -35,6 +35,7 @@ export class CartModalComponent {
   }
 
   public checkout() {
+    if (this.isSubmitting) return;
     const cartItems = this.cart.items();
     if (cartItems.length === 0) return;
 

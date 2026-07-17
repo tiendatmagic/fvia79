@@ -38,6 +38,8 @@ export class RegisterComponent {
   }
 
   public onSubmit() {
+    if (this.state.authStore.authLoading()) return;
+
     if (!this.name || !this.email || !this.password || !this.passwordConfirmation) {
       this.state.showToast('Vui lòng điền đầy đủ các thông tin!', 'error');
       return;

@@ -77,10 +77,10 @@
         app-button
         (click)="checkout()"
         [variant]="'primary'"
-        [disabled]="isSubmitting"
-        class="py-2.5 px-5 rounded-xl bg-gradient-to-r from-[var(--color-primary)] to-[var(--color-secondary)] text-white text-xs font-extrabold active:scale-95 shadow-sm shadow-[var(--color-primary)]/10 cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed"
+        [loading]="isSubmitting"
+        class="py-2.5 px-5 rounded-xl bg-gradient-to-r from-[var(--color-primary)] to-[var(--color-secondary)] text-white text-xs font-extrabold active:scale-95 shadow-sm shadow-[var(--color-primary)]/10 cursor-pointer"
       >
-        {{ isSubmitting ? 'Đang tạo đơn hàng...' : 'Đặt hàng ngay' }}
+        Đặt hàng ngay
       </button>
     </div>
   </div>

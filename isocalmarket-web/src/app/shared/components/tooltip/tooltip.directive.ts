@@ -25,6 +25,7 @@ export class TooltipDirective implements OnDestroy {
 
   @HostListener('mouseleave')
   @HostListener('focusout')
+  @HostListener('click')
   onMouseLeave(): void {
     this.destroyTooltip();
   }

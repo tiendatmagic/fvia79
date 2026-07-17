@@ -51,6 +51,7 @@ export class InventoryComponent implements OnInit {
 
   public readonly currentPage = signal<number>(1);
   public readonly limit = 10;
+  public readonly loadingItemId = signal<string | null>(null);
 
   public statusFilterOptions = [
     { label: 'Tất cả trạng thái', value: '' },
@@ -120,27 +121,36 @@ export class InventoryComponent implements OnInit {
   }
 
   public openEditModal(item: any) {
-    this.state.inventoryStore.fetchItemDetail(item.id).subscribe((freshItem) => {
-      if (!freshItem) return;
+    if (this.loadingItemId()) return;
+    this.loadingItemId.set(item.id);
 
-      const cleanProductOptions = this.state.productStore.products().map(p => ({
-        label: p.name,
-        value: String(p.id)
-      }));
+    this.state.inventoryStore.fetchItemDetail(item.id).subscribe({
+      next: (freshItem) => {
+        this.loadingItemId.set(null);
+        if (!freshItem) return;
 
-      this.modalService.open(EditInventoryModalComponent, {
-        title: 'Chỉnh sửa tài nguyên',
-        size: 'md',
-        data: {
-          item: freshItem,
-          productOptions: cleanProductOptions
-        }
-      }).afterClosed$.subscribe((success) => {
-        if (success) {
-          this.state.productStore.fetchProducts().subscribe();
-          this.fetchFilteredItems(this.currentPage());
-        }
-      });
+        const cleanProductOptions = this.state.productStore.products().map(p => ({
+          label: p.name,
+          value: String(p.id)
+        }));
+
+        this.modalService.open(EditInventoryModalComponent, {
+          title: 'Chỉnh sửa tài nguyên',
+          size: 'md',
+          data: {
+            item: freshItem,
+            productOptions: cleanProductOptions
+          }
+        }).afterClosed$.subscribe((success) => {
+          if (success) {
+            this.state.productStore.fetchProducts().subscribe();
+            this.fetchFilteredItems(this.currentPage());
+          }
+        });
+      },
+      error: () => {
+        this.loadingItemId.set(null);
+      }
     });
   }
 

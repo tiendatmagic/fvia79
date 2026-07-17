@@ -30,6 +30,7 @@ export class Disable2faModalComponent {
   }
 
   public onConfirm() {
+    if (this.isSubmitting) return;
     if (!this.code) {
       this.state.showToast('Vui lòng nhập mã xác thực 2FA!', 'error');
       return;
