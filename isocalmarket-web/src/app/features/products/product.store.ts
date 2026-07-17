@@ -14,10 +14,46 @@ export class ProductStore {
 
   public readonly products = signal<any[]>([]);
   public readonly categories = signal<any[]>([]);
+  public readonly paginatedCategories = signal<any[]>([]);
   public readonly loading = signal<boolean>(false);
   public readonly totalProducts = signal<number>(0);
   public readonly currentPage = signal<number>(1);
   public readonly lastPage = signal<number>(1);
+  public readonly totalCategories = signal<number>(0);
+  public readonly currentCategoryPage = signal<number>(1);
+  public readonly lastCategoryPage = signal<number>(1);
+
+  public fetchCategoriesPaginated(page: number, limit: number, search?: string) {
+    this.loading.set(true);
+    let params = new HttpParams()
+      .set('page', page.toString())
+      .set('limit', limit.toString());
+
+    if (search) {
+      params = params.set('search', search);
+    }
+
+    return this.api.get<any>('v1/categories', params).pipe(
+      tap((res) => {
+        if (res && res.data) {
+          this.paginatedCategories.set(res.data);
+          this.totalCategories.set(res.meta.total);
+          this.currentCategoryPage.set(res.meta.page);
+          this.lastCategoryPage.set(res.meta.last_page);
+        } else {
+          this.paginatedCategories.set(res || []);
+          this.totalCategories.set((res || []).length);
+          this.currentCategoryPage.set(1);
+          this.lastCategoryPage.set(1);
+        }
+      }),
+      catchError((err) => {
+        this.toast.showToast('Không thể tải danh sách danh mục phân trang!', 'error');
+        return of([]);
+      }),
+      finalize(() => this.loading.set(false))
+    );
+  }
 
   public fetchCategories(search?: string) {
     let params = new HttpParams();

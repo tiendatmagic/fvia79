@@ -42,8 +42,6 @@ class ProductRepository implements ProductRepositoryInterface
         if ($search) {
             $query->where(function ($q) use ($search) {
                 $this->applyAccentInsensitiveSearch($q, 'name', $search);
-                $this->applyAccentInsensitiveOrSearch($q, 'description', $search);
-                $this->applyAccentInsensitiveOrSearch($q, 'slug', $search);
             });
         }
         $models = $query->orderBy('created_at', 'desc')->get();
@@ -69,8 +67,6 @@ class ProductRepository implements ProductRepositoryInterface
         if ($search) {
             $query->where(function ($q) use ($search) {
                 $this->applyAccentInsensitiveSearch($q, 'name', $search);
-                $this->applyAccentInsensitiveOrSearch($q, 'description', $search);
-                $this->applyAccentInsensitiveOrSearch($q, 'slug', $search);
             });
         }
         $total = $query->count();

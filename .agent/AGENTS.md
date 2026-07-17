@@ -651,3 +651,17 @@
       3. Đồng bộ hóa toàn bộ các tệp HTML chứa ô tìm kiếm ([storefront.component.html](file:///d:/git/isocalmarket/isocalmarket-web/src/app/features/storefront/storefront.component.html), [products.component.html](file:///d:/git/isocalmarket/isocalmarket-web/src/app/features/products/products.component.html), [admin-categories.component.html](file:///d:/git/isocalmarket/isocalmarket-web/src/app/features/admin-categories/admin-categories.component.html), [inventory.component.html](file:///d:/git/isocalmarket/isocalmarket-web/src/app/features/inventory/inventory.component.html), [orders.component.html](file:///d:/git/isocalmarket/isocalmarket-web/src/app/features/orders/orders.component.html), [admin-orders.component.html](file:///d:/git/isocalmarket/isocalmarket-web/src/app/features/admin-orders/admin-orders.component.html)) sang `[debounce]="500"` để thống nhất trải nghiệm debounce 500ms trước khi call API backend.
       4. Loại bỏ hoàn toàn điều kiện tự lọc tìm kiếm ở frontend khỏi computed `filteredCategories` của [admin-categories.component.ts](file:///d:/git/isocalmarket/isocalmarket-web/src/app/features/admin-categories/admin-categories.component.ts) để tránh việc lọc trùng lặp hai lần.
       5. Chạy build frontend và unit tests backend thành công 100%.
+  - **[TỐI ƯU HÓA] Giới hạn phạm vi tìm kiếm của Danh mục và Sản phẩm trên Backend**:
+    - Vấn đề: Khi người dùng gõ các từ khóa ngắn như "ng", hệ thống tự động tìm kiếm trên cả tên, mô tả và slug. Điều này dẫn đến hầu hết tất cả các danh mục và sản phẩm đều trả về (vì từ "ng" xuất hiện rất nhiều trong các mô tả như "ngâm", "quảng", "lượng"). Người dùng tưởng lầm là chức năng tìm kiếm không lọc được.
+    - Giải pháp khắc phục: Cập nhật [CategoryRepository.php](file:///d:/git/isocalmarket/isocalmarket-api/app/Infrastructure/Persistence/Repositories/CategoryRepository.php) và [ProductRepository.php](file:///d:/git/isocalmarket/isocalmarket-api/app/Infrastructure/Persistence/Repositories/ProductRepository.php) để chỉ thực hiện tìm kiếm so khớp không dấu trên cột `name` thay vì tìm cả ở description và slug. Kết quả tìm kiếm hiển thị giờ đây hoàn toàn chính xác theo tên và không bị nhiễu bởi các từ khóa mô tả.
+    - Đã chạy `php artisan test` và `npm run build` thành công 100%.
+  - **[HOÀN THÀNH] Triển khai Phân trang (Pagination) cho Quản lý Sản phẩm và Quản lý Danh mục**:
+    - Backend:
+      1. Khai báo thêm `findAllPaginated` trong `CategoryRepositoryInterface` và `CategoryRepository`.
+      2. Thêm phương thức `getCategoriesPaginated` trong `CategoryService`.
+      3. Cập nhật `CategoryController@index` trả về meta phân trang (`total`, `page`, `limit`, `last_page`) nếu có param `page` và `limit` truyền lên. Ngược lại, trả về danh sách đầy đủ cho dropdown.
+    - Frontend:
+      1. Cập nhật `ProductStore` khai báo các signals phân trang riêng cho danh mục (`paginatedCategories`, `totalCategories`, `currentCategoryPage`, `lastCategoryPage`) và hàm `fetchCategoriesPaginated`.
+      2. Cập nhật `AdminCategoriesComponent` và `ProductsComponent` định cấu hình biến signal `currentPage`, giới hạn `limit = 10`, và phương thức `fetchPage()`.
+      3. Thêm component UI `<app-pagination>` vào cuối bảng dữ liệu ở cả hai trang [products.component.html](file:///d:/git/isocalmarket/isocalmarket-web/src/app/features/products/products.component.html) và [admin-categories.component.html](file:///d:/git/isocalmarket/isocalmarket-web/src/app/features/admin-categories/admin-categories.component.html).
+      4. Chạy `php artisan test` và `npm run build` thành công.

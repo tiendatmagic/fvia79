@@ -62,4 +62,9 @@ class CategoryService
 
         return $this->categoryRepository->delete($id);
     }
+
+    public function getCategoriesPaginated(int $page, int $limit, ?string $search = null): array
+    {
+        return $this->categoryRepository->findAllPaginated($page, $limit, $search);
+    }
 }

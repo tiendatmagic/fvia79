@@ -13,6 +13,7 @@ import { ModalService } from '@core/services/modal.service';
 import { CategoryFormModalComponent } from './category-form-modal/category-form-modal.component';
 import { CustomSelectComponent } from '@shared/components/custom-select/custom-select.component';
 import { CustomDateTimeRangeComponent } from '@shared/components/custom-date-time-range/custom-date-time-range.component';
+import { PaginationComponent } from '@shared/components/pagination/pagination.component';
 
 @Component({
   selector: 'app-admin-categories',
@@ -28,7 +29,8 @@ import { CustomDateTimeRangeComponent } from '@shared/components/custom-date-tim
     CustomSearchInputComponent,
     TooltipDirective,
     CustomSelectComponent,
-    CustomDateTimeRangeComponent
+    CustomDateTimeRangeComponent,
+    PaginationComponent
   ],
   templateUrl: './admin-categories.component.html',
   styles: [`
@@ -46,6 +48,8 @@ export class AdminCategoriesComponent implements OnInit {
 
   public readonly selectedSort = signal<string>('name-asc');
   public readonly selectedDateRange = signal<{ startDate: string; endDate: string }>({ startDate: '', endDate: '' });
+  public readonly currentPage = signal<number>(1);
+  public readonly limit = 10;
 
   public readonly sortOptions = [
     { label: 'Tên danh mục (A-Z)', value: 'name-asc' },
@@ -57,7 +61,7 @@ export class AdminCategoriesComponent implements OnInit {
   public readonly filteredCategories = computed(() => {
     const dateRange = this.selectedDateRange();
     const sort = this.selectedSort();
-    let list = this.state.productStore.categories();
+    let list = this.state.productStore.paginatedCategories();
 
     if (dateRange && dateRange.startDate) {
       const start = new Date(dateRange.startDate);
@@ -98,11 +102,21 @@ export class AdminCategoriesComponent implements OnInit {
   }
 
   public fetchCategories() {
-    this.state.productStore.fetchCategories(this._searchQuery().trim() || undefined).subscribe();
+    this.state.productStore.fetchCategoriesPaginated(
+      this.currentPage(),
+      this.limit,
+      this._searchQuery().trim() || undefined
+    ).subscribe();
+  }
+
+  public fetchPage(page: number) {
+    this.currentPage.set(page);
+    this.fetchCategories();
   }
 
   public onSearch(query: string) {
     this._searchQuery.set(query);
+    this.currentPage.set(1);
     this.fetchCategories();
   }
 

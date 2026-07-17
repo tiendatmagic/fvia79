@@ -13,6 +13,7 @@ import { TooltipDirective } from '@shared/components/tooltip/tooltip.directive';
 import { ModalService } from '@core/services/modal.service';
 import { ProductFormModalComponent } from './product-form-modal/product-form-modal.component';
 import { CustomSelectComponent } from '@shared/components/custom-select/custom-select.component';
+import { PaginationComponent } from '@shared/components/pagination/pagination.component';
 
 @Component({
   selector: 'app-products',
@@ -29,6 +30,7 @@ import { CustomSelectComponent } from '@shared/components/custom-select/custom-s
     CustomSearchInputComponent,
     TooltipDirective,
     CustomSelectComponent,
+    PaginationComponent,
   ],
   templateUrl: './products.component.html',
   styles: [`
@@ -44,55 +46,62 @@ export class ProductsComponent implements OnInit {
   public searchQuery = '';
   private readonly _searchQuery = signal('');
 
-  public readonly selectedCategoryFilter = signal('');
-  public readonly selectedStatusFilter = signal('');
+  public readonly selectedCategoryFilter = signal<string>('');
+  public readonly selectedStatusFilter = signal<string>('');
+  public readonly currentPage = signal<number>(1);
+  public readonly limit = 10;
+
+  public get categoryOptions() {
+    const list = this.state.productStore.categories().map((c) => ({
+      label: c.name,
+      value: c.id,
+    }));
+    return [{ label: 'Tất cả danh mục', value: '' }, ...list];
+  }
 
   public readonly statusOptions = [
     { label: 'Tất cả trạng thái', value: '' },
     { label: 'Đang hoạt động', value: 'active' },
-    { label: 'Ngưng hoạt động', value: 'inactive' }
+    { label: 'Ngừng hoạt động', value: 'inactive' },
   ];
-
-  public get categoryOptions() {
-    const cats = this.state.productStore.categories();
-    return [
-      { label: 'Tất cả danh mục', value: '' },
-      ...cats.map(c => ({ label: c.name, value: c.id }))
-    ];
-  }
 
   public readonly filteredProducts = computed(() => {
     return this.state.productStore.products();
   });
 
   ngOnInit() {
-    this.fetchFilteredProducts();
+    this.fetchFilteredProducts(1);
     this.state.productStore.fetchCategories().subscribe();
   }
 
-  public fetchFilteredProducts() {
+  public fetchFilteredProducts(page: number = 1) {
+    this.currentPage.set(page);
     this.state.productStore.fetchProducts(
-      undefined,
-      undefined,
+      page,
+      this.limit,
       this.selectedCategoryFilter() || undefined,
       this._searchQuery().trim() || undefined,
       this.selectedStatusFilter() || undefined
     ).subscribe();
   }
 
+  public fetchPage(page: number) {
+    this.fetchFilteredProducts(page);
+  }
+
   public onSearch(query: string) {
     this._searchQuery.set(query);
-    this.fetchFilteredProducts();
+    this.fetchFilteredProducts(1);
   }
 
   public onCategoryFilterChange(val: string) {
     this.selectedCategoryFilter.set(val);
-    this.fetchFilteredProducts();
+    this.fetchFilteredProducts(1);
   }
 
   public onStatusFilterChange(val: string) {
     this.selectedStatusFilter.set(val);
-    this.fetchFilteredProducts();
+    this.fetchFilteredProducts(1);
   }
 
   public openCreateDrawer() {
@@ -102,7 +111,7 @@ export class ProductsComponent implements OnInit {
       data: null
     }).afterClosed$.subscribe((success) => {
       if (success) {
-        this.state.productStore.fetchProducts().subscribe();
+        this.fetchFilteredProducts(1);
       }
     });
   }
@@ -114,7 +123,7 @@ export class ProductsComponent implements OnInit {
       data: product
     }).afterClosed$.subscribe((success) => {
       if (success) {
-        this.state.productStore.fetchProducts().subscribe();
+        this.fetchFilteredProducts(this.currentPage());
       }
     });
   }

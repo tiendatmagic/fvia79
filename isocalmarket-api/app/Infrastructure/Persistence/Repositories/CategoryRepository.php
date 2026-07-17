@@ -17,8 +17,6 @@ class CategoryRepository implements CategoryRepositoryInterface
         if ($search) {
             $query->where(function ($q) use ($search) {
                 $this->applyAccentInsensitiveSearch($q, 'name', $search);
-                $this->applyAccentInsensitiveOrSearch($q, 'description', $search);
-                $this->applyAccentInsensitiveOrSearch($q, 'slug', $search);
             });
         }
         $models = $query->orderBy('name', 'asc')->get();
@@ -27,6 +25,31 @@ class CategoryRepository implements CategoryRepositoryInterface
             $categories[] = CategoryMapper::toDomain($model);
         }
         return $categories;
+    }
+
+    public function findAllPaginated(int $page, int $limit, ?string $search = null): array
+    {
+        $query = CategoryModel::query();
+        if ($search) {
+            $query->where(function ($q) use ($search) {
+                $this->applyAccentInsensitiveSearch($q, 'name', $search);
+            });
+        }
+        $total = $query->count();
+        $models = $query->orderBy('name', 'asc')
+            ->skip(($page - 1) * $limit)
+            ->take($limit)
+            ->get();
+
+        $categories = [];
+        foreach ($models as $model) {
+            $categories[] = CategoryMapper::toDomain($model);
+        }
+
+        return [
+            'items' => $categories,
+            'total' => $total
+        ];
     }
 
     public function findById(string $id): ?Category

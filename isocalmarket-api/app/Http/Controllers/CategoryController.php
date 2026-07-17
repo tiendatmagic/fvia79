@@ -23,7 +23,36 @@ class CategoryController extends Controller
     public function index(Request $request)
     {
         try {
+            $page = $request->query('page');
+            $limit = $request->query('limit', 10);
             $search = $request->query('search');
+
+            if ($page) {
+                $result = $this->categoryService->getCategoriesPaginated((int)$page, (int)$limit, $search);
+                $categories = $result['items'];
+                $total = $result['total'];
+
+                $data = array_map(function ($cat) {
+                    return [
+                        'id' => $cat->getId(),
+                        'name' => $cat->getName(),
+                        'slug' => $cat->getSlug(),
+                        'description' => $cat->getDescription(),
+                        'created_at' => $cat->getCreatedAt() ? $cat->getCreatedAt()->format('Y-m-d H:i:s') : null
+                    ];
+                }, $categories);
+
+                return response()->json([
+                    'data' => $data,
+                    'meta' => [
+                        'total' => $total,
+                        'page' => (int)$page,
+                        'limit' => (int)$limit,
+                        'last_page' => (int)ceil($total / $limit)
+                    ]
+                ]);
+            }
+
             $categories = $this->categoryRepo->findAll($search);
             $data = array_map(function ($cat) {
                 return [
