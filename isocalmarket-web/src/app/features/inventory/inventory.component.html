@@ -205,15 +205,19 @@
                 <div class="flex items-center justify-end gap-2 whitespace-nowrap">
                   <button
                     (click)="openEditModal(item)"
-                    class="text-xs font-bold px-3 py-1.5 rounded-lg border border-[var(--color-primary)]/20 hover:bg-[var(--color-primary)]/10 text-[var(--color-primary)] bg-[var(--color-primary)]/5 hover:scale-105 active:scale-95 transition-all cursor-pointer"
+                    class="text-xs font-bold px-3 py-1.5 rounded-lg border border-[var(--color-primary)]/20 hover:bg-[var(--color-primary)]/10 text-[var(--color-primary)] bg-[var(--color-primary)]/5 dark:bg-[var(--color-primary)]/10 dark:border-[var(--color-primary)]/30 dark:hover:bg-[var(--color-primary)]/20 hover:scale-105 active:scale-95 transition-all cursor-pointer flex items-center gap-1 shrink-0"
+                    [appTooltip]="'Chỉnh sửa'"
                   >
-                    Sửa
+                    <app-icon name="edit" class="w-3.5 h-3.5" />
+                    <span>Sửa</span>
                   </button>
                   <button
                     (click)="confirmDeleteItem(item)"
-                    class="text-xs font-bold px-3 py-1.5 rounded-lg border border-rose-500/20 dark:border-rose-500/30 hover:bg-rose-100 dark:hover:bg-rose-950/40 text-rose-600 dark:text-rose-400 bg-rose-50 dark:bg-rose-950/20 hover:scale-105 active:scale-95 transition-all cursor-pointer"
+                    class="text-xs font-bold px-3 py-1.5 rounded-lg border border-rose-500/20 dark:border-rose-500/30 hover:bg-rose-100 dark:hover:bg-rose-950/40 text-rose-600 dark:text-rose-400 bg-rose-50 dark:bg-rose-950/20 hover:scale-105 active:scale-95 transition-all cursor-pointer flex items-center gap-1 shrink-0"
+                    [appTooltip]="'Xóa'"
                   >
-                    Xóa
+                    <app-icon name="trash" class="w-3.5 h-3.5" />
+                    <span>Xóa</span>
                   </button>
                 </div>
               </td>

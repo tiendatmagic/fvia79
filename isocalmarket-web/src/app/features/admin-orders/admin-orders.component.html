@@ -91,7 +91,7 @@
             <th class="py-4 px-6 text-center whitespace-nowrap">Số lượng mua</th>
             <th class="py-4 px-6 text-center whitespace-nowrap">Trạng thái</th>
             <th class="py-4 px-6 whitespace-nowrap">Ngày mua</th>
-            <th class="py-4 px-6 text-center whitespace-nowrap">Hành động</th>
+            <th class="py-4 px-6 text-right whitespace-nowrap">Thao tác</th>
           </tr>
         </thead>
         <tbody class="divide-y divide-slate-100 dark:divide-slate-900/50">
@@ -172,12 +172,12 @@
                 {{ order.created_at }}
               </span>
             </td>
-            <td class="py-4 px-6 text-center whitespace-nowrap">
-              <div class="flex items-center justify-center whitespace-nowrap">
+            <td class="py-4 px-6 text-right whitespace-nowrap">
+              <div class="flex items-center justify-end gap-2 whitespace-nowrap">
                 <button
                   (click)="viewDetail(order.id)"
-                  class="text-xs font-bold px-3 py-1.5 rounded-lg border border-teal-500/20 dark:border-teal-500/30 hover:bg-teal-100 dark:hover:bg-teal-950/40 text-teal-600 dark:text-teal-400 bg-teal-50 dark:bg-teal-950/20 hover:scale-105 active:scale-95 transition-all cursor-pointer flex items-center gap-1"
-                  title="Xem chi tiết"
+                  class="text-xs font-bold px-3 py-1.5 rounded-lg border border-teal-500/20 dark:border-teal-500/30 hover:bg-teal-100 dark:hover:bg-teal-950/40 text-teal-600 dark:text-teal-400 bg-teal-50 dark:bg-teal-950/20 hover:scale-105 active:scale-95 transition-all cursor-pointer flex items-center gap-1 shrink-0"
+                  [appTooltip]="'Xem chi tiết'"
                 >
                   <app-icon name="eye" class="w-3.5 h-3.5" />
                   <span>Chi tiết</span>
