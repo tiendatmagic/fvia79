@@ -6,6 +6,7 @@ import { catchError, filter, take, switchMap, takeUntil } from 'rxjs/operators';
 import { HttpClient } from '@angular/common/http';
 import { environment } from '@environments/environment';
 import { ToastService } from '@core/services/toast.service';
+import { UiStateService } from '@core/services/ui-state.service';
 
 let isRefreshing = false;
 const refreshDone$ = new BehaviorSubject<boolean>(false);
@@ -20,6 +21,7 @@ export const authInterceptor: HttpInterceptorFn = (
   const router = inject(Router);
   const http = inject(HttpClient);
   const toastService = inject(ToastService);
+  const uiStateService = inject(UiStateService);
 
   const isBypassCancel = req.url.includes('/auth/refresh') || req.url.includes('/auth/logout');
 
@@ -30,16 +32,19 @@ export const authInterceptor: HttpInterceptorFn = (
 
   return requestStream$.pipe(
     catchError((error: HttpErrorResponse) => {
-      if (error.status === 429 || error.status === 503) {
+      if (error.status === 503) {
+        cancelPending$.next();
+        uiStateService.isMaintenance.set(true);
+      } else if (error.status === 429) {
         cancelPending$.next();
 
         const now = Date.now();
         if (now - lastOverloadToastTime > TOAST_DEBOUNCE_MS) {
           lastOverloadToastTime = now;
-          const msg = error.status === 429
-            ? 'Hệ thống đang quá tải do nhận được quá nhiều yêu cầu. Vui lòng thử lại sau vài giây!'
-            : 'Dịch vụ tạm thời không khả dụng. Vui lòng thử lại sau!';
-          toastService.showToast(msg, 'error');
+          toastService.showToast(
+            'Hệ thống đang quá tải do nhận được quá nhiều yêu cầu. Vui lòng thử lại sau vài giây!',
+            'error'
+          );
         }
       }
 

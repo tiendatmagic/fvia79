@@ -29,12 +29,11 @@
     <label class="text-xs font-black text-slate-400 uppercase tracking-wider block mb-2"
       >Tên Lô Hàng</label
     >
-    <input
-      type="text"
-      class="form-input"
-      placeholder="Nhập tên lô hàng..."
+    <app-custom-input
+      [placeholder]="'Nhập tên lô hàng...'"
       [(ngModel)]="batchName"
       name="batchName"
+      type="text"
     />
   </div>
 
@@ -42,12 +41,14 @@
     <label class="text-xs font-black text-slate-400 uppercase tracking-wider block mb-2"
       >Danh sách tài nguyên còn lại (mỗi dòng một key)</label
     >
-    <textarea
-      class="form-textarea font-mono min-h-xs"
-      placeholder="Nhập thông tin tài nguyên kỹ thuật số..."
+    <app-custom-input
+      [placeholder]="'Nhập thông tin tài nguyên kỹ thuật số...'"
       [(ngModel)]="keysPool"
       name="keysPool"
-    ></textarea>
+      type="textarea"
+      [rows]="8"
+      customClass="font-mono min-h-[200px]"
+    />
     <div
       class="flex justify-between items-center text-xs font-bold text-slate-400 mt-1 select-none"
     >

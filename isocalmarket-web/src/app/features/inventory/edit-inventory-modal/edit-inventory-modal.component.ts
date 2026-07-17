@@ -4,6 +4,7 @@ import { FormsModule } from '@angular/forms';
 import { ModalRef, MODAL_DATA } from '@core/services/modal-ref';
 import { StateService } from '@core/services/state.service';
 import { CustomSelectComponent } from '@shared/components/custom-select/custom-select.component';
+import { CustomInputComponent } from '@shared/components/custom-input/custom-input.component';
 import { ButtonComponent } from '@shared/components/button/button.component';
 import { finalize } from 'rxjs/operators';
 
@@ -14,6 +15,7 @@ import { finalize } from 'rxjs/operators';
     CommonModule,
     FormsModule,
     CustomSelectComponent,
+    CustomInputComponent,
     ButtonComponent
   ],
   templateUrl: './edit-inventory-modal.component.html',

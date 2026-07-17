@@ -43,12 +43,13 @@
 
   <div class="form-field">
     <label class="text-xs font-black text-slate-400 uppercase tracking-wider block mb-2">Mô tả chi tiết</label>
-    <textarea
-      class="form-textarea min-h-[100px]"
+    <app-custom-input
       [placeholder]="'Nhập mô tả sản phẩm...'"
       [(ngModel)]="description"
       name="description"
-    ></textarea>
+      type="textarea"
+      customClass="min-h-[100px]"
+    />
   </div>
 
   <div class="form-field">

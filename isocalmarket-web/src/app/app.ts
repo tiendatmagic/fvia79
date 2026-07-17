@@ -8,6 +8,7 @@ import { SidebarComponent } from '@shared/layout/sidebar/sidebar.component';
 import { LogoComponent } from '@shared/components/logo/logo.component';
 import { ThemeSwitcherComponent } from '@shared/components/theme-switcher/theme-switcher.component';
 import { StateService } from '@core/services/state.service';
+import { MaintenanceComponent } from '@features/maintenance/maintenance.component';
 
 @Component({
   selector: 'app-root',
@@ -21,7 +22,8 @@ import { StateService } from '@core/services/state.service';
     ToastComponent,
     IconComponent,
     LogoComponent,
-    ThemeSwitcherComponent
+    ThemeSwitcherComponent,
+    MaintenanceComponent
   ],
   templateUrl: './app.html',
   styleUrl: './app.scss'

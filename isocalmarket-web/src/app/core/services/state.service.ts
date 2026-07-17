@@ -26,6 +26,7 @@ export class StateService {
   public readonly showMobileMenu = this.uiStateService.showMobileMenu;
   public readonly showDropdown = this.uiStateService.showDropdown;
   public readonly showNetworkDropdown = this.uiStateService.showNetworkDropdown;
+  public readonly isMaintenance = this.uiStateService.isMaintenance;
   public readonly isLoading = computed(() => 
     this.uiStateService.isLoading() || 
     this.authStore.authLoading() || 
