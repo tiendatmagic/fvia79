@@ -4,7 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Infrastructure\Persistence\Eloquent\OrderModel;
 use App\Infrastructure\Persistence\Eloquent\ProductModel;
-use App\Infrastructure\Persistence\Eloquent\InventoryItemModel;
+use App\Infrastructure\Persistence\Eloquent\InventoryBatchModel;
 use Illuminate\Http\Request;
 
 class DashboardController extends Controller
@@ -12,22 +12,34 @@ class DashboardController extends Controller
     public function stats(Request $request)
     {
         try {
-            // Tổng doanh thu của các đơn đã thanh toán (paid)
             $totalRevenue = (float) OrderModel::where('status', 'paid')->sum('total_price');
             $totalOrders = OrderModel::count();
-
             $totalProducts = ProductModel::where('status', 'active')->count();
 
             // Tổng số tài nguyên khả dụng trong kho
-            $totalAvailableInventory = InventoryItemModel::where('status', 'available')->count();
+            $batches = InventoryBatchModel::where('status', 'active')->get();
+            $totalAvailableInventory = 0;
+            foreach ($batches as $batch) {
+                if (!empty($batch->keys_pool)) {
+                    $lines = preg_split('/\r\n|\r|\n/', trim($batch->keys_pool));
+                    $totalAvailableInventory += count(array_filter($lines, fn($l) => !empty(trim($l))));
+                }
+            }
 
             $products = ProductModel::where('status', 'active')->get();
             $lowStockProducts = [];
 
             foreach ($products as $product) {
-                $availableCount = InventoryItemModel::where('product_id', $product->id)
-                    ->where('status', 'available')
-                    ->count();
+                $productBatches = InventoryBatchModel::where('product_id', $product->id)
+                    ->where('status', 'active')
+                    ->get();
+                $availableCount = 0;
+                foreach ($productBatches as $batch) {
+                    if (!empty($batch->keys_pool)) {
+                        $lines = preg_split('/\r\n|\r|\n/', trim($batch->keys_pool));
+                        $availableCount += count(array_filter($lines, fn($l) => !empty(trim($l))));
+                    }
+                }
 
                 if ($availableCount < 5) {
                     $lowStockProducts[] = [

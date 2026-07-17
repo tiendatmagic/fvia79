@@ -124,7 +124,6 @@ class OrderController extends Controller
             }
 
             $order = $details['order'];
-            $inventoryItems = $details['inventory_items'];
 
             $itemsData = array_map(function ($item) {
                 return [
@@ -136,13 +135,17 @@ class OrderController extends Controller
                 ];
             }, $order->getItems());
 
-            $accountsData = array_map(function ($acc) {
-                return [
-                    'id' => $acc->getId(),
-                    'product_id' => $acc->getProductId(),
-                    'data' => $acc->getData() // Raw data tài khoản đã mua
-                ];
-            }, $inventoryItems);
+            $accountsData = [];
+            foreach ($order->getItems() as $item) {
+                $keys = $item->getDeliveredKeys() ?: [];
+                foreach ($keys as $key) {
+                    $accountsData[] = [
+                        'id' => null,
+                        'product_id' => $item->getProductId(),
+                        'data' => $key
+                    ];
+                }
+            }
 
             return response()->json([
                 'id' => $order->getId(),

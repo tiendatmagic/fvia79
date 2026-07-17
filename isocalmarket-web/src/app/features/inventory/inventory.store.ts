@@ -59,14 +59,18 @@ export class InventoryStore {
     );
   }
 
-  public importItems(productId: number, rawData: string) {
+  public importItems(productId: number, batchName: string, rawData: string) {
     this.loading.set(true);
-    return this.api.post<any>('v1/inventory/import', { product_id: productId, raw_data: rawData }).pipe(
+    return this.api.post<any>('v1/inventory/import', {
+      product_id: productId,
+      batch_name: batchName,
+      raw_data: rawData
+    }).pipe(
       tap((res) => {
-        this.toast.showToast(res.message || 'Import kho thành công!', 'success');
+        this.toast.showToast(res.message || 'Import lô hàng thành công!', 'success');
       }),
       catchError((err) => {
-        const msg = err.error?.message || 'Import kho thất bại!';
+        const msg = err.error?.message || 'Import lô hàng thất bại!';
         this.toast.showToast(msg, 'error');
         return of(null);
       }),
@@ -74,14 +78,14 @@ export class InventoryStore {
     );
   }
 
-  public updateItem(id: string, payload: { product_id: string; data: string; status: string }) {
+  public updateItem(id: string, payload: { product_id: string; batch_name: string; keys_pool: string; status: string }) {
     this.loading.set(true);
     return this.api.put<any>(`v1/inventory/items/${id}`, payload).pipe(
       tap((res) => {
-        this.toast.showToast(res.message || 'Cập nhật tài nguyên thành công!', 'success');
+        this.toast.showToast(res.message || 'Cập nhật lô hàng thành công!', 'success');
       }),
       catchError((err) => {
-        const msg = err.error?.message || 'Cập nhật tài nguyên thất bại!';
+        const msg = err.error?.message || 'Cập nhật lô hàng thất bại!';
         this.toast.showToast(msg, 'error');
         return of(null);
       }),

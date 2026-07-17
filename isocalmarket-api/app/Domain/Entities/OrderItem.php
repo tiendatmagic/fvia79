@@ -10,6 +10,7 @@ class OrderItem
     private string $productName;
     private float $price;
     private int $quantity;
+    private ?array $deliveredKeys;
 
     public function __construct(
         ?string $id,
@@ -17,7 +18,8 @@ class OrderItem
         string $productId,
         string $productName,
         float $price,
-        int $quantity
+        int $quantity,
+        ?array $deliveredKeys = null
     ) {
         $this->id = $id;
         $this->orderId = $orderId;
@@ -25,6 +27,7 @@ class OrderItem
         $this->productName = $productName;
         $this->price = $price;
         $this->quantity = $quantity;
+        $this->deliveredKeys = $deliveredKeys;
     }
 
     public function getId(): ?string
@@ -55,5 +58,15 @@ class OrderItem
     public function getQuantity(): int
     {
         return $this->quantity;
+    }
+
+    public function getDeliveredKeys(): ?array
+    {
+        return $this->deliveredKeys;
+    }
+
+    public function setDeliveredKeys(?array $deliveredKeys): void
+    {
+        $this->deliveredKeys = $deliveredKeys;
     }
 }

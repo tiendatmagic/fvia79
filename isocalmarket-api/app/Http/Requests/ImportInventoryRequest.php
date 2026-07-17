@@ -15,6 +15,7 @@ class ImportInventoryRequest extends FormRequest
     {
         return [
             'product_id' => 'required|exists:products,id',
+            'batch_name' => 'required|string',
             'raw_data' => 'required|string',
         ];
     }

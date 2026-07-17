@@ -8,12 +8,14 @@ return new class extends Migration
 {
     public function up(): void
     {
-        Schema::create('inventory_items', function (Blueprint $table) {
+        Schema::create('inventory_batches', function (Blueprint $table) {
             $table->uuid('id')->primary();
             $table->foreignUuid('product_id')->constrained('products')->onDelete('cascade');
-            $table->text('data'); // Lưu trữ thông tin tài khoản, khóa... dưới dạng mã hóa
-            $table->enum('status', ['available', 'reserved', 'sold'])->default('available');
-            $table->foreignUuid('order_id')->nullable()->constrained('orders')->onDelete('set null');
+            $table->string('batch_name');
+            $table->longText('keys_pool')->nullable();
+            $table->integer('initial_count')->default(0);
+            $table->integer('sold_count')->default(0);
+            $table->enum('status', ['active', 'completed', 'inactive'])->default('active');
             $table->timestamps();
 
             $table->index(['product_id', 'status']);
@@ -22,6 +24,6 @@ return new class extends Migration
 
     public function down(): void
     {
-        Schema::dropIfExists('inventory_items');
+        Schema::dropIfExists('inventory_batches');
     }
 };

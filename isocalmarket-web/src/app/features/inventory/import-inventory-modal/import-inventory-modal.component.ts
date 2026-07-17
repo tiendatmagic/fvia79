@@ -29,6 +29,7 @@ export class ImportInventoryModalComponent implements OnInit {
   public readonly state = inject(StateService);
 
   public importProductId = '';
+  public batchName = '';
   public rawData = '';
   public productOptions: any[] = [];
   public isSubmitting = false;
@@ -38,6 +39,8 @@ export class ImportInventoryModalComponent implements OnInit {
       this.importProductId = this.modalData.selectedProductId || '';
       this.productOptions = this.modalData.productOptions || [];
     }
+    const now = new Date();
+    this.batchName = `Lô nhập ${now.toLocaleDateString('vi-VN')} ${now.toLocaleTimeString('vi-VN', { hour: '2-digit', minute: '2-digit' })}`;
   }
 
   public onClose() {
@@ -46,19 +49,22 @@ export class ImportInventoryModalComponent implements OnInit {
 
   public onSubmit() {
     if (this.isSubmitting) return;
-    if (!this.importProductId || !this.rawData.trim()) {
-      this.state.showToast('Vui lòng chọn sản phẩm và nhập dữ liệu tài nguyên!', 'error');
+    if (!this.importProductId || !this.batchName.trim() || !this.rawData.trim()) {
+      this.state.showToast('Vui lòng điền đầy đủ tên lô hàng, chọn sản phẩm và nhập dữ liệu tài nguyên!', 'error');
       return;
     }
 
     this.isSubmitting = true;
     this.state.inventoryStore.importItems(
       this.importProductId as any,
+      this.batchName,
       this.rawData
     ).pipe(
       finalize(() => this.isSubmitting = false)
     ).subscribe((res) => {
-      this.modalRef.close(true);
+      if (res) {
+        this.modalRef.close(true);
+      }
     });
   }
 }

@@ -552,21 +552,23 @@
     - **Khắc phục:** Thay đổi cách gọi API trong `ngOnInit()` thành gọi song song và độc lập. Gọi `fetchFilteredItems(1)` ngay lập tức giúp `inventoryStore.loading()` chuyển sang `true` trước khi render, giúp hiển thị skeleton loader ngay từ đầu.
     - **Kiểm thử:** Chạy `npm run build` biên dịch thành công 100% không phát sinh bất kỳ lỗi nào.
 
-  - **[HOÀN THÀNH] LOẠI BỎ MÃ HÓA KHO HÀNG & THÊM TÍNH NĂNG CHỈNH SỬA TÀI NGUYÊN**:
-    - **Yêu cầu:** 
-      1. Bỏ cơ chế mã hóa cột `data` trong bảng `inventory_items` để lưu trữ và hiển thị dạng văn bản thô (plain text).
-      2. Xây dựng chức năng chỉnh sửa (sửa dữ liệu) cho các tài nguyên kho hàng hiện có.
+  - **[HOÀN THÀNH] CHUYỂN ĐỔI HỆ THỐNG KHO SANG DẠNG LÔ HÀNG (INVENTORY BATCHES) - PHƯƠNG ÁN B**:
+    - **Yêu cầu:** Thay đổi thiết kế từ lưu trữ từng tài nguyên đơn lẻ (mỗi dòng text là 1 row DB) sang dạng quản lý theo Lô Hàng (Inventory Batches), lưu toàn bộ key chưa bán trong pool văn bản lớn (`keys_pool`) của 1 lô hàng để tối ưu hiệu năng và khả năng mở rộng.
     - **Thực hiện:**
+      - **Database (Migrations):**
+        1. Xóa bảng `inventory_items` và tạo bảng `inventory_batches` lưu trữ `batch_name`, `keys_pool`, `initial_count`, `sold_count`, `status`.
+        2. Thêm cột `delivered_keys` vào bảng `order_items` để lưu trữ các tài nguyên đã giao riêng cho đơn hàng.
       - **Backend (Laravel):**
-        1. Cập nhật `InventoryItemMapper.php` để lưu trực tiếp `$entity->getData()` vào `$model->data` trong `toPersistence` mà không dùng `Crypt::encryptString`. Giữ cơ chế giải mã fallback bằng try-catch tại `toDomain` để tương thích ngược.
-        2. Cập nhật `DatabaseSeeder.php` để tạo tài nguyên mẫu dạng thô không mã hóa.
-        3. Tạo Form Request `UpdateInventoryRequest.php` và thêm phương thức `updateItem` trong `InventoryService` cùng API endpoint `update` trong `InventoryController`. Đăng ký route `PUT /api/v1/inventory/items/{id}`.
-        4. Chạy `php artisan migrate:fresh --seed` để thiết lập lại database với dữ liệu mẫu không mã hóa.
+        1. Xóa Entity/Model/Mapper/Repository của `InventoryItem` và xây dựng thay thế bằng `InventoryBatch`, `InventoryBatchModel`, `InventoryBatchMapper`, `InventoryBatchRepository`.
+        2. Cập nhật `ProductRepository` để tính tổng tồn kho khả dụng từ các lô hàng active (bằng cách đếm số dòng trong `keys_pool`).
+        3. Cập nhật `OrderService::createOrder()` để tự động bóc tách (pop) key từ lô hàng active cũ nhất sang lô hàng mới hơn theo phương thức FIFO khi thanh toán, và lưu vào `delivered_keys` của order item.
+        4. Cập nhật `OrderController::show` chuyển đổi `delivered_keys` thành mảng `accounts` để giữ nguyên tương thích ngược đầu ra cho frontend.
+        5. Cập nhật `DashboardController` và `DatabaseSeeder` hoạt động hoàn hảo với cấu trúc Lô Hàng.
+        6. Chạy `php artisan migrate:fresh --seed` và chạy `php artisan test` vượt qua toàn bộ các bài test.
       - **Frontend (Angular):**
-        1. Cập nhật `inventory.store.ts` thêm phương thức `updateItem` gọi API PUT.
-        2. Tạo component Modal `EditInventoryModalComponent` (ts & html) hiển thị form chỉnh sửa sản phẩm, trạng thái và dữ liệu tài nguyên (dùng component `app-custom-select` và `app-button`).
-        3. Cập nhật `inventory.component.ts` để mở `EditInventoryModalComponent` qua `ModalService` và tải lại dữ liệu khi lưu thành công.
-        4. Thêm nút **Sửa** (kiểu dáng thương hiệu `text-[var(--color-primary)] bg-[var(--color-primary)]/5`) cạnh nút **Xóa** ở cột thao tác trong `inventory.component.html`.
-        5. Cập nhật warning lưu ý trong `import-inventory-modal.component.html` bỏ từ khóa "mã hóa".
-      - **Kiểm thử:** Chạy build frontend Angular (`npm run build`) thành công 100% không cảnh báo/lỗi compiler.
+        1. Cập nhật `inventory.store.ts` để gọi API và truyền tải các tham số Lô hàng (`batchName`, `keysPool`).
+        2. Cập nhật form Import (`import-inventory-modal`) thêm ô nhập **Tên Lô Hàng** (hỗ trợ tự sinh tên theo ngày giờ).
+        3. Cập nhật form Sửa (`edit-inventory-modal`) cho phép admin sửa tên lô, trạng thái (Hoạt động / Hoàn thành / Tạm khóa), và chỉnh sửa trực tiếp danh sách key còn lại trong `keys_pool`.
+        4. Cập nhật bảng hiển thị ở `inventory.component.html` hiển thị: ID Lô, Tên sản phẩm, Tên lô hàng, Số lượng (Khả dụng / Ban đầu), Trạng thái lô hàng, và các nút Sửa/Xóa.
+      - **Kiểm thử:** Chạy build frontend Angular (`npm run build`) thành công 100% không phát sinh lỗi hay cảnh báo.
 

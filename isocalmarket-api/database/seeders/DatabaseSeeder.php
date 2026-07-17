@@ -6,7 +6,7 @@ use Illuminate\Database\Seeder;
 use App\Infrastructure\Persistence\Eloquent\UserModel;
 use App\Infrastructure\Persistence\Eloquent\ProductModel;
 use App\Infrastructure\Persistence\Eloquent\CategoryModel;
-use App\Infrastructure\Persistence\Eloquent\InventoryItemModel;
+use App\Infrastructure\Persistence\Eloquent\InventoryBatchModel;
 use App\Infrastructure\Persistence\Eloquent\OrderModel;
 use App\Infrastructure\Persistence\Eloquent\OrderItemModel;
 use Illuminate\Support\Facades\Hash;
@@ -520,14 +520,20 @@ class DatabaseSeeder extends Seeder
                 $template = "ig_user_{i}|pass_ig_{i}|2FA_SECRET_XYZ_{i}|mail_ig_{i}@example.com";
             }
             
+            $keysList = [];
             for ($i = 1; $i <= 15; $i++) {
-                $rawText = str_replace('{i}', $i, $template);
-                InventoryItemModel::create([
-                    'product_id' => $p->id,
-                    'data'       => $rawText,
-                    'status'     => 'available'
-                ]);
+                $keysList[] = str_replace('{i}', $i, $template);
             }
+            $keysPool = implode("\n", $keysList);
+
+            InventoryBatchModel::create([
+                'product_id'    => $p->id,
+                'batch_name'    => 'Lô hàng mẫu #' . strtoupper(Str::random(5)),
+                'keys_pool'     => $keysPool,
+                'initial_count' => count($keysList),
+                'sold_count'    => 0,
+                'status'        => 'active'
+            ]);
         }
 
         $statusDistribution = array_merge(
@@ -582,43 +588,59 @@ class DatabaseSeeder extends Seeder
                 $p = $item['product'];
                 $qty = $item['quantity'];
 
-                OrderItemModel::create([
-                    'order_id'     => $order->id,
-                    'product_id'   => $p->id,
-                    'product_name' => $p->name,
-                    'price'        => $item['price'],
-                    'quantity'     => $qty,
-                    'created_at'   => $orderDate,
-                    'updated_at'   => $orderDate
-                ]);
-
-                if ($status === 'paid') {
-                    $itemsToSell = InventoryItemModel::where('product_id', $p->id)
-                        ->where('status', 'available')
-                        ->limit($qty)
+                $deliveredKeys = [];
+                if ($status === 'paid' || $status === 'pending') {
+                    $activeBatches = InventoryBatchModel::where('product_id', $p->id)
+                        ->where('status', 'active')
+                        ->orderBy('created_at', 'asc')
                         ->get();
 
-                    foreach ($itemsToSell as $inventoryItem) {
-                        $inventoryItem->update([
-                            'status' => 'sold',
-                            'order_id' => $order->id,
-                            'updated_at' => $orderDate
-                        ]);
-                    }
-                } elseif ($status === 'pending') {
-                    $itemsToReserve = InventoryItemModel::where('product_id', $p->id)
-                        ->where('status', 'available')
-                        ->limit($qty)
-                        ->get();
+                    $neededQuantity = $qty;
+                    foreach ($activeBatches as $batch) {
+                        if ($neededQuantity <= 0) {
+                            break;
+                        }
 
-                    foreach ($itemsToReserve as $inventoryItem) {
-                        $inventoryItem->update([
-                            'status' => 'reserved',
-                            'order_id' => $order->id,
-                            'updated_at' => $orderDate
-                        ]);
+                        $lines = preg_split('/\r\n|\r|\n/', $batch->keys_pool);
+                        $availableKeys = [];
+                        $remainingKeys = [];
+
+                        foreach ($lines as $line) {
+                            $trimmed = trim($line);
+                            if (empty($trimmed)) {
+                                continue;
+                            }
+                            if (count($availableKeys) < $neededQuantity) {
+                                $availableKeys[] = $trimmed;
+                            } else {
+                                $remainingKeys[] = $trimmed;
+                            }
+                        }
+
+                        $poppedCount = count($availableKeys);
+                        $batch->sold_count += $poppedCount;
+                        $batch->keys_pool = implode("\n", $remainingKeys);
+                        $neededQuantity -= $poppedCount;
+
+                        if (count($remainingKeys) === 0) {
+                            $batch->status = 'completed';
+                        }
+                        $batch->save();
+
+                        $deliveredKeys = array_merge($deliveredKeys, $availableKeys);
                     }
                 }
+
+                OrderItemModel::create([
+                    'order_id'       => $order->id,
+                    'product_id'     => $p->id,
+                    'product_name'   => $p->name,
+                    'price'          => $item['price'],
+                    'quantity'       => $qty,
+                    'delivered_keys' => (empty($deliveredKeys) ? null : $deliveredKeys),
+                    'created_at'     => $orderDate,
+                    'updated_at'     => $orderDate
+                ]);
             }
         }
     }

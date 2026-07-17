@@ -52,9 +52,9 @@ export class InventoryComponent implements OnInit {
 
   public statusFilterOptions = [
     { label: 'Tất cả trạng thái', value: '' },
-    { label: 'Sẵn có', value: 'available' },
-    { label: 'Tạm giữ', value: 'reserved' },
-    { label: 'Đã bán', value: 'sold' }
+    { label: 'Hoạt động', value: 'active' },
+    { label: 'Hoàn thành', value: 'completed' },
+    { label: 'Tạm khóa', value: 'inactive' }
   ];
 
   public get productOptions() {
@@ -96,7 +96,7 @@ export class InventoryComponent implements OnInit {
     this.fetchFilteredItems(page);
   }
 
-  public getProductName(productId: number): string {
+  public getProductName(productId: string): string {
     const product = this.state.productStore.products().find(p => p.id === productId);
     return product ? product.name : `Sản phẩm #${productId}`;
   }
@@ -162,19 +162,5 @@ export class InventoryComponent implements OnInit {
       () => this.state.showToast(message, 'success'),
       () => this.state.showToast('Không thể sao chép!', 'error')
     );
-  }
-
-  public showItemData(item: any) {
-    this.modalService.confirm({
-      title: 'Chi tiết Dữ liệu Tài nguyên',
-      descriptionHtml: `<div class="mt-2 text-left bg-slate-50 dark:bg-slate-950 p-4 rounded-xl border border-slate-200/50 dark:border-slate-800/80 font-mono text-xs break-all max-h-[300px] overflow-y-auto">${item.data}</div>`,
-      confirmText: 'Sao chép dữ liệu',
-      cancelText: 'Đóng',
-      confirmButtonClass: 'btn-primary'
-    }).afterClosed$.subscribe((confirmed?: boolean) => {
-      if (confirmed) {
-        this.copyToClipboard(item.data, 'Đã sao chép dữ liệu tài nguyên!');
-      }
-    });
   }
 }

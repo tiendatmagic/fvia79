@@ -21,7 +21,8 @@ class OrderMapper
                     $itemModel->product_id,
                     $productName,
                     $itemModel->price,
-                    $itemModel->quantity
+                    $itemModel->quantity,
+                    $itemModel->delivered_keys
                 );
             }
         }

@@ -30,15 +30,16 @@ export class EditInventoryModalComponent implements OnInit {
 
   public itemId = '';
   public editProductId = '';
-  public rawData = '';
-  public status = 'available';
+  public batchName = '';
+  public keysPool = '';
+  public status = 'active';
   public productOptions: any[] = [];
   public isSubmitting = false;
 
   public statusOptions = [
-    { label: 'Sẵn có', value: 'available' },
-    { label: 'Tạm giữ', value: 'reserved' },
-    { label: 'Đã bán', value: 'sold' }
+    { label: 'Hoạt động', value: 'active' },
+    { label: 'Hoàn thành (Hết hàng)', value: 'completed' },
+    { label: 'Tạm khóa', value: 'inactive' }
   ];
 
   ngOnInit() {
@@ -46,8 +47,9 @@ export class EditInventoryModalComponent implements OnInit {
       const item = this.modalData.item;
       this.itemId = item.id;
       this.editProductId = String(item.product_id);
-      this.rawData = item.data || '';
-      this.status = item.status || 'available';
+      this.batchName = item.batch_name || '';
+      this.keysPool = item.keys_pool || '';
+      this.status = item.status || 'active';
       this.productOptions = this.modalData.productOptions || [];
     }
   }
@@ -58,15 +60,16 @@ export class EditInventoryModalComponent implements OnInit {
 
   public onSubmit() {
     if (this.isSubmitting) return;
-    if (!this.editProductId || !this.rawData.trim()) {
-      this.state.showToast('Vui lòng chọn sản phẩm và nhập dữ liệu tài nguyên!', 'error');
+    if (!this.editProductId || !this.batchName.trim()) {
+      this.state.showToast('Vui lòng chọn sản phẩm và nhập tên lô hàng!', 'error');
       return;
     }
 
     this.isSubmitting = true;
     this.state.inventoryStore.updateItem(this.itemId, {
       product_id: this.editProductId,
-      data: this.rawData,
+      batch_name: this.batchName,
+      keys_pool: this.keysPool,
       status: this.status
     }).pipe(
       finalize(() => this.isSubmitting = false)

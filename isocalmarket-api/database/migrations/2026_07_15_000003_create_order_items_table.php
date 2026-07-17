@@ -15,6 +15,7 @@ return new class extends Migration
             $table->string('product_name'); // Lưu tên sản phẩm tại thời điểm đặt hàng (snapshot)
             $table->decimal('price', 15, 2);
             $table->integer('quantity');
+            $table->text('delivered_keys')->nullable();
             $table->timestamps();
 
             $table->index('order_id');

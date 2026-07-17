@@ -27,8 +27,8 @@ class AppServiceProvider extends ServiceProvider
             \App\Infrastructure\Persistence\Repositories\CategoryRepository::class
         );
         $this->app->bind(
-            \App\Domain\Repositories\InventoryItemRepositoryInterface::class,
-            \App\Infrastructure\Persistence\Repositories\InventoryItemRepository::class
+            \App\Domain\Repositories\InventoryBatchRepositoryInterface::class,
+            \App\Infrastructure\Persistence\Repositories\InventoryBatchRepository::class
         );
         $this->app->bind(
             \App\Domain\Repositories\OrderRepositoryInterface::class,

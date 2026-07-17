@@ -8,7 +8,7 @@ use Illuminate\Database\Eloquent\Attributes\Fillable;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Support\Str;
 
-#[Fillable(['order_id', 'product_id', 'product_name', 'price', 'quantity'])]
+#[Fillable(['order_id', 'product_id', 'product_name', 'price', 'quantity', 'delivered_keys'])]
 class OrderItemModel extends Model
 {
     use HasUuids;
@@ -25,6 +25,7 @@ class OrderItemModel extends Model
         return [
             'price' => 'float',
             'quantity' => 'integer',
+            'delivered_keys' => 'array',
         ];
     }
 

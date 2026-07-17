@@ -64,7 +64,7 @@
             <th
               class="py-4 px-6 text-xs font-bold text-slate-400 uppercase tracking-wider whitespace-nowrap"
             >
-              ID
+              ID Lô
             </th>
             <th
               class="py-4 px-6 text-xs font-bold text-slate-400 uppercase tracking-wider whitespace-nowrap"
@@ -74,17 +74,17 @@
             <th
               class="py-4 px-6 text-xs font-bold text-slate-400 uppercase tracking-wider whitespace-nowrap"
             >
-              Dữ liệu tài nguyên
+              Tên Lô Hàng
+            </th>
+            <th
+              class="py-4 px-6 text-xs font-bold text-slate-400 uppercase tracking-wider text-center whitespace-nowrap"
+            >
+              Số lượng (Khả dụng / Ban đầu)
             </th>
             <th
               class="py-4 px-6 text-xs font-bold text-slate-400 uppercase tracking-wider text-center whitespace-nowrap"
             >
               Trạng thái
-            </th>
-            <th
-              class="py-4 px-6 text-xs font-bold text-slate-400 uppercase tracking-wider text-center whitespace-nowrap"
-            >
-              Lịch sử đơn hàng
             </th>
             <th
               class="py-4 px-6 text-xs font-bold text-slate-400 uppercase tracking-wider text-right whitespace-nowrap"
@@ -133,50 +133,24 @@
                   {{ getProductName(item.product_id) }}
                 </span>
               </td>
-              <td class="py-4 px-6 min-w-[150px]">
-                <div class="flex items-center gap-2 max-w-[200px]">
-                  <code
-                    class="text-xs font-mono bg-slate-50 dark:bg-slate-950 px-2 py-1 rounded border border-slate-200/40 dark:border-slate-800/40 text-slate-700 dark:text-slate-300 truncate cursor-pointer hover:border-[var(--color-primary)]/50 transition-colors"
-                    (click)="showItemData(item)"
-                    title="Click để xem chi tiết và sao chép"
-                  >
-                    {{ item.data | slice:0:15 }}...
-                  </code>
-                  <button 
-                    (click)="copyToClipboard(item.data, 'Đã sao chép dữ liệu tài nguyên!'); $event.stopPropagation()" 
-                    class="p-1 hover:bg-slate-100 dark:hover:bg-slate-800 rounded transition-colors text-slate-400 hover:text-slate-600 dark:hover:text-slate-200 cursor-pointer"
-                    title="Sao chép nhanh"
-                  >
-                    <app-icon name="copy" class="w-3.5 h-3.5" />
-                  </button>
-                </div>
+              <td class="py-4 px-6 whitespace-nowrap">
+                <span class="text-sm font-semibold text-slate-700 dark:text-slate-300">
+                  {{ item.batch_name }}
+                </span>
+              </td>
+              <td class="py-4 px-6 text-center whitespace-nowrap">
+                <span class="text-sm font-extrabold text-slate-800 dark:text-white">
+                  {{ item.available_count }} / {{ item.initial_count }}
+                </span>
               </td>
               <td class="py-4 px-6 text-center whitespace-nowrap">
                 <app-badge
-                  [variant]="item.status === 'available' ? 'success' : item.status === 'reserved' ? 'warning' : 'neutral'"
+                  [variant]="item.status === 'active' ? 'success' : item.status === 'completed' ? 'neutral' : 'warning'"
                   size="sm"
                   rounded="md"
                 >
-                  {{ item.status === 'available' ? 'Sẵn có' : item.status === 'reserved' ? 'Tạm giữ' : 'Đã bán' }}
+                  {{ item.status === 'active' ? 'Hoạt động' : item.status === 'completed' ? 'Hoàn thành' : 'Tạm khóa' }}
                 </app-badge>
-              </td>
-              <td class="py-4 px-6 text-center whitespace-nowrap">
-                <div *ngIf="item.order_id" class="flex items-center justify-center gap-1.5">
-                  <span 
-                    [title]="item.order_id" 
-                    class="cursor-help text-xs font-mono font-bold text-slate-500 bg-slate-50 dark:bg-slate-950 px-2 py-1 rounded border border-b border-dashed border-slate-300 dark:border-slate-700 pb-0.5"
-                  >
-                    #{{ item.order_id | slice:0:8 }}...{{ item.order_id | slice:-4 }}
-                  </span>
-                  <button 
-                    (click)="copyToClipboard(item.order_id, 'Đã sao chép mã đơn hàng!'); $event.stopPropagation()" 
-                    class="p-1 hover:bg-slate-100 dark:hover:bg-slate-800 rounded transition-colors text-slate-400 hover:text-slate-600 dark:hover:text-slate-200 cursor-pointer"
-                    title="Sao chép mã đơn hàng"
-                  >
-                    <app-icon name="copy" class="w-3.5 h-3.5" />
-                  </button>
-                </div>
-                <span *ngIf="!item.order_id" class="text-xs text-slate-400 font-semibold">-</span>
               </td>
               <td class="py-4 px-6 text-right whitespace-nowrap">
                 <div class="flex items-center justify-end gap-2 whitespace-nowrap">
@@ -188,8 +162,7 @@
                   </button>
                   <button
                     (click)="confirmDeleteItem(item)"
-                    [disabled]="item.status === 'sold'"
-                    class="text-xs font-bold px-3 py-1.5 rounded-lg border border-rose-500/20 dark:border-rose-500/30 hover:bg-rose-100 dark:hover:bg-rose-950/40 text-rose-600 dark:text-rose-400 bg-rose-50 dark:bg-rose-950/20 hover:scale-105 active:scale-95 transition-all cursor-pointer disabled:opacity-50 disabled:pointer-events-none"
+                    class="text-xs font-bold px-3 py-1.5 rounded-lg border border-rose-500/20 dark:border-rose-500/30 hover:bg-rose-100 dark:hover:bg-rose-950/40 text-rose-600 dark:text-rose-400 bg-rose-50 dark:bg-rose-950/20 hover:scale-105 active:scale-95 transition-all cursor-pointer"
                   >
                     Xóa
                   </button>

@@ -6,7 +6,7 @@ use App\Domain\Entities\Order;
 use App\Domain\Entities\OrderItem;
 use App\Domain\Repositories\OrderRepositoryInterface;
 use App\Domain\Repositories\ProductRepositoryInterface;
-use App\Domain\Repositories\InventoryItemRepositoryInterface;
+use App\Domain\Repositories\InventoryBatchRepositoryInterface;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Str;
 
@@ -14,12 +14,12 @@ class OrderService
 {
     private OrderRepositoryInterface $orderRepository;
     private ProductRepositoryInterface $productRepository;
-    private InventoryItemRepositoryInterface $inventoryRepository;
+    private InventoryBatchRepositoryInterface $inventoryRepository;
 
     public function __construct(
         OrderRepositoryInterface $orderRepository,
         ProductRepositoryInterface $productRepository,
-        InventoryItemRepositoryInterface $inventoryRepository
+        InventoryBatchRepositoryInterface $inventoryRepository
     ) {
         $this->orderRepository = $orderRepository;
         $this->productRepository = $productRepository;
@@ -32,7 +32,7 @@ class OrderService
             $orderCode = 'ORD-' . date('Ymd') . '-' . strtoupper(Str::random(6));
             $totalPrice = 0.0;
             $orderItems = [];
-            $itemsToUpdate = [];
+            $batchesToSave = [];
 
             foreach ($itemsInput as $input) {
                 $productId = $input['product_id'];
@@ -46,12 +46,37 @@ class OrderService
                     throw new \Exception("Product ID {$productId} not found.");
                 }
 
-                // Pessimistic Lock các items khả dụng để giữ hàng
-                $availableItems = $this->inventoryRepository->findAvailableByProductIdForUpdate($productId, $quantity);
-
-                if (count($availableItems) < $quantity) {
-                    throw new \Exception("Sản phẩm '{$product->getName()}' không đủ số lượng tồn kho khả dụng (Yêu cầu: {$quantity}, Còn lại: " . count($availableItems) . ").");
+                $availableCount = $this->inventoryRepository->countAvailableByProductId($productId);
+                if ($availableCount < $quantity) {
+                    throw new \Exception("Sản phẩm '{$product->getName()}' không đủ số lượng tồn kho khả dụng (Yêu cầu: {$quantity}, Còn lại: {$availableCount}).");
                 }
+
+                $activeBatches = $this->inventoryRepository->findActiveBatchesByProductId($productId, true);
+
+                $deliveredKeys = [];
+                $neededQuantity = $quantity;
+
+                foreach ($activeBatches as $batch) {
+                    if ($neededQuantity <= 0) {
+                        break;
+                    }
+                    $batchAvailable = $batch->getAvailableCount();
+                    if ($batchAvailable === 0) {
+                        continue;
+                    }
+
+                    $takeCount = min($neededQuantity, $batchAvailable);
+                    $popped = $batch->popKeys($takeCount);
+                    $deliveredKeys = array_merge($deliveredKeys, $popped);
+                    $neededQuantity -= $takeCount;
+
+                    $batchesToSave[] = $batch;
+                }
+
+                if (count($deliveredKeys) < $quantity) {
+                    throw new \Exception("Có lỗi xảy ra: Không lấy đủ tài nguyên số cho sản phẩm '{$product->getName()}'.");
+                }
+
                 $itemPrice = $product->getPrice();
                 $totalPrice += $itemPrice * $quantity;
 
@@ -61,19 +86,16 @@ class OrderService
                     $productId,
                     $product->getName(),
                     $itemPrice,
-                    $quantity
+                    $quantity,
+                    $deliveredKeys
                 );
-                foreach ($availableItems as $item) {
-                    $itemsToUpdate[] = $item;
-                }
             }
 
             $order = new Order(null, $userId, $orderCode, $totalPrice, 'paid', $orderItems);
             $savedOrder = $this->orderRepository->save($order);
 
-            foreach ($itemsToUpdate as $item) {
-                $item->markAsSold($savedOrder->getId());
-                $this->inventoryRepository->save($item);
+            foreach ($batchesToSave as $batch) {
+                $this->inventoryRepository->save($batch);
             }
 
             return $savedOrder;
@@ -92,14 +114,9 @@ class OrderService
             throw new \Exception('Forbidden. Access denied.');
         }
 
-        $inventoryItems = [];
-        if ($order->isPaid()) {
-            $inventoryItems = $this->inventoryRepository->findByOrderId($orderId);
-        }
-
         return [
             'order' => $order,
-            'inventory_items' => $inventoryItems
+            'inventory_items' => []
         ];
     }
 

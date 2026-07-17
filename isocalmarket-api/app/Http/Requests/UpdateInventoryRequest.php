@@ -15,8 +15,9 @@ class UpdateInventoryRequest extends FormRequest
     {
         return [
             'product_id' => 'sometimes|required|exists:products,id',
-            'data' => 'required|string',
-            'status' => 'required|in:available,reserved,sold',
+            'batch_name' => 'required|string',
+            'status' => 'required|in:active,completed,inactive',
+            'keys_pool' => 'nullable|string',
         ];
     }
 }

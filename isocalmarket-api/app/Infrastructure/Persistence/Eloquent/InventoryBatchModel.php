@@ -8,12 +8,12 @@ use Illuminate\Database\Eloquent\Attributes\Fillable;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Support\Str;
 
-#[Fillable(['product_id', 'data', 'status', 'order_id'])]
-class InventoryItemModel extends Model
+#[Fillable(['product_id', 'batch_name', 'keys_pool', 'initial_count', 'sold_count', 'status'])]
+class InventoryBatchModel extends Model
 {
     use HasUuids;
 
-    protected $table = 'inventory_items';
+    protected $table = 'inventory_batches';
 
     public function newUniqueId(): string
     {
@@ -23,10 +23,5 @@ class InventoryItemModel extends Model
     public function product(): BelongsTo
     {
         return $this->belongsTo(ProductModel::class, 'product_id');
-    }
-
-    public function order(): BelongsTo
-    {
-        return $this->belongsTo(OrderModel::class, 'order_id');
     }
 }

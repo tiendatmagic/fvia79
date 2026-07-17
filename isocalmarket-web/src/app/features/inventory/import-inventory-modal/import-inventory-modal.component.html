@@ -1,12 +1,25 @@
 <div class="space-y-6 pb-2">
-  <div class="form-field">
-    <label class="text-[11px] font-black text-slate-400 uppercase tracking-wider block mb-2">Sản phẩm đích</label>
-    <app-custom-select
-      [options]="productOptions"
-      valueKey="value"
-      labelKey="label"
-      [(value)]="importProductId"
-    />
+  <div class="grid grid-cols-1 sm:grid-cols-2 gap-6">
+    <div class="form-field">
+      <label class="text-[11px] font-black text-slate-400 uppercase tracking-wider block mb-2">Sản phẩm đích</label>
+      <app-custom-select
+        [options]="productOptions"
+        valueKey="value"
+        labelKey="label"
+        [(value)]="importProductId"
+      />
+    </div>
+
+    <div class="form-field">
+      <label class="text-[11px] font-black text-slate-400 uppercase tracking-wider block mb-2">Tên Lô Hàng</label>
+      <input
+        type="text"
+        class="w-full p-3 rounded-xl border border-slate-200/40 dark:border-slate-800/40 bg-slate-50 dark:bg-slate-950/40 text-xs text-slate-800 dark:text-white focus:border-[var(--color-primary)] outline-none"
+        placeholder="Nhập tên lô hàng..."
+        [(ngModel)]="batchName"
+        name="batchName"
+      />
+    </div>
   </div>
 
   <div class="form-field">

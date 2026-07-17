@@ -5,11 +5,27 @@ namespace App\Infrastructure\Persistence\Repositories;
 use App\Domain\Entities\Product;
 use App\Domain\Repositories\ProductRepositoryInterface;
 use App\Infrastructure\Persistence\Eloquent\ProductModel;
-use App\Infrastructure\Persistence\Eloquent\InventoryItemModel;
+use App\Infrastructure\Persistence\Eloquent\InventoryBatchModel;
 use App\Infrastructure\Persistence\Mappers\ProductMapper;
 
 class ProductRepository implements ProductRepositoryInterface
 {
+    private function getAvailableCount(string $productId): int
+    {
+        $batches = InventoryBatchModel::where('product_id', $productId)
+            ->where('status', 'active')
+            ->get();
+        $total = 0;
+        foreach ($batches as $batch) {
+            if (!empty($batch->keys_pool)) {
+                $lines = preg_split('/\r\n|\r|\n/', trim($batch->keys_pool));
+                $filtered = array_filter($lines, fn($line) => !empty(trim($line)));
+                $total += count($filtered);
+            }
+        }
+        return $total;
+    }
+
     public function findAllActive(?string $categoryId = null): array
     {
         $query = ProductModel::where('status', 'active');
@@ -19,9 +35,7 @@ class ProductRepository implements ProductRepositoryInterface
         $models = $query->orderBy('created_at', 'desc')->get();
         $products = [];
         foreach ($models as $model) {
-            $availableCount = InventoryItemModel::where('product_id', $model->id)
-                ->where('status', 'available')
-                ->count();
+            $availableCount = $this->getAvailableCount($model->id);
             $products[] = ProductMapper::toDomain($model, $availableCount);
         }
         return $products;
@@ -41,9 +55,7 @@ class ProductRepository implements ProductRepositoryInterface
 
         $products = [];
         foreach ($models as $model) {
-            $availableCount = InventoryItemModel::where('product_id', $model->id)
-                ->where('status', 'available')
-                ->count();
+            $availableCount = $this->getAvailableCount($model->id);
             $products[] = ProductMapper::toDomain($model, $availableCount);
         }
 
@@ -58,9 +70,7 @@ class ProductRepository implements ProductRepositoryInterface
         $model = ProductModel::find($id);
         if (!$model) return null;
 
-        $availableCount = InventoryItemModel::where('product_id', $model->id)
-            ->where('status', 'available')
-            ->count();
+        $availableCount = $this->getAvailableCount($model->id);
         return ProductMapper::toDomain($model, $availableCount);
     }
 
@@ -69,9 +79,7 @@ class ProductRepository implements ProductRepositoryInterface
         $model = ProductModel::where('slug', $slug)->first();
         if (!$model) return null;
 
-        $availableCount = InventoryItemModel::where('product_id', $model->id)
-            ->where('status', 'available')
-            ->count();
+        $availableCount = $this->getAvailableCount($model->id);
         return ProductMapper::toDomain($model, $availableCount);
     }
 
@@ -80,9 +88,7 @@ class ProductRepository implements ProductRepositoryInterface
         $model = ProductMapper::toPersistence($product);
         $model->save();
 
-        $availableCount = InventoryItemModel::where('product_id', $model->id)
-            ->where('status', 'available')
-            ->count();
+        $availableCount = $this->getAvailableCount($model->id);
         return ProductMapper::toDomain($model, $availableCount);
     }
 

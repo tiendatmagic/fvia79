@@ -19,13 +19,23 @@ class InventoryController extends Controller
     public function import(ImportInventoryRequest $request)
     {
         try {
-            $importedCount = $this->inventoryService->importItems(
+            $batch = $this->inventoryService->importBatch(
                 $request->product_id,
+                $request->batch_name,
                 $request->raw_data
             );
 
             return response()->json([
-                'message' => "Successfully imported {$importedCount} inventory items."
+                'message' => "Successfully imported batch '{$batch->getBatchName()}' with {$batch->getInitialCount()} resources.",
+                'data' => [
+                    'id' => $batch->getId(),
+                    'product_id' => $batch->getProductId(),
+                    'batch_name' => $batch->getBatchName(),
+                    'initial_count' => $batch->getInitialCount(),
+                    'sold_count' => $batch->getSoldCount(),
+                    'available_count' => $batch->getAvailableCount(),
+                    'status' => $batch->getStatus()
+                ]
             ], 201);
         } catch (\Exception $e) {
             return response()->json(['message' => $e->getMessage()], 400);
@@ -42,7 +52,7 @@ class InventoryController extends Controller
             ];
 
             $page = $request->query('page');
-            $limit = $request->query('limit', 10); // Mặc định 10 item/trang trong admin quản lý kho
+            $limit = $request->query('limit', 10);
 
             if ($page) {
                 $result = $this->inventoryService->getItemsPaginated($filters, (int)$page, (int)$limit);
@@ -53,9 +63,13 @@ class InventoryController extends Controller
                     return [
                         'id' => $item->getId(),
                         'product_id' => $item->getProductId(),
-                        'data' => $item->getData(), // Cho phép admin xem raw data
+                        'batch_name' => $item->getBatchName(),
+                        'keys_pool' => $item->getKeysPool(),
+                        'initial_count' => $item->getInitialCount(),
+                        'sold_count' => $item->getSoldCount(),
+                        'available_count' => $item->getAvailableCount(),
                         'status' => $item->getStatus(),
-                        'order_id' => $item->getOrderId()
+                        'created_at' => $item->getCreatedAt()?->format('Y-m-d H:i:s')
                     ];
                 }, $items);
 
@@ -76,9 +90,13 @@ class InventoryController extends Controller
                 return [
                     'id' => $item->getId(),
                     'product_id' => $item->getProductId(),
-                    'data' => $item->getData(),
+                    'batch_name' => $item->getBatchName(),
+                    'keys_pool' => $item->getKeysPool(),
+                    'initial_count' => $item->getInitialCount(),
+                    'sold_count' => $item->getSoldCount(),
+                    'available_count' => $item->getAvailableCount(),
                     'status' => $item->getStatus(),
-                    'order_id' => $item->getOrderId()
+                    'created_at' => $item->getCreatedAt()?->format('Y-m-d H:i:s')
                 ];
             }, $items);
 
@@ -88,23 +106,25 @@ class InventoryController extends Controller
         }
     }
 
-
     public function update(UpdateInventoryRequest $request, $id)
     {
         try {
-            $updated = $this->inventoryService->updateItem($id, $request->validated());
+            $updated = $this->inventoryService->updateBatch($id, $request->validated());
             if (!$updated) {
-                return response()->json(['message' => 'Inventory item not found.'], 404);
+                return response()->json(['message' => 'Inventory batch not found.'], 404);
             }
 
             return response()->json([
-                'message' => 'Inventory item updated successfully.',
+                'message' => 'Inventory batch updated successfully.',
                 'data' => [
                     'id' => $updated->getId(),
                     'product_id' => $updated->getProductId(),
-                    'data' => $updated->getData(),
-                    'status' => $updated->getStatus(),
-                    'order_id' => $updated->getOrderId()
+                    'batch_name' => $updated->getBatchName(),
+                    'keys_pool' => $updated->getKeysPool(),
+                    'initial_count' => $updated->getInitialCount(),
+                    'sold_count' => $updated->getSoldCount(),
+                    'available_count' => $updated->getAvailableCount(),
+                    'status' => $updated->getStatus()
                 ]
             ]);
         } catch (\Exception $e) {
@@ -117,10 +137,10 @@ class InventoryController extends Controller
         try {
             $deleted = $this->inventoryService->deleteItem($id);
             if (!$deleted) {
-                return response()->json(['message' => 'Inventory item not found.'], 404);
+                return response()->json(['message' => 'Inventory batch not found.'], 404);
             }
 
-            return response()->json(['message' => 'Inventory item deleted successfully.']);
+            return response()->json(['message' => 'Inventory batch deleted successfully.']);
         } catch (\Exception $e) {
             return response()->json(['message' => $e->getMessage()], 500);
         }
