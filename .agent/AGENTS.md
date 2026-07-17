@@ -830,3 +830,10 @@
     - Yêu cầu: Áp dụng gạch ngang (`line-through`) cho các trường thông tin Loại, Số TKQC, Slug, Đơn giá (VND) và Tồn kho khả dụng của sản phẩm đã bị xóa mềm để tăng tính đồng nhất và trực quan.
     - Giải pháp & Triển khai: Cập nhật [products.component.html](file:///d:/git/isocalmarket/isocalmarket-web/src/app/features/products/products.component.html) bọc điều kiện `[ngClass]="{ 'line-through': p.is_deleted }"` cho các thẻ span thuộc tính (attributes), slug, đơn giá và badge tồn kho khả dụng.
     - Kết quả: Tất cả các trường thông tin cốt lõi của sản phẩm bị xóa đều được gạch ngang, hiển thị rõ ràng và chuẩn xác.
+
+  - **[GẠCH NGANG ID & VÔ HIỆU HÓA TOOLTIP SẢN PHẨM SOFT-DELETED]**:
+    - Yêu cầu: Áp dụng gạch ngang (`line-through`) cho ID sản phẩm và vô hiệu hóa toàn bộ tooltip trên dòng khi sản phẩm đã bị xóa mềm.
+    - Giải pháp & Triển khai:
+      1. Cập nhật [products.component.html](file:///d:/git/isocalmarket/isocalmarket-web/src/app/features/products/products.component.html) bổ sung `[ngClass]="{ 'line-through': p.is_deleted }"` cho ID sản phẩm.
+      2. Cập nhật tất cả các thuộc tính `[appTooltip]` trên dòng (ID, copy button, tên, mô tả, các thuộc tính, slug, giá cả, tồn kho khả dụng) sử dụng toán tử ba ngôi để trả về chuỗi rỗng `''` khi `p.is_deleted` là true, vô hiệu hóa tooltip hoàn toàn.
+    - Kết quả: Không còn hiển thị tooltip khi di chuột vào sản phẩm bị xóa mềm, và ID đã được gạch ngang đồng bộ.
