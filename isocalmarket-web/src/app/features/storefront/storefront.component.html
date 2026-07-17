@@ -14,6 +14,8 @@
           [placeholder]="'Tìm kiếm tài nguyên số...'"
           [(ngModel)]="searchQuery"
           name="searchQuery"
+          (valueChange)="onSearch($event)"
+          [debounce]="500"
         />
       </div>
     </div>

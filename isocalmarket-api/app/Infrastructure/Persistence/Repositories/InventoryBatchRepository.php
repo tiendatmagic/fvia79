@@ -9,6 +9,8 @@ use App\Infrastructure\Persistence\Mappers\InventoryBatchMapper;
 
 class InventoryBatchRepository implements InventoryBatchRepositoryInterface
 {
+    use AccentInsensitiveSearchTrait;
+
     public function findActiveBatchesByProductId(string $productId, bool $lock = false): array
     {
         $query = InventoryBatchModel::where('product_id', $productId)
@@ -51,7 +53,13 @@ class InventoryBatchRepository implements InventoryBatchRepositoryInterface
             $query->where('status', $filters['status']);
         }
         if (!empty($filters['search'])) {
-            $query->where('batch_name', 'like', '%' . $filters['search'] . '%');
+            $search = $filters['search'];
+            $query->where(function ($q) use ($search) {
+                $this->applyAccentInsensitiveSearch($q, 'batch_name', $search);
+                $q->orWhereHas('product', function ($pq) use ($search) {
+                    $this->applyAccentInsensitiveSearch($pq, 'name', $search);
+                });
+            });
         }
 
         $models = $query->orderBy('created_at', 'desc')->get();
@@ -69,7 +77,13 @@ class InventoryBatchRepository implements InventoryBatchRepositoryInterface
             $query->where('status', $filters['status']);
         }
         if (!empty($filters['search'])) {
-            $query->where('batch_name', 'like', '%' . $filters['search'] . '%');
+            $search = $filters['search'];
+            $query->where(function ($q) use ($search) {
+                $this->applyAccentInsensitiveSearch($q, 'batch_name', $search);
+                $q->orWhereHas('product', function ($pq) use ($search) {
+                    $this->applyAccentInsensitiveSearch($pq, 'name', $search);
+                });
+            });
         }
 
         $total = $query->count();

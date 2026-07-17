@@ -5,6 +5,7 @@ import {
   EventEmitter,
   forwardRef,
   signal,
+  OnInit,
   OnDestroy} from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule, ControlValueAccessor, NG_VALUE_ACCESSOR } from '@angular/forms';
@@ -31,7 +32,7 @@ import { debounceTime } from 'rxjs/operators';
       }
     `,
   ]})
-export class CustomSearchInputComponent implements ControlValueAccessor, OnDestroy {
+export class CustomSearchInputComponent implements ControlValueAccessor, OnInit, OnDestroy {
   public readonly val = signal<string>('');
 
   @Input() placeholder: string = 'Tìm kiếm...';
@@ -39,8 +40,8 @@ export class CustomSearchInputComponent implements ControlValueAccessor, OnDestr
   @Input() clearable: boolean = true;
   @Input() containerClass: string = 'w-full';
   @Input() inputClass: string = 'w-full search-input';
-    @Input() debounce: number = 0;
-    @Input() loading: boolean = false;
+  @Input() debounce: number = 500;
+  @Input() loading: boolean = false;
 
   @Output() valueChange = new EventEmitter<string>();
 
@@ -50,9 +51,11 @@ export class CustomSearchInputComponent implements ControlValueAccessor, OnDestr
   private onChange: (value: string) => void = () => {};
   private onTouched: () => void = () => {};
 
-  constructor() {
+  constructor() {}
+
+  ngOnInit() {
     this.valueSubscription = this.valueSubject
-      .pipe(debounceTime(this.debounce || 0))
+      .pipe(debounceTime(this.debounce))
       .subscribe((v) => {
         this.valueChange.emit(v);
       });

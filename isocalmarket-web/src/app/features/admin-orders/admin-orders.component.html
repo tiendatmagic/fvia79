@@ -9,7 +9,7 @@
         [(ngModel)]="searchQuery"
         name="searchQuery"
         (valueChange)="onSearch($event)"
-        [debounce]="300"
+        [debounce]="500"
         containerClass="w-full md:w-64"
       />
       <button

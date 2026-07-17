@@ -19,8 +19,12 @@ export class ProductStore {
   public readonly currentPage = signal<number>(1);
   public readonly lastPage = signal<number>(1);
 
-  public fetchCategories() {
-    return this.api.get<any[]>('v1/categories').pipe(
+  public fetchCategories(search?: string) {
+    let params = new HttpParams();
+    if (search) {
+      params = params.set('search', search);
+    }
+    return this.api.get<any[]>('v1/categories', params).pipe(
       tap((res) => {
         if (res) {
           this.categories.set(res);
@@ -33,7 +37,7 @@ export class ProductStore {
     );
   }
 
-  public fetchProducts(page?: number, limit?: number, categoryId?: string) {
+  public fetchProducts(page?: number, limit?: number, categoryId?: string, search?: string, status?: string) {
     this.loading.set(true);
     let params = new HttpParams();
     if (page !== undefined) {
@@ -44,6 +48,12 @@ export class ProductStore {
     }
     if (categoryId) {
       params = params.set('category_id', categoryId);
+    }
+    if (search) {
+      params = params.set('search', search);
+    }
+    if (status) {
+      params = params.set('status', status);
     }
 
     return this.api.get<any>('v1/products', params).pipe(

@@ -62,33 +62,37 @@ export class ProductsComponent implements OnInit {
   }
 
   public readonly filteredProducts = computed(() => {
-    const q = this._searchQuery().trim().toLowerCase();
-    const catFilter = this.selectedCategoryFilter();
-    const statusFilter = this.selectedStatusFilter();
-    let list = this.state.productStore.products();
-
-    if (catFilter) {
-      list = list.filter(p => p.category_id === catFilter);
-    }
-    if (statusFilter) {
-      list = list.filter(p => p.status === statusFilter);
-    }
-    if (q) {
-      list = list.filter(p =>
-        p.name?.toLowerCase().includes(q) ||
-        p.slug?.toLowerCase().includes(q)
-      );
-    }
-    return list;
+    return this.state.productStore.products();
   });
 
   ngOnInit() {
-    this.state.productStore.fetchProducts().subscribe();
+    this.fetchFilteredProducts();
     this.state.productStore.fetchCategories().subscribe();
+  }
+
+  public fetchFilteredProducts() {
+    this.state.productStore.fetchProducts(
+      undefined,
+      undefined,
+      this.selectedCategoryFilter() || undefined,
+      this._searchQuery().trim() || undefined,
+      this.selectedStatusFilter() || undefined
+    ).subscribe();
   }
 
   public onSearch(query: string) {
     this._searchQuery.set(query);
+    this.fetchFilteredProducts();
+  }
+
+  public onCategoryFilterChange(val: string) {
+    this.selectedCategoryFilter.set(val);
+    this.fetchFilteredProducts();
+  }
+
+  public onStatusFilterChange(val: string) {
+    this.selectedStatusFilter.set(val);
+    this.fetchFilteredProducts();
   }
 
   public openCreateDrawer() {

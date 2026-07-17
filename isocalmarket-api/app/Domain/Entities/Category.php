@@ -8,17 +8,20 @@ class Category
     private string $name;
     private string $slug;
     private ?string $description;
+    private ?\DateTimeInterface $createdAt;
 
     public function __construct(
         ?string $id,
         string $name,
         string $slug,
-        ?string $description = null
+        ?string $description = null,
+        ?\DateTimeInterface $createdAt = null
     ) {
         $this->id = $id;
         $this->name = $name;
         $this->slug = $slug;
         $this->description = $description;
+        $this->createdAt = $createdAt;
     }
 
     public function getId(): ?string
@@ -39,5 +42,10 @@ class Category
     public function getDescription(): ?string
     {
         return $this->description;
+    }
+
+    public function getCreatedAt(): ?\DateTimeInterface
+    {
+        return $this->createdAt;
     }
 }

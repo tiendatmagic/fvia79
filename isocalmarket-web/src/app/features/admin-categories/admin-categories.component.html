@@ -9,7 +9,7 @@
         [(ngModel)]="searchQuery"
         name="searchQuery"
         (valueChange)="onSearch($event)"
-        [debounce]="300"
+        [debounce]="500"
         containerClass="w-full md:w-64"
       />
       <button
@@ -30,6 +30,32 @@
       </button>
     </ng-container>
   </app-page-header>
+
+  <div
+    class="grid grid-cols-1 sm:grid-cols-2 gap-4 bg-slate-50 dark:bg-slate-900/40 border border-slate-200/30 dark:border-slate-800/30 rounded-2xl p-4 sm:p-5"
+  >
+    <div class="form-field">
+      <label>Bộ lọc Khoảng thời gian</label>
+      <app-custom-date-time-range
+        [ngModel]="selectedDateRange()"
+        (ngModelChange)="selectedDateRange.set($event)"
+        [showPresets]="true"
+        [showTime]="false"
+        placeholder="Lọc theo ngày tạo..."
+      />
+    </div>
+
+    <div class="form-field">
+      <label>Sắp xếp theo</label>
+      <app-custom-select
+        [options]="sortOptions"
+        valueKey="value"
+        labelKey="label"
+        [value]="selectedSort()"
+        (valueChange)="selectedSort.set($event)"
+      />
+    </div>
+  </div>
 
   <div app-card class="overflow-hidden !p-0">
     <div class="overflow-x-auto">
@@ -59,6 +85,11 @@
               Mô tả chi tiết
             </th>
             <th
+              class="py-4 px-6 text-xs font-bold text-slate-400 uppercase tracking-wider whitespace-nowrap"
+            >
+              Ngày tạo
+            </th>
+            <th
               class="py-4 px-6 text-xs font-bold text-slate-400 uppercase tracking-wider text-right whitespace-nowrap"
             >
               Thao tác
@@ -67,13 +98,13 @@
         </thead>
         <tbody>
           <tr *ngIf="state.productStore.loading()">
-            <td colspan="5" class="p-6">
+            <td colspan="6" class="p-6">
               <app-skeleton-loader [type]="'table'" [rows]="5" [showHeader]="false" />
             </td>
           </tr>
 
           <tr *ngIf="!state.productStore.loading() && filteredCategories().length === 0">
-            <td colspan="5" class="py-12 text-center text-sm font-semibold text-slate-400">
+            <td colspan="6" class="py-12 text-center text-sm font-semibold text-slate-400">
               Chưa có danh mục nào. Nhấp vào nút "Thêm Danh Mục" để bắt đầu!
             </td>
           </tr>
@@ -101,6 +132,9 @@
               </td>
               <td class="py-4 px-6 text-sm text-slate-500 dark:text-slate-400 min-w-[200px] max-w-[400px] truncate" [appTooltip]="c.description">
                 {{ c.description || '-' }}
+              </td>
+              <td class="py-4 px-6 text-sm text-slate-500 dark:text-slate-400 whitespace-nowrap">
+                {{ c.created_at | date: 'dd/MM/yyyy HH:mm' }}
               </td>
               <td class="py-4 px-6 text-right whitespace-nowrap">
                 <div class="flex items-center justify-end gap-2 whitespace-nowrap">

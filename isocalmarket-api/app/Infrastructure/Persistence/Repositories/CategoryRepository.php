@@ -9,9 +9,19 @@ use App\Infrastructure\Persistence\Mappers\CategoryMapper;
 
 class CategoryRepository implements CategoryRepositoryInterface
 {
-    public function findAll(): array
+    use AccentInsensitiveSearchTrait;
+
+    public function findAll(?string $search = null): array
     {
-        $models = CategoryModel::orderBy('name', 'asc')->get();
+        $query = CategoryModel::query();
+        if ($search) {
+            $query->where(function ($q) use ($search) {
+                $this->applyAccentInsensitiveSearch($q, 'name', $search);
+                $this->applyAccentInsensitiveOrSearch($q, 'description', $search);
+                $this->applyAccentInsensitiveOrSearch($q, 'slug', $search);
+            });
+        }
+        $models = $query->orderBy('name', 'asc')->get();
         $categories = [];
         foreach ($models as $model) {
             $categories[] = CategoryMapper::toDomain($model);

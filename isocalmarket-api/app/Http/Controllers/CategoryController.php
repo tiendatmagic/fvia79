@@ -20,16 +20,18 @@ class CategoryController extends Controller
         $this->categoryService = $categoryService;
     }
 
-    public function index()
+    public function index(Request $request)
     {
         try {
-            $categories = $this->categoryRepo->findAll();
+            $search = $request->query('search');
+            $categories = $this->categoryRepo->findAll($search);
             $data = array_map(function ($cat) {
                 return [
                     'id' => $cat->getId(),
                     'name' => $cat->getName(),
                     'slug' => $cat->getSlug(),
-                    'description' => $cat->getDescription()
+                    'description' => $cat->getDescription(),
+                    'created_at' => $cat->getCreatedAt() ? $cat->getCreatedAt()->format('Y-m-d H:i:s') : null
                 ];
             }, $categories);
 
@@ -54,7 +56,8 @@ class CategoryController extends Controller
                     'id' => $category->getId(),
                     'name' => $category->getName(),
                     'slug' => $category->getSlug(),
-                    'description' => $category->getDescription()
+                    'description' => $category->getDescription(),
+                    'created_at' => $category->getCreatedAt() ? $category->getCreatedAt()->format('Y-m-d H:i:s') : null
                 ]
             ], 201);
         } catch (\Exception $e) {
@@ -78,7 +81,8 @@ class CategoryController extends Controller
                     'id' => $category->getId(),
                     'name' => $category->getName(),
                     'slug' => $category->getSlug(),
-                    'description' => $category->getDescription()
+                    'description' => $category->getDescription(),
+                    'created_at' => $category->getCreatedAt() ? $category->getCreatedAt()->format('Y-m-d H:i:s') : null
                 ]
             ]);
         } catch (\Exception $e) {

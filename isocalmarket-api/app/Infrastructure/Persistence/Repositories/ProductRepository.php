@@ -10,6 +10,8 @@ use App\Infrastructure\Persistence\Mappers\ProductMapper;
 
 class ProductRepository implements ProductRepositoryInterface
 {
+    use AccentInsensitiveSearchTrait;
+
     private function getAvailableCount(string $productId): int
     {
         $batches = InventoryBatchModel::where('product_id', $productId)
@@ -26,11 +28,23 @@ class ProductRepository implements ProductRepositoryInterface
         return $total;
     }
 
-    public function findAllActive(?string $categoryId = null): array
+    public function findAllActive(?string $categoryId = null, ?string $status = null, ?string $search = null): array
     {
-        $query = ProductModel::where('status', 'active');
+        $query = ProductModel::query();
+        if ($status) {
+            $query->where('status', $status);
+        } else {
+            $query->where('status', 'active');
+        }
         if ($categoryId) {
             $query->where('category_id', $categoryId);
+        }
+        if ($search) {
+            $query->where(function ($q) use ($search) {
+                $this->applyAccentInsensitiveSearch($q, 'name', $search);
+                $this->applyAccentInsensitiveOrSearch($q, 'description', $search);
+                $this->applyAccentInsensitiveOrSearch($q, 'slug', $search);
+            });
         }
         $models = $query->orderBy('created_at', 'desc')->get();
         $products = [];
@@ -41,11 +55,23 @@ class ProductRepository implements ProductRepositoryInterface
         return $products;
     }
 
-    public function findAllActivePaginated(int $page, int $limit, ?string $categoryId = null): array
+    public function findAllActivePaginated(int $page, int $limit, ?string $categoryId = null, ?string $status = null, ?string $search = null): array
     {
-        $query = ProductModel::where('status', 'active');
+        $query = ProductModel::query();
+        if ($status) {
+            $query->where('status', $status);
+        } else {
+            $query->where('status', 'active');
+        }
         if ($categoryId) {
             $query->where('category_id', $categoryId);
+        }
+        if ($search) {
+            $query->where(function ($q) use ($search) {
+                $this->applyAccentInsensitiveSearch($q, 'name', $search);
+                $this->applyAccentInsensitiveOrSearch($q, 'description', $search);
+                $this->applyAccentInsensitiveOrSearch($q, 'slug', $search);
+            });
         }
         $total = $query->count();
         $models = $query->orderBy('created_at', 'desc')

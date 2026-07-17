@@ -11,6 +11,8 @@ use Illuminate\Support\Facades\DB;
 
 class OrderRepository implements OrderRepositoryInterface
 {
+    use AccentInsensitiveSearchTrait;
+
     public function save(Order $order): Order
     {
         return DB::transaction(function () use ($order) {
@@ -61,7 +63,7 @@ class OrderRepository implements OrderRepositoryInterface
         }
         if ($search) {
             $query->where(function ($q) use ($search) {
-                $q->where('order_code', 'like', "%{$search}%");
+                $this->applyAccentInsensitiveSearch($q, 'order_code', $search);
             });
         }
         if ($startDate) {
@@ -102,11 +104,13 @@ class OrderRepository implements OrderRepositoryInterface
         }
         if ($search) {
             $query->where(function ($q) use ($search) {
-                $q->where('order_code', 'like', "%{$search}%")
-                  ->orWhereHas('user', function ($qu) use ($search) {
-                      $qu->where('email', 'like', "%{$search}%")
-                         ->orWhere('name', 'like', "%{$search}%");
-                  });
+                $this->applyAccentInsensitiveSearch($q, 'order_code', $search);
+                $q->orWhereHas('user', function ($qu) use ($search) {
+                    $this->applyAccentInsensitiveSearch($qu, 'email', $search);
+                    $qu->orWhere(function ($qu2) use ($search) {
+                        $this->applyAccentInsensitiveSearch($qu2, 'name', $search);
+                    });
+                });
             });
         }
         if ($startDate) {

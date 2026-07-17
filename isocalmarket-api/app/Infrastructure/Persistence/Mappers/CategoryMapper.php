@@ -13,7 +13,8 @@ class CategoryMapper
             $model->id,
             $model->name,
             $model->slug,
-            $model->description
+            $model->description,
+            $model->created_at
         );
     }
 

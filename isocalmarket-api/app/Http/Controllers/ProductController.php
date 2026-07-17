@@ -21,9 +21,22 @@ class ProductController extends Controller
             $page = $request->query('page');
             $limit = $request->query('limit', 10);
             $categoryId = $request->query('category_id');
+            $search = $request->query('search');
+            $status = $request->query('status');
+
+            // Default behavior for storefront / guest is to show active status only
+            $user = null;
+            try {
+                $user = auth('api')->user();
+            } catch (\Exception $e) {}
+
+            $isAdmin = $user && $user->role === 'admin';
+            if (!$isAdmin && !$status) {
+                $status = 'active';
+            }
 
             if ($page) {
-                $result = $this->productService->getActiveProductsPaginated((int)$page, (int)$limit, $categoryId);
+                $result = $this->productService->getActiveProductsPaginated((int)$page, (int)$limit, $categoryId, $status, $search);
                 $products = $result['items'];
                 $total = $result['total'];
 
@@ -52,7 +65,7 @@ class ProductController extends Controller
                 ]);
             }
 
-            $products = $this->productService->getAllActiveProducts($categoryId);
+            $products = $this->productService->getAllActiveProducts($categoryId, $status, $search);
             
             $data = array_map(function ($product) {
                 return [

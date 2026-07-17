@@ -11,6 +11,8 @@ import { CustomSearchInputComponent } from '@shared/components/custom-search-inp
 import { TooltipDirective } from '@shared/components/tooltip/tooltip.directive';
 import { ModalService } from '@core/services/modal.service';
 import { CategoryFormModalComponent } from './category-form-modal/category-form-modal.component';
+import { CustomSelectComponent } from '@shared/components/custom-select/custom-select.component';
+import { CustomDateTimeRangeComponent } from '@shared/components/custom-date-time-range/custom-date-time-range.component';
 
 @Component({
   selector: 'app-admin-categories',
@@ -24,7 +26,9 @@ import { CategoryFormModalComponent } from './category-form-modal/category-form-
     PageHeaderComponent,
     IconComponent,
     CustomSearchInputComponent,
-    TooltipDirective
+    TooltipDirective,
+    CustomSelectComponent,
+    CustomDateTimeRangeComponent
   ],
   templateUrl: './admin-categories.component.html',
   styles: [`
@@ -40,17 +44,53 @@ export class AdminCategoriesComponent implements OnInit {
   public searchQuery = '';
   private readonly _searchQuery = signal('');
 
+  public readonly selectedSort = signal<string>('name-asc');
+  public readonly selectedDateRange = signal<{ startDate: string; endDate: string }>({ startDate: '', endDate: '' });
+
+  public readonly sortOptions = [
+    { label: 'Tên danh mục (A-Z)', value: 'name-asc' },
+    { label: 'Tên danh mục (Z-A)', value: 'name-desc' },
+    { label: 'Mới nhất', value: 'date-desc' },
+    { label: 'Cũ nhất', value: 'date-asc' }
+  ];
+
   public readonly filteredCategories = computed(() => {
-    const q = this._searchQuery().trim().toLowerCase();
-    const list = this.state.productStore.categories();
+    const dateRange = this.selectedDateRange();
+    const sort = this.selectedSort();
+    let list = this.state.productStore.categories();
 
-    if (!q) return list;
+    if (dateRange && dateRange.startDate) {
+      const start = new Date(dateRange.startDate);
+      start.setHours(0, 0, 0, 0);
 
-    return list.filter(c =>
-      c.name?.toLowerCase().includes(q) ||
-      c.slug?.toLowerCase().includes(q) ||
-      c.description?.toLowerCase().includes(q)
-    );
+      const end = dateRange.endDate ? new Date(dateRange.endDate) : new Date(dateRange.startDate);
+      end.setHours(23, 59, 59, 999);
+
+      list = list.filter(c => {
+        if (!c.created_at) return false;
+        const itemDate = new Date(c.created_at);
+        return itemDate >= start && itemDate <= end;
+      });
+    }
+
+    list = [...list].sort((a, b) => {
+      if (sort === 'name-asc') {
+        return (a.name || '').localeCompare(b.name || '', 'vi');
+      } else if (sort === 'name-desc') {
+        return (b.name || '').localeCompare(a.name || '', 'vi');
+      } else if (sort === 'date-desc') {
+        const t1 = a.created_at ? new Date(a.created_at).getTime() : 0;
+        const t2 = b.created_at ? new Date(b.created_at).getTime() : 0;
+        return t2 - t1;
+      } else if (sort === 'date-asc') {
+        const t1 = a.created_at ? new Date(a.created_at).getTime() : 0;
+        const t2 = b.created_at ? new Date(b.created_at).getTime() : 0;
+        return t1 - t2;
+      }
+      return 0;
+    });
+
+    return list;
   });
 
   ngOnInit() {
@@ -58,11 +98,12 @@ export class AdminCategoriesComponent implements OnInit {
   }
 
   public fetchCategories() {
-    this.state.productStore.fetchCategories().subscribe();
+    this.state.productStore.fetchCategories(this._searchQuery().trim() || undefined).subscribe();
   }
 
   public onSearch(query: string) {
     this._searchQuery.set(query);
+    this.fetchCategories();
   }
 
   public openCreateModal() {

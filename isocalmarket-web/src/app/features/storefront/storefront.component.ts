@@ -70,13 +70,7 @@ export class StorefrontComponent implements OnInit {
     { label: 'Thứ tự mặc định', value: 'default' }
   ];
   public readonly filteredProducts = computed(() => {
-    const list = this.state.productStore.products();
-    const q = this.searchQuery.toLowerCase().trim();
-    if (!q) return list;
-    return list.filter(p => 
-      p.name.toLowerCase().includes(q) || 
-      (p.description && p.description.toLowerCase().includes(q))
-    );
+    return this.state.productStore.products();
   });
 
   public readonly groupedProducts = computed(() => {
@@ -111,7 +105,18 @@ export class StorefrontComponent implements OnInit {
 
   ngOnInit() {
     this.state.productStore.fetchCategories().subscribe();
-    this.state.productStore.fetchProducts().subscribe();
+    this.state.productStore.fetchProducts(undefined, undefined, undefined, undefined, 'active').subscribe();
+  }
+
+  public onSearch(query: string) {
+    this.searchQuery = query;
+    this.state.productStore.fetchProducts(
+      undefined,
+      undefined,
+      undefined,
+      query.trim() || undefined,
+      'active'
+    ).subscribe();
   }
 
   public getCategoryPage(catId: string): number {
