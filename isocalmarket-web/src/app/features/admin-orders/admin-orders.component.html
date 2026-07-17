@@ -26,17 +26,6 @@
     class="grid grid-cols-1 sm:grid-cols-2 gap-4 bg-slate-50 dark:bg-slate-900/40 border border-slate-200/30 dark:border-slate-800/30 rounded-2xl p-4 sm:p-5"
   >
     <div class="form-field">
-      <label>Bộ lọc Trạng thái</label>
-      <app-custom-select
-        [options]="statusOptions"
-        valueKey="value"
-        labelKey="label"
-        [value]="selectedStatus()"
-        (valueChange)="onStatusChange($event)"
-      />
-    </div>
-
-    <div class="form-field">
       <label>Bộ lọc Khoảng thời gian</label>
       <app-custom-date-time-range
         [(ngModel)]="selectedDateRange"
@@ -44,6 +33,17 @@
         [showPresets]="true"
         [showTime]="false"
         placeholder="Lọc theo ngày tạo đơn..."
+      />
+    </div>
+
+    <div class="form-field">
+      <label>Bộ lọc Trạng thái</label>
+      <app-custom-select
+        [options]="statusOptions"
+        valueKey="value"
+        labelKey="label"
+        [value]="selectedStatus()"
+        (valueChange)="onStatusChange($event)"
       />
     </div>
   </div>
