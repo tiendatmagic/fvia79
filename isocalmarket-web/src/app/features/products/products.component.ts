@@ -9,6 +9,7 @@ import { CardComponent } from '@shared/components/card/card.component';
 import { PageHeaderComponent } from '@shared/components/page-header/page-header.component';
 import { IconComponent } from '@shared/components/icon/icon.component';
 import { CustomSearchInputComponent } from '@shared/components/custom-search-input/custom-search-input.component';
+import { TooltipDirective } from '@shared/components/tooltip/tooltip.directive';
 import { ModalService } from '@core/services/modal.service';
 import { ProductFormModalComponent } from './product-form-modal/product-form-modal.component';
 
@@ -25,6 +26,7 @@ import { ProductFormModalComponent } from './product-form-modal/product-form-mod
     PageHeaderComponent,
     IconComponent,
     CustomSearchInputComponent,
+    TooltipDirective,
   ],
   templateUrl: './products.component.html',
   styles: [`

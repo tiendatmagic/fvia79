@@ -1,5 +1,8 @@
 <div class="max-w-[1530px] mx-auto w-full p-4 sm:p-6 space-y-6">
-    <app-page-header title="Quản Lý Kho Hàng Số" description="Import tài khoản hàng loạt và kiểm soát trạng thái của từng tài nguyên kỹ thuật số.">
+  <app-page-header
+    title="Quản Lý Kho Hàng Số"
+    description="Import tài khoản hàng loạt và kiểm soát trạng thái của từng tài nguyên kỹ thuật số."
+  >
     <ng-container actions>
       <app-custom-search-input
         [placeholder]="'Tìm kiếm kho hàng...'"
@@ -28,7 +31,7 @@
     </ng-container>
   </app-page-header>
 
-    <div
+  <div
     class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4 bg-slate-50 dark:bg-slate-900/40 border border-slate-200/30 dark:border-slate-800/30 rounded-2xl p-4 sm:p-5"
   >
     <div class="form-field">
@@ -54,7 +57,7 @@
     </div>
   </div>
 
-    <div app-card class="overflow-hidden !p-0">
+  <div app-card class="overflow-hidden !p-0">
     <div class="overflow-x-auto">
       <table class="w-full text-left border-collapse">
         <thead>
@@ -94,56 +97,73 @@
           </tr>
         </thead>
         <tbody>
-                    <tr *ngIf="state.inventoryStore.loading()">
+          <tr *ngIf="state.inventoryStore.loading()">
             <td colspan="6" class="p-6">
               <app-skeleton-loader [type]="'table'" [rows]="5" [showHeader]="false" />
             </td>
           </tr>
 
-                    <tr *ngIf="!state.inventoryStore.loading() && state.inventoryStore.items().length === 0">
+          <tr *ngIf="!state.inventoryStore.loading() && state.inventoryStore.items().length === 0">
             <td colspan="6" class="py-12 text-center text-sm font-semibold text-slate-400">
               Không tìm thấy tài nguyên nào trong kho.
             </td>
           </tr>
 
-                    @if (!state.inventoryStore.loading()) {
+          @if (!state.inventoryStore.loading()) {
             <tr
               *ngFor="let item of state.inventoryStore.items()"
               class="border-b border-slate-200/30 dark:border-slate-800/30 hover:bg-slate-50/30 dark:hover:bg-slate-950/10 transition-colors"
             >
               <td class="py-4 px-6 text-xs whitespace-nowrap">
                 <div class="flex items-center gap-1.5">
-                  <span 
-                    [title]="item.id" 
+                  <span
+                    [appTooltip]="item.id"
                     class="cursor-help font-mono font-bold text-[var(--color-primary)] border-b border-dashed border-slate-300 dark:border-slate-700 pb-0.5"
                   >
-                    #{{ item.id | slice:0:8 }}...{{ item.id | slice:-4 }}
+                    #{{ item.id | slice: 0 : 8 }}...{{ item.id | slice: -4 }}
                   </span>
-                  <button 
-                    (click)="copyToClipboard(item.id, 'Đã sao chép mã tài nguyên!'); $event.stopPropagation()" 
+                  <button
+                    (click)="
+                      copyToClipboard(item.id, 'Đã sao chép mã tài nguyên!');
+                      $event.stopPropagation()
+                    "
                     class="p-1 hover:bg-slate-100 dark:hover:bg-slate-800 rounded transition-colors text-slate-400 hover:text-slate-600 dark:hover:text-slate-200 cursor-pointer"
-                    title="Sao chép ID đầy đủ"
+                    [appTooltip]="'Sao chép ID đầy đủ'"
                   >
                     <app-icon name="copy" class="w-3.5 h-3.5" />
                   </button>
                 </div>
               </td>
               <td class="py-4 px-6 whitespace-nowrap">
-                <span class="text-sm font-extrabold text-slate-800 dark:text-white">
+                <span
+                  class="text-sm font-extrabold text-slate-800 dark:text-white truncate max-w-xs block"
+                  [appTooltip]="getProductName(item.product_id)"
+                >
                   {{ getProductName(item.product_id) }}
                 </span>
               </td>
               <td class="py-4 px-6 whitespace-nowrap">
-                <span class="text-sm font-semibold text-slate-700 dark:text-slate-300">
+                <span
+                  class="text-sm font-semibold text-slate-700 dark:text-slate-300 truncate max-w-[150px] block"
+                  [appTooltip]="item.batch_name"
+                >
                   {{ item.batch_name }}
                 </span>
               </td>
               <td class="py-4 px-6 text-center whitespace-nowrap">
-                <span class="text-sm font-extrabold flex items-center justify-center" [ngClass]="{
-                  'text-rose-600 dark:text-rose-400': item.available_count === 0,
-                  'text-amber-600 dark:text-amber-400': item.available_count > 0 && item.available_count < item.initial_count,
-                  'text-emerald-600 dark:text-emerald-400': item.available_count === item.initial_count
-                }">
+                <span
+                  class="text-sm font-extrabold flex items-center justify-center"
+                  [ngClass]="{
+                    'text-rose-600 dark:text-rose-400': item.available_count === 0,
+                    'text-amber-600 dark:text-amber-400':
+                      item.available_count > 0 && item.available_count < item.initial_count,
+                    'text-emerald-600 dark:text-emerald-400':
+                      item.available_count === item.initial_count,
+                  }"
+                  [appTooltip]="
+                    'Khả dụng: ' + item.available_count + ' / Ban đầu: ' + item.initial_count
+                  "
+                >
                   <span>{{ item.available_count }}</span>
                   <span class="opacity-60 mx-1">/</span>
                   <span>{{ item.initial_count }}</span>
@@ -151,11 +171,30 @@
               </td>
               <td class="py-4 px-6 text-center whitespace-nowrap">
                 <app-badge
-                  [variant]="item.status === 'active' ? 'success' : item.status === 'completed' ? 'neutral' : 'warning'"
+                  [variant]="
+                    item.status === 'active'
+                      ? 'success'
+                      : item.status === 'completed'
+                        ? 'neutral'
+                        : 'warning'
+                  "
                   size="sm"
                   rounded="md"
+                  [appTooltip]="
+                    item.status === 'active'
+                      ? 'Hoạt động'
+                      : item.status === 'completed'
+                        ? 'Hoàn thành'
+                        : 'Tạm khóa'
+                  "
                 >
-                  {{ item.status === 'active' ? 'Hoạt động' : item.status === 'completed' ? 'Hoàn thành' : 'Tạm khóa' }}
+                  {{
+                    item.status === 'active'
+                      ? 'Hoạt động'
+                      : item.status === 'completed'
+                        ? 'Hoàn thành'
+                        : 'Tạm khóa'
+                  }}
                 </app-badge>
               </td>
               <td class="py-4 px-6 text-right whitespace-nowrap">
@@ -178,7 +217,7 @@
           }
         </tbody>
       </table>
-            <div
+      <div
         class="p-4 border-t border-slate-200/30 dark:border-slate-800/30 flex justify-center bg-slate-50/20 dark:bg-slate-950/10"
         *ngIf="state.inventoryStore.lastPage() > 1"
       >

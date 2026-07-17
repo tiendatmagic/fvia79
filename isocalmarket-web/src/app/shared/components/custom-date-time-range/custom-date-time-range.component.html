@@ -36,7 +36,7 @@
     </div>
   </div>
 
-    @if (isOpen()) {
+  @if (isOpen()) {
     <div
       [ngStyle]="popoverStyle"
       class="date-time-range-popover bg-white dark:bg-slate-950 border border-slate-200/50 dark:border-slate-800/50 shadow-lg shadow-[var(--color-primary)]/20 rounded-xl p-4 flex flex-col gap-4"
@@ -91,10 +91,10 @@
           }
         </div>
 
-                <div class="grid grid-cols-7 gap-y-1 gap-x-0">
+        <div class="grid grid-cols-7 gap-y-1 gap-x-0">
           @for (day of calendarDays(); track day.getTime()) {
             <div class="relative w-full aspect-square flex items-center justify-center">
-                            @if (getHighlightClass(day) !== 'hidden') {
+              @if (getHighlightClass(day) !== 'hidden') {
                 <div
                   class="absolute inset-y-1 bg-[var(--color-primary)]/10 z-0"
                   [ngClass]="getHighlightClass(day)"
@@ -177,7 +177,7 @@
         </div>
       </div>
 
-            @if (showTime && tempStartDate()) {
+      @if (showTime && tempStartDate()) {
         <div
           class="flex flex-col gap-2 pt-3.5 border-t border-slate-100 dark:border-slate-800/60 select-none"
         >
@@ -201,7 +201,7 @@
                   </div>
                   @if (showStartHourDropdown()) {
                     <div
-                      class="absolute bottom-full left-1/2 -translate-x-1/2 mb-1 w-16 max-h-[220px] overflow-y-auto bg-white dark:bg-slate-900 border border-slate-200/50 dark:border-slate-800/50 rounded-xl shadow-lg z-50 p-1.5 custom-scrollbar"
+                      class="absolute bottom-full left-1/2 -translate-x-1/2 mb-1 w-16 max-h-[300px] overflow-y-auto bg-white dark:bg-slate-900 border border-slate-200/50 dark:border-slate-800/50 rounded-xl shadow-lg z-50 p-1.5 custom-scrollbar"
                     >
                       @for (h of hoursArray; track h) {
                         <div
@@ -228,7 +228,7 @@
                   </div>
                   @if (showStartMinuteDropdown()) {
                     <div
-                      class="absolute bottom-full left-1/2 -translate-x-1/2 mb-1 w-16 max-h-[220px] overflow-y-auto bg-white dark:bg-slate-900 border border-slate-200/50 dark:border-slate-800/50 rounded-xl shadow-lg z-50 p-1.5 custom-scrollbar"
+                      class="absolute bottom-full left-1/2 -translate-x-1/2 mb-1 w-16 max-h-[300px] overflow-y-auto bg-white dark:bg-slate-900 border border-slate-200/50 dark:border-slate-800/50 rounded-xl shadow-lg z-50 p-1.5 custom-scrollbar"
                     >
                       @for (m of minutesArray; track m) {
                         <div
@@ -262,7 +262,7 @@
                   </div>
                   @if (showEndHourDropdown() && tempEndDate()) {
                     <div
-                      class="absolute bottom-full left-1/2 -translate-x-1/2 mb-1 w-16 max-h-[220px] overflow-y-auto bg-white dark:bg-slate-900 border border-slate-200/50 dark:border-slate-800/50 rounded-xl shadow-lg z-50 p-1.5 custom-scrollbar"
+                      class="absolute bottom-full left-1/2 -translate-x-1/2 mb-1 w-16 max-h-[300px] overflow-y-auto bg-white dark:bg-slate-900 border border-slate-200/50 dark:border-slate-800/50 rounded-xl shadow-lg z-50 p-1.5 custom-scrollbar"
                     >
                       @for (h of hoursArray; track h) {
                         <div
@@ -291,7 +291,7 @@
                   </div>
                   @if (showEndMinuteDropdown() && tempEndDate()) {
                     <div
-                      class="absolute bottom-full left-1/2 -translate-x-1/2 mb-1 w-16 max-h-[220px] overflow-y-auto bg-white dark:bg-slate-900 border border-slate-200/50 dark:border-slate-800/50 rounded-xl shadow-lg z-50 p-1.5 custom-scrollbar"
+                      class="absolute bottom-full left-1/2 -translate-x-1/2 mb-1 w-16 max-h-[300px] overflow-y-auto bg-white dark:bg-slate-900 border border-slate-200/50 dark:border-slate-800/50 rounded-xl shadow-lg z-50 p-1.5 custom-scrollbar"
                     >
                       @for (m of minutesArray; track m) {
                         <div

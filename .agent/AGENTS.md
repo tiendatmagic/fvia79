@@ -604,9 +604,14 @@
     - Đã cập nhật [toast.service.ts](file:///d:/git/isocalmarket/isocalmarket-web/src/app/core/services/toast.service.ts): Tích hợp bộ dịch tự động `translateMessage` trong `ToastService`. Mỗi khi hàm `showToast` được gọi, thông điệp (success/error) truyền qua sẽ được so khớp từ điển tiếng Anh và dịch hoàn toàn sang tiếng Việt thân thiện trước khi render. Hỗ trợ dịch động cả các chuỗi chứa tham số (ví dụ số lượng import).
   - **[HOÀN THÀNH] Tích hợp Khóa lạc quan (OCC) và Tự động đồng bộ dữ liệu khi sửa kho**:
     - Backend: Thêm route show item, phương thức `show($id)` trong [InventoryController.php](file:///d:/git/isocalmarket/isocalmarket-api/app/Http/Controllers/InventoryController.php), phương thức `getItemById` và so sánh `last_updated_at` chống Lost Update trong [InventoryService.php](file:///d:/git/isocalmarket/isocalmarket-api/app/Application/Services/InventoryService.php).
-    - Frontend: Viết hàm `fetchItemDetail` trong [inventory.store.ts](file:///d:/git/isocalmarket/isocalmarket-web/src/app/features/inventory/inventory.store.ts), cập nhật [inventory.component.ts](file:///d:/git/isocalmarket/isocalmarket-web/src/app/features/inventory/inventory.component.ts) để gọi API lấy dữ liệu mới nhất trước khi mở modal, và cập nhật [edit-inventory-modal.component.ts](file:///d:/git/isocalmarket/isocalmarket-web/src/app/features/inventory/edit-inventory-modal/edit-inventory-modal.component.ts) để truyền kèm `last_updated_at` khi lưu.
+    - Frontend: Viết hàm `fetchItemDetail` trong [inventory.store.ts](file:///d:/git/isocalmarket/isocalmarket-web/src/app/features/inventory/inventory.store.ts), cập nhật [inventory.component.ts](file:///d:/git/isocalmarket/isocalmarket-web/src/app/features/inventory/inventory.component.ts) để gọi API lấy dữ liệu mới nhất trước khi mở modal, và cập nhật [edit-inventory-modal.component.ts](file:///d:/git/isocalmarket/isocalmarket-web/src/app/features/inventory/edit-inventory-modal/edit-inventory-modal.component.ts) để truyền kèm `last_updated_at` when lưu.
   - **[HOÀN THÀNH] Tô màu trực quan cột Số lượng (Khả dụng / Ban đầu) trong Kho**:
     - Đã cập nhật [inventory.component.html](file:///d:/git/isocalmarket/isocalmarket-web/src/app/features/inventory/inventory.component.html): Tô màu số lượng khả dụng phía trước dựa trên trạng thái kho: màu đỏ (`text-rose-600`) khi đã bán hết (số lượng bằng 0), màu cam (`text-amber-600`) khi đang bán dở, và màu xanh lá (`text-emerald-600`) khi còn mới nguyên vẹn. Làm mờ dấu gạch chéo `/` và số ban đầu phía sau để làm nổi bật số khả dụng ở phía trước.
+  - **[HOÀN THÀNH] Tối ưu hóa rút gọn bảng dữ liệu và tích hợp Tooltip khi hover**:
+    - Đã import `TooltipDirective` và tích hợp `[appTooltip]` cho tất cả 5 trang feature: Lịch sử đơn hàng, Tổng quan Dashboard, Quản lý sản phẩm, Quản lý kho hàng, và Quản lý đơn hàng.
+    - Đã rút gọn hiển thị tên sản phẩm, tên lô hàng, mô tả, email khách hàng bằng class `truncate` kết hợp `max-w-[...]` thích hợp để giữ bảng cân đối, hiển thị dấu `...` khi quá dài.
+    - Hover chuột vào các trường này và các ô dữ liệu khác sẽ hiển thị tooltip đầy đủ thông tin gốc.
+
 
 
 

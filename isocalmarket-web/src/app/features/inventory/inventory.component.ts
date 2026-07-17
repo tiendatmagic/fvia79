@@ -14,6 +14,7 @@ import { PaginationComponent } from '@shared/components/pagination/pagination.co
 import { ImportInventoryModalComponent } from './import-inventory-modal/import-inventory-modal.component';
 import { EditInventoryModalComponent } from './edit-inventory-modal/edit-inventory-modal.component';
 import { CustomSearchInputComponent } from '@shared/components/custom-search-input/custom-search-input.component';
+import { TooltipDirective } from '@shared/components/tooltip/tooltip.directive';
 
 @Component({
   selector: 'app-inventory',
@@ -30,6 +31,7 @@ import { CustomSearchInputComponent } from '@shared/components/custom-search-inp
     IconComponent,
     PaginationComponent,
     CustomSearchInputComponent,
+    TooltipDirective,
   ],
   templateUrl: './inventory.component.html',
   styles: [`

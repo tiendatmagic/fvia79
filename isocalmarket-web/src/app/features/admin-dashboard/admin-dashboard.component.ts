@@ -7,6 +7,7 @@ import { BadgeComponent } from '@shared/components/badge/badge.component';
 import { CardComponent } from '@shared/components/card/card.component';
 import { PageHeaderComponent } from '@shared/components/page-header/page-header.component';
 import { IconComponent } from '@shared/components/icon/icon.component';
+import { TooltipDirective } from '@shared/components/tooltip/tooltip.directive';
 
 @Component({
   selector: 'app-admin-dashboard',
@@ -18,6 +19,7 @@ import { IconComponent } from '@shared/components/icon/icon.component';
     CardComponent,
     PageHeaderComponent,
     IconComponent,
+    TooltipDirective,
   ],
   templateUrl: './admin-dashboard.component.html',
   styles: [`

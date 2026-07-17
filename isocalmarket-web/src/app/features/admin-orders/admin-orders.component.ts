@@ -12,6 +12,7 @@ import { PageHeaderComponent } from '@shared/components/page-header/page-header.
 import { IconComponent } from '@shared/components/icon/icon.component';
 import { HttpParams } from '@angular/common/http';
 import { CustomSearchInputComponent } from '@shared/components/custom-search-input/custom-search-input.component';
+import { TooltipDirective } from '@shared/components/tooltip/tooltip.directive';
 
 @Component({
   selector: 'app-admin-orders',
@@ -26,6 +27,7 @@ import { CustomSearchInputComponent } from '@shared/components/custom-search-inp
     PageHeaderComponent,
     IconComponent,
     CustomSearchInputComponent,
+    TooltipDirective,
   ],
   templateUrl: './admin-orders.component.html',
   styles: [`

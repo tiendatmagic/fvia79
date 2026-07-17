@@ -9,6 +9,7 @@ import { CardComponent } from '@shared/components/card/card.component';
 import { PageHeaderComponent } from '@shared/components/page-header/page-header.component';
 import { IconComponent } from '@shared/components/icon/icon.component';
 import { CustomSearchInputComponent } from '@shared/components/custom-search-input/custom-search-input.component';
+import { TooltipDirective } from '@shared/components/tooltip/tooltip.directive';
 import { FormsModule } from '@angular/forms';
 
 @Component({
@@ -24,6 +25,7 @@ import { FormsModule } from '@angular/forms';
     PageHeaderComponent,
     IconComponent,
     CustomSearchInputComponent,
+    TooltipDirective,
   ],
   templateUrl: './orders.component.html',
   styles: [`
