@@ -12,6 +12,7 @@ import { CustomSearchInputComponent } from '@shared/components/custom-search-inp
 import { TooltipDirective } from '@shared/components/tooltip/tooltip.directive';
 import { ModalService } from '@core/services/modal.service';
 import { ProductFormModalComponent } from './product-form-modal/product-form-modal.component';
+import { CustomSelectComponent } from '@shared/components/custom-select/custom-select.component';
 
 @Component({
   selector: 'app-products',
@@ -27,6 +28,7 @@ import { ProductFormModalComponent } from './product-form-modal/product-form-mod
     IconComponent,
     CustomSearchInputComponent,
     TooltipDirective,
+    CustomSelectComponent,
   ],
   templateUrl: './products.component.html',
   styles: [`
@@ -42,18 +44,47 @@ export class ProductsComponent implements OnInit {
   public searchQuery = '';
   private readonly _searchQuery = signal('');
 
+  public readonly selectedCategoryFilter = signal('');
+  public readonly selectedStatusFilter = signal('');
+
+  public readonly statusOptions = [
+    { label: 'Tất cả trạng thái', value: '' },
+    { label: 'Đang hoạt động', value: 'active' },
+    { label: 'Ngưng hoạt động', value: 'inactive' }
+  ];
+
+  public get categoryOptions() {
+    const cats = this.state.productStore.categories();
+    return [
+      { label: 'Tất cả danh mục', value: '' },
+      ...cats.map(c => ({ label: c.name, value: c.id }))
+    ];
+  }
+
   public readonly filteredProducts = computed(() => {
     const q = this._searchQuery().trim().toLowerCase();
-    const products = this.state.productStore.products();
-    if (!q) return products;
-    return products.filter(p =>
-      p.name?.toLowerCase().includes(q) ||
-      p.slug?.toLowerCase().includes(q)
-    );
+    const catFilter = this.selectedCategoryFilter();
+    const statusFilter = this.selectedStatusFilter();
+    let list = this.state.productStore.products();
+
+    if (catFilter) {
+      list = list.filter(p => p.category_id === catFilter);
+    }
+    if (statusFilter) {
+      list = list.filter(p => p.status === statusFilter);
+    }
+    if (q) {
+      list = list.filter(p =>
+        p.name?.toLowerCase().includes(q) ||
+        p.slug?.toLowerCase().includes(q)
+      );
+    }
+    return list;
   });
 
   ngOnInit() {
     this.state.productStore.fetchProducts().subscribe();
+    this.state.productStore.fetchCategories().subscribe();
   }
 
   public onSearch(query: string) {

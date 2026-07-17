@@ -12,10 +12,10 @@ interface OrderRepositoryInterface
      * @return Order[]
      */
     public function findByUserId(string $userId): array;
-    public function findByUserIdPaginated(string $userId, int $page, int $limit, ?string $status = null, ?string $search = null): array;
+    public function findByUserIdPaginated(string $userId, int $page, int $limit, ?string $status = null, ?string $search = null, ?string $startDate = null, ?string $endDate = null): array;
     /**
      * @return Order[]
      */
     public function findAll(): array;
-    public function findAllPaginated(int $page, int $limit, ?string $status = null, ?string $search = null): array;
+    public function findAllPaginated(int $page, int $limit, ?string $status = null, ?string $search = null, ?string $startDate = null, ?string $endDate = null): array;
 }

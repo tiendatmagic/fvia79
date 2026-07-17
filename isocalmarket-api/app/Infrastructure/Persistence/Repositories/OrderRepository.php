@@ -53,7 +53,7 @@ class OrderRepository implements OrderRepositoryInterface
         return $models->map(fn($m) => OrderMapper::toDomain($m))->toArray();
     }
 
-    public function findByUserIdPaginated(string $userId, int $page, int $limit, ?string $status = null, ?string $search = null): array
+    public function findByUserIdPaginated(string $userId, int $page, int $limit, ?string $status = null, ?string $search = null, ?string $startDate = null, ?string $endDate = null): array
     {
         $query = OrderModel::where('user_id', $userId);
         if ($status) {
@@ -63,6 +63,14 @@ class OrderRepository implements OrderRepositoryInterface
             $query->where(function ($q) use ($search) {
                 $q->where('order_code', 'like', "%{$search}%");
             });
+        }
+        if ($startDate) {
+            $start = strlen($startDate) === 10 ? $startDate . ' 00:00:00' : $startDate;
+            $query->where('created_at', '>=', $start);
+        }
+        if ($endDate) {
+            $end = strlen($endDate) === 10 ? $endDate . ' 23:59:59' : $endDate;
+            $query->where('created_at', '<=', $end);
         }
         $total = $query->count();
         $models = $query->with(['items.product'])
@@ -86,7 +94,7 @@ class OrderRepository implements OrderRepositoryInterface
         return $models->map(fn($m) => OrderMapper::toDomain($m))->toArray();
     }
 
-    public function findAllPaginated(int $page, int $limit, ?string $status = null, ?string $search = null): array
+    public function findAllPaginated(int $page, int $limit, ?string $status = null, ?string $search = null, ?string $startDate = null, ?string $endDate = null): array
     {
         $query = OrderModel::query();
         if ($status) {
@@ -100,6 +108,14 @@ class OrderRepository implements OrderRepositoryInterface
                          ->orWhere('name', 'like', "%{$search}%");
                   });
             });
+        }
+        if ($startDate) {
+            $start = strlen($startDate) === 10 ? $startDate . ' 00:00:00' : $startDate;
+            $query->where('created_at', '>=', $start);
+        }
+        if ($endDate) {
+            $end = strlen($endDate) === 10 ? $endDate . ' 23:59:59' : $endDate;
+            $query->where('created_at', '<=', $end);
         }
         $total = $query->count();
         $models = $query->with(['items.product', 'user'])

@@ -13,6 +13,8 @@ import { IconComponent } from '@shared/components/icon/icon.component';
 import { HttpParams } from '@angular/common/http';
 import { CustomSearchInputComponent } from '@shared/components/custom-search-input/custom-search-input.component';
 import { TooltipDirective } from '@shared/components/tooltip/tooltip.directive';
+import { CustomSelectComponent } from '@shared/components/custom-select/custom-select.component';
+import { CustomDateTimeRangeComponent, DateTimeRangeValue } from '@shared/components/custom-date-time-range/custom-date-time-range.component';
 
 @Component({
   selector: 'app-admin-orders',
@@ -28,6 +30,8 @@ import { TooltipDirective } from '@shared/components/tooltip/tooltip.directive';
     IconComponent,
     CustomSearchInputComponent,
     TooltipDirective,
+    CustomSelectComponent,
+    CustomDateTimeRangeComponent,
   ],
   templateUrl: './admin-orders.component.html',
   styles: [`
@@ -49,8 +53,16 @@ export class AdminOrdersComponent implements OnInit {
   public readonly currentPage = signal<number>(1);
   public readonly limit = 10;
   public readonly selectedStatus = signal<string>('');
+  public selectedDateRange: DateTimeRangeValue = { startDate: '', endDate: '' };
   public searchQuery = '';
   private readonly _searchQuery = signal('');
+
+  public readonly statusOptions = [
+    { label: 'Tất cả trạng thái', value: '' },
+    { label: 'Đã thanh toán', value: 'paid' },
+    { label: 'Chờ thanh toán', value: 'pending' },
+    { label: 'Đã hủy', value: 'cancelled' }
+  ];
 
   ngOnInit() {
     this.fetchOrders(1);
@@ -70,6 +82,14 @@ export class AdminOrdersComponent implements OnInit {
 
     if (this._searchQuery().trim()) {
       params = params.set('search', this._searchQuery().trim());
+    }
+
+    if (this.selectedDateRange.startDate) {
+      params = params.set('start_date', this.selectedDateRange.startDate);
+    }
+
+    if (this.selectedDateRange.endDate) {
+      params = params.set('end_date', this.selectedDateRange.endDate);
     }
 
     this.apiService.get<any>('v1/orders', params).subscribe({

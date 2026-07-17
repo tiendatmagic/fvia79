@@ -12,8 +12,25 @@ class DashboardController extends Controller
     public function stats(Request $request)
     {
         try {
-            $totalRevenue = (float) OrderModel::where('status', 'paid')->sum('total_price');
-            $totalOrders = OrderModel::count();
+            $startDate = $request->query('start_date');
+            $endDate = $request->query('end_date');
+
+            $revenueQuery = OrderModel::where('status', 'paid');
+            $ordersQuery = OrderModel::query();
+
+            if ($startDate) {
+                $start = strlen($startDate) === 10 ? $startDate . ' 00:00:00' : $startDate;
+                $revenueQuery->where('created_at', '>=', $start);
+                $ordersQuery->where('created_at', '>=', $start);
+            }
+            if ($endDate) {
+                $end = strlen($endDate) === 10 ? $endDate . ' 23:59:59' : $endDate;
+                $revenueQuery->where('created_at', '<=', $end);
+                $ordersQuery->where('created_at', '<=', $end);
+            }
+
+            $totalRevenue = (float) $revenueQuery->sum('total_price');
+            $totalOrders = $ordersQuery->count();
             $totalProducts = ProductModel::where('status', 'active')->count();
 
             // Tổng số tài nguyên khả dụng trong kho

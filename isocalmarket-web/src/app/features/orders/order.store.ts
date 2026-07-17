@@ -19,7 +19,14 @@ export class OrderStore {
   public readonly currentPage = signal<number>(1);
   public readonly lastPage = signal<number>(1);
 
-  public fetchOrders(page?: number, limit?: number, search?: string) {
+  public fetchOrders(
+    page?: number,
+    limit?: number,
+    search?: string,
+    status?: string,
+    startDate?: string,
+    endDate?: string
+  ) {
     this.loading.set(true);
     let params = new HttpParams();
     if (page !== undefined) {
@@ -30,6 +37,15 @@ export class OrderStore {
     }
     if (search) {
       params = params.set('search', search);
+    }
+    if (status) {
+      params = params.set('status', status);
+    }
+    if (startDate) {
+      params = params.set('start_date', startDate);
+    }
+    if (endDate) {
+      params = params.set('end_date', endDate);
     }
 
     return this.api.get<any>('v1/orders', params).pipe(

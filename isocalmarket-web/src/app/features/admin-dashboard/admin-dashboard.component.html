@@ -1,4 +1,4 @@
-<div class="p-6 md:p-8 max-w-[1530px] mx-auto w-full space-y-8">
+<div class="max-w-[1530px] mx-auto w-full px-4 sm:px-6 py-6 space-y-6">
   <app-page-header
     title="Tổng Quan Dashboard"
     description="Thống kê hiệu suất kinh doanh & Tình trạng kho hàng số."
@@ -13,6 +13,27 @@
       </button>
     </ng-container>
   </app-page-header>
+
+  <div
+    class="bg-slate-50 dark:bg-slate-900/40 border border-slate-200/30 dark:border-slate-800/30 rounded-2xl p-4 sm:p-5 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4"
+  >
+    <div class="flex-1 max-w-sm w-full form-field !space-y-1.5">
+      <label class="text-xs font-bold text-slate-400 dark:text-slate-500 uppercase tracking-wider"
+        >Bộ lọc Khoảng thời gian</label
+      >
+      <app-custom-date-time-range
+        [(ngModel)]="selectedDateRange"
+        (ngModelChange)="loadStats()"
+        [showPresets]="true"
+        [showTime]="false"
+        placeholder="Lọc theo thời gian thống kê..."
+      />
+    </div>
+
+    <div class="text-xs text-slate-400 dark:text-slate-500 font-medium">
+      * Số liệu doanh thu và số đơn hàng sẽ được thống kê trong khoảng thời gian này.
+    </div>
+  </div>
 
   <div *ngIf="loading()" class="grid grid-cols-2 xl:grid-cols-4 gap-4">
     <div app-card *ngFor="let i of [1, 2, 3, 4]" class="relative p-4 md:p-5 overflow-hidden">

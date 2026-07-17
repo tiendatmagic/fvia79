@@ -31,6 +31,32 @@
     </ng-container>
   </app-page-header>
 
+  <div
+    class="grid grid-cols-1 sm:grid-cols-2 gap-4 bg-slate-50 dark:bg-slate-900/40 border border-slate-200/30 dark:border-slate-800/30 rounded-2xl p-4 sm:p-5"
+  >
+    <div class="form-field">
+      <label>Bộ lọc Danh mục</label>
+      <app-custom-select
+        [options]="categoryOptions"
+        valueKey="value"
+        labelKey="label"
+        [value]="selectedCategoryFilter()"
+        (valueChange)="selectedCategoryFilter.set($event)"
+      />
+    </div>
+
+    <div class="form-field">
+      <label>Bộ lọc Trạng thái</label>
+      <app-custom-select
+        [options]="statusOptions"
+        valueKey="value"
+        labelKey="label"
+        [value]="selectedStatusFilter()"
+        (valueChange)="selectedStatusFilter.set($event)"
+      />
+    </div>
+  </div>
+
   <div app-card class="overflow-hidden !p-0">
     <div class="overflow-x-auto">
       <table class="w-full text-left border-collapse">

@@ -49,12 +49,14 @@ class OrderController extends Controller
             $limit = $request->query('limit', 10); // Mặc định 10 đơn hàng/trang
             $status = $request->query('status'); // Lọc theo trạng thái đơn hàng
             $search = $request->query('search');
+            $startDate = $request->query('start_date');
+            $endDate = $request->query('end_date');
 
             if ($page) {
                 if ($user->role === 'admin') {
-                    $result = $this->orderService->getAllOrdersPaginated((int)$page, (int)$limit, $status, $search);
+                    $result = $this->orderService->getAllOrdersPaginated((int)$page, (int)$limit, $status, $search, $startDate, $endDate);
                 } else {
-                    $result = $this->orderService->getOrdersByUserPaginated($user->id, (int)$page, (int)$limit, $status, $search);
+                    $result = $this->orderService->getOrdersByUserPaginated($user->id, (int)$page, (int)$limit, $status, $search, $startDate, $endDate);
                 }
                 
                 $orders = $result['items'];

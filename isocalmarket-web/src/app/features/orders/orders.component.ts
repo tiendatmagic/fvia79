@@ -9,6 +9,8 @@ import { CardComponent } from '@shared/components/card/card.component';
 import { PageHeaderComponent } from '@shared/components/page-header/page-header.component';
 import { IconComponent } from '@shared/components/icon/icon.component';
 import { CustomSearchInputComponent } from '@shared/components/custom-search-input/custom-search-input.component';
+import { CustomSelectComponent } from '@shared/components/custom-select/custom-select.component';
+import { CustomDateTimeRangeComponent, DateTimeRangeValue } from '@shared/components/custom-date-time-range/custom-date-time-range.component';
 import { TooltipDirective } from '@shared/components/tooltip/tooltip.directive';
 import { FormsModule } from '@angular/forms';
 
@@ -26,6 +28,8 @@ import { FormsModule } from '@angular/forms';
     IconComponent,
     CustomSearchInputComponent,
     TooltipDirective,
+    CustomSelectComponent,
+    CustomDateTimeRangeComponent
   ],
   templateUrl: './orders.component.html',
   styles: [`
@@ -43,13 +47,30 @@ export class OrdersComponent implements OnInit {
   public searchQuery = '';
   private readonly _searchQuery = signal('');
 
+  public selectedStatusFilter = '';
+  public selectedDateRange: DateTimeRangeValue = { startDate: '', endDate: '' };
+
+  public readonly statusOptions = [
+    { label: 'Tất cả trạng thái', value: '' },
+    { label: 'Đã thanh toán', value: 'paid' },
+    { label: 'Chờ thanh toán', value: 'pending' },
+    { label: 'Đã hủy', value: 'cancelled' }
+  ];
+
   ngOnInit() {
     this.fetchPage(1);
   }
 
   public fetchPage(page: number) {
     this.currentPage.set(page);
-    this.state.orderStore.fetchOrders(page, this.limit, this._searchQuery().trim() || undefined).subscribe();
+    this.state.orderStore.fetchOrders(
+      page,
+      this.limit,
+      this._searchQuery().trim() || undefined,
+      this.selectedStatusFilter || undefined,
+      this.selectedDateRange.startDate || undefined,
+      this.selectedDateRange.endDate || undefined
+    ).subscribe();
   }
 
   public onSearch(query: string) {
