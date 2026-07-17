@@ -6,9 +6,6 @@ export const POPULAR_CHAINS = [
   { name: 'BSC Testnet', chainId: '97', rpcUrl: 'https://bsc-testnet-rpc.publicnode.com', explorerUrl: 'https://testnet.bscscan.com', color: '#e6a817' },
 ];
 
-/**
- * Lấy API URL của Block Explorer tương ứng với chainId.
- */
 export function getExplorerApiUrl(chainId: string | number): string | null {
   const id = chainId.toString().trim();
   switch (id) {
@@ -21,9 +18,6 @@ export function getExplorerApiUrl(chainId: string | number): string | null {
   }
 }
 
-/**
- * Lấy danh sách backup RPC URL đáng tin cậy.
- */
 export function getBackupRpcUrls(chainId: string | number): string[] {
   const id = chainId.toString().trim();
   switch (id) {

@@ -16,26 +16,21 @@ export class AuthStore {
   private readonly router = inject(Router);
   private readonly modalService = inject(ModalService);
 
-  // State Signals
   public readonly currentUser = signal<any | null>(null);
   public readonly authLoading = signal<boolean>(false);
 
-  // Computed Signals
   public readonly isAuthenticated = computed(() => this.currentUser() !== null);
   public readonly isAdmin = computed(() => this.currentUser()?.role === 'admin');
 
   private checkMeObservable$: Observable<any> | null = null;
 
-  // Signal lưu lỗi inline để hiển thị ngay trong form (không chỉ toast)
   public readonly loginError = signal<string>('');
   public readonly registerError = signal<string>('');
 
-  /** Dịch thông báo lỗi từ API (tiếng Anh) sang tiếng Việt thân thiện */
-  private translateAuthError(err: any, fallback: string): string {
+    private translateAuthError(err: any, fallback: string): string {
     const raw: string = err?.error?.message || err?.message || '';
     const status: number = err?.status || 0;
 
-    // Map message cụ thể từ backend
     const messageMap: Record<string, string> = {
       'Invalid email/username or password.': 'Tài khoản hoặc mật khẩu không chính xác!',
       'Unauthorized.': 'Phiên đăng nhập không hợp lệ. Vui lòng đăng nhập lại!',
@@ -54,7 +49,6 @@ export class AuthStore {
 
     if (status === 401) return 'Tài khoản hoặc mật khẩu không chính xác!';
     if (status === 422) {
-      // Laravel validation errors — thường có `errors` object
       const firstField = err?.error?.errors;
       if (firstField) {
         const firstKey = Object.keys(firstField)[0];
@@ -129,8 +123,6 @@ export class AuthStore {
         this.currentUser.set(user);
       }),
       catchError(() => {
-        // authInterceptor sẽ tự xử lý: refresh token → retry → hoặc redirect về /login
-        // Ở đây chỉ cần reset signal về null
         this.currentUser.set(null);
         return of(null);
       }),
@@ -256,13 +248,11 @@ export class AuthStore {
     );
   }
 
-  /** Hiển thị modal thông báo chào mừng nếu người dùng chưa chọn "Không hỏi lại trong 7 ngày" */
-  private openWelcomeNoticeIfNeeded(): void {
+    private openWelcomeNoticeIfNeeded(): void {
     const show = shouldShowWelcomeNotice();
     console.log('[AuthStore] Checking welcome notice. Should show?', show);
     if (!show) return;
     
-    // Trì hoãn nhẹ để router navigation hoàn tất trước khi mở modal
     setTimeout(() => {
       console.log('[AuthStore] Opening welcome notice modal now...');
       try {

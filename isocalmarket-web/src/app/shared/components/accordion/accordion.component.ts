@@ -2,15 +2,6 @@ import { Component, Input, ContentChildren, QueryList, AfterContentInit } from '
 import { CommonModule } from '@angular/common';
 import { AccordionItemComponent } from './accordion-item.component';
 
-/**
- * Accordion container component.
- *
- * Sử dụng:
- *   <app-accordion [multiple]="false">
- *     <app-accordion-item title="Tiêu đề 1">Nội dung 1</app-accordion-item>
- *     <app-accordion-item title="Tiêu đề 2">Nội dung 2</app-accordion-item>
- *   </app-accordion>
- */
 @Component({
   selector: 'app-accordion',
   imports: [CommonModule],
@@ -24,13 +15,11 @@ import { AccordionItemComponent } from './accordion-item.component';
   ],
 })
 export class AccordionComponent implements AfterContentInit {
-  /** Cho phép mở nhiều panel cùng lúc hay không */
-  @Input() multiple = false;
+    @Input() multiple = false;
 
   @ContentChildren(AccordionItemComponent) items!: QueryList<AccordionItemComponent>;
 
   ngAfterContentInit(): void {
-    // Nếu không cho mở nhiều, và có nhiều item được thiết lập expanded=true, chỉ giữ lại item đầu tiên
     if (!this.multiple) {
       let alreadyExpanded = false;
       this.items.forEach(item => {

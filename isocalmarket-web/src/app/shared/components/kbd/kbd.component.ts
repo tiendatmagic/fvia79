@@ -1,13 +1,6 @@
 import { Component } from '@angular/core';
 import { CommonModule } from '@angular/common';
 
-/**
- * Component hiển thị phím tắt 3D.
- *
- * Sử dụng:
- *   <kbd app-kbd>Ctrl</kbd> + <kbd app-kbd>K</kbd>
- *   <app-kbd>⌘</app-kbd>
- */
 @Component({
   selector: 'app-kbd, kbd[app-kbd]',
   imports: [CommonModule],

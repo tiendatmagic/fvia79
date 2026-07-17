@@ -1,8 +1,7 @@
 <div class="min-h-[80vh] flex items-center justify-center px-4">
   <div app-card class="w-full max-w-md !bg-white/60 dark:!bg-slate-900/60 backdrop-blur-md p-6 sm:p-8 space-y-6">
     
-    <!-- Title -->
-    <div class="text-center space-y-2">
+        <div class="text-center space-y-2">
       <h2 class="text-3xl font-black tracking-tight text-slate-900 dark:text-white">
         Đăng Ký
       </h2>
@@ -11,16 +10,14 @@
       </p>
     </div>
 
-    <!-- Inline Error Banner -->
-    @if (state.authStore.registerError()) {
+        @if (state.authStore.registerError()) {
       <div class="flex items-start gap-3 p-3.5 rounded-xl bg-red-50 dark:bg-red-950/40 border border-red-200 dark:border-red-900/60">
         <app-icon name="exclamation-circle" [solid]="true" viewBox="0 0 20 20" class="w-4 h-4 text-red-500 shrink-0 mt-0.5" />
         <p class="text-xs font-bold text-red-600 dark:text-red-400 leading-relaxed">{{ state.authStore.registerError() }}</p>
       </div>
     }
 
-    <!-- Form -->
-    <form (ngSubmit)="onSubmit()" class="space-y-5">
+        <form (ngSubmit)="onSubmit()" class="space-y-5">
       <div class="form-field">
         <label>Họ và Tên</label>
         <app-custom-input
@@ -77,8 +74,7 @@
       </div>
     </form>
 
-    <!-- Footer Links -->
-    <div class="text-center text-xs font-semibold text-slate-500">
+        <div class="text-center text-xs font-semibold text-slate-500">
       Đã có tài khoản? 
       <a routerLink="/login" class="text-[var(--color-primary)] hover:underline ml-1 font-bold">
         Đăng nhập

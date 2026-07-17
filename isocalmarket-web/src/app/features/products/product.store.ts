@@ -12,7 +12,6 @@ export class ProductStore {
   private readonly api = inject(ApiService);
   private readonly toast = inject(ToastService);
 
-  // State Signals
   public readonly products = signal<any[]>([]);
   public readonly categories = signal<any[]>([]);
   public readonly loading = signal<boolean>(false);

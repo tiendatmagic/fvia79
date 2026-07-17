@@ -1,9 +1,5 @@
 import { Injectable, signal } from '@angular/core';
 
-/**
- * Service quản lý trạng thái giao diện (UI state) toàn cục của ứng dụng.
- * Tương tự mẫu ui-state.service.ts của dự án cafe-blockchain.
- */
 @Injectable({
   providedIn: 'root'
 })

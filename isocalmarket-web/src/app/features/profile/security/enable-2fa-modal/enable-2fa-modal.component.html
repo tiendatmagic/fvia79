@@ -5,8 +5,7 @@
     </p>
   </div>
 
-  <!-- QR Code -->
-  <div class="flex justify-center py-1">
+    <div class="flex justify-center py-1">
     <qr-code
       [value]="qrCodeUrl"
       [size]="180"
@@ -14,14 +13,12 @@
     />
   </div>
 
-  <!-- Key manual entry -->
-  <div class="bg-slate-50 dark:bg-slate-950 border border-slate-200/50 dark:border-slate-800/60 rounded-xl p-3 text-center space-y-1">
+    <div class="bg-slate-50 dark:bg-slate-950 border border-slate-200/50 dark:border-slate-800/60 rounded-xl p-3 text-center space-y-1">
     <span class="text-[10px] uppercase font-black text-slate-400 block tracking-wider">Hoặc nhập mã khóa thủ công</span>
     <code class="text-sm font-black text-[var(--color-primary)] font-mono tracking-widest block select-all">{{ secretKey }}</code>
   </div>
 
-  <!-- Verification Input -->
-  <div class="form-field space-y-1.5">
+    <div class="form-field space-y-1.5">
     <label class="text-xs font-bold text-slate-500 uppercase tracking-wider block">Mã OTP 6 số hiển thị trên app</label>
     <app-custom-input
       [(ngModel)]="otpConfirmCode"
@@ -31,8 +28,7 @@
     />
   </div>
 
-  <!-- Footer Actions -->
-  <div class="flex gap-3 pt-4 border-t border-slate-100 dark:border-slate-800/60">
+    <div class="flex gap-3 pt-4 border-t border-slate-100 dark:border-slate-800/60">
     <button
       app-button
       [variant]="'secondary'"

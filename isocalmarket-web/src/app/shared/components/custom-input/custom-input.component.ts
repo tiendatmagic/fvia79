@@ -2,10 +2,6 @@ import { Component, Input, Output, EventEmitter, forwardRef, signal } from '@ang
 import { CommonModule } from '@angular/common';
 import { FormsModule, ControlValueAccessor, NG_VALUE_ACCESSOR } from '@angular/forms';
 
-/**
- * Custom Input component hỗ trợ text, number, email, password và textarea.
- * Tự động đồng bộ kích thước và bo góc chuẩn với hệ thống button/select.
- */
 @Component({
   selector: 'app-custom-input',
   standalone: true,
@@ -51,7 +47,6 @@ export class CustomInputComponent implements ControlValueAccessor {
     this.valueChange.emit(value);
   }
 
-  // ControlValueAccessor
   public writeValue(value: any): void {
     this.val.set(value === null || value === undefined ? '' : value);
   }

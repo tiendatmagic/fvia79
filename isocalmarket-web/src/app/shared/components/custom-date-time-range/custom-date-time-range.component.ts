@@ -63,10 +63,10 @@ export class CustomDateTimeRangeComponent implements ControlValueAccessor, After
 
   @Input() placeholder: string = 'Chọn khoảng thời gian...';
   @Input() disabled: boolean = false;
-  @Input() showTime: boolean = false; // Bật chế độ chọn Giờ:Phút
-  @Input() showPresets: boolean = false; // Bật thanh chọn nhanh
-  @Input() minDate: string = ''; // YYYY-MM-DD
-  @Input() maxDate: string = ''; // YYYY-MM-DD
+  @Input() showTime: boolean = false;
+  @Input() showPresets: boolean = false;
+  @Input() minDate: string = '';
+  @Input() maxDate: string = '';
 
   @Output() valueChange = new EventEmitter<DateTimeRangeValue>();
 
@@ -83,7 +83,6 @@ export class CustomDateTimeRangeComponent implements ControlValueAccessor, After
   public readonly tempEndTime = signal<string>('23:59');
   public readonly hoveredDate = signal<Date | null>(null);
 
-  // Bộ chọn giờ và phút tùy chỉnh (100% Custom UI)
   public readonly hoursArray = Array.from({ length: 24 }, (_, i) => String(i).padStart(2, '0'));
   public readonly minutesArray = Array.from({ length: 60 }, (_, i) => String(i).padStart(2, '0'));
   
@@ -107,7 +106,6 @@ export class CustomDateTimeRangeComponent implements ControlValueAccessor, After
     { label: 'Tháng này', id: 'this_month' }
   ];
 
-  // Chuỗi hiển thị trên ô nhập trigger
   public readonly displayValue = computed(() => {
     const val = this.value();
     if (!val.startDate) return '';
@@ -135,7 +133,6 @@ export class CustomDateTimeRangeComponent implements ControlValueAccessor, After
     return start || '';
   });
 
-  // Mảng 42 ngày tính toán động hiển thị trên lịch
   public readonly calendarDays = computed(() => {
     const year = this.currentYear();
     const month = this.currentMonth();
@@ -240,7 +237,6 @@ export class CustomDateTimeRangeComponent implements ControlValueAccessor, After
     if (!triggerEl) return;
 
     const rect = triggerEl.getBoundingClientRect();
-    // Kích thước popover thực tế: chiều rộng ~320px, chiều cao ~433px (không time) hoặc ~500px (kèm time)
     const popoverHeight = this.showTime ? 510 : 440;
     const popoverWidth = 320;
     const gap = 6;
@@ -336,16 +332,13 @@ export class CustomDateTimeRangeComponent implements ControlValueAccessor, After
     const end = this.tempEndDate();
 
     if (!start || (start && end)) {
-      // Bấm lần 1 hoặc reset để chọn mới
       this.tempStartDate.set(formatted);
       this.tempEndDate.set('');
     } else {
-      // Đã có startDate, bấm chọn endDate
       const startDateObj = this.parseDate(start);
       if (startDateObj && date >= startDateObj) {
         this.tempEndDate.set(formatted);
       } else {
-        // Nếu click ngày trước startDate, đảo ngày đó làm startDate mới
         this.tempStartDate.set(formatted);
         this.tempEndDate.set('');
       }
@@ -360,8 +353,6 @@ export class CustomDateTimeRangeComponent implements ControlValueAccessor, After
       this.hoveredDate.set(null);
     }
   }
-
-  // --- Logic điều khiển Custom Time Dropdowns ---
 
   public toggleDropdown(type: 'startHour' | 'startMinute' | 'endHour' | 'endMinute', event: Event): void {
     event.stopPropagation();
@@ -409,13 +400,13 @@ export class CustomDateTimeRangeComponent implements ControlValueAccessor, After
     let end = this.tempEndDate();
     
     if (!start) return;
-    if (!end) end = start; // Nếu chưa chọn ngày kết thúc, mặc định lấy trùng ngày bắt đầu
+    if (!end) end = start;
 
     let finalStart = start;
     let finalEnd = end;
 
     if (this.showTime) {
-      this.onTimeChange(); // Đảm bảo giờ phút đồng bộ mới nhất
+      this.onTimeChange();
       finalStart = `${start} ${this.tempStartTime()}`;
       finalEnd = `${end} ${this.tempEndTime()}`;
     }
@@ -455,7 +446,6 @@ export class CustomDateTimeRangeComponent implements ControlValueAccessor, After
     this.isOpen.set(false);
   }
 
-  // Xử lý các Preset chọn nhanh
   public selectPreset(presetId: string, event: Event): void {
     event.stopPropagation();
     const today = new Date();
@@ -608,7 +598,6 @@ export class CustomDateTimeRangeComponent implements ControlValueAccessor, After
     const eTime = end ? this.parseDate(end)!.getTime() : null;
     const hTime = hover ? this.clearTime(hover).getTime() : null;
     
-    // Xác định ngày bắt đầu và kết thúc thực tế của dải highlight (chọn chính thức hoặc đang hover)
     let rangeStart = sTime;
     let rangeEnd = eTime;
     
@@ -621,30 +610,24 @@ export class CustomDateTimeRangeComponent implements ControlValueAccessor, After
       }
     }
     
-    // Nếu ngày nằm ngoài dải highlight thì không vẽ
     if (rangeEnd === null) {
       if (dTime !== sTime) return 'hidden';
     } else {
       if (dTime < rangeStart || dTime > rangeEnd) return 'hidden';
     }
     
-    // Tính toán bo góc cho ngày nằm TRONG dải highlight:
     if (rangeEnd === null || rangeStart === rangeEnd) {
-      // Chỉ có 1 ngày duy nhất được highlight
       return 'rounded-full w-full';
     }
     
     if (dTime === rangeStart) {
-      // Đầu bắt đầu: bo góc trái
       return 'rounded-l-full w-full';
     }
     
     if (dTime === rangeEnd) {
-      // Đầu kết thúc: bo góc phải
       return 'rounded-r-full w-full';
     }
     
-    // Các ngày ở giữa: không bo góc, rộng 100%
     return 'w-full';
   }
 
@@ -692,7 +675,6 @@ export class CustomDateTimeRangeComponent implements ControlValueAccessor, After
     return null;
   }
 
-  // --- ControlValueAccessor Implementation ---
   private onChange: (value: any) => void = () => {};
   private onTouched: () => void = () => {};
 

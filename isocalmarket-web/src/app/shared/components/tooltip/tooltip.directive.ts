@@ -1,12 +1,5 @@
 import { Directive, Input, ElementRef, HostListener, Renderer2, OnDestroy } from '@angular/core';
 
-/**
- * Directive appTooltip hiển thị bong bóng thông tin khi di chuột hoặc focus.
- * Định vị động fixed ở body để tránh lỗi tràn khung.
- *
- * Sử dụng:
- *   <button appTooltip="Nội dung tooltip" tooltipPlacement="top">Hover me</button>
- */
 @Directive({
   selector: '[appTooltip]',
   standalone: true
@@ -45,7 +38,6 @@ export class TooltipDirective implements OnDestroy {
     this.tooltipEl = this.renderer.createElement('div');
     this.renderer.appendChild(this.tooltipEl, this.renderer.createText(this.text));
 
-    // Thêm các class style theo design system
     const classes = [
       'fixed',
       'z-[9999]',
@@ -74,10 +66,8 @@ export class TooltipDirective implements OnDestroy {
     classes.forEach(c => this.renderer.addClass(this.tooltipEl!, c));
     this.renderer.appendChild(document.body, this.tooltipEl);
 
-    // Tính toán tọa độ ban đầu
     this.updatePosition();
 
-    // Kích hoạt animation xuất hiện (fade-in & scale)
     requestAnimationFrame(() => {
       if (this.tooltipEl) {
         this.renderer.removeClass(this.tooltipEl, 'opacity-0');
@@ -85,7 +75,6 @@ export class TooltipDirective implements OnDestroy {
       }
     });
 
-    // Lắng nghe scroll & resize để ẩn tooltip tránh bị trôi lệch vị trí
     const scrollListener = this.renderer.listen('window', 'scroll', () => this.destroyTooltip());
     const resizeListener = this.renderer.listen('window', 'resize', () => this.destroyTooltip());
     this.removeListeners.push(scrollListener, resizeListener);
@@ -130,7 +119,6 @@ export class TooltipDirective implements OnDestroy {
   private destroyTooltip(): void {
     if (!this.tooltipEl) return;
 
-    // Hủy các sự kiện scroll & resize
     this.removeListeners.forEach(fn => fn());
     this.removeListeners = [];
 
@@ -139,7 +127,6 @@ export class TooltipDirective implements OnDestroy {
     this.renderer.addClass(el, 'opacity-0');
     this.renderer.setStyle(el, 'transform', el.style.transform + ' scale(0.95)');
 
-    // Xóa khỏi DOM sau khi transition hoàn thành
     setTimeout(() => {
       if (el.parentNode) {
         this.renderer.removeChild(document.body, el);

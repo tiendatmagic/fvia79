@@ -1,16 +1,13 @@
 <div class="fixed inset-0 z-50 flex items-center justify-center p-4">
-  <!-- Backdrop overlay tối nhẹ không blur -->
-  <div (click)="onBackdropClick()" class="fixed inset-0 bg-black/40"></div>
+    <div (click)="onBackdropClick()" class="fixed inset-0 bg-black/40"></div>
 
-  <!-- Modal Content -->
-  <div
+    <div
     [class]="
       'relative bg-white dark:bg-slate-900 rounded-[15px] border border-slate-200 dark:border-slate-800 pt-6 pb-5 w-full shadow-2xl text-slate-800 dark:text-slate-200 flex flex-col max-h-[90vh] ' +
       getSizeClass()
     "
   >
-    <!-- Header -->
-    @if (showHeader) {
+        @if (showHeader) {
       <div
         class="flex items-center justify-between px-6 pb-4 border-b border-slate-100 dark:border-slate-800/50 shrink-0"
       >
@@ -27,8 +24,7 @@
       </div>
     }
 
-    <!-- Body -->
-    <div class="flex-1 overflow-y-auto px-6 pt-4 no-scrollbar min-h-0 text-left">
+        <div class="flex-1 overflow-y-auto px-6 pt-4 no-scrollbar min-h-0 text-left">
       <ng-container *ngComponentOutlet="childComponent; injector: childInjector"></ng-container>
     </div>
   </div>

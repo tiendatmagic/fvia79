@@ -33,7 +33,7 @@ export class ProductFormModalComponent implements OnInit {
   public readonly state = inject(StateService);
 
   public isEditMode = false;
-  public editingId: any = null; // Hỗ trợ cả string UUID và number
+  public editingId: any = null;
   public categoryId = '';
   public name = '';
   public slug = '';

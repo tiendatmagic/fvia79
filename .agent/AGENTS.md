@@ -525,4 +525,13 @@
          - Chạy `npm run build` biên dịch Frontend Angular thành công 100% không phát sinh lỗi.
          - Chạy `php artisan test` kiểm thử Backend Laravel thành công 100% (passed 2/2 tests).
 
+  - **[HOÀN THÀNH] DỌN DẸP TUYỆT ĐỐI COMMENT JSDOC, TS & HTML TRÊN ISOCALMARKET-WEB**:
+    - **Yêu cầu:** Tiếp tục áp dụng mức độ dọn dẹp triệt để nhất giống như dự án ví Web3: xóa sạch các khối JSDoc (`/** ... */`) giải thích class/component/inputs/outputs, xóa sạch 100% comment HTML (`<!-- ... -->`) trong mọi tệp giao diện, và dọn dẹp các comment SCSS/CSS thừa.
+    - **Thực hiện:**
+      1. **TypeScript (.ts):** Loại bỏ hoàn toàn comment JSDoc và comment dòng đơn hiển nhiên trong tất cả các file của `isocalmarket-web/src/app` (bao gồm các custom components, stores, services, layouts, pipes, v.v.).
+      2. **HTML Templates (.html):** Xóa sạch 100% các thẻ comment HTML và dọn dẹp các dòng trống thừa thãi phát sinh.
+      3. **SCSS/CSS:** Loại bỏ toàn bộ các comment block trong `styles.scss` và các styles cục bộ.
+      4. **Kiểm thử:** Chạy `npm run build` biên dịch thành công 100% không lỗi biên dịch.
+
+
 

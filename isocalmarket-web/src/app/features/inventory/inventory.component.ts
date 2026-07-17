@@ -74,7 +74,6 @@ export class InventoryComponent implements OnInit {
 
   ngOnInit() {
     this.state.productStore.fetchProducts().subscribe(() => {
-      // Sau đó tải tất cả items kho
       this.fetchFilteredItems(1);
     });
   }
@@ -96,7 +95,6 @@ export class InventoryComponent implements OnInit {
   public fetchPage(page: number) {
     this.fetchFilteredItems(page);
   }
-
 
   public getProductName(productId: number): string {
     const product = this.state.productStore.products().find(p => p.id === productId);

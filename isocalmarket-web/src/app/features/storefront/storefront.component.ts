@@ -111,7 +111,7 @@ export class StorefrontComponent implements OnInit {
 
   ngOnInit() {
     this.state.productStore.fetchCategories().subscribe();
-    this.state.productStore.fetchProducts().subscribe(); // Load toàn bộ sản phẩm để gom nhóm ở client
+    this.state.productStore.fetchProducts().subscribe();
   }
 
   public getCategoryPage(catId: string): number {

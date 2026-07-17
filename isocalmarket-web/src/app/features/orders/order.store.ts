@@ -12,7 +12,6 @@ export class OrderStore {
   private readonly api = inject(ApiService);
   private readonly toast = inject(ToastService);
 
-  // State Signals
   public readonly orders = signal<any[]>([]);
   public readonly loading = signal<boolean>(false);
   public readonly currentOrderDetail = signal<any | null>(null);
@@ -54,7 +53,6 @@ export class OrderStore {
       finalize(() => this.loading.set(false))
     );
   }
-
 
   public fetchOrderDetail(id: number) {
     this.loading.set(true);

@@ -29,11 +29,9 @@
     </div>
   </div>
 
-  <!-- Divider -->
-  <div class="border-t border-slate-100 dark:border-slate-800"></div>
+    <div class="border-t border-slate-100 dark:border-slate-800"></div>
 
-  <!-- Checkbox "Không hỏi lại 7 ngày" -->
-  <app-custom-checkbox
+    <app-custom-checkbox
     [checked]="suppressFor7Days()"
     (checkedChange)="suppressFor7Days.set($event)"
     label="Không hỏi lại trong 7 ngày"

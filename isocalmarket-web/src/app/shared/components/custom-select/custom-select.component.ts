@@ -22,14 +22,6 @@ export interface SelectOption {
   [key: string]: any;
 }
 
-/**
- * Custom Select Dropdown thông minh với fixed positioning thoát khỏi overflow container.
- * Hỗ trợ smart placement (trên/dưới) dựa trên không gian viewport còn lại.
- *
- * Sử dụng:
- *   <app-custom-select [options]="list" valueKey="id" labelKey="name" [(value)]="selected" />
- *   <app-custom-select [options]="list" [showSearch]="true" placement="auto" label="Chọn mạng lưới" />
- */
 @Component({
   selector: 'app-custom-select',
   standalone: true,
@@ -93,7 +85,6 @@ export class CustomSelectComponent implements ControlValueAccessor, AfterViewChe
   public readonly isOpen = signal<boolean>(false);
   public readonly searchQuery = signal<string>('');
 
-  // Tọa độ và kích thước dropdown tính theo viewport (fixed positioning)
   public dropdownStyle: { [key: string]: string } = {};
   public resolvedPlacement: 'top' | 'bottom' = 'bottom';
 
@@ -113,16 +104,14 @@ export class CustomSelectComponent implements ControlValueAccessor, AfterViewChe
     this.isOpen.set(nextState);
   }
 
-  /** Tính toán vị trí dropdown dựa trên vị trí trigger button trong viewport */
-  private updateDropdownPosition(): void {
+    private updateDropdownPosition(): void {
     const triggerEl = this.triggerBtn?.nativeElement;
     if (!triggerEl) return;
 
     const rect = triggerEl.getBoundingClientRect();
     const dropdownMaxHeight = 280;
-    const gap = 6; // mt-1.5 = 6px
+    const gap = 6;
 
-    // Kiểm tra không gian phía dưới và phía trên
     const spaceBelow = window.innerHeight - rect.bottom - gap;
     const spaceAbove = rect.top - gap;
 
@@ -132,7 +121,6 @@ export class CustomSelectComponent implements ControlValueAccessor, AfterViewChe
     } else if (this.placement === 'bottom') {
       placeFinal = 'bottom';
     } else {
-      // Auto: Ưu tiên dưới nếu đủ chỗ, nếu không thì đặt bên có nhiều chỗ trống hơn
       if (spaceBelow >= dropdownMaxHeight) {
         placeFinal = 'bottom';
       } else if (spaceAbove >= dropdownMaxHeight) {
@@ -238,7 +226,6 @@ export class CustomSelectComponent implements ControlValueAccessor, AfterViewChe
     return filtered.slice(0, this.maxDisplay);
   });
 
-  // ControlValueAccessor
   private onChange: (value: any) => void = () => {};
   private onTouched: () => void = () => {};
 

@@ -79,15 +79,13 @@
       </div>
     </div>
 
-    <!-- Tài nguyên đã phân phối -->
-    <div *ngIf="detail.accounts && detail.accounts.length > 0" app-card class="overflow-hidden !p-0">
+        <div *ngIf="detail.accounts && detail.accounts.length > 0" app-card class="overflow-hidden !p-0">
       <div class="px-6 py-4 border-b border-slate-200/40 dark:border-slate-800/40 bg-slate-50/50 dark:bg-slate-950/20 flex flex-col sm:flex-row sm:items-center justify-between gap-3">
         <h4 class="text-xs font-black text-slate-400 uppercase tracking-wider pl-2 border-l-4 border-[var(--color-primary)]">
           Tài nguyên đã phân phối
         </h4>
         
-        <!-- View mode & Download actions -->
-        <div class="flex items-center gap-3 self-end sm:self-auto">
+                <div class="flex items-center gap-3 self-end sm:self-auto">
           <div class="flex items-center gap-1.5 p-1 bg-slate-100 dark:bg-slate-950 border border-slate-200/20 dark:border-slate-800/60 rounded-xl">
             <button
               (click)="viewMode.set('parsed')"
@@ -122,8 +120,7 @@
       </div>
 
       <div class="p-5 space-y-4">
-        <!-- Chế độ đã bóc tách (Parsed) -->
-        @if (viewMode() === 'parsed') {
+                @if (viewMode() === 'parsed') {
           <div
             *ngFor="let acc of detail.accounts; let i = index"
             class="bg-slate-50/50 dark:bg-slate-950/10 border border-slate-200/40 dark:border-slate-800/40 p-4 rounded-xl space-y-2.5"
@@ -157,8 +154,7 @@
                 </div>
               }
 
-              <!-- Khu vực hiển thị OTP 2FA -->
-              @if (activeOtpIndex() === i) {
+                            @if (activeOtpIndex() === i) {
                 <div class="mt-2.5 p-3 rounded-xl bg-teal-500/5 border border-teal-500/10 flex items-center justify-between gap-4">
                   <div class="flex items-center gap-2">
                     <span class="text-[10px] font-black text-teal-600 dark:text-teal-400 uppercase tracking-wider">Mã OTP 2FA:</span>
@@ -182,8 +178,7 @@
           </div>
         }
 
-        <!-- Chế độ dữ liệu thô (Raw) -->
-        @if (viewMode() === 'raw') {
+                @if (viewMode() === 'raw') {
           <div
             *ngFor="let acc of detail.accounts; let i = index"
             class="bg-slate-50 dark:bg-slate-900 border border-slate-200/40 dark:border-slate-800/40 p-3.5 rounded-xl flex items-center justify-between gap-4"
@@ -206,8 +201,7 @@
       </div>
     </div>
 
-    <!-- Thông báo nếu đơn chưa thanh toán hoặc đã hủy -->
-    <div
+        <div
       *ngIf="detail.status !== 'paid'"
       class="p-4 bg-amber-500/5 border border-amber-500/10 rounded-2xl text-xs font-semibold text-amber-600 dark:text-amber-500 flex items-center gap-2"
     >

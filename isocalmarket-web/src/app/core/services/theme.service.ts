@@ -8,7 +8,6 @@ export class ThemeService {
   
   public readonly isDarkMode = signal<boolean>(false);
   
-  // Đối tượng lắng nghe thay đổi theme hệ thống
   private mediaQueryList: MediaQueryList | null = null;
 
   constructor() {
@@ -21,7 +20,6 @@ export class ThemeService {
     const savedTheme = localStorage.getItem('theme_mode') as 'light' | 'dark' | 'auto' | null;
     this.mediaQueryList = window.matchMedia('(prefers-color-scheme: dark)');
     
-    // Lắng nghe sự thay đổi theme của hệ thống
     this.mediaQueryList.addEventListener('change', this.handleSystemThemeChange);
 
     if (savedTheme === 'light') {
@@ -62,7 +60,6 @@ export class ThemeService {
     }
   }
 
-  // Chuyển đổi qua lại giữa 3 chế độ: light -> dark -> auto
   public toggleTheme() {
     const current = this.themeMode();
     if (current === 'light') {

@@ -1,7 +1,6 @@
 <div class="max-w-[1530px] mx-auto w-full p-4 sm:p-6 space-y-6">
 
-  <!-- Header -->
-  <app-page-header title="Danh Mục Sản Phẩm Số" description="Quản lý danh sách các loại tài nguyên kỹ thuật số phân phối trên hệ thống.">
+    <app-page-header title="Danh Mục Sản Phẩm Số" description="Quản lý danh sách các loại tài nguyên kỹ thuật số phân phối trên hệ thống.">
     <ng-container actions>
       <app-custom-search-input
         [placeholder]="'Tìm kiếm sản phẩm...'"
@@ -29,8 +28,7 @@
     </ng-container>
   </app-page-header>
 
-  <!-- Main table card -->
-  <div app-card class="overflow-hidden !p-0">
+    <div app-card class="overflow-hidden !p-0">
     <div class="overflow-x-auto">
       <table class="w-full text-left border-collapse">
         <thead>
@@ -45,22 +43,19 @@
           </tr>
         </thead>
         <tbody>
-          <!-- Skeleton Loading -->
-          <tr *ngIf="state.productStore.loading()">
+                    <tr *ngIf="state.productStore.loading()">
             <td colspan="7" class="p-6">
               <app-skeleton-loader [type]="'table'" [rows]="5" [showHeader]="false" />
             </td>
           </tr>
 
-          <!-- Empty State -->
-          <tr *ngIf="!state.productStore.loading() && filteredProducts().length === 0">
+                    <tr *ngIf="!state.productStore.loading() && filteredProducts().length === 0">
             <td colspan="7" class="py-12 text-center text-sm font-semibold text-slate-400">
               Chưa có sản phẩm nào. Nhấp vào nút "Thêm Sản Phẩm" để bắt đầu!
             </td>
           </tr>
 
-          <!-- Data rows -->
-          @if (!state.productStore.loading()) {
+                    @if (!state.productStore.loading()) {
             <tr
               *ngFor="let p of filteredProducts()"
               class="border-b border-slate-200/30 dark:border-slate-800/30 hover:bg-slate-50/30 dark:hover:bg-slate-950/10 transition-colors"

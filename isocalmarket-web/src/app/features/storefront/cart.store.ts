@@ -12,10 +12,8 @@ export interface CartItem {
   providedIn: 'root'
 })
 export class CartStore {
-  // State Signal
   public readonly items = signal<CartItem[]>([]);
 
-  // Computed Signals
   public readonly totalAmount = computed(() => {
     return this.items().reduce((total, item) => total + (item.price * item.quantity), 0);
   });
@@ -27,7 +25,6 @@ export class CartStore {
   constructor() {
     this.loadFromStorage();
 
-    // Tự động đồng bộ sang localStorage mỗi khi items thay đổi
     effect(() => {
       if (typeof window !== 'undefined') {
         localStorage.setItem('isocalmarket_cart', JSON.stringify(this.items()));
@@ -54,7 +51,6 @@ export class CartStore {
 
     if (index > -1) {
       const updated = [...current];
-      // Giới hạn số lượng mua không vượt quá tồn kho khả dụng
       const newQty = updated[index].quantity + quantity;
       updated[index].quantity = Math.min(newQty, product.available_count || 1);
       this.items.set(updated);

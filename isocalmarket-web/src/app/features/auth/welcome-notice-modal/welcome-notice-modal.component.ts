@@ -9,7 +9,6 @@ import { IconComponent } from '@shared/components/icon/icon.component';
 
 export const WELCOME_NOTICE_STORAGE_KEY = 'welcome_notice_suppressed_until';
 
-/** Kiểm tra xem có nên hiển thị modal hay không */
 export function shouldShowWelcomeNotice(): boolean {
   try {
     const raw = localStorage.getItem(WELCOME_NOTICE_STORAGE_KEY);
@@ -36,8 +35,7 @@ export function shouldShowWelcomeNotice(): boolean {
 export class WelcomeNoticeModalComponent {
   private readonly modalRef = inject(ModalRef);
 
-  /** Mặc định tích "Không hỏi lại trong 7 ngày" */
-  public suppressFor7Days = signal<boolean>(true);
+    public suppressFor7Days = signal<boolean>(true);
 
   public onClose(): void {
     this.savePreference();
@@ -50,11 +48,9 @@ export class WelcomeNoticeModalComponent {
         const sevenDaysMs = 7 * 24 * 60 * 60 * 1000;
         localStorage.setItem(WELCOME_NOTICE_STORAGE_KEY, String(Date.now() + sevenDaysMs));
       } else {
-        // Xóa setting cũ để lần sau vẫn hiện
         localStorage.removeItem(WELCOME_NOTICE_STORAGE_KEY);
       }
     } catch {
-      // Ignore nếu localStorage không khả dụng
     }
   }
 }

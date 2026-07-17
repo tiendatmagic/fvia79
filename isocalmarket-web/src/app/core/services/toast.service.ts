@@ -25,10 +25,8 @@ export class ToastService {
       duration: finalDuration
     };
 
-    // Thêm toast mới vào danh sách
     this.toasts.update(current => [...current, newToast]);
 
-    // Tự động xoá toast sau khi hết thời gian duration
     setTimeout(() => {
       this.removeToast(id);
     }, finalDuration);

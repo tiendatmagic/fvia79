@@ -12,7 +12,6 @@ export class InventoryStore {
   private readonly api = inject(ApiService);
   private readonly toast = inject(ToastService);
 
-  // State Signals
   public readonly items = signal<any[]>([]);
   public readonly loading = signal<boolean>(false);
   public readonly totalItems = signal<number>(0);
@@ -59,7 +58,6 @@ export class InventoryStore {
       finalize(() => this.loading.set(false))
     );
   }
-
 
   public importItems(productId: number, rawData: string) {
     this.loading.set(true);

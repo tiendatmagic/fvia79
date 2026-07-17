@@ -19,14 +19,6 @@ import { CommonModule } from '@angular/common';
 import { FormsModule, NG_VALUE_ACCESSOR, ControlValueAccessor } from '@angular/forms';
 import { IconComponent } from '../icon/icon.component';
 
-/**
- * Custom Date Picker Component chất lượng cao, fixed positioning thoát overflow.
- * Hỗ trợ minDate, maxDate, quick-select presets, smart placement.
- *
- * Sử dụng:
- *   <app-custom-date-picker [(ngModel)]="selectedDate" label="Ngày bắt đầu" />
- *   <app-custom-date-picker [(ngModel)]="date" [minDate]="today" [showPresets]="true" />
- */
 @Component({
   selector: 'app-custom-date-picker',
   host: {
@@ -72,9 +64,9 @@ export class CustomDatePickerComponent implements ControlValueAccessor, AfterVie
 
   @Input() placeholder: string = 'Chọn ngày...';
   @Input() disabled: boolean = false;
-  @Input() minDate: string = ''; // YYYY-MM-DD
-  @Input() maxDate: string = ''; // YYYY-MM-DD
-  @Input() showPresets: boolean = true; // Hiển thị nút quick-select
+  @Input() minDate: string = '';
+  @Input() maxDate: string = '';
+  @Input() showPresets: boolean = true;
 
   @Output() valueChange = new EventEmitter<string>();
 
@@ -253,8 +245,7 @@ export class CustomDatePickerComponent implements ControlValueAccessor, AfterVie
     this.isOpen.set(false);
   }
 
-  /** Chọn nhanh preset (tính từ hôm nay) */
-  public selectPreset(days: number, event: Event): void {
+    public selectPreset(days: number, event: Event): void {
     event.stopPropagation();
     const target = new Date();
     target.setDate(target.getDate() + days);
@@ -283,12 +274,10 @@ export class CustomDatePickerComponent implements ControlValueAccessor, AfterVie
     return date.getMonth() === this.currentMonth();
   }
 
-  /** Kiểm tra ngày có bị vô hiệu bởi minDate/maxDate */
-  public isDateDisabled(date: Date): boolean {
+    public isDateDisabled(date: Date): boolean {
     if (this.minDate) {
       const min = this.parseDate(this.minDate);
       if (min) {
-        // So sánh theo ngày (bỏ giờ phút giây)
         const minDay = new Date(min.getFullYear(), min.getMonth(), min.getDate());
         const checkDay = new Date(date.getFullYear(), date.getMonth(), date.getDate());
         if (checkDay.getTime() < minDay.getTime()) return true;
@@ -329,7 +318,6 @@ export class CustomDatePickerComponent implements ControlValueAccessor, AfterVie
     return `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}-${String(d.getDate()).padStart(2, '0')}`;
   }
 
-  // ControlValueAccessor
   private onChange: (value: any) => void = () => {};
   private onTouched: () => void = () => {};
 

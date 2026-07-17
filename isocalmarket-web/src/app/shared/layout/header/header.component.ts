@@ -74,8 +74,7 @@ export class HeaderComponent {
     return name.charAt(0).toUpperCase();
   }
 
-  /** Định dạng số dư (VND) */
-  public formatBalance(balance: number | undefined): string {
+    public formatBalance(balance: number | undefined): string {
     if (!balance) return '0 ₫';
     return new Intl.NumberFormat('vi-VN', { style: 'currency', currency: 'VND' }).format(balance);
   }

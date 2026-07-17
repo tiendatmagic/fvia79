@@ -15,15 +15,13 @@
     }
   </div>
 
-  <!-- Segmented Control sử dụng Tab Group -->
-  <app-tab-group
+    <app-tab-group
     [options]="speedOptions"
     [activeValue]="stateService.txSpeed()"
     (valueChange)="stateService.txSpeed.set($event)"
   ></app-tab-group>
 
-  <!-- Trường nhập hệ số nhân -->
-  @if (stateService.txSpeed() === 'custom') {
+    @if (stateService.txSpeed() === 'custom') {
     <div
       class="mt-3 flex items-center justify-between bg-slate-100/80 dark:bg-slate-900 border border-slate-200/40 dark:border-slate-800/40 rounded-xl px-4 py-2.5 text-xs font-bold"
     >

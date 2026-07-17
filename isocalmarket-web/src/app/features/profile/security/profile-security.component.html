@@ -1,18 +1,15 @@
 <div class="space-y-6">
-  <!-- Section Title -->
-  <div class="border-b border-slate-100 dark:border-slate-800/60 pb-3">
+    <div class="border-b border-slate-100 dark:border-slate-800/60 pb-3">
     <h3 class="text-lg font-black text-slate-800 dark:text-slate-200">Bảo mật hai lớp (2FA)</h3>
     <p class="text-xs text-slate-400 dark:text-slate-500 font-bold mt-0.5">Tăng cường an toàn cho tài khoản bằng cách quét mã Google Authenticator.</p>
   </div>
 
-  <!-- Status Display -->
-  <div class="p-4 rounded-xl flex items-center justify-between border gap-4"
+    <div class="p-4 rounded-xl flex items-center justify-between border gap-4"
        [class]="state.currentUser()?.google2fa_enabled 
          ? 'bg-teal-50/40 border-teal-200/50 dark:bg-teal-950/10 dark:border-teal-900/30' 
          : 'bg-rose-50/40 border-rose-200/50 dark:bg-rose-950/10 dark:border-rose-900/30'">
     <div class="flex items-center gap-3 min-w-0 flex-1">
-      <!-- Shield Icon -->
-      <div class="p-2 rounded-lg shrink-0"
+            <div class="p-2 rounded-lg shrink-0"
            [class]="state.currentUser()?.google2fa_enabled ? 'bg-teal-100 dark:bg-teal-900/50 text-teal-600' : 'bg-rose-100 dark:bg-rose-900/50 text-rose-600'">
         <app-icon name="shield-check" class="w-5 h-5 shrink-0" />
       </div>
@@ -33,8 +30,7 @@
     </app-badge>
   </div>
 
-  <!-- 2FA not enabled -->
-  <div *ngIf="!state.currentUser()?.google2fa_enabled" class="text-center py-6 space-y-4">
+    <div *ngIf="!state.currentUser()?.google2fa_enabled" class="text-center py-6 space-y-4">
     <p class="text-sm text-slate-500 font-semibold max-w-sm mx-auto">
       Kích hoạt bảo mật 2 lớp qua Google Authenticator giúp phòng tránh truy cập trái phép ngay cả khi mật khẩu đăng nhập bị lộ.
     </p>
@@ -49,8 +45,7 @@
     </button>
   </div>
 
-  <!-- 2FA is enabled -->
-  <div *ngIf="state.currentUser()?.google2fa_enabled" class="text-center py-6 space-y-4">
+    <div *ngIf="state.currentUser()?.google2fa_enabled" class="text-center py-6 space-y-4">
     <p class="text-sm text-slate-500 font-semibold max-w-sm mx-auto">
       Tài khoản đang được bảo vệ bằng chế độ 2 lớp cực kỳ an toàn. Vui lòng không tắt chức năng này để bảo vệ tài sản của bạn.
     </p>

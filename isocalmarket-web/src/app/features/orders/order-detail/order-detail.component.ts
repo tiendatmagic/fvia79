@@ -38,7 +38,6 @@ export class OrderDetailComponent implements OnInit {
   public orderDetails = signal<any | null>(null);
   public loadingDetails = signal<boolean>(true);
 
-  // Parser & OTP State
   public viewMode = signal<'parsed' | 'raw'>('parsed');
   public activeOtpIndex = signal<number | null>(null);
   public currentOtpCode = signal<string>('');
@@ -149,7 +148,6 @@ export class OrderDetailComponent implements OnInit {
           if (match) {
             const code = match[0];
             this.currentOtpCode.set(code);
-            // Sao chép luôn cho khách hàng
             if (typeof window !== 'undefined' && navigator.clipboard) {
               navigator.clipboard.writeText(code).then(() => {
                 this.state.showToast('Đã copy mã OTP: ' + code, 'success');

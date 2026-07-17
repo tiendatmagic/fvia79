@@ -10,13 +10,6 @@ import { FormsModule, ControlValueAccessor, NG_VALUE_ACCESSOR } from '@angular/f
 
 import { IconComponent } from '@shared/components/icon/icon.component';
 
-/**
- * Custom Checkbox Component dùng chung tích hợp ControlValueAccessor.
- *
- * Sử dụng:
- *   <app-custom-checkbox [(ngModel)]="agreeTerms" label="Tôi đồng ý" />
- *   <app-custom-checkbox [checked]="agreeTerms" (checkedChange)="agreeTerms = $event" label="Tôi đồng ý" />
- */
 @Component({
   selector: 'app-custom-checkbox',
   
@@ -61,7 +54,6 @@ export class CustomCheckboxComponent implements ControlValueAccessor {
     this.onTouched();
   }
 
-  // ControlValueAccessor
   public writeValue(value: any): void {
     this.checked.set(!!value);
   }

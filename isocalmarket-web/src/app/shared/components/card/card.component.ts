@@ -1,13 +1,5 @@
 import { Component, Input } from '@angular/core';
 
-/**
- * Card container tái sử dụng toàn hệ thống.
- *
- * Sử dụng:
- *   <div app-card>...</div>
- *   <app-card>...</app-card>
- *   <app-card [interactive]="true">...</app-card>
- */
 @Component({
   selector: 'app-card, [app-card]',
   
@@ -24,6 +16,5 @@ import { Component, Input } from '@angular/core';
     `,
   ]})
 export class CardComponent {
-  /** Nếu true, thêm hiệu ứng hover/scale cho card có thể click */
-  @Input() interactive = false;
+    @Input() interactive = false;
 }

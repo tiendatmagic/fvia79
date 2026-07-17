@@ -8,11 +8,6 @@ import { InventoryStore } from '../../features/inventory/inventory.store';
 import { OrderStore } from '../../features/orders/order.store';
 import { Web3Service } from './web3.service';
 
-/**
- * StateService đóng vai trò là Facade Pattern (giống như cafe-blockchain).
- * Lớp này chịu trách nhiệm tiêm các dịch vụ con và expose (ủy thác) các tín hiệu (signals),
- * thuộc tính cũng như phương thức cần thiết ra bên ngoài để các component sử dụng thống nhất.
- */
 @Injectable({
   providedIn: 'root'
 })
@@ -28,7 +23,6 @@ export class StateService {
   
   private readonly web3Service = inject(Web3Service);
 
-  // Delegated UI State
   public readonly showMobileMenu = this.uiStateService.showMobileMenu;
   public readonly showDropdown = this.uiStateService.showDropdown;
   public readonly showNetworkDropdown = this.uiStateService.showNetworkDropdown;
@@ -40,16 +34,13 @@ export class StateService {
     this.orderStore.loading()
   );
 
-  // Delegated Theme State
   public readonly isDarkMode = this.themeService.isDarkMode;
   public readonly themeMode = this.themeService.themeMode;
 
-  // Delegated Auth State (Web2)
   public readonly currentUser = this.authStore.currentUser;
   public readonly isAuthenticated = this.authStore.isAuthenticated;
   public readonly isAdmin = this.authStore.isAdmin;
 
-  // Delegated Web3 State (Disabled for Web2)
   public readonly address = computed(() => null);
   public readonly chainId = computed(() => null);
   public readonly isConnected = computed(() => false);
@@ -63,13 +54,10 @@ export class StateService {
   public readonly POPULAR_CHAINS = this.web3Service.POPULAR_CHAINS;
   public readonly shortenedAddress = computed(() => '');
 
-  // Delegated Methods
-
   public showToast(msg: string, type: 'success' | 'error' | 'warning' = 'success') {
     this.toastService.showToast(msg, type);
   }
 
-  // Thay đổi giao diện màu
   public toggleTheme() {
     this.themeService.toggleTheme();
   }
@@ -78,7 +66,6 @@ export class StateService {
     this.themeService.setThemeMode(mode);
   }
 
-  // Fallback các method wallet cũ tránh lỗi compile
   public async connectWallet() {
     this.showToast('Hệ thống hiện đang chạy chế độ Web2, vui lòng đăng nhập bằng tài khoản!', 'warning');
   }

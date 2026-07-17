@@ -40,7 +40,7 @@ export class CartModalComponent {
 
     if (!this.state.isAuthenticated()) {
       this.state.showToast('Vui lòng đăng nhập để đặt hàng!', 'warning');
-      this.modalRef.close('login'); // Trả về 'login' để storefront redirect
+      this.modalRef.close('login');
       return;
     }
 
@@ -55,7 +55,7 @@ export class CartModalComponent {
         this.cart.clearCart();
         this.state.showToast('Đặt hàng thành công! Đơn hàng đang chờ thanh toán.', 'success');
         this.isSubmitting = false;
-        this.modalRef.close('success'); // Trả về 'success' để storefront redirect
+        this.modalRef.close('success');
       },
       error: (err) => {
         this.state.showToast(err.error?.message || 'Có lỗi xảy ra khi tạo đơn hàng!', 'error');

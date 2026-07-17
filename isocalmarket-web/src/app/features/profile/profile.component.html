@@ -1,22 +1,18 @@
 <div class="max-w-[1200px] mx-auto px-4 py-8 space-y-6">
-  <!-- Page Header -->
-  <app-page-header
+    <app-page-header
     title="Tài Khoản Cá Nhân"
     description="Quản lý thông tin cá nhân, cập nhật mật khẩu và thiết lập bảo mật hai lớp."
   />
 
   <div class="grid grid-cols-1 md:grid-cols-12 gap-6">
-    <!-- Sidebar / Navigation Tabs -->
-    <div
+        <div
       app-card
       class="col-span-12 lg:col-span-4 xl:col-span-3 p-4"
     >
-      <!-- Menu links container -->
-      <div
+            <div
         class="flex overflow-x-auto gap-1.5 md:flex-col pb-2 md:pb-0 border-b border-slate-100 dark:border-slate-800/60 md:border-b-0 whitespace-nowrap scrollbar-none"
       >
-        <!-- Tab 1: Information -->
-        <a
+                <a
           routerLink="information"
           routerLinkActive="bg-[var(--color-primary)]/5 dark:bg-[var(--color-primary)]/10 border-l-4 border-[var(--color-primary)] text-[var(--color-primary)] font-extrabold"
           [routerLinkActiveOptions]="{ exact: true }"
@@ -26,8 +22,7 @@
           <span class="whitespace-nowrap">Thông tin cơ bản</span>
         </a>
 
-        <!-- Tab 2: Password -->
-        <a
+                <a
           routerLink="password"
           routerLinkActive="bg-[var(--color-primary)]/5 dark:bg-[var(--color-primary)]/10 border-l-4 border-[var(--color-primary)] text-[var(--color-primary)] font-extrabold"
           class="flex items-center gap-3 px-4 py-3 text-sm font-semibold text-slate-600 dark:text-slate-400 hover:bg-slate-50 dark:hover:bg-slate-800/10 border-l-4 border-transparent rounded-xl transition-all cursor-pointer whitespace-nowrap"
@@ -36,8 +31,7 @@
           <span class="whitespace-nowrap">Đổi mật khẩu</span>
         </a>
 
-        <!-- Tab 3: Security 2FA -->
-        <a
+                <a
           routerLink="security"
           routerLinkActive="bg-[var(--color-primary)]/5 dark:bg-[var(--color-primary)]/10 border-l-4 border-[var(--color-primary)] text-[var(--color-primary)] font-extrabold"
           class="flex items-center gap-3 px-4 py-3 text-sm font-semibold text-slate-600 dark:text-slate-400 hover:bg-slate-50 dark:hover:bg-slate-800/10 border-l-4 border-transparent rounded-xl transition-all cursor-pointer whitespace-nowrap"
@@ -48,8 +42,7 @@
       </div>
     </div>
 
-    <!-- Main Content Container -->
-    <div
+        <div
       app-card
       class="col-span-12 lg:col-span-8 xl:col-span-9 p-4"
     >

@@ -9,7 +9,6 @@ export const routes: Routes = [
     loadComponent: () => import('@features/storefront/storefront.component').then(m => m.StorefrontComponent)
   },
 
-  // Auth — route ngắn gọn: /login, /register
   { path: 'auth', redirectTo: 'login', pathMatch: 'full' },
   { path: 'auth/login', redirectTo: 'login', pathMatch: 'full' },
   { path: 'auth/register', redirectTo: 'register', pathMatch: 'full' },

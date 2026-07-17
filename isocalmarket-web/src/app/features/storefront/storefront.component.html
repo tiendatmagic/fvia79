@@ -1,7 +1,6 @@
 <div class="max-w-[1530px] mx-auto w-full px-4 sm:px-6 py-6 space-y-6">
 
-  <!-- Header Banner Section (Glassmorphism) -->
-  <div class="relative bg-gradient-to-r from-[var(--color-primary)]/10 to-[var(--color-secondary)]/10 backdrop-blur-md border border-slate-200/50 dark:border-slate-800/50 rounded-2xl p-6 sm:p-10 flex flex-col md:flex-row md:items-center justify-between gap-6 overflow-hidden">
+    <div class="relative bg-gradient-to-r from-[var(--color-primary)]/10 to-[var(--color-secondary)]/10 backdrop-blur-md border border-slate-200/50 dark:border-slate-800/50 rounded-2xl p-6 sm:p-10 flex flex-col md:flex-row md:items-center justify-between gap-6 overflow-hidden">
     <div class="space-y-3 z-10">
       <h1 class="text-3xl sm:text-4xl font-black text-slate-900 dark:text-white leading-tight">
         Khám Phá Chợ Tài Nguyên Số Lớn Nhất
@@ -10,8 +9,7 @@
         Cung cấp tài khoản VIA Facebook, Gmail cổ, Netflix Premium, ChatGPT Plus, Proxy sạch 100% tốc độ cao và các dịch vụ bản quyền số an toàn, bảo mật.
       </p>
 
-      <!-- Search bar -->
-      <div class="max-w-md pt-2">
+            <div class="max-w-md pt-2">
         <app-custom-search-input
           [placeholder]="'Tìm kiếm tài nguyên số...'"
           [(ngModel)]="searchQuery"
@@ -20,19 +18,15 @@
       </div>
     </div>
 
-    <!-- Background decoration glow -->
-    <div class="absolute -right-16 -top-16 w-64 h-64 bg-[var(--color-primary)]/10 blur-[80px] rounded-full"></div>
+        <div class="absolute -right-16 -top-16 w-64 h-64 bg-[var(--color-primary)]/10 blur-[80px] rounded-full"></div>
     <div class="absolute -left-16 -bottom-16 w-64 h-64 bg-[var(--color-secondary)]/10 blur-[80px] rounded-full"></div>
   </div>
 
-  <!-- Toolbar Section: View Mode Toggle & Category Sorting -->
-  <div class="bg-white dark:bg-slate-900 border border-slate-200/80 dark:border-slate-800/80 p-3.5 rounded-2xl flex flex-col sm:flex-row sm:items-center justify-between gap-4">
-    <!-- Left: Display Mode Toggle -->
-    <div class="flex items-center gap-2">
+    <div class="bg-white dark:bg-slate-900 border border-slate-200/80 dark:border-slate-800/80 p-3.5 rounded-2xl flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+        <div class="flex items-center gap-2">
       <span class="text-xs text-slate-400 dark:text-slate-500 font-bold uppercase tracking-wider mr-1.5">Chế độ xem:</span>
       <div class="flex bg-slate-100 dark:bg-slate-950/60 p-1 rounded-xl border border-slate-200/40 dark:border-slate-800/40">
-        <!-- Card Mode -->
-        <button
+                <button
           (click)="viewMode.set('card')"
           class="flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-extrabold transition-all duration-200 cursor-pointer"
           [ngClass]="viewMode() === 'card'
@@ -42,8 +36,7 @@
           <app-icon name="grid" class="w-3.5 h-3.5" />
           <span>Dạng Card</span>
         </button>
-        <!-- List Mode -->
-        <button
+                <button
           (click)="viewMode.set('list')"
           class="flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-extrabold transition-all duration-200 cursor-pointer"
           [ngClass]="viewMode() === 'list'
@@ -56,8 +49,7 @@
       </div>
     </div>
 
-    <!-- Right: Sort categories -->
-    <div class="flex items-center gap-3">
+        <div class="flex items-center gap-3">
       <span class="text-xs text-slate-400 dark:text-slate-500 font-bold uppercase tracking-wider">Sắp xếp danh mục:</span>
       <div class="w-56">
         <app-custom-select
@@ -71,21 +63,16 @@
     </div>
   </div>
 
-  <!-- Products Section (Grouped by Category) -->
-  <div class="space-y-10">
-    <!-- Skeleton loading state -->
-    <app-skeleton-loader *ngIf="state.productStore.loading()" [type]="'card-grid'" [cards]="8" />
+    <div class="space-y-10">
+        <app-skeleton-loader *ngIf="state.productStore.loading()" [type]="'card-grid'" [cards]="8" />
 
-    <!-- Empty state -->
-    <div *ngIf="!state.productStore.loading() && groupedProducts().length === 0" app-card class="text-center py-12">
+        <div *ngIf="!state.productStore.loading() && groupedProducts().length === 0" app-card class="text-center py-12">
       <p class="text-sm font-semibold text-slate-400">Không tìm thấy sản phẩm nào phù hợp!</p>
     </div>
 
-    <!-- Grouped list -->
-    @if (!state.productStore.loading() && groupedProducts().length > 0) {
+        @if (!state.productStore.loading() && groupedProducts().length > 0) {
       <div *ngFor="let group of groupedProducts()" app-card class="p-6 space-y-6 !bg-white/40 dark:!bg-slate-900/40 backdrop-blur-md border border-slate-200/50 dark:border-slate-800/50">
-        <!-- Category Header -->
-        <div class="flex items-center justify-between border-b border-slate-200/30 dark:border-slate-800/30 pb-3">
+                <div class="flex items-center justify-between border-b border-slate-200/30 dark:border-slate-800/30 pb-3">
           <div class="space-y-1">
             <h3 class="text-lg font-black text-slate-800 dark:text-white flex items-center gap-2">
               <app-icon name="list-bullet" class="w-5 h-5 text-[var(--color-primary)]" />
@@ -100,18 +87,15 @@
           </app-badge>
         </div>
 
-        <!-- Product View depending on View Mode -->
-        @if (viewMode() === 'card') {
-          <!-- Product Grid within Category (Card View) -->
-          <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
+                @if (viewMode() === 'card') {
+                    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
             <div
               app-card
               [interactive]="true"
               *ngFor="let p of getPaginatedProductsForCategory(group.products, group.id)"
               class="p-5 space-y-4 flex flex-col justify-between !bg-white/80 dark:!bg-slate-900/80 border border-slate-200/40 dark:border-slate-800/40"
             >
-              <!-- Product Header -->
-              <div class="space-y-2">
+                            <div class="space-y-2">
                 <div class="flex items-start justify-between gap-4">
                   <h4 class="text-base font-extrabold text-slate-800 dark:text-white line-clamp-2">
                     {{ p.name }}
@@ -130,8 +114,7 @@
                   {{ p.description || 'Chưa có mô tả chi tiết cho sản phẩm này.' }}
                 </p>
 
-                <!-- Dynamic attributes -->
-                @if (p.attributes && p.attributes.length > 0) {
+                                @if (p.attributes && p.attributes.length > 0) {
                   <div class="flex flex-wrap gap-1.5 pt-1">
                     @for (attr of p.attributes; track $index) {
                       <span class="inline-flex items-center text-[10px] font-extrabold px-2 py-0.5 rounded bg-[var(--color-primary)]/5 dark:bg-[var(--color-primary)]/10 text-[var(--color-primary)] border border-[var(--color-primary)]/15">
@@ -147,8 +130,7 @@
                 </div>
               </div>
 
-              <!-- Product Footer (Price + Button) -->
-              <div class="pt-4 border-t border-slate-100 dark:border-slate-800/40 flex items-center justify-between gap-4">
+                            <div class="pt-4 border-t border-slate-100 dark:border-slate-800/40 flex items-center justify-between gap-4">
                 <div class="space-y-0.5">
                   <span class="text-xs text-slate-400 dark:text-slate-500 font-bold uppercase tracking-wider">Đơn giá</span>
                   <p class="text-lg font-black text-[var(--color-primary)]">
@@ -168,8 +150,7 @@
             </div>
           </div>
         } @else if (viewMode() === 'list') {
-          <!-- Product Table within Category (List View) -->
-          <div class="overflow-x-auto border border-slate-200/40 dark:border-slate-800/40 rounded-xl bg-white/80 dark:bg-slate-950/80 backdrop-blur-md">
+                    <div class="overflow-x-auto border border-slate-200/40 dark:border-slate-800/40 rounded-xl bg-white/80 dark:bg-slate-950/80 backdrop-blur-md">
             <table class="w-full text-left border-collapse min-w-[700px]">
               <thead>
                 <tr class="border-b border-slate-200/50 dark:border-slate-800/50 bg-slate-50/50 dark:bg-slate-900/40 text-[11px] font-black text-slate-400 uppercase tracking-wider">
@@ -184,8 +165,7 @@
                   *ngFor="let p of getPaginatedProductsForCategory(group.products, group.id)"
                   class="border-b border-slate-100 dark:border-slate-900/30 last:border-0 hover:bg-slate-50/50 dark:hover:bg-slate-900/30 transition-colors"
                 >
-                  <!-- Name & Attributes -->
-                  <td class="py-4 px-5">
+                                    <td class="py-4 px-5">
                     <div class="space-y-1.5">
                       <div class="text-sm font-extrabold text-slate-800 dark:text-white">
                         {{ p.name }}
@@ -204,12 +184,10 @@
                       }
                     </div>
                   </td>
-                  <!-- Price -->
-                  <td class="py-4 px-5 text-right font-black text-[var(--color-primary)] text-sm whitespace-nowrap">
+                                    <td class="py-4 px-5 text-right font-black text-[var(--color-primary)] text-sm whitespace-nowrap">
                     {{ p.price | number:'1.0-0' }} <span class="text-xs font-bold">VND</span>
                   </td>
-                  <!-- Inventory -->
-                  <td class="py-4 px-5">
+                                    <td class="py-4 px-5">
                     <div class="flex flex-col items-center gap-1 shrink-0">
                       <app-badge
                         [variant]="p.available_count > 0 ? 'success' : 'danger'"
@@ -223,8 +201,7 @@
                       </span>
                     </div>
                   </td>
-                  <!-- Actions -->
-                  <td class="py-4 px-5 text-right">
+                                    <td class="py-4 px-5 text-right">
                     <button app-button
                       (click)="addToCart(p)"
                       [disabled]="p.available_count <= 0"
@@ -240,8 +217,7 @@
           </div>
         }
 
-        <!-- Pagination for Category -->
-        <div class="flex justify-center pt-4 border-t border-slate-100/50 dark:border-slate-800/30" *ngIf="group.products.length > limit">
+                <div class="flex justify-center pt-4 border-t border-slate-100/50 dark:border-slate-800/30" *ngIf="group.products.length > limit">
           <app-pagination
             [currentPage]="getCategoryPage(group.id)"
             [totalPages]="getTotalPages(group.products.length)"

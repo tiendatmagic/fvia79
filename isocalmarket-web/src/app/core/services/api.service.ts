@@ -17,7 +17,7 @@ export class ApiService {
         'Content-Type': 'application/json'
       }),
       params,
-      withCredentials: true // Rất quan trọng để gửi/nhận HttpOnly Cookies
+      withCredentials: true
     };
   }
 

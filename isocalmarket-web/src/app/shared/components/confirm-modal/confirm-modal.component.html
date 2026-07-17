@@ -1,8 +1,7 @@
 @if (!isDynamic) {
   @if (isOpen) {
     <div class="fixed inset-0 z-[60] flex items-center justify-center p-4">
-      <!-- Backdrop overlay tối nhẹ không blur -->
-      <div (click)="onCancel()" class="fixed inset-0 bg-black/40"></div>
+            <div (click)="onCancel()" class="fixed inset-0 bg-black/40"></div>
 
       <div class="relative bg-white dark:bg-slate-900 rounded-[15px] border border-slate-200 dark:border-slate-800 p-6 max-w-sm w-full shadow-2xl text-slate-800 dark:text-slate-200 text-center">
         <ng-container *ngTemplateOutlet="confirmContent"></ng-container>
@@ -10,8 +9,7 @@
     </div>
   }
 } @else {
-  <!-- Chế độ Dynamic: Đã được bọc bởi ModalWrapperComponent -->
-  <div class="text-center w-full">
+    <div class="text-center w-full">
     <ng-container *ngTemplateOutlet="confirmContent"></ng-container>
   </div>
 }
@@ -33,8 +31,7 @@
     </p>
   }
 
-  <!-- Hỗ trợ nội dung tĩnh lồng ghép (chỉ dùng cho tĩnh) -->
-  @if (!isDynamic) {
+    @if (!isDynamic) {
     <div class="mb-5 text-left">
       <ng-content></ng-content>
     </div>

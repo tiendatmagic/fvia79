@@ -36,8 +36,7 @@
     </div>
   </div>
 
-  <!-- Popover Lịch & Cấu hình -->
-  @if (isOpen()) {
+    @if (isOpen()) {
     <div
       [ngStyle]="popoverStyle"
       class="date-time-range-popover bg-white dark:bg-slate-950 border border-slate-200/50 dark:border-slate-800/50 shadow-lg shadow-[var(--color-primary)]/20 rounded-xl p-4 flex flex-col gap-4"
@@ -92,12 +91,10 @@
           }
         </div>
 
-        <!-- Grid ngày với dải highlight liền mạch -->
-        <div class="grid grid-cols-7 gap-y-1 gap-x-0">
+                <div class="grid grid-cols-7 gap-y-1 gap-x-0">
           @for (day of calendarDays(); track day.getTime()) {
             <div class="relative w-full aspect-square flex items-center justify-center">
-              <!-- Nền highlight capsule thông minh -->
-              @if (getHighlightClass(day) !== 'hidden') {
+                            @if (getHighlightClass(day) !== 'hidden') {
                 <div
                   class="absolute inset-y-1 bg-[var(--color-primary)]/10 z-0"
                   [ngClass]="getHighlightClass(day)"
@@ -180,8 +177,7 @@
         </div>
       </div>
 
-      <!-- Time Selection (Chỉ hiện khi bật showTime) -->
-      @if (showTime && tempStartDate()) {
+            @if (showTime && tempStartDate()) {
         <div
           class="flex flex-col gap-2 pt-3.5 border-t border-slate-100 dark:border-slate-800/60 select-none"
         >

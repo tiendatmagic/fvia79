@@ -10,12 +10,6 @@ import {
 import { CommonModule } from '@angular/common';
 import { FormsModule, ControlValueAccessor, NG_VALUE_ACCESSOR } from '@angular/forms';
 
-/**
- * Custom Slider Component dùng chung tích hợp ControlValueAccessor.
- *
- * Sử dụng:
- *   <app-custom-slider [(ngModel)]="value" [min]="0" [max]="100" [step]="5" [marks]="true" label="Độ ưu tiên" />
- */
 @Component({
   selector: 'app-custom-slider',
   imports: [CommonModule, FormsModule],
@@ -63,7 +57,7 @@ export class CustomSliderComponent implements ControlValueAccessor {
   public readonly markPositions = computed(() => {
     if (!this.marks) return [];
     const stepsCount = (this.max - this.min) / this.step;
-    if (stepsCount <= 0 || stepsCount > 40) return []; // Giới hạn mốc để tránh rối mắt
+    if (stepsCount <= 0 || stepsCount > 40) return [];
 
     const positions: number[] = [];
     for (let i = 0; i <= stepsCount; i++) {
@@ -87,7 +81,6 @@ export class CustomSliderComponent implements ControlValueAccessor {
     this.onTouched();
   }
 
-  // Implementation of ControlValueAccessor
   writeValue(value: any): void {
     if (value !== undefined && value !== null) {
       this.value.set(Number(value));
@@ -106,7 +99,6 @@ export class CustomSliderComponent implements ControlValueAccessor {
     this.disabled = isDisabled;
   }
 
-  // CSS Class getters
   get filledTrackClass(): string {
     switch (this.color) {
       case 'primary':
