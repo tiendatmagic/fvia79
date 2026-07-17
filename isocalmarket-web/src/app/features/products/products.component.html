@@ -122,7 +122,10 @@
             <tr
               *ngFor="let p of filteredProducts()"
               class="border-b border-slate-200/30 dark:border-slate-800/30 hover:bg-slate-50/30 dark:hover:bg-slate-950/10 transition-colors"
-              [ngClass]="{'line-through text-slate-400 dark:text-slate-500 opacity-60 bg-slate-50/50 dark:bg-slate-950/20': p.is_deleted}"
+              [ngClass]="{
+                'opacity-50 bg-slate-100/40 dark:bg-slate-900/10 text-slate-400 dark:text-slate-500':
+                  p.is_deleted,
+              }"
             >
               <td class="py-4 px-6 text-xs whitespace-nowrap">
                 <div class="flex items-center gap-1.5">
@@ -144,15 +147,21 @@
                 </div>
               </td>
               <td class="py-4 px-6 min-w-[200px]">
-                <div class="space-y-1">
-                  <span
-                    class="text-sm font-extrabold text-slate-800 dark:text-white truncate max-w-xs block"
-                    [appTooltip]="p.name"
-                    >{{ p.name }}</span
-                  >
+                <div class="flex flex-col">
+                  <div class="flex items-center gap-2">
+                    <span
+                      class="font-black text-slate-800 dark:text-white truncate max-w-xs block"
+                      [appTooltip]="p.name"
+                      [ngClass]="{
+                        'line-through text-slate-400 dark:text-slate-500': p.is_deleted,
+                      }"
+                      >{{ p.name }}</span
+                    >
+                  </div>
                   <p
                     class="text-xs text-slate-400 dark:text-slate-500 font-semibold line-clamp-2 max-w-xs"
                     [appTooltip]="p.description || 'Không có mô tả.'"
+                    [ngClass]="{ 'line-through': p.is_deleted }"
                   >
                     {{ p.description || 'Không có mô tả.' }}
                   </p>
@@ -162,6 +171,7 @@
                         <span
                           class="inline-flex items-center text-xs font-black px-1.5 py-0.5 rounded-md bg-[var(--color-primary)]/5 dark:bg-[var(--color-primary)]/10 text-[var(--color-primary)] border border-[var(--color-primary)]/10"
                           [appTooltip]="attr.label + ': ' + attr.value"
+                          [ngClass]="{ 'line-through opacity-70': p.is_deleted }"
                         >
                           {{ attr.label }}: {{ attr.value }}
                         </span>
@@ -173,12 +183,12 @@
               <td
                 class="py-4 px-6 text-xs font-semibold text-slate-400 dark:text-slate-500 whitespace-nowrap"
               >
-                <span class="truncate max-w-[120px] block" [appTooltip]="p.slug">{{ p.slug }}</span>
+                <span class="truncate max-w-[120px] block" [appTooltip]="p.slug" [ngClass]="{ 'line-through': p.is_deleted }">{{ p.slug }}</span>
               </td>
               <td
                 class="py-4 px-6 text-sm font-black text-slate-800 dark:text-white whitespace-nowrap"
               >
-                <span [appTooltip]="(p.price | number: '1.0-0') + ' VND'"
+                <span [appTooltip]="(p.price | number: '1.0-0') + ' VND'" [ngClass]="{ 'line-through': p.is_deleted }"
                   >{{ p.price | number: '1.0-0' }} VND</span
                 >
               </td>
@@ -188,6 +198,7 @@
                   size="lg"
                   rounded="md"
                   [appTooltip]="'Tồn kho khả dụng: ' + p.available_count"
+                  [ngClass]="{ 'line-through': p.is_deleted }"
                 >
                   {{ p.available_count }}
                 </app-badge>
@@ -250,7 +261,10 @@
       </table>
     </div>
 
-    <div *ngIf="state.productStore.lastPage() > 1" class="border-t border-slate-200/30 dark:border-slate-800/30 p-4">
+    <div
+      *ngIf="state.productStore.lastPage() > 1"
+      class="border-t border-slate-200/30 dark:border-slate-800/30 p-4"
+    >
       <app-pagination
         [currentPage]="state.productStore.currentPage()"
         [totalPages]="state.productStore.lastPage()"

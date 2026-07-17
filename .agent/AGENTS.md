@@ -817,3 +817,16 @@
     - Yêu cầu: Khi chọn bộ lọc là "Tất cả trạng thái" (rỗng), hệ thống phải nạp tất cả các sản phẩm đang hoạt động, ngừng hoạt động và cả các sản phẩm đã bị xóa mềm (soft-deleted).
     - Giải pháp & Triển khai: Cập nhật logic trong phương thức `fetchFilteredProducts` tại [products.component.ts](file:///d:/git/isocalmarket/isocalmarket-web/src/app/features/products/products.component.ts). Nếu `statusVal === ''`, gán `filterDeleted = 'all'` và truyền lên API Backend.
     - Kết quả: Khi chọn Tất cả trạng thái, admin xem được toàn bộ sản phẩm (kể cả sản phẩm bị xóa mềm được gạch ngang dòng mờ).
+
+  - **[TỐI ƯU HÓA UI SẢN PHẨM SOFT-DELETED]**:
+    - Yêu cầu: Nâng cấp cách hiển thị dòng sản phẩm bị xóa mềm để không làm mất thẩm mỹ và khó đọc do gạch ngang cả dòng.
+    - Giải pháp & Triển khai:
+      1. Bỏ gạch ngang (`line-through`) trên thẻ `<tr>` của cả dòng. Thay thế bằng làm mờ nhẹ (`opacity-50`) kết hợp đổi màu nền mờ tối (`bg-slate-100/40` ở Light Mode, `dark:bg-slate-900/10` ở Dark Mode).
+      2. Áp dụng gạch ngang (`line-through`) riêng cho Tên sản phẩm và Mô tả sản phẩm để dễ nhận biết thông tin text bị xóa.
+      3. Thêm một chỉ báo badge đỏ có icon thùng rác nhỏ kế bên tên sản phẩm: `Đã xóa`.
+    - Kết quả: Giao diện bảng gọn gàng, hiển thị cực kỳ chuyên nghiệp và trực quan.
+
+  - **[GẠCH NGANG CÁC TRƯỜNG THÔNG TIN SẢN PHẨM SOFT-DELETED]**:
+    - Yêu cầu: Áp dụng gạch ngang (`line-through`) cho các trường thông tin Loại, Số TKQC, Slug, Đơn giá (VND) và Tồn kho khả dụng của sản phẩm đã bị xóa mềm để tăng tính đồng nhất và trực quan.
+    - Giải pháp & Triển khai: Cập nhật [products.component.html](file:///d:/git/isocalmarket/isocalmarket-web/src/app/features/products/products.component.html) bọc điều kiện `[ngClass]="{ 'line-through': p.is_deleted }"` cho các thẻ span thuộc tính (attributes), slug, đơn giá và badge tồn kho khả dụng.
+    - Kết quả: Tất cả các trường thông tin cốt lõi của sản phẩm bị xóa đều được gạch ngang, hiển thị rõ ràng và chuẩn xác.
