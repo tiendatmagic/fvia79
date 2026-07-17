@@ -676,7 +676,7 @@
   - **[BẢO MẬT] Khắc phục lỗ hổng truy vấn (Resource Exhaustion / Query Limit Vulnerability)**:
     - Yêu cầu: Ngăn ngừa lỗ hổng làm treo máy chủ khi kẻ gian sử dụng giá trị `limit` cực lớn (ví dụ: `limit=100`, `limit=1000000`).
     - Giải pháp & Triển khai:
-      1. Đã tạo [QueryLimitMiddleware.php](file:///d:/git/isocalmarket/isocalmarket-api/app/Http/Middleware/QueryLimitMiddleware.php) để làm sạch và chuẩn hóa tham số truy vấn `limit` (tối đa 50, mặc định 10 nếu nhỏ hơn 0 hoặc không phải số) và `page` (tối thiểu 1, mặc định 1 nếu không hợp lệ).
+      1. Đã tạo [QueryLimitMiddleware.php](file:///d:/git/isocalmarket/isocalmarket-api/app/Http/Middleware/QueryLimitMiddleware.php) để làm sạch và chuẩn hóa tham số truy vấn `limit` (tối đa **20**, mặc định 10 nếu nhỏ hơn 0 hoặc không phải số) và `page` (tối thiểu 1, mặc định 1 nếu không hợp lệ).
       2. Đăng ký middleware này toàn cục trong nhóm `api` tại [app.php](file:///d:/git/isocalmarket/isocalmarket-api/bootstrap/app.php) để tự động bảo vệ tất cả các API route có phân trang (Sản phẩm, Danh mục, Kho hàng, Đơn hàng...).
       3. Đã viết và tích hợp Unit Test [QueryLimitMiddlewareTest.php](file:///d:/git/isocalmarket/isocalmarket-api/tests/Unit/QueryLimitMiddlewareTest.php) kiểm thử độc lập cho middleware này mà không phụ thuộc vào kết nối CSDL SQLite của môi trường test.
-      4. Đã kiểm tra qua curl/Invoke-RestMethod thực tế từ PowerShell, kết quả phân trang ở các API Cửa hàng, Lịch sử đơn hàng, Quản lý sản phẩm, Danh mục, Kho hàng, Đơn hàng đều được chuẩn hóa và capped an toàn ở giới hạn tối đa 50 bản ghi/trang.
+      4. Đã kiểm tra qua curl/Invoke-RestMethod thực tế từ PowerShell, kết quả phân trang ở các API Cửa hàng, Lịch sử đơn hàng, Quản lý sản phẩm, Danh mục, Kho hàng, Đơn hàng đều được chuẩn hóa và capped an toàn ở giới hạn tối đa 20 bản ghi/trang.

@@ -8,14 +8,14 @@ use Tests\TestCase;
 
 class QueryLimitMiddlewareTest extends TestCase
 {
-    public function test_it_caps_limit_to_maximum_of_50(): void
+    public function test_it_caps_limit_to_maximum_of_20(): void
     {
         $middleware = new QueryLimitMiddleware();
         $request = Request::create('/test', 'GET', ['limit' => 100]);
 
         $middleware->handle($request, function ($req) {
-            $this->assertEquals(50, $req->query('limit'));
-            $this->assertEquals(50, $req->input('limit'));
+            $this->assertEquals(20, $req->query('limit'));
+            $this->assertEquals(20, $req->input('limit'));
             return response('ok');
         });
     }
