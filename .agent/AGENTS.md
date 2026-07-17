@@ -680,3 +680,18 @@
       2. Đăng ký middleware này toàn cục trong nhóm `api` tại [app.php](file:///d:/git/isocalmarket/isocalmarket-api/bootstrap/app.php) để tự động bảo vệ tất cả các API route có phân trang (Sản phẩm, Danh mục, Kho hàng, Đơn hàng...).
       3. Đã viết và tích hợp Unit Test [QueryLimitMiddlewareTest.php](file:///d:/git/isocalmarket/isocalmarket-api/tests/Unit/QueryLimitMiddlewareTest.php) kiểm thử độc lập cho middleware này mà không phụ thuộc vào kết nối CSDL SQLite của môi trường test.
       4. Đã kiểm tra qua curl/Invoke-RestMethod thực tế từ PowerShell, kết quả phân trang ở các API Cửa hàng, Lịch sử đơn hàng, Quản lý sản phẩm, Danh mục, Kho hàng, Đơn hàng đều được chuẩn hóa và capped an toàn ở giới hạn tối đa 20 bản ghi/trang.
+
+  - **[BẢO MẬT & RATE LIMIT] Cấu hình và kích hoạt Rate Limiting toàn cục cho API**:
+    - Yêu cầu: Khắc phục việc cấu hình Rate Limiter cho `api` (ví dụ giới hạn 5 request/phút) không có tác dụng và không chặn request.
+    - Giải pháp & Triển khai:
+      1. Phát hiện nguyên nhân do Laravel 11 mặc định không tự động tích hợp middleware giới hạn tần suất `throttle:api` cho nhóm route `api` trong `bootstrap/app.php` (dù đã có cấu hình định nghĩa trong `AppServiceProvider.php`).
+      2. Đã cập nhật [bootstrap/app.php](file:///d:/git/isocalmarket/isocalmarket-api/bootstrap/app.php) để bổ sung (append) middleware `'throttle:api'` vào nhóm middleware `'api'` toàn cục.
+      3. Kiểm tra lại bằng lệnh `php artisan route:list -v` xác nhận mọi route thuộc nhóm `api` đều đã thừa hưởng đầy đủ `throttle:api`. Khi request quá giới hạn cấu hình (ví dụ 5 req/phút), Laravel sẽ tự động chặn và trả về lỗi HTTP 429.
+
+  - **[BẢO MẬT & TRẢI NGHIỆM] Hủy toàn bộ pending request và thông báo quá tải khi nhận lỗi 429/503**:
+    - Yêu cầu: Khi một request API nhận lỗi quá tải (429) hoặc bảo trì (503) từ backend, tự động hủy (cancel) toàn bộ các request API khác đang ở trạng thái pending trên Client (Angular) và hiển thị một thông báo Toast lỗi duy nhất.
+    - Giải pháp & Triển khai:
+      1. Đã cập nhật [auth.interceptor.ts](file:///d:/git/isocalmarket/isocalmarket-web/src/app/core/interceptors/auth.interceptor.ts) sử dụng `Subject` của RxJS và toán tử `takeUntil` để quản lý luồng request API.
+      2. Khi phát hiện mã lỗi 429 hoặc 503, interceptor sẽ phát tín hiệu qua `Subject` giúp hủy bỏ ngay lập tức các request API pending còn lại (có loại trừ các request quan trọng như `/auth/refresh` và `/auth/logout` để bảo toàn trạng thái phiên).
+      3. Inject `ToastService` để hiển thị cảnh báo lỗi quá tải hệ thống với cơ chế chặn trùng lặp trong vòng 3 giây (chỉ hiển thị 1 Toast duy nhất khi có loạt request lỗi cùng lúc).
+      4. Biên dịch lại toàn bộ ứng dụng Frontend (`npm run build`) thành công 100% không phát sinh lỗi.

@@ -127,10 +127,15 @@
               <td class="py-4 px-6 text-sm font-extrabold text-slate-700 dark:text-slate-200">
                 {{ c.name }}
               </td>
-              <td class="py-4 px-6 text-sm font-mono text-slate-500 dark:text-slate-400 whitespace-nowrap">
+              <td
+                class="py-4 px-6 text-sm font-mono text-slate-500 dark:text-slate-400 whitespace-nowrap"
+              >
                 {{ c.slug }}
               </td>
-              <td class="py-4 px-6 text-sm text-slate-500 dark:text-slate-400 min-w-[200px] max-w-[400px] truncate" [appTooltip]="c.description">
+              <td
+                class="py-4 px-6 text-sm text-slate-500 dark:text-slate-400 min-w-[200px] max-w-[400px] truncate"
+                [appTooltip]="c.description"
+              >
                 {{ c.description || '-' }}
               </td>
               <td class="py-4 px-6 text-sm text-slate-500 dark:text-slate-400 whitespace-nowrap">
@@ -159,8 +164,11 @@
         </tbody>
       </table>
     </div>
-    
-    <div *ngIf="state.productStore.lastCategoryPage() > 1" class="border-t border-slate-200/30 dark:border-slate-800/30 p-4">
+
+    <div
+      *ngIf="state.productStore.lastCategoryPage() > 1"
+      class="border-t border-slate-200/30 dark:border-slate-800/30 p-4"
+    >
       <app-pagination
         [currentPage]="state.productStore.currentCategoryPage()"
         [totalPages]="state.productStore.lastCategoryPage()"

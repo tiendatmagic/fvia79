@@ -43,7 +43,7 @@ class AppServiceProvider extends ServiceProvider
     {
         // Rate limiter chung cho toàn bộ API: 60 requests/phút
         RateLimiter::for('api', function (Request $request) {
-            return Limit::perMinute(60)->by($request->ip());
+            return Limit::perMinute(40)->by($request->ip());
         });
 
         // Rate limiter nghiêm ngặt cho auth (chống brute-force):
