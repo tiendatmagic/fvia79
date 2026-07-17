@@ -104,7 +104,7 @@
                 <button
                   (click)="viewDetail(order.id)"
                   [appTooltip]="order.order_code"
-                  class="cursor-help font-mono font-bold text-[var(--color-primary)] hover:underline underline-offset-2 transition-opacity hover:opacity-80 pb-0.5 border-b border-dashed border-slate-300 dark:border-slate-700"
+                  class="font-mono font-bold text-[var(--color-primary)] hover:underline underline-offset-2 transition-opacity hover:opacity-80 pb-0.5 border-b border-dashed border-slate-300 dark:border-slate-700"
                 >
                   #{{ order.order_code | slice: 0 : 8 }}...{{ order.order_code | slice: -4 }}
                 </button>
