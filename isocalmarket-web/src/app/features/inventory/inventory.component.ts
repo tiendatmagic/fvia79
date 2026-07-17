@@ -118,23 +118,27 @@ export class InventoryComponent implements OnInit {
   }
 
   public openEditModal(item: any) {
-    const cleanProductOptions = this.state.productStore.products().map(p => ({
-      label: p.name,
-      value: String(p.id)
-    }));
+    this.state.inventoryStore.fetchItemDetail(item.id).subscribe((freshItem) => {
+      if (!freshItem) return;
 
-    this.modalService.open(EditInventoryModalComponent, {
-      title: 'Chỉnh sửa tài nguyên',
-      size: 'md',
-      data: {
-        item: item,
-        productOptions: cleanProductOptions
-      }
-    }).afterClosed$.subscribe((success) => {
-      if (success) {
-        this.state.productStore.fetchProducts().subscribe();
-        this.fetchFilteredItems(this.currentPage());
-      }
+      const cleanProductOptions = this.state.productStore.products().map(p => ({
+        label: p.name,
+        value: String(p.id)
+      }));
+
+      this.modalService.open(EditInventoryModalComponent, {
+        title: 'Chỉnh sửa tài nguyên',
+        size: 'md',
+        data: {
+          item: freshItem,
+          productOptions: cleanProductOptions
+        }
+      }).afterClosed$.subscribe((success) => {
+        if (success) {
+          this.state.productStore.fetchProducts().subscribe();
+          this.fetchFilteredItems(this.currentPage());
+        }
+      });
     });
   }
 

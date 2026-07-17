@@ -33,6 +33,7 @@ export class EditInventoryModalComponent implements OnInit {
   public batchName = '';
   public keysPool = '';
   public status = 'active';
+  public lastUpdatedAt = '';
   public productOptions: any[] = [];
   public isSubmitting = false;
 
@@ -50,6 +51,7 @@ export class EditInventoryModalComponent implements OnInit {
       this.batchName = item.batch_name || '';
       this.keysPool = item.keys_pool || '';
       this.status = item.status || 'active';
+      this.lastUpdatedAt = item.updated_at || '';
       this.productOptions = this.modalData.productOptions || [];
     }
   }
@@ -76,7 +78,8 @@ export class EditInventoryModalComponent implements OnInit {
       product_id: this.editProductId,
       batch_name: this.batchName,
       keys_pool: this.keysPool,
-      status: this.status
+      status: this.status,
+      last_updated_at: this.lastUpdatedAt
     }).pipe(
       finalize(() => this.isSubmitting = false)
     ).subscribe((res) => {

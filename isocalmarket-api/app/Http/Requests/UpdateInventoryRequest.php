@@ -18,6 +18,7 @@ class UpdateInventoryRequest extends FormRequest
             'batch_name' => 'required|string',
             'status' => 'required|in:active,completed,inactive',
             'keys_pool' => 'nullable|string',
+            'last_updated_at' => 'nullable|string',
         ];
     }
 }

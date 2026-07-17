@@ -40,6 +40,7 @@ Route::prefix('v1')->group(function () {
 
             Route::post('/inventory/import', ['App\Http\Controllers\InventoryController', 'import']);
             Route::get('/inventory/items', ['App\Http\Controllers\InventoryController', 'index']);
+            Route::get('/inventory/items/{id}', ['App\Http\Controllers\InventoryController', 'show']);
             Route::put('/inventory/items/{id}', ['App\Http\Controllers\InventoryController', 'update']);
             Route::delete('/inventory/items/{id}', ['App\Http\Controllers\InventoryController', 'destroy']);
         });

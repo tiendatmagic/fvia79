@@ -60,6 +60,14 @@ class InventoryService
             return null;
         }
 
+        $lastUpdatedAt = $data['last_updated_at'] ?? null;
+        if ($lastUpdatedAt) {
+            $dbUpdatedAt = $batch->getUpdatedAt()?->format('Y-m-d H:i:s');
+            if ($dbUpdatedAt && $dbUpdatedAt !== $lastUpdatedAt) {
+                throw new \Exception('Dữ liệu lô hàng đã được cập nhật bởi một giao dịch khác. Vui lòng đóng modal và tải lại trang.');
+            }
+        }
+
         $productId = $data['product_id'] ?? $batch->getProductId();
         $batchName = $data['batch_name'] ?? $batch->getBatchName();
         $keysPool = $data['keys_pool'] ?? $batch->getKeysPool();
@@ -88,6 +96,11 @@ class InventoryService
         );
 
         return $this->inventoryRepository->save($updatedBatch);
+    }
+
+    public function getItemById(string $id): ?InventoryBatch
+    {
+        return $this->inventoryRepository->findById($id);
     }
 
     public function getItems(array $filters): array

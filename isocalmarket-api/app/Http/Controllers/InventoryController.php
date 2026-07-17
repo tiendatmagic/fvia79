@@ -42,6 +42,30 @@ class InventoryController extends Controller
         }
     }
 
+    public function show($id)
+    {
+        try {
+            $item = $this->inventoryService->getItemById($id);
+            if (!$item) {
+                return response()->json(['message' => 'Inventory batch not found.'], 404);
+            }
+            return response()->json([
+                'id' => $item->getId(),
+                'product_id' => $item->getProductId(),
+                'batch_name' => $item->getBatchName(),
+                'keys_pool' => $item->getKeysPool(),
+                'initial_count' => $item->getInitialCount(),
+                'sold_count' => $item->getSoldCount(),
+                'available_count' => $item->getAvailableCount(),
+                'status' => $item->getStatus(),
+                'created_at' => $item->getCreatedAt()?->format('Y-m-d H:i:s'),
+                'updated_at' => $item->getUpdatedAt()?->format('Y-m-d H:i:s')
+            ]);
+        } catch (\Exception $e) {
+            return response()->json(['message' => $e->getMessage()], 500);
+        }
+    }
+
     public function index(Request $request)
     {
         try {

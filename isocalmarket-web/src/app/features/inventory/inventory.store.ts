@@ -78,11 +78,15 @@ export class InventoryStore {
     );
   }
 
-  public updateItem(id: string, payload: { product_id: string; batch_name: string; keys_pool: string; status: string }) {
+  public fetchItemDetail(id: string) {
+    return this.api.get<any>(`v1/inventory/items/${id}`);
+  }
+
+  public updateItem(id: string, payload: { product_id: string; batch_name: string; keys_pool: string; status: string; last_updated_at?: string }) {
     this.loading.set(true);
     return this.api.put<any>(`v1/inventory/items/${id}`, payload).pipe(
-      tap((res) => {
-        this.toast.showToast(res.message || 'Cập nhật lô hàng thành công!', 'success');
+      tap(() => {
+        this.toast.showToast('Cập nhật lô hàng thành công!', 'success');
       }),
       catchError((err) => {
         const msg = err.error?.message || 'Cập nhật lô hàng thất bại!';
