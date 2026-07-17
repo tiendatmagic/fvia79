@@ -139,14 +139,14 @@
                 </span>
               </td>
               <td class="py-4 px-6 text-center whitespace-nowrap">
-                <span class="text-sm font-extrabold text-slate-800 dark:text-white flex items-center justify-center">
-                  <span [ngClass]="{
-                    'text-rose-600 dark:text-rose-400': item.available_count === 0,
-                    'text-amber-600 dark:text-amber-400': item.available_count > 0 && item.available_count < item.initial_count,
-                    'text-emerald-600 dark:text-emerald-400': item.available_count === item.initial_count
-                  }">{{ item.available_count }}</span>
-                  <span class="text-slate-300 dark:text-slate-700 mx-1">/</span>
-                  <span class="text-slate-500 dark:text-slate-450 font-medium">{{ item.initial_count }}</span>
+                <span class="text-sm font-extrabold flex items-center justify-center" [ngClass]="{
+                  'text-rose-600 dark:text-rose-400': item.available_count === 0,
+                  'text-amber-600 dark:text-amber-400': item.available_count > 0 && item.available_count < item.initial_count,
+                  'text-emerald-600 dark:text-emerald-400': item.available_count === item.initial_count
+                }">
+                  <span>{{ item.available_count }}</span>
+                  <span class="opacity-60 mx-1">/</span>
+                  <span>{{ item.initial_count }}</span>
                 </span>
               </td>
               <td class="py-4 px-6 text-center whitespace-nowrap">
