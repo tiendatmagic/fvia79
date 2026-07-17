@@ -4,14 +4,6 @@
     description="Quản lý danh sách các loại danh mục sản phẩm MMO của hệ thống."
   >
     <ng-container actions>
-      <app-custom-search-input
-        [placeholder]="'Tìm kiếm danh mục...'"
-        [(ngModel)]="searchQuery"
-        name="searchQuery"
-        (valueChange)="onSearch($event)"
-        [debounce]="500"
-        containerClass="w-full md:w-64"
-      />
       <button
         (click)="fetchCategories()"
         class="px-4 py-2.5 text-sm font-extrabold text-slate-600 dark:text-slate-400 hover:text-primary bg-white dark:bg-slate-950 border border-slate-200/60 dark:border-slate-800/80 rounded-xl hover:bg-slate-50 dark:hover:bg-slate-900 transition-all cursor-pointer flex items-center gap-1.5"
@@ -32,7 +24,7 @@
   </app-page-header>
 
   <div
-    class="grid grid-cols-1 sm:grid-cols-2 gap-4 bg-slate-50 dark:bg-slate-900/40 border border-slate-200/30 dark:border-slate-800/30 rounded-2xl p-4 sm:p-5"
+    class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4 bg-slate-50 dark:bg-slate-900/40 border border-slate-200/30 dark:border-slate-800/30 rounded-2xl p-4 sm:p-5"
   >
     <div class="form-field">
       <label>Bộ lọc Khoảng thời gian</label>
@@ -53,6 +45,18 @@
         labelKey="label"
         [value]="selectedSort()"
         (valueChange)="selectedSort.set($event)"
+      />
+    </div>
+
+    <div class="form-field">
+      <label>Tìm kiếm</label>
+      <app-custom-search-input
+        [placeholder]="'Tìm kiếm danh mục...'"
+        [(ngModel)]="searchQuery"
+        name="searchQuery"
+        (valueChange)="onSearch($event)"
+        [debounce]="500"
+        containerClass="w-full"
       />
     </div>
   </div>

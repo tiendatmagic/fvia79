@@ -5,15 +5,7 @@
     [description]="state.isAdmin() ? 'Quản lý toàn bộ lịch sử đơn hàng trên hệ thống.' : 'Xem danh sách các đơn hàng và lấy tài nguyên số đã đặt mua.'"
   >
     <ng-container actions>
-      <app-custom-search-input
-        [placeholder]="'Tìm kiếm đơn hàng...'"
-        [(ngModel)]="searchQuery"
-        name="searchQuery"
-        (valueChange)="onSearch($event)"
-        [debounce]="500"
-        containerClass="w-full md:w-64"
-      />
-            <button
+      <button
         (click)="fetchPage(currentPage())"
         class="px-4 py-2.5 text-sm font-extrabold text-slate-600 dark:text-slate-400 hover:text-primary bg-white dark:bg-slate-950 border border-slate-200/60 dark:border-slate-800/80 rounded-xl hover:bg-slate-50 dark:hover:bg-slate-900 transition-all cursor-pointer flex items-center gap-1.5"
       >
@@ -23,8 +15,8 @@
     </ng-container>
   </app-page-header>
 
-    <div
-    class="grid grid-cols-1 sm:grid-cols-2 gap-4 bg-slate-50 dark:bg-slate-900/40 border border-slate-200/30 dark:border-slate-800/30 rounded-2xl p-4 sm:p-5"
+  <div
+    class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4 bg-slate-50 dark:bg-slate-900/40 border border-slate-200/30 dark:border-slate-800/30 rounded-2xl p-4 sm:p-5"
   >
     <div class="form-field">
       <label>Bộ lọc Khoảng thời gian</label>
@@ -45,6 +37,18 @@
         labelKey="label"
         [(value)]="selectedStatusFilter"
         (valueChange)="selectedStatusFilter = $event; fetchPage(1)"
+      />
+    </div>
+
+    <div class="form-field">
+      <label>Tìm kiếm</label>
+      <app-custom-search-input
+        [placeholder]="'Tìm kiếm đơn hàng...'"
+        [(ngModel)]="searchQuery"
+        name="searchQuery"
+        (valueChange)="onSearch($event)"
+        [debounce]="500"
+        containerClass="w-full"
       />
     </div>
   </div>

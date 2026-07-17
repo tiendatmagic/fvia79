@@ -610,7 +610,8 @@
   - **[HOÀN THÀNH] Tối ưu hóa rút gọn bảng dữ liệu và tích hợp Tooltip khi hover**:
     - Đã import `TooltipDirective` và tích hợp `[appTooltip]` cho tất cả 5 trang feature: Lịch sử đơn hàng, Tổng quan Dashboard, Quản lý sản phẩm, Quản lý kho hàng, và Quản lý đơn hàng.
     - Đã rút gọn hiển thị tên sản phẩm, tên lô hàng, mô tả, email khách hàng bằng class `truncate` kết hợp `max-w-[...]` thích hợp để giữ bảng cân đối, hiển thị dấu `...` khi quá dài.
-    - Hover chuột vào các trường này và các ô dữ liệu khác sẽ hiển thị tooltip đầy đủ thông tin gốc.  - **[HOÀN THÀNH] Triển khai bộ lọc (Filter Bar) đồng bộ trên 4 trang giao diện**:
+    - Hover chuột vào các trường này và các ô dữ liệu khác sẽ hiển thị tooltip đầy đủ thông tin gốc.
+  - **[HOÀN THÀNH] Triển khai bộ lọc (Filter Bar) đồng bộ trên 4 trang giao diện**:
     - Backend: Cập nhật `OrderRepository`, `OrderService`, `OrderController` và `DashboardController` để tiếp nhận và truy vấn dữ liệu chính xác theo khoảng thời gian (`start_date`, `end_date`).
     - Quản lý sản phẩm: Tích hợp dropdown bộ chọn Danh mục và Trạng thái, thực hiện lọc client-side mượt mà qua signal computed `filteredProducts()`.
     - Lịch sử đơn hàng & Quản lý đơn hàng: Triển khai thanh bộ lọc Grid đồng bộ chứa dropdown Trạng thái và bộ chọn thời gian `<app-custom-date-time-range>`, kết nối và gọi API backend chính xác.
@@ -618,6 +619,7 @@
     - Biên dịch: Chạy lệnh build frontend hoàn thành không lỗi.
     - Sửa lỗi bộ lọc: Khắc phục hiện tượng race condition khi lọc khoảng thời gian bằng cách chuyển sự kiện lắng nghe từ `(valueChange)` sang `(ngModelChange)` cho `CustomDateTimeRangeComponent` ở cả 3 trang (Orders, Admin Orders, Dashboard) giúp model cập nhật đầy đủ trước khi fetch.
     - Sửa lỗi bộ lọc sản phẩm: Chuyển đổi các biến lọc Category/Status của sản phẩm sang Signals để computed `filteredProducts()` phản ứng và tính toán lại chính xác client-side ngay khi chọn dropdown.
+    - Chạy build frontend và unit tests backend thành công 100%.
   - **[HOÀN THÀNH] Tối ưu hiển thị mô tả sản phẩm ở trang Quản lý sản phẩm**:
     - Yêu cầu: Giới hạn mô tả sản phẩm hiển thị tối đa 2 dòng, nếu dài hơn thì hiển thị 3 chấm (...).
     - Giải pháp: Thay thế class `truncate max-w-xs block` bằng `line-clamp-2 max-w-xs` cho thẻ mô tả sản phẩm `<p>` dưới cột Tên sản phẩm trong file [products.component.html](file:///d:/git/isocalmarket/isocalmarket-web/src/app/features/products/products.component.html). Điều này cho phép hiển thị tối đa 2 dòng mô tả và tự động thêm 3 chấm nếu văn bản vượt quá 2 dòng.
@@ -693,5 +695,18 @@
     - Giải pháp & Triển khai:
       1. Đã cập nhật [auth.interceptor.ts](file:///d:/git/isocalmarket/isocalmarket-web/src/app/core/interceptors/auth.interceptor.ts) sử dụng `Subject` của RxJS và toán tử `takeUntil` để quản lý luồng request API.
       2. Khi phát hiện mã lỗi 429 hoặc 503, interceptor sẽ phát tín hiệu qua `Subject` giúp hủy bỏ ngay lập tức các request API pending còn lại (có loại trừ các request quan trọng như `/auth/refresh` và `/auth/logout` để bảo toàn trạng thái phiên).
-      3. Inject `ToastService` để hiển thị cảnh báo lỗi quá tải hệ thống với cơ chế chặn trùng lặp trong vòng 3 giây (chỉ hiển thị 1 Toast duy nhất khi có loạt request lỗi cùng lúc).
+      3. Inject `ToastService` để hiển thị cảnh báo lỗi quá tải hệ thống with cơ chế chặn trùng lặp trong vòng 3 giây (chỉ hiển thị 1 Toast duy nhất khi có loạt request lỗi cùng lúc).
       4. Biên dịch lại toàn bộ ứng dụng Frontend (`npm run build`) thành công 100% không phát sinh lỗi.
+
+  - **[HOÀN THÀNH] Đồng bộ giao diện bộ lọc (Filter Bars) và di chuyển Thanh tìm kiếm xuống dưới**:
+    - Yêu cầu: Đồng bộ hóa cách sắp xếp các bộ lọc trên tất cả các trang quản trị và lịch sử. Bộ lọc trạng thái phải luôn nằm ở phía bên phải. Cấu trúc grid của các bộ lọc phải nhất quán. Đồng thời đưa thanh tìm kiếm từ header xuống filter bar nằm bên phải các bộ lọc để thuận tiện thao tác và giải phóng không gian header.
+    - Giải pháp & Triển khai:
+      1. **Sắp xếp lại vị trí**: Đã đảo vị trí của "Bộ lọc Trạng thái" và "Bộ lọc Khoảng thời gian" trong [orders.component.html](file:///d:/git/isocalmarket/isocalmarket-web/src/app/features/orders/orders.component.html) và [admin-orders.component.html](file:///d:/git/isocalmarket/isocalmarket-web/src/app/features/admin-orders/admin-orders.component.html) để đảm bộ bộ lọc trạng thái luôn nằm bên phải.
+      2. **Chuyển Thanh tìm kiếm xuống Filter Bar**: Đã xóa `app-custom-search-input` trong slot `actions` ở `<app-page-header>` và đưa xuống làm cột thứ 3 bên phải các bộ lọc trong grid 3 cột (`grid-cols-1 sm:grid-cols-2 md:grid-cols-3`) tại các trang:
+         - [products.component.html](file:///d:/git/isocalmarket/isocalmarket-web/src/app/features/products/products.component.html)
+         - [admin-categories.component.html](file:///d:/git/isocalmarket/isocalmarket-web/src/app/features/admin-categories/admin-categories.component.html)
+         - [inventory.component.html](file:///d:/git/isocalmarket/isocalmarket-web/src/app/features/inventory/inventory.component.html) (Cũng đồng thời đổi cấu trúc grid từ 3 cột bị trống sang 3 cột có chứa ô tìm kiếm)
+         - [orders.component.html](file:///d:/git/isocalmarket/isocalmarket-web/src/app/features/orders/orders.component.html)
+         - [admin-orders.component.html](file:///d:/git/isocalmarket/isocalmarket-web/src/app/features/admin-orders/admin-orders.component.html)
+      3. **Tối ưu trải nghiệm**: Đặt `containerClass="w-full"` cho ô tìm kiếm giúp nó co giãn khít đều cột thứ 3 trên màn hình lớn. Bổ sung nhãn `<label>Tìm kiếm</label>` viết hoa tự động đồng bộ theo design system.
+      4. **Xác minh biên dịch**: Đã chạy build frontend hoàn tất thành công 100% không phát sinh lỗi.
