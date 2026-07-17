@@ -47,6 +47,12 @@ export class ImportInventoryModalComponent implements OnInit {
     this.modalRef.close(false);
   }
 
+  public get rawDataCount(): number {
+    if (!this.rawData) return 0;
+    const lines = this.rawData.split('\n');
+    return lines.filter(line => line.trim().length > 0).length;
+  }
+
   public onSubmit() {
     if (this.isSubmitting) return;
     if (!this.importProductId || !this.batchName.trim() || !this.rawData.trim()) {

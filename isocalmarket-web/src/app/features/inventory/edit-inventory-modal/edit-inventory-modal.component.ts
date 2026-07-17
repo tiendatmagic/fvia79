@@ -58,6 +58,12 @@ export class EditInventoryModalComponent implements OnInit {
     this.modalRef.close(false);
   }
 
+  public get keysCount(): number {
+    if (!this.keysPool) return 0;
+    const lines = this.keysPool.split('\n');
+    return lines.filter(line => line.trim().length > 0).length;
+  }
+
   public onSubmit() {
     if (this.isSubmitting) return;
     if (!this.editProductId || !this.batchName.trim()) {

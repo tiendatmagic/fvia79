@@ -351,6 +351,17 @@
       2. Cập nhật [app.config.ts](file:///d:/git/isocalmarket/isocalmarket-web/src/app/app.config.ts) — Đăng ký interceptor vào `provideHttpClient(withInterceptors([authInterceptor]))`.
       3. Đơn giản hóa [auth.store.ts](file:///d:/git/isocalmarket/isocalmarket-web/src/app/features/auth/auth.store.ts) — Loại bỏ logic xóa cookie thủ công trong `checkMe()` vì interceptor đã đảm nhận hoàn toàn.
       4. Đã chạy build kiểm tra frontend thành công không phát sinh lỗi biên dịch.
+  - **[TRIỂN KHAI JWT HTTP INTERCEPTOR AUTO-REFRESH TOKEN]**:
+    - Yêu cầu: Người dùng không bao giờ phải đăng nhập lại trong vòng 7 ngày (miễn là còn truy cập web). Hệ thống phải tự động làm mới `access_token` ngầm khi nó hết hạn (30 phút).
+    - Phân tích: Backend Laravel đã hoàn chỉnh 100% — đã có endpoint `POST /api/v1/auth/refresh` nhận `refresh_token` từ cookie HttpOnly, tạo cặp token mới và trả về. Phần còn thiếu duy nhất là HTTP Interceptor ở Frontend Angular.
+    - Thực hiện triển khai & Kết quả:
+      1. Tạo mới [auth.interceptor.ts](file:///d:/git/isocalmarket/isocalmarket-web/src/app/core/interceptors/auth.interceptor.ts) — Interceptor dạng functional (Angular 16+) xử lý toàn bộ luồng tự động refresh:
+         - Bắt lỗi 401 từ bất kỳ API nào (ngoại trừ chính endpoint `/auth/refresh` để tránh vòng lặp vô hạn).
+         - Nếu `access_token` hết hạn: gọi ngầm `POST /api/v1/auth/refresh`.
+         - Sau khi refresh thành công: gửi lại request gốc đã bị 401 — người dùng hoàn toàn không nhận ra gián đoạn.
+         - Nếu có nhiều request 401 cùng lúc: dùng `BehaviorSubject` để xếp hàng chờ — chỉ gọi refresh **1 lần duy nhất**, tránh spam API.
+         - Nếu `refresh_token` cũng hết hạn (sau 7 ngày không truy cập): xóa cookie `auth_logged_in`, chuyển người dùng về `/auth/login`.
+      2. Cập nhật [app.config.ts](file:///d:/git/isocalmarket/isocalmarket-web/src/app/app.config.ts) — Đăng ký interceptor vào `provideHttpClient(withInterceptors([authInterceptor]))`.
   - **[THÊM CHỨC NĂNG THÔNG TIN CÁ NHÂN, ĐỔI MẬT KHẨU & BẢO MẬT 2FA]**:
     - Yêu cầu: Cho phép người dùng chỉnh sửa số điện thoại (username/email hiển thị readonly và disable). Hỗ trợ đổi mật khẩu (3 trường: mật khẩu cũ, mật khẩu mới, xác nhận mật khẩu mới). Hỗ trợ bảo mật 2 lớp (2FA) bằng Google Authenticator.
     - Thực hiện triển khai & Kết quả:
@@ -575,4 +586,17 @@
          - `edit-inventory-modal.component.html` (chuyển `text-[11px]`)
          - `admin-dashboard.component.html` (chuyển `text-[10px] md:text-xs`)
       4. Chạy biên dịch dự án kiểm tra thành công.
-
+  - **[HOÀN THÀNH] Bỏ thông tin tài khoản ở sidebar và chuyển đổi Đăng xuất sang Modal xác nhận**:
+    - Đã cập nhật [sidebar.component.html](file:///d:/git/isocalmarket/isocalmarket-web/src/app/shared/layout/sidebar/sidebar.component.html) và [app.html](file:///d:/git/isocalmarket/isocalmarket-web/src/app/app.html): Loại bỏ hoàn toàn khối chứa thông tin tài khoản (tên user, vai trò, nút Thoát) và nút Đăng nhập ở dưới cùng Sidebar của cả hai giao diện desktop và mobile sidebar, chỉ giữ lại thanh chuyển đổi giao diện `<app-theme-switcher />`.
+    - Đã cập nhật [header.component.ts](file:///d:/git/isocalmarket/isocalmarket-web/src/app/shared/layout/header/header.component.ts) và [header.component.html](file:///d:/git/isocalmarket/isocalmarket-web/src/app/shared/layout/header/header.component.html): Chuyển đổi sự kiện click của nút Đăng xuất trong dropdown tài khoản ở Header sang gọi phương thức `logout()` trong TS controller. Phương thức này sẽ kích hoạt `ModalService.confirm()` hiển thị modal xác nhận động, và chỉ gọi API logout thực sự khi người dùng chọn Xác nhận.
+  - **[HOÀN THÀNH] Tối ưu hóa màu nền cho các trường nhập liệu Input, Select, Textarea**:
+    - Đã cập nhật [styles.scss](file:///d:/git/isocalmarket/isocalmarket-web/src/styles.scss): Điều chỉnh màu nền của các class `.form-input`, `.form-textarea`, `.search-input` từ xám nhạt (`bg-slate-50`) sang màu trắng tinh (`bg-white`) ở chế độ Light Mode và tối đậm (`bg-slate-950`) ở chế độ Dark Mode.
+    - Đã đồng bộ hóa [edit-inventory-modal.component.html](file:///d:/git/isocalmarket/isocalmarket-web/src/app/features/inventory/edit-inventory-modal/edit-inventory-modal.component.html), [import-inventory-modal.component.html](file:///d:/git/isocalmarket/isocalmarket-web/src/app/features/inventory/import-inventory-modal/import-inventory-modal.component.html) và [product-form-modal.component.html](file:///d:/git/isocalmarket/isocalmarket-web/src/app/features/products/product-form-modal/product-form-modal.component.html) để loại bỏ các class CSS inline cứng của các thẻ `input` và `textarea`, chuyển sang sử dụng các class toàn cục `.form-input` và `.form-textarea`.
+  - **[HOÀN THÀNH] Bổ sung màu nền cho nút Tải lại (Reload) trên toàn hệ thống**:
+    - Đã cập nhật 4 tệp giao diện: [products.component.html](file:///d:/git/isocalmarket/isocalmarket-web/src/app/features/products/products.component.html), [inventory.component.html](file:///d:/git/isocalmarket/isocalmarket-web/src/app/features/inventory/inventory.component.html), [orders.component.html](file:///d:/git/isocalmarket/isocalmarket-web/src/app/features/orders/orders.component.html) và [admin-orders.component.html](file:///d:/git/isocalmarket/isocalmarket-web/src/app/features/admin-orders/admin-orders.component.html). Bổ sung class `bg-white dark:bg-slate-950` để nút Tải lại có nền trắng ở Light Mode và tối ở Dark Mode, giúp đồng bộ hóa thẩm mỹ UI.
+  - **[HOÀN THÀNH] Sửa lỗi logic tính toán số lượng lô hàng (Khả dụng / Ban đầu) khi sửa**:
+    - Đã cập nhật [InventoryService.php](file:///d:/git/isocalmarket/isocalmarket-api/app/Application/Services/InventoryService.php): Sửa đổi logic hàm `updateBatch` để giữ nguyên số lượng đã bán thực tế `sold_count` cũ, đồng thời tính lại `initial_count` mới theo công thức = `available_count` hiện tại + `sold_count` đã bán.
+    - Đã chạy lệnh Tinker sửa đổi và đồng bộ hóa cột `initial_count` cho toàn bộ các lô hàng mẫu bị lỗi lệch số lượng khả dụng lớn hơn số lượng ban đầu (`19 / 3` đổi thành `19 / 19`).
+  - **[HOÀN THÀNH] Tích hợp bộ đếm số lượng tài nguyên dưới Textarea**:
+    - Đã cập nhật [edit-inventory-modal.component.ts](file:///d:/git/isocalmarket/isocalmarket-web/src/app/features/inventory/edit-inventory-modal/edit-inventory-modal.component.ts) và [edit-inventory-modal.component.html](file:///d:/git/isocalmarket/isocalmarket-web/src/app/features/inventory/edit-inventory-modal/edit-inventory-modal.component.html): Viết getter `keysCount` và hiển thị nhãn `Tổng cộng: X tài khoản` ngay dưới textarea trong modal Chỉnh sửa tài nguyên.
+    - Đã cập nhật [import-inventory-modal.component.ts](file:///d:/git/isocalmarket/isocalmarket-web/src/app/features/inventory/import-inventory-modal/import-inventory-modal.component.ts) và [import-inventory-modal.component.html](file:///d:/git/isocalmarket/isocalmarket-web/src/app/features/inventory/import-inventory-modal/import-inventory-modal.component.html): Viết getter `rawDataCount` và hiển thị nhãn `Tổng cộng: Y tài khoản` dưới textarea trong modal Import Kho Hàng.

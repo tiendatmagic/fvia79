@@ -70,20 +70,17 @@ class InventoryService
         $cleanKeys = array_filter(array_map('trim', $lines), fn($k) => !empty($k));
         $currentAvailableCount = count($cleanKeys);
 
-        // Tính toán sold_count dựa trên sự thay đổi
-        // sold_count = initial_count - current_available_count
-        // Nếu admin sửa key làm phình to hoặc thu nhỏ, sold_count sẽ được giữ nguyên hoặc điều chỉnh cho hợp lý.
-        $soldCount = $batch->getInitialCount() - $currentAvailableCount;
-        if ($soldCount < 0) {
-            $soldCount = 0;
-        }
+        // Khi admin sửa keys_pool, sold_count (số lượng đã bán thực tế) được giữ nguyên.
+        // initial_count (tổng số lượng ban đầu) sẽ được tính lại bằng: số lượng khả dụng hiện tại + số lượng đã bán.
+        $soldCount = $batch->getSoldCount();
+        $initialCount = $currentAvailableCount + $soldCount;
 
         $updatedBatch = new InventoryBatch(
             $batch->getId(),
             $productId,
             $batchName,
             implode("\n", $cleanKeys),
-            $batch->getInitialCount(),
+            $initialCount,
             $soldCount,
             $status,
             $batch->getCreatedAt(),
