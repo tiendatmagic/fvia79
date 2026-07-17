@@ -275,6 +275,9 @@ When user's prompt is NOT in English:
 > - **Angular Custom Component Host Display (CRITICAL):** All Angular custom components (e.g. `app-custom-switch`, `app-custom-select`, `app-custom-date-picker`) must explicitly set `:host { display: block; }` in their stylesheet to prevent display: inline default browser behavior from ignoring Tailwind vertical margins/spacings (which causes adjacent labels/elements to stick together).
 > - **Flat Layout & Border Elimination (CRITICAL):** Avoid using unnecessary horizontal border dividers (`border-t`) to separate sub-sections or settings. Use a flat design with consistent spacing (e.g. `space-y-6`) instead.
 > - **Modal Component Architecture & Inheritance (CRITICAL):** Do NOT use native browser dialogs like `alert` or `confirm`. All modals must be built as standalone components and opened/closed dynamically from the `.ts` controller logic (via a modal dispatch service/dynamic injection), rather than being hardcoded in parent HTML templates. Prioritize reusing or extending existing generic modal components (e.g., confirmations) instead of creating duplicate modal components.
+> - **Duplicate API & Click Spam Prevention (CRITICAL):**
+>   - Every action button that calls an API (especially edit/create/delete buttons, submit form inputs, login, register, 2FA settings, checkout, and detail requests) must have a loading state (`isSubmitting` / `authLoading` / `loadingItemId`) and an immediate guard check at the beginning of the handler (e.g. `if (this.isSubmitting) return;`) to prevent duplicate HTTP requests from click spamming.
+>   - Tooltips on buttons must automatically dismiss on `click` (by adding `@HostListener('click')` inside `TooltipDirective` to call `destroyTooltip()`) to prevent them from getting stuck on screen over modal backdrops.
 ---
 
 ## 📁 QUICK REFERENCE

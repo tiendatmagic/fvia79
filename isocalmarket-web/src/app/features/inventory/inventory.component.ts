@@ -107,7 +107,7 @@ export class InventoryComponent implements OnInit {
   public openImportDrawer() {
     this.modalService.open(ImportInventoryModalComponent, {
       title: 'Import Tài Nguyên Số',
-      size: 'md',
+      size: 'lg',
       data: {
         selectedProductId: this.selectedProductFilter || '',
         productOptions: this.productOptions
@@ -136,7 +136,7 @@ export class InventoryComponent implements OnInit {
 
         this.modalService.open(EditInventoryModalComponent, {
           title: 'Chỉnh sửa tài nguyên',
-          size: 'md',
+          size: 'lg',
           data: {
             item: freshItem,
             productOptions: cleanProductOptions

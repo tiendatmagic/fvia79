@@ -35,7 +35,7 @@ export class ProfileSecurityComponent {
         if (res) {
           this.modalService.open(Enable2faModalComponent, {
             title: 'Kích hoạt bảo mật 2FA',
-            size: 'md',
+            size: 'lg',
             data: { secret: res.secret, qr_code_url: res.qr_code_url }
           });
         }

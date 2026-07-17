@@ -123,7 +123,7 @@ export class AdminCategoriesComponent implements OnInit {
   public openCreateModal() {
     this.modalService.open(CategoryFormModalComponent, {
       title: 'Thêm Danh Mục Mới',
-      size: 'md',
+      size: 'lg',
       data: null
     }).afterClosed$.subscribe((success) => {
       if (success) {
@@ -135,7 +135,7 @@ export class AdminCategoriesComponent implements OnInit {
   public openEditModal(category: any) {
     this.modalService.open(CategoryFormModalComponent, {
       title: 'Cập Nhật Danh Mục',
-      size: 'md',
+      size: 'lg',
       data: category
     }).afterClosed$.subscribe((success) => {
       if (success) {

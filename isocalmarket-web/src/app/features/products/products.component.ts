@@ -107,7 +107,7 @@ export class ProductsComponent implements OnInit {
   public openCreateDrawer() {
     this.modalService.open(ProductFormModalComponent, {
       title: 'Thêm Sản Phẩm Mới',
-      size: 'md',
+      size: 'lg',
       data: null
     }).afterClosed$.subscribe((success) => {
       if (success) {
@@ -119,7 +119,7 @@ export class ProductsComponent implements OnInit {
   public openEditDrawer(product: any) {
     this.modalService.open(ProductFormModalComponent, {
       title: 'Cập Nhật Sản Phẩm',
-      size: 'md',
+      size: 'lg',
       data: product
     }).afterClosed$.subscribe((success) => {
       if (success) {
