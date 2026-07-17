@@ -97,7 +97,6 @@ export class CustomSelectComponent implements ControlValueAccessor, AfterViewChe
   public dropdownStyle: { [key: string]: string } = {};
   public resolvedPlacement: 'top' | 'bottom' = 'bottom';
 
-  /** Đóng dropdown khi click ra ngoài component */
   public onClickOutside(event: MouseEvent): void {
     if (!this.elementRef.nativeElement.contains(event.target)) {
       this.isOpen.set(false);
@@ -166,8 +165,6 @@ export class CustomSelectComponent implements ControlValueAccessor, AfterViewChe
       };
     }
   }
-
-  /** Cập nhật vị trí khi scroll hoặc resize */
   ngAfterViewChecked(): void {
     if (this.isOpen() && this.triggerBtn) {
       this.updateDropdownPosition();

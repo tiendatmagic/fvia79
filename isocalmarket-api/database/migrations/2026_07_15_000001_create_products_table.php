@@ -19,7 +19,6 @@ return new class extends Migration
             $table->json('attributes')->nullable();
             $table->timestamps();
 
-            // Index tối ưu lọc theo trạng thái, giá và danh mục
             $table->index('status');
             $table->index('price');
             $table->index('category_id');

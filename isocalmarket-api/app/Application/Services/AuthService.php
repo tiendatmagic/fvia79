@@ -35,7 +35,6 @@ class AuthService
 
     public function login(string $login, string $password): ?User
     {
-        // Tìm kiếm người dùng bằng cả email hoặc username (name)
         $user = $this->userRepository->findByEmailOrUsername($login);
 
         if (!$user) {

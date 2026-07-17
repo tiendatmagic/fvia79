@@ -46,7 +46,6 @@
 
       <!-- USER DROPDOWN: mọi thiết bị -->
       @if (stateService.isAuthenticated()) {
-        <!-- Trigger Button -->
         <div class="relative">
           <button
             (click)="toggleUserDropdown($event)"
@@ -57,7 +56,6 @@
                 : 'border-slate-200/50 dark:border-slate-800/50 bg-white dark:bg-slate-900 hover:border-[var(--color-primary)]/40'
             "
           >
-            <!-- Avatar chữ cái -->
             <span
               class="w-7 h-7 rounded-lg flex items-center justify-center text-white text-xs font-black shrink-0"
               style="
@@ -85,7 +83,6 @@
                 {{ formatBalance(stateService.currentUser()?.balance) }}
               </span>
             </div>
-            <!-- Chevron -->
             <app-icon
               name="chevron-down"
               class="w-3.5 h-3.5 text-slate-400 transition-transform duration-200 hidden sm:block group-hover:text-[var(--color-primary)]"
@@ -94,13 +91,11 @@
             />
           </button>
 
-          <!-- Dropdown Panel -->
           @if (showUserDropdown()) {
             <div
               class="absolute right-0 top-full mt-2 w-60 bg-white dark:bg-slate-900 border border-slate-200/60 dark:border-slate-800/60 rounded-2xl shadow-xl shadow-slate-900/10 dark:shadow-slate-950/40 overflow-hidden z-50"
               (click)="$event.stopPropagation()"
             >
-              <!-- Header thông tin user -->
               <div class="px-4 py-3.5 border-b border-slate-100 dark:border-slate-800/60">
                 <div class="flex items-center gap-3">
                   <span
@@ -138,9 +133,7 @@
                 </div>
               </div>
 
-              <!-- Menu items -->
               <div class="p-1.5 flex flex-col">
-                <!-- Trang quản trị (Admin) -->
                 @if (stateService.isAdmin()) {
                   <a
                     routerLink="/admin/dashboard"
@@ -152,7 +145,6 @@
                   </a>
                 }
 
-                <!-- Lịch sử đơn hàng (Khách hàng) -->
                 @if (!stateService.isAdmin()) {
                   <a
                     routerLink="/orders"
@@ -164,7 +156,6 @@
                   </a>
                 }
 
-                <!-- Thông tin cá nhân -->
                 <a
                   routerLink="/profile"
                   (click)="showUserDropdown.set(false)"
@@ -175,7 +166,6 @@
                 </a>
               </div>
 
-              <!-- Divider + Đăng xuất -->
               <div class="border-t border-slate-100 dark:border-slate-800/60 p-1.5">
                 <button
                   (click)="stateService.authStore.logout().subscribe(); showUserDropdown.set(false)"
@@ -189,7 +179,6 @@
           }
         </div>
       } @else {
-        <!-- Nút Đăng nhập/Đăng ký (chưa đăng nhập) -->
         @if (router.url.includes('/login')) {
           <a
             routerLink="/register"

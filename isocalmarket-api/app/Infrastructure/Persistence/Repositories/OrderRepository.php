@@ -21,8 +21,6 @@ class OrderRepository implements OrderRepositoryInterface
             if ($order->getId()) {
                 OrderItemModel::where('order_id', $model->id)->delete();
             }
-
-            // Lưu các items mới
             foreach ($order->getItems() as $item) {
                 $itemModel = new OrderItemModel();
                 $itemModel->order_id = $model->id;

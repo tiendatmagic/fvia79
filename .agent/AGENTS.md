@@ -511,3 +511,18 @@
     - Đã chạy build Angular thành công 100% không phát sinh lỗi.
     - **Cập nhật dọn dẹp (Refactor):** Thay thế toàn bộ các emoji (như ❌) và các thẻ `<svg>` inline viết trực tiếp trong các template HTML (`welcome-notice-modal.component.html`, `login.component.html`, `register.component.html`, `accordion-item.component.html`, `product-form-modal.component.html`, `custom-checkbox.component.html`) bằng việc gọi qua component dùng chung `<app-icon>`. Import `IconComponent` vào các component tương ứng. Loại bỏ emoji khỏi chuỗi title modal trong `auth.store.ts`. Biên dịch hệ thống thành công không lỗi.
 
+  - **[HOÀN THÀNH] DỌN DẸP COMMENT RÁC, DIVIDERS (====) & CODE COMMENT-OUT**:
+    - **Yêu cầu:** Loại bỏ toàn bộ các comment phân cách rườm rà dạng `=======`, mã nguồn bị comment-out (không sử dụng), và các comment giải thích hiển nhiên không cần thiết (clean code/self-documenting) ở cả Frontend và Backend.
+    - **Thực hiện:**
+      1. **Frontend:**
+         - Rút gọn các divider lớn `/* ==================== HỆ THỐNG ... ==================== */` trong [styles.scss](file:///d:/git/isocalmarket/isocalmarket-web/src/styles.scss) và [state.service.ts](file:///d:/git/isocalmarket/isocalmarket-web/src/app/core/services/state.service.ts), [icon.component.html](file:///d:/git/isocalmarket/isocalmarket-web/src/app/shared/components/icon/icon.component.html) thành các đề mục tiếng Anh ngắn gọn, tinh tế.
+         - Xóa bỏ các comment hiển nhiên bên cạnh icon, các chú thích logic UI hiển nhiên trong các file HTML component con (Shared Components & Features HTML) và các file logic `.ts` (theme.service, state.service, tooltip.directive).
+      2. **Backend:**
+         - Loại bỏ các comment-out imports (`// use ...`) trong [User.php](file:///d:/git/isocalmarket/isocalmarket-api/app/Models/User.php) và [ExampleTest.php](file:///d:/git/isocalmarket/isocalmarket-api/tests/Feature/ExampleTest.php).
+         - Loại bỏ các comment giải thích code hiển nhiên trong [OrderService.php](file:///d:/git/isocalmarket/isocalmarket-api/app/Application/Services/OrderService.php) (giữ lại Pessimistic Lock, giải mã nhạy cảm), [AuthController.php](file:///d:/git/isocalmarket/isocalmarket-api/app/Http/Controllers/AuthController.php), [DashboardController.php](file:///d:/git/isocalmarket/isocalmarket-api/app/Http/Controllers/DashboardController.php), [OrderRepository.php](file:///d:/git/isocalmarket/isocalmarket-api/app/Infrastructure/Persistence/Repositories/OrderRepository.php).
+         - Giữ lại toàn bộ comment thuật toán phức tạp của Google TOTP 2FA trong [Google2FA.php](file:///d:/git/isocalmarket/isocalmarket-api/app/Infrastructure/Security/Google2FA.php) để làm tài liệu kỹ thuật.
+      3. **Kiểm thử:**
+         - Chạy `npm run build` biên dịch Frontend Angular thành công 100% không phát sinh lỗi.
+         - Chạy `php artisan test` kiểm thử Backend Laravel thành công 100% (passed 2/2 tests).
+
+

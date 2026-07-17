@@ -42,8 +42,6 @@ export class TooltipDirective implements OnDestroy {
 
   private createTooltip(): void {
     if (this.tooltipEl) return;
-
-    // Tạo phần tử tooltip
     this.tooltipEl = this.renderer.createElement('div');
     this.renderer.appendChild(this.tooltipEl, this.renderer.createText(this.text));
 
@@ -74,8 +72,6 @@ export class TooltipDirective implements OnDestroy {
       'ease-out'
     ];
     classes.forEach(c => this.renderer.addClass(this.tooltipEl!, c));
-
-    // Thêm vào document body
     this.renderer.appendChild(document.body, this.tooltipEl);
 
     // Tính toán tọa độ ban đầu
@@ -140,8 +136,6 @@ export class TooltipDirective implements OnDestroy {
 
     const el = this.tooltipEl;
     this.tooltipEl = null;
-
-    // Fade-out và scale down
     this.renderer.addClass(el, 'opacity-0');
     this.renderer.setStyle(el, 'transform', el.style.transform + ' scale(0.95)');
 

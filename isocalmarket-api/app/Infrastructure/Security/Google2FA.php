@@ -49,7 +49,6 @@ class Google2FA
             // Tính toán HMAC-SHA1
             $hmac = hash_hmac('sha1', $time, $key, true);
             
-            // Lấy offset từ byte cuối cùng
             $offset = ord(substr($hmac, -1)) & 0x0F;
             
             // Trích xuất 4 byte từ offset
@@ -59,10 +58,8 @@ class Google2FA
             $value = unpack('N', $hashpart);
             $value = $value[1];
             
-            // Bỏ đi bit dấu
             $value = $value & 0x7FFFFFFF;
             
-            // Lấy 6 số cuối
             $modulo = pow(10, 6);
             $calcCode = str_pad((string)($value % $modulo), 6, '0', STR_PAD_LEFT);
             

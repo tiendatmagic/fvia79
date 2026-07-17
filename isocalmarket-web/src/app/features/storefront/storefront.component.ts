@@ -69,8 +69,6 @@ export class StorefrontComponent implements OnInit {
     { label: 'Tên danh mục (Z - A)', value: 'za' },
     { label: 'Thứ tự mặc định', value: 'default' }
   ];
-
-  // Tìm kiếm sản phẩm
   public readonly filteredProducts = computed(() => {
     const list = this.state.productStore.products();
     const q = this.searchQuery.toLowerCase().trim();
@@ -81,7 +79,6 @@ export class StorefrontComponent implements OnInit {
     );
   });
 
-  // Gom nhóm sản phẩm theo Danh mục & Sắp xếp danh mục
   public readonly groupedProducts = computed(() => {
     const list = this.filteredProducts();
     const categories = this.state.productStore.categories();

@@ -69,8 +69,6 @@ export class HeaderComponent {
       }
     });
   }
-
-  /** Lấy chữ cái đầu của tên để làm avatar */
   public getUserInitial(): string {
     const name = this.stateService.currentUser()?.name || '';
     return name.charAt(0).toUpperCase();

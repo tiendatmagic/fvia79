@@ -29,7 +29,6 @@ export class RegisterComponent {
   public passwordConfirmation = '';
 
   constructor() {
-    // Tự động chuyển hướng nếu phát hiện trạng thái đã đăng nhập
     effect(() => {
       if (this.state.isAuthenticated()) {
         const dest = this.state.isAdmin() ? '/admin/dashboard' : '/storefront';

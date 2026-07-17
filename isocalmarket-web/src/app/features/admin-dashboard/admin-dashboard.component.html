@@ -1,5 +1,4 @@
 <div class="p-6 md:p-8 max-w-[1530px] mx-auto w-full space-y-8">
-  <!-- Tiêu đề trang -->
   <app-page-header
     title="Tổng Quan Dashboard"
     description="Thống kê hiệu suất kinh doanh & Tình trạng kho hàng số."
@@ -15,7 +14,6 @@
     </ng-container>
   </app-page-header>
 
-  <!-- Skeleton loading -->
   <div *ngIf="loading()" class="grid grid-cols-2 xl:grid-cols-4 gap-4">
     <div app-card *ngFor="let i of [1, 2, 3, 4]" class="relative p-4 md:p-5 overflow-hidden">
       <div
@@ -29,9 +27,7 @@
     </div>
   </div>
 
-  <!-- Thẻ Thống Kê (Grid 4 cột) -->
   <div *ngIf="!loading() && stats()" class="grid grid-cols-2 xl:grid-cols-4 gap-4">
-    <!-- Doanh thu -->
     <div app-card class="relative p-4 md:p-5 overflow-hidden">
       <div
         class="absolute top-4 right-4 md:top-5 md:right-5 w-10 h-10 rounded-xl bg-blue-50 dark:bg-blue-950/30 flex items-center justify-center text-[var(--color-primary)]"
@@ -52,7 +48,6 @@
       </div>
     </div>
 
-    <!-- Đơn hàng -->
     <div app-card class="relative p-4 md:p-5 overflow-hidden">
       <div
         class="absolute top-4 right-4 md:top-5 md:right-5 w-10 h-10 rounded-xl bg-slate-50 dark:bg-slate-900 flex items-center justify-center text-slate-500"
@@ -73,7 +68,6 @@
       </div>
     </div>
 
-    <!-- Sản phẩm active -->
     <div app-card class="relative p-4 md:p-5 overflow-hidden">
       <div
         class="absolute top-4 right-4 md:top-5 md:right-5 w-10 h-10 rounded-xl bg-teal-50 dark:bg-teal-950/30 flex items-center justify-center text-[var(--color-secondary)]"
@@ -94,7 +88,6 @@
       </div>
     </div>
 
-    <!-- Tồn kho khả dụng -->
     <div app-card class="relative p-4 md:p-5 overflow-hidden">
       <div
         class="absolute top-4 right-4 md:top-5 md:right-5 w-10 h-10 rounded-xl bg-amber-50 dark:bg-amber-950/30 flex items-center justify-center text-amber-500"
@@ -116,7 +109,6 @@
     </div>
   </div>
 
-  <!-- Cảnh báo sản phẩm tồn kho thấp -->
   <div *ngIf="!loading() && stats()" app-card class="p-6 space-y-6">
     <div class="flex items-center justify-between">
       <div class="flex items-center gap-2">
@@ -130,7 +122,6 @@
       >
     </div>
 
-    <!-- Không có cảnh báo -->
     <div
       *ngIf="stats().low_stock_products.length === 0"
       class="flex flex-col items-center justify-center py-8 text-center space-y-2"
@@ -148,7 +139,6 @@
       </p>
     </div>
 
-    <!-- Bảng danh sách sản phẩm tồn thấp -->
     <div *ngIf="stats().low_stock_products.length > 0" class="overflow-x-auto">
       <table class="w-full text-left border-collapse">
         <thead>

@@ -21,18 +21,14 @@ export class StateService {
   private readonly themeService = inject(ThemeService);
   private readonly toastService = inject(ToastService);
   
-  // Tiêm các Slice Stores mới
   public readonly authStore = inject(AuthStore);
   public readonly productStore = inject(ProductStore);
   public readonly inventoryStore = inject(InventoryStore);
   public readonly orderStore = inject(OrderStore);
   
-  // Giữ Web3Service fallback để an toàn tương thích ngược
   private readonly web3Service = inject(Web3Service);
 
-  // ====================================================
-  // DELEGATED UI STATE (ỦY THÁC TRẠNG THÁI GIAO DIỆN)
-  // ====================================================
+  // Delegated UI State
   public readonly showMobileMenu = this.uiStateService.showMobileMenu;
   public readonly showDropdown = this.uiStateService.showDropdown;
   public readonly showNetworkDropdown = this.uiStateService.showNetworkDropdown;
@@ -44,22 +40,16 @@ export class StateService {
     this.orderStore.loading()
   );
 
-  // ====================================================
-  // DELEGATED THEME STATE (ỦY THÁC TRẠNG THÁI THEME)
-  // ====================================================
+  // Delegated Theme State
   public readonly isDarkMode = this.themeService.isDarkMode;
   public readonly themeMode = this.themeService.themeMode;
 
-  // ====================================================
-  // DELEGATED AUTH STATE (ỦY THÁC TRẠNG THÁI AUTH WEB2)
-  // ====================================================
+  // Delegated Auth State (Web2)
   public readonly currentUser = this.authStore.currentUser;
   public readonly isAuthenticated = this.authStore.isAuthenticated;
   public readonly isAdmin = this.authStore.isAdmin;
 
-  // ====================================================
-  // DELEGATED WEB3 STATE (MỌI HOẠT ĐỘNG WEB3 SẼ BỊ TẮT / KHÔNG KẾT NỐI VÌ ĐÂY LÀ WEB2)
-  // ====================================================
+  // Delegated Web3 State (Disabled for Web2)
   public readonly address = computed(() => null);
   public readonly chainId = computed(() => null);
   public readonly isConnected = computed(() => false);
@@ -73,11 +63,8 @@ export class StateService {
   public readonly POPULAR_CHAINS = this.web3Service.POPULAR_CHAINS;
   public readonly shortenedAddress = computed(() => '');
 
-  // ====================================================
-  // DELEGATED METHODS (ỦY THÁC PHƯƠNG THỨC HÀNH ĐỘNG)
-  // ====================================================
+  // Delegated Methods
 
-  // Thông báo Toast
   public showToast(msg: string, type: 'success' | 'error' | 'warning' = 'success') {
     this.toastService.showToast(msg, type);
   }

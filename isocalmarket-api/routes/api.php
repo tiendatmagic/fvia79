@@ -12,7 +12,6 @@ Route::prefix('v1')->group(function () {
 
     Route::post('/auth/refresh', ['App\Http\Controllers\AuthController', 'refresh']);
 
-    // Public routes — ai cũng xem được danh sách sản phẩm
     Route::get('/products', ['App\Http\Controllers\ProductController', 'index']);
     Route::get('/products/{id}', ['App\Http\Controllers\ProductController', 'show']);
     Route::get('/categories', ['App\Http\Controllers\CategoryController', 'index']);

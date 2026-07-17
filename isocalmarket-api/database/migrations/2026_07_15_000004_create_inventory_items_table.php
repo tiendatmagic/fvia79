@@ -16,7 +16,6 @@ return new class extends Migration
             $table->foreignUuid('order_id')->nullable()->constrained('orders')->onDelete('set null');
             $table->timestamps();
 
-            // Composite index tối ưu hóa truy vấn tồn kho theo sản phẩm + trạng thái
             $table->index(['product_id', 'status']);
         });
     }

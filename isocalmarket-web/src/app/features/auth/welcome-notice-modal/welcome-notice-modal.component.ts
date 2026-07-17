@@ -7,7 +7,6 @@ import { CustomCheckboxComponent } from '@shared/components/custom-checkbox/cust
 
 import { IconComponent } from '@shared/components/icon/icon.component';
 
-/** Key lưu timestamp "không hỏi lại" vào localStorage */
 export const WELCOME_NOTICE_STORAGE_KEY = 'welcome_notice_suppressed_until';
 
 /** Kiểm tra xem có nên hiển thị modal hay không */

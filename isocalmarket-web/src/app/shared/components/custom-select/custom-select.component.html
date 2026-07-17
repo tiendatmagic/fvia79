@@ -1,5 +1,4 @@
 <div class="{{ containerClass }}" [class.opacity-60]="disabled">
-  <!-- Nút kích hoạt Dropdown -->
   <button
     type="button"
     #triggerBtn
@@ -31,7 +30,6 @@
       [ngStyle]="dropdownStyle"
       class="bg-white dark:bg-slate-900 border border-slate-200/85 dark:border-slate-800/85 rounded-xl shadow-lg flex flex-col overflow-hidden"
     >
-      <!-- Ô tìm kiếm nhanh trong dropdown -->
       @if (shouldShowSearch()) {
         <div
           class="px-4 py-2.5 border-b border-slate-100 dark:border-slate-800 flex items-center gap-2.5 shrink-0 bg-slate-50/50 dark:bg-slate-950/40"
@@ -47,7 +45,6 @@
         </div>
       }
 
-      <!-- Danh sách Options -->
       <div class="overflow-y-auto no-scrollbar flex-1 py-1">
         @if (filteredOptions().length === 0) {
           <div class="px-4 py-3 text-center text-xs text-slate-400 italic">
@@ -62,7 +59,6 @@
           >
             <span class="truncate">{{ getOptionLabel(opt) }}</span>
 
-            <!-- Checkmark khi đã chọn -->
             @if (compareValues(getOptionValue(opt), value)) {
               <app-icon
                 name="check"

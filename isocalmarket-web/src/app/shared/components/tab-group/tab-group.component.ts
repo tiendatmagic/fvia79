@@ -50,7 +50,6 @@ export class TabGroupComponent implements AfterViewInit, OnChanges, OnDestroy {
   /** Class CSS tùy chỉnh cho container */
   @Input() containerClass: string = '';
 
-  /** Class CSS tùy chỉnh cho các nút bấm tab (để tùy chỉnh padding, width, v.v.) */
   @Input() buttonClass: string = '';
 
   /** Class CSS tùy chỉnh cho thẻ span nhãn chữ (ví dụ ẩn chữ trên desktop) */
@@ -67,7 +66,6 @@ export class TabGroupComponent implements AfterViewInit, OnChanges, OnDestroy {
 
   private resizeObserver?: ResizeObserver;
 
-  /** Trạng thái vị trí và kích thước của slider */
   public readonly sliderStyle = signal<{ left: string; width: string }>({
     left: '0px',
     width: '0px'});

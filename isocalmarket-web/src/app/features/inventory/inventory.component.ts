@@ -41,7 +41,6 @@ export class InventoryComponent implements OnInit {
   public readonly state = inject(StateService);
   private readonly modalService = inject(ModalService);
 
-  // Bộ lọc và tìm kiếm
   public selectedProductFilter = '';
   public selectedStatusFilter = '';
   public searchQuery = '';
@@ -57,7 +56,6 @@ export class InventoryComponent implements OnInit {
     { label: 'Đã bán', value: 'sold' }
   ];
 
-  // Map danh sách sản phẩm cho Select
   public get productOptions() {
     const options = this.state.productStore.products().map(p => ({
       label: p.name,
@@ -75,7 +73,6 @@ export class InventoryComponent implements OnInit {
   }
 
   ngOnInit() {
-    // Tải sản phẩm trước
     this.state.productStore.fetchProducts().subscribe(() => {
       // Sau đó tải tất cả items kho
       this.fetchFilteredItems(1);

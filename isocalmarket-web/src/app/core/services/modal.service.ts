@@ -29,8 +29,6 @@ export class ModalService {
         componentRef.destroy();
       }
     });
-
-    // Tạo injector riêng chứa ModalRef và MODAL_DATA để component con có thể inject
     const childInjector = Injector.create({
       providers: [
         { provide: ModalRef, useValue: modalRef },
@@ -38,8 +36,6 @@ export class ModalService {
       ],
       parent: this.injector
     });
-
-    // Tạo Wrapper component
     componentRef = createComponent(ModalWrapperComponent, {
       environmentInjector: this.appRef.injector,
       elementInjector: childInjector

@@ -17,7 +17,6 @@ return new class extends Migration
             $table->integer('quantity');
             $table->timestamps();
 
-            // Index tối ưu truy vấn theo đơn hàng và sản phẩm
             $table->index('order_id');
             $table->index('product_id');
         });

@@ -52,7 +52,6 @@ export class AuthStore {
 
     if (messageMap[raw]) return messageMap[raw];
 
-    // Map theo status code nếu không có message cụ thể
     if (status === 401) return 'Tài khoản hoặc mật khẩu không chính xác!';
     if (status === 422) {
       // Laravel validation errors — thường có `errors` object
@@ -114,7 +113,6 @@ export class AuthStore {
   }
 
   public checkMe() {
-    // Check trạng thái login indicator trước để tránh gọi API thừa khi chưa đăng nhập
     const isLocalLoggedIn = typeof document !== 'undefined' && document.cookie.includes('auth_logged_in=true');
     if (!isLocalLoggedIn) {
       this.currentUser.set(null);

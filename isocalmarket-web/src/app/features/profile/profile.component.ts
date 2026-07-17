@@ -19,8 +19,6 @@ import { IconComponent } from '@shared/components/icon/icon.component';
 })
 export class ProfileComponent {
   public readonly state = inject(StateService);
-
-  /** Lấy chữ cái đầu của tên để làm avatar */
   public getUserInitial(): string {
     const name = this.state.currentUser()?.name || '';
     return name.charAt(0).toUpperCase();

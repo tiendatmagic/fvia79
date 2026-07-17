@@ -8,11 +8,9 @@ import { Injectable, signal } from '@angular/core';
   providedIn: 'root'
 })
 export class UiStateService {
-  // Trạng thái hiển thị menu và các dropdown của Header/Sidebar
   public readonly showMobileMenu = signal<boolean>(false);
   public readonly showDropdown = signal<boolean>(false);
   public readonly showNetworkDropdown = signal<boolean>(false);
 
-  // Trạng thái Loading hệ thống toàn cục
   public readonly isLoading = signal<boolean>(false);
 }

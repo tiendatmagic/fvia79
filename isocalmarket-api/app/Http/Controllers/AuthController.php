@@ -47,8 +47,6 @@ class AuthController extends Controller
             if (!$user) {
                 return response()->json(['message' => 'Invalid email/username or password.'], 401);
             }
-
-            // Kiểm tra 2FA
             if ($user->isGoogle2faEnabled()) {
                 $tempToken = $this->authService->generateTemp2FaToken($user);
                 return response()->json([

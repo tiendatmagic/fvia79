@@ -81,7 +81,6 @@ export class Web3Service {
       return;
     }
 
-    // Để AppKit tự động lấy cấu hình từ Reown Cloud Dashboard (Social & Email)
     const isDark = this.themeService.isDarkMode();
 
     this.modal = createAppKit({
@@ -116,7 +115,6 @@ export class Web3Service {
       if (accountState.isConnected && accountState.address) {
         await this.updateBalanceAndNetwork();
         
-        // Cập nhật hiển thị modal nếu mạng hiện tại sai sau khi load account (khi reload)
         const currentChainId = this.chainId();
         if (currentChainId) {
           this.checkAndUpdateNetworkState(currentChainId, false);
@@ -146,7 +144,6 @@ export class Web3Service {
     });
   }
 
-  // Hàm helper tập trung kiểm tra và cập nhật trạng thái mạng lưới
   private checkAndUpdateNetworkState(chainId: number, showToastAlert = true) {
     const prevChainId = this.chainId();
     const prevWrongChain = this.isWrongChain();
@@ -159,12 +156,10 @@ export class Web3Service {
 
     if (isSupported) {
       this.networkName.set(supportedChain.name);
-      // Lấy symbol của native currency của chain
       const symbol = (supportedChain as any).nativeCurrency?.symbol || 'ETH';
       this.chainSymbol.set(symbol);
 
       this.showWrongChainModal.set(false);
-      // Chỉ tự động đóng modal nếu trước đó đang ở sai mạng lưới và nay đã chuyển về đúng mạng
       if (prevWrongChain) {
         try {
           this.modal.close();
@@ -209,7 +204,6 @@ export class Web3Service {
     }
   }
 
-  // Cập nhật số dư và thông tin mạng thông qua Ethers BrowserProvider
   public async updateBalanceAndNetwork() {
     try {
       if (!this.modal) return;
@@ -245,7 +239,6 @@ export class Web3Service {
     }
   }
 
-  // Mở popup chuyển mạng
   public async openNetworkModal() {
     try {
       if (!this.modal) return;
@@ -265,7 +258,6 @@ export class Web3Service {
     }
   }
 
-  // Ngắt kết nối ví
   public async disconnect() {
     try {
       if (!this.modal) return;
@@ -301,7 +293,6 @@ export class Web3Service {
     }
     const ethersProvider = new BrowserProvider(walletProvider as any);
 
-    // Ghi đè phương thức send để bypass cuộc gọi eth_accounts / eth_requestAccounts bị ví Social của AppKit chặn
     const currentAddress = this.address();
     const originalSend = ethersProvider.send.bind(ethersProvider);
     ethersProvider.send = async (method: string, params: any[]) => {
@@ -316,7 +307,6 @@ export class Web3Service {
     return await ethersProvider.getSigner();
   }
 
-  // Lấy Ethers Provider phục vụ giao dịch đọc
   public getProvider() {
     if (!this.modal) {
       throw new Error('Chức năng Web3 hiện đang bị tắt');
@@ -328,7 +318,6 @@ export class Web3Service {
     return new BrowserProvider(walletProvider as any);
   }
 
-  // Lấy gas overrides dựa trên cài đặt tốc độ giao dịch của người dùng
   public async getGasOverrides(signer?: any): Promise<any> {
     const overrides: any = {};
     try {

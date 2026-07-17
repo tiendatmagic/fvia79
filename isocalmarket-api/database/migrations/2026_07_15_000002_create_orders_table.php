@@ -16,7 +16,6 @@ return new class extends Migration
             $table->enum('status', ['pending', 'paid', 'cancelled'])->default('pending');
             $table->timestamps();
 
-            // Index tối ưu lọc theo user, trạng thái và thời gian tạo
             $table->index('user_id');
             $table->index('status');
             $table->index('created_at');

@@ -4,7 +4,6 @@
       Hiển thị {{ getStartIndex() }}-{{ getEndIndex() }} trên tổng số {{ totalItems }} {{ itemName }}
     </span>
     <div class="flex items-center gap-1.5">
-      <!-- Nút Previous -->
       <button
         (click)="goToPage(currentPage - 1)"
         [disabled]="currentPage === 1"
@@ -13,7 +12,6 @@
         <app-icon name="chevron-left" class="h-4 w-4" strokeWidth="2.5" />
       </button>
 
-      <!-- Các số trang -->
       @for (p of pagesArray; track $index) {
         @if (p === '...') {
           <span class="w-8.5 h-8.5 flex items-center justify-center text-slate-400 text-xs font-bold">...</span>
@@ -30,7 +28,6 @@
         }
       }
 
-      <!-- Nút Next -->
       <button
         (click)="goToPage(currentPage + 1)"
         [disabled]="currentPage === totalPages"

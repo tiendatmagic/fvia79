@@ -18,8 +18,6 @@ export class SkeletonLoaderComponent {
   @Input() cols = 5;
   @Input() cards = 8;
   @Input() showHeader = true;
-
-  // Trả về mảng số lượng phần tử để lặp bằng @for
   getArray(count: number): number[] {
     return Array.from({ length: count }, (_, i) => i + 1);
   }

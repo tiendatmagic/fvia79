@@ -35,7 +35,6 @@ export class LoginComponent {
   constructor() {
     this.returnUrl = this.route.snapshot.queryParams['returnUrl'] || '/';
     
-    // Tự động chuyển hướng nếu phát hiện trạng thái đã đăng nhập
     effect(() => {
       if (this.state.isAuthenticated()) {
         const dest = this.state.isAdmin() ? '/admin/dashboard' : this.returnUrl;

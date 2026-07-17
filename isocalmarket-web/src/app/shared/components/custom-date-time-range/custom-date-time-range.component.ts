@@ -71,16 +71,12 @@ export class CustomDateTimeRangeComponent implements ControlValueAccessor, After
   @Output() valueChange = new EventEmitter<DateTimeRangeValue>();
 
   @ViewChild('triggerDiv', { static: false }) triggerDiv!: ElementRef<HTMLDivElement>;
-
-  // Model value chính thức
   public readonly value = signal<DateTimeRangeValue>({ startDate: '', endDate: '' });
   public readonly isOpen = signal<boolean>(false);
 
-  // Trạng thái tháng/năm đang xem trên lịch
   public readonly currentYear = signal<number>(new Date().getFullYear());
   public readonly currentMonth = signal<number>(new Date().getMonth());
 
-  // Trạng thái tạm thời phục vụ chọn và hover trên popup
   public readonly tempStartDate = signal<string>('');
   public readonly tempEndDate = signal<string>('');
   public readonly tempStartTime = signal<string>('00:00');
@@ -96,7 +92,6 @@ export class CustomDateTimeRangeComponent implements ControlValueAccessor, After
   public readonly endHour = signal<string>('23');
   public readonly endMinute = signal<string>('59');
 
-  // Trạng thái hiển thị dropdown giờ/phút tùy chỉnh
   public readonly showStartHourDropdown = signal<boolean>(false);
   public readonly showStartMinuteDropdown = signal<boolean>(false);
   public readonly showEndHourDropdown = signal<boolean>(false);
@@ -104,8 +99,6 @@ export class CustomDateTimeRangeComponent implements ControlValueAccessor, After
 
   public readonly weekdays = ['T2', 'T3', 'T4', 'T5', 'T6', 'T7', 'CN'];
   public popoverStyle: { [key: string]: string } = {};
-
-  // Khai báo các Presets chọn nhanh
   public readonly presets = [
     { label: 'Hôm nay', id: 'today' },
     { label: 'Hôm qua', id: 'yesterday' },
@@ -188,8 +181,6 @@ export class CustomDateTimeRangeComponent implements ControlValueAccessor, After
 
   private openPopover(): void {
     const val = this.value();
-    
-    // Phân rã giá trị hiện có để gán vào các biến temp
     if (val.startDate) {
       const startParts = val.startDate.split(' ');
       this.tempStartDate.set(startParts[0]);
@@ -527,11 +518,9 @@ export class CustomDateTimeRangeComponent implements ControlValueAccessor, After
     this.tempStartDate.set(this.formatDate(start));
     this.tempEndDate.set(this.formatDate(end));
     
-    // Tự động lưu và đóng luôn khi bấm preset chọn nhanh
     this.apply();
   }
 
-  // --- Helpers So Sánh & Trạng Thái Trực Quan Lịch ---
   
   public isToday(date: Date): boolean {
     const today = new Date();

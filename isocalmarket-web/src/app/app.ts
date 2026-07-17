@@ -30,7 +30,6 @@ export class App implements OnInit {
   public stateService = inject(StateService);
 
   ngOnInit() {
-    // Tự động kiểm tra trạng thái phiên làm việc khi load/reload trang
     this.stateService.authStore.checkMe().subscribe();
   }
 }

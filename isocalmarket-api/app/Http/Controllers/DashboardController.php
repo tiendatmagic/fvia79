@@ -14,17 +14,13 @@ class DashboardController extends Controller
         try {
             // Tổng doanh thu của các đơn đã thanh toán (paid)
             $totalRevenue = (float) OrderModel::where('status', 'paid')->sum('total_price');
-
-            // Tổng số đơn hàng
             $totalOrders = OrderModel::count();
 
-            // Tổng số sản phẩm hoạt động
             $totalProducts = ProductModel::where('status', 'active')->count();
 
             // Tổng số tài nguyên khả dụng trong kho
             $totalAvailableInventory = InventoryItemModel::where('status', 'available')->count();
 
-            // Lấy danh sách sản phẩm và lọc ra các sản phẩm sắp hết hàng (tồn kho khả dụng < 5)
             $products = ProductModel::where('status', 'active')->get();
             $lowStockProducts = [];
 

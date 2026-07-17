@@ -64,9 +64,7 @@ class DatabaseSeeder extends Seeder
             $categoriesMap[$cData['slug']] = CategoryModel::create($cData);
         }
 
-        // 3. Tạo 51 sản phẩm MMO thực tế thuộc các danh mục trên
         $productsData = [
-            // 1. BẢNG GIÁ BM
             [
                 'category_slug' => 'bang-gia-bm',
                 'name' => 'BM3 Ngâm Full 3 Tài Khoản',
@@ -418,7 +416,6 @@ class DatabaseSeeder extends Seeder
                 'attributes' => [['label' => 'Quốc gia', 'value' => 'Canada'], ['label' => 'Tuổi', 'value' => '> 2 tháng']]
             ],
 
-            // 9. Clone Việt Nam
             [
                 'category_slug' => 'clone-viet-nam',
                 'name' => 'Clone Việt Nam Verify Hotmail',
@@ -513,7 +510,6 @@ class DatabaseSeeder extends Seeder
             ]));
         }
 
-        // 4. Tạo Tồn kho mẫu (Inventory Items) dồi dào - Mỗi sản phẩm 15 items => Tổng hơn 760 items tồn kho
         foreach ($products as $p) {
             $template = "1000" . rand(100000000, 999999999) . "{i}|pass_secret_via_{i}|2FA_SECRET_KEY_XYZ_{i}|recovery_mail_{i}@gmail.com|pass_mail";
             if (str_contains($p->slug, 'gmail') || str_contains($p->slug, 'outlook') || str_contains($p->slug, 'hotmail')) {
@@ -534,7 +530,6 @@ class DatabaseSeeder extends Seeder
             }
         }
 
-        // 5. Sinh ngẫu nhiên 50 Đơn hàng mẫu để hiển thị biểu đồ và lịch sử phân trang cực kỳ phong phú
         $statusDistribution = array_merge(
             array_fill(0, 75, 'paid'),
             array_fill(0, 15, 'pending'),
@@ -549,13 +544,10 @@ class DatabaseSeeder extends Seeder
             $daysAgo = rand(0, 30);
             $orderDate = Carbon::now()->subDays($daysAgo)->subHours(rand(0, 23))->subMinutes(rand(0, 59));
             
-            // Chọn ngẫu nhiên trạng thái
             $status = $statusDistribution[array_rand($statusDistribution)];
             
-            // Tạo mã đơn hàng độc nhất
             $orderCode = 'ORD-' . $orderDate->format('Ymd') . '-' . strtoupper(Str::random(6));
 
-            // Chọn ngẫu nhiên từ 1 đến 2 sản phẩm khác nhau cho đơn hàng này
             $numItems = rand(1, 2);
             $selectedProducts = (array) array_rand($products, $numItems);
             if (!is_array($selectedProducts)) {
@@ -577,7 +569,6 @@ class DatabaseSeeder extends Seeder
                 $totalPrice += $p->price * $quantity;
             }
 
-            // Tạo đơn hàng trước
             $order = OrderModel::create([
                 'user_id'     => $customer->id,
                 'order_code'  => $orderCode,
@@ -587,7 +578,6 @@ class DatabaseSeeder extends Seeder
                 'updated_at'  => $orderDate
             ]);
 
-            // Tạo các order items và cập nhật trạng thái kho khớp chuẩn
             foreach ($orderItems as $item) {
                 $p = $item['product'];
                 $qty = $item['quantity'];
@@ -602,7 +592,6 @@ class DatabaseSeeder extends Seeder
                     'updated_at'   => $orderDate
                 ]);
 
-                // Nếu đơn hàng 'paid' hoặc 'pending' -> Trích xuất tài nguyên tương ứng từ kho
                 if ($status === 'paid') {
                     $itemsToSell = InventoryItemModel::where('product_id', $p->id)
                         ->where('status', 'available')

@@ -4,7 +4,6 @@
       <!-- Backdrop overlay tối nhẹ không blur -->
       <div (click)="onCancel()" class="fixed inset-0 bg-black/40"></div>
 
-      <!-- Modal Content -->
       <div class="relative bg-white dark:bg-slate-900 rounded-[15px] border border-slate-200 dark:border-slate-800 p-6 max-w-sm w-full shadow-2xl text-slate-800 dark:text-slate-200 text-center">
         <ng-container *ngTemplateOutlet="confirmContent"></ng-container>
       </div>
@@ -18,17 +17,14 @@
 }
 
 <ng-template #confirmContent>
-  <!-- Warning Icon SVG -->
   <div class="w-12 h-12 rounded-full bg-rose-500/10 text-rose-500 flex items-center justify-center mx-auto mb-4">
     <app-icon name="warning" class="h-6 w-6" strokeWidth="2" />
   </div>
 
-  <!-- Tiêu đề -->
   <h4 class="text-base font-extrabold text-slate-900 dark:text-white mb-2">
     {{ title }}
   </h4>
 
-  <!-- Mô tả -->
   @if (descriptionHtml) {
     <div class="text-sm text-slate-500 dark:text-slate-400 mb-5 leading-relaxed font-semibold" [innerHTML]="descriptionHtml"></div>
   } @else {
@@ -44,7 +40,6 @@
     </div>
   }
 
-  <!-- Action Buttons -->
   <div class="flex gap-3">
     <button
       app-button

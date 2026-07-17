@@ -324,8 +324,6 @@ export class CustomDatePickerComponent implements ControlValueAccessor, AfterVie
     }
     return null;
   }
-
-  /** Helper: Lấy ngày hôm nay dạng YYYY-MM-DD */
   public static todayString(): string {
     const d = new Date();
     return `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}-${String(d.getDate()).padStart(2, '0')}`;
