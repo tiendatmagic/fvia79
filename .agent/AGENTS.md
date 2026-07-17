@@ -759,3 +759,17 @@
       4. **Backend Controller**: Thêm trường `'products_count' => $cat->getProductsCount() ?? 0` trong response JSON của phương thức `index` tại [CategoryController.php](file:///d:/git/isocalmarket/isocalmarket-api/app/Http/Controllers/CategoryController.php).
       5. **Frontend HTML**: Cập nhật [admin-categories.component.html](file:///d:/git/isocalmarket/isocalmarket-web/src/app/features/admin-categories/admin-categories.component.html) để chèn cột "Số sản phẩm" căn giữa, hiển thị số lượng sản phẩm dưới dạng text màu giống trang kho hàng (đỏ cho 0, xanh cho >0), đồng thời tăng `colspan` từ 6 lên 7 cho skeleton loader và hàng thông báo rỗng.
       6. **Xác minh & Build**: Chạy build frontend hoàn tất không phát sinh lỗi biên dịch.
+
+  - **[ĐỒNG BỘ CSS SỐ LƯỢNG BẰNG APP-BADGE & TỐI ƯU MÀU TRẠNG THÁI]**:
+    - Yêu cầu: Đồng bộ giao diện hiển thị các cột số lượng trên các bảng quản lý (Danh mục, Kho hàng, Đơn hàng) bằng cách dùng `<app-badge>` tương tự như trang sản phẩm, hỗ trợ font-size to hơn (`size="lg"`), và thay đổi màu của trạng thái "Hoàn thành" (`completed`) trong kho hàng.
+    - Giải pháp & Triển khai:
+      1. **Đồng bộ các cột số lượng bằng `<app-badge>` size="lg"**:
+         - Cập nhật [admin-categories.component.html](file:///d:/git/isocalmarket/isocalmarket-web/src/app/features/admin-categories/admin-categories.component.html): Thay thế thẻ `<span>` hiển thị số sản phẩm bằng `<app-badge>` với variant `success` (nếu >0) và `danger` (nếu =0).
+         - Cập nhật [inventory.component.html](file:///d:/git/isocalmarket/isocalmarket-web/src/app/features/inventory/inventory.component.html): Thay thế text thô hiển thị tỉ lệ tồn kho khả dụng bằng `<app-badge>` với variant `success` (nếu còn nguyên lô), `warning` (nếu đã bán một phần), và `danger` (nếu hết hàng).
+         - Cập nhật [admin-orders.component.html](file:///d:/git/isocalmarket/isocalmarket-web/src/app/features/admin-orders/admin-orders.component.html): Thay thế text thô hiển thị số lượng mua bằng `<app-badge>` màu xám (`neutral`).
+         - Cập nhật [products.component.html](file:///d:/git/isocalmarket/isocalmarket-web/src/app/features/products/products.component.html): Nâng size badge tồn kho khả dụng từ `md` lên `lg` để đồng nhất font-size to hơn.
+      2. **Sửa lỗi Angular Compiler (Import Missing)**:
+         - Cập nhật [admin-categories.component.ts](file:///d:/git/isocalmarket/isocalmarket-web/src/app/features/admin-categories/admin-categories.component.ts) để import `BadgeComponent` vào danh sách `imports` của component.
+      3. **Tối ưu màu trạng thái "Hoàn thành"**:
+         - Cập nhật [inventory.component.html](file:///d:/git/isocalmarket/isocalmarket-web/src/app/features/inventory/inventory.component.html): Thay đổi variant của trạng thái `completed` (Hoàn thành) của lô hàng từ màu xám (`neutral`) sang xanh dương chủ đạo (`primary`) theo feedback của người dùng.
+      4. **Xác minh & Build**: Chạy build frontend (`npm run build`) hoàn tất thành công 100% không phát sinh lỗi biên dịch.
