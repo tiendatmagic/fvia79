@@ -73,9 +73,8 @@ export class InventoryComponent implements OnInit {
   }
 
   ngOnInit() {
-    this.state.productStore.fetchProducts().subscribe(() => {
-      this.fetchFilteredItems(1);
-    });
+    this.state.productStore.fetchProducts().subscribe();
+    this.fetchFilteredItems(1);
   }
 
   public fetchFilteredItems(page: number = 1) {

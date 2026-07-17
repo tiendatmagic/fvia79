@@ -546,3 +546,8 @@
       - Phát hiện hàm `findAllActive` trong `ProductRepository` chưa sắp xếp. Đã bổ sung `orderBy('created_at', 'desc')` vào hàm này trong [ProductRepository.php](file:///d:/git/isocalmarket/isocalmarket-api/app/Infrastructure/Persistence/Repositories/ProductRepository.php) để các sản phẩm không phân trang (như trang quản trị sản phẩm tải đầy đủ) luôn hiển thị sản phẩm mới tạo lên trên cùng.
       - Chạy test backend thành công 100%.
 
+  - **[SỬA LỖI] Lỗi chớp dữ liệu cũ trước khi hiện skeleton ở Quản lý kho hàng**:
+    - **Nhận diện lỗi:** Khi truy cập Quản lý kho hàng `/admin/inventory`, danh sách dữ liệu cũ chớp lên đầy đủ rồi mới hiển thị skeleton loader và tải lại dữ liệu mới, trong khi các trang khác hiện skeleton ngay từ đầu.
+    - **Nguyên nhân:** Hàm `ngOnInit()` trong `InventoryComponent` được gọi tuần tự (waterfall), đợi API tải danh sách sản phẩm `fetchProducts()` xong rồi mới gọi API tải danh sách kho `fetchFilteredItems(1)`. Trong lúc chờ API sản phẩm phản hồi, biến `inventoryStore.loading()` vẫn là `false` nên giao diện render dữ liệu cũ lưu trong store cache.
+    - **Khắc phục:** Thay đổi cách gọi API trong `ngOnInit()` thành gọi song song và độc lập. Gọi `fetchFilteredItems(1)` ngay lập tức giúp `inventoryStore.loading()` chuyển sang `true` trước khi render, giúp hiển thị skeleton loader ngay từ đầu.
+    - **Kiểm thử:** Chạy `npm run build` biên dịch thành công 100% không phát sinh bất kỳ lỗi nào.
