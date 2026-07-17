@@ -153,15 +153,15 @@
               >
                 {{ c.description || '-' }}
               </td>
-              <td class="py-4 px-6 text-sm font-extrabold text-center whitespace-nowrap">
-                <span
-                  [ngClass]="{
-                    'text-rose-600 dark:text-rose-400': c.products_count === 0,
-                    'text-emerald-600 dark:text-emerald-400': c.products_count > 0
-                  }"
+              <td class="py-4 px-6 text-center whitespace-nowrap">
+                <app-badge
+                  [variant]="c.products_count > 0 ? 'success' : 'danger'"
+                  size="lg"
+                  rounded="md"
+                  [appTooltip]="'Số sản phẩm: ' + (c.products_count ?? 0)"
                 >
                   {{ c.products_count ?? 0 }}
-                </span>
+                </app-badge>
               </td>
               <td
                 class="py-4 px-6 text-sm text-slate-500 dark:text-slate-400 whitespace-nowrap"

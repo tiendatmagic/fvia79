@@ -14,6 +14,7 @@ import { CategoryFormModalComponent } from './category-form-modal/category-form-
 import { CustomSelectComponent } from '@shared/components/custom-select/custom-select.component';
 import { CustomDateTimeRangeComponent } from '@shared/components/custom-date-time-range/custom-date-time-range.component';
 import { PaginationComponent } from '@shared/components/pagination/pagination.component';
+import { BadgeComponent } from '@shared/components/badge/badge.component';
 
 @Component({
   selector: 'app-admin-categories',
@@ -30,7 +31,8 @@ import { PaginationComponent } from '@shared/components/pagination/pagination.co
     TooltipDirective,
     CustomSelectComponent,
     CustomDateTimeRangeComponent,
-    PaginationComponent
+    PaginationComponent,
+    BadgeComponent
   ],
   templateUrl: './admin-categories.component.html',
   styles: [`

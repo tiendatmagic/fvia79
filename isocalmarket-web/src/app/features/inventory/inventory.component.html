@@ -155,23 +155,22 @@
                 </span>
               </td>
               <td class="py-4 px-6 text-center whitespace-nowrap">
-                <span
-                  class="text-sm font-extrabold flex items-center justify-center"
-                  [ngClass]="{
-                    'text-rose-600 dark:text-rose-400': item.available_count === 0,
-                    'text-amber-600 dark:text-amber-400':
-                      item.available_count > 0 && item.available_count < item.initial_count,
-                    'text-emerald-600 dark:text-emerald-400':
-                      item.available_count === item.initial_count,
-                  }"
+                <app-badge
+                  [variant]="
+                    item.available_count === 0
+                      ? 'danger'
+                      : item.available_count === item.initial_count
+                        ? 'success'
+                        : 'warning'
+                  "
+                  size="md"
+                  rounded="md"
                   [appTooltip]="
                     'Khả dụng: ' + item.available_count + ' / Ban đầu: ' + item.initial_count
                   "
                 >
-                  <span>{{ item.available_count }}</span>
-                  <span class="opacity-60 mx-1">/</span>
-                  <span>{{ item.initial_count }}</span>
-                </span>
+                  {{ item.available_count }} / {{ item.initial_count }}
+                </app-badge>
               </td>
               <td class="py-4 px-6 text-center whitespace-nowrap">
                 <app-badge
