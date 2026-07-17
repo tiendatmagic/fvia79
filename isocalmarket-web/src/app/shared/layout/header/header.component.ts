@@ -74,7 +74,22 @@ export class HeaderComponent {
     return name.charAt(0).toUpperCase();
   }
 
-    public formatBalance(balance: number | undefined): string {
+  public logout() {
+    this.showUserDropdown.set(false);
+    this.modalService.confirm({
+      title: 'Xác nhận đăng xuất',
+      description: 'Bạn có chắc chắn muốn đăng xuất tài khoản?',
+      confirmText: 'Đăng xuất',
+      cancelText: 'Hủy',
+      confirmButtonClass: 'btn-danger'
+    }).afterClosed$.subscribe((confirmed?: boolean) => {
+      if (confirmed) {
+        this.stateService.authStore.logout().subscribe();
+      }
+    });
+  }
+
+  public formatBalance(balance: number | undefined): string {
     if (!balance) return '0 ₫';
     return new Intl.NumberFormat('vi-VN', { style: 'currency', currency: 'VND' }).format(balance);
   }

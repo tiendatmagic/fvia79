@@ -121,40 +121,8 @@
     </nav>
 
         <div
-      class="px-5 py-4 border-t border-slate-100 dark:border-slate-800/60 bg-slate-50/30 dark:bg-slate-900/10 space-y-3"
+      class="px-5 py-4 border-t border-slate-100 dark:border-slate-800/60 bg-slate-50/30 dark:bg-slate-900/10"
     >
-      <div
-        *ngIf="stateService.isAuthenticated()"
-        class="flex items-center justify-between p-3 rounded-xl bg-slate-100/50 dark:bg-slate-900 border border-slate-200/30 dark:border-slate-800/30"
-      >
-        <div class="flex flex-col">
-          <span class="text-xs font-bold text-slate-800 dark:text-white truncate max-w-[140px]">
-            {{ stateService.currentUser()?.name }}
-          </span>
-          <span class="text-xs font-bold text-slate-400 uppercase tracking-wide">
-            {{ stateService.currentUser()?.role }}
-          </span>
-        </div>
-        <button
-          (click)="
-            stateService.authStore.logout().subscribe(); stateService.showMobileMenu.set(false)
-          "
-          class="text-xs font-extrabold text-red-500 hover:text-red-600 cursor-pointer"
-        >
-          Thoát
-        </button>
-      </div>
-
-      <a
-        *ngIf="!stateService.isAuthenticated()"
-        routerLink="/login"
-        (click)="stateService.showMobileMenu.set(false)"
-        class="w-full py-2.5 flex items-center justify-center rounded-xl text-white text-xs font-extrabold cursor-pointer"
-        style="background: linear-gradient(to right, var(--color-primary), var(--color-secondary))"
-      >
-        Đăng nhập
-      </a>
-
       <app-theme-switcher />
     </div>
   </aside>

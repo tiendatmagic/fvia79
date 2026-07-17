@@ -160,7 +160,7 @@
 
               <div class="border-t border-slate-100 dark:border-slate-800/60 p-1.5">
                 <button
-                  (click)="stateService.authStore.logout().subscribe(); showUserDropdown.set(false)"
+                  (click)="logout()"
                   class="w-full flex items-center gap-3 px-4 py-2.5 text-sm font-semibold text-red-500 hover:bg-red-50 dark:hover:bg-red-950/20 transition-colors cursor-pointer rounded-xl"
                 >
                   <app-icon name="logout" class="w-[18px] h-[18px] shrink-0" />
