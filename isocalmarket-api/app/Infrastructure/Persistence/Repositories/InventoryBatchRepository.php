@@ -27,12 +27,10 @@ class InventoryBatchRepository implements InventoryBatchRepositoryInterface
 
     public function countAvailableByProductId(string $productId): int
     {
-        $batches = $this->findActiveBatchesByProductId($productId);
-        $total = 0;
-        foreach ($batches as $batch) {
-            $total += $batch->getAvailableCount();
-        }
-        return $total;
+        return (int) InventoryBatchModel::where('product_id', $productId)
+            ->where('status', 'active')
+            ->selectRaw('SUM(initial_count - sold_count) as total')
+            ->value('total') ?? 0;
     }
 
     public function save(InventoryBatch $batch): InventoryBatch

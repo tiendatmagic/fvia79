@@ -18,15 +18,12 @@ class ProductRepository implements ProductRepositoryInterface
             ? $model->activeBatches
             : InventoryBatchModel::where('product_id', $model->id)
                 ->where('status', 'active')
+                ->select('id', 'product_id', 'initial_count', 'sold_count', 'status', 'created_at')
                 ->get();
 
         $total = 0;
         foreach ($batches as $batch) {
-            if (!empty($batch->keys_pool)) {
-                $lines = preg_split('/\r\n|\r|\n/', trim($batch->keys_pool));
-                $filtered = array_filter($lines, fn($line) => !empty(trim($line)));
-                $total += count($filtered);
-            }
+            $total += max(0, (int)$batch->initial_count - (int)$batch->sold_count);
         }
         return $total;
     }
@@ -54,7 +51,7 @@ class ProductRepository implements ProductRepositoryInterface
                 $this->applyAccentInsensitiveSearch($q, 'name', $search);
             });
         }
-        $models = $query->with(['activeBatches'])->orderBy('created_at', 'desc')->get();
+        $models = $query->with(['activeBatches:id,product_id,initial_count,sold_count,status,created_at'])->orderBy('created_at', 'desc')->get();
         $products = [];
         foreach ($models as $model) {
             $availableCount = $this->getAvailableCount($model);
@@ -87,7 +84,7 @@ class ProductRepository implements ProductRepositoryInterface
             });
         }
         $total = $query->count();
-        $models = $query->with(['activeBatches'])->orderBy('created_at', 'desc')
+        $models = $query->with(['activeBatches:id,product_id,initial_count,sold_count,status,created_at'])->orderBy('created_at', 'desc')
             ->skip(($page - 1) * $limit)
             ->take($limit)
             ->get();

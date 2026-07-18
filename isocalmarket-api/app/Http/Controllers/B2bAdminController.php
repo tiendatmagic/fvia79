@@ -243,14 +243,9 @@ class B2bAdminController extends Controller
             $totalUsers = UserModel::count();
 
             // Tổng số tài nguyên khả dụng trong kho
-            $batches = InventoryBatchModel::where('status', 'active')->get();
-            $totalAvailableInventory = 0;
-            foreach ($batches as $batch) {
-                if (!empty($batch->keys_pool)) {
-                    $lines = preg_split('/\r\n|\r|\n/', trim($batch->keys_pool));
-                    $totalAvailableInventory += count(array_filter($lines, fn($l) => !empty(trim($l))));
-                }
-            }
+            $totalAvailableInventory = (int) InventoryBatchModel::where('status', 'active')
+                ->selectRaw('SUM(initial_count - sold_count) as total')
+                ->value('total') ?? 0;
 
             return response()->json([
                 'success' => true,
