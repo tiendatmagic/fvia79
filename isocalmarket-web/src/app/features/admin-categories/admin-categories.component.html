@@ -24,7 +24,7 @@
   </app-page-header>
 
   <div
-    class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4 bg-slate-50 dark:bg-slate-900/40 border border-slate-200/30 dark:border-slate-800/30 rounded-2xl p-4 sm:p-5"
+    class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 bg-slate-50 dark:bg-slate-900/40 border border-slate-200/30 dark:border-slate-800/30 rounded-2xl p-4 sm:p-5"
   >
     <div class="form-field">
       <label>Bộ lọc Khoảng thời gian</label>
@@ -165,7 +165,9 @@
               </td>
               <td
                 class="py-4 px-6 text-sm text-slate-500 dark:text-slate-400 whitespace-nowrap"
-                [appTooltip]="(c.created_at ? (c.created_at | date: 'dd/MM/yyyy HH:mm') : '-') || ''"
+                [appTooltip]="
+                  (c.created_at ? (c.created_at | date: 'dd/MM/yyyy HH:mm') : '-') || ''
+                "
               >
                 {{ c.created_at | date: 'dd/MM/yyyy HH:mm' }}
               </td>

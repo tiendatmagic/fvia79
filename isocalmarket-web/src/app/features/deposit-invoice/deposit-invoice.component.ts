@@ -33,8 +33,8 @@ export class DepositInvoiceComponent implements OnInit, OnDestroy {
   private readonly router = inject(Router);
   public readonly state = inject(StateService);
 
-  // Ví nhận USDT BEP20 của chủ sàn (khớp với backend)
-  public readonly adminWalletAddress = '0x889812A612c6aDce4dbDb7f54c25B6c3FE5c26F3';
+  // Ví nhận USDT BEP20 của chủ sàn (được lấy động từ backend)
+  public readonly adminWalletAddress = signal('');
 
   // Lệnh nạp tiền hiện tại
   public invoice: DepositHistoryItem | null = null;
@@ -75,6 +75,14 @@ export class DepositInvoiceComponent implements OnInit, OnDestroy {
       next: (res) => {
         this.isLoadingInvoice.set(false);
         this.invoice = res.invoice;
+
+        // Nếu admin chưa set ví nhận tiền (hoặc ví rỗng), báo lỗi
+        const wallet = res.invoice?.adminWalletAddress || '';
+        if (!wallet.trim()) {
+          this.invoiceError.set('Quản trị viên hệ thống chưa cấu hình địa chỉ ví nhận USDT. Vui lòng liên hệ hỗ trợ!');
+          return;
+        }
+        this.adminWalletAddress.set(wallet);
         
         // Nếu hóa đơn không ở trạng thái Chờ thanh toán, quay về trang nạp tiền
         if (this.invoice.status !== 'pending_payment') {
@@ -108,7 +116,13 @@ export class DepositInvoiceComponent implements OnInit, OnDestroy {
       error: (err) => {
         this.isLoadingInvoice.set(false);
         const status = err?.status;
-        if (status === 404) {
+        const errMsg = err?.error?.message || '';
+        
+        if (errMsg.includes('configured the receiving USDT wallet')) {
+          this.invoiceError.set('Quản trị viên hệ thống chưa cấu hình địa chỉ ví nhận USDT nạp tiền. Vui lòng liên hệ Admin!');
+        } else if (errMsg.includes('configured the scanner API key')) {
+          this.invoiceError.set('Hệ thống đối soát tự động chưa được cấu hình Scanner API Key. Vui lòng liên hệ Admin!');
+        } else if (status === 404) {
           this.invoiceError.set('Lệnh nạp tiền không tồn tại hoặc bạn không có quyền xem!');
         } else if (status === 401 || status === 403) {
           this.invoiceError.set('Bạn cần đăng nhập để xem hóa đơn nạp tiền!');
@@ -222,7 +236,12 @@ export class DepositInvoiceComponent implements OnInit, OnDestroy {
         }
       },
       error: (err) => {
-        const msg = err?.error?.message || 'BOT chưa phát hiện giao dịch USDT hợp lệ của bạn!';
+        let msg = err?.error?.message || 'BOT chưa phát hiện giao dịch USDT hợp lệ của bạn!';
+        if (msg.includes('configured the receiving USDT wallet')) {
+          msg = 'Hệ thống đối soát bị lỗi do Quản trị viên chưa cấu hình địa chỉ ví nhận tiền!';
+        } else if (msg.includes('configured the scanner API key')) {
+          msg = 'Hệ thống đối soát bị lỗi do Quản trị viên chưa cấu hình Scanner API Key!';
+        }
         this.state.showToast(msg, 'error');
       }
     });

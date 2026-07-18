@@ -16,7 +16,9 @@
   </app-page-header>
 
   <!-- Khung bộ lọc tìm kiếm -->
-  <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4 bg-slate-50 dark:bg-slate-900/40 border border-slate-200/30 dark:border-slate-800/30 rounded-2xl p-4 sm:p-5">
+  <div
+    class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 bg-slate-50 dark:bg-slate-900/40 border border-slate-200/30 dark:border-slate-800/30 rounded-2xl p-4 sm:p-5"
+  >
     <div class="form-field">
       <label>Bộ lọc Khoảng thời gian</label>
       <app-custom-date-time-range
@@ -57,13 +59,39 @@
     <div class="overflow-x-auto">
       <table class="w-full text-left border-collapse">
         <thead>
-          <tr class="border-b border-slate-200/30 dark:border-slate-800/30 bg-slate-50/50 dark:bg-slate-950/20">
-            <th class="py-4 px-6 text-xs font-bold text-slate-400 uppercase tracking-wider whitespace-nowrap">Mã lệnh</th>
-            <th class="py-4 px-6 text-xs font-bold text-slate-400 uppercase tracking-wider whitespace-nowrap">Số lượng (USDT)</th>
-            <th class="py-4 px-6 text-xs font-bold text-slate-400 uppercase tracking-wider whitespace-nowrap">Số tiền VND</th>
-            <th class="py-4 px-6 text-xs font-bold text-slate-400 uppercase tracking-wider whitespace-nowrap">Trạng thái</th>
-            <th class="py-4 px-6 text-xs font-bold text-slate-400 uppercase tracking-wider whitespace-nowrap">Thời gian tạo</th>
-            <th class="py-4 px-6 text-xs font-bold text-slate-400 uppercase tracking-wider text-right whitespace-nowrap">Thao tác</th>
+          <tr
+            class="border-b border-slate-200/30 dark:border-slate-800/30 bg-slate-50/50 dark:bg-slate-950/20"
+          >
+            <th
+              class="py-4 px-6 text-xs font-bold text-slate-400 uppercase tracking-wider whitespace-nowrap"
+            >
+              Mã lệnh
+            </th>
+            <th
+              class="py-4 px-6 text-xs font-bold text-slate-400 uppercase tracking-wider whitespace-nowrap"
+            >
+              Số lượng (USDT)
+            </th>
+            <th
+              class="py-4 px-6 text-xs font-bold text-slate-400 uppercase tracking-wider whitespace-nowrap"
+            >
+              Số tiền VND
+            </th>
+            <th
+              class="py-4 px-6 text-xs font-bold text-slate-400 uppercase tracking-wider whitespace-nowrap"
+            >
+              Trạng thái
+            </th>
+            <th
+              class="py-4 px-6 text-xs font-bold text-slate-400 uppercase tracking-wider whitespace-nowrap"
+            >
+              Thời gian tạo
+            </th>
+            <th
+              class="py-4 px-6 text-xs font-bold text-slate-400 uppercase tracking-wider text-right whitespace-nowrap"
+            >
+              Thao tác
+            </th>
           </tr>
         </thead>
         <tbody>
@@ -75,45 +103,82 @@
           </tr>
 
           <!-- Trống lịch sử -->
-          <tr *ngIf="!state.depositStore.loading() && state.depositStore.historyList().length === 0">
-            <td colspan="6" class="py-12 text-center text-slate-400 dark:text-slate-500 font-semibold">
-              <app-icon name="archive" class="w-8 h-8 mx-auto mb-2 opacity-50 text-slate-300 dark:text-slate-650" />
-              <p class="text-xs font-extrabold uppercase tracking-wider">Không tìm thấy lệnh nạp tiền nào!</p>
+          <tr
+            *ngIf="!state.depositStore.loading() && state.depositStore.historyList().length === 0"
+          >
+            <td
+              colspan="6"
+              class="py-12 text-center text-slate-400 dark:text-slate-500 font-semibold"
+            >
+              <app-icon
+                name="archive"
+                class="w-8 h-8 mx-auto mb-2 opacity-50 text-slate-300 dark:text-slate-650"
+              />
+              <p class="text-xs font-extrabold uppercase tracking-wider">
+                Không tìm thấy lệnh nạp tiền nào!
+              </p>
             </td>
           </tr>
 
           <!-- Data rows -->
           <ng-container *ngIf="!state.depositStore.loading()">
-            <tr *ngFor="let item of state.depositStore.historyList()" class="border-b border-slate-200/30 dark:border-slate-800/30 hover:bg-slate-50/30 dark:hover:bg-slate-950/10 transition-colors">
+            <tr
+              *ngFor="let item of state.depositStore.historyList()"
+              class="border-b border-slate-200/30 dark:border-slate-800/30 hover:bg-slate-50/30 dark:hover:bg-slate-950/10 transition-colors"
+            >
               <!-- Mã lệnh -->
-              <td class="py-4 px-6 text-xs font-mono font-black text-slate-700 dark:text-slate-300 whitespace-nowrap">
+              <td
+                class="py-4 px-6 text-xs font-mono font-black text-slate-700 dark:text-slate-300 whitespace-nowrap"
+              >
                 #{{ item.code }}
               </td>
 
               <!-- Số lượng thực nạp -->
-              <td class="py-4 px-6 text-sm font-extrabold text-slate-855 dark:text-white whitespace-nowrap">
+              <td
+                class="py-4 px-6 text-sm font-extrabold text-slate-855 dark:text-white whitespace-nowrap"
+              >
                 {{ item.amountUsdt }} USDT
                 <div class="text-[10px] text-slate-400 dark:text-slate-500 font-bold mt-0.5">
-                  (Thực chuyển: {{ item.amountToPay | number:'1.4-4' }} USDT)
+                  (Thực chuyển: {{ item.amountToPay | number: '1.4-4' }} USDT)
                 </div>
               </td>
-              
+
               <!-- Số tiền quy đổi VND -->
-              <td class="py-4 px-6 text-xs font-black text-slate-600 dark:text-slate-400 whitespace-nowrap">
+              <td
+                class="py-4 px-6 text-xs font-black text-slate-600 dark:text-slate-400 whitespace-nowrap"
+              >
                 {{ item.amountVnd | number }} VNĐ
               </td>
 
               <!-- Trạng thái -->
               <td class="py-4 px-6 whitespace-nowrap">
                 <app-badge
-                  [variant]="item.status === 'completed' ? 'success' : (item.status === 'pending_payment' ? 'warning' : (item.status === 'expired' ? 'neutral' : 'danger'))"
+                  [variant]="
+                    item.status === 'completed'
+                      ? 'success'
+                      : item.status === 'pending_payment'
+                        ? 'warning'
+                        : item.status === 'expired'
+                          ? 'neutral'
+                          : 'danger'
+                  "
                 >
-                  {{ item.status === 'completed' ? 'Thành công' : (item.status === 'pending_payment' ? 'Chờ thanh toán' : (item.status === 'expired' ? 'Đã hết hạn' : 'Thất bại')) }}
+                  {{
+                    item.status === 'completed'
+                      ? 'Thành công'
+                      : item.status === 'pending_payment'
+                        ? 'Chờ thanh toán'
+                        : item.status === 'expired'
+                          ? 'Đã hết hạn'
+                          : 'Thất bại'
+                  }}
                 </app-badge>
               </td>
 
               <!-- Thời gian -->
-              <td class="py-4 px-6 text-xs font-semibold text-slate-500 dark:text-slate-400 whitespace-nowrap">
+              <td
+                class="py-4 px-6 text-xs font-semibold text-slate-500 dark:text-slate-400 whitespace-nowrap"
+              >
                 {{ item.createdAt }}
               </td>
 
@@ -129,7 +194,11 @@
                     <span>Thanh toán</span>
                     <app-icon name="chevron-right" class="w-3.5 h-3.5" />
                   </button>
-                  <span *ngIf="item.status !== 'pending_payment'" class="text-xs text-slate-400 dark:text-slate-600 font-bold mr-4">-</span>
+                  <span
+                    *ngIf="item.status !== 'pending_payment'"
+                    class="text-xs text-slate-400 dark:text-slate-600 font-bold mr-4"
+                    >-</span
+                  >
                 </div>
               </td>
             </tr>
@@ -139,7 +208,10 @@
     </div>
 
     <!-- Phân trang -->
-    <div *ngIf="state.depositStore.lastPage() > 1" class="p-4 border-t border-slate-200/30 dark:border-slate-800/30 flex justify-center bg-slate-50/20 dark:bg-slate-950/10">
+    <div
+      *ngIf="state.depositStore.lastPage() > 1"
+      class="p-4 border-t border-slate-200/30 dark:border-slate-800/30 flex justify-center bg-slate-50/20 dark:bg-slate-950/10"
+    >
       <app-pagination
         [currentPage]="state.depositStore.currentPage()"
         [totalPages]="state.depositStore.lastPage()"

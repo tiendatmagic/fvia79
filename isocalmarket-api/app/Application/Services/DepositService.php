@@ -16,8 +16,8 @@ class DepositService
 
     // Địa chỉ ví nhận USDT BEP20 của chủ sàn (cấu hình động qua .env hoặc lấy mặc định)
     private string $adminWalletAddress;
-    // API Key BscScan (cấu hình qua .env hoặc lấy test key mặc định)
-    private string $bscScanApiKey;
+    // API Key của blockchain scanner (cấu hình qua .env, hỗ trợ BscScan/Etherscan...)
+    private string $scannerApiKey;
 
     public function __construct(
         DepositRepositoryInterface $depositRepository,
@@ -26,8 +26,16 @@ class DepositService
         $this->depositRepository = $depositRepository;
         $this->userRepository = $userRepository;
 
-        $this->adminWalletAddress = env('ADMIN_WALLET_ADDRESS', '0x889812A612c6aDce4dbDb7f54c25B6c3FE5c26F3');
-        $this->bscScanApiKey = env('BSCSCAN_API_KEY', '94CWX8UC3A5UI54EA2B9MAHW2VXRGB3G82');
+        $this->adminWalletAddress = env('ADMIN_WALLET_ADDRESS', '');
+        $this->scannerApiKey = env('SCANNER_API_KEY', '');
+    }
+
+    /**
+     * Lấy ví nhận tiền của Admin
+     */
+    public function getAdminWalletAddress(): string
+    {
+        return $this->adminWalletAddress;
     }
 
     /**
@@ -70,6 +78,22 @@ class DepositService
      */
     public function createDeposit(string $userId, float $amountUsdt): Deposit
     {
+        if (empty($this->adminWalletAddress)) {
+            throw new \RuntimeException("The administrator has not configured the receiving USDT wallet address yet.");
+        }
+        if (empty($this->scannerApiKey)) {
+            throw new \RuntimeException("The administrator has not configured the scanner API key yet.");
+        }
+
+        // Chặn tạo nhiều hóa đơn nếu đang có hóa đơn chờ thanh toán chưa giải quyết
+        $hasPending = \App\Infrastructure\Persistence\Eloquent\DepositModel::where('user_id', $userId)
+            ->where('status', 'pending_payment')
+            ->exists();
+
+        if ($hasPending) {
+            throw new \RuntimeException("You already have an active deposit order. Please cancel the previous order before creating a new one.");
+        }
+
         $rate = $this->getUsdtToVndRate();
         
         // Sinh đuôi lẻ đối soát ngẫu nhiên (từ 0.0001 đến 0.0999) để phân biệt các giao dịch chuyển khoản trùng lượng USDT chẵn
@@ -174,6 +198,13 @@ class DepositService
      */
     public function checkTransaction(string $id, string $userId): bool
     {
+        if (empty($this->adminWalletAddress)) {
+            throw new \RuntimeException("The administrator has not configured the receiving USDT wallet address yet.");
+        }
+        if (empty($this->scannerApiKey)) {
+            throw new \RuntimeException("The administrator has not configured the scanner API key yet.");
+        }
+
         $deposit = $this->depositRepository->find($id);
         if (!$deposit || $deposit->getUserId() !== $userId || $deposit->getStatus() !== 'pending_payment') {
             Log::warning("Deposit check request invalid for invoice ID: {$id}");
@@ -193,7 +224,7 @@ class DepositService
                 'startblock' => 0,
                 'endblock' => 99999999,
                 'sort' => 'desc',
-                'apikey' => $this->bscScanApiKey
+                'apikey' => $this->scannerApiKey
             ]);
 
             if ($response->successful()) {

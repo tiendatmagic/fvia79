@@ -21,6 +21,7 @@ export interface DepositHistoryItem {
   amountVnd: number;
   status: 'pending_payment' | 'completed' | 'failed' | 'expired';
   createdAt: string;
+  adminWalletAddress?: string;
 }
 
 @Component({

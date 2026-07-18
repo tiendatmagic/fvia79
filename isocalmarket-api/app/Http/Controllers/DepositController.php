@@ -36,7 +36,18 @@ class DepositController extends Controller
         $userId = Auth::id();
         $amountUsdt = (float) $request->input('amount_usdt');
 
-        $deposit = $this->depositService->createDeposit($userId, $amountUsdt);
+        try {
+            $deposit = $this->depositService->createDeposit($userId, $amountUsdt);
+        } catch (\RuntimeException $e) {
+            $activeInvoice = \App\Infrastructure\Persistence\Eloquent\DepositModel::where('user_id', $userId)
+                ->where('status', 'pending_payment')
+                ->first();
+
+            return response()->json([
+                'message' => $e->getMessage(),
+                'active_invoice_id' => $activeInvoice ? $activeInvoice->id : null
+            ], 400);
+        }
 
         return response()->json([
             'message' => 'Created deposit invoice successfully.',
@@ -120,7 +131,15 @@ class DepositController extends Controller
     public function checkTransaction(string $id): JsonResponse
     {
         $userId = Auth::id();
-        $matched = $this->depositService->checkTransaction($id, $userId);
+        
+        try {
+            $matched = $this->depositService->checkTransaction($id, $userId);
+        } catch (\RuntimeException $e) {
+            return response()->json([
+                'success' => false,
+                'message' => $e->getMessage()
+            ], 400);
+        }
 
         if ($matched) {
             return response()->json([
@@ -150,6 +169,7 @@ class DepositController extends Controller
             'status' => $deposit->getStatus(),
             'createdAt' => $deposit->getCreatedAt() ? $deposit->getCreatedAt()->format('c') : null,
             'updatedAt' => $deposit->getUpdatedAt() ? $deposit->getUpdatedAt()->format('c') : null,
+            'adminWalletAddress' => $this->depositService->getAdminWalletAddress(),
         ];
     }
 }

@@ -3,6 +3,7 @@ import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { Router, RouterModule } from '@angular/router';
 import { StateService } from '@core/services/state.service';
+import { ModalService } from '@core/services/modal.service';
 import { CustomInputComponent } from '@shared/components/custom-input/custom-input.component';
 import { ButtonComponent } from '@shared/components/button/button.component';
 import { PageHeaderComponent } from '@shared/components/page-header/page-header.component';
@@ -32,7 +33,8 @@ import { IconComponent } from '@shared/components/icon/icon.component';
 export class DepositComponent implements OnInit {
   public readonly state = inject(StateService);
   private readonly router = inject(Router);
-  
+  private readonly modalService = inject(ModalService);
+
   // Trạng thái form
   public amountUsdt: number | null = null;
   public vndEquivalent = 0;
@@ -77,8 +79,36 @@ export class DepositComponent implements OnInit {
       },
       error: (err) => {
         this.isSubmitting = false;
-        const msg = err?.error?.message || 'Có lỗi xảy ra khi tạo lệnh nạp tiền!';
-        this.state.showToast(msg, 'error');
+        let msg = err?.error?.message || 'Có lỗi xảy ra khi tạo lệnh nạp tiền!';
+
+        if (msg.includes('configured the receiving USDT wallet')) {
+          msg = 'Quản trị viên hệ thống chưa cấu hình địa chỉ ví nhận USDT nạp tiền! Vui lòng quay lại sau.';
+          this.state.showToast(msg, 'error');
+        } else if (msg.includes('configured the scanner API key')) {
+          msg = 'Hệ thống đối soát tự động chưa được cấu hình Scanner API Key! Vui lòng quay lại sau.';
+          this.state.showToast(msg, 'error');
+        } else if (msg.includes('already have an active deposit order')) {
+          const activeInvoiceId = err?.error?.active_invoice_id;
+
+          this.modalService.confirm({
+            title: 'Lệnh nạp tiền chưa hoàn tất',
+            description: 'Bạn đang có một lệnh nạp tiền chưa thanh toán. Vui lòng kiểm tra hoặc hủy lệnh nạp cũ trước khi tạo lệnh mới',
+            confirmText: 'Xem lệnh nạp tiền',
+            cancelText: 'Đóng modal',
+            confirmButtonClass: 'btn-primary',
+            size: 'md'
+          }).afterClosed$.subscribe((confirmed) => {
+            if (confirmed) {
+              if (activeInvoiceId) {
+                this.router.navigate(['/deposit/invoice', activeInvoiceId]);
+              } else {
+                this.router.navigate(['/deposit/history']);
+              }
+            }
+          });
+        } else {
+          this.state.showToast(msg, 'error');
+        }
       }
     });
   }

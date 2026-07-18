@@ -863,3 +863,57 @@
       3. **Tích hợp Router & Menu Sidebar**: Đăng ký route `deposit` và `deposit/invoice/:id` trong [profile.routes.ts](file:///d:/git/isocalmarket/isocalmarket-web/src/app/features/profile/profile.routes.ts). Tích hợp menu **"Nạp tiền USDT"** trực tiếp vào Sidebar chính ở cả Desktop [sidebar.component.html](file:///d:/git/isocalmarket/isocalmarket-web/src/app/shared/layout/sidebar/sidebar.component.html) và Mobile [app.html](file:///d:/git/isocalmarket/isocalmarket-web/src/app/app.html) để người dùng có thể thấy ngay lập tức dưới mục Lịch sử đơn hàng.
       4. **Xác minh & Build**: Chạy build frontend Angular (`npm run build`) hoàn tất thành công 100% không phát sinh lỗi biên dịch.
 
+  - **[ĐỘC LẬP HÓA MENU NẠP TIỀN & PHÂN TRANG LỊCH SỬ NẠP]**:
+    - Yêu cầu: Tách biệt hoàn toàn các trang Nạp tiền USDT, Lịch sử nạp và Hóa đơn nạp ra khỏi Profile. Cung cấp bộ lọc, tìm kiếm và phân trang chuẩn cho trang Lịch sử nạp tiền tương tự các tính năng khác.
+    - Giải pháp & Triển khai:
+      1. Đã tách các component nạp tiền ra ngoài thư mục `profile` thành các feature độc lập: `DepositComponent`, `DepositInvoiceComponent` và `DepositHistoryComponent`.
+      2. Đã cập nhật `app.routes.ts` để khai báo các route nạp tiền ở cấp cao nhất: `/deposit`, `/deposit/history` và `/deposit/invoice/:id`.
+      3. Đã cập nhật menu sidebar và menu mobile để liên kết trực tiếp tới các trang nạp độc lập này.
+      4. Xây dựng trang Lịch sử nạp tiền đầy đủ tính năng: bộ lọc trạng thái (Chờ thanh toán, Thành công, Đã hủy/Hết hạn, Thất bại), lọc khoảng ngày tháng bằng `CustomDateTimeRangeComponent`, tìm kiếm văn bản bằng `CustomSearchInputComponent` và phân trang bằng `app-pagination`.
+
+  - **[TÍCH HỢP TỶ GIÁ COINGECKO & XỬ LÝ ĐỐI SOÁT TỰ ĐỘNG BẰNG BOT]**:
+    - Yêu cầu: Tự động lấy tỷ giá USDT/VND từ API CoinGecko, cache kết quả trong 10 phút ở Backend. Quét giao dịch tự động qua mạng blockchain thông qua API BscScan.
+    - Giải pháp & Triển khai:
+      1. Triển khai phương thức `getUsdtToVndRate()` trong [DepositService.php](file:///d:/git/isocalmarket/isocalmarket-api/app/Application/Services/DepositService.php) gọi API CoinGecko và lưu Cache 10 phút. Nếu API lỗi, dùng tỷ giá fallback là `26,500 VND`.
+      2. Xây dựng bot quét transaction BEP-20 thực nhận gửi tới ví Admin qua BscScan API trong `checkTransaction()`, kiểm tra chính xác số tiền lẻ (Suffix) đối soát ngẫu nhiên, giới hạn thời hạn chuyển 15 phút, lưu TxHash vào DB để tránh Replay Attack.
+
+  - **[XÓA V VÍ DEMO & THIẾT LẬP VALIDATION VÍ NHẬN TIỀN]**:
+    - Yêu cầu: Xóa bỏ hoàn toàn địa chỉ ví nhận USDT BEP-20 demo hardcode ở cả Frontend và Backend. Nếu Admin chưa thiết lập ví nhận trong file `.env`, hệ thống phải báo lỗi Admin chưa cấu hình ví nhận tiền.
+    - Giải pháp & Triển khai:
+      1. **Backend**: Thay thế ví nhận demo fallback bằng chuỗi trống `env('ADMIN_WALLET_ADDRESS', '')` trong [DepositService.php](file:///d:/git/isocalmarket/isocalmarket-api/app/Application/Services/DepositService.php). Thêm kiểm tra validation ở `createDeposit` và `checkTransaction`. Nếu ví trống, ném `RuntimeException` tiếng Anh.
+      2. **Backend Controller**: Bắt exception ở [DepositController.php](file:///d:/git/isocalmarket/isocalmarket-api/app/Http/Controllers/DepositController.php) và trả về phản hồi HTTP 400. Đưa thêm trường `adminWalletAddress` động vào hàm format JSON của hóa đơn.
+      3. **Frontend**: Chuyển `adminWalletAddress` trong [deposit-invoice.component.ts](file:///d:/git/isocalmarket/isocalmarket-web/src/app/features/deposit-invoice/deposit-invoice.component.ts) thành một Writable Signal. Lấy ví động từ dữ liệu hóa đơn trả về bởi API Backend.
+      4. **Dịch thông báo lỗi**: Thêm hàm dịch ở Frontend cho các thông điệp lỗi liên quan đến cấu hình ví của Admin từ Backend, hiển thị tiếng Việt trên Toast / Card màn hình lỗi rõ ràng.
+
+  - **[TỔNG QUÁT HÓA & VALIDATION KHÓA SCANNER API]**:
+    - Yêu cầu: Kiểm tra nếu hệ thống chưa cấu hình `SCANNER_API_KEY` (không dùng tên biến BscScan để dễ dàng mở rộng nhiều blockchain scan API khác sau này) thì không cho phép người dùng nạp tiền, trả về thông điệp lỗi tương tự ví nhận.
+    - Giải pháp & Triển khai:
+      1. **Backend**: Đổi tên biến `$bscScanApiKey` và khóa cấu hình môi trường `.env` thành `$scannerApiKey` và `SCANNER_API_KEY` trong [DepositService.php](file:///d:/git/isocalmarket/isocalmarket-api/app/Application/Services/DepositService.php). Xóa bỏ giá trị demo fallback, mặc định về rỗng `env('SCANNER_API_KEY', '')`.
+      2. **Validation**: Thêm điều kiện kiểm tra `empty($this->scannerApiKey)` trong cả `createDeposit()` và `checkTransaction()`. Nếu thiếu, ném lỗi: `"The administrator has not configured the scanner API key yet."`.
+      3. **Frontend**: Cập nhật hàm dịch lỗi tại [deposit.component.ts](file:///d:/git/isocalmarket/isocalmarket-web/src/app/features/deposit/deposit.component.ts) và [deposit-invoice.component.ts](file:///d:/git/isocalmarket/isocalmarket-web/src/app/features/deposit-invoice/deposit-invoice.component.ts). Nếu backend trả về thông báo lỗi thiếu Scanner API Key, tự động dịch thành thông điệp tiếng Việt:
+         - *"Hệ thống đối soát tự động chưa được cấu hình Scanner API Key! Vui lòng quay lại sau."*
+         - *"Hệ thống đối soát tự động chưa được cấu hình Scanner API Key. Vui lòng liên hệ Admin!"*
+      4. **Xác minh**: Chạy `npm run build` thành công 100% không phát sinh lỗi biên dịch.
+
+  - **[SỬA LỖI RESPONSIVE, TRÀN CHỮ VÀ ĐỒNG HỒ ĐẾM NGƯỢC]**:
+    - Yêu cầu: Khắc phục lỗi giao diện bị chèn ép quá mức ở viewport hẹp (như 770px), chữ trên nút bị tràn/cắt xén, và đồng hồ đếm ngược thời gian nạp không hoạt động.
+    - Giải pháp & Triển khai:
+      1. Chuyển đổi breakpoint layout 2 cột từ `sm:grid-cols-12` sang `lg:grid-cols-12` trong [deposit-invoice.component.html](file:///d:/git/isocalmarket/isocalmarket-web/src/app/features/deposit-invoice/deposit-invoice.component.html). Khi kích thước hiển thị hẹp (dưới 1024px), giao diện tự động xếp dọc (1 cột) gọn gàng, không bị chèn ép.
+      2. Sửa lại container các nút Hủy/Chuyển khoản thành `flex flex-col gap-3 w-full` để nút luôn rộng rãi, hiển thị đầy đủ text, không bị che khuất hoặc tràn chữ.
+      3. Thêm `whitespace-nowrap` vào badge mạng lưới BEP-20 để đảm bảo không bị gãy dòng.
+      4. Chuyển đổi các biến đếm ngược `countdownText` và `timeLeft` từ thuộc tính class thường sang Angular Signals để kích hoạt cơ chế Change Detection liên tục khi `interval` chạy, sửa lỗi đồng hồ đứng yên không đếm ngược.
+      5. Thêm `adminWalletAddress?: string` vào interface `DepositHistoryItem` để sửa triệt để lỗi biên dịch TypeScript.
+      6. Đã chạy biên dịch Angular (`npm run build`) và hoàn thành thành công 100% không có lỗi.
+
+  - **[CHẶN TẠO NHIỀU LỆNH NẠP TIỀN SONG SONG (ANTI-SPAM)]**:
+    - Yêu cầu: Không cho phép người dùng tạo nhiều hóa đơn nạp tiền song song để tránh spam làm đầy cơ sở dữ liệu. Nếu muốn tạo lệnh mới, người dùng bắt buộc phải hủy lệnh cũ đang chờ thanh toán.
+    - Giải pháp & Triển khai:
+      1. **Backend**: Thêm điều kiện kiểm tra tồn tại hóa đơn `pending_payment` của chính user đó trước khi cho phép tạo mới trong [DepositService.php](file:///d:/git/isocalmarket/isocalmarket-api/app/Application/Services/DepositService.php). Nếu có, ném lỗi: `"You already have an active deposit order. Please cancel the previous order before creating a new one."`
+      2. **API Controller**: Cập nhật [DepositController.php](file:///d:/git/isocalmarket/isocalmarket-api/app/Http/Controllers/DepositController.php) để khi ném ngoại lệ này, tự động truy vấn tìm ID hóa đơn đang active và trả về kèm theo trong trường `active_invoice_id` của response JSON lỗi.
+      3. **Frontend**: Cập nhật hàm dịch lỗi tại [deposit.component.ts](file:///d:/git/isocalmarket/isocalmarket-web/src/app/features/deposit/deposit.component.ts). Thay vì hiển thị Toast, hệ thống sẽ sử dụng `ModalService.confirm()` hiển thị một Confirm Modal chuyên nghiệp:
+         - *Tiêu đề*: *"Lệnh nạp tiền chưa hoàn tất"*
+         - *Nội dung*: *"Bạn đang có một lệnh nạp tiền chưa thanh toán. Vui lòng kiểm tra hóa đơn hoặc hủy lệnh nạp cũ trước khi tạo lệnh mới!"*
+         - *Nút xác nhận*: *"Xem lệnh nạp tiền hiện tại"* (Click vào sẽ tự động điều hướng người dùng tới trang hóa đơn `/deposit/invoice/:id` của lệnh nạp chưa thanh toán đó).
+         - *Nút hủy*: *"Đóng modal"*.
+      4. **Xác minh**: Chạy `npm run build` thành công 100% không phát sinh lỗi biên dịch.
+
