@@ -103,4 +103,17 @@ export class AdminApiComponent {
     const text = `${this.siteUrl()}/api/v1/admin/b2b/products/PRODUCT_UUID/inventory`;
     this.copyToClipboard(text, 'đường dẫn Import Inventory');
   }
+
+  // API 4: Get Stats
+  public copyGetStatsCurl() {
+    const key = this.apiKey() || 'API_KEY_CUA_BAN';
+    const text = `curl -X GET "${this.siteUrl()}/api/v1/admin/b2b/stats?api_key=${key}"`;
+    this.copyToClipboard(text, 'mẫu CURL Get B2B Stats');
+  }
+
+  public copyGetStatsUrl() {
+    const key = this.apiKey() || 'API_KEY_CUA_BAN';
+    const text = `${this.siteUrl()}/api/v1/admin/b2b/stats?api_key=${key}`;
+    this.copyToClipboard(text, 'đường dẫn Get B2B Stats');
+  }
 }

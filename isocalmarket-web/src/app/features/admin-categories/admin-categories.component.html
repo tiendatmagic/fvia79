@@ -197,15 +197,13 @@
       </table>
     </div>
 
-    <div
-      *ngIf="state.productStore.lastCategoryPage() > 1"
-      class="border-t border-slate-200/30 dark:border-slate-800/30 p-4"
-    >
-      <app-pagination
-        [currentPage]="state.productStore.currentCategoryPage()"
-        [totalPages]="state.productStore.lastCategoryPage()"
-        (pageChange)="fetchPage($event)"
-      />
-    </div>
+    <app-pagination
+      [currentPage]="state.productStore.currentCategoryPage()"
+      [totalPages]="state.productStore.lastCategoryPage()"
+      [totalItems]="state.productStore.totalCategories()"
+      [itemsPerPage]="limit"
+      [itemName]="'danh mục'"
+      (pageChange)="fetchPage($event)"
+    />
   </div>
 </div>

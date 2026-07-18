@@ -148,4 +148,32 @@ class B2bAdminApiTest extends TestCase
             'success' => true
         ]);
     }
+
+    public function test_admin_can_fetch_b2b_dashboard_stats(): void
+    {
+        $response = $this->withHeaders([
+            'X-API-KEY' => 'ADMIN-KEY-TEST-12345'
+        ])->getJson('/api/v1/admin/b2b/stats');
+
+        $response->assertStatus(200);
+        $response->assertJsonStructure([
+            'success',
+            'data' => [
+                'total_revenue',
+                'total_orders',
+                'total_products',
+                'total_available_inventory',
+                'total_users'
+            ]
+        ]);
+    }
+
+    public function test_reseller_cannot_fetch_b2b_dashboard_stats(): void
+    {
+        $response = $this->withHeaders([
+            'X-API-KEY' => 'RESELLER-KEY-TEST-12345'
+        ])->getJson('/api/v1/admin/b2b/stats');
+
+        $response->assertStatus(403);
+    }
 }

@@ -182,18 +182,13 @@
         </tbody>
       </table>
     </div>
-    <div
-      class="p-4 border-t border-slate-200/30 dark:border-slate-800/30 flex justify-center bg-slate-50/20 dark:bg-slate-950/10"
-      *ngIf="state.orderStore.lastPage() > 1"
-    >
-      <app-pagination
-        [currentPage]="state.orderStore.currentPage()"
-        [totalPages]="state.orderStore.lastPage()"
-        [totalItems]="state.orderStore.totalOrders()"
-        [itemsPerPage]="limit"
-        [itemName]="'đơn hàng'"
-        (pageChange)="fetchPage($event)"
-      />
-    </div>
+    <app-pagination
+      [currentPage]="state.orderStore.currentPage()"
+      [totalPages]="state.orderStore.lastPage()"
+      [totalItems]="state.orderStore.totalOrders()"
+      [itemsPerPage]="limit"
+      [itemName]="'đơn hàng'"
+      (pageChange)="fetchPage($event)"
+    />
   </div>
 </div>

@@ -28,13 +28,15 @@
       />
     </div>
 
-    <div class="flex items-center md:col-span-2 text-xs text-slate-400 dark:text-slate-500 font-medium md:pt-6">
+    <div
+      class="flex items-center md:col-span-2 text-xs text-slate-400 dark:text-slate-500 font-medium md:pt-6"
+    >
       <span>* Số liệu doanh thu và số đơn hàng sẽ được thống kê trong khoảng thời gian này.</span>
     </div>
   </div>
 
-  <div *ngIf="loading()" class="grid grid-cols-2 xl:grid-cols-4 gap-4">
-    <div app-card *ngFor="let i of [1, 2, 3, 4]" class="relative p-4 md:p-5 overflow-hidden">
+  <div *ngIf="loading()" class="grid grid-cols-2 lg:grid-cols-3 2xl:grid-cols-5 gap-4">
+    <div app-card *ngFor="let i of [1, 2, 3, 4, 5]" class="relative p-4 md:p-5 overflow-hidden">
       <div
         class="absolute top-4 right-4 w-10 h-10 bg-slate-200 dark:bg-slate-800 rounded-xl animate-pulse"
       ></div>
@@ -46,7 +48,7 @@
     </div>
   </div>
 
-  <div *ngIf="!loading() && stats()" class="grid grid-cols-2 xl:grid-cols-4 gap-4">
+  <div *ngIf="!loading() && stats()" class="grid grid-cols-2 lg:grid-cols-3 2xl:grid-cols-5 gap-4">
     <div app-card class="relative p-4 md:p-5 overflow-hidden">
       <div
         class="absolute top-4 right-4 md:top-5 md:right-5 w-10 h-10 rounded-xl bg-blue-50 dark:bg-blue-950/30 flex items-center justify-center text-[var(--color-primary)]"
@@ -126,6 +128,26 @@
         <app-badge variant="warning" size="sm" rounded="md">Sẵn sàng bán</app-badge>
       </div>
     </div>
+
+    <div app-card class="relative p-4 md:p-5 overflow-hidden">
+      <div
+        class="absolute top-4 right-4 md:top-5 md:right-5 w-10 h-10 rounded-xl bg-purple-50 dark:bg-purple-950/30 flex items-center justify-center text-purple-500"
+      >
+        <app-icon name="customers" class="w-5 h-5" />
+      </div>
+      <div class="pr-14 space-y-2">
+        <span class="text-xs font-bold text-slate-400 uppercase tracking-wide block"
+          >Tổng Người Dùng</span
+        >
+        <h2
+          class="text-lg md:text-2xl font-black text-slate-800 dark:text-white tracking-tight leading-tight"
+        >
+          {{ stats().total_users | number }}
+          <span class="text-xs font-extrabold text-slate-500">Thành viên</span>
+        </h2>
+        <app-badge variant="info" size="sm" rounded="md">Đăng ký hệ thống</app-badge>
+      </div>
+    </div>
   </div>
 
   <div *ngIf="loading()" app-card class="p-6 space-y-6">
@@ -134,7 +156,10 @@
       <div class="h-6 bg-slate-200 dark:bg-slate-800 rounded-full w-20 animate-pulse"></div>
     </div>
     <div class="space-y-4">
-      <div *ngFor="let i of [1, 2, 3]" class="flex items-center justify-between py-2 border-b border-slate-100 dark:border-slate-800/40 last:border-0">
+      <div
+        *ngFor="let i of [1, 2, 3]"
+        class="flex items-center justify-between py-2 border-b border-slate-100 dark:border-slate-800/40 last:border-0"
+      >
         <div class="h-4 bg-slate-100 dark:bg-slate-900 rounded-md w-1/3 animate-pulse"></div>
         <div class="h-4 bg-slate-100 dark:bg-slate-900 rounded-md w-16 animate-pulse"></div>
         <div class="h-5 bg-slate-100 dark:bg-slate-900 rounded-full w-24 animate-pulse"></div>
@@ -157,9 +182,14 @@
     </div>
 
     <!-- Thanh tìm kiếm & bộ lọc tồn kho thấp -->
-    <div class="grid grid-cols-1 md:grid-cols-3 gap-4 bg-slate-50/50 dark:bg-slate-950/20 border border-slate-200/30 dark:border-slate-800/30 rounded-2xl p-4 sm:p-5">
+    <div
+      class="grid grid-cols-1 md:grid-cols-3 gap-4 bg-slate-50/50 dark:bg-slate-950/20 border border-slate-200/30 dark:border-slate-800/30 rounded-2xl p-4 sm:p-5"
+    >
       <div class="form-field md:col-span-2">
-        <label class="text-xs font-bold text-slate-400 dark:text-slate-500 uppercase tracking-wider block mb-1">Tìm kiếm sản phẩm</label>
+        <label
+          class="text-xs font-bold text-slate-400 dark:text-slate-500 uppercase tracking-wider block mb-1"
+          >Tìm kiếm sản phẩm</label
+        >
         <app-custom-search-input
           [placeholder]="'Tìm kiếm theo tên sản phẩm cảnh báo...'"
           [(ngModel)]="rawSearchQuery"
@@ -170,7 +200,10 @@
         />
       </div>
       <div class="form-field md:col-span-1">
-        <label class="text-xs font-bold text-slate-400 dark:text-slate-500 uppercase tracking-wider block mb-1">Danh mục</label>
+        <label
+          class="text-xs font-bold text-slate-400 dark:text-slate-500 uppercase tracking-wider block mb-1"
+          >Danh mục</label
+        >
         <app-custom-select
           [options]="categoryOptions"
           [value]="selectedCategory()"

@@ -183,14 +183,13 @@
       </table>
     </div>
 
-    <!-- Phân trang -->
-    <div class="px-6 py-4 border-t border-slate-100 dark:border-slate-900/60" *ngIf="state.userStore.totalItems() > 0">
-      <app-pagination
-        [currentPage]="state.userStore.currentPage()"
-        [totalPages]="state.userStore.lastPage()"
-        [totalItems]="state.userStore.totalItems()"
-        (pageChange)="fetchPage($event)"
-      />
-    </div>
+    <app-pagination
+      [currentPage]="state.userStore.currentPage()"
+      [totalPages]="state.userStore.lastPage()"
+      [totalItems]="state.userStore.totalItems()"
+      [itemsPerPage]="limit"
+      [itemName]="'thành viên'"
+      (pageChange)="fetchPage($event)"
+    />
   </div>
 </div>

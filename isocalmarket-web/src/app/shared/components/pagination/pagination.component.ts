@@ -10,10 +10,15 @@ import { IconComponent } from '@shared/components/icon/icon.component';
 
 @Component({
   selector: 'app-pagination',
-  
   imports: [CommonModule, IconComponent],
-  
-  templateUrl: './pagination.component.html'})
+  templateUrl: './pagination.component.html',
+  styles: [`
+    :host {
+      display: block;
+      width: 100%;
+    }
+  `]
+})
 export class PaginationComponent implements OnChanges {
   @Input() currentPage: number = 1;
   @Input() totalPages: number = 1;

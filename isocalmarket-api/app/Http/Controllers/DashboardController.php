@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Infrastructure\Persistence\Eloquent\OrderModel;
 use App\Infrastructure\Persistence\Eloquent\ProductModel;
 use App\Infrastructure\Persistence\Eloquent\InventoryBatchModel;
+use App\Infrastructure\Persistence\Eloquent\UserModel;
 use Illuminate\Http\Request;
 
 class DashboardController extends Controller
@@ -32,6 +33,7 @@ class DashboardController extends Controller
             $totalRevenue = (float) $revenueQuery->sum('total_price');
             $totalOrders = $ordersQuery->count();
             $totalProducts = ProductModel::where('status', 'active')->count();
+            $totalUsers = UserModel::count();
 
             // Tổng số tài nguyên khả dụng trong kho
             $batches = InventoryBatchModel::where('status', 'active')->get();
@@ -85,6 +87,7 @@ class DashboardController extends Controller
                 'total_orders' => $totalOrders,
                 'total_products' => $totalProducts,
                 'total_available_inventory' => $totalAvailableInventory,
+                'total_users' => $totalUsers,
                 'low_stock_products' => $lowStockProducts
             ]);
         } catch (\Exception $e) {

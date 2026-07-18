@@ -5,6 +5,8 @@ namespace App\Http\Controllers;
 use Illuminate\Http\Request;
 use App\Infrastructure\Persistence\Eloquent\UserModel;
 use App\Infrastructure\Persistence\Eloquent\OrderModel;
+use App\Infrastructure\Persistence\Eloquent\ProductModel;
+use App\Infrastructure\Persistence\Eloquent\InventoryBatchModel;
 use Illuminate\Support\Facades\Auth;
 
 class B2bAdminController extends Controller
@@ -208,6 +210,60 @@ class B2bAdminController extends Controller
             ], 201);
         } catch (\Exception $e) {
             return response()->json(['message' => 'Failed to import inventory: ' . $e->getMessage()], 400);
+        }
+    }
+
+    /**
+     * GET /api/v1/admin/b2b/stats
+     * Lấy số liệu thống kê hệ thống (Doanh thu, Đơn hàng, Sản phẩm, Tồn kho, Người dùng)
+     */
+    public function getStats(Request $request)
+    {
+        try {
+            $startDate = $request->query('start_date');
+            $endDate = $request->query('end_date');
+
+            $revenueQuery = OrderModel::where('status', 'paid');
+            $ordersQuery = OrderModel::query();
+
+            if ($startDate) {
+                $start = strlen($startDate) === 10 ? $startDate . ' 00:00:00' : $startDate;
+                $revenueQuery->where('created_at', '>=', $start);
+                $ordersQuery->where('created_at', '>=', $start);
+            }
+            if ($endDate) {
+                $end = strlen($endDate) === 10 ? $endDate . ' 23:59:59' : $endDate;
+                $revenueQuery->where('created_at', '<=', $end);
+                $ordersQuery->where('created_at', '<=', $end);
+            }
+
+            $totalRevenue = (float) $revenueQuery->sum('total_price');
+            $totalOrders = $ordersQuery->count();
+            $totalProducts = ProductModel::where('status', 'active')->count();
+            $totalUsers = UserModel::count();
+
+            // Tổng số tài nguyên khả dụng trong kho
+            $batches = InventoryBatchModel::where('status', 'active')->get();
+            $totalAvailableInventory = 0;
+            foreach ($batches as $batch) {
+                if (!empty($batch->keys_pool)) {
+                    $lines = preg_split('/\r\n|\r|\n/', trim($batch->keys_pool));
+                    $totalAvailableInventory += count(array_filter($lines, fn($l) => !empty(trim($l))));
+                }
+            }
+
+            return response()->json([
+                'success' => true,
+                'data' => [
+                    'total_revenue' => $totalRevenue,
+                    'total_orders' => $totalOrders,
+                    'total_products' => $totalProducts,
+                    'total_available_inventory' => $totalAvailableInventory,
+                    'total_users' => $totalUsers
+                ]
+            ]);
+        } catch (\Exception $e) {
+            return response()->json(['message' => 'Failed to fetch dashboard stats: ' . $e->getMessage()], 500);
         }
     }
 }

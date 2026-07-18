@@ -1032,3 +1032,13 @@
       3. **API Admin quản lý đại lý B2B (`GET /api/v1/admin/b2b/users`)**: Triển khai phân trang (`page`, `limit`), bộ lọc (`role`, `has_api_key`), và tìm kiếm (`search` theo tên/email/sđt) trả về cấu trúc JSON phân trang chuẩn.
       4. **API Admin xem đơn hàng B2B (`GET /api/v1/admin/b2b/orders`)**: Bổ sung bộ lọc `status`, `user_id` và tìm kiếm `search` (theo mã đơn hàng hoặc thông tin khách hàng).
       5. **Xác minh**: Chạy unit test suite Laravel backend (`php artisan test`) và biên dịch Angular frontend (`npm run build`) thành công 100% không phát sinh lỗi.
+
+  - **[SỬA LỖI HIỂN THỊ PHÂN TRANG 0-0 BẢN GHI]**:
+    - Nhận diện lỗi: Khi truy cập các trang như Quản lý danh mục hoặc Quản lý sản phẩm, phần phân trang (pagination) hiển thị dòng chữ lỗi: "Hiển thị 0-0 trên tổng số 0 bản ghi" mặc dù danh sách vẫn có dữ liệu và hiển thị các nút chọn trang bình thường.
+    - Nguyên nhân: Các trang này gọi `<app-pagination>` nhưng chưa bind (hoặc thiếu) các thuộc tính đầu vào quan trọng là `[totalItems]`, `[itemsPerPage]` và `[itemName]`. Khi thiếu `[totalItems]`, component pagination nhận giá trị mặc định là `0` và tính toán chỉ số hiển thị bắt đầu và kết thúc đều bằng `0`, dẫn đến hiển thị lỗi.
+    - Giải pháp khắc phục:
+      1. Cập nhật [admin-categories.component.html](file:///d:/git/isocalmarket/isocalmarket-web/src/app/features/admin-categories/admin-categories.component.html): Bổ sung `[totalItems]="state.productStore.totalCategories()"`, `[itemsPerPage]="limit"` và `[itemName]="'danh mục'"`.
+      2. Cập nhật [products.component.html](file:///d:/git/isocalmarket/isocalmarket-web/src/app/features/products/products.component.html): Bổ sung `[totalItems]="state.productStore.totalProducts()"`, `[itemsPerPage]="limit"` và `[itemName]="'sản phẩm'"`.
+      3. Cập nhật [admin-users.component.html](file:///d:/git/isocalmarket/isocalmarket-web/src/app/features/admin-users/admin-users.component.html): Bổ sung `[itemsPerPage]="limit"` và `[itemName]="'thành viên'"`.
+      4. Cập nhật [admin-orders.component.html](file:///d:/git/isocalmarket/isocalmarket-web/src/app/features/admin-orders/admin-orders.component.html): Loại bỏ dòng chữ `Tổng số: {{ total() }} đơn hàng` bị trùng lặp hiển thị, đồng thời bổ sung `[itemName]="'đơn hàng'"` cho đồng bộ và rõ ràng.
+      5. Chạy build kiểm tra frontend thành công không phát sinh lỗi biên dịch.
