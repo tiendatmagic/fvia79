@@ -21,7 +21,8 @@ class UserMapper
             $model->phone,
             $model->google2fa_secret,
             $model->google2fa_enabled,
-            $model->api_key
+            $model->api_key,
+            $model->status ?? 'active'
         );
     }
 
@@ -43,6 +44,7 @@ class UserMapper
         $model->google2fa_secret = $entity->getGoogle2faSecret();
         $model->google2fa_enabled = $entity->isGoogle2faEnabled();
         $model->api_key = $entity->getApiKey();
+        $model->status = $entity->getStatus();
 
         return $model;
     }

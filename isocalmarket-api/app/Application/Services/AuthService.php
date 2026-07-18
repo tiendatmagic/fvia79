@@ -45,6 +45,10 @@ class AuthService
             return null;
         }
 
+        if ($user->isBanned()) {
+            throw new \Exception('Your account has been banned. Please contact administrator.');
+        }
+
         return $user;
     }
 

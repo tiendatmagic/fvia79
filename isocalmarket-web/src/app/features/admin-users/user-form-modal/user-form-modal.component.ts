@@ -40,6 +40,7 @@ export class UserFormModalComponent implements OnInit {
   public balance = 0;
   public password = '';
   public api_key = '';
+  public status = 'active';
 
   public generate_api_key = false;
   public revoke_api_key = false;
@@ -49,6 +50,11 @@ export class UserFormModalComponent implements OnInit {
   public roleOptions = [
     { label: 'Khách hàng', value: 'customer' },
     { label: 'Quản trị viên', value: 'admin' }
+  ];
+
+  public statusOptions = [
+    { label: 'Đang hoạt động', value: 'active' },
+    { label: 'Bị khóa', value: 'banned' }
   ];
 
   ngOnInit() {
@@ -61,6 +67,7 @@ export class UserFormModalComponent implements OnInit {
       this.role = this.modalData.role;
       this.balance = this.modalData.balance;
       this.api_key = this.modalData.api_key || '';
+      this.status = this.modalData.status || 'active';
     }
   }
 
@@ -108,6 +115,7 @@ export class UserFormModalComponent implements OnInit {
     this.isSubmitting = true;
 
     if (this.isEditMode) {
+      data.status = this.status;
       if (this.generate_api_key) {
         data.generate_api_key = true;
       } else if (this.revoke_api_key) {

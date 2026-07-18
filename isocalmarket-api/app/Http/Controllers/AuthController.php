@@ -115,7 +115,8 @@ class AuthController extends Controller
                 ->withCookie($refreshTokenCookie)
                 ->withCookie($loggedInCookie);
         } catch (\Exception $e) {
-            return response()->json(['message' => $e->getMessage()], 500);
+            $code = str_contains($e->getMessage(), 'banned') ? 403 : 500;
+            return response()->json(['message' => $e->getMessage()], $code);
         }
     }
 

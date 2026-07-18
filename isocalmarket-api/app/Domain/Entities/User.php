@@ -16,6 +16,7 @@ class User
     private ?string $google2faSecret;
     private bool $google2faEnabled;
     private ?string $apiKey;
+    private string $status;
 
     public function __construct(
         ?string $id,
@@ -29,7 +30,8 @@ class User
         ?string $phone = null,
         ?string $google2faSecret = null,
         bool $google2faEnabled = false,
-        ?string $apiKey = null
+        ?string $apiKey = null,
+        string $status = 'active'
     ) {
         $this->id = $id;
         $this->name = $name;
@@ -43,6 +45,7 @@ class User
         $this->google2faSecret = $google2faSecret;
         $this->google2faEnabled = $google2faEnabled;
         $this->apiKey = $apiKey;
+        $this->status = $status;
     }
 
     public function getId(): ?string
@@ -149,5 +152,20 @@ class User
     public function setApiKey(?string $apiKey): void
     {
         $this->apiKey = $apiKey;
+    }
+
+    public function getStatus(): string
+    {
+        return $this->status;
+    }
+
+    public function setStatus(string $status): void
+    {
+        $this->status = $status;
+    }
+
+    public function isBanned(): bool
+    {
+        return $this->status === 'banned';
     }
 }

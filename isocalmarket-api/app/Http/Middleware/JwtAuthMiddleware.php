@@ -48,6 +48,10 @@ class JwtAuthMiddleware
             return response()->json(['message' => 'Unauthorized. User not found.'], 401);
         }
 
+        if ($userModel->status === 'banned') {
+            return response()->json(['message' => 'Your account has been banned.'], 403);
+        }
+
         // Đăng nhập user vào Auth context của Laravel
         Auth::login($userModel);
 

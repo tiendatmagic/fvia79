@@ -46,7 +46,8 @@ class AdminUserController extends Controller
                     'role' => $user->getRole(),
                     'balance' => $user->getBalance(),
                     'api_key' => $user->getApiKey(),
-                    'google2fa_enabled' => $user->isGoogle2faEnabled()
+                    'google2fa_enabled' => $user->isGoogle2faEnabled(),
+                    'status' => $user->getStatus()
                 ];
             }, $users);
 
@@ -129,6 +130,7 @@ class AdminUserController extends Controller
             'role' => 'required|string|in:admin,customer',
             'balance' => 'required|numeric|min:0',
             'password' => 'nullable|string|min:6',
+            'status' => 'nullable|string|in:active,banned',
             'generate_api_key' => 'nullable|boolean',
             'revoke_api_key' => 'nullable|boolean'
         ]);
@@ -152,7 +154,8 @@ class AdminUserController extends Controller
                 $request->phone,
                 $user->getGoogle2faSecret(),
                 $user->isGoogle2faEnabled(),
-                $user->getApiKey()
+                $user->getApiKey(),
+                $request->status ?? $user->getStatus()
             );
 
             if ($request->input('generate_api_key')) {
@@ -172,7 +175,8 @@ class AdminUserController extends Controller
                     'phone' => $savedUser->getPhone(),
                     'role' => $savedUser->getRole(),
                     'balance' => $savedUser->getBalance(),
-                    'api_key' => $savedUser->getApiKey()
+                    'api_key' => $savedUser->getApiKey(),
+                    'status' => $savedUser->getStatus()
                 ]
             ]);
         } catch (\Exception $e) {

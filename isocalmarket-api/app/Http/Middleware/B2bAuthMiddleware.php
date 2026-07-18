@@ -41,6 +41,10 @@ class B2bAuthMiddleware
             return response()->json(['message' => 'Unauthorized. Invalid API Key.'], 401);
         }
 
+        if ($userModel->status === 'banned') {
+            return response()->json(['message' => 'Your account has been banned.'], 403);
+        }
+
         // Login the user into the Laravel context
         Auth::login($userModel);
 

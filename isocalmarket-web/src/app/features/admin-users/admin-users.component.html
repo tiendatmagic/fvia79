@@ -71,20 +71,21 @@
             <th class="py-4 px-6 text-xs font-bold text-slate-400 uppercase tracking-wider text-center whitespace-nowrap">Vai trò</th>
             <th class="py-4 px-6 text-xs font-bold text-slate-400 uppercase tracking-wider text-right whitespace-nowrap">Số dư (VND)</th>
             <th class="py-4 px-6 text-xs font-bold text-slate-400 uppercase tracking-wider whitespace-nowrap">B2B API Key</th>
+            <th class="py-4 px-6 text-xs font-bold text-slate-400 uppercase tracking-wider text-center whitespace-nowrap">Trạng thái</th>
             <th class="py-4 px-6 text-xs font-bold text-slate-400 uppercase tracking-wider text-right whitespace-nowrap">Thao tác</th>
           </tr>
         </thead>
         <tbody>
           <!-- Loading skeleton -->
           <tr *ngIf="state.userStore.loading()">
-            <td colspan="7" class="p-6">
+            <td colspan="8" class="p-6">
               <app-skeleton-loader [type]="'table'" [rows]="5" [showHeader]="false" />
             </td>
           </tr>
 
           <!-- Empty state -->
           <tr *ngIf="!state.userStore.loading() && state.userStore.users().length === 0">
-            <td colspan="7" class="py-12 text-center text-sm font-semibold text-slate-400">
+            <td colspan="8" class="py-12 text-center text-sm font-semibold text-slate-400">
               Không tìm thấy thành viên nào. Nhấp vào nút "Thêm thành viên" để tạo tài khoản mới!
             </td>
           </tr>
@@ -166,6 +167,13 @@
                     Chưa tạo API Key
                   </span>
                 </ng-template>
+              </td>
+
+              <!-- Trạng thái -->
+              <td class="py-4.5 px-6 text-center whitespace-nowrap">
+                <app-badge [variant]="user.status === 'active' ? 'success' : 'danger'" size="sm" rounded="md">
+                  {{ user.status === 'active' ? 'Hoạt động' : 'Đã khóa' }}
+                </app-badge>
               </td>
 
               <!-- Thao tác -->
