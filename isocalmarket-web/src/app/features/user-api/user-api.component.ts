@@ -1,4 +1,4 @@
-import { Component, inject, computed } from '@angular/core';
+import { Component, inject, computed, signal } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { StateService } from '@core/services/state.service';
 import { PageHeaderComponent } from '@shared/components/page-header/page-header.component';
@@ -26,6 +26,7 @@ import { environment } from '@environments/environment';
 })
 export class UserApiComponent {
   public readonly state = inject(StateService);
+  public readonly activeTab = signal<'bash' | 'cmd'>('bash');
 
   public readonly siteUrl = computed(() => {
     const baseUrl = environment.apiBaseUrl;
@@ -79,6 +80,12 @@ export class UserApiComponent {
     const key = this.apiKey() || 'API_KEY_CUA_BAN';
     const text = `curl -X POST "${this.siteUrl()}/api/v1/b2b/buy" -H "Content-Type: application/json" -H "X-API-KEY: ${key}" -d '{"product_id": "PRODUCT_ID", "quantity": 1}'`;
     this.copyToClipboard(text, 'mẫu CURL Buy');
+  }
+
+  public copyBuyWindowsCurl() {
+    const key = this.apiKey() || 'API_KEY_CUA_BAN';
+    const text = `curl -X POST "${this.siteUrl()}/api/v1/b2b/buy" -H "Content-Type: application/json" -H "X-API-KEY: ${key}" -d "{\\"product_id\\": \\"PRODUCT_ID\\", \\"quantity\\": 1}"`;
+    this.copyToClipboard(text, 'mẫu CURL Buy (Windows CMD)');
   }
 
   public copyBuyUrl() {

@@ -46,12 +46,12 @@ class OrderService
                 }
                 $product = $this->productRepository->findById($productId);
                 if (!$product || $product->isDeleted()) {
-                    throw new \Exception("Sản phẩm không khả dụng hoặc đã bị ngừng kinh doanh.");
+                    throw new \Exception("Product is not available or has been discontinued.");
                 }
 
                 $availableCount = $this->inventoryRepository->countAvailableByProductId($productId);
                 if ($availableCount < $quantity) {
-                    throw new \Exception("Sản phẩm '{$product->getName()}' không đủ số lượng tồn kho khả dụng (Yêu cầu: {$quantity}, Còn lại: {$availableCount}).");
+                    throw new \Exception("Product '{$product->getName()}' does not have enough stock available (Requested: {$quantity}, Available: {$availableCount}).");
                 }
 
                 $activeBatches = $this->inventoryRepository->findActiveBatchesByProductId($productId, true);
@@ -77,7 +77,7 @@ class OrderService
                 }
 
                 if (count($deliveredKeys) < $quantity) {
-                    throw new \Exception("Có lỗi xảy ra: Không lấy đủ tài nguyên số cho sản phẩm '{$product->getName()}'.");
+                    throw new \Exception("An error occurred: Could not retrieve enough digital resources for product '{$product->getName()}'.");
                 }
 
                 $itemPrice = $product->getPrice();
@@ -97,11 +97,11 @@ class OrderService
             // Kiểm tra và trừ tiền từ số dư của người dùng
             $user = $this->userRepository->findById($userId);
             if (!$user) {
-                throw new \Exception('Không tìm thấy tài khoản người dùng.');
+                throw new \Exception('User account not found.');
             }
 
             if ($user->getBalance() < $totalPrice) {
-                throw new \Exception("Số dư không đủ để thanh toán đơn hàng (Yêu cầu: " . number_format($totalPrice) . " VND, Hiện có: " . number_format($user->getBalance()) . " VND).");
+                throw new \Exception("Insufficient balance to pay for the order (Required: " . number_format($totalPrice) . " VND, Current: " . number_format($user->getBalance()) . " VND).");
             }
 
             $user->setBalance($user->getBalance() - $totalPrice);
