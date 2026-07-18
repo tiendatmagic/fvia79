@@ -6,7 +6,7 @@
 
   @if (loading()) {
     <app-card>
-      <app-skeleton-loader type="form" [showHeader]="false" />
+      <app-skeleton-loader type="form" [showHeader]="false" [rows]="2" buttonLayout="end" />
     </app-card>
   } @else {
     <app-card>

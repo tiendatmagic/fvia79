@@ -57,17 +57,28 @@
   }
 
     @if (type === 'form') {
-    <div class="space-y-5 max-w-lg">
+    <div class="space-y-5">
       @for (i of getArray(rows); track i) {
         <div class="space-y-2">
           <div class="h-3.5 bg-slate-200 dark:bg-slate-800 rounded-md w-1/4"></div>
           <div class="h-10 bg-slate-100 dark:bg-slate-800/50 rounded-xl w-full"></div>
         </div>
       }
-      <div class="flex gap-3 pt-2">
-        <div class="h-10 bg-slate-200 dark:bg-slate-800 rounded-xl flex-1"></div>
-        <div class="h-10 bg-slate-300 dark:bg-slate-700 rounded-xl w-32"></div>
-      </div>
+      @if (buttonLayout === 'full') {
+        <div class="pt-2">
+          <div class="h-11 bg-slate-300 dark:bg-slate-700 rounded-xl w-full"></div>
+        </div>
+      } @else if (buttonLayout === 'end') {
+        <div class="flex justify-end gap-3 pt-2">
+          <div class="h-10 bg-slate-200 dark:bg-slate-800 rounded-xl w-36"></div>
+          <div class="h-10 bg-slate-300 dark:bg-slate-700 rounded-xl w-28"></div>
+        </div>
+      } @else {
+        <div class="flex gap-3 pt-2">
+          <div class="h-10 bg-slate-200 dark:bg-slate-800 rounded-xl flex-1"></div>
+          <div class="h-10 bg-slate-300 dark:bg-slate-700 rounded-xl w-32"></div>
+        </div>
+      }
     </div>
   }
 

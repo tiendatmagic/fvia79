@@ -1105,5 +1105,13 @@
          - **DepositHistoryComponent** (Lịch sử nạp tiền)
          - **StorefrontComponent** (Chế độ xem List ở trang chủ cửa hàng)
       3. Cấu hình import `TableComponent`, `TableCellDirective`, `TableColumn` và `TooltipDirective` đầy đủ cho các module tương ứng.
-      4. Chạy biên dịch Angular production build (`npm run build`) thành công 100% không phát sinh bất kỳ lỗi biên dịch nào.
-
+   - **[SỬA LỖI SKELETON LOADER FORM CHƯA TRÙNG KHỚP]**:
+    - **Nhận diện lỗi**: Trang Cấu hình hệ thống (`/admin/settings`) và trang Nạp tiền (`/deposit`) sử dụng skeleton loader kiểu `type="form"` chưa trùng khớp về kích thước (bị giới hạn cứng bởi `max-w-lg` làm co hẹp chiều ngang), số lượng trường nhập liệu giả (mặc định 5 trường trong khi thực tế chỉ cần 2), và cấu hình nút bấm giả.
+    - **Giải pháp & Triển khai**:
+      1. Loại bỏ class giới hạn chiều rộng `max-w-lg` khỏi template [skeleton-loader.component.html](file:///d:/git/isocalmarket/isocalmarket-web/src/app/shared/components/skeleton-loader/skeleton-loader.component.html) để component tự do co giãn theo container Card bọc ngoài.
+      2. Bổ sung `@Input() buttonLayout: 'full' | 'split' | 'end' = 'split';` vào [skeleton-loader.component.ts](file:///d:/git/isocalmarket/isocalmarket-web/src/app/shared/components/skeleton-loader/skeleton-loader.component.ts) và triển khai cấu trúc HTML nút bấm giả tương ứng:
+         - `end`: 2 nút giả nhỏ căn lề phải (áp dụng cho trang Settings với `[rows]="2"`).
+         - `full`: 1 nút giả dài rộng 100% (áp dụng cho trang Deposit với `[rows]="2"`).
+         - `split` (mặc định): Layout 2 nút giả cũ.
+      3. Cập nhật mã HTML tại [admin-settings.component.html](file:///d:/git/isocalmarket/isocalmarket-web/src/app/features/admin-settings/admin-settings.component.html) và [deposit.component.html](file:///d:/git/isocalmarket/isocalmarket-web/src/app/features/deposit/deposit.component.html) để truyền cấu hình khớp 100% với form thực tế.
+      4. Chạy biên dịch dự án thành công không phát sinh lỗi.
