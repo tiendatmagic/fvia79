@@ -35,122 +35,122 @@
     </div>
   </div>
 
-  <div *ngIf="loading()" class="grid grid-cols-2 lg:grid-cols-3 2xl:grid-cols-5 gap-4">
-    <div app-card *ngFor="let i of [1, 2, 3, 4, 5]" class="relative p-4 md:p-5 overflow-hidden">
-      <div
-        class="absolute top-4 right-4 w-10 h-10 bg-slate-200 dark:bg-slate-800 rounded-xl animate-pulse"
-      ></div>
-      <div class="pr-14 space-y-2 animate-pulse">
-        <div class="h-2.5 bg-slate-200 dark:bg-slate-800 rounded-md w-3/4"></div>
-        <div class="h-6 bg-slate-200 dark:bg-slate-800 rounded-lg w-full"></div>
-        <div class="h-5 bg-slate-200 dark:bg-slate-800 rounded-md w-1/2"></div>
+  <div *ngIf="loading()" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-5 gap-4">
+    <app-card
+      *ngFor="let i of [1, 2, 3, 4, 5]; let idx = index"
+      [class.sm:col-span-2]="idx === 4"
+      [class.lg:col-span-1]="idx === 4"
+      class="flex flex-col justify-between h-[135px] p-4 md:p-5 overflow-hidden"
+    >
+      <div class="flex items-center justify-between animate-pulse">
+        <div class="h-2.5 bg-slate-200 dark:bg-slate-800 rounded-md w-24"></div>
+        <div class="w-9 h-9 rounded-xl bg-slate-200 dark:bg-slate-800"></div>
       </div>
-    </div>
+      <div class="space-y-2 mt-2 animate-pulse">
+        <div class="h-6 bg-slate-200 dark:bg-slate-800 rounded-lg w-2/3"></div>
+        <div class="h-5 bg-slate-200 dark:bg-slate-800 rounded-md w-16"></div>
+      </div>
+    </app-card>
   </div>
 
-  <div *ngIf="!loading() && stats()" class="grid grid-cols-2 lg:grid-cols-3 2xl:grid-cols-5 gap-4">
-    <div app-card class="relative p-4 md:p-5 overflow-hidden">
-      <div
-        class="absolute top-4 right-4 md:top-5 md:right-5 w-10 h-10 rounded-xl bg-blue-50 dark:bg-blue-950/30 flex items-center justify-center text-[var(--color-primary)]"
-      >
-        <app-icon name="cash" class="w-5 h-5" />
+  <div *ngIf="!loading() && stats()" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-5 gap-4">
+    <!-- Card 1: Tổng Doanh Thu -->
+    <app-card class="flex flex-col justify-between h-[135px] p-4 md:p-5 overflow-hidden">
+      <div class="flex items-center justify-between">
+        <span class="text-xs font-bold text-slate-400 dark:text-slate-500 uppercase tracking-wider">
+          Tổng Doanh Thu
+        </span>
+        <div class="w-9 h-9 rounded-xl bg-blue-50 dark:bg-blue-950/30 flex items-center justify-center text-[var(--color-primary)]">
+          <app-icon name="cash" class="w-4.5 h-4.5" />
+        </div>
       </div>
-      <div class="pr-14 space-y-2">
-        <span class="text-xs font-bold text-slate-400 uppercase tracking-wide block"
-          >Tổng Doanh Thu</span
-        >
-        <h2
-          class="text-lg md:text-2xl font-black text-slate-800 dark:text-white tracking-tight leading-tight"
-        >
+      <div class="space-y-1.5 mt-2">
+        <h2 class="text-lg md:text-2xl font-black text-slate-800 dark:text-white tracking-tight leading-none">
           {{ stats().total_revenue | number }}
-          <span class="text-xs font-extrabold text-slate-500">VND</span>
+          <span class="text-xs font-extrabold text-slate-500 ml-0.5">VND</span>
         </h2>
         <app-badge variant="success" size="sm" rounded="md">Đã thanh toán</app-badge>
       </div>
-    </div>
+    </app-card>
 
-    <div app-card class="relative p-4 md:p-5 overflow-hidden">
-      <div
-        class="absolute top-4 right-4 md:top-5 md:right-5 w-10 h-10 rounded-xl bg-slate-50 dark:bg-slate-900 flex items-center justify-center text-slate-500"
-      >
-        <app-icon name="orders" class="w-5 h-5" />
+    <!-- Card 2: Tổng Đơn Hàng -->
+    <app-card class="flex flex-col justify-between h-[135px] p-4 md:p-5 overflow-hidden">
+      <div class="flex items-center justify-between">
+        <span class="text-xs font-bold text-slate-400 dark:text-slate-500 uppercase tracking-wider">
+          Tổng Đơn Hàng
+        </span>
+        <div class="w-9 h-9 rounded-xl bg-slate-100 dark:bg-slate-800/50 flex items-center justify-center text-slate-500">
+          <app-icon name="orders" class="w-4.5 h-4.5" />
+        </div>
       </div>
-      <div class="pr-14 space-y-2">
-        <span class="text-xs font-bold text-slate-400 uppercase tracking-wide block"
-          >Tổng Đơn Hàng</span
-        >
-        <h2
-          class="text-lg md:text-2xl font-black text-slate-800 dark:text-white tracking-tight leading-tight"
-        >
+      <div class="space-y-1.5 mt-2">
+        <h2 class="text-lg md:text-2xl font-black text-slate-800 dark:text-white tracking-tight leading-none">
           {{ stats().total_orders | number }}
-          <span class="text-xs font-extrabold text-slate-500">Đơn</span>
+          <span class="text-xs font-extrabold text-slate-500 ml-0.5">Đơn</span>
         </h2>
         <app-badge variant="neutral" size="sm" rounded="md">Toàn hệ thống</app-badge>
       </div>
-    </div>
+    </app-card>
 
-    <div app-card class="relative p-4 md:p-5 overflow-hidden">
-      <div
-        class="absolute top-4 right-4 md:top-5 md:right-5 w-10 h-10 rounded-xl bg-teal-50 dark:bg-teal-950/30 flex items-center justify-center text-[var(--color-secondary)]"
-      >
-        <app-icon name="list-bullet" class="w-5 h-5" />
+    <!-- Card 3: Danh mục Sản phẩm -->
+    <app-card class="flex flex-col justify-between h-[135px] p-4 md:p-5 overflow-hidden">
+      <div class="flex items-center justify-between">
+        <span class="text-xs font-bold text-slate-400 dark:text-slate-500 uppercase tracking-wider">
+          Danh mục Sản phẩm
+        </span>
+        <div class="w-9 h-9 rounded-xl bg-teal-50 dark:bg-teal-950/30 flex items-center justify-center text-[var(--color-secondary)]">
+          <app-icon name="list-bullet" class="w-4.5 h-4.5" />
+        </div>
       </div>
-      <div class="pr-14 space-y-2">
-        <span class="text-xs font-bold text-slate-400 uppercase tracking-wide block"
-          >Danh mục Sản phẩm</span
-        >
-        <h2
-          class="text-lg md:text-2xl font-black text-slate-800 dark:text-white tracking-tight leading-tight"
-        >
+      <div class="space-y-1.5 mt-2">
+        <h2 class="text-lg md:text-2xl font-black text-slate-800 dark:text-white tracking-tight leading-none">
           {{ stats().total_products | number }}
-          <span class="text-xs font-extrabold text-slate-500">Mục</span>
+          <span class="text-xs font-extrabold text-slate-500 ml-0.5">Mục</span>
         </h2>
         <app-badge variant="secondary" size="sm" rounded="md">Đang hoạt động</app-badge>
       </div>
-    </div>
+    </app-card>
 
-    <div app-card class="relative p-4 md:p-5 overflow-hidden">
-      <div
-        class="absolute top-4 right-4 md:top-5 md:right-5 w-10 h-10 rounded-xl bg-amber-50 dark:bg-amber-950/30 flex items-center justify-center text-amber-500"
-      >
-        <app-icon name="inventory" class="w-5 h-5" />
+    <!-- Card 4: Tồn Kho Khả Dụng -->
+    <app-card class="flex flex-col justify-between h-[135px] p-4 md:p-5 overflow-hidden">
+      <div class="flex items-center justify-between">
+        <span class="text-xs font-bold text-slate-400 dark:text-slate-500 uppercase tracking-wider">
+          Tồn Kho Khả Dụng
+        </span>
+        <div class="w-9 h-9 rounded-xl bg-amber-50 dark:bg-amber-950/30 flex items-center justify-center text-amber-500">
+          <app-icon name="inventory" class="w-4.5 h-4.5" />
+        </div>
       </div>
-      <div class="pr-14 space-y-2">
-        <span class="text-xs font-bold text-slate-400 uppercase tracking-wide block"
-          >Tồn Kho Khả Dụng</span
-        >
-        <h2
-          class="text-lg md:text-2xl font-black text-slate-800 dark:text-white tracking-tight leading-tight"
-        >
+      <div class="space-y-1.5 mt-2">
+        <h2 class="text-lg md:text-2xl font-black text-slate-800 dark:text-white tracking-tight leading-none">
           {{ stats().total_available_inventory | number }}
-          <span class="text-xs font-extrabold text-slate-500">Tài nguyên</span>
+          <span class="text-xs font-extrabold text-slate-500 ml-0.5">Tài nguyên</span>
         </h2>
         <app-badge variant="warning" size="sm" rounded="md">Sẵn sàng bán</app-badge>
       </div>
-    </div>
+    </app-card>
 
-    <div app-card class="relative p-4 md:p-5 overflow-hidden">
-      <div
-        class="absolute top-4 right-4 md:top-5 md:right-5 w-10 h-10 rounded-xl bg-purple-50 dark:bg-purple-950/30 flex items-center justify-center text-purple-500"
-      >
-        <app-icon name="customers" class="w-5 h-5" />
+    <!-- Card 5: Tổng Người Dùng -->
+    <app-card class="sm:col-span-2 lg:col-span-1 flex flex-col justify-between h-[135px] p-4 md:p-5 overflow-hidden">
+      <div class="flex items-center justify-between">
+        <span class="text-xs font-bold text-slate-400 dark:text-slate-500 uppercase tracking-wider">
+          Tổng Người Dùng
+        </span>
+        <div class="w-9 h-9 rounded-xl bg-purple-50 dark:bg-purple-950/30 flex items-center justify-center text-purple-500">
+          <app-icon name="customers" class="w-4.5 h-4.5" />
+        </div>
       </div>
-      <div class="pr-14 space-y-2">
-        <span class="text-xs font-bold text-slate-400 uppercase tracking-wide block"
-          >Tổng Người Dùng</span
-        >
-        <h2
-          class="text-lg md:text-2xl font-black text-slate-800 dark:text-white tracking-tight leading-tight"
-        >
+      <div class="space-y-1.5 mt-2">
+        <h2 class="text-lg md:text-2xl font-black text-slate-800 dark:text-white tracking-tight leading-none">
           {{ stats().total_users | number }}
-          <span class="text-xs font-extrabold text-slate-500">Thành viên</span>
+          <span class="text-xs font-extrabold text-slate-500 ml-0.5">Thành viên</span>
         </h2>
         <app-badge variant="info" size="sm" rounded="md">Đăng ký hệ thống</app-badge>
       </div>
-    </div>
+    </app-card>
   </div>
 
-  <div *ngIf="loading()" app-card class="p-6 space-y-6">
+  <app-card *ngIf="loading()" class="p-6 space-y-6">
     <div class="flex items-center justify-between">
       <div class="h-4 bg-slate-200 dark:bg-slate-800 rounded-md w-1/4 animate-pulse"></div>
       <div class="h-6 bg-slate-200 dark:bg-slate-800 rounded-full w-20 animate-pulse"></div>
@@ -166,9 +166,9 @@
         <div class="h-7 bg-slate-100 dark:bg-slate-900 rounded-lg w-20 animate-pulse"></div>
       </div>
     </div>
-  </div>
+  </app-card>
 
-  <div *ngIf="!loading() && stats()" app-card class="p-6 space-y-6">
+  <app-card *ngIf="!loading() && stats()" class="p-6 space-y-6">
     <div class="flex items-center justify-between">
       <div class="flex items-center gap-2">
         <div class="w-2.5 h-2.5 rounded-full bg-red-500 animate-ping"></div>
@@ -282,5 +282,5 @@
         </tbody>
       </table>
     </div>
-  </div>
+  </app-card>
 </div>
