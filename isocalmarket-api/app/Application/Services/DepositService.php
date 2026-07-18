@@ -325,15 +325,17 @@ class DepositService
                         }
 
                         // Tìm thấy giao dịch khớp hoàn toàn! Tiến hành cộng tiền và hoàn thành hóa đơn
-                        $deposit->setStatus('completed');
-                        $deposit->setTxHash($txHash);
-                        $this->depositRepository->save($deposit);
+                        \Illuminate\Support\Facades\DB::transaction(function () use ($deposit, $txHash, $userId) {
+                            $deposit->setStatus('completed');
+                            $deposit->setTxHash($txHash);
+                            $this->depositRepository->save($deposit);
 
-                        $user = $this->userRepository->find($userId);
-                        if ($user) {
-                            $user->addBalance($deposit->getAmountUsdt());
-                            $this->userRepository->save($user);
-                        }
+                            $user = $this->userRepository->findById($userId);
+                            if ($user) {
+                                $user->addBalance($deposit->getAmountUsdt());
+                                $this->userRepository->save($user);
+                            }
+                        });
 
                         Log::info("Deposit successfully matched and processed: Invoice #{$deposit->getCode()}, Amount: {$deposit->getAmountUsdt()} USDT, TxHash: {$txHash}");
                         return true;

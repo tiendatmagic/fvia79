@@ -1207,4 +1207,10 @@
       2. **Database Seeder**: Thay đổi description của trường cấu hình `scanner_api_key` trong [DatabaseSeeder.php](file:///d:/git/isocalmarket/isocalmarket-api/database/seeders/DatabaseSeeder.php) để hướng dẫn dùng Moralis.
       3. **Frontend UI**: Thay đổi ô input của `scanner_api_key` thành `<textarea>` với 3 dòng nhập liệu trong [admin-settings.component.html](file:///d:/git/isocalmarket/isocalmarket-web/src/app/features/admin-settings/admin-settings.component.html) để người dùng dễ dàng dán JWT Token dài.
       4. **Che giấu bảo mật**: Thêm class `.mask-security` sử dụng thuộc tính `-webkit-text-security: disc` trong stylesheet của [admin-settings.component.ts](file:///d:/git/isocalmarket/isocalmarket-web/src/app/features/admin-settings/admin-settings.component.ts), giúp che giấu API key thành dấu chấm tròn tương tự ô password khi ở trạng thái ẩn, và hiển thị lại khi nhấn nút Toggle Eye.
-      5. **Xác minh**: Chạy thử nghiệm đối soát tự động thành công và liên kết lấy API key Moralis được điều hướng chính xác.
+      5. **Xác minh**: Chạy thử nghiệm đối soát tự động thành công và liên kết lấy API key Moralis được điều hướng chính xác.  - **[SỬA LỖI & TOÀN VẸN DỮ LIỆU] Khắc phục lỗi đối soát nạp tiền & Cập nhật số dư người dùng**:
+    - **Yêu cầu**: Giải quyết lỗi hệ thống không cộng tiền vào tài khoản người dùng sau khi đối soát thành công giao dịch blockchain.
+    - **Giải pháp & Triển khai**:
+      1. **Sửa lỗi gọi hàm**: Thay thế hàm `$this->userRepository->find()` bị lỗi (không tồn tại) bằng hàm đúng `$this->userRepository->findById()` trong [DepositService.php](file:///d:/git/isocalmarket/isocalmarket-api/app/Application/Services/DepositService.php).
+      2. **Toàn vẹn dữ liệu (DB Transaction)**: Bọc toàn bộ logic cập nhật trạng thái hóa đơn (`completed`) và cộng số dư tài khoản người dùng vào trong khối `DB::transaction(...)`. Đảm bảo nếu một trong hai thao tác thất bại, hệ thống sẽ rollback dữ liệu về trạng thái trước đó để tránh trường hợp hóa đơn đã duyệt nhưng người dùng chưa được cộng tiền.
+      3. **Đối soát thủ công bù**: Viết script xử lý bù số dư `0.1` USDT thành công cho hóa đơn `#234` bị lỗi trước đó.
+      4. **Xác minh**: Chạy thử nghiệm thành công, hệ thống đã hoạt động trơn tru không còn lỗi phát sinh.
