@@ -35,12 +35,12 @@
     </div>
   </div>
 
-  <div *ngIf="loading()" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-5 gap-4">
+  <div *ngIf="loading()" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 2xl:grid-cols-5 gap-4">
     <app-card
       *ngFor="let i of [1, 2, 3, 4, 5]; let idx = index"
       [class.sm:col-span-2]="idx === 4"
       [class.lg:col-span-1]="idx === 4"
-      class="flex flex-col justify-between h-[135px] p-4 md:p-5 overflow-hidden"
+      class="flex flex-col justify-between min-h-[136px] h-auto p-4 md:p-5 overflow-hidden"
     >
       <div class="flex items-center justify-between animate-pulse">
         <div class="h-2.5 bg-slate-200 dark:bg-slate-800 rounded-md w-24"></div>
@@ -53,9 +53,9 @@
     </app-card>
   </div>
 
-  <div *ngIf="!loading() && stats()" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-5 gap-4">
+  <div *ngIf="!loading() && stats()" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 2xl:grid-cols-5 gap-4">
     <!-- Card 1: Tổng Doanh Thu -->
-    <app-card class="flex flex-col justify-between h-[135px] p-4 md:p-5 overflow-hidden">
+    <app-card class="flex flex-col justify-between min-h-[136px] h-auto p-4 md:p-5 overflow-hidden">
       <div class="flex items-center justify-between">
         <span class="text-xs font-bold text-slate-400 dark:text-slate-500 uppercase tracking-wider">
           Tổng Doanh Thu
@@ -65,7 +65,7 @@
         </div>
       </div>
       <div class="space-y-1.5 mt-2">
-        <h2 class="text-lg md:text-2xl font-black text-slate-800 dark:text-white tracking-tight leading-none">
+        <h2 class="text-lg md:text-2xl font-black text-slate-800 dark:text-white tracking-tight leading-none whitespace-nowrap">
           {{ stats().total_revenue | number }}
           <span class="text-xs font-extrabold text-slate-500 ml-0.5">VND</span>
         </h2>
@@ -74,7 +74,7 @@
     </app-card>
 
     <!-- Card 2: Tổng Đơn Hàng -->
-    <app-card class="flex flex-col justify-between h-[135px] p-4 md:p-5 overflow-hidden">
+    <app-card class="flex flex-col justify-between min-h-[136px] h-auto p-4 md:p-5 overflow-hidden">
       <div class="flex items-center justify-between">
         <span class="text-xs font-bold text-slate-400 dark:text-slate-500 uppercase tracking-wider">
           Tổng Đơn Hàng
@@ -84,7 +84,7 @@
         </div>
       </div>
       <div class="space-y-1.5 mt-2">
-        <h2 class="text-lg md:text-2xl font-black text-slate-800 dark:text-white tracking-tight leading-none">
+        <h2 class="text-lg md:text-2xl font-black text-slate-800 dark:text-white tracking-tight leading-none whitespace-nowrap">
           {{ stats().total_orders | number }}
           <span class="text-xs font-extrabold text-slate-500 ml-0.5">Đơn</span>
         </h2>
@@ -93,7 +93,7 @@
     </app-card>
 
     <!-- Card 3: Danh mục Sản phẩm -->
-    <app-card class="flex flex-col justify-between h-[135px] p-4 md:p-5 overflow-hidden">
+    <app-card class="flex flex-col justify-between min-h-[136px] h-auto p-4 md:p-5 overflow-hidden">
       <div class="flex items-center justify-between">
         <span class="text-xs font-bold text-slate-400 dark:text-slate-500 uppercase tracking-wider">
           Danh mục Sản phẩm
@@ -103,7 +103,7 @@
         </div>
       </div>
       <div class="space-y-1.5 mt-2">
-        <h2 class="text-lg md:text-2xl font-black text-slate-800 dark:text-white tracking-tight leading-none">
+        <h2 class="text-lg md:text-2xl font-black text-slate-800 dark:text-white tracking-tight leading-none whitespace-nowrap">
           {{ stats().total_products | number }}
           <span class="text-xs font-extrabold text-slate-500 ml-0.5">Mục</span>
         </h2>
@@ -112,7 +112,7 @@
     </app-card>
 
     <!-- Card 4: Tồn Kho Khả Dụng -->
-    <app-card class="flex flex-col justify-between h-[135px] p-4 md:p-5 overflow-hidden">
+    <app-card class="flex flex-col justify-between min-h-[136px] h-auto p-4 md:p-5 overflow-hidden">
       <div class="flex items-center justify-between">
         <span class="text-xs font-bold text-slate-400 dark:text-slate-500 uppercase tracking-wider">
           Tồn Kho Khả Dụng
@@ -122,7 +122,7 @@
         </div>
       </div>
       <div class="space-y-1.5 mt-2">
-        <h2 class="text-lg md:text-2xl font-black text-slate-800 dark:text-white tracking-tight leading-none">
+        <h2 class="text-lg md:text-2xl font-black text-slate-800 dark:text-white tracking-tight leading-none whitespace-nowrap">
           {{ stats().total_available_inventory | number }}
           <span class="text-xs font-extrabold text-slate-500 ml-0.5">Tài nguyên</span>
         </h2>
@@ -131,7 +131,7 @@
     </app-card>
 
     <!-- Card 5: Tổng Người Dùng -->
-    <app-card class="sm:col-span-2 lg:col-span-1 flex flex-col justify-between h-[135px] p-4 md:p-5 overflow-hidden">
+    <app-card class="sm:col-span-2 lg:col-span-1 flex flex-col justify-between min-h-[136px] h-auto p-4 md:p-5 overflow-hidden">
       <div class="flex items-center justify-between">
         <span class="text-xs font-bold text-slate-400 dark:text-slate-500 uppercase tracking-wider">
           Tổng Người Dùng
@@ -141,7 +141,7 @@
         </div>
       </div>
       <div class="space-y-1.5 mt-2">
-        <h2 class="text-lg md:text-2xl font-black text-slate-800 dark:text-white tracking-tight leading-none">
+        <h2 class="text-lg md:text-2xl font-black text-slate-800 dark:text-white tracking-tight leading-none whitespace-nowrap">
           {{ stats().total_users | number }}
           <span class="text-xs font-extrabold text-slate-500 ml-0.5">Thành viên</span>
         </h2>
