@@ -1115,3 +1115,11 @@
          - `split` (mặc định): Layout 2 nút giả cũ.
       3. Cập nhật mã HTML tại [admin-settings.component.html](file:///d:/git/isocalmarket/isocalmarket-web/src/app/features/admin-settings/admin-settings.component.html) và [deposit.component.html](file:///d:/git/isocalmarket/isocalmarket-web/src/app/features/deposit/deposit.component.html) để truyền cấu hình khớp 100% với form thực tế.
       4. Chạy biên dịch dự án thành công không phát sinh lỗi.
+
+  - **[SỬA LỖI] Trùng lặp Slug sản phẩm khi bị xóa mềm (Soft Deleted) & Sinh Slug Tự Tăng**:
+    - **Nhận diện lỗi**: Khi thêm sản phẩm mới có tên trùng hoặc sinh ra slug trùng với một sản phẩm đã bị xóa mềm trước đó (ví dụ: `san-pham-demo`), hệ thống báo lỗi cơ sở dữ liệu `SQLSTATE[23000]: Integrity constraint violation: 1062 Duplicate entry 'san-pham-demo' for key 'products.products_slug_unique'`.
+    - **Nguyên nhân**: Do `ProductRepository::findBySlug()` sử dụng truy vấn Eloquent thông thường mà không có `withTrashed()`. Khi kiểm tra trùng lặp slug để tự động thêm hậu tố thời gian, Eloquent bỏ qua các sản phẩm đã xóa mềm, dẫn đến nhận định là slug chưa tồn tại. Tuy nhiên ở mức DB, bản ghi xóa mềm vẫn tồn tại và có ràng buộc `UNIQUE` trên cột `slug` dẫn đến crash.
+    - **Giải pháp khắc phục**:
+      1. Cập nhật hàm `findBySlug` trong [ProductRepository.php](file:///d:/git/isocalmarket/isocalmarket-api/app/Infrastructure/Persistence/Repositories/ProductRepository.php) sử dụng `ProductModel::withTrashed()` để quét qua cả các sản phẩm đã xóa mềm khi xác thực tính duy nhất của slug.
+      2. Chuyển đổi logic sinh slug khi trùng lặp từ dạng timestamp (`-1721319585`) sang dạng số tăng dần (`-1`, `-2`, `-3`,...) trong cả [ProductService.php](file:///d:/git/isocalmarket/isocalmarket-api/app/Application/Services/ProductService.php) và [CategoryService.php](file:///d:/git/isocalmarket/isocalmarket-api/app/Application/Services/CategoryService.php) bằng hàm đệ quy/vòng lặp kiểm tra repository.
+      3. Đã chạy unit test suite và tất cả các test cases hoạt động bình thường.

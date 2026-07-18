@@ -115,7 +115,7 @@ class ProductRepository implements ProductRepositoryInterface
 
     public function findBySlug(string $slug): ?Product
     {
-        $model = ProductModel::where('slug', $slug)->first();
+        $model = ProductModel::withTrashed()->where('slug', $slug)->first();
         if (!$model) return null;
 
         $availableCount = $this->getAvailableCount($model);

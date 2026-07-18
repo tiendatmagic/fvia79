@@ -18,11 +18,8 @@ class CategoryService
 
     public function createCategory(string $name, ?string $slug, ?string $description): Category
     {
-        $finalSlug = $slug ? Str::slug($slug) : Str::slug($name);
-        $existing = $this->categoryRepository->findBySlug($finalSlug);
-        if ($existing) {
-            $finalSlug .= '-' . time();
-        }
+        $baseSlug = $slug ? Str::slug($slug) : Str::slug($name);
+        $finalSlug = $this->generateUniqueSlug($baseSlug);
 
         $category = new Category(null, $name, $finalSlug, $description);
         return $this->categoryRepository->save($category);
@@ -35,16 +32,25 @@ class CategoryService
             throw new \Exception('Category not found.');
         }
 
-        $finalSlug = $slug ? Str::slug($slug) : Str::slug($name);
-        if ($finalSlug !== $category->getSlug()) {
-            $existing = $this->categoryRepository->findBySlug($finalSlug);
-            if ($existing) {
-                $finalSlug .= '-' . time();
-            }
-        }
+        $baseSlug = $slug ? Str::slug($slug) : Str::slug($name);
+        $finalSlug = $this->generateUniqueSlug($baseSlug, $id);
 
         $updatedCategory = new Category($id, $name, $finalSlug, $description);
         return $this->categoryRepository->save($updatedCategory);
+    }
+
+    private function generateUniqueSlug(string $baseSlug, ?string $excludeId = null): string
+    {
+        $slug = $baseSlug;
+        $count = 1;
+        while (true) {
+            $existing = $this->categoryRepository->findBySlug($slug);
+            if (!$existing || ($excludeId && $existing->getId() === $excludeId)) {
+                return $slug;
+            }
+            $slug = $baseSlug . '-' . $count;
+            $count++;
+        }
     }
 
     public function deleteCategory(string $id): bool

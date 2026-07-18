@@ -32,11 +32,8 @@ class ProductService
 
     public function createProduct(string $name, ?string $slug, ?string $description, float $price, string $status = 'active', ?array $attributes = null, ?string $categoryId = null): Product
     {
-        $finalSlug = $slug ?: Str::slug($name);
-        $existing = $this->productRepository->findBySlug($finalSlug);
-        if ($existing) {
-            $finalSlug .= '-' . time();
-        }
+        $baseSlug = $slug ?: Str::slug($name);
+        $finalSlug = $this->generateUniqueSlug($baseSlug);
 
         $product = new Product(null, $name, $finalSlug, $description, $price, $status, 0, $attributes, $categoryId);
         return $this->productRepository->save($product);
@@ -53,16 +50,25 @@ class ProductService
             throw new \Exception('Cannot update a soft-deleted product.');
         }
 
-        $finalSlug = $slug ?: Str::slug($name);
-        if ($finalSlug !== $product->getSlug()) {
-            $existing = $this->productRepository->findBySlug($finalSlug);
-            if ($existing) {
-                $finalSlug .= '-' . time();
-            }
-        }
+        $baseSlug = $slug ?: Str::slug($name);
+        $finalSlug = $this->generateUniqueSlug($baseSlug, $id);
 
         $updatedProduct = new Product($id, $name, $finalSlug, $description, $price, $status, 0, $attributes, $categoryId);
         return $this->productRepository->save($updatedProduct);
+    }
+
+    private function generateUniqueSlug(string $baseSlug, ?string $excludeId = null): string
+    {
+        $slug = $baseSlug;
+        $count = 1;
+        while (true) {
+            $existing = $this->productRepository->findBySlug($slug);
+            if (!$existing || ($excludeId && $existing->getId() === $excludeId)) {
+                return $slug;
+            }
+            $slug = $baseSlug . '-' . $count;
+            $count++;
+        }
     }
 
     public function deleteProduct(string $id): bool
