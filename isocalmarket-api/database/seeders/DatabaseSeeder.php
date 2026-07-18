@@ -29,8 +29,16 @@ class DatabaseSeeder extends Seeder
 
         $customers = [];
         $customerNames = [
-            'Nguyễn Văn A', 'Trần Thị B', 'Lê Văn C', 'Phạm Thị D', 'Hoàng Văn E',
-            'Đỗ Minh F', 'Vũ Thị G', 'Phan Thanh H', 'Bùi Văn I', 'Ngô Thị K'
+            'Nguyễn Văn A',
+            'Trần Thị B',
+            'Lê Văn C',
+            'Phạm Thị D',
+            'Hoàng Văn E',
+            'Đỗ Minh F',
+            'Vũ Thị G',
+            'Phan Thanh H',
+            'Bùi Văn I',
+            'Ngô Thị K'
         ];
 
         foreach ($customerNames as $index => $name) {
@@ -501,10 +509,10 @@ class DatabaseSeeder extends Seeder
         foreach ($productsData as $data) {
             $catSlug = $data['category_slug'];
             $catId = isset($categoriesMap[$catSlug]) ? $categoriesMap[$catSlug]->id : null;
-            
+
             // Xóa category_slug trước khi insert DB
             unset($data['category_slug']);
-            
+
             $products[] = ProductModel::create(array_merge($data, [
                 'category_id' => $catId,
                 'status' => 'active'
@@ -520,7 +528,7 @@ class DatabaseSeeder extends Seeder
             } elseif (str_contains($p->slug, 'instagram')) {
                 $template = "ig_user_{i}|pass_ig_{i}|2FA_SECRET_XYZ_{i}|mail_ig_{i}@example.com";
             }
-            
+
             $keysList = [];
             for ($i = 1; $i <= 15; $i++) {
                 $keysList[] = str_replace('{i}', $i, $template);
@@ -546,13 +554,13 @@ class DatabaseSeeder extends Seeder
         for ($orderIdx = 1; $orderIdx <= 50; $orderIdx++) {
             // Chọn ngẫu nhiên khách hàng
             $customer = $customers[array_rand($customers)];
-            
+
             // Ngày đặt hàng ngẫu nhiên trong vòng 30 ngày qua
             $daysAgo = rand(0, 30);
             $orderDate = Carbon::now()->subDays($daysAgo)->subHours(rand(0, 23))->subMinutes(rand(0, 59));
-            
+
             $status = $statusDistribution[array_rand($statusDistribution)];
-            
+
             $orderCode = 'ORD-' . $orderDate->format('Ymd') . '-' . strtoupper(Str::random(6));
 
             $numItems = rand(1, 2);
@@ -567,7 +575,7 @@ class DatabaseSeeder extends Seeder
             foreach ($selectedProducts as $prodIdx) {
                 $p = $products[$prodIdx];
                 $quantity = rand(1, 2);
-                
+
                 $orderItems[] = [
                     'product' => $p,
                     'price' => $p->price,
@@ -649,14 +657,14 @@ class DatabaseSeeder extends Seeder
         \Illuminate\Support\Facades\DB::table('system_settings')->insert([
             [
                 'key' => 'admin_wallet_address',
-                'value' => env('ADMIN_WALLET_ADDRESS', '0xAB4a22a64bBC1Ca0445758C2Ee66a4cB2b64444'),
+                'value' => env('ADMIN_WALLET_ADDRESS', ''),
                 'description' => 'Địa chỉ ví USDT nhận tiền nạp của admin (BEP20)',
                 'created_at' => now(),
                 'updated_at' => now(),
             ],
             [
                 'key' => 'scanner_api_key',
-                'value' => env('SCANNER_API_KEY', '46FR26RXC8YVGV8X9PK6TICNMJZPGV6TKM'),
+                'value' => env('SCANNER_API_KEY', ''),
                 'description' => 'API Key của Etherscan để kiểm tra giao dịch nạp tiền',
                 'created_at' => now(),
                 'updated_at' => now(),

@@ -32,9 +32,11 @@ class SystemSettingController extends Controller
     public function update(Request $request)
     {
         $request->validate([
-            'admin_wallet_address' => 'sometimes|required|string|max:255',
+            'admin_wallet_address' => ['sometimes', 'required', 'string', 'regex:/^0x[a-fA-F0-9]{40}$/'],
             'scanner_api_key' => 'sometimes|required|string|max:255',
             'token_cleanup_days' => 'sometimes|required|integer|min:1|max:365',
+        ], [
+            'admin_wallet_address.regex' => 'The admin wallet address must be a valid BEP20/EVM address starting with 0x followed by 40 hex characters.',
         ]);
 
         $settingsToSave = [];

@@ -270,7 +270,8 @@ class DepositService
         $tokenContract = strtolower($this->tokenContractAddress);
         
         try {
-            $response = Http::timeout(10)->get('https://api.etherscan.io/api', [
+            $response = Http::timeout(10)->get('https://api.etherscan.io/v2/api', [
+                'chainid' => 56,
                 'module' => 'account',
                 'action' => 'tokentx',
                 'address' => $adminWallet,

@@ -80,10 +80,19 @@ export class AdminSettingsComponent implements OnInit {
   public onSubmit(): void {
     if (this.submitting() || this.isLocked()) return;
 
-    if (!this.form.admin_wallet_address.trim()) {
+    const walletAddress = this.form.admin_wallet_address.trim();
+    if (!walletAddress) {
       this.toast.showToast('Địa chỉ ví Admin không được để trống!', 'warning');
       return;
     }
+
+    // Kiểm tra định dạng ví BEP20/EVM (0x + 40 ký tự hex)
+    const walletRegex = /^0x[a-fA-F0-9]{40}$/;
+    if (!walletRegex.test(walletAddress)) {
+      this.toast.showToast('Địa chỉ ví nhận USDT BEP20 không hợp lệ! Ví phải bắt đầu bằng "0x" và có đúng 42 ký tự (a-f, 0-9).', 'error');
+      return;
+    }
+
     if (!this.form.scanner_api_key.trim()) {
       this.toast.showToast('API Key Scanner không được để trống!', 'warning');
       return;
@@ -94,8 +103,9 @@ export class AdminSettingsComponent implements OnInit {
         this.toast.showToast('Cập nhật cấu hình hệ thống thành công!', 'success');
         this.isLocked.set(true);
       },
-      error: () => {
-        this.toast.showToast('Có lỗi xảy ra khi cập nhật cấu hình!', 'error');
+      error: (err) => {
+        const errorMsg = err?.error?.errors?.admin_wallet_address?.[0] || err?.error?.message || 'Có lỗi xảy ra khi cập nhật cấu hình!';
+        this.toast.showToast(errorMsg, 'error');
       }
     });
   }
