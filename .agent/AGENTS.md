@@ -1065,3 +1065,11 @@
          - Xóa `border-b` ở phần header của các trang profile: `profile-information.component.html`, `profile-password.component.html`, và `profile-security.component.html`.
          - Xóa `border-b` ở tiêu đề nhóm sản phẩm, `border-t` ở khu vực giá card sản phẩm, và `border-t` ở nút "Xem thêm" trên `storefront.component.html`.
       4. **Xác minh**: Giữ lại các border hợp lý cho Table Rows (`<tr>`) và các border-b của card section headers để phân cấp dữ liệu tốt, chạy build ứng dụng frontend thành công không có lỗi.
+
+  - **[SỬA LỖI ĐIỀU HƯỚNG TỪ DASHBOARD SANG INVENTORY]**:
+    - Nhận diện lỗi: Nút "Nhập kho" ở bảng "Lọc Tồn Kho" ngoài Dashboard khi bấm chỉ chuyển sang trang `/admin/inventory` mà không có phản ứng gì tiếp theo, cũng không tự động lọc sản phẩm hay mở modal nhập kho.
+    - Nguyên nhân: Nút "Nhập kho" ngoài Dashboard gửi tham số `product_id` qua URL query parameters (`/admin/inventory?product_id=...`), nhưng ở [inventory.component.ts](file:///d:/git/isocalmarket/isocalmarket-web/src/app/features/inventory/inventory.component.ts) chưa thực hiện đọc tham số này từ Router để kích hoạt các hành động tương ứng.
+    - Giải pháp khắc phục:
+      1. Import `ActivatedRoute` từ `@angular/router` và inject vào class.
+      2. Trong `ngOnInit()`, sau khi `fetchProducts()` tải xong danh sách sản phẩm, kiểm tra nếu `product_id` tồn tại trong `route.snapshot.queryParams` thì thiết lập bộ lọc sản phẩm `selectedProductFilter = productId`, gọi `fetchFilteredItems(1)` để lọc danh sách tài nguyên và tự động gọi `openImportDrawer()` để mở modal nhập kho cho sản phẩm đó.
+      3. Nếu không có `product_id`, thực hiện tải danh sách kho thông thường như cũ.

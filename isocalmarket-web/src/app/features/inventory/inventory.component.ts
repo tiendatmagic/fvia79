@@ -15,6 +15,7 @@ import { ImportInventoryModalComponent } from './import-inventory-modal/import-i
 import { EditInventoryModalComponent } from './edit-inventory-modal/edit-inventory-modal.component';
 import { CustomSearchInputComponent } from '@shared/components/custom-search-input/custom-search-input.component';
 import { TooltipDirective } from '@shared/components/tooltip/tooltip.directive';
+import { ActivatedRoute } from '@angular/router';
 
 @Component({
   selector: 'app-inventory',
@@ -43,6 +44,7 @@ import { TooltipDirective } from '@shared/components/tooltip/tooltip.directive';
 export class InventoryComponent implements OnInit {
   public readonly state = inject(StateService);
   private readonly modalService = inject(ModalService);
+  private readonly route = inject(ActivatedRoute);
 
   public selectedProductFilter = '';
   public selectedStatusFilter = '';
@@ -77,8 +79,21 @@ export class InventoryComponent implements OnInit {
   }
 
   ngOnInit() {
-    this.state.productStore.fetchProducts().subscribe();
-    this.fetchFilteredItems(1);
+    this.state.productStore.fetchProducts().subscribe({
+      next: () => {
+        const productId = this.route.snapshot.queryParams['product_id'];
+        if (productId) {
+          this.selectedProductFilter = productId;
+          this.fetchFilteredItems(1);
+          this.openImportDrawer();
+        } else {
+          this.fetchFilteredItems(1);
+        }
+      },
+      error: () => {
+        this.fetchFilteredItems(1);
+      }
+    });
   }
 
   public fetchFilteredItems(page: number = 1) {
