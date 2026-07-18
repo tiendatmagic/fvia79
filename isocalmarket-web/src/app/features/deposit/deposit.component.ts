@@ -9,6 +9,7 @@ import { ButtonComponent } from '@shared/components/button/button.component';
 import { PageHeaderComponent } from '@shared/components/page-header/page-header.component';
 import { CardComponent } from '@shared/components/card/card.component';
 import { IconComponent } from '@shared/components/icon/icon.component';
+import { SkeletonLoaderComponent } from '@shared/components/skeleton-loader/skeleton-loader.component';
 
 @Component({
   selector: 'app-deposit',
@@ -21,7 +22,8 @@ import { IconComponent } from '@shared/components/icon/icon.component';
     ButtonComponent,
     PageHeaderComponent,
     CardComponent,
-    IconComponent
+    IconComponent,
+    SkeletonLoaderComponent
   ],
   templateUrl: './deposit.component.html',
   styles: [`

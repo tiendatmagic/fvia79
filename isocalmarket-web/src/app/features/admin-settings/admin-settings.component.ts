@@ -1,4 +1,4 @@
-import { Component, OnInit, inject } from '@angular/core';
+import { Component, OnInit, inject, signal } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { SystemSettingStore, SystemSettingsPayload } from './system-setting.store';
@@ -6,6 +6,7 @@ import { PageHeaderComponent } from '@shared/components/page-header/page-header.
 import { CardComponent } from '@shared/components/card/card.component';
 import { ButtonComponent } from '@shared/components/button/button.component';
 import { SkeletonLoaderComponent } from '@shared/components/skeleton-loader/skeleton-loader.component';
+import { IconComponent } from '@shared/components/icon/icon.component';
 import { ToastService } from '@core/services/toast.service';
 
 @Component({
@@ -17,7 +18,8 @@ import { ToastService } from '@core/services/toast.service';
     PageHeaderComponent,
     CardComponent,
     ButtonComponent,
-    SkeletonLoaderComponent
+    SkeletonLoaderComponent,
+    IconComponent
   ],
   templateUrl: './admin-settings.component.html',
   styles: [`
@@ -32,6 +34,8 @@ export class AdminSettingsComponent implements OnInit {
 
   public readonly loading = this.store.loading;
   public readonly submitting = this.store.submitting;
+  public readonly isLocked = signal<boolean>(true);
+  public readonly showApiKey = signal<boolean>(false);
 
   public form: SystemSettingsPayload = {
     admin_wallet_address: '',
@@ -51,8 +55,16 @@ export class AdminSettingsComponent implements OnInit {
     });
   }
 
+  public toggleLock(): void {
+    this.isLocked.set(!this.isLocked());
+  }
+
+  public toggleApiKeyVisibility(): void {
+    this.showApiKey.set(!this.showApiKey());
+  }
+
   public onSubmit(): void {
-    if (this.submitting()) return;
+    if (this.submitting() || this.isLocked()) return;
 
     if (!this.form.admin_wallet_address.trim()) {
       this.toast.showToast('Địa chỉ ví Admin không được để trống!', 'warning');
@@ -66,6 +78,7 @@ export class AdminSettingsComponent implements OnInit {
     this.store.updateSettings(this.form).subscribe({
       next: () => {
         this.toast.showToast('Cập nhật cấu hình hệ thống thành công!', 'success');
+        this.isLocked.set(true);
       },
       error: () => {
         this.toast.showToast('Có lỗi xảy ra khi cập nhật cấu hình!', 'error');

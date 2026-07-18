@@ -999,10 +999,10 @@
     - Yêu cầu: Chuyển cấu hình `ADMIN_WALLET_ADDRESS` và `SCANNER_API_KEY` từ file `.env` vào DB. Thêm giao diện quản lý cấu hình này trong admin.
     - Giải pháp & Triển khai:
       1. **Database**: Tạo migration tạo bảng `system_settings` (key primary, value text, description string). Cập nhật `DatabaseSeeder.php` seed sẵn giá trị ví admin và api key mặc định.
-      2. **Backend**: Triển khai DDD gồm Entity, Model, Mapper, Repository. Tạo `SystemSettingService` xử lý get/set setting (hỗ trợ Cache 1 giờ). Cập nhật `DepositService` đọc ví và api key scanner động từ `SystemSettingService`.
+      2. **Backend**: Triển khai DDD gồm Entity, Model, Mapper, Repository. Tạo `SystemSettingService` xử lý get/set setting (hỗ trợ Cache 1 giờ). Cập nhật `DepositService` đọc ví và api key scanner động từ `SystemSettingService`, chuyển đổi địa chỉ gọi API sang `https://api.etherscan.io/api`.
       3. **API Controllers**: Viết `SystemSettingController` cung cấp API lấy và cập nhật cấu hình cho admin, đăng ký route tại `api.php`.
       4. **Frontend**: Tạo Slice Store `SystemSettingStore` quản lý state. Thêm route `/admin/settings`, đăng ký menu liên kết tại Sidebar Desktop (`sidebar.component.html`) và Mobile (`app.html`).
-      5. **UI Component**: Xây dựng `AdminSettingsComponent` (ts & html) tuân thủ `design.md`, sử dụng card kính mờ, form field tiêu chuẩn và skeleton loader.
+      5. **UI Component**: Xây dựng `AdminSettingsComponent` (ts & html) tuân thủ `design.md`, sử dụng card kính mờ, form field tiêu chuẩn và skeleton loader. Chuyển đổi tên cấu hình sang Etherscan API Key, thêm nút ẩn/hiện API Key bằng icon con mắt (`eye` / `eye-slash`), link hướng dẫn `https://etherscan.io/apidashboard`, và bổ sung chế độ khóa/mở khóa bảo mật (`isLocked` = true mặc định).
       6. **Xác minh**: Chạy `php artisan test` và `npm run build` thành công 100% không có lỗi.
 
 

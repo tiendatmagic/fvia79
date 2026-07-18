@@ -259,9 +259,8 @@ class DepositService
         $tokenContract = strtolower($this->tokenContractAddress);
         
         try {
-            // Gọi BscScan API lấy danh sách các giao dịch BEP-20 gần đây của địa chỉ ví chủ sàn
-            // Etherscan v2 API standard hỗ trợ endpoint này
-            $response = Http::timeout(10)->get('https://api.bscscan.com/api', [
+            // Gọi Etherscan API lấy danh sách các giao dịch ERC-20 gần đây của địa chỉ ví chủ sàn
+            $response = Http::timeout(10)->get('https://api.etherscan.io/api', [
                 'module' => 'account',
                 'action' => 'tokentx',
                 'address' => $adminWallet,
@@ -327,13 +326,13 @@ class DepositService
                         return true;
                     }
                 } else {
-                    Log::warning("BscScan API response status error: " . json_encode($result));
+                    Log::warning("Etherscan API response status error: " . json_encode($result));
                 }
             } else {
-                Log::error("BscScan API HTTP status code error: " . $response->status());
+                Log::error("Etherscan API HTTP status code error: " . $response->status());
             }
         } catch (\Exception $e) {
-            Log::error("Failed to query BscScan transactions: " . $e->getMessage());
+            Log::error("Failed to query Etherscan transactions: " . $e->getMessage());
         }
 
         return false;

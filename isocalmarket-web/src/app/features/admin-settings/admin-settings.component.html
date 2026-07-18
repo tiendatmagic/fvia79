@@ -12,7 +12,6 @@
     <app-card>
       <form (ngSubmit)="onSubmit()" #settingsForm="ngForm" class="space-y-6">
         <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
-          
           <div class="form-field md:col-span-2">
             <label>Địa chỉ ví nhận USDT của Admin (BEP20)</label>
             <div class="relative mt-1">
@@ -22,43 +21,70 @@
                 class="form-input w-full pr-10"
                 placeholder="Nhập địa chỉ ví USDT (ví dụ: 0xAB4a22a64bBC...)"
                 [(ngModel)]="form.admin_wallet_address"
+                [disabled]="isLocked()"
                 required
               />
             </div>
             <p class="mt-1.5 text-xs text-slate-400 dark:text-slate-500">
-              Đây là địa chỉ ví BEP20 trên Binance Smart Chain sẽ nhận tiền nạp từ khách hàng. Hãy chắc chắn địa chỉ này là chính xác để tránh mất mát tài sản.
+              Đây là địa chỉ ví BEP20 trên Binance Smart Chain sẽ nhận tiền nạp từ khách hàng. Hãy
+              chắc chắn địa chỉ này là chính xác để tránh mất mát tài sản.
             </p>
           </div>
 
           <div class="form-field md:col-span-2">
-            <label>BSCScan API Key</label>
+            <label>Etherscan API Key</label>
             <div class="relative mt-1">
               <input
-                type="password"
+                [type]="showApiKey() ? 'text' : 'password'"
                 name="scanner_api_key"
-                class="form-input w-full pr-10"
-                placeholder="Nhập API Key BSCScan..."
+                class="form-input w-full pr-12"
+                placeholder="Nhập API Key Etherscan..."
                 [(ngModel)]="form.scanner_api_key"
+                [disabled]="isLocked()"
                 required
               />
+              <button
+                type="button"
+                (click)="toggleApiKeyVisibility()"
+                class="absolute inset-y-0 right-0 pr-4 flex items-center text-slate-400 hover:text-slate-600 dark:hover:text-slate-200 transition-colors"
+              >
+                <app-icon [name]="showApiKey() ? 'eye-slash' : 'eye'" class="w-5 h-5" />
+              </button>
             </div>
             <p class="mt-1.5 text-xs text-slate-400 dark:text-slate-500">
-              Khóa API dùng để kết nối và tự động kiểm tra giao dịch nạp tiền trên chuỗi khối BSC thông qua BSCScan Scanner.
+              Khóa API dùng để kết nối và tự động kiểm tra giao dịch nạp tiền trên chuỗi khối Ethereum thông qua Etherscan Scanner. 
+              <a href="https://etherscan.io/apidashboard" target="_blank" class="text-primary hover:underline font-bold inline-flex items-center gap-0.5 ml-1 cursor-pointer">
+                Lấy API Key tại đây <app-icon name="external-link" class="w-3 h-3" />
+              </a>
             </p>
           </div>
-
         </div>
 
-        <div class="flex justify-end pt-4 border-t border-slate-200/40 dark:border-slate-800/40">
+        <div
+          class="flex justify-end items-center gap-3 pt-4 border-t border-slate-200/40 dark:border-slate-800/40"
+        >
           <button
+            type="button"
             app-button
-            type="submit"
-            [loading]="submitting()"
-            [disabled]="!settingsForm.form.valid || submitting()"
-            class="px-6 py-2.5 rounded-xl font-bold bg-gradient-to-r from-[var(--color-primary)] to-[var(--color-secondary)] text-white hover:scale-[1.01] active:scale-[0.98] transition-all duration-300 shadow-md shadow-[var(--color-primary)]/20"
+            variant="secondary"
+            (click)="toggleLock()"
+            class="px-4 py-2.5 rounded-xl font-semibold flex items-center gap-2 hover:scale-[1.01] active:scale-[0.98] transition-all duration-300"
           >
-            Lưu cấu hình
+            <app-icon [name]="isLocked() ? 'lock' : 'lock-open'" class="w-4 h-4" />
+            <span>{{ isLocked() ? 'Mở khóa để sửa' : 'Khóa chỉnh sửa' }}</span>
           </button>
+
+          @if (!isLocked()) {
+            <button
+              app-button
+              type="submit"
+              [loading]="submitting()"
+              [disabled]="!settingsForm.form.valid || submitting()"
+              class="px-6 py-2.5 rounded-xl font-bold bg-gradient-to-r from-[var(--color-primary)] to-[var(--color-secondary)] text-white hover:scale-[1.01] active:scale-[0.98] transition-all duration-300 shadow-md shadow-[var(--color-primary)]/20"
+            >
+              Lưu cấu hình
+            </button>
+          }
         </div>
       </form>
     </app-card>
