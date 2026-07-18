@@ -5,6 +5,7 @@ import { PageHeaderComponent } from '@shared/components/page-header/page-header.
 import { CardComponent } from '@shared/components/card/card.component';
 import { ButtonComponent } from '@shared/components/button/button.component';
 import { IconComponent } from '@shared/components/icon/icon.component';
+import { environment } from '@environments/environment';
 
 @Component({
   selector: 'app-user-api',
@@ -27,10 +28,11 @@ export class UserApiComponent {
   public readonly state = inject(StateService);
 
   public readonly siteUrl = computed(() => {
-    if (typeof window !== 'undefined') {
-      return window.location.origin;
+    const baseUrl = environment.apiBaseUrl;
+    if (baseUrl.endsWith('/api')) {
+      return baseUrl.substring(0, baseUrl.length - 4);
     }
-    return 'https://isocalmarket.com';
+    return baseUrl;
   });
 
   public readonly apiKey = computed(() => {
@@ -77,6 +79,11 @@ export class UserApiComponent {
     const key = this.apiKey() || 'API_KEY_CUA_BAN';
     const text = `curl -X POST "${this.siteUrl()}/api/v1/b2b/buy" -H "Content-Type: application/json" -H "X-API-KEY: ${key}" -d '{"product_id": "PRODUCT_ID", "quantity": 1}'`;
     this.copyToClipboard(text, 'mẫu CURL Buy');
+  }
+
+  public copyBuyUrl() {
+    const text = `${this.siteUrl()}/api/v1/b2b/buy`;
+    this.copyToClipboard(text, 'đường dẫn Buy Product');
   }
 
   public regenerateKey() {

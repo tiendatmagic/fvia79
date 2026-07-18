@@ -107,7 +107,9 @@ class AuthController extends Controller
                     'email' => $user->getEmail(),
                     'phone' => $user->getPhone(),
                     'role' => $user->getRole(),
-                    'google2fa_enabled' => $user->isGoogle2faEnabled()
+                    'google2fa_enabled' => $user->isGoogle2faEnabled(),
+                    'balance' => $user->getBalance(),
+                    'api_key' => $user->getApiKey()
                 ]
             ])->withCookie($accessTokenCookie)
                 ->withCookie($refreshTokenCookie)
@@ -189,7 +191,9 @@ class AuthController extends Controller
                     'email' => $user->getEmail(),
                     'phone' => $user->getPhone(),
                     'role' => $user->getRole(),
-                    'google2fa_enabled' => $user->isGoogle2faEnabled()
+                    'google2fa_enabled' => $user->isGoogle2faEnabled(),
+                    'balance' => $user->getBalance(),
+                    'api_key' => $user->getApiKey()
                 ]
             ])->withCookie($accessTokenCookie)
                 ->withCookie($refreshTokenCookie)
@@ -249,7 +253,9 @@ class AuthController extends Controller
                 'email' => $user->getEmail(),
                 'phone' => $user->getPhone(),
                 'role' => $user->getRole(),
-                'google2fa_enabled' => $user->isGoogle2faEnabled()
+                'google2fa_enabled' => $user->isGoogle2faEnabled(),
+                'balance' => $user->getBalance(),
+                'api_key' => $user->getApiKey()
             ]
         ])->withCookie($accessTokenCookie)->withCookie($refreshTokenCookie);
     }
@@ -286,7 +292,9 @@ class AuthController extends Controller
                 'email' => $userModel->email,
                 'phone' => $userModel->phone,
                 'role' => $userModel->role,
-                'google2fa_enabled' => $userModel->google2fa_enabled
+                'google2fa_enabled' => $userModel->google2fa_enabled,
+                'balance' => (float)$userModel->balance,
+                'api_key' => $userModel->api_key
             ]
         ]);
     }
