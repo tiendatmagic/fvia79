@@ -60,7 +60,7 @@
         </a>
 
         <a
-          [routerLink]="stateService.isAuthenticated() ? '/orders' : '/login'"
+          routerLink="/orders"
           routerLinkActive="!bg-primary/10 !text-primary !font-extrabold"
           (click)="stateService.showMobileMenu.set(false)"
           class="flex items-center gap-3.5 px-4 py-3 rounded-xl hover:bg-slate-100 dark:hover:bg-slate-800/50 text-slate-600 dark:text-slate-400 font-semibold text-sm transition-colors duration-200 cursor-pointer"
@@ -70,7 +70,7 @@
         </a>
 
         <a
-          [routerLink]="stateService.isAuthenticated() ? '/deposit' : '/login'"
+          routerLink="/deposit"
           routerLinkActive="!bg-primary/10 !text-primary !font-extrabold"
           [routerLinkActiveOptions]="{ exact: true }"
           (click)="stateService.showMobileMenu.set(false)"
@@ -81,7 +81,7 @@
         </a>
 
         <a
-          [routerLink]="stateService.isAuthenticated() ? '/deposit/history' : '/login'"
+          routerLink="/deposit/history"
           routerLinkActive="!bg-primary/10 !text-primary !font-extrabold"
           (click)="stateService.showMobileMenu.set(false)"
           class="flex items-center gap-3.5 px-4 py-3 rounded-xl hover:bg-slate-100 dark:hover:bg-slate-800/50 text-slate-600 dark:text-slate-400 font-semibold text-sm transition-colors duration-200 cursor-pointer"

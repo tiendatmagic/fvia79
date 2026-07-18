@@ -987,4 +987,13 @@
          - Giảm độ rộng các cột cố định: Cột Đơn giá giảm từ `w-44` (176px) xuống `w-32` (128px), cột Tồn kho và Thao tác giảm từ `w-36` (144px) xuống `w-28` (112px). Phần không gian còn lại ưu tiên cho cột Tên sản phẩm/Thuộc tính co giãn tự nhiên.
       3. **Xác minh**: Chạy biên dịch dự án thành công không phát sinh lỗi.
 
+  - **[SỬA LỖI TRÙNG LẶP ACTIVE TRÊN SIDEBAR KHI LOGGED OUT]**:
+    - Yêu cầu: Khắc phục lỗi khi người dùng chưa đăng nhập và truy cập trang `/login` (Đăng nhập), cả 3 menu "Lịch sử đơn hàng", "Nạp tiền USDT", và "Lịch sử nạp tiền" đều bị kích hoạt trạng thái active cùng lúc.
+    - Giải pháp & Triển khai:
+      1. Nguyên nhân: Do gán routerLink động trỏ về `/login` khi chưa đăng nhập (`[routerLink]="stateService.isAuthenticated() ? '/path' : '/login'"`). Khi ở trang `/login`, Angular nhận diện URL khớp hoàn toàn với routerLink của cả 3 thẻ và gán active class cho cả 3.
+      2. Khắc phục: Chuyển toàn bộ 3 menu về routerLink tĩnh tương ứng (`/orders`, `/deposit`, `/deposit/history`) ở cả Sidebar Desktop ([sidebar.component.html](file:///d:/git/isocalmarket/isocalmarket-web/src/app/shared/layout/sidebar/sidebar.component.html)) và Sidebar Mobile ([app.html](file:///d:/git/isocalmarket/isocalmarket-web/src/app/app.html)).
+      3. Tính năng bảo vệ: Khi người dùng click, Router vẫn được chuyển tiếp tới các URL gốc này. Các router này đã được bảo vệ hoàn hảo bằng `AuthGuard` ở file định tuyến chính nên người dùng chưa đăng nhập sẽ được tự động chuyển hướng về `/login?returnUrl=...`. Không còn tình trạng trùng lặp active khi ở màn hình login.
+      4. Xác minh: Chạy build frontend Angular thành công 100% không phát sinh lỗi.
+
+
 
