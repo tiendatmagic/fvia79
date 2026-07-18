@@ -20,9 +20,34 @@ class ProductService
     {
         $isStorefrontLoad = !$categoryId && ($status === 'active' || !$status) && !$search && $filterDeleted === 'active';
         if ($isStorefrontLoad) {
-            return Cache::remember('products_active_storefront', 600, function () use ($categoryId, $status, $search, $filterDeleted) {
-                return $this->productRepository->findAllActive($categoryId, $status, $search, $filterDeleted);
+            $cached = Cache::remember('products_active_storefront', 600, function () use ($categoryId, $status, $search, $filterDeleted) {
+                $products = $this->productRepository->findAllActive($categoryId, $status, $search, $filterDeleted);
+                return array_map(fn($p) => [
+                    'id' => $p->getId(),
+                    'name' => $p->getName(),
+                    'slug' => $p->getSlug(),
+                    'description' => $p->getDescription(),
+                    'price' => $p->getPrice(),
+                    'status' => $p->getStatus(),
+                    'available_count' => $p->getAvailableCount(),
+                    'attributes' => $p->getAttributes(),
+                    'categoryId' => $p->getCategoryId(),
+                    'deletedAt' => $p->getDeletedAt()?->format('Y-m-d H:i:s'),
+                ], $products);
             });
+
+            return array_map(fn($p) => new Product(
+                $p['id'],
+                $p['name'],
+                $p['slug'],
+                $p['description'],
+                $p['price'],
+                $p['status'],
+                $p['available_count'],
+                $p['attributes'],
+                $p['categoryId'],
+                $p['deletedAt'] ? new \DateTime($p['deletedAt']) : null
+            ), $cached);
         }
         return $this->productRepository->findAllActive($categoryId, $status, $search, $filterDeleted);
     }

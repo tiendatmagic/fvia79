@@ -3,7 +3,7 @@ import { HttpParams } from '@angular/common/http';
 import { ApiService } from '@core/services/api.service';
 import { ToastService } from '@core/services/toast.service';
 import { tap, catchError, finalize } from 'rxjs/operators';
-import { of } from 'rxjs';
+import { of, Subscription, Subject } from 'rxjs';
 
 @Injectable({
   providedIn: 'root'
@@ -11,6 +11,9 @@ import { of } from 'rxjs';
 export class ProductStore {
   private readonly api = inject(ApiService);
   private readonly toast = inject(ToastService);
+ 
+  private activeFetchCategoriesPaginatedSub?: Subscription;
+  private activeFetchProductsSub?: Subscription;
 
   public readonly products = signal<any[]>([]);
   public readonly categories = signal<any[]>([]);
@@ -24,16 +27,22 @@ export class ProductStore {
   public readonly lastCategoryPage = signal<number>(1);
 
   public fetchCategoriesPaginated(page: number, limit: number, search?: string) {
+    if (this.activeFetchCategoriesPaginatedSub) {
+      this.activeFetchCategoriesPaginatedSub.unsubscribe();
+    }
+ 
     this.loading.set(true);
     let params = new HttpParams()
       .set('page', page.toString())
       .set('limit', limit.toString());
-
+ 
     if (search) {
       params = params.set('search', search);
     }
-
-    return this.api.get<any>('v1/categories', params).pipe(
+ 
+    const subject = new Subject<any>();
+ 
+    const req$ = this.api.get<any>('v1/categories', params).pipe(
       tap((res) => {
         if (res && res.data) {
           this.paginatedCategories.set(res.data);
@@ -53,6 +62,18 @@ export class ProductStore {
       }),
       finalize(() => this.loading.set(false))
     );
+ 
+    this.activeFetchCategoriesPaginatedSub = req$.subscribe({
+      next: (res) => {
+        subject.next(res);
+        subject.complete();
+      },
+      error: (err) => {
+        subject.error(err);
+      }
+    });
+ 
+    return subject.asObservable();
   }
 
   public fetchCategories(search?: string) {
@@ -83,6 +104,10 @@ export class ProductStore {
   }
 
   public fetchProducts(page?: number, limit?: number, categoryId?: string, search?: string, status?: string, filterDeleted?: string) {
+    if (this.activeFetchProductsSub) {
+      this.activeFetchProductsSub.unsubscribe();
+    }
+ 
     const isStorefrontLoad = page === undefined && limit === undefined && categoryId === undefined && search === undefined && status === 'active' && filterDeleted === undefined;
     if (isStorefrontLoad && this.products().length > 0) {
       let params = new HttpParams();
@@ -100,7 +125,7 @@ export class ProductStore {
       });
       return of(this.products());
     }
-
+ 
     this.loading.set(true);
     let params = new HttpParams();
     if (page !== undefined) {
@@ -121,8 +146,10 @@ export class ProductStore {
     if (filterDeleted) {
       params = params.set('filter_deleted', filterDeleted);
     }
-
-    return this.api.get<any>('v1/products', params).pipe(
+ 
+    const subject = new Subject<any>();
+ 
+    const req$ = this.api.get<any>('v1/products', params).pipe(
       tap((res) => {
         if (res && res.data) {
           this.products.set(res.data);
@@ -142,6 +169,18 @@ export class ProductStore {
       }),
       finalize(() => this.loading.set(false))
     );
+ 
+    this.activeFetchProductsSub = req$.subscribe({
+      next: (res) => {
+        subject.next(res);
+        subject.complete();
+      },
+      error: (err) => {
+        subject.error(err);
+      }
+    });
+ 
+    return subject.asObservable();
   }
 
   public createProduct(data: any) {

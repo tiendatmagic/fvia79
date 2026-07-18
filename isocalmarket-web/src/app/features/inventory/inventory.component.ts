@@ -89,20 +89,14 @@ export class InventoryComponent implements OnInit {
   }
 
   ngOnInit() {
+    const productId = this.route.snapshot.queryParams['product_id'];
+    this.fetchFilteredItems(1);
+
     this.state.productStore.fetchProducts().subscribe({
       next: () => {
-        const productId = this.route.snapshot.queryParams['product_id'];
         if (productId) {
-          // Lọc danh sách kho bình thường theo bộ lọc mặc định
-          this.fetchFilteredItems(1);
-          // Truyền trực tiếp productId vào Modal nhập kho mà không ghi đè lên bộ lọc bảng hiển thị
           this.openImportDrawer(productId);
-        } else {
-          this.fetchFilteredItems(1);
         }
-      },
-      error: () => {
-        this.fetchFilteredItems(1);
       }
     });
   }

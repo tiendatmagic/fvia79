@@ -1145,3 +1145,18 @@
       2. **InventoryBatchRepository**: Tối ưu hàm `countAvailableByProductId()` trong [InventoryBatchRepository.php](file:///d:/git/isocalmarket/isocalmarket-api/app/Infrastructure/Persistence/Repositories/InventoryBatchRepository.php) bằng cách thực hiện duy nhất 1 câu truy vấn SQL SUM: `SUM(initial_count - sold_count)`.
       3. **Controllers**: Thay thế toàn bộ vòng lặp đếm số lượng thủ công trên danh sách lô hàng bằng câu truy vấn `SUM(initial_count - sold_count)` trực tiếp từ Database trong [DashboardController.php](file:///d:/git/isocalmarket/isocalmarket-api/app/Http/Controllers/DashboardController.php) và [B2bAdminController.php](file:///d:/git/isocalmarket/isocalmarket-api/app/Http/Controllers/B2bAdminController.php).
       4. **Kết quả**: Giảm 100 lần lưu lượng băng thông giữa Database và PHP, giảm tiêu thụ RAM, tăng tốc phản hồi trang Storefront và Dashboard lên mức sub-second (dưới 100ms) kể cả khi hệ thống chứa hàng chục ngàn tài nguyên số. Các unit test chạy thành công 100%.
+
+  - **[TỐI ƯU HIỆU SUẤT] Caching & Triệt tiêu Race Condition khi Click nhanh**:
+    - **Yêu cầu**: Cài đặt bộ nhớ đệm (Cache) theo yêu cầu thời gian (Storefront 10 phút, Dashboard 5 phút) ở Backend và xử lý triệt để lỗi Spam Click/chuyển tab nhanh gây lỗi hiển thị dữ liệu sai lệch (Race Condition) trên Frontend.
+    - **Giải pháp & Triển khai**:
+      1. **Backend Cache**:
+         * Cache danh mục ở [CategoryController.php](file:///d:/git/isocalmarket/isocalmarket-api/app/Http/Controllers/CategoryController.php) và sản phẩm ở [ProductService.php](file:///d:/git/isocalmarket/isocalmarket-api/app/Application/Services/ProductService.php) trong 10 phút.
+         * Triển khai cơ chế xóa cache tự động khi Admin Thêm/Sửa/Xóa sản phẩm, danh mục, khi nhập kho lô hàng mới ([InventoryService.php](file:///d:/git/isocalmarket/isocalmarket-api/app/Application/Services/InventoryService.php)) và khi người dùng thanh toán đơn hàng thành công ([OrderService.php](file:///d:/git/isocalmarket/isocalmarket-api/app/Application/Services/OrderService.php)).
+         * Cache thống kê Dashboard ở [DashboardController.php](file:///d:/git/isocalmarket/isocalmarket-api/app/Http/Controllers/DashboardController.php) trong 5 phút.
+      2. **Frontend In-flight Subscription Cancellation**:
+         * Nâng cấp các file Store (`ProductStore`, `InventoryStore`, `OrderStore`, `DepositStore`) để tự động lưu trữ và hủy bỏ subscription trước đó (`.unsubscribe()`) nếu phát hiện có request mới được kích hoạt (Spam click phân trang, gõ tìm kiếm nhanh, chuyển đổi tab liên tục).
+         * Giúp ngắt kết nối mạng của request cũ lập tức (Browser cancel request) và chỉ hiển thị kết quả của request mới nhất.
+      3. **Kết quả**:
+         * Giao diện tải mượt mà, triệt tiêu hoàn toàn hiện tượng nhấp nháy dữ liệu cũ/mới và ngăn chặn 100% tình trạng sai lệch dữ liệu bảng do Race Condition.
+         * Dự án frontend đã biên dịch thành công (`npm run build`) không có lỗi.
+         * **Sửa lỗi Nghiệp vụ Serialization (`__PHP_Incomplete_Class` 500 Error)**: Khắc phục lỗi khi lưu trữ trực tiếp các đối tượng Entity (`Product` class) vào cache thô dẫn đến lỗi deserialization. Chuyển đổi thành mảng liên kết (associative arrays) thuần túy trước khi lưu vào cache và tự phục dựng lại đối tượng khi đọc ra. Đã giải phóng cache thành công (`php artisan cache:clear`).

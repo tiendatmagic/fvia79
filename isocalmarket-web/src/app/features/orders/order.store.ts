@@ -3,7 +3,7 @@ import { HttpParams } from '@angular/common/http';
 import { ApiService } from '@core/services/api.service';
 import { ToastService } from '@core/services/toast.service';
 import { tap, catchError, finalize } from 'rxjs/operators';
-import { of } from 'rxjs';
+import { of, Subscription, Subject } from 'rxjs';
 
 @Injectable({
   providedIn: 'root'
@@ -11,6 +11,8 @@ import { of } from 'rxjs';
 export class OrderStore {
   private readonly api = inject(ApiService);
   private readonly toast = inject(ToastService);
+ 
+  private activeFetchOrdersSub?: Subscription;
 
   public readonly orders = signal<any[]>([]);
   public readonly loading = signal<boolean>(false);
@@ -27,6 +29,10 @@ export class OrderStore {
     startDate?: string,
     endDate?: string
   ) {
+    if (this.activeFetchOrdersSub) {
+      this.activeFetchOrdersSub.unsubscribe();
+    }
+ 
     this.loading.set(true);
     let params = new HttpParams();
     if (page !== undefined) {
@@ -47,8 +53,10 @@ export class OrderStore {
     if (endDate) {
       params = params.set('end_date', endDate);
     }
-
-    return this.api.get<any>('v1/orders', params).pipe(
+ 
+    const subject = new Subject<any>();
+ 
+    const req$ = this.api.get<any>('v1/orders', params).pipe(
       tap((res) => {
         if (res && res.data) {
           this.orders.set(res.data);
@@ -68,6 +76,18 @@ export class OrderStore {
       }),
       finalize(() => this.loading.set(false))
     );
+ 
+    this.activeFetchOrdersSub = req$.subscribe({
+      next: (res) => {
+        subject.next(res);
+        subject.complete();
+      },
+      error: (err) => {
+        subject.error(err);
+      }
+    });
+ 
+    return subject.asObservable();
   }
 
   public fetchOrderDetail(id: number) {

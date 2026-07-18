@@ -3,7 +3,7 @@ import { ApiService } from '@core/services/api.service';
 import { ToastService } from '@core/services/toast.service';
 import { HttpParams } from '@angular/common/http';
 import { tap, catchError, finalize } from 'rxjs/operators';
-import { of } from 'rxjs';
+import { of, Subscription, Subject } from 'rxjs';
 
 @Injectable({
   providedIn: 'root'
@@ -11,6 +11,8 @@ import { of } from 'rxjs';
 export class InventoryStore {
   private readonly api = inject(ApiService);
   private readonly toast = inject(ToastService);
+ 
+  private activeFetchItemsSub?: Subscription;
 
   public readonly items = signal<any[]>([]);
   public readonly loading = signal<boolean>(false);
@@ -19,6 +21,10 @@ export class InventoryStore {
   public readonly lastPage = signal<number>(1);
 
   public fetchItems(filters: { product_id?: string; status?: string; search?: string } = {}, page?: number, limit?: number) {
+    if (this.activeFetchItemsSub) {
+      this.activeFetchItemsSub.unsubscribe();
+    }
+ 
     this.loading.set(true);
     let params = new HttpParams();
     if (filters.product_id) {
@@ -36,8 +42,10 @@ export class InventoryStore {
     if (limit !== undefined) {
       params = params.set('limit', limit.toString());
     }
-
-    return this.api.get<any>('v1/inventory/items', params).pipe(
+ 
+    const subject = new Subject<any>();
+ 
+    const req$ = this.api.get<any>('v1/inventory/items', params).pipe(
       tap((res) => {
         if (res && res.data) {
           this.items.set(res.data);
@@ -57,6 +65,18 @@ export class InventoryStore {
       }),
       finalize(() => this.loading.set(false))
     );
+ 
+    this.activeFetchItemsSub = req$.subscribe({
+      next: (res) => {
+        subject.next(res);
+        subject.complete();
+      },
+      error: (err) => {
+        subject.error(err);
+      }
+    });
+ 
+    return subject.asObservable();
   }
 
   public importItems(productId: number, batchName: string, rawData: string) {

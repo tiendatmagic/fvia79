@@ -2,7 +2,7 @@ import { Injectable, inject, signal } from '@angular/core';
 import { ApiService } from '@core/services/api.service';
 import { HttpParams } from '@angular/common/http';
 import { tap, finalize } from 'rxjs/operators';
-import { Observable } from 'rxjs';
+import { Observable, Subscription, Subject } from 'rxjs';
 import { DepositHistoryItem } from '../deposit-history/deposit-history.component';
 
 @Injectable({
@@ -10,6 +10,8 @@ import { DepositHistoryItem } from '../deposit-history/deposit-history.component
 })
 export class DepositStore {
   private readonly api = inject(ApiService);
+ 
+  private activeFetchHistorySub?: Subscription;
 
   public readonly loading = signal<boolean>(false);
   public readonly rate = signal<number>(26500);
@@ -44,7 +46,7 @@ export class DepositStore {
     );
   }
 
-    public fetchHistory(
+  public fetchHistory(
     page: number,
     limit: number,
     search?: string,
@@ -52,12 +54,16 @@ export class DepositStore {
     startDate?: string,
     endDate?: string
   ): Observable<{ items: DepositHistoryItem[]; total: number; last_page: number; current_page: number }> {
+    if (this.activeFetchHistorySub) {
+      this.activeFetchHistorySub.unsubscribe();
+    }
+ 
     this.loading.set(true);
     
     let params = new HttpParams()
       .set('page', page.toString())
       .set('limit', limit.toString());
-
+ 
     if (search) {
       params = params.set('search', search);
     }
@@ -70,8 +76,10 @@ export class DepositStore {
     if (endDate) {
       params = params.set('end_date', endDate);
     }
-
-    return this.api.get<{ items: DepositHistoryItem[]; total: number; last_page: number; current_page: number }>('v1/deposit/history', params).pipe(
+ 
+    const subject = new Subject<any>();
+ 
+    const req$ = this.api.get<{ items: DepositHistoryItem[]; total: number; last_page: number; current_page: number }>('v1/deposit/history', params).pipe(
       tap(res => {
         if (res) {
           this.historyList.set(res.items || []);
@@ -82,6 +90,18 @@ export class DepositStore {
       }),
       finalize(() => this.loading.set(false))
     );
+ 
+    this.activeFetchHistorySub = req$.subscribe({
+      next: (res) => {
+        subject.next(res);
+        subject.complete();
+      },
+      error: (err) => {
+        subject.error(err);
+      }
+    });
+ 
+    return subject.asObservable();
   }
 
     public fetchInvoice(id: string): Observable<{ invoice: DepositHistoryItem }> {
