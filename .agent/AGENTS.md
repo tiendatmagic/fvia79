@@ -1128,6 +1128,7 @@
     - **Yêu cầu**: Cho phép hiển thị các sản phẩm không thuộc danh mục nào (`category_id` là null hoặc rỗng) tại trang cửa hàng `/storefront` giống cơ chế "Uncategorized" của WordPress, nằm ở vị trí dưới cùng danh sách.
     - **Giải pháp & Triển khai**:
       1. Cập nhật hàm computed `groupedProducts` tại [storefront.component.ts](file:///d:/git/isocalmarket/isocalmarket-web/src/app/features/storefront/storefront.component.ts).
-      2. Nếu phát hiện nhóm sản phẩm `'other'` (những sản phẩm không có `category_id`) có số lượng lớn hơn 0, hệ thống sẽ đẩy thêm một danh mục ảo mang tên *"Chưa phân loại"* với mô tả *"Các sản phẩm chưa được xếp vào danh mục cụ thể."* vào cuối danh sách các nhóm sản phẩm hiển thị.
-      3. Hoàn toàn tương thích với cơ chế phân trang động và chế độ hiển thị Card/List hiện có của Storefront mà không cần sửa đổi file template HTML.
-      4. Đã chạy biên dịch kiểm tra dự án frontend thành công (`npm run build`) không có lỗi.
+      2. Nếu phát hiện nhóm sản phẩm `'other'` (những sản phẩm không có `category_id`) có số lượng lớn hơn 0, hệ thống sẽ đẩy thêm một danh mục ảo mang tên *"Sản phẩm khác"* với mô tả *"Các sản phẩm chưa được xếp vào danh mục cụ thể."* vào cuối danh sách các nhóm sản phẩm hiển thị.
+      3. Danh mục này hoàn toàn là ảo và được dựng động, do đó không tồn tại trong cơ sở dữ liệu và không thể bị xóa ở giao diện Quản lý danh mục.
+      4. Hoàn toàn tương thích với cơ chế phân trang động và chế độ hiển thị Card/List hiện có của Storefront mà không cần sửa đổi file template HTML.
+      5. Đã chạy biên dịch kiểm tra dự án frontend thành công (`npm run build`) không có lỗi.
