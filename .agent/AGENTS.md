@@ -1178,3 +1178,18 @@
       2. **Artisan Command & Scheduler**: Định nghĩa lệnh Artisan `deposit:check-pending` trong [console.php](file:///d:/git/isocalmarket/isocalmarket-api/routes/console.php) để quét tất cả hóa đơn `pending_payment` và đối soát qua BscScan API. Tự động đánh dấu hóa đơn là `expired` nếu quá 16 phút (960 giây, bao gồm 1 phút grace period trễ mạng) mà không tìm thấy giao dịch.
       3. **Cấu hình Scheduler**: Đăng ký lệnh chạy tự động mỗi phút qua `Schedule::command('deposit:check-pending')->everyMinute()`.
       4. **Xác minh**: Đã chạy thử nghiệm lệnh Artisan thủ công và kiểm tra danh sách Schedule thành công.
+
+  - **[BẢO MẬT & MỨC NẠP TỐI THIỂU] Giới hạn số tiền nạp tối thiểu là 0.1 USDT**:
+    - **Yêu cầu**: Cấu hình và ràng buộc mức nạp tối thiểu là 0.1 USDT trên toàn hệ thống (không cho phép dưới 0.1 USDT).
+    - **Giải pháp & Triển khai**:
+      1. **Backend Validation Rules**: Cập nhật [CreateDepositRequest.php](file:///d:/git/isocalmarket/isocalmarket-api/app/Http/Requests/CreateDepositRequest.php) thay đổi rule từ `min:1` thành `min:0.1`.
+      2. **Backend Service Guard**: Thêm kiểm tra phòng vệ tại hàm `createDeposit` trong [DepositService.php](file:///d:/git/isocalmarket/isocalmarket-api/app/Application/Services/DepositService.php), ném ra lỗi Runtime nếu lượng USDT truyền vào nhỏ hơn 0.1.
+      3. **Frontend Validation**: Thay đổi logic tại [deposit.component.ts](file:///d:/git/isocalmarket/isocalmarket-web/src/app/features/deposit/deposit.component.ts) để kiểm tra `amountUsdt < 0.1` ngay tại client, hiển thị Toast cảnh báo tiếng Việt: *"Số lượng USDT nạp tối thiểu là 0.1 USDT!"*. Đồng thời thêm hàm dịch lỗi từ API nếu trả về thông tin nạp tối thiểu từ Backend.
+      4. **Giao diện HTML**: Cập nhật [deposit.component.html](file:///d:/git/isocalmarket/isocalmarket-web/src/app/features/deposit/deposit.component.html) chỉnh `[min]="0.1"` và thay placeholder gợi ý rõ ràng: *"Nhập số lượng USDT (Tối thiểu 0.1 USDT)"*.
+
+  - **[TỐI ƯU HOÁ CODEBASE & HIỆU SUẤT] Tách biệt logic Artisan Command sang Service & Cache Blockchain Requests**:
+    - **Yêu cầu**: Tối ưu hóa file [console.php](file:///d:/git/isocalmarket/isocalmarket-api/routes/console.php) để tuân thủ kiến trúc Clean Code/DDD, không viết logic tuần tự trực tiếp trong Closure và tối ưu số lượng HTTP request gửi lên Blockchain Explorer API.
+    - **Giải pháp & Triển khai**:
+      1. **Đóng gói logic nghiệp vụ**: Di chuyển toàn bộ các thao tác xử lý nghiệp vụ đối soát và kiểm tra hết hạn từ closure trong `console.php` vào hàm mới `checkAllPendingDeposits()` của [DepositService.php](file:///d:/git/isocalmarket/isocalmarket-api/app/Application/Services/DepositService.php). Closure lúc này chỉ nhận callback để xử lý in logs (I/O) ra console, giúp mã nguồn mạch lạc và đúng Single Responsibility Principle.
+      2. **Request-level Cache (Bộ nhớ đệm trong phiên)**: Định nghĩa thuộc tính `$cachedTransactions` trong `DepositService` để lưu trữ dữ liệu blockchain nhận được. Khi Cron Job chạy quét qua danh sách nhiều hoá đơn cùng lúc, hệ thống chỉ cần gọi HTTP request lên Blockchain API **đúng 1 lần duy nhất** rồi chia sẻ dữ liệu đối soát cho mọi hóa đơn, tránh bị Rate Limit / Block API Key từ BscScan/Etherscan.
+      3. **Xác minh**: Chạy thử nghiệm lệnh Artisan `php artisan deposit:check-pending` và kiểm tra `php artisan schedule:list` thành công tốt đẹp.

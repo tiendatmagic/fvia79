@@ -24,6 +24,9 @@ class DepositService
 
     private SystemSettingService $settingService;
 
+    // Bộ nhớ đệm lưu danh sách giao dịch chuỗi trong một phiên làm việc để tránh spam API
+    private ?array $cachedTransactions = null;
+
     public function __construct(
         DepositRepositoryInterface $depositRepository,
         UserRepositoryInterface $userRepository,
@@ -105,6 +108,10 @@ class DepositService
 
         if ($hasPending) {
             throw new \RuntimeException("You already have an active deposit order. Please cancel the previous order before creating a new one.");
+        }
+
+        if ($amountUsdt < 0.1) {
+            throw new \RuntimeException("The deposit amount must be at least 0.1 USDT.");
         }
 
         $rate = $this->getUsdtToVndRate();
@@ -339,4 +346,46 @@ class DepositService
 
         return false;
     }
+
+    /**
+     * Tự động quét và đối soát toàn bộ hóa đơn nạp USDT BEP20 đang ở trạng thái pending_payment
+     * 
+     * @param \Closure|null $logCallback Hàm callback để in log ra màn hình console khi chạy Artisan
+     */
+    public function checkAllPendingDeposits(?\Closure $logCallback = null): void
+    {
+        $pendingDeposits = \App\Infrastructure\Persistence\Eloquent\DepositModel::where('status', 'pending_payment')->get();
+
+        if ($pendingDeposits->isEmpty()) {
+            if ($logCallback) $logCallback('info', 'No pending deposits found.');
+            return;
+        }
+
+        foreach ($pendingDeposits as $deposit) {
+            try {
+                if ($logCallback) $logCallback('info', "Checking deposit code: {$deposit->code} (ID: {$deposit->id})");
+
+                // Đối soát blockchain
+                $matched = $this->checkTransaction($deposit->id, $deposit->user_id);
+
+                if ($matched) {
+                    if ($logCallback) $logCallback('info', "Successfully matched and completed deposit code: {$deposit->code}");
+                } else {
+                    // Kiểm tra hết hạn (16 phút = 960 giây)
+                    $createdTime = $deposit->created_at->getTimestamp();
+                    $now = time();
+                    if (($now - $createdTime) > 960) {
+                        $deposit->update(['status' => 'expired']);
+                        if ($logCallback) $logCallback('info', "Deposit code {$deposit->code} has expired (exceeded 15 minutes window + 1 minute grace period).");
+                    } else {
+                        if ($logCallback) $logCallback('info', "Deposit code {$deposit->code} is still pending within the payment window.");
+                    }
+                }
+            } catch (\Exception $e) {
+                Log::error("Failed to check pending deposit ID {$deposit->id}: " . $e->getMessage());
+                if ($logCallback) $logCallback('error', "Error checking deposit ID {$deposit->id}: " . $e->getMessage());
+            }
+        }
+    }
 }
+

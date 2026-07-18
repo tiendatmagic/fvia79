@@ -20,7 +20,7 @@ class CreateDepositRequest extends FormRequest
     public function rules(): array
     {
         return [
-            'amount_usdt' => 'required|numeric|min:1',
+            'amount_usdt' => 'required|numeric|min:0.1',
         ];
     }
 }

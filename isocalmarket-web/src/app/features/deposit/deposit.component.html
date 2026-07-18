@@ -40,14 +40,14 @@
           </div>
         </div>
 
-                <div class="form-field">
+        <div class="form-field">
           <label class="text-xs font-bold text-slate-400 dark:text-slate-500 uppercase tracking-wider block mb-1">Số lượng USDT muốn nạp</label>
           <app-custom-input
             [(ngModel)]="amountUsdt"
             name="amountUsdt"
             type="number"
-            placeholder="Nhập số lượng USDT muốn nạp (VD: 50)"
-            [min]="1"
+            placeholder="Nhập số lượng USDT (Tối thiểu 0.1 USDT)"
+            [min]="0.1"
             (ngModelChange)="onAmountChange()"
           />
         </div>

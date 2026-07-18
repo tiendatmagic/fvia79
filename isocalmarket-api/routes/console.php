@@ -36,39 +36,13 @@ Artisan::command('auth:force-logout-all', function () {
 Artisan::command('deposit:check-pending', function (DepositService $depositService) {
     $this->info('Starting checks for pending deposits...');
 
-    // 1. Quét các hóa đơn đang chờ thanh toán (pending_payment)
-    $pendingDeposits = DepositModel::where('status', 'pending_payment')->get();
-
-    if ($pendingDeposits->isEmpty()) {
-        $this->info('No pending deposits found.');
-        return;
-    }
-
-    foreach ($pendingDeposits as $deposit) {
-        try {
-            $this->info("Checking deposit code: {$deposit->code} (ID: {$deposit->id})");
-
-            // Đối soát giao dịch trên blockchain
-            $matched = $depositService->checkTransaction($deposit->id, $deposit->user_id);
-
-            if ($matched) {
-                $this->info("Successfully matched and completed deposit code: {$deposit->code}");
-            } else {
-                // Kiểm tra xem hóa đơn đã quá 16 phút chưa (960 giây để tạo dung sai trễ mạng)
-                $createdTime = $deposit->created_at->getTimestamp();
-                $now = time();
-                if (($now - $createdTime) > 960) {
-                    $deposit->update(['status' => 'expired']);
-                    $this->info("Deposit code {$deposit->code} has expired (exceeded 15 minutes window + 1 minute grace period).");
-                } else {
-                    $this->info("Deposit code {$deposit->code} is still pending within the payment window.");
-                }
-            }
-        } catch (\Exception $e) {
-            Log::error("Failed to check pending deposit ID {$deposit->id}: " . $e->getMessage());
-            $this->error("Error checking deposit ID {$deposit->id}: " . $e->getMessage());
+    $depositService->checkAllPendingDeposits(function (string $type, string $message) {
+        if ($type === 'error') {
+            $this->error($message);
+        } else {
+            $this->info($message);
         }
-    }
+    });
 
     $this->info('Pending deposits check completed.');
 })->purpose('Scan blockchain and reconcile pending USDT BEP20 deposits');

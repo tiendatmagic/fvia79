@@ -63,8 +63,8 @@ export class DepositComponent implements OnInit {
   public onCreateInvoice() {
     if (this.isSubmitting) return;
 
-    if (!this.amountUsdt || this.amountUsdt <= 0) {
-      this.state.showToast('Vui lòng nhập số lượng USDT nạp hợp lệ (> 0)!', 'error');
+    if (this.amountUsdt === null || this.amountUsdt === undefined || this.amountUsdt < 0.1) {
+      this.state.showToast('Số lượng USDT nạp tối thiểu là 0.1 USDT!', 'error');
       return;
     }
 
@@ -82,7 +82,10 @@ export class DepositComponent implements OnInit {
         this.isSubmitting = false;
         let msg = err?.error?.message || 'Có lỗi xảy ra khi tạo lệnh nạp tiền!';
 
-        if (msg.includes('configured the receiving USDT wallet')) {
+        if (msg.toLowerCase().includes('at least 0.1')) {
+          msg = 'Số lượng USDT nạp tối thiểu là 0.1 USDT!';
+          this.state.showToast(msg, 'error');
+        } else if (msg.includes('configured the receiving USDT wallet')) {
           msg = 'Quản trị viên hệ thống chưa cấu hình địa chỉ ví nhận USDT nạp tiền! Vui lòng quay lại sau.';
           this.state.showToast(msg, 'error');
         } else if (msg.includes('configured the scanner API key')) {
