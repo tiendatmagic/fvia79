@@ -5,6 +5,7 @@ namespace App\Application\Services;
 use App\Domain\Entities\InventoryBatch;
 use App\Domain\Repositories\InventoryBatchRepositoryInterface;
 use App\Domain\Repositories\ProductRepositoryInterface;
+use Illuminate\Support\Facades\Cache;
 
 class InventoryService
 {
@@ -50,7 +51,9 @@ class InventoryService
             'active'
         );
 
-        return $this->inventoryRepository->save($batch);
+        $saved = $this->inventoryRepository->save($batch);
+        Cache::forget('products_active_storefront');
+        return $saved;
     }
 
     public function updateBatch(string $id, array $data): ?InventoryBatch
@@ -95,7 +98,9 @@ class InventoryService
             $batch->getUpdatedAt()
         );
 
-        return $this->inventoryRepository->save($updatedBatch);
+        $saved = $this->inventoryRepository->save($updatedBatch);
+        Cache::forget('products_active_storefront');
+        return $saved;
     }
 
     public function getItemById(string $id): ?InventoryBatch
@@ -115,6 +120,10 @@ class InventoryService
 
     public function deleteItem(string $id): bool
     {
-        return $this->inventoryRepository->delete($id);
+        $deleted = $this->inventoryRepository->delete($id);
+        if ($deleted) {
+            Cache::forget('products_active_storefront');
+        }
+        return $deleted;
     }
 }

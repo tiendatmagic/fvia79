@@ -56,6 +56,15 @@ export class ProductStore {
   }
 
   public fetchCategories(search?: string) {
+    if (!search && this.categories().length > 0) {
+      this.api.get<any[]>('v1/categories').subscribe({
+        next: (res) => {
+          if (res) this.categories.set(res);
+        }
+      });
+      return of(this.categories());
+    }
+
     let params = new HttpParams();
     if (search) {
       params = params.set('search', search);
@@ -74,6 +83,24 @@ export class ProductStore {
   }
 
   public fetchProducts(page?: number, limit?: number, categoryId?: string, search?: string, status?: string, filterDeleted?: string) {
+    const isStorefrontLoad = page === undefined && limit === undefined && categoryId === undefined && search === undefined && status === 'active' && filterDeleted === undefined;
+    if (isStorefrontLoad && this.products().length > 0) {
+      let params = new HttpParams();
+      if (status) {
+        params = params.set('status', status);
+      }
+      this.api.get<any>('v1/products', params).subscribe({
+        next: (res) => {
+          if (res && res.data) {
+            this.products.set(res.data);
+          } else {
+            this.products.set(res);
+          }
+        }
+      });
+      return of(this.products());
+    }
+
     this.loading.set(true);
     let params = new HttpParams();
     if (page !== undefined) {

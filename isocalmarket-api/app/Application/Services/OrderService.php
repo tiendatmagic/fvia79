@@ -9,6 +9,7 @@ use App\Domain\Repositories\ProductRepositoryInterface;
 use App\Domain\Repositories\InventoryBatchRepositoryInterface;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Str;
+use Illuminate\Support\Facades\Cache;
 
 class OrderService
 {
@@ -113,6 +114,8 @@ class OrderService
             foreach ($batchesToSave as $batch) {
                 $this->inventoryRepository->save($batch);
             }
+
+            Cache::forget('products_active_storefront');
 
             return $savedOrder;
         });

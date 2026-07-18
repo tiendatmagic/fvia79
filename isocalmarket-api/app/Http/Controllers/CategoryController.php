@@ -6,6 +6,7 @@ use App\Domain\Repositories\CategoryRepositoryInterface;
 use App\Http\Requests\CreateCategoryRequest;
 use App\Application\Services\CategoryService;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Cache;
 
 class CategoryController extends Controller
 {
@@ -54,6 +55,23 @@ class CategoryController extends Controller
                 ]);
             }
 
+            if (empty($search)) {
+                $data = Cache::remember('categories_active_storefront', 600, function () use ($search) {
+                    $categories = $this->categoryRepo->findAll($search);
+                    return array_map(function ($cat) {
+                        return [
+                            'id' => $cat->getId(),
+                            'name' => $cat->getName(),
+                            'slug' => $cat->getSlug(),
+                            'description' => $cat->getDescription(),
+                            'products_count' => $cat->getProductsCount() ?? 0,
+                            'created_at' => $cat->getCreatedAt() ? $cat->getCreatedAt()->format('Y-m-d H:i:s') : null
+                        ];
+                    }, $categories);
+                });
+                return response()->json($data);
+            }
+
             $categories = $this->categoryRepo->findAll($search);
             $data = array_map(function ($cat) {
                 return [
@@ -81,6 +99,7 @@ class CategoryController extends Controller
                 $request->description
             );
 
+            Cache::forget('categories_active_storefront');
             return response()->json([
                 'message' => 'Category created successfully.',
                 'category' => [
@@ -106,6 +125,7 @@ class CategoryController extends Controller
                 $request->description
             );
 
+            Cache::forget('categories_active_storefront');
             return response()->json([
                 'message' => 'Category updated successfully.',
                 'category' => [
@@ -125,6 +145,7 @@ class CategoryController extends Controller
     {
         try {
             $this->categoryService->deleteCategory($id);
+            Cache::forget('categories_active_storefront');
             return response()->json(['message' => 'Category deleted successfully.']);
         } catch (\Exception $e) {
             return response()->json(['message' => $e->getMessage()], 400);

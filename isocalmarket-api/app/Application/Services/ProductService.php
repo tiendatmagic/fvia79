@@ -5,6 +5,7 @@ namespace App\Application\Services;
 use App\Domain\Entities\Product;
 use App\Domain\Repositories\ProductRepositoryInterface;
 use Illuminate\Support\Str;
+use Illuminate\Support\Facades\Cache;
 
 class ProductService
 {
@@ -17,6 +18,12 @@ class ProductService
 
     public function getAllActiveProducts(?string $categoryId = null, ?string $status = null, ?string $search = null, ?string $filterDeleted = 'active'): array
     {
+        $isStorefrontLoad = !$categoryId && ($status === 'active' || !$status) && !$search && $filterDeleted === 'active';
+        if ($isStorefrontLoad) {
+            return Cache::remember('products_active_storefront', 600, function () use ($categoryId, $status, $search, $filterDeleted) {
+                return $this->productRepository->findAllActive($categoryId, $status, $search, $filterDeleted);
+            });
+        }
         return $this->productRepository->findAllActive($categoryId, $status, $search, $filterDeleted);
     }
 
@@ -36,7 +43,10 @@ class ProductService
         $finalSlug = $this->generateUniqueSlug($baseSlug);
 
         $product = new Product(null, $name, $finalSlug, $description, $price, $status, 0, $attributes, $categoryId);
-        return $this->productRepository->save($product);
+        $saved = $this->productRepository->save($product);
+        Cache::forget('products_active_storefront');
+        Cache::forget('categories_active_storefront');
+        return $saved;
     }
 
     public function updateProduct(string $id, string $name, ?string $slug, ?string $description, float $price, string $status, ?array $attributes = null, ?string $categoryId = null): Product
@@ -54,7 +64,10 @@ class ProductService
         $finalSlug = $this->generateUniqueSlug($baseSlug, $id);
 
         $updatedProduct = new Product($id, $name, $finalSlug, $description, $price, $status, 0, $attributes, $categoryId);
-        return $this->productRepository->save($updatedProduct);
+        $saved = $this->productRepository->save($updatedProduct);
+        Cache::forget('products_active_storefront');
+        Cache::forget('categories_active_storefront');
+        return $saved;
     }
 
     private function generateUniqueSlug(string $baseSlug, ?string $excludeId = null): string
@@ -73,11 +86,21 @@ class ProductService
 
     public function deleteProduct(string $id): bool
     {
-        return $this->productRepository->delete($id);
+        $deleted = $this->productRepository->delete($id);
+        if ($deleted) {
+            Cache::forget('products_active_storefront');
+            Cache::forget('categories_active_storefront');
+        }
+        return $deleted;
     }
 
     public function restoreProduct(string $id): bool
     {
-        return $this->productRepository->restore($id);
+        $restored = $this->productRepository->restore($id);
+        if ($restored) {
+            Cache::forget('products_active_storefront');
+            Cache::forget('categories_active_storefront');
+        }
+        return $restored;
     }
 }
