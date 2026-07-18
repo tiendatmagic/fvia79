@@ -1193,3 +1193,11 @@
       1. **Đóng gói logic nghiệp vụ**: Di chuyển toàn bộ các thao tác xử lý nghiệp vụ đối soát và kiểm tra hết hạn từ closure trong `console.php` vào hàm mới `checkAllPendingDeposits()` của [DepositService.php](file:///d:/git/isocalmarket/isocalmarket-api/app/Application/Services/DepositService.php). Closure lúc này chỉ nhận callback để xử lý in logs (I/O) ra console, giúp mã nguồn mạch lạc và đúng Single Responsibility Principle.
       2. **Request-level Cache (Bộ nhớ đệm trong phiên)**: Định nghĩa thuộc tính `$cachedTransactions` trong `DepositService` để lưu trữ dữ liệu blockchain nhận được. Khi Cron Job chạy quét qua danh sách nhiều hoá đơn cùng lúc, hệ thống chỉ cần gọi HTTP request lên Blockchain API **đúng 1 lần duy nhất** rồi chia sẻ dữ liệu đối soát cho mọi hóa đơn, tránh bị Rate Limit / Block API Key từ BscScan/Etherscan.
       3. **Xác minh**: Chạy thử nghiệm lệnh Artisan `php artisan deposit:check-pending` và kiểm tra `php artisan schedule:list` thành công tốt đẹp.
+
+  - **[TỐI ƯU HÓA UX] Loại bỏ Skeleton Loader khi thực hiện hành động (Tạo lệnh/Hủy/Check nạp tiền)**:
+    - **Yêu cầu**: Khắc phục lỗi khi nhấn nút "Tạo lệnh nạp tiền", "Hủy", hoặc "Kiểm tra giao dịch", giao diện form biến mất và thay thế bằng skeleton loader gây gián đoạn trải nghiệm người dùng.
+    - **Giải pháp & Triển khai**:
+      1. **DepositStore**: Cập nhật [deposit.store.ts](file:///d:/git/isocalmarket/isocalmarket-web/src/app/features/deposit/deposit.store.ts), loại bỏ việc đột biến trạng thái `loading.set(true)` trong các phương thức write/action: `createDeposit()`, `cancelInvoice()`, và `checkTransaction()`. Chỉ giữ lại trạng thái loading cho các API đọc dữ liệu như `fetchRate()`, `fetchHistory()`, `fetchInvoice()`.
+      2. **Component Indicators**: Form và các phần tử nhập liệu vẫn hiển thị nguyên vẹn, các nút bấm xử lý tương ứng vẫn hiển thị vòng xoay loading spinner độc lập (`isSubmitting`, `isCancelling`, `isChecking`) để báo hiệu chính xác tiến trình xử lý.
+      3. **Xác minh**: Ứng dụng hoạt động mượt mà, trực quan và biên dịch Angular thành công.
+

@@ -35,14 +35,12 @@ export class DepositStore {
   }
 
     public createDeposit(amountUsdt: number): Observable<{ message: string; invoice: DepositHistoryItem }> {
-    this.loading.set(true);
     return this.api.post<{ message: string; invoice: DepositHistoryItem }>('v1/deposit', { amount_usdt: amountUsdt }).pipe(
       tap(res => {
         if (res && res.invoice) {
           this.currentInvoice.set(res.invoice);
         }
-      }),
-      finalize(() => this.loading.set(false))
+      })
     );
   }
 
@@ -117,16 +115,10 @@ export class DepositStore {
   }
 
     public cancelInvoice(id: string): Observable<{ message: string }> {
-    this.loading.set(true);
-    return this.api.post<{ message: string }>(`v1/deposit/invoice/${id}/cancel`, {}).pipe(
-      finalize(() => this.loading.set(false))
-    );
+    return this.api.post<{ message: string }>(`v1/deposit/invoice/${id}/cancel`, {});
   }
 
-    public checkTransaction(id: string): Observable<{ success: boolean; message: string }> {
-    this.loading.set(true);
-    return this.api.post<{ success: boolean; message: string }>(`v1/deposit/invoice/${id}/check`, {}).pipe(
-      finalize(() => this.loading.set(false))
-    );
+  public checkTransaction(id: string): Observable<{ success: boolean; message: string }> {
+    return this.api.post<{ success: boolean; message: string }>(`v1/deposit/invoice/${id}/check`, {});
   }
 }
