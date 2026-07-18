@@ -1218,3 +1218,10 @@
   - **[TỐI ƯU HIỆU SUẤT] Khôi phục bộ nhớ đệm cachedTransactions cho Moralis**:
     - **Yêu cầu**: Tối ưu số lượng API request khi nhiều người dùng cùng nạp tiền tại một thời điểm, tránh bị block rate limit từ Moralis.
     - **Giải pháp & Triển khai**: Khôi phục biến `$cachedTransactions` trong [DepositService.php](file:///d:/git/isocalmarket/isocalmarket-api/app/Application/Services/DepositService.php). Khi quét nhiều hóa đơn trong cùng một phiên chạy cron job, hệ thống chỉ gọi HTTP request lên API Moralis đúng 1 lần duy nhất để lấy 100 giao dịch mới nhất, rồi dùng bộ nhớ đệm này để đối soát cho tất cả hóa đơn còn lại trong vòng lặp.
+
+  - **[CẢI THIỆN UX] Thêm modal xác nhận & cảnh báo khi hủy hóa đơn nạp tiền**:
+    - **Yêu cầu**: Hiển thị modal cảnh báo xác nhận khi người dùng click "Hủy Lệnh Nạp" kèm lưu ý không hủy đơn nếu đã chuyển tiền.
+    - **Giải pháp & Triển khai**:
+      1. **Tích hợp ModalService**: Inject `ModalService` vào [deposit-invoice.component.ts](file:///d:/git/isocalmarket/isocalmarket-web/src/app/features/deposit-invoice/deposit-invoice.component.ts).
+      2. **Modal cấu hình**: Sử dụng hàm `confirm()` để dựng hộp thoại xác nhận hủy lệnh, tích hợp nội dung cảnh báo màu vàng nổi bật dạng HTML (`descriptionHtml`): *"Lưu ý quan trọng: Nếu bạn đã thực hiện chuyển khoản rồi, vui lòng KHÔNG hủy lệnh nạp này! BOT sẽ không thể tự động đối soát cộng tiền khi lệnh đã bị hủy."*
+      3. **Xác minh**: Giao diện hiển thị rõ ràng, cản trở việc click hủy nhầm hiệu quả.

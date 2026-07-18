@@ -2,6 +2,7 @@ import { Component, inject, OnInit, OnDestroy, signal } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { ActivatedRoute, Router, RouterModule } from '@angular/router';
 import { StateService } from '@core/services/state.service';
+import { ModalService } from '@core/services/modal.service';
 import { ButtonComponent } from '@shared/components/button/button.component';
 import { CardComponent } from '@shared/components/card/card.component';
 import { IconComponent } from '@shared/components/icon/icon.component';
@@ -32,6 +33,7 @@ export class DepositInvoiceComponent implements OnInit, OnDestroy {
   private readonly route = inject(ActivatedRoute);
   private readonly router = inject(Router);
   public readonly state = inject(StateService);
+  private readonly modalService = inject(ModalService);
 
   public readonly adminWalletAddress = signal('');
 
@@ -237,18 +239,41 @@ export class DepositInvoiceComponent implements OnInit, OnDestroy {
   public cancelInvoice() {
     if (!this.invoice || this.isCancelling) return;
 
-    this.isCancelling = true;
-    this.state.depositStore.cancelInvoice(this.invoice.id).pipe(
-      finalize(() => this.isCancelling = false)
-    ).subscribe({
-      next: () => {
-        this.stopCountdown();
-        this.state.showToast('Đã hủy lệnh nạp tiền thành công!', 'success');
-        this.router.navigate(['/deposit/history']);
-      },
-      error: (err) => {
-        const msg = err?.error?.message || 'Không thể hủy lệnh nạp tiền!';
-        this.state.showToast(msg, 'error');
+    this.modalService.confirm({
+      title: 'Xác nhận hủy lệnh nạp tiền',
+      descriptionHtml: `
+        <div class="space-y-3">
+          <p class="text-sm text-slate-600 dark:text-slate-400">Bạn có chắc chắn muốn hủy lệnh nạp tiền này không? Hành động này không thể hoàn tác.</p>
+          <div class="p-3 bg-amber-50 dark:bg-amber-950/20 border border-amber-200/50 dark:border-amber-800/40 rounded-xl flex gap-2">
+            <svg class="w-5 h-5 text-amber-500 shrink-0 mt-0.5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"/>
+            </svg>
+            <p class="text-xs text-amber-700 dark:text-amber-400 font-bold leading-normal">
+              Lưu ý quan trọng: Nếu bạn đã thực hiện chuyển khoản rồi, vui lòng KHÔNG hủy lệnh nạp này! BOT sẽ không thể tự động đối soát cộng tiền khi lệnh đã bị hủy.
+            </p>
+          </div>
+        </div>
+      `,
+      confirmText: 'Xác nhận hủy',
+      cancelText: 'Quay lại',
+      confirmButtonClass: 'btn-danger'
+    }).afterClosed$.subscribe((confirmed?: boolean) => {
+      if (confirmed) {
+        this.isCancelling = true;
+        this.state.depositStore.cancelInvoice(this.invoice!.id).pipe(
+          finalize(() => this.isCancelling = false)
+        ).subscribe({
+          next: () => {
+            this.stopCountdown();
+            this.stopStatusPolling();
+            this.state.showToast('Đã hủy lệnh nạp tiền thành công!', 'success');
+            this.router.navigate(['/deposit/history']);
+          },
+          error: (err) => {
+            const msg = err?.error?.message || 'Không thể hủy lệnh nạp tiền!';
+            this.state.showToast(msg, 'error');
+          }
+        });
       }
     });
   }
