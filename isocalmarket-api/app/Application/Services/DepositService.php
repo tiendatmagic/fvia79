@@ -23,15 +23,19 @@ class DepositService
     // Số chữ số thập phân (decimals) của token đối soát (mặc định USDT trên BSC có 18 decimals)
     private int $tokenDecimals;
 
+    private SystemSettingService $settingService;
+
     public function __construct(
         DepositRepositoryInterface $depositRepository,
-        UserRepositoryInterface $userRepository
+        UserRepositoryInterface $userRepository,
+        SystemSettingService $settingService
     ) {
         $this->depositRepository = $depositRepository;
         $this->userRepository = $userRepository;
+        $this->settingService = $settingService;
 
-        $this->adminWalletAddress = env('ADMIN_WALLET_ADDRESS', '');
-        $this->scannerApiKey = env('SCANNER_API_KEY', '');
+        $this->adminWalletAddress = $this->settingService->getSetting('admin_wallet_address', '');
+        $this->scannerApiKey = $this->settingService->getSetting('scanner_api_key', '');
         
         // Cấu hình linh hoạt token đối soát (mặc định là USDT BEP20 trên BSC)
         $this->tokenContractAddress = env('TOKEN_CONTRACT_ADDRESS', '0x55d398326f99059ff775485246999027b3197955');
@@ -43,7 +47,7 @@ class DepositService
      */
     public function getAdminWalletAddress(): string
     {
-        return $this->adminWalletAddress;
+        return $this->settingService->getSetting('admin_wallet_address', '');
     }
 
     /**
@@ -86,6 +90,9 @@ class DepositService
      */
     public function createDeposit(string $userId, float $amountUsdt): Deposit
     {
+        $this->adminWalletAddress = $this->settingService->getSetting('admin_wallet_address', '');
+        $this->scannerApiKey = $this->settingService->getSetting('scanner_api_key', '');
+
         if (empty($this->adminWalletAddress)) {
             throw new \RuntimeException("The administrator has not configured the receiving USDT wallet address yet.");
         }
@@ -232,6 +239,9 @@ class DepositService
      */
     public function checkTransaction(string $id, string $userId): bool
     {
+        $this->adminWalletAddress = $this->settingService->getSetting('admin_wallet_address', '');
+        $this->scannerApiKey = $this->settingService->getSetting('scanner_api_key', '');
+
         if (empty($this->adminWalletAddress)) {
             throw new \RuntimeException("The administrator has not configured the receiving USDT wallet address yet.");
         }

@@ -995,5 +995,16 @@
       3. Tính năng bảo vệ: Khi người dùng click, Router vẫn được chuyển tiếp tới các URL gốc này. Các router này đã được bảo vệ hoàn hảo bằng `AuthGuard` ở file định tuyến chính nên người dùng chưa đăng nhập sẽ được tự động chuyển hướng về `/login?returnUrl=...`. Không còn tình trạng trùng lặp active khi ở màn hình login.
       4. Xác minh: Chạy build frontend Angular thành công 100% không phát sinh lỗi.
 
+  - **[CHUYỂN CẤU HÌNH HỆ THỐNG VÀO DATABASE & GIAO DIỆN ADMIN (SYSTEM SETTINGS)]**:
+    - Yêu cầu: Chuyển cấu hình `ADMIN_WALLET_ADDRESS` và `SCANNER_API_KEY` từ file `.env` vào DB. Thêm giao diện quản lý cấu hình này trong admin.
+    - Giải pháp & Triển khai:
+      1. **Database**: Tạo migration tạo bảng `system_settings` (key primary, value text, description string). Cập nhật `DatabaseSeeder.php` seed sẵn giá trị ví admin và api key mặc định.
+      2. **Backend**: Triển khai DDD gồm Entity, Model, Mapper, Repository. Tạo `SystemSettingService` xử lý get/set setting (hỗ trợ Cache 1 giờ). Cập nhật `DepositService` đọc ví và api key scanner động từ `SystemSettingService`.
+      3. **API Controllers**: Viết `SystemSettingController` cung cấp API lấy và cập nhật cấu hình cho admin, đăng ký route tại `api.php`.
+      4. **Frontend**: Tạo Slice Store `SystemSettingStore` quản lý state. Thêm route `/admin/settings`, đăng ký menu liên kết tại Sidebar Desktop (`sidebar.component.html`) và Mobile (`app.html`).
+      5. **UI Component**: Xây dựng `AdminSettingsComponent` (ts & html) tuân thủ `design.md`, sử dụng card kính mờ, form field tiêu chuẩn và skeleton loader.
+      6. **Xác minh**: Chạy `php artisan test` và `npm run build` thành công 100% không có lỗi.
+
+
 
 

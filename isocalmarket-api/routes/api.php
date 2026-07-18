@@ -42,6 +42,9 @@ Route::prefix('v1')->group(function () {
         Route::middleware(['admin'])->group(function () {
             Route::get('/admin/dashboard-stats', ['App\Http\Controllers\DashboardController', 'stats']);
 
+            Route::get('/admin/settings', ['App\Http\Controllers\SystemSettingController', 'index']);
+            Route::put('/admin/settings', ['App\Http\Controllers\SystemSettingController', 'update']);
+
             Route::post('/products', ['App\Http\Controllers\ProductController', 'store']);
             Route::put('/products/{id}', ['App\Http\Controllers\ProductController', 'update']);
             Route::delete('/products/{id}', ['App\Http\Controllers\ProductController', 'destroy']);

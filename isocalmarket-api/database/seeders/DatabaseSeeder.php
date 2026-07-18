@@ -643,5 +643,23 @@ class DatabaseSeeder extends Seeder
                 ]);
             }
         }
+
+        // 5. Seed cấu hình hệ thống (System Settings)
+        \Illuminate\Support\Facades\DB::table('system_settings')->insert([
+            [
+                'key' => 'admin_wallet_address',
+                'value' => env('ADMIN_WALLET_ADDRESS', '0xAB4a22a64bBC1Ca0445758C2Ee66a4cB2b64444'),
+                'description' => 'Địa chỉ ví USDT nhận tiền nạp của admin (BEP20)',
+                'created_at' => now(),
+                'updated_at' => now(),
+            ],
+            [
+                'key' => 'scanner_api_key',
+                'value' => env('SCANNER_API_KEY', '46FR26RXC8YVGV8X9PK6TICNMJZPGV6TKM'),
+                'description' => 'API Key của BSCScan để kiểm tra giao dịch nạp tiền',
+                'created_at' => now(),
+                'updated_at' => now(),
+            ]
+        ]);
     }
 }

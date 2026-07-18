@@ -38,6 +38,10 @@ class AppServiceProvider extends ServiceProvider
             \App\Domain\Repositories\DepositRepositoryInterface::class,
             \App\Infrastructure\Persistence\Repositories\DepositRepository::class
         );
+        $this->app->bind(
+            \App\Domain\Repositories\SystemSettingRepositoryInterface::class,
+            \App\Infrastructure\Persistence\Repositories\SystemSettingRepository::class
+        );
     }
 
     /**
