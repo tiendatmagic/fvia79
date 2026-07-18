@@ -12,11 +12,14 @@ class ProductRepository implements ProductRepositoryInterface
 {
     use AccentInsensitiveSearchTrait;
 
-    private function getAvailableCount(string $productId): int
+    private function getAvailableCount(ProductModel $model): int
     {
-        $batches = InventoryBatchModel::where('product_id', $productId)
-            ->where('status', 'active')
-            ->get();
+        $batches = $model->relationLoaded('activeBatches')
+            ? $model->activeBatches
+            : InventoryBatchModel::where('product_id', $model->id)
+                ->where('status', 'active')
+                ->get();
+
         $total = 0;
         foreach ($batches as $batch) {
             if (!empty($batch->keys_pool)) {
@@ -51,10 +54,10 @@ class ProductRepository implements ProductRepositoryInterface
                 $this->applyAccentInsensitiveSearch($q, 'name', $search);
             });
         }
-        $models = $query->orderBy('created_at', 'desc')->get();
+        $models = $query->with(['activeBatches'])->orderBy('created_at', 'desc')->get();
         $products = [];
         foreach ($models as $model) {
-            $availableCount = $this->getAvailableCount($model->id);
+            $availableCount = $this->getAvailableCount($model);
             $products[] = ProductMapper::toDomain($model, $availableCount);
         }
         return $products;
@@ -84,14 +87,14 @@ class ProductRepository implements ProductRepositoryInterface
             });
         }
         $total = $query->count();
-        $models = $query->orderBy('created_at', 'desc')
+        $models = $query->with(['activeBatches'])->orderBy('created_at', 'desc')
             ->skip(($page - 1) * $limit)
             ->take($limit)
             ->get();
 
         $products = [];
         foreach ($models as $model) {
-            $availableCount = $this->getAvailableCount($model->id);
+            $availableCount = $this->getAvailableCount($model);
             $products[] = ProductMapper::toDomain($model, $availableCount);
         }
 
@@ -106,7 +109,7 @@ class ProductRepository implements ProductRepositoryInterface
         $model = ProductModel::withTrashed()->find($id);
         if (!$model) return null;
 
-        $availableCount = $this->getAvailableCount($model->id);
+        $availableCount = $this->getAvailableCount($model);
         return ProductMapper::toDomain($model, $availableCount);
     }
 
@@ -115,7 +118,7 @@ class ProductRepository implements ProductRepositoryInterface
         $model = ProductModel::where('slug', $slug)->first();
         if (!$model) return null;
 
-        $availableCount = $this->getAvailableCount($model->id);
+        $availableCount = $this->getAvailableCount($model);
         return ProductMapper::toDomain($model, $availableCount);
     }
 
@@ -124,7 +127,7 @@ class ProductRepository implements ProductRepositoryInterface
         $model = ProductMapper::toPersistence($product);
         $model->save();
 
-        $availableCount = $this->getAvailableCount($model->id);
+        $availableCount = $this->getAvailableCount($model);
         return ProductMapper::toDomain($model, $availableCount);
     }
 

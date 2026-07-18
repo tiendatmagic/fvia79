@@ -47,4 +47,9 @@ class ProductModel extends Model
     {
         return $this->hasMany(InventoryItemModel::class, 'product_id');
     }
+
+    public function activeBatches(): HasMany
+    {
+        return $this->hasMany(InventoryBatchModel::class, 'product_id')->where('status', 'active');
+    }
 }

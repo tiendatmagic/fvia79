@@ -954,5 +954,12 @@
       2. Chuyển đổi thuộc tính `routerLink="..."` thành thuộc tính động `[routerLink]="stateService.isAuthenticated() ? '...' : '/login'"` để chuyển hướng linh hoạt người dùng chưa đăng nhập về trang đăng nhập.
       3. Đã chạy kiểm tra biên dịch `npm run build` thành công không phát sinh lỗi.
 
-
-
+  - **[TỐI ƯU HÓA DATABASE INDEX & KHẮC PHỤC LỖI TRUY VẤN N+1]**:
+    - Yêu cầu: Kiểm tra cấu trúc database, tối ưu hóa các chỉ mục (indexes) và cải thiện hiệu suất truy vấn hệ thống.
+    - Giải pháp & Triển khai:
+      1. **Bổ sung Indexes**: Tạo và chạy migration `2026_07_18_020000_add_performance_indexes_to_tables.php` bổ sung index cho `deleted_at`, `created_at` trên bảng `products` (SoftDeletes và pagination order), và `created_at` trên bảng `inventory_batches` (FIFO order).
+      2. **Khắc phục lỗi N+1 Query**: 
+         - Thêm quan hệ `activeBatches()` trong `ProductModel.php`.
+         - Cấu hình eager loading `with(['activeBatches'])` trong `ProductRepository.php` khi truy vấn danh sách sản phẩm.
+         - Cập nhật hàm `getAvailableCount` để kiểm tra và lấy trực tiếp dữ liệu từ quan hệ đã được load sẵn trong RAM, giảm từ `1 + N` query xuống còn đúng `2` query duy nhất cho toàn bộ danh sách sản phẩm.
+      3. **Xác minh**: Chạy `php artisan migrate` và `php artisan test` hoàn thành 100% test case passed.
