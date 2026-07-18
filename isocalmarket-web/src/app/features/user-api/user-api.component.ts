@@ -29,6 +29,11 @@ import { RouterModule } from '@angular/router';
 export class UserApiComponent {
   public readonly state = inject(StateService);
   public readonly activeTab = signal<'bash' | 'cmd'>('bash');
+  public readonly showApiKey = signal<boolean>(false);
+
+  public toggleShowApiKey() {
+    this.showApiKey.update(val => !val);
+  }
 
   public readonly isAdmin = computed(() => {
     return this.state.currentUser()?.role === 'admin';

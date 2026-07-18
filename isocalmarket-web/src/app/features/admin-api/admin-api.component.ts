@@ -29,6 +29,11 @@ export class AdminApiComponent {
   
   // Tabs for endpoints containing body payloads (Import Inventory)
   public readonly importInventoryTab = signal<'bash' | 'cmd'>('bash');
+  public readonly showApiKey = signal<boolean>(false);
+
+  public toggleShowApiKey() {
+    this.showApiKey.update(val => !val);
+  }
 
   public readonly siteUrl = computed(() => {
     const baseUrl = environment.apiBaseUrl;

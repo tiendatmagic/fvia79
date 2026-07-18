@@ -1160,3 +1160,14 @@
          * Giao diện tải mượt mà, triệt tiêu hoàn toàn hiện tượng nhấp nháy dữ liệu cũ/mới và ngăn chặn 100% tình trạng sai lệch dữ liệu bảng do Race Condition.
          * Dự án frontend đã biên dịch thành công (`npm run build`) không có lỗi.
          * **Sửa lỗi Nghiệp vụ Serialization (`__PHP_Incomplete_Class` 500 Error)**: Khắc phục lỗi khi lưu trữ trực tiếp các đối tượng Entity (`Product` class) vào cache thô dẫn đến lỗi deserialization. Chuyển đổi thành mảng liên kết (associative arrays) thuần túy trước khi lưu vào cache và tự phục dựng lại đối tượng khi đọc ra. Đã giải phóng cache thành công (`php artisan cache:clear`).
+
+  - **[TÍNH NĂNG] Ẩn/Hiện API Key cho User API và Admin API**:
+    - **Yêu cầu**: Cổng API tích hợp cho User (`/user-api`) và Admin (`/admin/api`) cần có nút ẩn/hiện API Key, mặc định là ẩn.
+    - **Giải pháp & Triển khai**:
+      1. Khai báo thêm signal `showApiKey = signal<boolean>(false);` và phương thức `toggleShowApiKey()` để đảo ngược trạng thái ẩn/hiện trong [user-api.component.ts](file:///d:/git/isocalmarket/isocalmarket-web/src/app/features/user-api/user-api.component.ts) và [admin-api.component.ts](file:///d:/git/isocalmarket/isocalmarket-web/src/app/features/admin-api/admin-api.component.ts).
+      2. Cập nhật file HTML [user-api.component.html](file:///d:/git/isocalmarket/isocalmarket-web/src/app/features/user-api/user-api.component.html) và [admin-api.component.html](file:///d:/git/isocalmarket/isocalmarket-web/src/app/features/admin-api/admin-api.component.html):
+         * Sử dụng biểu thức check `showApiKey()` để che API Key thành chuỗi dấu chấm tròn `••••••••••••••••••••••••••••••••` khi ở chế độ ẩn.
+         * Thêm nút bấm chuyển đổi trạng thái với icon `eye` (hiển thị) hoặc `eye-slash` (ẩn) đặt nằm trước nút copy.
+         * Nới rộng padding-right của ô API Key từ `pr-12` sang `pr-20` để hiển thị cân đối và không bị đè văn bản khi có 2 nút hành động.
+      3. Đã chạy biên dịch kiểm tra dự án frontend thành công (`npm run build`) không có lỗi.
+
