@@ -13,6 +13,12 @@ export class OrderStore {
   private readonly toast = inject(ToastService);
  
   private activeFetchOrdersSub?: Subscription;
+ 
+  private readonly ordersCache = new Map<string, { data: any; timestamp: number }>();
+ 
+  public clearCache() {
+    this.ordersCache.clear();
+  }
 
   public readonly orders = signal<any[]>([]);
   public readonly loading = signal<boolean>(false);
@@ -29,6 +35,24 @@ export class OrderStore {
     startDate?: string,
     endDate?: string
   ) {
+    const cacheKey = JSON.stringify({ page, limit, search, status, startDate, endDate });
+    const cached = this.ordersCache.get(cacheKey);
+    if (cached && (Date.now() - cached.timestamp < 60000)) {
+      const res = cached.data;
+      if (res && res.data) {
+        this.orders.set(res.data);
+        this.totalOrders.set(res.meta.total);
+        this.currentPage.set(res.meta.page);
+        this.lastPage.set(res.meta.last_page);
+      } else {
+        this.orders.set(res);
+        this.totalOrders.set(res.length);
+        this.currentPage.set(1);
+        this.lastPage.set(1);
+      }
+      return of(res);
+    }
+ 
     if (this.activeFetchOrdersSub) {
       this.activeFetchOrdersSub.unsubscribe();
     }
@@ -58,6 +82,7 @@ export class OrderStore {
  
     const req$ = this.api.get<any>('v1/orders', params).pipe(
       tap((res) => {
+        this.ordersCache.set(cacheKey, { data: res, timestamp: Date.now() });
         if (res && res.data) {
           this.orders.set(res.data);
           this.totalOrders.set(res.meta.total);
@@ -110,6 +135,7 @@ export class OrderStore {
     this.loading.set(true);
     return this.api.post<any>('v1/orders', { items }).pipe(
       tap((res) => {
+        this.clearCache();
         this.toast.showToast('Đặt hàng thành công!', 'success');
         this.fetchOrders().subscribe();
       }),

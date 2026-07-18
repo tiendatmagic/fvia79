@@ -2,14 +2,12 @@ import { Component, OnInit, inject, signal } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { Router } from '@angular/router';
-import { ApiService } from '@core/services/api.service';
 import { StateService } from '@core/services/state.service';
 import { PaginationComponent } from '@shared/components/pagination/pagination.component';
 import { BadgeComponent } from '@shared/components/badge/badge.component';
 import { CardComponent } from '@shared/components/card/card.component';
 import { PageHeaderComponent } from '@shared/components/page-header/page-header.component';
 import { IconComponent } from '@shared/components/icon/icon.component';
-import { HttpParams } from '@angular/common/http';
 import { CustomSearchInputComponent } from '@shared/components/custom-search-input/custom-search-input.component';
 import { TooltipDirective } from '@shared/components/tooltip/tooltip.directive';
 import { CustomSelectComponent } from '@shared/components/custom-select/custom-select.component';
@@ -42,7 +40,6 @@ import { TableComponent, TableCellDirective, TableColumn } from '@shared/compone
   `]
 })
 export class AdminOrdersComponent implements OnInit {
-  private readonly apiService = inject(ApiService);
   public readonly stateService = inject(StateService);
   private readonly router = inject(Router);
 
@@ -83,27 +80,14 @@ export class AdminOrdersComponent implements OnInit {
     this.currentPage.set(page);
     this.loading.set(true);
 
-    let params = new HttpParams()
-      .set('page', page.toString())
-      .set('limit', this.limit.toString());
-
-    if (this.selectedStatus()) {
-      params = params.set('status', this.selectedStatus());
-    }
-
-    if (this._searchQuery().trim()) {
-      params = params.set('search', this._searchQuery().trim());
-    }
-
-    if (this.selectedDateRange.startDate) {
-      params = params.set('start_date', this.selectedDateRange.startDate);
-    }
-
-    if (this.selectedDateRange.endDate) {
-      params = params.set('end_date', this.selectedDateRange.endDate);
-    }
-
-    this.apiService.get<any>('v1/orders', params).subscribe({
+    this.stateService.orderStore.fetchOrders(
+      page,
+      this.limit,
+      this._searchQuery().trim() || undefined,
+      this.selectedStatus() || undefined,
+      this.selectedDateRange.startDate || undefined,
+      this.selectedDateRange.endDate || undefined
+    ).subscribe({
       next: (res) => {
         this.orders.set(res.data || []);
         const totalCount = res.meta?.total || 0;

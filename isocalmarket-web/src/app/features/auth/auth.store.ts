@@ -6,6 +6,11 @@ import { Router } from '@angular/router';
 import { tap, catchError, finalize, map, shareReplay } from 'rxjs/operators';
 import { of, Observable } from 'rxjs';
 import { shouldShowWelcomeNotice, WelcomeNoticeModalComponent } from './welcome-notice-modal/welcome-notice-modal.component';
+import { ProductStore } from '../products/product.store';
+import { InventoryStore } from '../inventory/inventory.store';
+import { OrderStore } from '../orders/order.store';
+import { UserStore } from '../admin-users/user.store';
+import { SystemSettingStore } from '../admin-settings/system-setting.store';
 
 @Injectable({
   providedIn: 'root'
@@ -15,6 +20,12 @@ export class AuthStore {
   private readonly toast = inject(ToastService);
   private readonly router = inject(Router);
   private readonly modalService = inject(ModalService);
+ 
+  private readonly productStore = inject(ProductStore);
+  private readonly inventoryStore = inject(InventoryStore);
+  private readonly orderStore = inject(OrderStore);
+  private readonly userStore = inject(UserStore);
+  private readonly systemSettingStore = inject(SystemSettingStore);
 
   public readonly currentUser = signal<any | null>(null);
   public readonly authLoading = signal<boolean>(false);
@@ -137,6 +148,12 @@ export class AuthStore {
 
   public logout() {
     this.authLoading.set(true);
+    this.productStore.clearCache();
+    this.inventoryStore.clearCache();
+    this.orderStore.clearCache();
+    this.userStore.clearCache();
+    this.systemSettingStore.clearCache();
+ 
     return this.api.post<any>('v1/auth/logout', {}).pipe(
       tap(() => {
         this.currentUser.set(null);

@@ -14,6 +14,14 @@ export class ProductStore {
  
   private activeFetchCategoriesPaginatedSub?: Subscription;
   private activeFetchProductsSub?: Subscription;
+ 
+  private readonly productsCache = new Map<string, { data: any; timestamp: number }>();
+  private readonly categoriesPaginatedCache = new Map<string, { data: any; timestamp: number }>();
+ 
+  public clearCache() {
+    this.productsCache.clear();
+    this.categoriesPaginatedCache.clear();
+  }
 
   public readonly products = signal<any[]>([]);
   public readonly categories = signal<any[]>([]);
@@ -27,6 +35,24 @@ export class ProductStore {
   public readonly lastCategoryPage = signal<number>(1);
 
   public fetchCategoriesPaginated(page: number, limit: number, search?: string) {
+    const cacheKey = JSON.stringify({ page, limit, search });
+    const cached = this.categoriesPaginatedCache.get(cacheKey);
+    if (cached && (Date.now() - cached.timestamp < 60000)) {
+      const res = cached.data;
+      if (res && res.data) {
+        this.paginatedCategories.set(res.data);
+        this.totalCategories.set(res.meta.total);
+        this.currentCategoryPage.set(res.meta.page);
+        this.lastCategoryPage.set(res.meta.last_page);
+      } else {
+        this.paginatedCategories.set(res || []);
+        this.totalCategories.set((res || []).length);
+        this.currentCategoryPage.set(1);
+        this.lastCategoryPage.set(1);
+      }
+      return of(res);
+    }
+ 
     if (this.activeFetchCategoriesPaginatedSub) {
       this.activeFetchCategoriesPaginatedSub.unsubscribe();
     }
@@ -44,6 +70,7 @@ export class ProductStore {
  
     const req$ = this.api.get<any>('v1/categories', params).pipe(
       tap((res) => {
+        this.categoriesPaginatedCache.set(cacheKey, { data: res, timestamp: Date.now() });
         if (res && res.data) {
           this.paginatedCategories.set(res.data);
           this.totalCategories.set(res.meta.total);
@@ -104,11 +131,31 @@ export class ProductStore {
   }
 
   public fetchProducts(page?: number, limit?: number, categoryId?: string, search?: string, status?: string, filterDeleted?: string) {
+    const isStorefrontLoad = page === undefined && limit === undefined && categoryId === undefined && search === undefined && status === 'active' && filterDeleted === undefined;
+    if (!isStorefrontLoad) {
+      const cacheKey = JSON.stringify({ page, limit, categoryId, search, status, filterDeleted });
+      const cached = this.productsCache.get(cacheKey);
+      if (cached && (Date.now() - cached.timestamp < 60000)) {
+        const res = cached.data;
+        if (res && res.data) {
+          this.products.set(res.data);
+          this.totalProducts.set(res.meta.total);
+          this.currentPage.set(res.meta.page);
+          this.lastPage.set(res.meta.last_page);
+        } else {
+          this.products.set(res);
+          this.totalProducts.set(res.length);
+          this.currentPage.set(1);
+          this.lastPage.set(1);
+        }
+        return of(res);
+      }
+    }
+ 
     if (this.activeFetchProductsSub) {
       this.activeFetchProductsSub.unsubscribe();
     }
  
-    const isStorefrontLoad = page === undefined && limit === undefined && categoryId === undefined && search === undefined && status === 'active' && filterDeleted === undefined;
     if (isStorefrontLoad && this.products().length > 0) {
       let params = new HttpParams();
       if (status) {
@@ -151,6 +198,10 @@ export class ProductStore {
  
     const req$ = this.api.get<any>('v1/products', params).pipe(
       tap((res) => {
+        if (!isStorefrontLoad) {
+          const cacheKey = JSON.stringify({ page, limit, categoryId, search, status, filterDeleted });
+          this.productsCache.set(cacheKey, { data: res, timestamp: Date.now() });
+        }
         if (res && res.data) {
           this.products.set(res.data);
           this.totalProducts.set(res.meta.total);
@@ -187,6 +238,7 @@ export class ProductStore {
     this.loading.set(true);
     return this.api.post<any>('v1/products', data).pipe(
       tap((res) => {
+        this.clearCache();
         this.toast.showToast('Tạo sản phẩm thành công!', 'success');
       }),
       catchError((err) => {
@@ -197,11 +249,12 @@ export class ProductStore {
       finalize(() => this.loading.set(false))
     );
   }
-
+ 
   public updateProduct(id: string, data: any) {
     this.loading.set(true);
     return this.api.put<any>(`v1/products/${id}`, data).pipe(
       tap(() => {
+        this.clearCache();
         this.toast.showToast('Cập nhật sản phẩm thành công!', 'success');
       }),
       catchError((err) => {
@@ -212,11 +265,12 @@ export class ProductStore {
       finalize(() => this.loading.set(false))
     );
   }
-
+ 
   public deleteProduct(id: string) {
     this.loading.set(true);
     return this.api.delete<any>(`v1/products/${id}`).pipe(
       tap(() => {
+        this.clearCache();
         this.toast.showToast('Xóa sản phẩm thành công!', 'success');
       }),
       catchError((err) => {
@@ -227,11 +281,12 @@ export class ProductStore {
       finalize(() => this.loading.set(false))
     );
   }
-
+ 
   public restoreProduct(id: string) {
     this.loading.set(true);
     return this.api.post<any>(`v1/products/${id}/restore`, {}).pipe(
       tap(() => {
+        this.clearCache();
         this.toast.showToast('Khôi phục sản phẩm thành công!', 'success');
       }),
       catchError((err) => {
@@ -247,6 +302,7 @@ export class ProductStore {
     this.loading.set(true);
     return this.api.post<any>('v1/categories', data).pipe(
       tap(() => {
+        this.clearCache();
         this.toast.showToast('Tạo danh mục thành công!', 'success');
       }),
       catchError((err) => {
@@ -257,11 +313,12 @@ export class ProductStore {
       finalize(() => this.loading.set(false))
     );
   }
-
+ 
   public updateCategory(id: string, data: any) {
     this.loading.set(true);
     return this.api.put<any>(`v1/categories/${id}`, data).pipe(
       tap(() => {
+        this.clearCache();
         this.toast.showToast('Cập nhật danh mục thành công!', 'success');
       }),
       catchError((err) => {
@@ -272,11 +329,12 @@ export class ProductStore {
       finalize(() => this.loading.set(false))
     );
   }
-
+ 
   public deleteCategory(id: string) {
     this.loading.set(true);
     return this.api.delete<any>(`v1/categories/${id}`).pipe(
       tap(() => {
+        this.clearCache();
         this.toast.showToast('Xóa danh mục thành công!', 'success');
       }),
       catchError((err) => {

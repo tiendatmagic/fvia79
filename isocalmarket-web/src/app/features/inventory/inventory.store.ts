@@ -13,6 +13,12 @@ export class InventoryStore {
   private readonly toast = inject(ToastService);
  
   private activeFetchItemsSub?: Subscription;
+ 
+  private readonly itemsCache = new Map<string, { data: any; timestamp: number }>();
+ 
+  public clearCache() {
+    this.itemsCache.clear();
+  }
 
   public readonly items = signal<any[]>([]);
   public readonly loading = signal<boolean>(false);
@@ -21,6 +27,24 @@ export class InventoryStore {
   public readonly lastPage = signal<number>(1);
 
   public fetchItems(filters: { product_id?: string; status?: string; search?: string } = {}, page?: number, limit?: number) {
+    const cacheKey = JSON.stringify({ filters, page, limit });
+    const cached = this.itemsCache.get(cacheKey);
+    if (cached && (Date.now() - cached.timestamp < 60000)) {
+      const res = cached.data;
+      if (res && res.data) {
+        this.items.set(res.data);
+        this.totalItems.set(res.meta.total);
+        this.currentPage.set(res.meta.page);
+        this.lastPage.set(res.meta.last_page);
+      } else {
+        this.items.set(res);
+        this.totalItems.set(res.length);
+        this.currentPage.set(1);
+        this.lastPage.set(1);
+      }
+      return of(res);
+    }
+ 
     if (this.activeFetchItemsSub) {
       this.activeFetchItemsSub.unsubscribe();
     }
@@ -47,6 +71,7 @@ export class InventoryStore {
  
     const req$ = this.api.get<any>('v1/inventory/items', params).pipe(
       tap((res) => {
+        this.itemsCache.set(cacheKey, { data: res, timestamp: Date.now() });
         if (res && res.data) {
           this.items.set(res.data);
           this.totalItems.set(res.meta.total);
@@ -87,6 +112,7 @@ export class InventoryStore {
       raw_data: rawData
     }).pipe(
       tap((res) => {
+        this.clearCache();
         this.toast.showToast(res.message || 'Import lô hàng thành công!', 'success');
       }),
       catchError((err) => {
@@ -97,15 +123,16 @@ export class InventoryStore {
       finalize(() => this.loading.set(false))
     );
   }
-
+ 
   public fetchItemDetail(id: string) {
     return this.api.get<any>(`v1/inventory/items/${id}`);
   }
-
+ 
   public updateItem(id: string, payload: { product_id: string; batch_name: string; keys_pool: string; status: string; last_updated_at?: string }) {
     this.loading.set(true);
     return this.api.put<any>(`v1/inventory/items/${id}`, payload).pipe(
       tap(() => {
+        this.clearCache();
         this.toast.showToast('Cập nhật lô hàng thành công!', 'success');
       }),
       catchError((err) => {
@@ -116,11 +143,12 @@ export class InventoryStore {
       finalize(() => this.loading.set(false))
     );
   }
-
+ 
   public deleteItem(id: number, productIdFilter?: string) {
     this.loading.set(true);
     return this.api.delete<any>(`v1/inventory/items/${id}`).pipe(
       tap(() => {
+        this.clearCache();
         this.toast.showToast('Xóa tài nguyên kho thành công!', 'success');
       }),
       catchError((err) => {
