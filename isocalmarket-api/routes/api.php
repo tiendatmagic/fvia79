@@ -28,6 +28,7 @@ Route::prefix('v1')->group(function () {
     Route::middleware(['b2b.auth', 'admin'])->group(function () {
         Route::get('/admin/b2b/users', ['App\Http\Controllers\B2bAdminController', 'indexUsers']);
         Route::get('/admin/b2b/orders', ['App\Http\Controllers\B2bAdminController', 'indexOrders']);
+        Route::post('/admin/b2b/products/{id}/inventory', ['App\Http\Controllers\B2bAdminController', 'importInventory']);
     });
 
     Route::middleware(['jwt.auth'])->group(function () {

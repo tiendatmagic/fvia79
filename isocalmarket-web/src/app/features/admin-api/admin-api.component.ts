@@ -25,6 +25,9 @@ import { environment } from '@environments/environment';
 export class AdminApiComponent {
   public readonly state = inject(StateService);
   
+  // Tabs for endpoints containing body payloads (Import Inventory)
+  public readonly importInventoryTab = signal<'bash' | 'cmd'>('bash');
+
   public readonly siteUrl = computed(() => {
     const baseUrl = environment.apiBaseUrl;
     if (baseUrl.endsWith('/api')) {
@@ -73,5 +76,29 @@ export class AdminApiComponent {
     const key = this.apiKey() || 'API_KEY_CUA_BAN';
     const text = `${this.siteUrl()}/api/v1/admin/b2b/orders?api_key=${key}&page=1&limit=10`;
     this.copyToClipboard(text, 'đường dẫn Get B2B Orders');
+  }
+
+  // API 3: Import Inventory
+  public copyImportInventoryCurl() {
+    const key = this.apiKey() || 'API_KEY_CUA_BAN';
+    const text = `curl -X POST "${this.siteUrl()}/api/v1/admin/b2b/products/PRODUCT_UUID/inventory" -H "Content-Type: application/json" -H "X-API-KEY: ${key}" -d '{"batch_name": "Lô hàng mới", "content": "tai_khoan_1\\ntai_khoan_2"}'`;
+    this.copyToClipboard(text, 'mẫu CURL Import Inventory');
+  }
+
+  public copyImportInventoryWindowsCurl() {
+    const key = this.apiKey() || 'API_KEY_CUA_BAN';
+    const text = `curl -X POST "${this.siteUrl()}/api/v1/admin/b2b/products/PRODUCT_UUID/inventory" -H "Content-Type: application/json" -H "X-API-KEY: ${key}" -d "{\\"batch_name\\": \\"Lô hàng mới\\", \\"content\\": \\"tai_khoan_1\\\\ntai_khoan_2\\"}"`;
+    this.copyToClipboard(text, 'mẫu CURL Import Inventory (Windows CMD)');
+  }
+
+  public copyImportInventoryFileCurl() {
+    const key = this.apiKey() || 'API_KEY_CUA_BAN';
+    const text = `curl -X POST "${this.siteUrl()}/api/v1/admin/b2b/products/PRODUCT_UUID/inventory" -H "X-API-KEY: ${key}" -F "batch_name=Lô hàng mới" -F "file=@inventory.txt"`;
+    this.copyToClipboard(text, 'mẫu CURL Import bằng file');
+  }
+
+  public copyImportInventoryUrl() {
+    const text = `${this.siteUrl()}/api/v1/admin/b2b/products/PRODUCT_UUID/inventory`;
+    this.copyToClipboard(text, 'đường dẫn Import Inventory');
   }
 }

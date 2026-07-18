@@ -4,6 +4,8 @@ namespace Tests\Feature;
 
 use Tests\TestCase;
 use App\Infrastructure\Persistence\Eloquent\UserModel;
+use App\Infrastructure\Persistence\Eloquent\ProductModel;
+use App\Infrastructure\Persistence\Eloquent\CategoryModel;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 
 class B2bAdminApiTest extends TestCase
@@ -98,6 +100,52 @@ class B2bAdminApiTest extends TestCase
         $response->assertJsonStructure([
             'success',
             'orders'
+        ]);
+    }
+
+    public function test_admin_can_import_inventory(): void
+    {
+        $category = CategoryModel::create([
+            'name' => 'Test Category',
+            'slug' => 'test-category',
+            'description' => 'Test Description'
+        ]);
+
+        $product = ProductModel::create([
+            'category_id' => $category->id,
+            'name' => 'Test Product',
+            'slug' => 'test-product',
+            'description' => 'Test Description',
+            'price' => 10000.0,
+            'status' => 'active'
+        ]);
+
+        // Test 1: Import via JSON payload 'content'
+        $response = $this->withHeaders([
+            'X-API-KEY' => 'ADMIN-KEY-TEST-12345'
+        ])->postJson("/api/v1/admin/b2b/products/{$product->id}/inventory", [
+            'batch_name' => 'Lô hàng test',
+            'content' => "tài khoản 1\ntài khoản 2"
+        ]);
+
+        $response->assertStatus(201);
+        $response->assertJson([
+            'success' => true
+        ]);
+
+        // Test 2: Import via file upload
+        $file = \Illuminate\Http\UploadedFile::fake()->createWithContent('inventory.txt', "tài khoản 3\ntài khoản 4");
+        
+        $responseFile = $this->withHeaders([
+            'X-API-KEY' => 'ADMIN-KEY-TEST-12345'
+        ])->post("/api/v1/admin/b2b/products/{$product->id}/inventory", [
+            'batch_name' => 'Lô hàng test file',
+            'file' => $file
+        ]);
+
+        $responseFile->assertStatus(201);
+        $responseFile->assertJson([
+            'success' => true
         ]);
     }
 }
