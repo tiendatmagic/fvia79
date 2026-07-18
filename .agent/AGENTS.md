@@ -1214,3 +1214,7 @@
       2. **Toàn vẹn dữ liệu (DB Transaction)**: Bọc toàn bộ logic cập nhật trạng thái hóa đơn (`completed`) và cộng số dư tài khoản người dùng vào trong khối `DB::transaction(...)`. Đảm bảo nếu một trong hai thao tác thất bại, hệ thống sẽ rollback dữ liệu về trạng thái trước đó để tránh trường hợp hóa đơn đã duyệt nhưng người dùng chưa được cộng tiền.
       3. **Đối soát thủ công bù**: Viết script xử lý bù số dư `0.1` USDT thành công cho hóa đơn `#234` bị lỗi trước đó.
       4. **Xác minh**: Chạy thử nghiệm thành công, hệ thống đã hoạt động trơn tru không còn lỗi phát sinh.
+
+  - **[TỐI ƯU HIỆU SUẤT] Khôi phục bộ nhớ đệm cachedTransactions cho Moralis**:
+    - **Yêu cầu**: Tối ưu số lượng API request khi nhiều người dùng cùng nạp tiền tại một thời điểm, tránh bị block rate limit từ Moralis.
+    - **Giải pháp & Triển khai**: Khôi phục biến `$cachedTransactions` trong [DepositService.php](file:///d:/git/isocalmarket/isocalmarket-api/app/Application/Services/DepositService.php). Khi quét nhiều hóa đơn trong cùng một phiên chạy cron job, hệ thống chỉ gọi HTTP request lên API Moralis đúng 1 lần duy nhất để lấy 100 giao dịch mới nhất, rồi dùng bộ nhớ đệm này để đối soát cho tất cả hóa đơn còn lại trong vòng lặp.

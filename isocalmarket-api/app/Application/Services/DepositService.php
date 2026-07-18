@@ -270,22 +270,28 @@ class DepositService
         $tokenContract = strtolower($this->tokenContractAddress);
         
         try {
-            // Moralis API: GET /api/v2.2/{address}/erc20/transfers
-            // Auth via X-API-Key header, chain=bsc, filter by USDT contract
-            $response = Http::timeout(10)
-                ->withHeader('X-API-Key', $this->scannerApiKey)
-                ->get("https://deep-index.moralis.io/api/v2.2/{$adminWallet}/erc20/transfers", [
-                    'chain'               => 'bsc',
-                    'contract_addresses'  => [$this->tokenContractAddress],
-                    'order'               => 'DESC',
-                    'limit'               => 100,
-                ]);
+            if ($this->cachedTransactions === null) {
+                // Moralis API: GET /api/v2.2/{address}/erc20/transfers
+                // Auth via X-API-Key header, chain=bsc, filter by USDT contract
+                $response = Http::timeout(10)
+                    ->withHeader('X-API-Key', $this->scannerApiKey)
+                    ->get("https://deep-index.moralis.io/api/v2.2/{$adminWallet}/erc20/transfers", [
+                        'chain'               => 'bsc',
+                        'contract_addresses'  => [$this->tokenContractAddress],
+                        'order'               => 'DESC',
+                        'limit'               => 100,
+                    ]);
 
-            if ($response->successful()) {
-                $result = $response->json();
+                if ($response->successful()) {
+                    $result = $response->json();
+                    $this->cachedTransactions = $result['result'] ?? [];
+                } else {
+                    Log::error("Moralis API HTTP error: " . $response->status() . " - " . $response->body());
+                    $this->cachedTransactions = [];
+                }
+            }
 
-                if (isset($result['result']) && is_array($result['result'])) {
-                    $transactions = $result['result'];
+            $transactions = $this->cachedTransactions;
 
                     foreach ($transactions as $tx) {
                         // 1. Kiểm tra token có khớp với token đối soát cấu hình không
@@ -340,12 +346,6 @@ class DepositService
                         Log::info("Deposit successfully matched and processed: Invoice #{$deposit->getCode()}, Amount: {$deposit->getAmountUsdt()} USDT, TxHash: {$txHash}");
                         return true;
                     }
-                } else {
-                    Log::warning("Moralis API response error: " . json_encode($result));
-                }
-            } else {
-                Log::error("Moralis API HTTP error: " . $response->status() . " - " . $response->body());
-            }
         } catch (\Exception $e) {
             Log::error("Failed to query Moralis transactions: " . $e->getMessage());
         }
