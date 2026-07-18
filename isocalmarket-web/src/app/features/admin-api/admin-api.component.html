@@ -1,0 +1,453 @@
+<div class="max-w-[1530px] mx-auto w-full p-4 sm:p-6 space-y-6">
+  <!-- Tiêu đề trang -->
+  <app-page-header
+    title="Admin API"
+    description="Cổng kết nối đặc quyền dành cho Admin để tự động hóa quản lý đại lý, cập nhật số dư và đối soát hệ thống."
+  />
+
+  <!-- Card 1: API Key của Admin & Cấu hình -->
+  <div app-card class="p-6 space-y-5">
+    <div class="flex items-center gap-2 border-b border-slate-100 dark:border-slate-800/60 pb-3">
+      <app-icon name="key" class="w-5 h-5 text-[var(--color-primary)]" />
+      <h3 class="text-sm font-black text-slate-700 dark:text-slate-300 uppercase tracking-wider">
+        API Key của Admin & Cấu hình
+      </h3>
+    </div>
+
+    <!-- Cảnh báo bảo mật -->
+    <div
+      class="bg-amber-50 dark:bg-amber-950/30 border border-amber-200/60 dark:border-amber-900/50 rounded-2xl p-5 flex items-start gap-4 text-xs font-semibold leading-relaxed"
+    >
+      <div
+        class="w-10 h-10 rounded-full bg-amber-100 dark:bg-amber-900/50 text-amber-600 dark:text-amber-400 flex items-center justify-center shrink-0"
+      >
+        <app-icon name="warning" class="w-5 h-5" />
+      </div>
+      <div class="space-y-1">
+        <h4 class="text-sm font-extrabold text-amber-800 dark:text-amber-300">
+          Cảnh báo bảo mật cấp cao!
+        </h4>
+        <p class="text-xs text-amber-700/90 dark:text-amber-400/80 leading-relaxed font-semibold">
+          Các cổng API dưới đây cho phép can thiệp trực tiếp vào tài khoản người dùng và số dư hệ thống. 
+          Tuyệt đối không chia sẻ API Key của tài khoản Admin cho bất kỳ ai hoặc đẩy lên mã nguồn công khai (Github, Gitlab).
+        </p>
+      </div>
+    </div>
+
+    <!-- API Base URL và API Key containers -->
+    <div class="flex flex-col md:flex-row items-stretch md:items-center gap-4">
+      <!-- Base URL -->
+      <div
+        class="relative flex-1 flex items-center bg-slate-50 dark:bg-slate-950 h-12 px-4 pr-12 rounded-xl border border-slate-200/60 dark:border-slate-900 min-w-0"
+      >
+        <span
+          class="text-xs font-bold text-slate-400 dark:text-slate-500 uppercase tracking-wider mr-2 shrink-0 select-none"
+        >
+          Base URL:
+        </span>
+        <span
+          class="text-sm font-extrabold font-mono text-slate-700 dark:text-slate-300 truncate flex-1 select-all"
+        >
+          {{ siteUrl() }}/api/v1
+        </span>
+        <button
+          (click)="copyToClipboard(siteUrl() + '/api/v1', 'Base URL')"
+          class="absolute right-3.5 top-1/2 -translate-y-1/2 text-slate-400 dark:text-slate-500 hover:text-[var(--color-primary)] dark:hover:text-white active:scale-95 transition-all p-1 cursor-pointer"
+          title="Sao chép Base URL"
+        >
+          <app-icon name="copy" class="w-4 h-4" />
+        </button>
+      </div>
+
+      <!-- Admin API Key -->
+      <div
+        class="relative flex-1 flex items-center bg-slate-50 dark:bg-slate-950 h-12 px-4 pr-12 rounded-xl border border-slate-200/60 dark:border-slate-900 min-w-0"
+      >
+        <span
+          class="text-xs font-bold text-slate-400 dark:text-slate-500 uppercase tracking-wider mr-2 shrink-0 select-none"
+        >
+          Admin API Key:
+        </span>
+        <span
+          class="text-sm font-extrabold font-mono text-slate-700 dark:text-slate-300 truncate flex-1"
+        >
+          {{ apiKey() || 'Chưa cấu hình API Key' }}
+        </span>
+        @if (apiKey()) {
+          <button
+            (click)="copyToClipboard(apiKey()!, 'Admin API Key')"
+            class="absolute right-3.5 top-1/2 -translate-y-1/2 text-slate-400 dark:text-slate-500 hover:text-[var(--color-primary)] dark:hover:text-white active:scale-95 transition-all p-1 cursor-pointer"
+            title="Sao chép Admin API Key"
+          >
+            <app-icon name="copy" class="w-4 h-4" />
+          </button>
+        }
+      </div>
+    </div>
+  </div>
+
+  <!-- Card 2: Tài liệu tích hợp B2B Admin API -->
+  <div app-card class="p-6 space-y-6">
+    <div
+      class="flex flex-col md:flex-row md:items-center md:justify-between border-b border-slate-100 dark:border-slate-800/60 pb-3 gap-2"
+    >
+      <div class="flex items-center gap-2">
+        <app-icon name="code" class="w-5 h-5 text-[var(--color-primary)]" />
+        <h3 class="text-sm font-black text-slate-700 dark:text-slate-300 uppercase tracking-wider">
+          Tài liệu tích hợp B2B Admin API
+        </h3>
+      </div>
+      <span class="text-xs font-bold text-slate-400 dark:text-slate-500">
+        Cổng kết nối đặc quyền dành cho quản trị hệ thống và đối soát thành viên B2B
+      </span>
+    </div>
+
+    <!-- API LIST -->
+    <div class="space-y-8 divide-y divide-slate-100 dark:divide-slate-800">
+      
+      <!-- API 1: List B2B Resellers -->
+      <div class="pt-0 space-y-4">
+        <div class="flex items-start gap-3">
+          <div class="w-7 h-7 rounded-full bg-[var(--color-primary)]/10 text-[var(--color-primary)] text-xs font-black flex items-center justify-center shrink-0 mt-0.5">
+            1
+          </div>
+          <div>
+            <h4 class="text-sm font-extrabold text-slate-800 dark:text-white">
+              1. Lấy danh sách thành viên B2B
+            </h4>
+            <p class="text-xs font-semibold text-slate-500 dark:text-slate-400 mt-1">
+              Trả về toàn bộ danh sách thành viên trên hệ thống bao gồm hồ sơ, vai trò, số dư ví hiện tại và trạng thái khóa API.
+            </p>
+          </div>
+        </div>
+
+        <div class="flex flex-wrap items-center gap-2">
+          <span class="text-[10px] font-black uppercase tracking-wider bg-blue-500 text-white px-2 py-0.5 rounded">
+            GET
+          </span>
+          <span class="font-mono text-xs font-extrabold text-slate-600 dark:text-slate-300 bg-slate-100 dark:bg-slate-900 px-2 py-1 rounded">
+            /api/v1/admin/b2b/users
+          </span>
+        </div>
+
+        <div class="space-y-3">
+          <!-- Curl -->
+          <div class="space-y-1.5">
+            <span class="text-[10px] font-bold text-slate-400 dark:text-slate-500 uppercase tracking-wider block">Mẫu gọi API (CURL)</span>
+            <div class="relative bg-slate-50 dark:bg-slate-950 rounded-xl border border-slate-200/60 dark:border-slate-900 overflow-hidden">
+              <div class="overflow-x-auto p-3.5 pr-12 font-mono text-xs text-slate-700 dark:text-slate-300 leading-relaxed">
+                <pre class="whitespace-pre">curl -X GET "{{ siteUrl() }}/api/v1/admin/b2b/users?api_key={{ apiKey() || 'API_KEY_CUA_BAN' }}"</pre>
+              </div>
+              <button
+                (click)="copyGetUsersCurl()"
+                class="absolute right-3.5 top-3.5 text-slate-400 dark:text-slate-500 hover:text-[var(--color-primary)] dark:hover:text-white transition-colors cursor-pointer"
+                title="Copy CURL"
+              >
+                <app-icon name="copy" class="w-4 h-4" />
+              </button>
+            </div>
+          </div>
+
+          <!-- URL trực tiếp -->
+          <div class="space-y-1.5">
+            <span class="text-[10px] font-bold text-slate-400 dark:text-slate-500 uppercase tracking-wider block">URL gọi trực tiếp</span>
+            <div class="relative bg-slate-50 dark:bg-slate-950 rounded-xl border border-slate-200/60 dark:border-slate-900 overflow-hidden">
+              <div class="overflow-x-auto p-3.5 pr-12 font-mono text-xs text-slate-700 dark:text-slate-300 leading-relaxed">
+                <span class="text-[var(--color-primary)] font-semibold">{{ siteUrl() }}/api/v1/admin/b2b/users?api_key={{ apiKey() || 'API_KEY_CUA_BAN' }}</span>
+              </div>
+              <button
+                (click)="copyGetUsersUrl()"
+                class="absolute right-3.5 top-3.5 text-slate-400 dark:text-slate-500 hover:text-[var(--color-primary)] dark:hover:text-white transition-colors cursor-pointer"
+                title="Copy URL"
+              >
+                <app-icon name="copy" class="w-4 h-4" />
+              </button>
+            </div>
+          </div>
+
+          <!-- Response -->
+          <div class="space-y-1.5">
+            <span class="text-[10px] font-bold text-slate-400 dark:text-slate-500 uppercase tracking-wider block">RESPONSE MẪU (JSON)</span>
+            <div class="bg-slate-50 dark:bg-slate-950 rounded-xl p-4 font-mono text-xs text-slate-700 dark:text-slate-300 overflow-x-auto leading-relaxed border border-slate-200/60 dark:border-slate-900">
+              <pre class="whitespace-pre">{{ '{' }}
+  "success": true,
+  "users": [
+    {{ '{' }}
+      "id": "019f6699-e6d2-70f2-89bd-d3b93946a77d",
+      "name": "reseller_partner",
+      "email": "partner@gmail.com",
+      "phone": "0988777666",
+      "role": "customer",
+      "balance": 1500000,
+      "has_api_key": true
+    {{ '}' }}
+  ]
+{{ '}' }}</pre>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- API 2: Adjust Reseller Balance -->
+      <div class="pt-8 space-y-4">
+        <div class="flex items-start gap-3">
+          <div class="w-7 h-7 rounded-full bg-[var(--color-primary)]/10 text-[var(--color-primary)] text-xs font-black flex items-center justify-center shrink-0 mt-0.5">
+            2
+          </div>
+          <div>
+            <h4 class="text-sm font-extrabold text-slate-800 dark:text-white">
+              2. Cộng/trừ tiền tài khoản thành viên
+            </h4>
+            <p class="text-xs font-semibold text-slate-500 dark:text-slate-400 mt-1">
+              Điều chỉnh số dư ví của thành viên. Truyền số dương để cộng tiền nạp, số âm để trừ phạt hoặc thu hồi số dư.
+            </p>
+          </div>
+        </div>
+
+        <div class="flex flex-wrap items-center gap-2">
+          <span class="text-[10px] font-black uppercase tracking-wider bg-teal-600 text-white px-2 py-0.5 rounded">
+            POST
+          </span>
+          <span class="font-mono text-xs font-extrabold text-slate-600 dark:text-slate-300 bg-slate-100 dark:bg-slate-900 px-2 py-1 rounded">
+            /api/v1/admin/b2b/users/balance
+          </span>
+        </div>
+
+        <div class="space-y-3">
+          <!-- Curl Tabs -->
+          <div class="space-y-2">
+            <div class="flex items-center gap-1 border-b border-slate-200/60 dark:border-slate-900 pb-1">
+              <button
+                (click)="adjustBalanceTab.set('bash')"
+                [class]="adjustBalanceTab() === 'bash'
+                  ? 'text-xs font-bold text-[var(--color-primary)] border-b-2 border-[var(--color-primary)] pb-1 px-3 -mb-1.5 transition-all cursor-pointer'
+                  : 'text-xs font-semibold text-slate-400 dark:text-slate-500 pb-1 px-3 -mb-1.5 hover:text-slate-600 dark:hover:text-slate-400 transition-all cursor-pointer'"
+              >
+                Linux / macOS / Bash
+              </button>
+              <button
+                (click)="adjustBalanceTab.set('cmd')"
+                [class]="adjustBalanceTab() === 'cmd'
+                  ? 'text-xs font-bold text-[var(--color-primary)] border-b-2 border-[var(--color-primary)] pb-1 px-3 -mb-1.5 transition-all cursor-pointer'
+                  : 'text-xs font-semibold text-slate-400 dark:text-slate-500 pb-1 px-3 -mb-1.5 hover:text-slate-600 dark:hover:text-slate-400 transition-all cursor-pointer'"
+              >
+                Windows CMD
+              </button>
+            </div>
+
+            @if (adjustBalanceTab() === 'bash') {
+              <div class="relative bg-slate-50 dark:bg-slate-950 rounded-xl border border-slate-200/60 dark:border-slate-900 overflow-hidden mt-1.5">
+                <div class="overflow-x-auto p-3.5 pr-12 font-mono text-xs text-slate-700 dark:text-slate-300 leading-relaxed">
+                  <pre class="whitespace-pre">curl -X POST "{{ siteUrl() }}/api/v1/admin/b2b/users/balance" -H "Content-Type: application/json" -H "X-API-KEY: {{ apiKey() || 'API_KEY_CUA_BAN' }}" -d '{{ '{' }}"user_id": "USER_ID", "amount": 100000{{ '}' }}'</pre>
+                </div>
+                <button
+                  (click)="copyAdjustBalanceCurl()"
+                  class="absolute right-3.5 top-3.5 text-slate-400 dark:text-slate-500 hover:text-[var(--color-primary)] dark:hover:text-white transition-colors cursor-pointer"
+                  title="Copy Linux CURL"
+                >
+                  <app-icon name="copy" class="w-4 h-4" />
+                </button>
+              </div>
+            } @else if (adjustBalanceTab() === 'cmd') {
+              <div class="relative bg-slate-50 dark:bg-slate-950 rounded-xl border border-slate-200/60 dark:border-slate-900 overflow-hidden mt-1.5">
+                <div class="overflow-x-auto p-3.5 pr-12 font-mono text-xs text-slate-700 dark:text-slate-300 leading-relaxed">
+                  <pre class="whitespace-pre">curl -X POST "{{ siteUrl() }}/api/v1/admin/b2b/users/balance" -H "Content-Type: application/json" -H "X-API-KEY: {{ apiKey() || 'API_KEY_CUA_BAN' }}" -d "{{ '{' }}\"user_id\": \"USER_ID\", \"amount\": 100000{{ '}' }}"</pre>
+                </div>
+                <button
+                  (click)="copyAdjustBalanceWindowsCurl()"
+                  class="absolute right-3.5 top-3.5 text-slate-400 dark:text-slate-500 hover:text-[var(--color-primary)] dark:hover:text-white transition-colors cursor-pointer"
+                  title="Copy Windows CMD CURL"
+                >
+                  <app-icon name="copy" class="w-4 h-4" />
+                </button>
+              </div>
+            }
+          </div>
+
+          <!-- Payload Spec -->
+          <div class="space-y-1.5">
+            <span class="text-[10px] font-bold text-slate-400 dark:text-slate-500 uppercase tracking-wider block">Tham số Body (JSON Payload)</span>
+            <div class="bg-slate-50 dark:bg-slate-950 border border-slate-200/60 dark:border-slate-900 rounded-xl p-4 space-y-4">
+              <!-- Field 1: user_id -->
+              <div class="flex items-start gap-4 text-xs font-semibold border-b border-slate-100 dark:border-slate-800/60 pb-3">
+                <div class="min-w-[120px] font-mono text-[var(--color-primary)] font-bold">
+                  user_id
+                </div>
+                <div class="flex-1 space-y-1">
+                  <div class="flex items-center gap-1.5">
+                    <span class="text-[10px] font-black uppercase bg-rose-500/10 text-rose-500 px-1.5 py-0.5 rounded">Bắt buộc</span>
+                    <span class="text-slate-400 dark:text-slate-500 font-mono text-[10px]">String (UUID)</span>
+                  </div>
+                  <p class="text-slate-500 dark:text-slate-400 font-semibold leading-relaxed">
+                    ID định danh của thành viên cần điều chỉnh số dư ví.
+                  </p>
+                </div>
+              </div>
+
+              <!-- Field 2: amount -->
+              <div class="flex items-start gap-4 text-xs font-semibold">
+                <div class="min-w-[120px] font-mono text-[var(--color-primary)] font-bold">
+                  amount
+                </div>
+                <div class="flex-1 space-y-1">
+                  <div class="flex items-center gap-1.5">
+                    <span class="text-[10px] font-black uppercase bg-rose-500/10 text-rose-500 px-1.5 py-0.5 rounded">Bắt buộc</span>
+                    <span class="text-slate-400 dark:text-slate-500 font-mono text-[10px]">Numeric</span>
+                  </div>
+                  <p class="text-slate-500 dark:text-slate-400 font-semibold leading-relaxed">
+                    Số tiền cần điều chỉnh. Số dương (ví dụ: <code class="font-mono text-[10px]">100000</code>) để nạp thêm, số âm (ví dụ: <code class="font-mono text-[10px]">-50000</code>) để khấu trừ số dư.
+                  </p>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Response -->
+          <div class="space-y-1.5">
+            <span class="text-[10px] font-bold text-slate-400 dark:text-slate-500 uppercase tracking-wider block">RESPONSE MẪU (JSON)</span>
+            <div class="bg-slate-50 dark:bg-slate-950 rounded-xl p-4 font-mono text-xs text-slate-700 dark:text-slate-300 overflow-x-auto leading-relaxed border border-slate-200/60 dark:border-slate-900">
+              <pre class="whitespace-pre">{{ '{' }}
+  "success": true,
+  "user_id": "019f6699-e6d2-70f2-89bd-d3b93946a77d",
+  "name": "reseller_partner",
+  "new_balance": 1600000
+{{ '}' }}</pre>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- API 3: List wholesale orders -->
+      <div class="pt-8 space-y-4">
+        <div class="flex items-start gap-3">
+          <div class="w-7 h-7 rounded-full bg-[var(--color-primary)]/10 text-[var(--color-primary)] text-xs font-black flex items-center justify-center shrink-0 mt-0.5">
+            3
+          </div>
+          <div>
+            <h4 class="text-sm font-extrabold text-slate-800 dark:text-white">
+              3. Lấy danh sách đơn hàng B2B toàn hệ thống
+            </h4>
+            <p class="text-xs font-semibold text-slate-500 dark:text-slate-400 mt-1">
+              Truy xuất thông tin tất cả đơn hàng đã mua qua kênh B2B của mọi thành viên để phục vụ đối soát, thống kê và báo cáo doanh thu sỉ.
+            </p>
+          </div>
+        </div>
+
+        <div class="flex flex-wrap items-center gap-2">
+          <span class="text-[10px] font-black uppercase tracking-wider bg-blue-500 text-white px-2 py-0.5 rounded">
+            GET
+          </span>
+          <span class="font-mono text-xs font-extrabold text-slate-600 dark:text-slate-300 bg-slate-100 dark:bg-slate-900 px-2 py-1 rounded">
+            /api/v1/admin/b2b/orders
+          </span>
+        </div>
+
+        <div class="space-y-3">
+          <!-- Curl -->
+          <div class="space-y-1.5">
+            <span class="text-[10px] font-bold text-slate-400 dark:text-slate-500 uppercase tracking-wider block">Mẫu gọi API (CURL)</span>
+            <div class="relative bg-slate-50 dark:bg-slate-950 rounded-xl border border-slate-200/60 dark:border-slate-900 overflow-hidden">
+              <div class="overflow-x-auto p-3.5 pr-12 font-mono text-xs text-slate-700 dark:text-slate-300 leading-relaxed">
+                <pre class="whitespace-pre">curl -X GET "{{ siteUrl() }}/api/v1/admin/b2b/orders?api_key={{ apiKey() || 'API_KEY_CUA_BAN' }}&page=1&limit=10"</pre>
+              </div>
+              <button
+                (click)="copyGetOrdersCurl()"
+                class="absolute right-3.5 top-3.5 text-slate-400 dark:text-slate-500 hover:text-[var(--color-primary)] dark:hover:text-white transition-colors cursor-pointer"
+                title="Copy CURL"
+              >
+                <app-icon name="copy" class="w-4 h-4" />
+              </button>
+            </div>
+          </div>
+
+          <!-- URL trực tiếp -->
+          <div class="space-y-1.5">
+            <span class="text-[10px] font-bold text-slate-400 dark:text-slate-500 uppercase tracking-wider block">URL gọi trực tiếp</span>
+            <div class="relative bg-slate-50 dark:bg-slate-950 rounded-xl border border-slate-200/60 dark:border-slate-900 overflow-hidden">
+              <div class="overflow-x-auto p-3.5 pr-12 font-mono text-xs text-slate-700 dark:text-slate-300 leading-relaxed">
+                <span class="text-[var(--color-primary)] font-semibold">{{ siteUrl() }}/api/v1/admin/b2b/orders?api_key={{ apiKey() || 'API_KEY_CUA_BAN' }}&page=1&limit=10</span>
+              </div>
+              <button
+                (click)="copyGetOrdersUrl()"
+                class="absolute right-3.5 top-3.5 text-slate-400 dark:text-slate-500 hover:text-[var(--color-primary)] dark:hover:text-white transition-colors cursor-pointer"
+                title="Copy URL"
+              >
+                <app-icon name="copy" class="w-4 h-4" />
+              </button>
+            </div>
+          </div>
+
+          <!-- Query Params Spec -->
+          <div class="space-y-1.5">
+            <span class="text-[10px] font-bold text-slate-400 dark:text-slate-500 uppercase tracking-wider block">Tham số URL (Query Parameters)</span>
+            <div class="bg-slate-50 dark:bg-slate-950 border border-slate-200/60 dark:border-slate-900 rounded-xl p-4 space-y-4">
+              <!-- Field 1: page -->
+              <div class="flex items-start gap-4 text-xs font-semibold border-b border-slate-100 dark:border-slate-800/60 pb-3">
+                <div class="min-w-[120px] font-mono text-[var(--color-primary)] font-bold">
+                  page
+                </div>
+                <div class="flex-1 space-y-1">
+                  <div class="flex items-center gap-1.5">
+                    <span class="text-[10px] font-black uppercase bg-slate-100 dark:bg-slate-800 text-slate-500 px-1.5 py-0.5 rounded">Tùy chọn</span>
+                    <span class="text-slate-400 dark:text-slate-500 font-mono text-[10px]">Numeric</span>
+                  </div>
+                  <p class="text-slate-500 dark:text-slate-400 font-semibold leading-relaxed">
+                    Số trang cần lấy dữ liệu. Mặc định là <code class="font-mono text-[10px]">1</code>.
+                  </p>
+                </div>
+              </div>
+
+              <!-- Field 2: limit -->
+              <div class="flex items-start gap-4 text-xs font-semibold">
+                <div class="min-w-[120px] font-mono text-[var(--color-primary)] font-bold">
+                  limit
+                </div>
+                <div class="flex-1 space-y-1">
+                  <div class="flex items-center gap-1.5">
+                    <span class="text-[10px] font-black uppercase bg-slate-100 dark:bg-slate-800 text-slate-500 px-1.5 py-0.5 rounded">Tùy chọn</span>
+                    <span class="text-slate-400 dark:text-slate-500 font-mono text-[10px]">Numeric</span>
+                  </div>
+                  <p class="text-slate-500 dark:text-slate-400 font-semibold leading-relaxed">
+                    Số lượng đơn hàng hiển thị trên mỗi trang. Mặc định là <code class="font-mono text-[10px]">10</code>, tối đa là <code class="font-mono text-[10px]">20</code>.
+                  </p>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Response -->
+          <div class="space-y-1.5">
+            <span class="text-[10px] font-bold text-slate-400 dark:text-slate-500 uppercase tracking-wider block">RESPONSE MẪU (JSON)</span>
+            <div class="bg-slate-50 dark:bg-slate-950 rounded-xl p-4 font-mono text-xs text-slate-700 dark:text-slate-300 overflow-x-auto leading-relaxed border border-slate-200/60 dark:border-slate-900">
+              <pre class="whitespace-pre">{{ '{' }}
+  "success": true,
+  "orders": [
+    {{ '{' }}
+      "id": "019f6699-e6d2-70f2-89bd-d3b93946a77d",
+      "order_code": "ORD-20260718-A7F9D2",
+      "user": {{ '{' }}
+        "id": "019f6699-e6d2-70f2-89bd-d3b93946a77d",
+        "name": "reseller_partner",
+        "email": "partner@gmail.com"
+      {{ '}' }},
+      "total_price": 80000,
+      "status": "paid",
+      "created_at": "2026-07-18T17:21:04+07:00",
+      "accounts_count": 1
+    {{ '}' }}
+  ],
+  "pagination": {{ '{' }}
+    "total": 1,
+    "page": 1,
+    "limit": 10,
+    "last_page": 1
+  {{ '}' }}
+{{ '}' }}</pre>
+            </div>
+          </div>
+        </div>
+      </div>
+
+    </div>
+  </div>
+</div>

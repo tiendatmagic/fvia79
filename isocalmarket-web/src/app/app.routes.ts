@@ -95,6 +95,10 @@ export const routes: Routes = [
       {
         path: 'settings',
         loadComponent: () => import('@features/admin-settings/admin-settings.component').then(m => m.AdminSettingsComponent)
+      },
+      {
+        path: 'api',
+        loadComponent: () => import('@features/admin-api/admin-api.component').then(m => m.AdminApiComponent)
       }
     ]
   },
