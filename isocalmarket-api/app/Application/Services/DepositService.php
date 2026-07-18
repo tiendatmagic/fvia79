@@ -18,6 +18,10 @@ class DepositService
     private string $adminWalletAddress;
     // API Key của blockchain scanner (cấu hình qua .env, hỗ trợ BscScan/Etherscan...)
     private string $scannerApiKey;
+    // Địa chỉ contract của token đối soát (USDT mặc định trên BSC)
+    private string $tokenContractAddress;
+    // Số chữ số thập phân (decimals) của token đối soát (mặc định USDT trên BSC có 18 decimals)
+    private int $tokenDecimals;
 
     public function __construct(
         DepositRepositoryInterface $depositRepository,
@@ -28,6 +32,10 @@ class DepositService
 
         $this->adminWalletAddress = env('ADMIN_WALLET_ADDRESS', '');
         $this->scannerApiKey = env('SCANNER_API_KEY', '');
+        
+        // Cấu hình linh hoạt token đối soát (mặc định là USDT BEP20 trên BSC)
+        $this->tokenContractAddress = env('TOKEN_CONTRACT_ADDRESS', '0x55d398326f99059ff775485246999027b3197955');
+        $this->tokenDecimals = (int) env('TOKEN_DECIMALS', 18);
     }
 
     /**
@@ -96,10 +104,36 @@ class DepositService
 
         $rate = $this->getUsdtToVndRate();
         
-        // Sinh đuôi lẻ đối soát ngẫu nhiên (từ 0.0001 đến 0.0999) để phân biệt các giao dịch chuyển khoản trùng lượng USDT chẵn
-        $randomSuffix = rand(1, 999) / 10000;
-        $amountToPay = round($amountUsdt + $randomSuffix, 4);
-        $amountVnd = round($amountUsdt * $rate, 2);
+        // Làm tròn số tiền nạp gốc về 2 chữ số thập phân
+        $baseAmount = round($amountUsdt, 2);
+
+        // Lấy tất cả số tiền cần trả (amount_to_pay) của các hóa đơn cùng lượng tiền gốc đang chờ thanh toán
+        $activeAmounts = \App\Infrastructure\Persistence\Eloquent\DepositModel::where('status', 'pending_payment')
+            ->where('amount_usdt', $baseAmount)
+            ->pluck('amount_to_pay')
+            ->toArray();
+
+        // Tìm đuôi lẻ tiếp theo (từ .0000, .0001, .0002, ...) chưa bị trùng lắp
+        $suffix = 0.0000;
+        $step = 0.0001;
+        $maxSuffix = 0.0999; // Giới hạn tối đa 1000 người nạp trùng số tiền chẵn trong vòng 15 phút
+
+        while (true) {
+            $candidateAmount = round($baseAmount + $suffix, 4);
+
+            if (!in_array($candidateAmount, $activeAmounts)) {
+                $amountToPay = $candidateAmount;
+                break;
+            }
+
+            $suffix += $step;
+
+            if ($suffix > $maxSuffix) {
+                throw new \RuntimeException("Too many pending transactions for this amount. Please try again in a few minutes.");
+            }
+        }
+
+        $amountVnd = round($baseAmount * $rate, 2);
 
         // Sinh mã lệnh nạp ngắn gọn tăng dần (dạng string số, VD: 232)
         // Lấy mã code số lớn nhất hiện tại
@@ -110,7 +144,7 @@ class DepositService
             id: null, // Sẽ tự sinh UUIDv7 ở Model
             userId: $userId,
             code: $nextCode,
-            amountUsdt: $amountUsdt,
+            amountUsdt: $baseAmount,
             amountToPay: $amountToPay,
             amountVnd: $amountVnd,
             txHash: null,
@@ -212,7 +246,7 @@ class DepositService
         }
 
         $adminWallet = strtolower($this->adminWalletAddress);
-        $usdtContract = '0x55d398326f99059ff775485246999027b3197955'; // USDT Contract Address on BSC (BEP-20)
+        $tokenContract = strtolower($this->tokenContractAddress);
         
         try {
             // Gọi BscScan API lấy danh sách các giao dịch BEP-20 gần đây của địa chỉ ví chủ sàn
@@ -234,8 +268,8 @@ class DepositService
                     $transactions = $result['result'];
                     
                     foreach ($transactions as $tx) {
-                        // 1. Kiểm tra token có phải USDT BEP20 không
-                        if (strtolower($tx['contractAddress']) !== $usdtContract) {
+                        // 1. Kiểm tra token có khớp với token đối soát cấu hình không
+                        if (strtolower($tx['contractAddress']) !== $tokenContract) {
                             continue;
                         }
 
@@ -244,8 +278,8 @@ class DepositService
                             continue;
                         }
 
-                        // 3. Quy đổi số lượng chuyển khoản từ wei sang USDT (USDT có 18 số lẻ thập phân trên BSC)
-                        $txValueUsdt = (float) $tx['value'] / 1e18;
+                        // 3. Quy đổi số lượng chuyển khoản từ wei sang giá trị thực dựa trên Decimals cấu hình
+                        $txValueUsdt = (float) $tx['value'] / pow(10, $this->tokenDecimals);
                         $amountToPay = $deposit->getAmountToPay();
 
                         // 4. So khớp số lượng thực nhận (dung sai làm tròn cực nhỏ 0.0001)

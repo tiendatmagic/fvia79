@@ -913,7 +913,29 @@
       3. **Frontend**: Cập nhật hàm dịch lỗi tại [deposit.component.ts](file:///d:/git/isocalmarket/isocalmarket-web/src/app/features/deposit/deposit.component.ts). Thay vì hiển thị Toast, hệ thống sẽ sử dụng `ModalService.confirm()` hiển thị một Confirm Modal chuyên nghiệp:
          - *Tiêu đề*: *"Lệnh nạp tiền chưa hoàn tất"*
          - *Nội dung*: *"Bạn đang có một lệnh nạp tiền chưa thanh toán. Vui lòng kiểm tra hóa đơn hoặc hủy lệnh nạp cũ trước khi tạo lệnh mới!"*
-         - *Nút xác nhận*: *"Xem lệnh nạp tiền hiện tại"* (Click vào sẽ tự động điều hướng người dùng tới trang hóa đơn `/deposit/invoice/:id` của lệnh nạp chưa thanh toán đó).
+         - *Nút xác nhận*: *"Xem lệnh nạp tiền"* (Click vào sẽ tự động điều hướng người dùng tới trang hóa đơn `/deposit/invoice/:id` của lệnh nạp chưa thanh toán đó).
          - *Nút hủy*: *"Đóng modal"*.
       4. **Xác minh**: Chạy `npm run build` thành công 100% không phát sinh lỗi biên dịch.
+
+  - **[ĐUÔI SỐ LẺ TĂNG DẦN THEO THỨ TỰ (SEQUENTIAL SUFFIX)]**:
+    - Yêu cầu: Đổi cơ chế sinh đuôi số lẻ đối soát ngẫu nhiên sang tăng dần theo thứ tự. Ví dụ: Cùng nạp 1 USDT, người A nạp 1.0000 USDT, người B nạp 1.0001 USDT, người C nạp 1.0002 USDT, đảm bảo không trùng nhau tại cùng thời điểm.
+    - Giải pháp & Triển khai:
+      1. **Thuật toán**: Cập nhật [DepositService.php](file:///d:/git/isocalmarket/isocalmarket-api/app/Application/Services/DepositService.php). Lấy tất cả số tiền cần trả (`amount_to_pay`) của các hóa đơn cùng lượng tiền gốc đang ở trạng thái `pending_payment`.
+      2. Chạy vòng lặp tìm giá trị cộng thêm bắt đầu từ `0.0000` tăng dần mỗi bước `0.0001` cho tới khi tìm thấy giá trị duy nhất chưa được sử dụng. Giới hạn chênh lệch tối đa là `0.0999` (hỗ trợ tối đa 1000 lệnh trùng lượng tiền chẵn chạy song song).
+      3. **Đồng bộ hóa**: Sử dụng `$baseAmount` đã làm tròn trong constructor tạo thực thể `Deposit` để đảm bảo lưu trữ chính xác.
+      4. **Xác minh**: Chạy `npm run build` hoàn thành thành công 100%.
+
+  - **[BẢO MẬT: LOẠI BỎ CREDENTIALS SEED TRONG ENV & DATABASE SEEDER]**:
+    - Yêu cầu: Xóa bỏ hoàn toàn các tài khoản admin/customer seed có ảnh hưởng đến bảo mật khai báo trong file `.env`. Hệ thống chỉ cho phép đăng nhập qua dữ liệu trực tiếp trong bảng `users` của database, không được nhận hoặc bypass từ cấu hình file `.env`.
+    - Giải pháp & Triển khai:
+      1. **File cấu hình**: Xóa bỏ 5 biến môi trường `SEED_ADMIN_EMAIL`, `SEED_ADMIN_PASSWORD`, `SEED_CUSTOMER1_EMAIL`, `SEED_CUSTOMER2_EMAIL`, `SEED_CUSTOMER_PASSWORD` khỏi [.env](file:///d:/git/isocalmarket/isocalmarket-api/.env) và [.env.example](file:///d:/git/isocalmarket/isocalmarket-api/.env.example).
+      2. **Database Seeder**: Cập nhật [DatabaseSeeder.php](file:///d:/git/isocalmarket/isocalmarket-api/database/seeders/DatabaseSeeder.php) để tạo tài khoản `admin` sử dụng thông tin tĩnh an toàn (Email: `admin@isocalmarket.com`, Password: `Admin@Isocal2025!`) trực tiếp trong mã nguồn seeder thay vì gọi qua `env()`.
+      3. **Xác minh**: Chạy lại lệnh khởi tạo lại cơ sở dữ liệu `php artisan migrate:fresh --seed` và chạy bộ kiểm thử `php artisan test` đạt kết quả 100% thành công.
+
+  - **[CLICK VÀO SỐ TIỀN NẠP ĐỂ COPY]**:
+    - Yêu cầu: Cho phép người dùng click trực tiếp vào chữ hiển thị số tiền nạp USDT ở trang hóa đơn thanh toán để copy nhanh giá trị chuyển khoản, tăng trải nghiệm người dùng ngoài nút copy có sẵn kế bên.
+    - Giải pháp & Triển khai:
+      1. **Frontend**: Cập nhật [deposit-invoice.component.html](file:///d:/git/isocalmarket/isocalmarket-web/src/app/features/deposit-invoice/deposit-invoice.component.html) bổ sung sự kiện `(click)="copyText(invoice.amountToPay.toString(), 'Số tiền cần chuyển')"` trực tiếp trên thẻ `<span>` hiển thị lượng USDT.
+      2. **Giao diện**: Thêm các class Tailwind `cursor-pointer hover:opacity-80 active:scale-95 transition-all` và thuộc tính `title="Click để copy số tiền"` giúp phần tử phản hồi trực quan khi di chuột vào hoặc click.
+      3. **Xác minh**: Chạy `npm run build` thành công 100%.
 
