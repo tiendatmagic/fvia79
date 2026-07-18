@@ -188,7 +188,7 @@
         </div>
       </div>
 
-      <!-- API 2: Adjust Reseller Balance -->
+      <!-- API 2: List wholesale orders -->
       <div class="pt-8 space-y-4">
         <div class="flex items-start gap-3">
           <div class="w-7 h-7 rounded-full bg-[var(--color-primary)]/10 text-[var(--color-primary)] text-xs font-black flex items-center justify-center shrink-0 mt-0.5">
@@ -196,136 +196,7 @@
           </div>
           <div>
             <h4 class="text-sm font-extrabold text-slate-800 dark:text-white">
-              2. Cộng/trừ tiền tài khoản thành viên
-            </h4>
-            <p class="text-xs font-semibold text-slate-500 dark:text-slate-400 mt-1">
-              Điều chỉnh số dư ví của thành viên. Truyền số dương để cộng tiền nạp, số âm để trừ phạt hoặc thu hồi số dư.
-            </p>
-          </div>
-        </div>
-
-        <div class="flex flex-wrap items-center gap-2">
-          <span class="text-[10px] font-black uppercase tracking-wider bg-teal-600 text-white px-2 py-0.5 rounded">
-            POST
-          </span>
-          <span class="font-mono text-xs font-extrabold text-slate-600 dark:text-slate-300 bg-slate-100 dark:bg-slate-900 px-2 py-1 rounded">
-            /api/v1/admin/b2b/users/balance
-          </span>
-        </div>
-
-        <div class="space-y-3">
-          <!-- Curl Tabs -->
-          <div class="space-y-2">
-            <div class="flex items-center gap-1 border-b border-slate-200/60 dark:border-slate-900 pb-1">
-              <button
-                (click)="adjustBalanceTab.set('bash')"
-                [class]="adjustBalanceTab() === 'bash'
-                  ? 'text-xs font-bold text-[var(--color-primary)] border-b-2 border-[var(--color-primary)] pb-1 px-3 -mb-1.5 transition-all cursor-pointer'
-                  : 'text-xs font-semibold text-slate-400 dark:text-slate-500 pb-1 px-3 -mb-1.5 hover:text-slate-600 dark:hover:text-slate-400 transition-all cursor-pointer'"
-              >
-                Linux / macOS / Bash
-              </button>
-              <button
-                (click)="adjustBalanceTab.set('cmd')"
-                [class]="adjustBalanceTab() === 'cmd'
-                  ? 'text-xs font-bold text-[var(--color-primary)] border-b-2 border-[var(--color-primary)] pb-1 px-3 -mb-1.5 transition-all cursor-pointer'
-                  : 'text-xs font-semibold text-slate-400 dark:text-slate-500 pb-1 px-3 -mb-1.5 hover:text-slate-600 dark:hover:text-slate-400 transition-all cursor-pointer'"
-              >
-                Windows CMD
-              </button>
-            </div>
-
-            @if (adjustBalanceTab() === 'bash') {
-              <div class="relative bg-slate-50 dark:bg-slate-950 rounded-xl border border-slate-200/60 dark:border-slate-900 overflow-hidden mt-1.5">
-                <div class="overflow-x-auto p-3.5 pr-12 font-mono text-xs text-slate-700 dark:text-slate-300 leading-relaxed">
-                  <pre class="whitespace-pre">curl -X POST "{{ siteUrl() }}/api/v1/admin/b2b/users/balance" -H "Content-Type: application/json" -H "X-API-KEY: {{ apiKey() || 'API_KEY_CUA_BAN' }}" -d '{{ '{' }}"user_id": "USER_ID", "amount": 100000{{ '}' }}'</pre>
-                </div>
-                <button
-                  (click)="copyAdjustBalanceCurl()"
-                  class="absolute right-3.5 top-3.5 text-slate-400 dark:text-slate-500 hover:text-[var(--color-primary)] dark:hover:text-white transition-colors cursor-pointer"
-                  title="Copy Linux CURL"
-                >
-                  <app-icon name="copy" class="w-4 h-4" />
-                </button>
-              </div>
-            } @else if (adjustBalanceTab() === 'cmd') {
-              <div class="relative bg-slate-50 dark:bg-slate-950 rounded-xl border border-slate-200/60 dark:border-slate-900 overflow-hidden mt-1.5">
-                <div class="overflow-x-auto p-3.5 pr-12 font-mono text-xs text-slate-700 dark:text-slate-300 leading-relaxed">
-                  <pre class="whitespace-pre">curl -X POST "{{ siteUrl() }}/api/v1/admin/b2b/users/balance" -H "Content-Type: application/json" -H "X-API-KEY: {{ apiKey() || 'API_KEY_CUA_BAN' }}" -d "{{ '{' }}\"user_id\": \"USER_ID\", \"amount\": 100000{{ '}' }}"</pre>
-                </div>
-                <button
-                  (click)="copyAdjustBalanceWindowsCurl()"
-                  class="absolute right-3.5 top-3.5 text-slate-400 dark:text-slate-500 hover:text-[var(--color-primary)] dark:hover:text-white transition-colors cursor-pointer"
-                  title="Copy Windows CMD CURL"
-                >
-                  <app-icon name="copy" class="w-4 h-4" />
-                </button>
-              </div>
-            }
-          </div>
-
-          <!-- Payload Spec -->
-          <div class="space-y-1.5">
-            <span class="text-[10px] font-bold text-slate-400 dark:text-slate-500 uppercase tracking-wider block">Tham số Body (JSON Payload)</span>
-            <div class="bg-slate-50 dark:bg-slate-950 border border-slate-200/60 dark:border-slate-900 rounded-xl p-4 space-y-4">
-              <!-- Field 1: user_id -->
-              <div class="flex items-start gap-4 text-xs font-semibold border-b border-slate-100 dark:border-slate-800/60 pb-3">
-                <div class="min-w-[120px] font-mono text-[var(--color-primary)] font-bold">
-                  user_id
-                </div>
-                <div class="flex-1 space-y-1">
-                  <div class="flex items-center gap-1.5">
-                    <span class="text-[10px] font-black uppercase bg-rose-500/10 text-rose-500 px-1.5 py-0.5 rounded">Bắt buộc</span>
-                    <span class="text-slate-400 dark:text-slate-500 font-mono text-[10px]">String (UUID)</span>
-                  </div>
-                  <p class="text-slate-500 dark:text-slate-400 font-semibold leading-relaxed">
-                    ID định danh của thành viên cần điều chỉnh số dư ví.
-                  </p>
-                </div>
-              </div>
-
-              <!-- Field 2: amount -->
-              <div class="flex items-start gap-4 text-xs font-semibold">
-                <div class="min-w-[120px] font-mono text-[var(--color-primary)] font-bold">
-                  amount
-                </div>
-                <div class="flex-1 space-y-1">
-                  <div class="flex items-center gap-1.5">
-                    <span class="text-[10px] font-black uppercase bg-rose-500/10 text-rose-500 px-1.5 py-0.5 rounded">Bắt buộc</span>
-                    <span class="text-slate-400 dark:text-slate-500 font-mono text-[10px]">Numeric</span>
-                  </div>
-                  <p class="text-slate-500 dark:text-slate-400 font-semibold leading-relaxed">
-                    Số tiền cần điều chỉnh. Số dương (ví dụ: <code class="font-mono text-[10px]">100000</code>) để nạp thêm, số âm (ví dụ: <code class="font-mono text-[10px]">-50000</code>) để khấu trừ số dư.
-                  </p>
-                </div>
-              </div>
-            </div>
-          </div>
-
-          <!-- Response -->
-          <div class="space-y-1.5">
-            <span class="text-[10px] font-bold text-slate-400 dark:text-slate-500 uppercase tracking-wider block">RESPONSE MẪU (JSON)</span>
-            <div class="bg-slate-50 dark:bg-slate-950 rounded-xl p-4 font-mono text-xs text-slate-700 dark:text-slate-300 overflow-x-auto leading-relaxed border border-slate-200/60 dark:border-slate-900">
-              <pre class="whitespace-pre">{{ '{' }}
-  "success": true,
-  "user_id": "019f6699-e6d2-70f2-89bd-d3b93946a77d",
-  "name": "reseller_partner",
-  "new_balance": 1600000
-{{ '}' }}</pre>
-            </div>
-          </div>
-        </div>
-      </div>
-
-      <!-- API 3: List wholesale orders -->
-      <div class="pt-8 space-y-4">
-        <div class="flex items-start gap-3">
-          <div class="w-7 h-7 rounded-full bg-[var(--color-primary)]/10 text-[var(--color-primary)] text-xs font-black flex items-center justify-center shrink-0 mt-0.5">
-            3
-          </div>
-          <div>
-            <h4 class="text-sm font-extrabold text-slate-800 dark:text-white">
-              3. Lấy danh sách đơn hàng B2B toàn hệ thống
+              2. Lấy danh sách đơn hàng B2B toàn hệ thống
             </h4>
             <p class="text-xs font-semibold text-slate-500 dark:text-slate-400 mt-1">
               Truy xuất thông tin tất cả đơn hàng đã mua qua kênh B2B của mọi thành viên để phục vụ đối soát, thống kê và báo cáo doanh thu sỉ.

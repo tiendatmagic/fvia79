@@ -40,38 +40,6 @@ class B2bAdminController extends Controller
     }
 
     /**
-     * POST /api/v1/admin/b2b/users/balance
-     * Cộng/trừ tiền trực tiếp cho tài khoản thành viên
-     */
-    public function adjustBalance(Request $request)
-    {
-        try {
-            $request->validate([
-                'user_id' => 'required|string',
-                'amount' => 'required|numeric'
-            ]);
-
-            $user = UserModel::find($request->input('user_id'));
-            if (!$user) {
-                return response()->json(['message' => 'User not found.'], 404);
-            }
-
-            $amount = (float)$request->input('amount');
-            $user->balance += $amount;
-            $user->save();
-
-            return response()->json([
-                'success' => true,
-                'user_id' => $user->id,
-                'name' => $user->name,
-                'new_balance' => (float)$user->balance
-            ]);
-        } catch (\Exception $e) {
-            return response()->json(['message' => 'Failed to adjust balance: ' . $e->getMessage()], 500);
-        }
-    }
-
-    /**
      * GET /api/v1/admin/b2b/orders
      * Lấy danh sách toàn bộ đơn hàng B2B của tất cả đại lý
      */

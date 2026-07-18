@@ -25,9 +25,6 @@ import { environment } from '@environments/environment';
 export class AdminApiComponent {
   public readonly state = inject(StateService);
   
-  // Tabs for endpoints containing body payloads (Adjust Balance)
-  public readonly adjustBalanceTab = signal<'bash' | 'cmd'>('bash');
-
   public readonly siteUrl = computed(() => {
     const baseUrl = environment.apiBaseUrl;
     if (baseUrl.endsWith('/api')) {
@@ -65,25 +62,7 @@ export class AdminApiComponent {
     this.copyToClipboard(text, 'đường dẫn Get B2B Users');
   }
 
-  // API 2: Adjust Reseller Balance
-  public copyAdjustBalanceCurl() {
-    const key = this.apiKey() || 'API_KEY_CUA_BAN';
-    const text = `curl -X POST "${this.siteUrl()}/api/v1/admin/b2b/users/balance" -H "Content-Type: application/json" -H "X-API-KEY: ${key}" -d '{"user_id": "USER_ID", "amount": 100000}'`;
-    this.copyToClipboard(text, 'mẫu CURL Adjust Balance');
-  }
-
-  public copyAdjustBalanceWindowsCurl() {
-    const key = this.apiKey() || 'API_KEY_CUA_BAN';
-    const text = `curl -X POST "${this.siteUrl()}/api/v1/admin/b2b/users/balance" -H "Content-Type: application/json" -H "X-API-KEY: ${key}" -d "{\\"user_id\\": \\"USER_ID\\", \\"amount\\": 100000}"`;
-    this.copyToClipboard(text, 'mẫu CURL Adjust Balance (Windows CMD)');
-  }
-
-  public copyAdjustBalanceUrl() {
-    const text = `${this.siteUrl()}/api/v1/admin/b2b/users/balance`;
-    this.copyToClipboard(text, 'đường dẫn Adjust Balance');
-  }
-
-  // API 3: List B2B wholesale orders
+  // API 2: List B2B wholesale orders
   public copyGetOrdersCurl() {
     const key = this.apiKey() || 'API_KEY_CUA_BAN';
     const text = `curl -X GET "${this.siteUrl()}/api/v1/admin/b2b/orders?api_key=${key}&page=1&limit=10"`;

@@ -88,28 +88,6 @@ class B2bAdminApiTest extends TestCase
         $response2->assertStatus(401);
     }
 
-    public function test_admin_can_adjust_user_balance(): void
-    {
-        // Initial balance is 50000.0. Let's add 150000.0.
-        $response = $this->withHeaders([
-            'X-API-KEY' => 'ADMIN-KEY-TEST-12345'
-        ])->postJson("/api/v1/admin/b2b/users/balance", [
-            'user_id' => $this->normalUser->id,
-            'amount' => 150000.0
-        ]);
-
-        $response->assertStatus(200);
-        $response->assertJson([
-            'success' => true,
-            'user_id' => $this->normalUser->id,
-            'new_balance' => 200000.0
-        ]);
-
-        // Verify in DB
-        $updatedUser = UserModel::find($this->normalUser->id);
-        $this->assertEquals(200000.0, $updatedUser->balance);
-    }
-
     public function test_admin_can_fetch_b2b_orders(): void
     {
         $response = $this->withHeaders([

@@ -27,7 +27,6 @@ Route::prefix('v1')->group(function () {
     // B2B Admin API Routes - protected by B2B API Key auth AND Admin middleware
     Route::middleware(['b2b.auth', 'admin'])->group(function () {
         Route::get('/admin/b2b/users', ['App\Http\Controllers\B2bAdminController', 'indexUsers']);
-        Route::post('/admin/b2b/users/balance', ['App\Http\Controllers\B2bAdminController', 'adjustBalance']);
         Route::get('/admin/b2b/orders', ['App\Http\Controllers\B2bAdminController', 'indexOrders']);
     });
 
