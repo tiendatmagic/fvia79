@@ -175,6 +175,17 @@ class DepositService
             return false;
         }
 
+        // Tự động kiểm tra đối soát lần cuối trước khi chuyển sang trạng thái hủy
+        try {
+            $matched = $this->checkTransaction($id, $userId);
+            if ($matched) {
+                // Đã khớp giao dịch và cộng tiền thành công trên blockchain, không hủy nữa
+                return true;
+            }
+        } catch (\Exception $e) {
+            Log::error("Failed to check blockchain before canceling deposit ID {$id}: " . $e->getMessage());
+        }
+
         $deposit->setStatus('expired');
         $this->depositRepository->save($deposit);
         return true;

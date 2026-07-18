@@ -1171,3 +1171,10 @@
          * Nới rộng padding-right của ô API Key từ `pr-12` sang `pr-20` để hiển thị cân đối và không bị đè văn bản khi có 2 nút hành động.
       3. Đã chạy biên dịch kiểm tra dự án frontend thành công (`npm run build`) không có lỗi.
 
+  - **[TÍNH NĂNG & BẢO VỆ GIAO DỊCH] Cron Job đối soát USDT BEP20 chạy ngầm**:
+    - **Yêu cầu**: Tối ưu hóa chức năng nạp tiền USDT BEP20 để tự động đối soát giao dịch blockchain ngay cả khi người dùng tắt trình duyệt sau khi chuyển khoản.
+    - **Giải pháp & Triển khai**:
+      1. **Bảo vệ Hủy Hóa Đơn**: Cập nhật phương thức `cancelInvoice` trong [DepositService.php](file:///d:/git/isocalmarket/isocalmarket-api/app/Application/Services/DepositService.php) để gọi `checkTransaction` tự động kiểm tra blockchain lần cuối. Nếu có giao dịch hợp lệ, hệ thống sẽ phê duyệt hoàn tất và cộng số dư thay vì hủy bỏ.
+      2. **Artisan Command & Scheduler**: Định nghĩa lệnh Artisan `deposit:check-pending` trong [console.php](file:///d:/git/isocalmarket/isocalmarket-api/routes/console.php) để quét tất cả hóa đơn `pending_payment` và đối soát qua BscScan API. Tự động đánh dấu hóa đơn là `expired` nếu quá 16 phút (960 giây, bao gồm 1 phút grace period trễ mạng) mà không tìm thấy giao dịch.
+      3. **Cấu hình Scheduler**: Đăng ký lệnh chạy tự động mỗi phút qua `Schedule::command('deposit:check-pending')->everyMinute()`.
+      4. **Xác minh**: Đã chạy thử nghiệm lệnh Artisan thủ công và kiểm tra danh sách Schedule thành công.

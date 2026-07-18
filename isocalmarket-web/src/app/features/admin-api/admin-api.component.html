@@ -1,5 +1,5 @@
 <div class="max-w-[1530px] mx-auto w-full p-4 sm:p-6 space-y-6">
-    <app-page-header
+  <app-page-header
     title="Admin API"
     description="Cổng kết nối đặc quyền dành cho Admin để tự động hóa quản lý đại lý, cập nhật số dư và đối soát hệ thống."
   >
@@ -14,7 +14,7 @@
     </ng-container>
   </app-page-header>
 
-    <div app-card class="p-6 space-y-5">
+  <div app-card class="p-6 space-y-5">
     <div class="flex items-center gap-2 border-b border-slate-100 dark:border-slate-800/60 pb-3">
       <app-icon name="key" class="w-5 h-5 text-[var(--color-primary)]" />
       <h3 class="text-sm font-black text-slate-700 dark:text-slate-300 uppercase tracking-wider">
@@ -22,7 +22,7 @@
       </h3>
     </div>
 
-        <div
+    <div
       class="bg-amber-50 dark:bg-amber-950/30 border border-amber-200/60 dark:border-amber-900/50 rounded-2xl p-5 flex items-start gap-4 text-xs font-semibold leading-relaxed"
     >
       <div
@@ -35,17 +35,18 @@
           Cảnh báo bảo mật cấp cao!
         </h4>
         <p class="text-xs text-amber-700/90 dark:text-amber-400/80 leading-relaxed font-semibold">
-          Các cổng API dưới đây cho phép can thiệp trực tiếp vào tài khoản người dùng và số dư hệ thống. 
-          Tuyệt đối không chia sẻ API Key của tài khoản Admin cho bất kỳ ai hoặc đẩy lên mã nguồn công khai (Github, Gitlab).
+          Các cổng API dưới đây cho phép can thiệp trực tiếp vào tài khoản người dùng và số dư hệ
+          thống. Tuyệt đối không chia sẻ API Key của tài khoản Admin cho bất kỳ ai hoặc đẩy lên mã
+          nguồn công khai (Github, Gitlab).
         </p>
       </div>
     </div>
 
-        <div
+    <div
       class="bg-blue-50/50 dark:bg-slate-900/30 border border-blue-100/50 dark:border-slate-800/50 text-blue-700 dark:text-slate-300 rounded-2xl p-4 sm:p-5 text-xs font-semibold leading-relaxed"
     >
-      Sử dụng API Key này để xác thực khi gọi các B2B Admin API bằng cách truyền trực tiếp trên URL (Query
-      param
+      Sử dụng API Key này để xác thực khi gọi các B2B Admin API bằng cách truyền trực tiếp trên URL
+      (Query param
       <code
         class="bg-blue-100 dark:bg-slate-800 px-1 py-0.5 rounded font-mono font-bold text-blue-800 dark:text-blue-300"
         >?api_key=...</code
@@ -60,30 +61,8 @@
       >
     </div>
 
-        <div class="flex flex-col md:flex-row items-stretch md:items-center gap-4">
-            <div
-        class="relative flex-1 flex items-center bg-slate-50 dark:bg-slate-950 h-12 px-4 pr-12 rounded-xl border border-slate-200/60 dark:border-slate-900 min-w-0"
-      >
-        <span
-          class="text-xs font-bold text-slate-400 dark:text-slate-500 uppercase tracking-wider mr-2 shrink-0 select-none"
-        >
-          Base URL:
-        </span>
-        <span
-          class="text-sm font-extrabold font-mono text-slate-700 dark:text-slate-300 truncate flex-1 select-all"
-        >
-          {{ siteUrl() }}/api/v1
-        </span>
-        <button
-          (click)="copyToClipboard(siteUrl() + '/api/v1', 'Base URL')"
-          class="absolute right-3.5 top-1/2 -translate-y-1/2 text-slate-400 dark:text-slate-500 hover:text-[var(--color-primary)] dark:hover:text-white active:scale-95 transition-all p-1 cursor-pointer"
-          title="Sao chép Base URL"
-        >
-          <app-icon name="copy" class="w-4 h-4" />
-        </button>
-      </div>
-
-            <div
+    <div class="flex flex-col md:flex-row items-stretch md:items-center gap-4">
+      <div
         class="relative flex-1 flex items-center bg-slate-50 dark:bg-slate-950 h-12 px-4 pr-20 rounded-xl border border-slate-200/60 dark:border-slate-900 min-w-0"
       >
         <span
@@ -94,7 +73,13 @@
         <span
           class="text-sm font-extrabold font-mono text-slate-700 dark:text-slate-300 truncate flex-1"
         >
-          {{ apiKey() ? (showApiKey() ? apiKey() : '••••••••••••••••••••••••••••••••') : 'Chưa cấu hình API Key' }}
+          {{
+            apiKey()
+              ? showApiKey()
+                ? apiKey()
+                : '••••••••••••••••••••••••••••••••'
+              : 'Chưa cấu hình API Key'
+          }}
         </span>
         @if (apiKey()) {
           <div class="absolute right-3.5 top-1/2 -translate-y-1/2 flex items-center gap-2">
@@ -118,7 +103,7 @@
     </div>
   </div>
 
-    <div app-card class="p-6 space-y-6">
+  <div app-card class="p-6 space-y-6">
     <div
       class="flex flex-col md:flex-row md:items-center md:justify-between border-b border-slate-100 dark:border-slate-800/60 pb-3 gap-2"
     >
@@ -133,11 +118,12 @@
       </span>
     </div>
 
-        <div class="space-y-8 divide-y divide-slate-100 dark:divide-slate-800">
-      
-            <div class="pt-0 space-y-4">
+    <div class="space-y-8 divide-y divide-slate-100 dark:divide-slate-800">
+      <div class="pt-0 space-y-4">
         <div class="flex items-start gap-3">
-          <div class="w-7 h-7 rounded-full bg-[var(--color-primary)]/10 text-[var(--color-primary)] text-xs font-black flex items-center justify-center shrink-0 mt-0.5">
+          <div
+            class="w-7 h-7 rounded-full bg-[var(--color-primary)]/10 text-[var(--color-primary)] text-xs font-black flex items-center justify-center shrink-0 mt-0.5"
+          >
             1
           </div>
           <div>
@@ -145,26 +131,42 @@
               1. Lấy danh sách thành viên B2B
             </h4>
             <p class="text-xs font-semibold text-slate-500 dark:text-slate-400 mt-1">
-              Trả về danh sách thành viên trên hệ thống bao gồm hồ sơ, vai trò, số dư ví hiện tại và trạng thái khóa API. Hỗ trợ phân trang (?page=1&limit=10), tìm kiếm (?search=...), lọc theo vai trò (?role=...) và trạng thái API Key (?has_api_key=yes/no).
+              Trả về danh sách thành viên trên hệ thống bao gồm hồ sơ, vai trò, số dư ví hiện tại và
+              trạng thái khóa API. Hỗ trợ phân trang (?page=1&limit=10), tìm kiếm (?search=...), lọc
+              theo vai trò (?role=...) và trạng thái API Key (?has_api_key=yes/no).
             </p>
           </div>
         </div>
 
         <div class="flex flex-wrap items-center gap-2">
-          <span class="text-[10px] font-black uppercase tracking-wider bg-blue-500 text-white px-2 py-0.5 rounded">
+          <span
+            class="text-[10px] font-black uppercase tracking-wider bg-blue-500 text-white px-2 py-0.5 rounded"
+          >
             GET
           </span>
-          <span class="font-mono text-xs font-extrabold text-slate-600 dark:text-slate-300 bg-slate-100 dark:bg-slate-900 px-2 py-1 rounded">
+          <span
+            class="font-mono text-xs font-extrabold text-slate-600 dark:text-slate-300 bg-slate-100 dark:bg-slate-900 px-2 py-1 rounded"
+          >
             /api/v1/admin/b2b/users
           </span>
         </div>
 
         <div class="space-y-3">
-                    <div class="space-y-1.5">
-            <span class="text-[10px] font-bold text-slate-400 dark:text-slate-500 uppercase tracking-wider block">Mẫu gọi API (CURL)</span>
-            <div class="relative bg-slate-50 dark:bg-slate-950 rounded-xl border border-slate-200/60 dark:border-slate-900 overflow-hidden">
-              <div class="overflow-x-auto p-3.5 pr-12 font-mono text-xs text-slate-700 dark:text-slate-300 leading-relaxed">
-                <pre class="whitespace-pre">curl -X GET "{{ siteUrl() }}/api/v1/admin/b2b/users?api_key={{ apiKey() || 'API_KEY_CUA_BAN' }}"</pre>
+          <div class="space-y-1.5">
+            <span
+              class="text-[10px] font-bold text-slate-400 dark:text-slate-500 uppercase tracking-wider block"
+              >Mẫu gọi API (CURL)</span
+            >
+            <div
+              class="relative bg-slate-50 dark:bg-slate-950 rounded-xl border border-slate-200/60 dark:border-slate-900 overflow-hidden"
+            >
+              <div
+                class="overflow-x-auto p-3.5 pr-12 font-mono text-xs text-slate-700 dark:text-slate-300 leading-relaxed"
+              >
+                <pre class="whitespace-pre">
+curl -X GET "{{ siteUrl() }}/api/v1/admin/b2b/users?api_key={{
+                    apiKey() || 'API_KEY_CUA_BAN'
+                  }}"</pre>
               </div>
               <button
                 (click)="copyGetUsersCurl()"
@@ -176,11 +178,22 @@
             </div>
           </div>
 
-                    <div class="space-y-1.5">
-            <span class="text-[10px] font-bold text-slate-400 dark:text-slate-500 uppercase tracking-wider block">URL gọi trực tiếp</span>
-            <div class="relative bg-slate-50 dark:bg-slate-950 rounded-xl border border-slate-200/60 dark:border-slate-900 overflow-hidden">
-              <div class="overflow-x-auto p-3.5 pr-12 font-mono text-xs text-slate-700 dark:text-slate-300 leading-relaxed">
-                <span class="text-[var(--color-primary)] font-semibold">{{ siteUrl() }}/api/v1/admin/b2b/users?api_key={{ apiKey() || 'API_KEY_CUA_BAN' }}</span>
+          <div class="space-y-1.5">
+            <span
+              class="text-[10px] font-bold text-slate-400 dark:text-slate-500 uppercase tracking-wider block"
+              >URL gọi trực tiếp</span
+            >
+            <div
+              class="relative bg-slate-50 dark:bg-slate-950 rounded-xl border border-slate-200/60 dark:border-slate-900 overflow-hidden"
+            >
+              <div
+                class="overflow-x-auto p-3.5 pr-12 font-mono text-xs text-slate-700 dark:text-slate-300 leading-relaxed"
+              >
+                <span class="text-[var(--color-primary)] font-semibold"
+                  >{{ siteUrl() }}/api/v1/admin/b2b/users?api_key={{
+                    apiKey() || 'API_KEY_CUA_BAN'
+                  }}</span
+                >
               </div>
               <button
                 (click)="copyGetUsersUrl()"
@@ -192,62 +205,98 @@
             </div>
           </div>
 
-                    <div class="space-y-1.5">
-            <span class="text-[10px] font-bold text-slate-400 dark:text-slate-500 uppercase tracking-wider block">Tham số URL (Query Parameters)</span>
-            <div class="bg-slate-50 dark:bg-slate-950 border border-slate-200/60 dark:border-slate-900 rounded-xl p-4 space-y-4">
-                            <div class="flex flex-col sm:flex-row items-start gap-2 sm:gap-4 text-xs font-semibold border-b border-slate-100 dark:border-slate-800/60 pb-3">
+          <div class="space-y-1.5">
+            <span
+              class="text-[10px] font-bold text-slate-400 dark:text-slate-500 uppercase tracking-wider block"
+              >Tham số URL (Query Parameters)</span
+            >
+            <div
+              class="bg-slate-50 dark:bg-slate-950 border border-slate-200/60 dark:border-slate-900 rounded-xl p-4 space-y-4"
+            >
+              <div
+                class="flex flex-col sm:flex-row items-start gap-2 sm:gap-4 text-xs font-semibold border-b border-slate-100 dark:border-slate-800/60 pb-3"
+              >
                 <div class="min-w-[120px] font-mono text-[var(--color-primary)] font-bold">
                   api_key
                 </div>
                 <div class="flex-1 space-y-1">
                   <div class="flex items-center gap-1.5">
-                    <span class="text-[10px] font-black uppercase bg-rose-500/10 text-rose-500 px-1.5 py-0.5 rounded">Bắt buộc</span>
-                    <span class="text-slate-400 dark:text-slate-500 font-mono text-[10px]">String</span>
+                    <span
+                      class="text-[10px] font-black uppercase bg-rose-500/10 text-rose-500 px-1.5 py-0.5 rounded"
+                      >Bắt buộc</span
+                    >
+                    <span class="text-slate-400 dark:text-slate-500 font-mono text-[10px]"
+                      >String</span
+                    >
                   </div>
                   <p class="text-slate-500 dark:text-slate-400 font-semibold leading-relaxed">
-                    Khóa API Key của Admin để xác thực. Có thể truyền qua query parameter hoặc header <code class="font-mono text-[10px]">X-API-KEY</code>.
+                    Khóa API Key của Admin để xác thực. Có thể truyền qua query parameter hoặc
+                    header <code class="font-mono text-[10px]">X-API-KEY</code>.
                   </p>
                 </div>
               </div>
 
-                            <div class="flex flex-col sm:flex-row items-start gap-2 sm:gap-4 text-xs font-semibold border-b border-slate-100 dark:border-slate-800/60 pb-3">
+              <div
+                class="flex flex-col sm:flex-row items-start gap-2 sm:gap-4 text-xs font-semibold border-b border-slate-100 dark:border-slate-800/60 pb-3"
+              >
                 <div class="min-w-[120px] font-mono text-[var(--color-primary)] font-bold">
                   page
                 </div>
                 <div class="flex-1 space-y-1">
                   <div class="flex items-center gap-1.5">
-                    <span class="text-[10px] font-black uppercase bg-slate-100 dark:bg-slate-800 text-slate-500 px-1.5 py-0.5 rounded">Tùy chọn</span>
-                    <span class="text-slate-400 dark:text-slate-500 font-mono text-[10px]">Numeric</span>
+                    <span
+                      class="text-[10px] font-black uppercase bg-slate-100 dark:bg-slate-800 text-slate-500 px-1.5 py-0.5 rounded"
+                      >Tùy chọn</span
+                    >
+                    <span class="text-slate-400 dark:text-slate-500 font-mono text-[10px]"
+                      >Numeric</span
+                    >
                   </div>
                   <p class="text-slate-500 dark:text-slate-400 font-semibold leading-relaxed">
-                    Số trang cần lấy dữ liệu. Mặc định là <code class="font-mono text-[10px]">1</code>.
+                    Số trang cần lấy dữ liệu. Mặc định là
+                    <code class="font-mono text-[10px]">1</code>.
                   </p>
                 </div>
               </div>
 
-                            <div class="flex flex-col sm:flex-row items-start gap-2 sm:gap-4 text-xs font-semibold border-b border-slate-100 dark:border-slate-800/60 pb-3">
+              <div
+                class="flex flex-col sm:flex-row items-start gap-2 sm:gap-4 text-xs font-semibold border-b border-slate-100 dark:border-slate-800/60 pb-3"
+              >
                 <div class="min-w-[120px] font-mono text-[var(--color-primary)] font-bold">
                   limit
                 </div>
                 <div class="flex-1 space-y-1">
                   <div class="flex items-center gap-1.5">
-                    <span class="text-[10px] font-black uppercase bg-slate-100 dark:bg-slate-800 text-slate-500 px-1.5 py-0.5 rounded">Tùy chọn</span>
-                    <span class="text-slate-400 dark:text-slate-500 font-mono text-[10px]">Numeric</span>
+                    <span
+                      class="text-[10px] font-black uppercase bg-slate-100 dark:bg-slate-800 text-slate-500 px-1.5 py-0.5 rounded"
+                      >Tùy chọn</span
+                    >
+                    <span class="text-slate-400 dark:text-slate-500 font-mono text-[10px]"
+                      >Numeric</span
+                    >
                   </div>
                   <p class="text-slate-500 dark:text-slate-400 font-semibold leading-relaxed">
-                    Số lượng thành viên hiển thị trên mỗi trang. Mặc định là <code class="font-mono text-[10px]">10</code>.
+                    Số lượng thành viên hiển thị trên mỗi trang. Mặc định là
+                    <code class="font-mono text-[10px]">10</code>.
                   </p>
                 </div>
               </div>
 
-                            <div class="flex flex-col sm:flex-row items-start gap-2 sm:gap-4 text-xs font-semibold border-b border-slate-100 dark:border-slate-800/60 pb-3">
+              <div
+                class="flex flex-col sm:flex-row items-start gap-2 sm:gap-4 text-xs font-semibold border-b border-slate-100 dark:border-slate-800/60 pb-3"
+              >
                 <div class="min-w-[120px] font-mono text-[var(--color-primary)] font-bold">
                   search
                 </div>
                 <div class="flex-1 space-y-1">
                   <div class="flex items-center gap-1.5">
-                    <span class="text-[10px] font-black uppercase bg-slate-100 dark:bg-slate-800 text-slate-500 px-1.5 py-0.5 rounded">Tùy chọn</span>
-                    <span class="text-slate-400 dark:text-slate-500 font-mono text-[10px]">String</span>
+                    <span
+                      class="text-[10px] font-black uppercase bg-slate-100 dark:bg-slate-800 text-slate-500 px-1.5 py-0.5 rounded"
+                      >Tùy chọn</span
+                    >
+                    <span class="text-slate-400 dark:text-slate-500 font-mono text-[10px]"
+                      >String</span
+                    >
                   </div>
                   <p class="text-slate-500 dark:text-slate-400 font-semibold leading-relaxed">
                     Từ khóa tìm kiếm theo tên, email hoặc số điện thoại thành viên.
@@ -255,42 +304,72 @@
                 </div>
               </div>
 
-                            <div class="flex flex-col sm:flex-row items-start gap-2 sm:gap-4 text-xs font-semibold border-b border-slate-100 dark:border-slate-800/60 pb-3">
+              <div
+                class="flex flex-col sm:flex-row items-start gap-2 sm:gap-4 text-xs font-semibold border-b border-slate-100 dark:border-slate-800/60 pb-3"
+              >
                 <div class="min-w-[120px] font-mono text-[var(--color-primary)] font-bold">
                   role
                 </div>
                 <div class="flex-1 space-y-1">
                   <div class="flex items-center gap-1.5">
-                    <span class="text-[10px] font-black uppercase bg-slate-100 dark:bg-slate-800 text-slate-500 px-1.5 py-0.5 rounded">Tùy chọn</span>
-                    <span class="text-slate-400 dark:text-slate-500 font-mono text-[10px]">String</span>
+                    <span
+                      class="text-[10px] font-black uppercase bg-slate-100 dark:bg-slate-800 text-slate-500 px-1.5 py-0.5 rounded"
+                      >Tùy chọn</span
+                    >
+                    <span class="text-slate-400 dark:text-slate-500 font-mono text-[10px]"
+                      >String</span
+                    >
                   </div>
                   <p class="text-slate-500 dark:text-slate-400 font-semibold leading-relaxed">
-                    Lọc theo vai trò của thành viên. Nhận giá trị: <code class="font-mono text-[10px]">admin</code> hoặc <code class="font-mono text-[10px]">customer</code>.
+                    Lọc theo vai trò của thành viên. Nhận giá trị:
+                    <code class="font-mono text-[10px]">admin</code> hoặc
+                    <code class="font-mono text-[10px]">customer</code>.
                   </p>
                 </div>
               </div>
 
-                            <div class="flex flex-col sm:flex-row items-start gap-2 sm:gap-4 text-xs font-semibold">
+              <div
+                class="flex flex-col sm:flex-row items-start gap-2 sm:gap-4 text-xs font-semibold"
+              >
                 <div class="min-w-[120px] font-mono text-[var(--color-primary)] font-bold">
                   has_api_key
                 </div>
                 <div class="flex-1 space-y-1">
                   <div class="flex items-center gap-1.5">
-                    <span class="text-[10px] font-black uppercase bg-slate-100 dark:bg-slate-800 text-slate-500 px-1.5 py-0.5 rounded">Tùy chọn</span>
-                    <span class="text-slate-400 dark:text-slate-500 font-mono text-[10px]">String / Boolean</span>
+                    <span
+                      class="text-[10px] font-black uppercase bg-slate-100 dark:bg-slate-800 text-slate-500 px-1.5 py-0.5 rounded"
+                      >Tùy chọn</span
+                    >
+                    <span class="text-slate-400 dark:text-slate-500 font-mono text-[10px]"
+                      >String / Boolean</span
+                    >
                   </div>
                   <p class="text-slate-500 dark:text-slate-400 font-semibold leading-relaxed">
-                    Lọc theo trạng thái đã sinh API Key B2B hay chưa. Nhận giá trị: <code class="font-mono text-[10px]">yes</code>/<code class="font-mono text-[10px]">no</code> hoặc <code class="font-mono text-[10px]">1</code>/<code class="font-mono text-[10px]">0</code>.
+                    Lọc theo trạng thái đã sinh API Key B2B hay chưa. Nhận giá trị:
+                    <code class="font-mono text-[10px]">yes</code>/<code
+                      class="font-mono text-[10px]"
+                      >no</code
+                    >
+                    hoặc <code class="font-mono text-[10px]">1</code>/<code
+                      class="font-mono text-[10px]"
+                      >0</code
+                    >.
                   </p>
                 </div>
               </div>
             </div>
           </div>
 
-                    <div class="space-y-1.5">
-            <span class="text-[10px] font-bold text-slate-400 dark:text-slate-500 uppercase tracking-wider block">RESPONSE MẪU (JSON)</span>
-            <div class="bg-slate-50 dark:bg-slate-950 rounded-xl p-4 font-mono text-xs text-slate-700 dark:text-slate-300 overflow-x-auto leading-relaxed border border-slate-200/60 dark:border-slate-900">
-              <pre class="whitespace-pre">{{ '{' }}
+          <div class="space-y-1.5">
+            <span
+              class="text-[10px] font-bold text-slate-400 dark:text-slate-500 uppercase tracking-wider block"
+              >RESPONSE MẪU (JSON)</span
+            >
+            <div
+              class="bg-slate-50 dark:bg-slate-950 rounded-xl p-4 font-mono text-xs text-slate-700 dark:text-slate-300 overflow-x-auto leading-relaxed border border-slate-200/60 dark:border-slate-900"
+            >
+              <pre class="whitespace-pre"
+                >{{ '{' }}
   "success": true,
   "users": [
     {{ '{' }}
@@ -309,9 +388,11 @@
         </div>
       </div>
 
-            <div class="pt-8 space-y-4">
+      <div class="pt-8 space-y-4">
         <div class="flex items-start gap-3">
-          <div class="w-7 h-7 rounded-full bg-[var(--color-primary)]/10 text-[var(--color-primary)] text-xs font-black flex items-center justify-center shrink-0 mt-0.5">
+          <div
+            class="w-7 h-7 rounded-full bg-[var(--color-primary)]/10 text-[var(--color-primary)] text-xs font-black flex items-center justify-center shrink-0 mt-0.5"
+          >
             2
           </div>
           <div>
@@ -319,26 +400,42 @@
               2. Lấy danh sách đơn hàng B2B toàn hệ thống
             </h4>
             <p class="text-xs font-semibold text-slate-500 dark:text-slate-400 mt-1">
-              Truy xuất thông tin tất cả đơn hàng đã mua qua kênh B2B của mọi thành viên. Hỗ trợ phân trang (?page=1&limit=10), tìm kiếm (?search=...), lọc theo trạng thái (?status=...) và đại lý (?user_id=...).
+              Truy xuất thông tin tất cả đơn hàng đã mua qua kênh B2B của mọi thành viên. Hỗ trợ
+              phân trang (?page=1&limit=10), tìm kiếm (?search=...), lọc theo trạng thái
+              (?status=...) và đại lý (?user_id=...).
             </p>
           </div>
         </div>
 
         <div class="flex flex-wrap items-center gap-2">
-          <span class="text-[10px] font-black uppercase tracking-wider bg-blue-500 text-white px-2 py-0.5 rounded">
+          <span
+            class="text-[10px] font-black uppercase tracking-wider bg-blue-500 text-white px-2 py-0.5 rounded"
+          >
             GET
           </span>
-          <span class="font-mono text-xs font-extrabold text-slate-600 dark:text-slate-300 bg-slate-100 dark:bg-slate-900 px-2 py-1 rounded">
+          <span
+            class="font-mono text-xs font-extrabold text-slate-600 dark:text-slate-300 bg-slate-100 dark:bg-slate-900 px-2 py-1 rounded"
+          >
             /api/v1/admin/b2b/orders
           </span>
         </div>
 
         <div class="space-y-3">
-                    <div class="space-y-1.5">
-            <span class="text-[10px] font-bold text-slate-400 dark:text-slate-500 uppercase tracking-wider block">Mẫu gọi API (CURL)</span>
-            <div class="relative bg-slate-50 dark:bg-slate-950 rounded-xl border border-slate-200/60 dark:border-slate-900 overflow-hidden">
-              <div class="overflow-x-auto p-3.5 pr-12 font-mono text-xs text-slate-700 dark:text-slate-300 leading-relaxed">
-                <pre class="whitespace-pre">curl -X GET "{{ siteUrl() }}/api/v1/admin/b2b/orders?api_key={{ apiKey() || 'API_KEY_CUA_BAN' }}&page=1&limit=10"</pre>
+          <div class="space-y-1.5">
+            <span
+              class="text-[10px] font-bold text-slate-400 dark:text-slate-500 uppercase tracking-wider block"
+              >Mẫu gọi API (CURL)</span
+            >
+            <div
+              class="relative bg-slate-50 dark:bg-slate-950 rounded-xl border border-slate-200/60 dark:border-slate-900 overflow-hidden"
+            >
+              <div
+                class="overflow-x-auto p-3.5 pr-12 font-mono text-xs text-slate-700 dark:text-slate-300 leading-relaxed"
+              >
+                <pre class="whitespace-pre">
+curl -X GET "{{ siteUrl() }}/api/v1/admin/b2b/orders?api_key={{
+                    apiKey() || 'API_KEY_CUA_BAN'
+                  }}&page=1&limit=10"</pre>
               </div>
               <button
                 (click)="copyGetOrdersCurl()"
@@ -350,11 +447,22 @@
             </div>
           </div>
 
-                    <div class="space-y-1.5">
-            <span class="text-[10px] font-bold text-slate-400 dark:text-slate-500 uppercase tracking-wider block">URL gọi trực tiếp</span>
-            <div class="relative bg-slate-50 dark:bg-slate-950 rounded-xl border border-slate-200/60 dark:border-slate-900 overflow-hidden">
-              <div class="overflow-x-auto p-3.5 pr-12 font-mono text-xs text-slate-700 dark:text-slate-300 leading-relaxed">
-                <span class="text-[var(--color-primary)] font-semibold">{{ siteUrl() }}/api/v1/admin/b2b/orders?api_key={{ apiKey() || 'API_KEY_CUA_BAN' }}&page=1&limit=10</span>
+          <div class="space-y-1.5">
+            <span
+              class="text-[10px] font-bold text-slate-400 dark:text-slate-500 uppercase tracking-wider block"
+              >URL gọi trực tiếp</span
+            >
+            <div
+              class="relative bg-slate-50 dark:bg-slate-950 rounded-xl border border-slate-200/60 dark:border-slate-900 overflow-hidden"
+            >
+              <div
+                class="overflow-x-auto p-3.5 pr-12 font-mono text-xs text-slate-700 dark:text-slate-300 leading-relaxed"
+              >
+                <span class="text-[var(--color-primary)] font-semibold"
+                  >{{ siteUrl() }}/api/v1/admin/b2b/orders?api_key={{
+                    apiKey() || 'API_KEY_CUA_BAN'
+                  }}&page=1&limit=10</span
+                >
               </div>
               <button
                 (click)="copyGetOrdersUrl()"
@@ -366,62 +474,101 @@
             </div>
           </div>
 
-                    <div class="space-y-1.5">
-            <span class="text-[10px] font-bold text-slate-400 dark:text-slate-500 uppercase tracking-wider block">Tham số URL (Query Parameters)</span>
-            <div class="bg-slate-50 dark:bg-slate-950 border border-slate-200/60 dark:border-slate-900 rounded-xl p-4 space-y-4">
-                            <div class="flex flex-col sm:flex-row items-start gap-2 sm:gap-4 text-xs font-semibold border-b border-slate-100 dark:border-slate-800/60 pb-3">
+          <div class="space-y-1.5">
+            <span
+              class="text-[10px] font-bold text-slate-400 dark:text-slate-500 uppercase tracking-wider block"
+              >Tham số URL (Query Parameters)</span
+            >
+            <div
+              class="bg-slate-50 dark:bg-slate-950 border border-slate-200/60 dark:border-slate-900 rounded-xl p-4 space-y-4"
+            >
+              <div
+                class="flex flex-col sm:flex-row items-start gap-2 sm:gap-4 text-xs font-semibold border-b border-slate-100 dark:border-slate-800/60 pb-3"
+              >
                 <div class="min-w-[120px] font-mono text-[var(--color-primary)] font-bold">
                   page
                 </div>
                 <div class="flex-1 space-y-1">
                   <div class="flex items-center gap-1.5">
-                    <span class="text-[10px] font-black uppercase bg-slate-100 dark:bg-slate-800 text-slate-500 px-1.5 py-0.5 rounded">Tùy chọn</span>
-                    <span class="text-slate-400 dark:text-slate-500 font-mono text-[10px]">Numeric</span>
+                    <span
+                      class="text-[10px] font-black uppercase bg-slate-100 dark:bg-slate-800 text-slate-500 px-1.5 py-0.5 rounded"
+                      >Tùy chọn</span
+                    >
+                    <span class="text-slate-400 dark:text-slate-500 font-mono text-[10px]"
+                      >Numeric</span
+                    >
                   </div>
                   <p class="text-slate-500 dark:text-slate-400 font-semibold leading-relaxed">
-                    Số trang cần lấy dữ liệu. Mặc định là <code class="font-mono text-[10px]">1</code>.
+                    Số trang cần lấy dữ liệu. Mặc định là
+                    <code class="font-mono text-[10px]">1</code>.
                   </p>
                 </div>
               </div>
 
-                            <div class="flex flex-col sm:flex-row items-start gap-2 sm:gap-4 text-xs font-semibold border-b border-slate-100 dark:border-slate-800/60 pb-3">
+              <div
+                class="flex flex-col sm:flex-row items-start gap-2 sm:gap-4 text-xs font-semibold border-b border-slate-100 dark:border-slate-800/60 pb-3"
+              >
                 <div class="min-w-[120px] font-mono text-[var(--color-primary)] font-bold">
                   limit
                 </div>
                 <div class="flex-1 space-y-1">
                   <div class="flex items-center gap-1.5">
-                    <span class="text-[10px] font-black uppercase bg-slate-100 dark:bg-slate-800 text-slate-500 px-1.5 py-0.5 rounded">Tùy chọn</span>
-                    <span class="text-slate-400 dark:text-slate-500 font-mono text-[10px]">Numeric</span>
+                    <span
+                      class="text-[10px] font-black uppercase bg-slate-100 dark:bg-slate-800 text-slate-500 px-1.5 py-0.5 rounded"
+                      >Tùy chọn</span
+                    >
+                    <span class="text-slate-400 dark:text-slate-500 font-mono text-[10px]"
+                      >Numeric</span
+                    >
                   </div>
                   <p class="text-slate-500 dark:text-slate-400 font-semibold leading-relaxed">
-                    Số lượng đơn hàng hiển thị trên mỗi trang. Mặc định là <code class="font-mono text-[10px]">10</code>, tối đa là <code class="font-mono text-[10px]">20</code>.
+                    Số lượng đơn hàng hiển thị trên mỗi trang. Mặc định là
+                    <code class="font-mono text-[10px]">10</code>, tối đa là
+                    <code class="font-mono text-[10px]">20</code>.
                   </p>
                 </div>
               </div>
 
-                            <div class="flex flex-col sm:flex-row items-start gap-2 sm:gap-4 text-xs font-semibold border-b border-slate-100 dark:border-slate-800/60 pb-3">
+              <div
+                class="flex flex-col sm:flex-row items-start gap-2 sm:gap-4 text-xs font-semibold border-b border-slate-100 dark:border-slate-800/60 pb-3"
+              >
                 <div class="min-w-[120px] font-mono text-[var(--color-primary)] font-bold">
                   status
                 </div>
                 <div class="flex-1 space-y-1">
                   <div class="flex items-center gap-1.5">
-                    <span class="text-[10px] font-black uppercase bg-slate-100 dark:bg-slate-800 text-slate-500 px-1.5 py-0.5 rounded">Tùy chọn</span>
-                    <span class="text-slate-400 dark:text-slate-500 font-mono text-[10px]">String</span>
+                    <span
+                      class="text-[10px] font-black uppercase bg-slate-100 dark:bg-slate-800 text-slate-500 px-1.5 py-0.5 rounded"
+                      >Tùy chọn</span
+                    >
+                    <span class="text-slate-400 dark:text-slate-500 font-mono text-[10px]"
+                      >String</span
+                    >
                   </div>
                   <p class="text-slate-500 dark:text-slate-400 font-semibold leading-relaxed">
-                    Lọc đơn hàng theo trạng thái. Nhận các giá trị: <code class="font-mono text-[10px]">paid</code>, <code class="font-mono text-[10px]">pending</code>, <code class="font-mono text-[10px]">cancelled</code>.
+                    Lọc đơn hàng theo trạng thái. Nhận các giá trị:
+                    <code class="font-mono text-[10px]">paid</code>,
+                    <code class="font-mono text-[10px]">pending</code>,
+                    <code class="font-mono text-[10px]">cancelled</code>.
                   </p>
                 </div>
               </div>
 
-                            <div class="flex flex-col sm:flex-row items-start gap-2 sm:gap-4 text-xs font-semibold border-b border-slate-100 dark:border-slate-800/60 pb-3">
+              <div
+                class="flex flex-col sm:flex-row items-start gap-2 sm:gap-4 text-xs font-semibold border-b border-slate-100 dark:border-slate-800/60 pb-3"
+              >
                 <div class="min-w-[120px] font-mono text-[var(--color-primary)] font-bold">
                   user_id
                 </div>
                 <div class="flex-1 space-y-1">
                   <div class="flex items-center gap-1.5">
-                    <span class="text-[10px] font-black uppercase bg-slate-100 dark:bg-slate-800 text-slate-500 px-1.5 py-0.5 rounded">Tùy chọn</span>
-                    <span class="text-slate-400 dark:text-slate-500 font-mono text-[10px]">String (UUID)</span>
+                    <span
+                      class="text-[10px] font-black uppercase bg-slate-100 dark:bg-slate-800 text-slate-500 px-1.5 py-0.5 rounded"
+                      >Tùy chọn</span
+                    >
+                    <span class="text-slate-400 dark:text-slate-500 font-mono text-[10px]"
+                      >String (UUID)</span
+                    >
                   </div>
                   <p class="text-slate-500 dark:text-slate-400 font-semibold leading-relaxed">
                     Lọc đơn hàng của đại lý/thành viên cụ thể dựa trên mã ID tài khoản.
@@ -429,27 +576,41 @@
                 </div>
               </div>
 
-                            <div class="flex flex-col sm:flex-row items-start gap-2 sm:gap-4 text-xs font-semibold">
+              <div
+                class="flex flex-col sm:flex-row items-start gap-2 sm:gap-4 text-xs font-semibold"
+              >
                 <div class="min-w-[120px] font-mono text-[var(--color-primary)] font-bold">
                   search
                 </div>
                 <div class="flex-1 space-y-1">
                   <div class="flex items-center gap-1.5">
-                    <span class="text-[10px] font-black uppercase bg-slate-100 dark:bg-slate-800 text-slate-500 px-1.5 py-0.5 rounded">Tùy chọn</span>
-                    <span class="text-slate-400 dark:text-slate-500 font-mono text-[10px]">String</span>
+                    <span
+                      class="text-[10px] font-black uppercase bg-slate-100 dark:bg-slate-800 text-slate-500 px-1.5 py-0.5 rounded"
+                      >Tùy chọn</span
+                    >
+                    <span class="text-slate-400 dark:text-slate-500 font-mono text-[10px]"
+                      >String</span
+                    >
                   </div>
                   <p class="text-slate-500 dark:text-slate-400 font-semibold leading-relaxed">
-                    Từ khóa tìm kiếm theo mã đơn hàng (`order_code`) hoặc thông tin đại lý (tên/email).
+                    Từ khóa tìm kiếm theo mã đơn hàng (`order_code`) hoặc thông tin đại lý
+                    (tên/email).
                   </p>
                 </div>
               </div>
             </div>
           </div>
 
-                    <div class="space-y-1.5">
-            <span class="text-[10px] font-bold text-slate-400 dark:text-slate-500 uppercase tracking-wider block">RESPONSE MẪU (JSON)</span>
-            <div class="bg-slate-50 dark:bg-slate-950 rounded-xl p-4 font-mono text-xs text-slate-700 dark:text-slate-300 overflow-x-auto leading-relaxed border border-slate-200/60 dark:border-slate-900">
-              <pre class="whitespace-pre">{{ '{' }}
+          <div class="space-y-1.5">
+            <span
+              class="text-[10px] font-bold text-slate-400 dark:text-slate-500 uppercase tracking-wider block"
+              >RESPONSE MẪU (JSON)</span
+            >
+            <div
+              class="bg-slate-50 dark:bg-slate-950 rounded-xl p-4 font-mono text-xs text-slate-700 dark:text-slate-300 overflow-x-auto leading-relaxed border border-slate-200/60 dark:border-slate-900"
+            >
+              <pre class="whitespace-pre"
+                >{{ '{' }}
   "success": true,
   "orders": [
     {{ '{' }}
@@ -478,9 +639,11 @@
         </div>
       </div>
 
-            <div class="pt-8 space-y-4">
+      <div class="pt-8 space-y-4">
         <div class="flex items-start gap-3">
-          <div class="w-7 h-7 rounded-full bg-[var(--color-primary)]/10 text-[var(--color-primary)] text-xs font-black flex items-center justify-center shrink-0 mt-0.5">
+          <div
+            class="w-7 h-7 rounded-full bg-[var(--color-primary)]/10 text-[var(--color-primary)] text-xs font-black flex items-center justify-center shrink-0 mt-0.5"
+          >
             3
           </div>
           <div>
@@ -488,32 +651,47 @@
               3. Thêm kho sản phẩm (Nhập lô tài nguyên mới)
             </h4>
             <p class="text-xs font-semibold text-slate-500 dark:text-slate-400 mt-1">
-              Thêm dữ liệu kho hàng vào sản phẩm. Có thể gửi nội dung trực tiếp bằng JSON hoặc tải file TXT thông qua multipart/form-data.
+              Thêm dữ liệu kho hàng vào sản phẩm. Có thể gửi nội dung trực tiếp bằng JSON hoặc tải
+              file TXT thông qua multipart/form-data.
             </p>
           </div>
         </div>
 
         <div class="flex flex-wrap items-center gap-2">
-          <span class="text-[10px] font-black uppercase tracking-wider bg-teal-600 text-white px-2 py-0.5 rounded">
+          <span
+            class="text-[10px] font-black uppercase tracking-wider bg-teal-600 text-white px-2 py-0.5 rounded"
+          >
             POST
           </span>
-          <span class="font-mono text-xs font-extrabold text-slate-600 dark:text-slate-300 bg-slate-100 dark:bg-slate-900 px-2 py-1 rounded">
+          <span
+            class="font-mono text-xs font-extrabold text-slate-600 dark:text-slate-300 bg-slate-100 dark:bg-slate-900 px-2 py-1 rounded"
+          >
             /api/v1/admin/b2b/products/{{ '{' }}id{{ '}' }}/inventory
           </span>
         </div>
 
         <div class="space-y-4">
-                    <div class="space-y-1.5">
-            <span class="text-[10px] font-bold text-slate-400 dark:text-slate-500 uppercase tracking-wider block">Tham số yêu cầu (Parameters)</span>
-            <div class="bg-slate-50 dark:bg-slate-950 border border-slate-200/60 dark:border-slate-900 rounded-xl p-4 space-y-4">
-                            <div class="flex flex-col sm:flex-row items-start gap-2 sm:gap-4 text-xs font-semibold border-b border-slate-100 dark:border-slate-800/60 pb-3">
-                <div class="min-w-[120px] font-mono text-[var(--color-primary)] font-bold">
-                  id
-                </div>
+          <div class="space-y-1.5">
+            <span
+              class="text-[10px] font-bold text-slate-400 dark:text-slate-500 uppercase tracking-wider block"
+              >Tham số yêu cầu (Parameters)</span
+            >
+            <div
+              class="bg-slate-50 dark:bg-slate-950 border border-slate-200/60 dark:border-slate-900 rounded-xl p-4 space-y-4"
+            >
+              <div
+                class="flex flex-col sm:flex-row items-start gap-2 sm:gap-4 text-xs font-semibold border-b border-slate-100 dark:border-slate-800/60 pb-3"
+              >
+                <div class="min-w-[120px] font-mono text-[var(--color-primary)] font-bold">id</div>
                 <div class="flex-1 space-y-1">
                   <div class="flex items-center gap-1.5">
-                    <span class="text-[10px] font-black uppercase bg-rose-500/10 text-rose-500 px-1.5 py-0.5 rounded">Bắt buộc</span>
-                    <span class="text-slate-400 dark:text-slate-500 font-mono text-[10px]">String (URL)</span>
+                    <span
+                      class="text-[10px] font-black uppercase bg-rose-500/10 text-rose-500 px-1.5 py-0.5 rounded"
+                      >Bắt buộc</span
+                    >
+                    <span class="text-slate-400 dark:text-slate-500 font-mono text-[10px]"
+                      >String (URL)</span
+                    >
                   </div>
                   <p class="text-slate-500 dark:text-slate-400 font-semibold leading-relaxed">
                     ID sản phẩm trên URL. Sản phẩm phải thuộc quyền quản lý của bạn.
@@ -521,92 +699,139 @@
                 </div>
               </div>
 
-                            <div class="flex flex-col sm:flex-row items-start gap-2 sm:gap-4 text-xs font-semibold border-b border-slate-100 dark:border-slate-800/60 pb-3">
+              <div
+                class="flex flex-col sm:flex-row items-start gap-2 sm:gap-4 text-xs font-semibold border-b border-slate-100 dark:border-slate-800/60 pb-3"
+              >
                 <div class="min-w-[120px] font-mono text-[var(--color-primary)] font-bold">
                   batch_name
                 </div>
                 <div class="flex-1 space-y-1">
                   <div class="flex items-center gap-1.5">
-                    <span class="text-[10px] font-black uppercase bg-slate-100 dark:bg-slate-800 text-slate-500 px-1.5 py-0.5 rounded">Tùy chọn</span>
-                    <span class="text-slate-400 dark:text-slate-500 font-mono text-[10px]">String (Body)</span>
+                    <span
+                      class="text-[10px] font-black uppercase bg-slate-100 dark:bg-slate-800 text-slate-500 px-1.5 py-0.5 rounded"
+                      >Tùy chọn</span
+                    >
+                    <span class="text-slate-400 dark:text-slate-500 font-mono text-[10px]"
+                      >String (Body)</span
+                    >
                   </div>
                   <p class="text-slate-500 dark:text-slate-400 font-semibold leading-relaxed">
-                    Tên ký hiệu của lô hàng để dễ phân loại và đối soát (mặc định sẽ tự động sinh theo ngày giờ hiện tại).
+                    Tên ký hiệu của lô hàng để dễ phân loại và đối soát (mặc định sẽ tự động sinh
+                    theo ngày giờ hiện tại).
                   </p>
                 </div>
               </div>
 
-                            <div class="flex flex-col sm:flex-row items-start gap-2 sm:gap-4 text-xs font-semibold border-b border-slate-100 dark:border-slate-800/60 pb-3">
+              <div
+                class="flex flex-col sm:flex-row items-start gap-2 sm:gap-4 text-xs font-semibold border-b border-slate-100 dark:border-slate-800/60 pb-3"
+              >
                 <div class="min-w-[120px] font-mono text-[var(--color-primary)] font-bold">
                   content
                 </div>
                 <div class="flex-1 space-y-1">
                   <div class="flex items-center gap-1.5">
-                    <span class="text-[10px] font-black uppercase bg-rose-500/10 text-rose-500 px-1.5 py-0.5 rounded">Bắt buộc*</span>
-                    <span class="text-slate-400 dark:text-slate-500 font-mono text-[10px]">String (Body)</span>
+                    <span
+                      class="text-[10px] font-black uppercase bg-rose-500/10 text-rose-500 px-1.5 py-0.5 rounded"
+                      >Bắt buộc*</span
+                    >
+                    <span class="text-slate-400 dark:text-slate-500 font-mono text-[10px]"
+                      >String (Body)</span
+                    >
                   </div>
                   <p class="text-slate-500 dark:text-slate-400 font-semibold leading-relaxed">
-                    Dữ liệu kho hàng dạng chuỗi nhiều dòng (phân cách bằng dấu xuống dòng <code class="font-mono text-[10px]">\n</code>). Bắt buộc nếu không gửi file.
+                    Dữ liệu kho hàng dạng chuỗi nhiều dòng (phân cách bằng dấu xuống dòng
+                    <code class="font-mono text-[10px]">\n</code>). Bắt buộc nếu không gửi file.
                   </p>
                 </div>
               </div>
 
-                            <div class="flex flex-col sm:flex-row items-start gap-2 sm:gap-4 text-xs font-semibold">
+              <div
+                class="flex flex-col sm:flex-row items-start gap-2 sm:gap-4 text-xs font-semibold"
+              >
                 <div class="min-w-[120px] font-mono text-[var(--color-primary)] font-bold">
                   file
                 </div>
                 <div class="flex-1 space-y-1">
                   <div class="flex items-center gap-1.5">
-                    <span class="text-[10px] font-black uppercase bg-rose-500/10 text-rose-500 px-1.5 py-0.5 rounded">Bắt buộc*</span>
-                    <span class="text-slate-400 dark:text-slate-500 font-mono text-[10px]">File (TXT)</span>
+                    <span
+                      class="text-[10px] font-black uppercase bg-rose-500/10 text-rose-500 px-1.5 py-0.5 rounded"
+                      >Bắt buộc*</span
+                    >
+                    <span class="text-slate-400 dark:text-slate-500 font-mono text-[10px]"
+                      >File (TXT)</span
+                    >
                   </div>
                   <p class="text-slate-500 dark:text-slate-400 font-semibold leading-relaxed">
-                    Tải file định dạng văn bản <code class="font-mono text-[10px]">.txt</code> chứa dữ liệu sản phẩm qua multipart/form-data. Bắt buộc nếu không gửi content.
+                    Tải file định dạng văn bản <code class="font-mono text-[10px]">.txt</code> chứa
+                    dữ liệu sản phẩm qua multipart/form-data. Bắt buộc nếu không gửi content.
                   </p>
                 </div>
               </div>
             </div>
           </div>
 
-                    <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-                        <div class="space-y-1.5">
+          <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+            <div class="space-y-1.5">
               <div class="flex items-center justify-between">
-                <span class="text-[10px] font-bold text-slate-400 dark:text-slate-500 uppercase tracking-wider block">Ví dụ gửi JSON hàng loạt</span>
-                <div class="flex items-center gap-1.5 border-b border-slate-200/40 dark:border-slate-800/40 pb-0.5">
+                <span
+                  class="text-[10px] font-bold text-slate-400 dark:text-slate-500 uppercase tracking-wider block"
+                  >Ví dụ gửi JSON hàng loạt</span
+                >
+                <div
+                  class="flex items-center gap-1.5 border-b border-slate-200/40 dark:border-slate-800/40 pb-0.5"
+                >
                   <button
                     (click)="importInventoryTab.set('bash')"
-                    [class]="importInventoryTab() === 'bash'
-                      ? 'text-[10px] font-bold text-[var(--color-primary)] border-b border-[var(--color-primary)] pb-0.5 px-2 transition-all cursor-pointer'
-                      : 'text-[10px] font-semibold text-slate-400 dark:text-slate-500 pb-0.5 px-2 hover:text-slate-600 dark:hover:text-slate-400 transition-all cursor-pointer'"
+                    [class]="
+                      importInventoryTab() === 'bash'
+                        ? 'text-[10px] font-bold text-[var(--color-primary)] border-b border-[var(--color-primary)] pb-0.5 px-2 transition-all cursor-pointer'
+                        : 'text-[10px] font-semibold text-slate-400 dark:text-slate-500 pb-0.5 px-2 hover:text-slate-600 dark:hover:text-slate-400 transition-all cursor-pointer'
+                    "
                   >
                     Bash
                   </button>
                   <button
                     (click)="importInventoryTab.set('cmd')"
-                    [class]="importInventoryTab() === 'cmd'
-                      ? 'text-[10px] font-bold text-[var(--color-primary)] border-b border-[var(--color-primary)] pb-0.5 px-2 transition-all cursor-pointer'
-                      : 'text-[10px] font-semibold text-slate-400 dark:text-slate-500 pb-0.5 px-2 hover:text-slate-600 dark:hover:text-slate-400 transition-all cursor-pointer'"
+                    [class]="
+                      importInventoryTab() === 'cmd'
+                        ? 'text-[10px] font-bold text-[var(--color-primary)] border-b border-[var(--color-primary)] pb-0.5 px-2 transition-all cursor-pointer'
+                        : 'text-[10px] font-semibold text-slate-400 dark:text-slate-500 pb-0.5 px-2 hover:text-slate-600 dark:hover:text-slate-400 transition-all cursor-pointer'
+                    "
                   >
                     CMD
                   </button>
                 </div>
               </div>
-              <div class="relative bg-slate-50 dark:bg-slate-950 rounded-xl border border-slate-200/60 dark:border-slate-900 overflow-hidden min-h-[120px]">
-                <div class="overflow-x-auto p-3.5 pr-12 font-mono text-xs text-slate-700 dark:text-slate-300 leading-relaxed">
+              <div
+                class="relative bg-slate-50 dark:bg-slate-950 rounded-xl border border-slate-200/60 dark:border-slate-900 overflow-hidden min-h-[120px]"
+              >
+                <div
+                  class="overflow-x-auto p-3.5 pr-12 font-mono text-xs text-slate-700 dark:text-slate-300 leading-relaxed"
+                >
                   @if (importInventoryTab() === 'bash') {
-                    <pre class="whitespace-pre">curl -X POST "{{ siteUrl() }}/api/v1/admin/b2b/products/PRODUCT_UUID/inventory" \
+                    <pre class="whitespace-pre">
+curl -X POST "{{ siteUrl() }}/api/v1/admin/b2b/products/PRODUCT_UUID/inventory" \
   -H "Content-Type: application/json" \
   -H "X-API-KEY: {{ apiKey() || 'API_KEY_CUA_BAN' }}" \
   -d '{{ '{' }}"batch_name": "Lô hàng mới", "content": "tai_khoan_1\ntai_khoan_2"{{ '}' }}'</pre>
                   } @else {
-                    <pre class="whitespace-pre">curl -X POST "{{ siteUrl() }}/api/v1/admin/b2b/products/PRODUCT_UUID/inventory" \
+                    <pre class="whitespace-pre">
+curl -X POST "{{ siteUrl() }}/api/v1/admin/b2b/products/PRODUCT_UUID/inventory" \
   -H "Content-Type: application/json" \
   -H "X-API-KEY: {{ apiKey() || 'API_KEY_CUA_BAN' }}" \
-  -d "{{ '{' }}\\\"batch_name\\\": \\\"Lô hàng mới\\\", \\\"content\\\": \\\"tai_khoan_1\\\\ntai_khoan_2\\\"{{ '}' }}"</pre>
+  -d "{{
+                        '{'
+                      }}\\\"batch_name\\\": \\\"Lô hàng mới\\\", \\\"content\\\": \\\"tai_khoan_1\\\\ntai_khoan_2\\\"{{
+                        '}'
+                      }}"</pre>
                   }
                 </div>
                 <button
-                  (click)="importInventoryTab() === 'bash' ? copyImportInventoryCurl() : copyImportInventoryWindowsCurl()"
+                  (click)="
+                    importInventoryTab() === 'bash'
+                      ? copyImportInventoryCurl()
+                      : copyImportInventoryWindowsCurl()
+                  "
                   class="absolute right-3.5 top-3.5 text-slate-400 dark:text-slate-500 hover:text-[var(--color-primary)] dark:hover:text-white transition-colors cursor-pointer"
                   title="Copy JSON CURL"
                 >
@@ -615,11 +840,19 @@
               </div>
             </div>
 
-                        <div class="space-y-1.5">
-              <span class="text-[10px] font-bold text-slate-400 dark:text-slate-500 uppercase tracking-wider block">Ví dụ tải file</span>
-              <div class="relative bg-slate-50 dark:bg-slate-950 rounded-xl border border-slate-200/60 dark:border-slate-900 overflow-hidden min-h-[120px]">
-                <div class="overflow-x-auto p-3.5 pr-12 font-mono text-xs text-slate-700 dark:text-slate-300 leading-relaxed">
-                  <pre class="whitespace-pre">curl -X POST "{{ siteUrl() }}/api/v1/admin/b2b/products/PRODUCT_UUID/inventory" \
+            <div class="space-y-1.5">
+              <span
+                class="text-[10px] font-bold text-slate-400 dark:text-slate-500 uppercase tracking-wider block"
+                >Ví dụ tải file</span
+              >
+              <div
+                class="relative bg-slate-50 dark:bg-slate-950 rounded-xl border border-slate-200/60 dark:border-slate-900 overflow-hidden min-h-[120px]"
+              >
+                <div
+                  class="overflow-x-auto p-3.5 pr-12 font-mono text-xs text-slate-700 dark:text-slate-300 leading-relaxed"
+                >
+                  <pre class="whitespace-pre">
+curl -X POST "{{ siteUrl() }}/api/v1/admin/b2b/products/PRODUCT_UUID/inventory" \
   -H "X-API-KEY: {{ apiKey() || 'API_KEY_CUA_BAN' }}" \
   -F "batch_name=Lô hàng mới" \
   -F "file=@inventory.txt"</pre>
@@ -635,10 +868,16 @@
             </div>
           </div>
 
-                        <div class="space-y-1.5">
-              <span class="text-[10px] font-bold text-slate-400 dark:text-slate-500 uppercase tracking-wider block">RESPONSE MẪU (JSON)</span>
-              <div class="bg-slate-50 dark:bg-slate-950 rounded-xl p-4 font-mono text-xs text-slate-700 dark:text-slate-300 overflow-x-auto leading-relaxed border border-slate-200/60 dark:border-slate-900">
-                <pre class="whitespace-pre">{{ '{' }}
+          <div class="space-y-1.5">
+            <span
+              class="text-[10px] font-bold text-slate-400 dark:text-slate-500 uppercase tracking-wider block"
+              >RESPONSE MẪU (JSON)</span
+            >
+            <div
+              class="bg-slate-50 dark:bg-slate-950 rounded-xl p-4 font-mono text-xs text-slate-700 dark:text-slate-300 overflow-x-auto leading-relaxed border border-slate-200/60 dark:border-slate-900"
+            >
+              <pre class="whitespace-pre"
+                >{{ '{' }}
   "success": true,
   "message": "Successfully imported batch 'Lô hàng mới' with 2 resources.",
   "data": {{ '{' }}
@@ -651,122 +890,182 @@
     "status": "active"
   {{ '}' }}
 {{ '}' }}</pre>
-              </div>
             </div>
           </div>
         </div>
+      </div>
 
-                <div class="pt-8 space-y-4">
-          <div class="flex items-start gap-3">
-            <div class="w-7 h-7 rounded-full bg-[var(--color-primary)]/10 text-[var(--color-primary)] text-xs font-black flex items-center justify-center shrink-0 mt-0.5">
-              4
-            </div>
-            <div>
-              <h4 class="text-sm font-extrabold text-slate-800 dark:text-white">
-                4. Lấy số liệu thống kê hệ thống B2B
-              </h4>
-              <p class="text-xs font-semibold text-slate-500 dark:text-slate-400 mt-1">
-                Xem tổng quan số liệu hoạt động toàn hệ thống bao gồm: Doanh thu, Đơn hàng, Sản phẩm, Tồn kho khả dụng và Tổng số người dùng.
-              </p>
+      <div class="pt-8 space-y-4">
+        <div class="flex items-start gap-3">
+          <div
+            class="w-7 h-7 rounded-full bg-[var(--color-primary)]/10 text-[var(--color-primary)] text-xs font-black flex items-center justify-center shrink-0 mt-0.5"
+          >
+            4
+          </div>
+          <div>
+            <h4 class="text-sm font-extrabold text-slate-800 dark:text-white">
+              4. Lấy số liệu thống kê hệ thống B2B
+            </h4>
+            <p class="text-xs font-semibold text-slate-500 dark:text-slate-400 mt-1">
+              Xem tổng quan số liệu hoạt động toàn hệ thống bao gồm: Doanh thu, Đơn hàng, Sản phẩm,
+              Tồn kho khả dụng và Tổng số người dùng.
+            </p>
+          </div>
+        </div>
+
+        <div class="flex flex-wrap items-center gap-2">
+          <span
+            class="text-[10px] font-black uppercase tracking-wider bg-blue-500 text-white px-2 py-0.5 rounded"
+          >
+            GET
+          </span>
+          <span
+            class="font-mono text-xs font-extrabold text-slate-600 dark:text-slate-300 bg-slate-100 dark:bg-slate-900 px-2 py-1 rounded"
+          >
+            /api/v1/admin/b2b/stats
+          </span>
+        </div>
+
+        <div class="space-y-3">
+          <div class="space-y-1.5">
+            <span
+              class="text-[10px] font-bold text-slate-400 dark:text-slate-500 uppercase tracking-wider block"
+              >Mẫu gọi API (CURL)</span
+            >
+            <div
+              class="relative bg-slate-50 dark:bg-slate-950 rounded-xl border border-slate-200/60 dark:border-slate-900 overflow-hidden"
+            >
+              <div
+                class="overflow-x-auto p-3.5 pr-12 font-mono text-xs text-slate-700 dark:text-slate-300 leading-relaxed"
+              >
+                <pre class="whitespace-pre">
+curl -X GET "{{ siteUrl() }}/api/v1/admin/b2b/stats?api_key={{
+                    apiKey() || 'API_KEY_CUA_BAN'
+                  }}"</pre>
+              </div>
+              <button
+                (click)="copyGetStatsCurl()"
+                class="absolute right-3.5 top-3.5 text-slate-400 dark:text-slate-500 hover:text-[var(--color-primary)] dark:hover:text-white transition-colors cursor-pointer"
+                title="Copy CURL"
+              >
+                <app-icon name="copy" class="w-4 h-4" />
+              </button>
             </div>
           </div>
 
-          <div class="flex flex-wrap items-center gap-2">
-            <span class="text-[10px] font-black uppercase tracking-wider bg-blue-500 text-white px-2 py-0.5 rounded">
-              GET
-            </span>
-            <span class="font-mono text-xs font-extrabold text-slate-600 dark:text-slate-300 bg-slate-100 dark:bg-slate-900 px-2 py-1 rounded">
-              /api/v1/admin/b2b/stats
-            </span>
+          <div class="space-y-1.5">
+            <span
+              class="text-[10px] font-bold text-slate-400 dark:text-slate-500 uppercase tracking-wider block"
+              >URL gọi trực tiếp</span
+            >
+            <div
+              class="relative bg-slate-50 dark:bg-slate-950 rounded-xl border border-slate-200/60 dark:border-slate-900 overflow-hidden"
+            >
+              <div
+                class="overflow-x-auto p-3.5 pr-12 font-mono text-xs text-slate-700 dark:text-slate-300 leading-relaxed"
+              >
+                <span class="text-[var(--color-primary)] font-semibold"
+                  >{{ siteUrl() }}/api/v1/admin/b2b/stats?api_key={{
+                    apiKey() || 'API_KEY_CUA_BAN'
+                  }}</span
+                >
+              </div>
+              <button
+                (click)="copyGetStatsUrl()"
+                class="absolute right-3.5 top-3.5 text-slate-400 dark:text-slate-500 hover:text-[var(--color-primary)] dark:hover:text-white transition-colors cursor-pointer"
+                title="Copy URL"
+              >
+                <app-icon name="copy" class="w-4 h-4" />
+              </button>
+            </div>
           </div>
 
-          <div class="space-y-3">
-                        <div class="space-y-1.5">
-              <span class="text-[10px] font-bold text-slate-400 dark:text-slate-500 uppercase tracking-wider block">Mẫu gọi API (CURL)</span>
-              <div class="relative bg-slate-50 dark:bg-slate-950 rounded-xl border border-slate-200/60 dark:border-slate-900 overflow-hidden">
-                <div class="overflow-x-auto p-3.5 pr-12 font-mono text-xs text-slate-700 dark:text-slate-300 leading-relaxed">
-                  <pre class="whitespace-pre">curl -X GET "{{ siteUrl() }}/api/v1/admin/b2b/stats?api_key={{ apiKey() || 'API_KEY_CUA_BAN' }}"</pre>
+          <div class="space-y-1.5">
+            <span
+              class="text-[10px] font-bold text-slate-400 dark:text-slate-500 uppercase tracking-wider block"
+              >Tham số URL (Query Parameters)</span
+            >
+            <div
+              class="bg-slate-50 dark:bg-slate-950 border border-slate-200/60 dark:border-slate-900 rounded-xl p-4 space-y-4"
+            >
+              <div
+                class="flex flex-col sm:flex-row items-start gap-2 sm:gap-4 text-xs font-semibold border-b border-slate-100 dark:border-slate-800/60 pb-3"
+              >
+                <div class="min-w-[120px] font-mono text-[var(--color-primary)] font-bold">
+                  api_key
                 </div>
-                <button
-                  (click)="copyGetStatsCurl()"
-                  class="absolute right-3.5 top-3.5 text-slate-400 dark:text-slate-500 hover:text-[var(--color-primary)] dark:hover:text-white transition-colors cursor-pointer"
-                  title="Copy CURL"
-                >
-                  <app-icon name="copy" class="w-4 h-4" />
-                </button>
+                <div class="flex-1 space-y-1">
+                  <div class="flex items-center gap-1.5">
+                    <span
+                      class="text-[10px] font-black uppercase bg-rose-500/10 text-rose-500 px-1.5 py-0.5 rounded"
+                      >Bắt buộc</span
+                    >
+                    <span class="text-slate-400 dark:text-slate-500 font-mono text-[10px]"
+                      >String</span
+                    >
+                  </div>
+                  <p class="text-slate-500 dark:text-slate-400 font-semibold leading-relaxed">
+                    Khóa API Key của Admin để xác thực quyền truy cập.
+                  </p>
+                </div>
               </div>
-            </div>
 
-                        <div class="space-y-1.5">
-              <span class="text-[10px] font-bold text-slate-400 dark:text-slate-500 uppercase tracking-wider block">URL gọi trực tiếp</span>
-              <div class="relative bg-slate-50 dark:bg-slate-950 rounded-xl border border-slate-200/60 dark:border-slate-900 overflow-hidden">
-                <div class="overflow-x-auto p-3.5 pr-12 font-mono text-xs text-slate-700 dark:text-slate-300 leading-relaxed">
-                  <span class="text-[var(--color-primary)] font-semibold">{{ siteUrl() }}/api/v1/admin/b2b/stats?api_key={{ apiKey() || 'API_KEY_CUA_BAN' }}</span>
+              <div
+                class="flex flex-col sm:flex-row items-start gap-2 sm:gap-4 text-xs font-semibold border-b border-slate-100 dark:border-slate-800/60 pb-3"
+              >
+                <div class="min-w-[120px] font-mono text-[var(--color-primary)] font-bold">
+                  start_date
                 </div>
-                <button
-                  (click)="copyGetStatsUrl()"
-                  class="absolute right-3.5 top-3.5 text-slate-400 dark:text-slate-500 hover:text-[var(--color-primary)] dark:hover:text-white transition-colors cursor-pointer"
-                  title="Copy URL"
-                >
-                  <app-icon name="copy" class="w-4 h-4" />
-                </button>
+                <div class="flex-1 space-y-1">
+                  <div class="flex items-center gap-1.5">
+                    <span
+                      class="text-[10px] font-black uppercase bg-slate-100 dark:bg-slate-800 text-slate-500 px-1.5 py-0.5 rounded"
+                      >Tùy chọn</span
+                    >
+                    <span class="text-slate-400 dark:text-slate-500 font-mono text-[10px]"
+                      >String (YYYY-MM-DD)</span
+                    >
+                  </div>
+                  <p class="text-slate-500 dark:text-slate-400 font-semibold leading-relaxed">
+                    Ngày bắt đầu để tính toán doanh thu và đơn hàng.
+                  </p>
+                </div>
               </div>
-            </div>
 
-                        <div class="space-y-1.5">
-              <span class="text-[10px] font-bold text-slate-400 dark:text-slate-500 uppercase tracking-wider block">Tham số URL (Query Parameters)</span>
-              <div class="bg-slate-50 dark:bg-slate-950 border border-slate-200/60 dark:border-slate-900 rounded-xl p-4 space-y-4">
-                                <div class="flex flex-col sm:flex-row items-start gap-2 sm:gap-4 text-xs font-semibold border-b border-slate-100 dark:border-slate-800/60 pb-3">
-                  <div class="min-w-[120px] font-mono text-[var(--color-primary)] font-bold">
-                    api_key
-                  </div>
-                  <div class="flex-1 space-y-1">
-                    <div class="flex items-center gap-1.5">
-                      <span class="text-[10px] font-black uppercase bg-rose-500/10 text-rose-500 px-1.5 py-0.5 rounded">Bắt buộc</span>
-                      <span class="text-slate-400 dark:text-slate-500 font-mono text-[10px]">String</span>
-                    </div>
-                    <p class="text-slate-500 dark:text-slate-400 font-semibold leading-relaxed">
-                      Khóa API Key của Admin để xác thực quyền truy cập.
-                    </p>
-                  </div>
+              <div
+                class="flex flex-col sm:flex-row items-start gap-2 sm:gap-4 text-xs font-semibold"
+              >
+                <div class="min-w-[120px] font-mono text-[var(--color-primary)] font-bold">
+                  end_date
                 </div>
-
-                                <div class="flex flex-col sm:flex-row items-start gap-2 sm:gap-4 text-xs font-semibold border-b border-slate-100 dark:border-slate-800/60 pb-3">
-                  <div class="min-w-[120px] font-mono text-[var(--color-primary)] font-bold">
-                    start_date
+                <div class="flex-1 space-y-1">
+                  <div class="flex items-center gap-1.5">
+                    <span
+                      class="text-[10px] font-black uppercase bg-slate-100 dark:bg-slate-800 text-slate-500 px-1.5 py-0.5 rounded"
+                      >Tùy chọn</span
+                    >
+                    <span class="text-slate-400 dark:text-slate-500 font-mono text-[10px]"
+                      >String (YYYY-MM-DD)</span
+                    >
                   </div>
-                  <div class="flex-1 space-y-1">
-                    <div class="flex items-center gap-1.5">
-                      <span class="text-[10px] font-black uppercase bg-slate-100 dark:bg-slate-800 text-slate-500 px-1.5 py-0.5 rounded">Tùy chọn</span>
-                      <span class="text-slate-400 dark:text-slate-500 font-mono text-[10px]">String (YYYY-MM-DD)</span>
-                    </div>
-                    <p class="text-slate-500 dark:text-slate-400 font-semibold leading-relaxed">
-                      Ngày bắt đầu để tính toán doanh thu và đơn hàng.
-                    </p>
-                  </div>
-                </div>
-
-                                <div class="flex flex-col sm:flex-row items-start gap-2 sm:gap-4 text-xs font-semibold">
-                  <div class="min-w-[120px] font-mono text-[var(--color-primary)] font-bold">
-                    end_date
-                  </div>
-                  <div class="flex-1 space-y-1">
-                    <div class="flex items-center gap-1.5">
-                      <span class="text-[10px] font-black uppercase bg-slate-100 dark:bg-slate-800 text-slate-500 px-1.5 py-0.5 rounded">Tùy chọn</span>
-                      <span class="text-slate-400 dark:text-slate-500 font-mono text-[10px]">String (YYYY-MM-DD)</span>
-                    </div>
-                    <p class="text-slate-500 dark:text-slate-400 font-semibold leading-relaxed">
-                      Ngày kết thúc để tính toán doanh thu và đơn hàng.
-                    </p>
-                  </div>
+                  <p class="text-slate-500 dark:text-slate-400 font-semibold leading-relaxed">
+                    Ngày kết thúc để tính toán doanh thu và đơn hàng.
+                  </p>
                 </div>
               </div>
             </div>
+          </div>
 
-                        <div class="space-y-1.5">
-              <span class="text-[10px] font-bold text-slate-400 dark:text-slate-500 uppercase tracking-wider block">RESPONSE MẪU (JSON)</span>
-              <div class="bg-slate-50 dark:bg-slate-950 rounded-xl p-4 font-mono text-xs text-slate-700 dark:text-slate-300 overflow-x-auto leading-relaxed border border-slate-200/60 dark:border-slate-900">
-                <pre class="whitespace-pre">{{ '{' }}
+          <div class="space-y-1.5">
+            <span
+              class="text-[10px] font-bold text-slate-400 dark:text-slate-500 uppercase tracking-wider block"
+              >RESPONSE MẪU (JSON)</span
+            >
+            <div
+              class="bg-slate-50 dark:bg-slate-950 rounded-xl p-4 font-mono text-xs text-slate-700 dark:text-slate-300 overflow-x-auto leading-relaxed border border-slate-200/60 dark:border-slate-900"
+            >
+              <pre class="whitespace-pre"
+                >{{ '{' }}
   "success": true,
   "data": {{ '{' }}
     "total_revenue": 11868800,
@@ -776,11 +1075,10 @@
     "total_users": 150
   {{ '}' }}
 {{ '}' }}</pre>
-              </div>
             </div>
           </div>
         </div>
-
+      </div>
     </div>
   </div>
 </div>
