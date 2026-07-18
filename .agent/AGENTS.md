@@ -1052,3 +1052,16 @@
       3. Cập nhật [admin-users.component.html](file:///d:/git/isocalmarket/isocalmarket-web/src/app/features/admin-users/admin-users.component.html): Bổ sung `[itemsPerPage]="limit"` và `[itemName]="'thành viên'"`.
       4. Cập nhật [admin-orders.component.html](file:///d:/git/isocalmarket/isocalmarket-web/src/app/features/admin-orders/admin-orders.component.html): Loại bỏ dòng chữ `Tổng số: {{ total() }} đơn hàng` bị trùng lặp hiển thị, đồng thời bổ sung `[itemName]="'đơn hàng'"` cho đồng bộ và rõ ràng.
       5. Chạy build kiểm tra frontend thành công không phát sinh lỗi biên dịch.
+
+  - **[LOẠI BỎ ĐƯỜNG KẺ BORDER TRONG MODAL & TOÀN BỘ CÁC TRANG (FLAT DESIGN)]**:
+    - Yêu cầu: Loại bỏ các đường kẻ phân chia nằm ngang (`border-t` / `border-b`) không nhất quán hoặc không cần thiết trên toàn bộ các modal (User, Product, Category, Import, 2FA, Giỏ hàng, Welcome, v.v.) và các trang (Deposit, Storefront, Profile, Settings, v.v.) để đạt được thiết kế phẳng (Flat Design) đồng bộ, tránh chia cắt thô cứng.
+    - Giải pháp & Triển khai:
+      1. **Modal Child Components**: Xóa `border-t` ở các footer chứa nút action (Hủy/Lưu) và phần phân tách thông tin của các modal: `user-form-modal.component.html`, `product-form-modal.component.html`, `import-inventory-modal.component.html`, `edit-inventory-modal.component.html`, `category-form-modal.component.html`, `enable-2fa-modal.component.html`, `disable-2fa-modal.component.html`, `cart-modal.component.html`, và `welcome-notice-modal.component.html`.
+      2. **Modal Shared Components (Header)**: Xóa `border-b` phân chia header tại `modal-wrapper.component.html` và `modal.component.html` để đồng bộ thiết kế không viền ngang, mang lại sự liền mạch cho modal.
+      3. **Các trang chức năng**:
+         - Xóa `border-t` ở nút bấm action và `border-b` ở tỷ giá của `deposit.component.html` và `deposit-invoice.component.html`.
+         - Xóa `border-t` ở nút lưu cài đặt của `admin-settings.component.html`.
+         - Xóa `border-b` ở tiêu đề trang và `border-t` ở dòng tổng tiền của `order-detail.component.html`.
+         - Xóa `border-b` ở phần header của các trang profile: `profile-information.component.html`, `profile-password.component.html`, và `profile-security.component.html`.
+         - Xóa `border-b` ở tiêu đề nhóm sản phẩm, `border-t` ở khu vực giá card sản phẩm, và `border-t` ở nút "Xem thêm" trên `storefront.component.html`.
+      4. **Xác minh**: Giữ lại các border hợp lý cho Table Rows (`<tr>`) và các border-b của card section headers để phân cấp dữ liệu tốt, chạy build ứng dụng frontend thành công không có lỗi.
