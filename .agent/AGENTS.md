@@ -1071,5 +1071,5 @@
     - Nguyên nhân: Nút "Nhập kho" ngoài Dashboard gửi tham số `product_id` qua URL query parameters (`/admin/inventory?product_id=...`), nhưng ở [inventory.component.ts](file:///d:/git/isocalmarket/isocalmarket-web/src/app/features/inventory/inventory.component.ts) chưa thực hiện đọc tham số này từ Router để kích hoạt các hành động tương ứng.
     - Giải pháp khắc phục:
       1. Import `ActivatedRoute` từ `@angular/router` và inject vào class.
-      2. Trong `ngOnInit()`, sau khi `fetchProducts()` tải xong danh sách sản phẩm, kiểm tra nếu `product_id` tồn tại trong `route.snapshot.queryParams` thì thiết lập bộ lọc sản phẩm `selectedProductFilter = productId`, gọi `fetchFilteredItems(1)` để lọc danh sách tài nguyên và tự động gọi `openImportDrawer()` để mở modal nhập kho cho sản phẩm đó.
-      3. Nếu không có `product_id`, thực hiện tải danh sách kho thông thường như cũ.
+      2. Trong `ngOnInit()`, sau khi `fetchProducts()` tải xong danh sách sản phẩm, kiểm tra nếu `product_id` tồn tại trong `route.snapshot.queryParams` thì truyền trực tiếp `productId` này vào phương thức `openImportDrawer(productId)` để tự động mở modal nhập kho có chọn sẵn sản phẩm cần nhập.
+      3. Giải pháp này giúp giữ nguyên bộ lọc bảng hiển thị ở background đằng sau modal, không làm thay đổi hay cưỡng ép thay đổi bộ lọc chung của trang Inventory khi người dùng click phím tắt ngoài Dashboard.

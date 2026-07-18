@@ -83,9 +83,10 @@ export class InventoryComponent implements OnInit {
       next: () => {
         const productId = this.route.snapshot.queryParams['product_id'];
         if (productId) {
-          this.selectedProductFilter = productId;
+          // Lọc danh sách kho bình thường theo bộ lọc mặc định
           this.fetchFilteredItems(1);
-          this.openImportDrawer();
+          // Truyền trực tiếp productId vào Modal nhập kho mà không ghi đè lên bộ lọc bảng hiển thị
+          this.openImportDrawer(productId);
         } else {
           this.fetchFilteredItems(1);
         }
@@ -119,12 +120,12 @@ export class InventoryComponent implements OnInit {
     return product ? product.name : `Sản phẩm #${productId}`;
   }
 
-  public openImportDrawer() {
+  public openImportDrawer(defaultProductId?: string) {
     this.modalService.open(ImportInventoryModalComponent, {
       title: 'Import Tài Nguyên Số',
       size: '2xl',
       data: {
-        selectedProductId: this.selectedProductFilter || '',
+        selectedProductId: defaultProductId || this.selectedProductFilter || '',
         productOptions: this.productOptions
       }
     }).afterClosed$.subscribe((success) => {
