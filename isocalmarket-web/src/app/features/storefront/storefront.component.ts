@@ -112,6 +112,15 @@ export class StorefrontComponent implements OnInit {
       mapped.sort((a, b) => b.name.localeCompare(a.name, 'vi', { sensitivity: 'base' }));
     }
 
+    if (groups['other'] && groups['other'].length > 0) {
+      mapped.push({
+        id: 'other',
+        name: 'Sản phẩm khác',
+        description: 'Các sản phẩm chưa được xếp vào danh mục cụ thể.',
+        products: groups['other']
+      });
+    }
+
     return mapped;
   });
 

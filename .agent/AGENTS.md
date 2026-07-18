@@ -1123,3 +1123,11 @@
       1. Cập nhật hàm `findBySlug` trong [ProductRepository.php](file:///d:/git/isocalmarket/isocalmarket-api/app/Infrastructure/Persistence/Repositories/ProductRepository.php) sử dụng `ProductModel::withTrashed()` để quét qua cả các sản phẩm đã xóa mềm khi xác thực tính duy nhất của slug.
       2. Chuyển đổi logic sinh slug khi trùng lặp từ dạng timestamp (`-1721319585`) sang dạng số tăng dần (`-1`, `-2`, `-3`,...) trong cả [ProductService.php](file:///d:/git/isocalmarket/isocalmarket-api/app/Application/Services/ProductService.php) và [CategoryService.php](file:///d:/git/isocalmarket/isocalmarket-api/app/Application/Services/CategoryService.php) bằng hàm đệ quy/vòng lặp kiểm tra repository.
       3. Đã chạy unit test suite và tất cả các test cases hoạt động bình thường.
+
+  - **[TÍNH NĂNG] Hiển Thị Sản Phẩm Chưa Phân Loại Tại Storefront**:
+    - **Yêu cầu**: Cho phép hiển thị các sản phẩm không thuộc danh mục nào (`category_id` là null hoặc rỗng) tại trang cửa hàng `/storefront` giống cơ chế "Uncategorized" của WordPress, nằm ở vị trí dưới cùng danh sách.
+    - **Giải pháp & Triển khai**:
+      1. Cập nhật hàm computed `groupedProducts` tại [storefront.component.ts](file:///d:/git/isocalmarket/isocalmarket-web/src/app/features/storefront/storefront.component.ts).
+      2. Nếu phát hiện nhóm sản phẩm `'other'` (những sản phẩm không có `category_id`) có số lượng lớn hơn 0, hệ thống sẽ đẩy thêm một danh mục ảo mang tên *"Chưa phân loại"* với mô tả *"Các sản phẩm chưa được xếp vào danh mục cụ thể."* vào cuối danh sách các nhóm sản phẩm hiển thị.
+      3. Hoàn toàn tương thích với cơ chế phân trang động và chế độ hiển thị Card/List hiện có của Storefront mà không cần sửa đổi file template HTML.
+      4. Đã chạy biên dịch kiểm tra dự án frontend thành công (`npm run build`) không có lỗi.
