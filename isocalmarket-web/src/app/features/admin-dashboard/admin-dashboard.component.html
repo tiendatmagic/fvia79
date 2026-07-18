@@ -153,31 +153,58 @@
   <app-card class="p-6 space-y-6">
     <div class="flex items-center justify-between">
       <div class="flex items-center gap-2">
-        @if (!lowStockLoading() && stats()?.low_stock_products?.length > 0) {
+        @if (!lowStockLoading() && stats()?.low_stock_products?.length > 0 && selectedThreshold() !== 'gte_100') {
           <div class="w-2.5 h-2.5 rounded-full bg-red-500 animate-ping"></div>
+        } @else if (!lowStockLoading() && stats()?.low_stock_products?.length > 0 && selectedThreshold() === 'gte_100') {
+          <div class="w-2.5 h-2.5 rounded-full bg-emerald-400"></div>
         } @else {
           <div class="w-2.5 h-2.5 rounded-full bg-emerald-400"></div>
         }
         <h3 class="text-base font-black text-slate-800 dark:text-white tracking-tight">
-          Cảnh Báo Tồn Kho Thấp (&lt; 5 items)
+          Lọc Tồn Kho
+          @if (stats()?.low_stock_threshold_label) {
+            <span class="text-slate-400 font-semibold text-sm ml-1">({{ stats().low_stock_threshold_label }})</span>
+          } @else {
+            <span class="text-slate-400 font-semibold text-sm ml-1">(&lt; 5 items)</span>
+          }
         </h3>
       </div>
-      @if (!lowStockLoading() && stats()?.low_stock_products?.length > 0) {
+      @if (!lowStockLoading() && stats()?.low_stock_products?.length > 0 && selectedThreshold() !== 'gte_100') {
         <app-badge variant="danger" size="sm" rounded="full" [pulse]="true"
           >Cần nhập hàng gấp</app-badge
         >
-      } @else if (!lowStockLoading() && stats()) {
+      } @else if (!lowStockLoading() && stats()?.low_stock_products?.length > 0 && selectedThreshold() === 'gte_100') {
+        <app-badge variant="success" size="sm" rounded="full"
+          >Tồn kho tốt</app-badge
+        >
+      } @else if (!lowStockLoading() && stats() && selectedThreshold() !== 'gte_100') {
         <app-badge variant="success" size="sm" rounded="full"
           >Kho hàng đầy đủ</app-badge
         >
       }
     </div>
 
-    <!-- Thanh tìm kiếm & bộ lọc tồn kho thấp -->
+    <!-- Thanh tìm kiếm & bộ lọc tồn kho: Ngưỡng + Danh mục + Tìm kiếm -->
     <div
-      class="grid grid-cols-1 md:grid-cols-3 gap-4 bg-slate-50/50 dark:bg-slate-950/20 border border-slate-200/30 dark:border-slate-800/30 rounded-2xl p-4 sm:p-5"
+      class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 bg-slate-50/50 dark:bg-slate-950/20 border border-slate-200/30 dark:border-slate-800/30 rounded-2xl p-4 sm:p-5"
     >
-      <div class="form-field md:col-span-1">
+      <!-- Ngưỡng tồn kho -->
+      <div class="form-field">
+        <label
+          class="text-xs font-bold text-slate-400 dark:text-slate-500 uppercase tracking-wider block mb-1"
+          >Ngưỡng tồn kho</label
+        >
+        <app-custom-select
+          [options]="thresholdOptions"
+          [value]="selectedThreshold()"
+          (valueChange)="selectedThreshold.set($event); loadStats(true)"
+          valueKey="value"
+          labelKey="label"
+        />
+      </div>
+
+      <!-- Danh mục -->
+      <div class="form-field">
         <label
           class="text-xs font-bold text-slate-400 dark:text-slate-500 uppercase tracking-wider block mb-1"
           >Danh mục</label
@@ -191,13 +218,14 @@
         />
       </div>
 
-      <div class="form-field md:col-span-2">
+      <!-- Tìm kiếm sản phẩm -->
+      <div class="form-field sm:col-span-2">
         <label
           class="text-xs font-bold text-slate-400 dark:text-slate-500 uppercase tracking-wider block mb-1"
           >Tìm kiếm sản phẩm</label
         >
         <app-custom-search-input
-          [placeholder]="'Tìm kiếm theo tên sản phẩm cảnh báo...'"
+          [placeholder]="'Tìm kiếm theo tên sản phẩm...'"
           [(ngModel)]="rawSearchQuery"
           name="rawSearchQuery"
           (valueChange)="onSearchLowStock($event)"

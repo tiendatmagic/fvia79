@@ -47,6 +47,19 @@ class DashboardController extends Controller
 
             $lowStockCategoryId = $request->query('low_stock_category_id');
             $lowStockSearch = $request->query('low_stock_search');
+            $thresholdParam = $request->query('low_stock_threshold', '5');
+
+            // Xác định chế độ lọc: lt (less than) hoặc gte (greater than or equal)
+            if ($thresholdParam === 'gte_100') {
+                $compareMode = 'gte';
+                $threshold = 100;
+                $thresholdLabel = '\u2265 100 items';
+            } else {
+                $thresholdInput = (int) $thresholdParam;
+                $threshold = in_array($thresholdInput, [5, 10, 50, 100]) ? $thresholdInput : 5;
+                $compareMode = 'lt';
+                $thresholdLabel = '< ' . $threshold . ' items';
+            }
 
             $productQuery = ProductModel::where('status', 'active');
             if ($lowStockCategoryId) {
@@ -71,7 +84,11 @@ class DashboardController extends Controller
                     }
                 }
 
-                if ($availableCount < 5) {
+                $matches = $compareMode === 'gte'
+                    ? $availableCount >= $threshold
+                    : $availableCount < $threshold;
+
+                if ($matches) {
                     $lowStockProducts[] = [
                         'id' => $product->id,
                         'name' => $product->name,
@@ -88,7 +105,9 @@ class DashboardController extends Controller
                 'total_products' => $totalProducts,
                 'total_available_inventory' => $totalAvailableInventory,
                 'total_users' => $totalUsers,
-                'low_stock_products' => $lowStockProducts
+                'low_stock_products' => $lowStockProducts,
+                'low_stock_threshold' => $thresholdParam,
+                'low_stock_threshold_label' => $thresholdLabel
             ]);
         } catch (\Exception $e) {
             return response()->json(['message' => $e->getMessage()], 500);

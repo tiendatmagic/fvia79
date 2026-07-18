@@ -49,7 +49,16 @@ export class AdminDashboardComponent implements OnInit {
   // low stock filter/search signals
   public readonly selectedCategory = signal<string>('');
   public readonly lowStockSearch = signal<string>('');
+  public readonly selectedThreshold = signal<string>('5');
   public rawSearchQuery = '';
+
+  public readonly thresholdOptions = [
+    { label: '< 5 items (rất thấp)', value: '5' },
+    { label: '< 10 items', value: '10' },
+    { label: '< 50 items', value: '50' },
+    { label: '< 100 items', value: '100' },
+    { label: '\u2265 100 items (tồn kho tốt)', value: 'gte_100' },
+  ];
 
   public get categoryOptions() {
     const list = this.stateService.productStore.categories().map((c) => ({
@@ -85,6 +94,7 @@ export class AdminDashboardComponent implements OnInit {
     if (this.lowStockSearch().trim()) {
       params = params.set('low_stock_search', this.lowStockSearch().trim());
     }
+    params = params.set('low_stock_threshold', this.selectedThreshold());
 
     this.apiService.get<any>('v1/admin/dashboard-stats', params).subscribe({
       next: (res) => {
