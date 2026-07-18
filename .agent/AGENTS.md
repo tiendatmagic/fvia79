@@ -947,4 +947,12 @@
       3. Đồng thời, lệnh sẽ kích hoạt lệnh con `key:generate` để tạo lại `APP_KEY` mới trong file `.env`. Việc này làm cho mọi JWT Access Token đang được lưu trữ ở cookie client ngay lập tức bị sai chữ ký và mất hiệu lực hoàn toàn mà không cần chờ hết hạn 30 phút.
       4. Chạy kiểm tra helper command `php artisan auth:force-logout-all --help` thành công.
 
+  - **[HIỂN THỊ MENU SIDEBAR KHI CHƯA ĐĂNG NHẬP]**:
+    - Yêu cầu: Hiển thị đầy đủ các menu "Lịch sử đơn hàng", "Nạp tiền USDT", và "Lịch sử nạp tiền" trên sidebar/menu (cả ở Desktop và Mobile) ngay cả khi người dùng chưa đăng nhập. Nếu bấm vào các menu này khi chưa đăng nhập, tự động chuyển hướng người dùng sang trang Đăng nhập `/login`.
+    - Giải pháp & Triển khai:
+      1. Loại bỏ các chỉ thị `*ngIf="stateService.isAuthenticated()"` trên các thẻ liên kết của các menu này trong [sidebar.component.html](file:///d:/git/isocalmarket/isocalmarket-web/src/app/shared/layout/sidebar/sidebar.component.html) và [app.html](file:///d:/git/isocalmarket/isocalmarket-web/src/app/app.html).
+      2. Chuyển đổi thuộc tính `routerLink="..."` thành thuộc tính động `[routerLink]="stateService.isAuthenticated() ? '...' : '/login'"` để chuyển hướng linh hoạt người dùng chưa đăng nhập về trang đăng nhập.
+      3. Đã chạy kiểm tra biên dịch `npm run build` thành công không phát sinh lỗi.
+
+
 
