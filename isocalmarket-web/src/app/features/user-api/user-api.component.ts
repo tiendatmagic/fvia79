@@ -6,6 +6,7 @@ import { CardComponent } from '@shared/components/card/card.component';
 import { ButtonComponent } from '@shared/components/button/button.component';
 import { IconComponent } from '@shared/components/icon/icon.component';
 import { environment } from '@environments/environment';
+import { RouterModule } from '@angular/router';
 
 @Component({
   selector: 'app-user-api',
@@ -15,7 +16,8 @@ import { environment } from '@environments/environment';
     PageHeaderComponent,
     CardComponent,
     ButtonComponent,
-    IconComponent
+    IconComponent,
+    RouterModule
   ],
   templateUrl: './user-api.component.html',
   styles: [`
@@ -27,6 +29,10 @@ import { environment } from '@environments/environment';
 export class UserApiComponent {
   public readonly state = inject(StateService);
   public readonly activeTab = signal<'bash' | 'cmd'>('bash');
+
+  public readonly isAdmin = computed(() => {
+    return this.state.currentUser()?.role === 'admin';
+  });
 
   public readonly siteUrl = computed(() => {
     const baseUrl = environment.apiBaseUrl;

@@ -3,7 +3,18 @@
   <app-page-header
     title="User API"
     description="Tích hợp hệ thống B2B để đồng bộ danh sách sản phẩm, giá bán, tồn kho và tự động đặt hàng nhanh chóng."
-  />
+  >
+    <ng-container actions>
+      <a
+        *ngIf="isAdmin()"
+        routerLink="/admin/api"
+        class="px-4 py-2.5 text-sm font-extrabold text-slate-600 dark:text-slate-400 hover:text-primary bg-white dark:bg-slate-950 border border-slate-200/60 dark:border-slate-800/80 rounded-xl hover:bg-slate-50 dark:hover:bg-slate-900 transition-all cursor-pointer flex items-center gap-1.5"
+      >
+        <app-icon name="key" class="w-4 h-4" />
+        Chuyển sang Admin API
+      </a>
+    </ng-container>
+  </app-page-header>
 
   <!-- Card 1: API Key của bạn -->
   <div app-card class="p-6 space-y-5">

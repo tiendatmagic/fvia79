@@ -5,6 +5,7 @@ import { PageHeaderComponent } from '@shared/components/page-header/page-header.
 import { CardComponent } from '@shared/components/card/card.component';
 import { IconComponent } from '@shared/components/icon/icon.component';
 import { environment } from '@environments/environment';
+import { RouterModule } from '@angular/router';
 
 @Component({
   selector: 'app-admin-api',
@@ -13,7 +14,8 @@ import { environment } from '@environments/environment';
     CommonModule,
     PageHeaderComponent,
     CardComponent,
-    IconComponent
+    IconComponent,
+    RouterModule
   ],
   templateUrl: './admin-api.component.html',
   styles: [`
