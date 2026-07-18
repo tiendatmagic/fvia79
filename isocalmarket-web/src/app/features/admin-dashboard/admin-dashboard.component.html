@@ -153,14 +153,24 @@
   <app-card class="p-6 space-y-6">
     <div class="flex items-center justify-between">
       <div class="flex items-center gap-2">
-        <div class="w-2.5 h-2.5 rounded-full bg-red-500 animate-ping"></div>
+        @if (!lowStockLoading() && stats()?.low_stock_products?.length > 0) {
+          <div class="w-2.5 h-2.5 rounded-full bg-red-500 animate-ping"></div>
+        } @else {
+          <div class="w-2.5 h-2.5 rounded-full bg-emerald-400"></div>
+        }
         <h3 class="text-base font-black text-slate-800 dark:text-white tracking-tight">
           Cảnh Báo Tồn Kho Thấp (&lt; 5 items)
         </h3>
       </div>
-      <app-badge variant="danger" size="sm" rounded="full" [pulse]="true"
-        >Cần nhập hàng gấp</app-badge
-      >
+      @if (!lowStockLoading() && stats()?.low_stock_products?.length > 0) {
+        <app-badge variant="danger" size="sm" rounded="full" [pulse]="true"
+          >Cần nhập hàng gấp</app-badge
+        >
+      } @else if (!lowStockLoading() && stats()) {
+        <app-badge variant="success" size="sm" rounded="full"
+          >Kho hàng đầy đủ</app-badge
+        >
+      }
     </div>
 
     <!-- Thanh tìm kiếm & bộ lọc tồn kho thấp -->
@@ -196,6 +206,7 @@
         />
       </div>
     </div>
+
 
     <!-- Skeleton Loading cho riêng phần Table Cảnh báo tồn kho -->
     <div *ngIf="lowStockLoading()" class="space-y-4">

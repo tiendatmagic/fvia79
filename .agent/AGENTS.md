@@ -1,5 +1,15 @@
 # Lịch sử Yêu cầu & Quy trình Làm việc (Isocalmarket)
 
+## ⛔ QUY TẮC BẮT BUỘC (MANDATORY RULES)
+
+> **TUYỆT ĐỐI KHÔNG được chạy lệnh `php artisan migrate:fresh --seed`** vì lệnh này sẽ **XÓA TOÀN BỘ DỮ LIỆU** hiện có trong database. Chỉ được dùng trong môi trường dev sạch hoàn toàn.
+>
+> Khi cần chạy migration mới, chỉ dùng:
+> - `php artisan migrate` — áp dụng migration mới mà không xóa dữ liệu cũ.
+>
+> Khi cần seed dữ liệu cho một seeder cụ thể, chỉ dùng:
+> - `php artisan db:seed --class=TenSeederClass` — chạy đúng 1 seeder.
+
 ## Yêu cầu ban đầu
 - Xóa bỏ tất cả các page/feature demo như `home`, `about`, `contact`...
 - Đọc và tuân thủ các quy tắc trong `design.md`, `ARCHITECTURE.md` và toàn bộ các tệp tại thư mục `working/`.

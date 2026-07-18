@@ -41,7 +41,6 @@ class DatabaseSeeder extends Seeder
                 'password' => Hash::make('password'),
                 'role'     => 'customer',
                 'phone'    => '098' . rand(1000000, 9999999),
-                'api_key'  => 'B2B-KEY-customer' . ($index + 1)
             ]);
         }
 
