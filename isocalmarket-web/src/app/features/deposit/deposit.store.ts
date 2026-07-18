@@ -22,7 +22,7 @@ export class DepositStore {
   public readonly lastPage = signal<number>(1);
   public readonly currentPage = signal<number>(1);
 
-    public fetchRate(): Observable<{ rate: number }> {
+  public fetchRate(): Observable<{ rate: number }> {
     this.loading.set(true);
     return this.api.get<{ rate: number }>('v1/deposit/rate').pipe(
       tap(res => {
@@ -34,7 +34,7 @@ export class DepositStore {
     );
   }
 
-    public createDeposit(amountUsdt: number): Observable<{ message: string; invoice: DepositHistoryItem }> {
+  public createDeposit(amountUsdt: number): Observable<{ message: string; invoice: DepositHistoryItem }> {
     return this.api.post<{ message: string; invoice: DepositHistoryItem }>('v1/deposit', { amount_usdt: amountUsdt }).pipe(
       tap(res => {
         if (res && res.invoice) {
@@ -102,19 +102,25 @@ export class DepositStore {
     return subject.asObservable();
   }
 
-    public fetchInvoice(id: string): Observable<{ invoice: DepositHistoryItem }> {
-    this.loading.set(true);
+  public fetchInvoice(id: string, silent: boolean = false): Observable<{ invoice: DepositHistoryItem }> {
+    if (!silent) {
+      this.loading.set(true);
+    }
     return this.api.get<{ invoice: DepositHistoryItem }>(`v1/deposit/invoice/${id}`).pipe(
       tap(res => {
         if (res && res.invoice) {
           this.currentInvoice.set(res.invoice);
         }
       }),
-      finalize(() => this.loading.set(false))
+      finalize(() => {
+        if (!silent) {
+          this.loading.set(false);
+        }
+      })
     );
   }
 
-    public cancelInvoice(id: string): Observable<{ message: string }> {
+  public cancelInvoice(id: string): Observable<{ message: string }> {
     return this.api.post<{ message: string }>(`v1/deposit/invoice/${id}/cancel`, {});
   }
 

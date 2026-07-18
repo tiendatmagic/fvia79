@@ -45,6 +45,8 @@ export class DepositInvoiceComponent implements OnInit, OnDestroy {
   public readonly timeLeft = signal(900);
   public readonly countdownText = signal('15:00');
   private timerSubscription: Subscription | null = null;
+  private pollingSubscription: Subscription | null = null;
+  private expirationTime = 0;
 
   public isCancelling = false;
   public isChecking = false;
@@ -55,6 +57,7 @@ export class DepositInvoiceComponent implements OnInit, OnDestroy {
 
   ngOnDestroy() {
     this.stopCountdown();
+    this.stopStatusPolling();
   }
 
   // Tải chi tiết hóa đơn từ Backend API
@@ -89,12 +92,13 @@ export class DepositInvoiceComponent implements OnInit, OnDestroy {
           return;
         }
 
-        // Tính toán đếm ngược thực tế dựa trên thời gian tạo
+        // Tính toán đếm ngược thực tế dựa trên thời gian tạo tuyệt đối
         if (this.invoice.createdAt) {
           const createdTime = new Date(this.invoice.createdAt).getTime();
+          this.expirationTime = createdTime + (900 * 1000); // 15 phút từ lúc tạo
+
           const nowTime = Date.now();
-          const diffSeconds = Math.floor((nowTime - createdTime) / 1000);
-          const remaining = 900 - diffSeconds;
+          const remaining = Math.max(0, Math.floor((this.expirationTime - nowTime) / 1000));
 
           if (remaining <= 0) {
             this.timeLeft.set(0);
@@ -104,9 +108,14 @@ export class DepositInvoiceComponent implements OnInit, OnDestroy {
           } else {
             this.timeLeft.set(remaining);
             this.startCountdown();
+            this.startStatusPolling(this.invoice.id);
           }
         } else {
+          this.expirationTime = Date.now() + (900 * 1000);
           this.startCountdown();
+          if (this.invoice.id) {
+            this.startStatusPolling(this.invoice.id);
+          }
         }
       },
       error: (err) => {
@@ -129,32 +138,66 @@ export class DepositInvoiceComponent implements OnInit, OnDestroy {
     });
   }
 
-  // Bắt đầu đếm ngược 15 phút
+  // Bắt đầu đếm ngược 15 phút (tự động hiệu chỉnh theo đồng hồ hệ thống)
   private startCountdown() {
     this.stopCountdown();
-    const t = this.timeLeft();
-    const minutes = Math.floor(t / 60);
-    const seconds = t % 60;
-    this.countdownText.set(`${minutes.toString().padStart(2, '0')}:${seconds.toString().padStart(2, '0')}`);
+    this.updateTimerDisplay();
 
     this.timerSubscription = interval(1000).subscribe(() => {
-      const current = this.timeLeft();
-      if (current > 0) {
-        const next = current - 1;
-        this.timeLeft.set(next);
-        const mins = Math.floor(next / 60);
-        const secs = next % 60;
-        this.countdownText.set(`${mins.toString().padStart(2, '0')}:${secs.toString().padStart(2, '0')}`);
-      } else {
-        this.onInvoiceExpired();
-      }
+      this.updateTimerDisplay();
     });
+  }
+
+  private updateTimerDisplay() {
+    const nowTime = Date.now();
+    const remaining = Math.max(0, Math.floor((this.expirationTime - nowTime) / 1000));
+    
+    this.timeLeft.set(remaining);
+    const mins = Math.floor(remaining / 60);
+    const secs = remaining % 60;
+    this.countdownText.set(`${mins.toString().padStart(2, '0')}:${secs.toString().padStart(2, '0')}`);
+
+    if (remaining <= 0) {
+      this.onInvoiceExpired();
+    }
   }
 
   private stopCountdown() {
     if (this.timerSubscription) {
       this.timerSubscription.unsubscribe();
       this.timerSubscription = null;
+    }
+  }
+
+  // Polling tự động quét trạng thái hóa đơn ngầm mỗi 10 giây
+  private startStatusPolling(invoiceId: string) {
+    this.stopStatusPolling();
+    this.pollingSubscription = interval(10000).subscribe(() => {
+      this.state.depositStore.fetchInvoice(invoiceId, true).subscribe({
+        next: (res) => {
+          if (res && res.invoice) {
+            if (res.invoice.status === 'completed') {
+              this.stopCountdown();
+              this.stopStatusPolling();
+              this.state.showToast('Nạp tiền thành công! Số dư tài khoản đã được cập nhật.', 'success');
+              this.state.authStore.checkMe().subscribe();
+              this.router.navigate(['/deposit/history']);
+            } else if (res.invoice.status === 'failed' || res.invoice.status === 'expired') {
+              this.stopCountdown();
+              this.stopStatusPolling();
+              this.state.showToast('Lệnh nạp tiền đã bị hủy hoặc hết hạn.', 'error');
+              this.router.navigate(['/deposit/history']);
+            }
+          }
+        }
+      });
+    });
+  }
+
+  private stopStatusPolling() {
+    if (this.pollingSubscription) {
+      this.pollingSubscription.unsubscribe();
+      this.pollingSubscription = null;
     }
   }
 
