@@ -128,10 +128,10 @@
               class="text-[10px] font-bold text-slate-400 dark:text-slate-500 uppercase tracking-wider block"
               >Mẫu gọi API (CURL)</span
             >
-            <div
-              class="relative bg-slate-50 dark:bg-slate-950 rounded-xl p-3.5 pr-12 font-mono text-xs text-slate-700 dark:text-slate-300 overflow-x-auto leading-relaxed border border-slate-200/60 dark:border-slate-900"
-            >
-              <pre class="whitespace-pre">curl -X GET "{{ siteUrl() }}/api/v1/b2b/products?api_key={{ apiKey() || 'API_KEY_CUA_BAN' }}"</pre>
+            <div class="relative bg-slate-50 dark:bg-slate-950 rounded-xl border border-slate-200/60 dark:border-slate-900 overflow-hidden">
+              <div class="overflow-x-auto p-3.5 pr-12 font-mono text-xs text-slate-700 dark:text-slate-300 leading-relaxed">
+                <pre class="whitespace-pre">curl -X GET "{{ siteUrl() }}/api/v1/b2b/products?api_key={{ apiKey() || 'API_KEY_CUA_BAN' }}"</pre>
+              </div>
               <button
                 (click)="copyGetProductsCurl()"
                 class="absolute right-3.5 top-3.5 text-slate-400 dark:text-slate-500 hover:text-[var(--color-primary)] dark:hover:text-white transition-colors cursor-pointer"
@@ -148,12 +148,12 @@
               class="text-[10px] font-bold text-slate-400 dark:text-slate-500 uppercase tracking-wider block"
               >URL gọi trực tiếp</span
             >
-            <div
-              class="relative bg-slate-50 dark:bg-slate-950 rounded-xl p-3.5 pr-12 font-mono text-xs text-slate-700 dark:text-slate-300 overflow-x-auto leading-relaxed border border-slate-200/60 dark:border-slate-900"
-            >
-              <span class="text-[var(--color-primary)] font-semibold"
-                >{{ siteUrl() }}/api/v1/b2b/products?api_key=</span
-              >{{ apiKey() || 'API_KEY_CUA_BAN' }}
+            <div class="relative bg-slate-50 dark:bg-slate-950 rounded-xl border border-slate-200/60 dark:border-slate-900 overflow-hidden">
+              <div class="overflow-x-auto p-3.5 pr-12 font-mono text-xs text-slate-700 dark:text-slate-300 leading-relaxed">
+                <span class="text-[var(--color-primary)] font-semibold"
+                  >{{ siteUrl() }}/api/v1/b2b/products?api_key=</span
+                >{{ apiKey() || 'API_KEY_CUA_BAN' }}
+              </div>
               <button
                 (click)="copyGetProductsUrl()"
                 class="absolute right-3.5 top-3.5 text-slate-400 dark:text-slate-500 hover:text-[var(--color-primary)] dark:hover:text-white transition-colors cursor-pointer"
@@ -225,10 +225,10 @@
               class="text-[10px] font-bold text-slate-400 dark:text-slate-500 uppercase tracking-wider block"
               >Mẫu gọi API (CURL)</span
             >
-            <div
-              class="relative bg-slate-50 dark:bg-slate-950 rounded-xl p-3.5 pr-12 font-mono text-xs text-slate-700 dark:text-slate-300 overflow-x-auto leading-relaxed border border-slate-200/60 dark:border-slate-900"
-            >
-              <pre class="whitespace-pre">curl -X GET "{{ siteUrl() }}/api/v1/b2b/products/PRODUCT_ID?api_key={{ apiKey() || 'API_KEY_CUA_BAN' }}"</pre>
+            <div class="relative bg-slate-50 dark:bg-slate-950 rounded-xl border border-slate-200/60 dark:border-slate-900 overflow-hidden">
+              <div class="overflow-x-auto p-3.5 pr-12 font-mono text-xs text-slate-700 dark:text-slate-300 leading-relaxed">
+                <pre class="whitespace-pre">curl -X GET "{{ siteUrl() }}/api/v1/b2b/products/PRODUCT_ID?api_key={{ apiKey() || 'API_KEY_CUA_BAN' }}"</pre>
+              </div>
               <button
                 (click)="copyGetProductDetailCurl()"
                 class="absolute right-3.5 top-3.5 text-slate-400 dark:text-slate-500 hover:text-[var(--color-primary)] dark:hover:text-white transition-colors cursor-pointer"
@@ -245,12 +245,12 @@
               class="text-[10px] font-bold text-slate-400 dark:text-slate-500 uppercase tracking-wider block"
               >URL gọi trực tiếp</span
             >
-            <div
-              class="relative bg-slate-50 dark:bg-slate-950 rounded-xl p-3.5 pr-12 font-mono text-xs text-slate-700 dark:text-slate-300 overflow-x-auto leading-relaxed border border-slate-200/60 dark:border-slate-900"
-            >
-              <span class="text-[var(--color-primary)] font-semibold"
-                >{{ siteUrl() }}/api/v1/b2b/products/PRODUCT_ID?api_key=</span
-              >{{ apiKey() || 'API_KEY_CUA_BAN' }}
+            <div class="relative bg-slate-50 dark:bg-slate-950 rounded-xl border border-slate-200/60 dark:border-slate-900 overflow-hidden">
+              <div class="overflow-x-auto p-3.5 pr-12 font-mono text-xs text-slate-700 dark:text-slate-300 leading-relaxed">
+                <span class="text-[var(--color-primary)] font-semibold"
+                  >{{ siteUrl() }}/api/v1/b2b/products/PRODUCT_ID?api_key=</span
+                >{{ apiKey() || 'API_KEY_CUA_BAN' }}
+              </div>
               <button
                 (click)="copyGetProductDetailUrl()"
                 class="absolute right-3.5 top-3.5 text-slate-400 dark:text-slate-500 hover:text-[var(--color-primary)] dark:hover:text-white transition-colors cursor-pointer"
@@ -322,10 +322,10 @@
               class="text-[10px] font-bold text-slate-400 dark:text-slate-500 uppercase tracking-wider block"
               >Mẫu gọi API (CURL)</span
             >
-            <div
-              class="relative bg-slate-50 dark:bg-slate-950 rounded-xl p-3.5 pr-12 font-mono text-xs text-slate-700 dark:text-slate-300 overflow-x-auto leading-relaxed border border-slate-200/60 dark:border-slate-900"
-            >
-              <pre class="whitespace-pre">curl -X POST "{{ siteUrl() }}/api/v1/b2b/buy" -H "Content-Type: application/json" -H "X-API-KEY: {{ apiKey() || 'API_KEY_CUA_BAN' }}" -d '{{ '{' }}"product_id": "PRODUCT_ID", "quantity": 1{{ '}' }}'</pre>
+            <div class="relative bg-slate-50 dark:bg-slate-950 rounded-xl border border-slate-200/60 dark:border-slate-900 overflow-hidden">
+              <div class="overflow-x-auto p-3.5 pr-12 font-mono text-xs text-slate-700 dark:text-slate-300 leading-relaxed">
+                <pre class="whitespace-pre">curl -X POST "{{ siteUrl() }}/api/v1/b2b/buy" -H "Content-Type: application/json" -H "X-API-KEY: {{ apiKey() || 'API_KEY_CUA_BAN' }}" -d '{{ '{' }}"product_id": "PRODUCT_ID", "quantity": 1{{ '}' }}'</pre>
+              </div>
               <button
                 (click)="copyBuyCurl()"
                 class="absolute right-3.5 top-3.5 text-slate-400 dark:text-slate-500 hover:text-[var(--color-primary)] dark:hover:text-white transition-colors cursor-pointer"
@@ -342,10 +342,10 @@
               class="text-[10px] font-bold text-slate-400 dark:text-slate-500 uppercase tracking-wider block"
               >URL gọi trực tiếp</span
             >
-            <div
-              class="relative bg-slate-50 dark:bg-slate-950 rounded-xl p-3.5 pr-12 font-mono text-xs text-slate-700 dark:text-slate-300 overflow-x-auto leading-relaxed border border-slate-200/60 dark:border-slate-900"
-            >
-              <span class="text-[var(--color-primary)] font-semibold">{{ siteUrl() }}/api/v1/b2b/buy</span>
+            <div class="relative bg-slate-50 dark:bg-slate-950 rounded-xl border border-slate-200/60 dark:border-slate-900 overflow-hidden">
+              <div class="overflow-x-auto p-3.5 pr-12 font-mono text-xs text-slate-700 dark:text-slate-300 leading-relaxed">
+                <span class="text-[var(--color-primary)] font-semibold">{{ siteUrl() }}/api/v1/b2b/buy</span>
+              </div>
               <button
                 (click)="copyBuyUrl()"
                 class="absolute right-3.5 top-3.5 text-slate-400 dark:text-slate-500 hover:text-[var(--color-primary)] dark:hover:text-white transition-colors cursor-pointer"
@@ -353,6 +353,39 @@
               >
                 <app-icon name="copy" class="w-4 h-4" />
               </button>
+            </div>
+          </div>
+
+          <!-- Tham số Body (JSON Payload) -->
+          <div class="space-y-1.5">
+            <span
+              class="text-[10px] font-bold text-slate-400 dark:text-slate-500 uppercase tracking-wider block"
+              >Tham số Body (JSON Payload)</span
+            >
+            <div class="bg-slate-50 dark:bg-slate-950 border border-slate-200/60 dark:border-slate-900 rounded-xl p-4 space-y-3">
+              <div class="flex items-start gap-4 text-xs">
+                <div class="min-w-[120px] font-mono text-[var(--color-primary)] font-bold">product_id</div>
+                <div class="flex-1 space-y-1">
+                  <div class="flex items-center gap-1.5">
+                    <span class="text-[10px] font-black uppercase bg-rose-500/10 text-rose-500 px-1.5 py-0.5 rounded">Bắt buộc</span>
+                    <span class="text-slate-400 dark:text-slate-500 font-mono text-[10px]">String (UUID)</span>
+                  </div>
+                  <p class="text-slate-500 dark:text-slate-400 font-semibold">Mã ID của sản phẩm bạn muốn đặt mua.</p>
+                </div>
+              </div>
+
+              <div class="h-px bg-slate-200/50 dark:bg-slate-800/40"></div>
+
+              <div class="flex items-start gap-4 text-xs">
+                <div class="min-w-[120px] font-mono text-[var(--color-primary)] font-bold">quantity</div>
+                <div class="flex-1 space-y-1">
+                  <div class="flex items-center gap-1.5">
+                    <span class="text-[10px] font-black uppercase bg-rose-500/10 text-rose-500 px-1.5 py-0.5 rounded">Bắt buộc</span>
+                    <span class="text-slate-400 dark:text-slate-500 font-mono text-[10px]">Integer (>= 1)</span>
+                  </div>
+                  <p class="text-slate-500 dark:text-slate-400 font-semibold">Số lượng sản phẩm muốn đặt mua.</p>
+                </div>
+              </div>
             </div>
           </div>
 
