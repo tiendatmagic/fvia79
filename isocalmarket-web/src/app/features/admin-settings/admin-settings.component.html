@@ -64,6 +64,26 @@
             </div>
 
             <div class="form-field md:col-span-2">
+              <label>Tỷ giá quy đổi USDT sang VND cố định</label>
+              <div class="relative mt-1">
+                <input
+                  type="number"
+                  name="usdt_exchange_rate"
+                  class="form-input w-full"
+                  placeholder="Nhập tỷ giá cố định (ví dụ: 26500, nhập 0 để tự động lấy từ CoinGecko)"
+                  [(ngModel)]="form.usdt_exchange_rate"
+                  [disabled]="isLocked()"
+                  min="0"
+                  required
+                />
+              </div>
+              <p class="mt-1.5 text-xs text-slate-400 dark:text-slate-500">
+                Thiết lập tỷ giá cố định (ví dụ: 26500) để quy đổi tiền nạp của khách hàng.
+                <span class="font-bold text-[var(--color-primary)] dark:text-[var(--color-secondary)]">Nhập 0 để hệ thống tự động lấy tỷ giá thời gian thực từ CoinGecko (cache 10 phút để tránh spam API)</span>.
+              </p>
+            </div>
+
+            <div class="form-field md:col-span-2">
               <label>Moralis API Key</label>
               <div class="relative mt-1">
                 <textarea

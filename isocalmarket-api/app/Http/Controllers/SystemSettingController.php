@@ -33,8 +33,9 @@ class SystemSettingController extends Controller
     {
         $request->validate([
             'admin_wallet_address' => ['sometimes', 'required', 'string', 'regex:/^0x[a-fA-F0-9]{40}$/'],
-            'scanner_api_key' => 'sometimes|required|string|max:255',
+            'scanner_api_key' => 'sometimes|required|string|max:1000',
             'token_cleanup_days' => 'sometimes|required|integer|min:1|max:365',
+            'usdt_exchange_rate' => 'sometimes|required|numeric|min:0|max:1000000',
         ], [
             'admin_wallet_address.regex' => 'The admin wallet address must be a valid BEP20/EVM address starting with 0x followed by 40 hex characters.',
         ]);
@@ -48,6 +49,9 @@ class SystemSettingController extends Controller
         }
         if ($request->has('token_cleanup_days')) {
             $settingsToSave['token_cleanup_days'] = (string)$request->input('token_cleanup_days');
+        }
+        if ($request->has('usdt_exchange_rate')) {
+            $settingsToSave['usdt_exchange_rate'] = (string)$request->input('usdt_exchange_rate');
         }
 
         if (!empty($settingsToSave)) {

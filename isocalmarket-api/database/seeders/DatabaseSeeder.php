@@ -675,6 +675,13 @@ class DatabaseSeeder extends Seeder
                 'description' => 'Số ngày lưu trữ login tokens trước khi tự động dọn dẹp',
                 'created_at' => now(),
                 'updated_at' => now(),
+            ],
+            [
+                'key' => 'usdt_exchange_rate',
+                'value' => '0',
+                'description' => 'Tỷ giá quy đổi USDT sang VND cố định (Đặt 0 để tự động lấy từ CoinGecko)',
+                'created_at' => now(),
+                'updated_at' => now(),
             ]
         ]);
     }

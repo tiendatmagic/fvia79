@@ -58,6 +58,13 @@ class DepositService
      */
     public function getUsdtToVndRate(): float
     {
+        // 1. Kiểm tra xem admin có thiết lập tỷ giá cố định trong cài đặt hệ thống không
+        $fixedRate = $this->settingService->getSetting('usdt_exchange_rate', '0');
+        if (!empty($fixedRate) && (float) $fixedRate > 0) {
+            return (float) $fixedRate;
+        }
+
+        // 2. Nếu không cấu hình cố định, tự động lấy tỷ giá từ CoinGecko và Cache trong 10 phút
         return Cache::remember('usdt_to_vnd_rate', 600, function () {
             try {
                 $response = Http::timeout(5)
@@ -346,7 +353,7 @@ class DepositService
 
                     $user = $this->userRepository->findById($userId);
                     if ($user) {
-                        $user->addBalance($deposit->getAmountUsdt());
+                        $user->addBalance($deposit->getAmountVnd());
                         $this->userRepository->save($user);
                     }
                 });

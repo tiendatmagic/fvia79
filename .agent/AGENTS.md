@@ -1247,3 +1247,16 @@
       3. **Lưu trữ**: Cập nhật `createDeposit` lưu địa chỉ ví Admin cấu hình hiện tại vào hóa đơn tại thời điểm tạo.
       4. **Truy vấn**: Cập nhật `formatDeposit` trong `DepositController.php` để lấy ví từ hóa đơn đã lưu vết trong DB (nếu trống/legacy thì fallback về ví cấu hình hiện tại).
     - **Xác minh**: Chạy thử nghiệm thành công, lưu vết chuẩn xác và độc lập với cài đặt tương lai.
+
+  - **[TÍNH NĂNG MỚI & TỐI ƯU] Cấu hình tỷ giá USDT/VND cố định hoặc tự động**:
+    - **Yêu cầu**: Tối ưu hóa việc lấy tỷ giá quy đổi USDT sang VND, tránh spam CoinGecko API nhiều lần khi có lượng lớn giao dịch, đồng thời cho phép Admin tự thiết lập tỷ giá cố định.
+    - **Giải pháp & Triển khai**:
+      1. **Cấu hình database**: Thêm cài đặt `usdt_exchange_rate` (mặc định là `0` - Auto) trong bảng `system_settings` thông qua seeder và script chèn bổ sung.
+      2. **Cập nhật Backend**: Sửa `getUsdtToVndRate()` trong `DepositService.php` để ưu tiên lấy tỷ giá từ cấu hình cố định này. Nếu bằng `0` sẽ tự động lấy từ CoinGecko và cache trong 10 phút.
+      3. **Cập nhật Frontend**: Tích hợp trường `usdt_exchange_rate` vào form và store quản lý của `/admin/settings`.
+    - **Xác minh**: Chạy thử nghiệm và lưu thay đổi thành công, hệ thống hoạt động mượt mà không lỗi.
+
+  - **[SỬA LỖI] Nâng giới hạn ký tự cho Moralis API Key**:
+    - **Yêu cầu**: Khắc phục lỗi lưu cài đặt hệ thống thất bại do Moralis Web3 API Key (JWT) quá dài vượt quá giới hạn 255 ký tự của validation.
+    - **Giải pháp & Triển khai**: Cập nhật validation của `scanner_api_key` trong [SystemSettingController.php](file:///d:/git/isocalmarket/isocalmarket-api/app/Http/Controllers/SystemSettingController.php) từ `max:255` lên `max:1000`.
+    - **Xác minh**: Admin lưu cài đặt thành công mà không còn bị chặn.

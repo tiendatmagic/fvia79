@@ -7,6 +7,7 @@ export interface SystemSettingsPayload {
   admin_wallet_address: string;
   scanner_api_key: string;
   token_cleanup_days?: number;
+  usdt_exchange_rate?: number;
 }
 
 @Injectable({
@@ -24,7 +25,8 @@ export class SystemSettingStore {
   public readonly settings = signal<SystemSettingsPayload>({
     admin_wallet_address: '',
     scanner_api_key: '',
-    token_cleanup_days: 7
+    token_cleanup_days: 7,
+    usdt_exchange_rate: 0
   });
 
   private cachedSettings: SystemSettingsPayload | null = null;
@@ -50,6 +52,11 @@ export class SystemSettingStore {
             res.token_cleanup_days = Number(res.token_cleanup_days);
           } else {
             res.token_cleanup_days = 7;
+          }
+          if (res.usdt_exchange_rate !== undefined) {
+            res.usdt_exchange_rate = Number(res.usdt_exchange_rate);
+          } else {
+            res.usdt_exchange_rate = 0;
           }
           this.cachedSettings = res;
           this.lastFetchTime = Date.now();

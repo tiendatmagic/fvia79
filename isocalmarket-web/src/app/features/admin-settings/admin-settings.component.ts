@@ -50,7 +50,8 @@ export class AdminSettingsComponent implements OnInit {
   public form: SystemSettingsPayload = {
     admin_wallet_address: '',
     scanner_api_key: '',
-    token_cleanup_days: 7
+    token_cleanup_days: 7,
+    usdt_exchange_rate: 0
   };
 
   ngOnInit(): void {
