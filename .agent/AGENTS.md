@@ -964,13 +964,27 @@
          - Cập nhật hàm `getAvailableCount` để kiểm tra và lấy trực tiếp dữ liệu từ quan hệ đã được load sẵn trong RAM, giảm từ `1 + N` query xuống còn đúng `2` query duy nhất cho toàn bộ danh sách sản phẩm.
       3. **Xác minh**: Chạy `php artisan migrate` và `php artisan test` hoàn thành 100% test case passed.
 
-  - **[TỐI ƯU RESPONSIVE LAYOUT & BỘ LỌC, TIÊU ĐỀ DI ĐỘNG]**:
-    - Yêu cầu: Khắc phục lỗi co hẹp quá mức giao diện trang cửa hàng (Storefront) ở độ rộng màn hình trung bình tầm 770px, tối ưu hiển thị bộ lọc và tránh gãy dòng tiêu đề/badge trên thiết bị di động.
+  - **[TỐI ƯU RESPONSIVE LAYOUT & BỘ LỌC, TIÊU ĐỀ, CARD DI ĐỘNG]**:
+    - Yêu cầu: Khắc phục lỗi co hẹp quá mức giao diện trang cửa hàng (Storefront) ở độ rộng màn hình trung bình tầm 770px, tối ưu hiển thị bộ lọc, tránh gãy dòng tiêu đề/badge và lỗi tràn/đè chữ ở footer card trên thiết bị di động.
     - Giải pháp & Triển khai:
       1. **Chuyển đổi Breakpoint**: Nâng breakpoint kích hoạt layout cố định (Desktop Sidebar) và Header dịch chuyển từ `md` (768px) lên `lg` (1024px).
       2. **Layout app.html**: Cập nhật container Sidebar di động thành `lg:hidden` và container chứa router-outlet dịch lề từ `md:pl-72` sang `lg:pl-72`.
       3. **Header**: Cập nhật header padding-left và z-index thành `lg:pl-72 lg:z-30`. Cập nhật Hamburger menu và Logo thành `lg:hidden`.
       4. **Sidebar**: Cập nhật sidebar cố định thành `hidden lg:flex`.
-      5. **Tối ưu bộ lọc Storefront**: Ẩn nhãn `"Chế độ xem:"` và `"Sắp xếp danh mục:"` cùng văn bản nút `"Dạng Card"`, `"Dạng List"` trên mobile bằng class `hidden sm:inline`. Đổi container bộ lọc sang `flex-row items-center justify-between` và thu gọn dropdown sang `w-40 sm:w-56` để xếp ngang siêu gọn.
+      5. **Tối ưu bộ lọc Storefront**: Ẩn nhãn `"Chế độ xem:"` và `"Sắp xếp danh mục:"` cùng văn bản nút `"Dạng Card"`, `"Dạng List"` trên các màn hình nhỏ hơn `xl` (1280px) bằng class `hidden xl:inline`. Đổi container bộ lọc sang `flex-row items-center justify-between` và thu gọn dropdown sang `w-40 xl:w-56` để xếp ngang siêu gọn, đẹp và không bị tràn ở cả 660px và 1025px (khi có sidebar cố định hiển thị bên trái).
       6. **Tối ưu tiêu đề nhóm**: Đổi container tiêu đề nhóm và badge số lượng sang `flex-col sm:flex-row gap-3` để trên mobile tự xếp dọc giúp tiêu đề chiếm trọn chiều rộng, không bị badge ép gây rớt chữ. Bổ sung `shrink-0 whitespace-nowrap self-start` cho badge để chống gãy dòng. Căn chỉnh icon `items-start` và hạ size chữ tiêu đề xuống `text-base sm:text-lg`.
-      7. **Xác minh**: Chạy `npm run build` thành công 100% không có lỗi.
+      7. **Tối ưu footer card sản phẩm**: Đổi sang `flex-col sm:flex-row gap-3`. Trên mobile, Đơn giá dàn ngang dạt hai bên (`flex justify-between w-full`), giúp chữ `"Đơn giá"` nằm trái và giá tiền `"240,000 VND"` nằm phải. Nút `"Mua Ngay"` chiếm trọn chiều rộng (`w-full`) ở dòng dưới để ngăn chặn 100% tình trạng đè chữ hay rớt dòng thô kệch.
+      8. **Xác minh**: Chạy `npm run build` thành công 100% không có lỗi.
+
+  - **[TỐI ƯU RESPONSIVE DẠNG LIST TRÊN MOBILE & DESKTOP HẸP]**:
+    - Yêu cầu: Khắc phục triệt để lỗi cuộn ngang ở chế độ xem danh sách (View Mode: List) trên trang cửa hàng (Storefront). Lỗi xảy ra trên cả thiết bị di động và màn hình laptop hẹp (như 1027px khi có sidebar cố định chiếm 256px diện tích hiển thị).
+    - Giải pháp & Triển khai:
+      1. **Thay đổi Breakpoint ẩn/hiện**: Nâng breakpoint tách biệt giao diện từ `sm` (640px) lên `lg` (1024px).
+         - **Màn hình lớn (`lg:block hidden`)**: Hiển thị dạng bảng (Table) cổ điển.
+         - **Màn hình nhỏ và trung bình/máy tính bảng (`lg:hidden block`)**: Tự động chuyển sang giao diện Vertical List dẹt tối giản 100% width, nút "Mua Ngay" hiển thị trực quan ở góc phải mỗi card.
+      2. **Triệt tiêu scrollbar ngang trên desktop hẹp**:
+         - Loại bỏ thuộc tính `min-w-[700px]` của `<table>` khi ở trên màn hình desktop, thay bằng `min-w-[650px] lg:min-w-0`. Class `lg:min-w-0` giúp bảng co giãn linh hoạt theo container cha mà không bị tràn.
+         - Giảm độ rộng các cột cố định: Cột Đơn giá giảm từ `w-44` (176px) xuống `w-32` (128px), cột Tồn kho và Thao tác giảm từ `w-36` (144px) xuống `w-28` (112px). Phần không gian còn lại ưu tiên cho cột Tên sản phẩm/Thuộc tính co giãn tự nhiên.
+      3. **Xác minh**: Chạy biên dịch dự án thành công không phát sinh lỗi.
+
+
