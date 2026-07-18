@@ -660,6 +660,13 @@ class DatabaseSeeder extends Seeder
                 'description' => 'API Key của Etherscan để kiểm tra giao dịch nạp tiền',
                 'created_at' => now(),
                 'updated_at' => now(),
+            ],
+            [
+                'key' => 'token_cleanup_days',
+                'value' => '7',
+                'description' => 'Số ngày lưu trữ login tokens trước khi tự động dọn dẹp',
+                'created_at' => now(),
+                'updated_at' => now(),
             ]
         ]);
     }

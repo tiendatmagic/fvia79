@@ -4,6 +4,9 @@ namespace App\Http\Controllers;
 
 use App\Application\Services\SystemSettingService;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Artisan;
+use Illuminate\Support\Facades\File;
+use Illuminate\Support\Facades\Log;
 
 class SystemSettingController extends Controller
 {
@@ -29,17 +32,156 @@ class SystemSettingController extends Controller
     public function update(Request $request)
     {
         $request->validate([
-            'admin_wallet_address' => 'required|string|max:255',
-            'scanner_api_key' => 'required|string|max:255',
+            'admin_wallet_address' => 'sometimes|required|string|max:255',
+            'scanner_api_key' => 'sometimes|required|string|max:255',
+            'token_cleanup_days' => 'sometimes|required|integer|min:1|max:365',
         ]);
 
-        $this->settingService->saveSettings([
-            'admin_wallet_address' => $request->input('admin_wallet_address'),
-            'scanner_api_key' => $request->input('scanner_api_key'),
-        ]);
+        $settingsToSave = [];
+        if ($request->has('admin_wallet_address')) {
+            $settingsToSave['admin_wallet_address'] = $request->input('admin_wallet_address');
+        }
+        if ($request->has('scanner_api_key')) {
+            $settingsToSave['scanner_api_key'] = $request->input('scanner_api_key');
+        }
+        if ($request->has('token_cleanup_days')) {
+            $settingsToSave['token_cleanup_days'] = (string)$request->input('token_cleanup_days');
+        }
+
+        if (!empty($settingsToSave)) {
+            $this->settingService->saveSettings($settingsToSave);
+        }
 
         return response()->json([
             'message' => 'System settings updated successfully.'
+        ]);
+    }
+
+    /**
+     * Xóa compiled Blade views
+     */
+    public function clearViews()
+    {
+        Artisan::call('view:clear');
+        return response()->json(['success' => true, 'message' => 'Compiled views cleared successfully.']);
+    }
+
+    /**
+     * Xóa config cache
+     */
+    public function clearConfig()
+    {
+        Artisan::call('config:clear');
+        return response()->json(['success' => true, 'message' => 'Config cache cleared successfully.']);
+    }
+
+    /**
+     * Xóa route cache
+     */
+    public function clearRoutes()
+    {
+        Artisan::call('route:clear');
+        return response()->json(['success' => true, 'message' => 'Route cache cleared successfully.']);
+    }
+
+    /**
+     * Tối ưu hóa hiệu năng: cache config, routes, views
+     */
+    public function optimize()
+    {
+        Artisan::call('optimize');
+        return response()->json(['success' => true, 'message' => 'System optimization completed successfully.']);
+    }
+
+    /**
+     * Xóa toàn bộ optimization cache
+     */
+    public function clearOptimize()
+    {
+        Artisan::call('optimize:clear');
+        return response()->json(['success' => true, 'message' => 'Optimization cache cleared successfully.']);
+    }
+
+    /**
+     * Xóa toàn bộ và tối ưu hóa lại cache hệ thống
+     */
+    public function clearAllCaches()
+    {
+        Artisan::call('optimize:clear');
+        Artisan::call('view:clear');
+        Artisan::call('optimize');
+        Artisan::call('cache:clear');
+
+        // Xóa cứng thư mục cache data để tránh lỗi lock file hoặc cấu hình sai
+        $cacheDataPath = storage_path('framework/cache/data');
+        try {
+            if (File::isDirectory($cacheDataPath)) {
+                $this->recursiveCleanDirectory($cacheDataPath);
+            }
+        } catch (\Throwable $e) {
+            Log::error('Lỗi khi xóa cứng thư mục cache data: ' . $e->getMessage());
+        }
+
+        return response()->json(['success' => true, 'message' => 'Toàn bộ cache hệ thống đã được dọn dẹp và tối ưu hóa thành công.']);
+    }
+
+    /**
+     * Dọn dẹp đệ quy toàn bộ thư mục và tệp tin
+     */
+    private function recursiveCleanDirectory($dirPath)
+    {
+        if (!is_dir($dirPath)) {
+            return;
+        }
+
+        $items = scandir($dirPath);
+        if ($items === false) {
+            return;
+        }
+
+        foreach ($items as $item) {
+            if ($item === '.' || $item === '..') {
+                continue;
+            }
+
+            $path = $dirPath . DIRECTORY_SEPARATOR . $item;
+            @chmod($path, 0777);
+
+            if (is_dir($path)) {
+                $this->recursiveCleanDirectory($path);
+                @rmdir($path);
+            } else {
+                @unlink($path);
+            }
+        }
+    }
+
+    /**
+     * Dọn dẹp các Token hết hạn/cũ thủ công
+     */
+    public function cleanTokens(Request $request)
+    {
+        $deletedCount = \App\Infrastructure\Persistence\Eloquent\UserModel::where('refresh_token_expired_at', '<', now())->update([
+            'refresh_token_hash' => null,
+            'refresh_token_expired_at' => null
+        ]);
+        
+        return response()->json([
+            'success' => true,
+            'message' => "Successfully cleaned up {$deletedCount} expired refresh tokens from database."
+        ]);
+    }
+
+    /**
+     * Xóa toàn bộ tokens đăng nhập của mọi user (Force Logout All)
+     */
+    public function cleanAllTokens()
+    {
+        Artisan::call('auth:force-logout-all');
+
+        return response()->json([
+            'success' => true,
+            'message' => "Successfully cleared all active tokens and regenerated application key. All users logged out."
         ]);
     }
 }

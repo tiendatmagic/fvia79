@@ -61,6 +61,14 @@ Route::prefix('v1')->group(function () {
 
             Route::get('/admin/settings', ['App\Http\Controllers\SystemSettingController', 'index']);
             Route::put('/admin/settings', ['App\Http\Controllers\SystemSettingController', 'update']);
+            Route::post('/admin/maintenance/clear-views', ['App\Http\Controllers\SystemSettingController', 'clearViews']);
+            Route::post('/admin/maintenance/clear-config', ['App\Http\Controllers\SystemSettingController', 'clearConfig']);
+            Route::post('/admin/maintenance/clear-routes', ['App\Http\Controllers\SystemSettingController', 'clearRoutes']);
+            Route::post('/admin/maintenance/optimize', ['App\Http\Controllers\SystemSettingController', 'optimize']);
+            Route::post('/admin/maintenance/clear-optimize', ['App\Http\Controllers\SystemSettingController', 'clearOptimize']);
+            Route::post('/admin/maintenance/clear-all', ['App\Http\Controllers\SystemSettingController', 'clearAllCaches']);
+            Route::post('/admin/maintenance/clean-tokens', ['App\Http\Controllers\SystemSettingController', 'cleanTokens']);
+            Route::post('/admin/maintenance/clean-all-tokens', ['App\Http\Controllers\SystemSettingController', 'cleanAllTokens']);
 
             // Admin Member Management (CRUD)
             Route::get('/admin/users', ['App\Http\Controllers\AdminUserController', 'index']);

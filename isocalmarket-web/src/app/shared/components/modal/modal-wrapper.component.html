@@ -1,16 +1,14 @@
 <div class="fixed inset-0 z-50 flex items-center justify-center p-4">
-    <div (click)="onBackdropClick()" class="fixed inset-0 bg-black/40"></div>
+  <div (click)="onBackdropClick()" class="fixed inset-0 bg-black/40"></div>
 
-    <div
+  <div
     [class]="
       'relative bg-white dark:bg-slate-900 rounded-[15px] border border-slate-200 dark:border-slate-800 pt-6 pb-5 w-full shadow-2xl text-slate-800 dark:text-slate-200 flex flex-col max-h-[90vh] ' +
       getSizeClass()
     "
   >
-        @if (showHeader) {
-      <div
-        class="flex items-center justify-between px-6 pb-2 shrink-0"
-      >
+    @if (showHeader) {
+      <div class="flex items-center justify-between px-6 pb-2 shrink-0">
         <h3 class="text-base font-extrabold text-slate-800 dark:text-white truncate pr-4">
           {{ title }}
         </h3>
@@ -24,7 +22,7 @@
       </div>
     }
 
-        <div class="flex-1 overflow-y-auto px-6 pt-4 no-scrollbar min-h-0 text-left">
+    <div class="flex-1 overflow-y-auto px-6 py-0 no-scrollbar min-h-0 text-left">
       <ng-container *ngComponentOutlet="childComponent; injector: childInjector"></ng-container>
     </div>
   </div>
