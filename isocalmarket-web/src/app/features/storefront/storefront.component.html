@@ -24,36 +24,38 @@
     <div class="absolute -left-16 -bottom-16 w-64 h-64 bg-[var(--color-secondary)]/10 blur-[80px] rounded-full"></div>
   </div>
 
-    <div class="bg-white dark:bg-slate-900 border border-slate-200/80 dark:border-slate-800/80 p-3.5 rounded-2xl flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+    <div class="bg-white dark:bg-slate-900 border border-slate-200/80 dark:border-slate-800/80 p-3 sm:p-3.5 rounded-2xl flex flex-row items-center justify-between gap-4">
         <div class="flex items-center gap-2">
-      <span class="text-xs text-slate-400 dark:text-slate-500 font-bold uppercase tracking-wider mr-1.5">Chế độ xem:</span>
+      <span class="text-xs text-slate-400 dark:text-slate-500 font-bold uppercase tracking-wider mr-1.5 hidden sm:inline">Chế độ xem:</span>
       <div class="flex bg-slate-100 dark:bg-slate-950/60 p-1 rounded-xl border border-slate-200/40 dark:border-slate-800/40">
-                <button
+        <!-- Card View Button -->
+        <button
           (click)="viewMode.set('card')"
-          class="flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-extrabold transition-all duration-200 cursor-pointer"
+          class="flex items-center gap-1.5 px-2 sm:px-3 py-1.5 rounded-lg text-xs font-extrabold transition-all duration-200 cursor-pointer"
           [ngClass]="viewMode() === 'card'
             ? 'bg-white dark:bg-slate-900 text-[var(--color-primary)] shadow-sm'
             : 'text-slate-500 hover:text-slate-800 dark:hover:text-slate-200'"
         >
           <app-icon name="grid" class="w-3.5 h-3.5" />
-          <span>Dạng Card</span>
+          <span class="hidden sm:inline">Dạng Card</span>
         </button>
-                <button
+        <!-- List View Button -->
+        <button
           (click)="viewMode.set('list')"
-          class="flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-extrabold transition-all duration-200 cursor-pointer"
+          class="flex items-center gap-1.5 px-2 sm:px-3 py-1.5 rounded-lg text-xs font-extrabold transition-all duration-200 cursor-pointer"
           [ngClass]="viewMode() === 'list'
             ? 'bg-white dark:bg-slate-900 text-[var(--color-primary)] shadow-sm'
             : 'text-slate-500 hover:text-slate-800 dark:hover:text-slate-200'"
         >
           <app-icon name="list" class="w-3.5 h-3.5" />
-          <span>Dạng List</span>
+          <span class="hidden sm:inline">Dạng List</span>
         </button>
       </div>
     </div>
 
         <div class="flex items-center gap-3">
-      <span class="text-xs text-slate-400 dark:text-slate-500 font-bold uppercase tracking-wider">Sắp xếp danh mục:</span>
-      <div class="w-56">
+      <span class="text-xs text-slate-400 dark:text-slate-500 font-bold uppercase tracking-wider hidden sm:inline">Sắp xếp danh mục:</span>
+      <div class="w-40 sm:w-56">
         <app-custom-select
           [options]="sortOptions"
           valueKey="value"
@@ -74,17 +76,17 @@
 
         @if (!state.productStore.loading() && groupedProducts().length > 0) {
       <div *ngFor="let group of groupedProducts()" app-card class="p-6 space-y-6 !bg-white/40 dark:!bg-slate-900/40 backdrop-blur-md border border-slate-200/50 dark:border-slate-800/50">
-                <div class="flex items-center justify-between border-b border-slate-200/30 dark:border-slate-800/30 pb-3">
-          <div class="space-y-1">
-            <h3 class="text-lg font-black text-slate-800 dark:text-white flex items-center gap-2">
-              <app-icon name="list-bullet" class="w-5 h-5 text-[var(--color-primary)]" />
-              {{ group.name }}
+        <div class="flex flex-col sm:flex-row sm:items-start justify-between gap-3 border-b border-slate-200/30 dark:border-slate-800/30 pb-3">
+          <div class="space-y-1 min-w-0 w-full sm:w-auto">
+            <h3 class="text-base sm:text-lg font-black text-slate-800 dark:text-white flex items-start gap-2">
+              <app-icon name="list-bullet" class="w-5 h-5 text-[var(--color-primary)] shrink-0 mt-0.5" />
+              <span class="break-words">{{ group.name }}</span>
             </h3>
-            <p *ngIf="group.description" class="text-xs text-slate-400 dark:text-slate-500 font-semibold">
+            <p *ngIf="group.description" class="text-xs text-slate-400 dark:text-slate-500 font-semibold break-words">
               {{ group.description }}
             </p>
           </div>
-          <app-badge variant="neutral" size="sm" rounded="lg">
+          <app-badge variant="neutral" size="sm" rounded="lg" class="shrink-0 whitespace-nowrap self-start">
             {{ group.products.length }} dòng sản phẩm
           </app-badge>
         </div>

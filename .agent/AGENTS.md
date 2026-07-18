@@ -960,6 +960,15 @@
       1. **Bổ sung Indexes**: Tạo và chạy migration `2026_07_18_020000_add_performance_indexes_to_tables.php` bổ sung index cho `deleted_at`, `created_at` trên bảng `products` (SoftDeletes và pagination order), và `created_at` trên bảng `inventory_batches` (FIFO order).
       2. **Khắc phục lỗi N+1 Query**: 
          - Thêm quan hệ `activeBatches()` trong `ProductModel.php`.
-         - Cấu hình eager loading `with(['activeBatches'])` trong `ProductRepository.php` khi truy vấn danh sách sản phẩm.
+         - Cấu hình eager loading `with(['activeBatches'])` trong `ProductRepository.php` when query list products.
          - Cập nhật hàm `getAvailableCount` để kiểm tra và lấy trực tiếp dữ liệu từ quan hệ đã được load sẵn trong RAM, giảm từ `1 + N` query xuống còn đúng `2` query duy nhất cho toàn bộ danh sách sản phẩm.
       3. **Xác minh**: Chạy `php artisan migrate` và `php artisan test` hoàn thành 100% test case passed.
+
+  - **[TỐI ƯU RESPONSIVE LAYOUT & BREAKPOINT CO HẸP]**:
+    - Yêu cầu: Khắc phục lỗi co hẹp quá mức giao diện trang cửa hàng (Storefront) và menu bị lỗi/chèn ép ở độ rộng màn hình trung bình tầm 770px.
+    - Giải pháp & Triển khai:
+      1. **Chuyển đổi Breakpoint**: Nâng breakpoint kích hoạt layout cố định (Desktop Sidebar) và Header dịch chuyển từ `md` (768px) lên `lg` (1024px).
+      2. **Layout app.html**: Cập nhật container Sidebar di động thành `lg:hidden` và container chứa router-outlet dịch lề từ `md:pl-72` sang `lg:pl-72`.
+      3. **Header**: Cập nhật header padding-left và z-index thành `lg:pl-72 lg:z-30`. Cập nhật Hamburger menu và Logo thành `lg:hidden`.
+      4. **Sidebar**: Cập nhật sidebar cố định thành `hidden lg:flex`.
+      5. **Xác minh**: Chạy `npm run build` thành công 100% không có lỗi.

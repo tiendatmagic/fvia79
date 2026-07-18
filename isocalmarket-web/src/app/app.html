@@ -7,7 +7,7 @@
     [ngClass]="
       stateService.showMobileMenu() ? 'visible pointer-events-auto' : 'invisible pointer-events-none'
     "
-    class="fixed inset-0 z-[60] flex md:hidden transition-all duration-300"
+    class="fixed inset-0 z-[60] flex lg:hidden transition-all duration-300"
   >
       <div
       (click)="stateService.showMobileMenu.set(false)"
@@ -164,7 +164,7 @@
 
   <app-header></app-header>
 
-  <div class="md:pl-72 min-h-screen transition-all duration-300">
+  <div class="lg:pl-72 min-h-screen transition-all duration-300">
     <router-outlet></router-outlet>
   </div>
 }
