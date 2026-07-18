@@ -8,7 +8,7 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Attributes\Fillable;
 use Illuminate\Support\Str;
 
-#[Fillable(['user_id', 'code', 'amount_usdt', 'amount_to_pay', 'amount_vnd', 'tx_hash', 'status'])]
+#[Fillable(['user_id', 'code', 'amount_usdt', 'amount_to_pay', 'amount_vnd', 'tx_hash', 'admin_wallet_address', 'status'])]
 class DepositModel extends Model
 {
     use HasFactory, HasUuids;

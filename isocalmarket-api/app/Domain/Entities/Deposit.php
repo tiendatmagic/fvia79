@@ -11,6 +11,7 @@ class Deposit
     private float $amountToPay;
     private float $amountVnd;
     private ?string $txHash;
+    private ?string $adminWalletAddress;
     private string $status;
     private ?\DateTime $createdAt;
     private ?\DateTime $updatedAt;
@@ -23,6 +24,7 @@ class Deposit
         float $amountToPay,
         float $amountVnd,
         ?string $txHash = null,
+        ?string $adminWalletAddress = null,
         string $status = 'pending_payment',
         ?\DateTime $createdAt = null,
         ?\DateTime $updatedAt = null
@@ -34,6 +36,7 @@ class Deposit
         $this->amountToPay = $amountToPay;
         $this->amountVnd = $amountVnd;
         $this->txHash = $txHash;
+        $this->adminWalletAddress = $adminWalletAddress;
         $this->status = $status;
         $this->createdAt = $createdAt;
         $this->updatedAt = $updatedAt;
@@ -77,6 +80,11 @@ class Deposit
     public function setTxHash(?string $txHash): void
     {
         $this->txHash = $txHash;
+    }
+
+    public function getAdminWalletAddress(): ?string
+    {
+        return $this->adminWalletAddress;
     }
 
     public function getStatus(): string

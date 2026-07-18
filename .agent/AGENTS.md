@@ -1230,3 +1230,20 @@
     - **Yêu cầu**: Ngăn chặn kẻ gian tạo hóa đơn nạp tiền trùng số lẻ để "cướp" giao dịch của người dùng vừa hủy hóa đơn, hoặc đối soát nhầm giao dịch cũ.
     - **Giải pháp & Triển khai**: Cập nhật hàm `createDeposit` trong [DepositService.php](file:///d:/git/isocalmarket/isocalmarket-api/app/Application/Services/DepositService.php). Khi tìm số lẻ trống tiếp theo, hệ thống không chỉ kiểm tra các hóa đơn đang chờ thanh toán mà còn giữ khóa (lock) tất cả các số lẻ của hóa đơn vừa hủy hoặc hết hạn trong vòng 10 phút.
     - **Xác minh**: Chạy thử nghiệm thành công, hệ thống cấp số lẻ tiếp theo chính xác và an toàn.
+
+  - **[TÍNH NĂNG MỚI] Modal xem chi tiết lệnh nạp tiền & liên kết blockchain**:
+    - **Yêu cầu**: Thêm tính năng cho phép người dùng xem chi tiết các lệnh nạp đã hoàn thành/hết hạn/bị hủy (bao gồm ví nhận của sàn, mã giao dịch blockchain txHash kèm liên kết BscScan) dưới dạng modal tại cột Thao tác lịch sử nạp tiền.
+    - **Giải pháp & Triển khai**:
+      1. **Component Modal mới**: Tạo component [deposit-detail-modal.component.ts](file:///d:/git/isocalmarket/isocalmarket-web/src/app/features/deposit-history/deposit-detail-modal.component.ts) và template [deposit-detail-modal.component.html](file:///d:/git/isocalmarket/isocalmarket-web/src/app/features/deposit-history/deposit-detail-modal.component.html) hiển thị chi tiết hóa đơn (mã lệnh, số lượng, VND quy đổi, ngày tạo, ví nhận, txHash và nút Copy tương ứng). Tích hợp link sang BscScan nếu có txHash.
+      2. **Cập nhật Lịch sử**: Sửa [deposit-history.component.ts](file:///d:/git/isocalmarket/isocalmarket-web/src/app/features/deposit-history/deposit-history.component.ts), bổ sung trường `txHash` vào interface, inject `ModalService` và hàm `viewDetails()` để gọi modal động.
+      3. **Cập nhật Bảng HTML**: Sửa [deposit-history.component.html](file:///d:/git/isocalmarket/isocalmarket-web/src/app/features/deposit-history/deposit-history.component.html), đổi ký tự `-` mặc định khi hóa đơn không ở trạng thái pending thành nút "Chi tiết" (màu xanh ngọc teal tinh tế đồng bộ thiết kế).
+      4. **Xác minh**: Giao diện hiển thị chuẩn xác, mở modal xem chi tiết mượt mà.
+
+  - **[BẢO MẬT & TOÀN VẸN] Lưu vết lịch sử ví nhận của Sàn trong hóa đơn**:
+    - **Yêu cầu**: Đảm bảo ví nhận của Sàn phải được lưu trữ cố định (snapshot) cho từng hóa đơn lúc tạo, tránh trường hợp Sàn đổi ví trong cài đặt làm sai lệch ví nhận của các hóa đơn cũ trong lịch sử.
+    - **Giải pháp & Triển khai**:
+      1. **Database Migration**: Tạo migration bổ sung cột `admin_wallet_address` (nullable string) vào bảng `deposits`. Chạy migrate thành công.
+      2. **Domain & Model Mapping**: Cập nhật Domain Entity `Deposit` và Eloquent Model `DepositModel` (thêm vào fillable) để hỗ trợ lưu và map cột này qua `DepositMapper`.
+      3. **Lưu trữ**: Cập nhật `createDeposit` lưu địa chỉ ví Admin cấu hình hiện tại vào hóa đơn tại thời điểm tạo.
+      4. **Truy vấn**: Cập nhật `formatDeposit` trong `DepositController.php` để lấy ví từ hóa đơn đã lưu vết trong DB (nếu trống/legacy thì fallback về ví cấu hình hiện tại).
+    - **Xác minh**: Chạy thử nghiệm thành công, lưu vết chuẩn xác và độc lập với cài đặt tương lai.

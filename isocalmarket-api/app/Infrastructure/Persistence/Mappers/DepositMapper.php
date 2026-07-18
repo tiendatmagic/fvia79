@@ -17,6 +17,7 @@ class DepositMapper
             (float) $model->amount_to_pay,
             (float) $model->amount_vnd,
             $model->tx_hash,
+            $model->admin_wallet_address,
             $model->status,
             $model->created_at ? new \DateTime($model->created_at->toDateTimeString()) : null,
             $model->updated_at ? new \DateTime($model->updated_at->toDateTimeString()) : null
@@ -36,6 +37,7 @@ class DepositMapper
         $model->amount_to_pay = $entity->getAmountToPay();
         $model->amount_vnd = $entity->getAmountVnd();
         $model->tx_hash = $entity->getTxHash();
+        $model->admin_wallet_address = $entity->getAdminWalletAddress();
         $model->status = $entity->getStatus();
 
         return $model;

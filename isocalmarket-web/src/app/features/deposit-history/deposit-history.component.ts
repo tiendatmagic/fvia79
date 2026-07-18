@@ -12,6 +12,8 @@ import { CustomSelectComponent } from '@shared/components/custom-select/custom-s
 import { CustomDateTimeRangeComponent, DateTimeRangeValue } from '@shared/components/custom-date-time-range/custom-date-time-range.component';
 import { FormsModule } from '@angular/forms';
 import { TableComponent, TableCellDirective, TableColumn } from '@shared/components/table/table.component';
+import { ModalService } from '@core/services/modal.service';
+import { DepositDetailModalComponent } from './deposit-detail-modal.component';
 
 export interface DepositHistoryItem {
   id: string;
@@ -22,6 +24,7 @@ export interface DepositHistoryItem {
   status: 'pending_payment' | 'completed' | 'failed' | 'expired';
   createdAt: string;
   adminWalletAddress?: string;
+  txHash?: string;
 }
 
 @Component({
@@ -52,6 +55,7 @@ export interface DepositHistoryItem {
 export class DepositHistoryComponent implements OnInit {
   public readonly state = inject(StateService);
   private readonly router = inject(Router);
+  private readonly modalService = inject(ModalService);
 
   public readonly columns: TableColumn[] = [
     { key: 'code', label: 'Mã lệnh', sortable: true },
@@ -108,5 +112,13 @@ export class DepositHistoryComponent implements OnInit {
     if (item.status === 'pending_payment') {
       this.router.navigate(['/deposit/invoice', item.id]);
     }
+  }
+
+  public viewDetails(item: DepositHistoryItem) {
+    this.modalService.open(DepositDetailModalComponent, {
+      title: 'Chi tiết lệnh nạp tiền',
+      size: 'md',
+      data: { invoice: item }
+    });
   }
 }

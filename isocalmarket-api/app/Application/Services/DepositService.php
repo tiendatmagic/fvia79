@@ -165,6 +165,7 @@ class DepositService
             amountToPay: $amountToPay,
             amountVnd: $amountVnd,
             txHash: null,
+            adminWalletAddress: $this->adminWalletAddress,
             status: 'pending_payment'
         );
 

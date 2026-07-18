@@ -110,7 +110,6 @@
           {{ row.createdAt }}
         </span>
       </ng-template>
-
       <ng-template appTableCell="actions" let-row="row">
         <div class="flex items-center justify-end gap-2 whitespace-nowrap">
           <button
@@ -122,11 +121,15 @@
             <span>Thanh toán</span>
             <app-icon name="chevron-right" class="w-3.5 h-3.5" />
           </button>
-          <span
+          <button
             *ngIf="row.status !== 'pending_payment'"
-            class="text-xs text-slate-400 dark:text-slate-600 font-bold mr-4"
-            >-</span
+            type="button"
+            (click)="viewDetails(row)"
+            class="text-xs font-bold px-3 py-1.5 rounded-lg border border-teal-500/20 hover:bg-teal-500/10 text-teal-600 dark:text-teal-400 bg-teal-500/5 hover:scale-105 active:scale-95 transition-all cursor-pointer flex items-center gap-1 shrink-0"
           >
+            <span>Chi tiết</span>
+            <app-icon name="info" class="w-3.5 h-3.5" />
+          </button>
         </div>
       </ng-template>
     </app-table>
