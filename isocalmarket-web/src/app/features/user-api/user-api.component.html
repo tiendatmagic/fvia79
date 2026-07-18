@@ -103,7 +103,7 @@
               1. Lấy danh sách sản phẩm
             </h4>
             <p class="text-xs font-semibold text-slate-500 dark:text-slate-400 mt-1">
-              Lấy danh sách ID sản phẩm, tên, giá bán và số lượng có sẵn trong kho hàng.
+              Lấy danh sách ID sản phẩm, tên, giá bán và số lượng có sẵn trong kho hàng. Hỗ trợ lọc theo danh mục (?category_id=...) và tìm kiếm (?search=...) theo tên sản phẩm.
             </p>
           </div>
         </div>
@@ -170,6 +170,60 @@ curl -X GET "{{ siteUrl() }}/api/v1/b2b/products?api_key={{ apiKey() || 'API_KEY
               >
                 <app-icon name="copy" class="w-4 h-4" />
               </button>
+            </div>
+          </div>
+
+          <!-- Tham số URL (Query Parameters) -->
+          <div class="space-y-1.5">
+            <span class="text-[10px] font-bold text-slate-400 dark:text-slate-500 uppercase tracking-wider block">Tham số URL (Query Parameters)</span>
+            <div class="bg-slate-50 dark:bg-slate-950 border border-slate-200/60 dark:border-slate-900 rounded-xl p-4 space-y-4">
+              <!-- api_key -->
+              <div class="flex items-start gap-4 text-xs font-semibold border-b border-slate-100 dark:border-slate-800/60 pb-3">
+                <div class="min-w-[120px] font-mono text-[var(--color-primary)] font-bold">
+                  api_key
+                </div>
+                <div class="flex-1 space-y-1">
+                  <div class="flex items-center gap-1.5">
+                    <span class="text-[10px] font-black uppercase bg-rose-500/10 text-rose-500 px-1.5 py-0.5 rounded">Bắt buộc</span>
+                    <span class="text-slate-400 dark:text-slate-500 font-mono text-[10px]">String</span>
+                  </div>
+                  <p class="text-slate-500 dark:text-slate-400 font-semibold leading-relaxed">
+                    Khóa API Key của đại lý để xác thực quyền truy cập. Có thể truyền qua query parameter hoặc header <code class="font-mono text-[10px]">X-API-KEY</code>.
+                  </p>
+                </div>
+              </div>
+
+              <!-- category_id -->
+              <div class="flex items-start gap-4 text-xs font-semibold border-b border-slate-100 dark:border-slate-800/60 pb-3">
+                <div class="min-w-[120px] font-mono text-[var(--color-primary)] font-bold">
+                  category_id
+                </div>
+                <div class="flex-1 space-y-1">
+                  <div class="flex items-center gap-1.5">
+                    <span class="text-[10px] font-black uppercase bg-slate-100 dark:bg-slate-800 text-slate-500 px-1.5 py-0.5 rounded">Tùy chọn</span>
+                    <span class="text-slate-400 dark:text-slate-500 font-mono text-[10px]">String (UUID)</span>
+                  </div>
+                  <p class="text-slate-500 dark:text-slate-400 font-semibold leading-relaxed">
+                    Mã danh mục sản phẩm cần lọc. Nếu không truyền sẽ lấy sản phẩm từ tất cả danh mục.
+                  </p>
+                </div>
+              </div>
+
+              <!-- search -->
+              <div class="flex items-start gap-4 text-xs font-semibold">
+                <div class="min-w-[120px] font-mono text-[var(--color-primary)] font-bold">
+                  search
+                </div>
+                <div class="flex-1 space-y-1">
+                  <div class="flex items-center gap-1.5">
+                    <span class="text-[10px] font-black uppercase bg-slate-100 dark:bg-slate-800 text-slate-500 px-1.5 py-0.5 rounded">Tùy chọn</span>
+                    <span class="text-slate-400 dark:text-slate-500 font-mono text-[10px]">String</span>
+                  </div>
+                  <p class="text-slate-500 dark:text-slate-400 font-semibold leading-relaxed">
+                    Từ khóa tìm kiếm theo tên sản phẩm.
+                  </p>
+                </div>
+              </div>
             </div>
           </div>
 

@@ -24,9 +24,9 @@
     </ng-container>
   </app-page-header>
 
-  <!-- Thanh tìm kiếm thành viên -->
+  <!-- Thanh tìm kiếm & bộ lọc thành viên -->
   <div class="grid grid-cols-1 md:grid-cols-3 gap-4 bg-slate-50 dark:bg-slate-900/40 border border-slate-200/30 dark:border-slate-800/30 rounded-2xl p-4 sm:p-5">
-    <div class="form-field md:col-span-3">
+    <div class="form-field md:col-span-2">
       <label class="text-xs font-bold text-slate-400 dark:text-slate-500 uppercase tracking-wider block mb-1">Tìm kiếm thành viên</label>
       <app-custom-search-input
         [placeholder]="'Tìm kiếm theo tên, email hoặc số điện thoại...'"
@@ -35,6 +35,16 @@
         (valueChange)="onSearch($event)"
         [debounce]="500"
         containerClass="w-full"
+      />
+    </div>
+    <div class="form-field md:col-span-1">
+      <label class="text-xs font-bold text-slate-400 dark:text-slate-500 uppercase tracking-wider block mb-1">Vai trò</label>
+      <app-custom-select
+        [options]="roleOptions"
+        [value]="selectedRoleFilter()"
+        (valueChange)="selectedRoleFilter.set($event); fetchUsers(1)"
+        valueKey="value"
+        labelKey="label"
       />
     </div>
   </div>

@@ -29,8 +29,9 @@ class AdminUserController extends Controller
             $page = (int)$request->query('page', 1);
             $limit = (int)$request->query('limit', 10);
             $search = $request->query('search');
+            $role = $request->query('role');
 
-            $result = $this->userRepository->findAllPaginated($page, $limit, $search);
+            $result = $this->userRepository->findAllPaginated($page, $limit, $search, $role);
             $users = $result['items'];
             $total = $result['total'];
 

@@ -22,7 +22,7 @@ export class UserStore {
   /**
    * Lấy danh sách thành viên phân trang & tìm kiếm
    */
-  public fetchUsers(page: number, limit: number, search?: string): Observable<any> {
+  public fetchUsers(page: number, limit: number, search?: string, role?: string): Observable<any> {
     this.loading.set(true);
 
     let params = new HttpParams()
@@ -31,6 +31,10 @@ export class UserStore {
 
     if (search) {
       params = params.set('search', search);
+    }
+
+    if (role) {
+      params = params.set('role', role);
     }
 
     return this.api.get<any>('v1/admin/users', params).pipe(

@@ -1024,3 +1024,11 @@
       6. **Sửa lỗi & Tối ưu**:
          - Khắc phục lỗi Duplicate API call bằng cách gán `[loading]="state.authStore.authLoading()"` và chèn guard chặn click spam khi sinh API Key.
          - Cập nhật background và text color của các khung mã code/CURL/JSON trong tài liệu `User API` tương thích động theo chế độ sáng/tối (Light/Dark Mode) thông qua màu dịu `bg-slate-50 border-slate-200/60 text-slate-700` (ở Light Mode) và `bg-slate-900/60 border-slate-800/40 text-slate-300` (ở Dark Mode), nút copy đổi màu chữ hover tương ứng.
+  - **[BỔ SUNG PHÂN TRANG, BỘ LỌC & TÌM KIẾM CHO THÀNH VIÊN VÀ B2B APIs]**:
+    - Yêu cầu: Bổ sung tính năng phân trang, bộ lọc và tìm kiếm còn thiếu cho giao diện Quản lý Thành viên và các API B2B/Đại lý.
+    - Giải pháp & Triển khai:
+      1. **Quản lý Thành viên (UI & Backend)**: Bổ sung dropdown lọc vai trò (`Tất cả`, `Admin`, `User`) sử dụng component `<app-custom-select>` có sẵn trên giao diện `/admin/users`. Cập nhật `AdminUserController`, `UserRepositoryInterface`, `UserRepository` và `UserStore` (Angular) để truyền nhận tham số `role` khi gọi dữ liệu phân trang.
+      2. **API đại lý lấy danh sách sản phẩm (`GET /api/v1/b2b/products`)**: Bổ sung bộ lọc `category_id` và tìm kiếm `search` (giữ nguyên không phân trang theo yêu cầu).
+      3. **API Admin quản lý đại lý B2B (`GET /api/v1/admin/b2b/users`)**: Triển khai phân trang (`page`, `limit`), bộ lọc (`role`, `has_api_key`), và tìm kiếm (`search` theo tên/email/sđt) trả về cấu trúc JSON phân trang chuẩn.
+      4. **API Admin xem đơn hàng B2B (`GET /api/v1/admin/b2b/orders`)**: Bổ sung bộ lọc `status`, `user_id` và tìm kiếm `search` (theo mã đơn hàng hoặc thông tin khách hàng).
+      5. **Xác minh**: Chạy unit test suite Laravel backend (`php artisan test`) và biên dịch Angular frontend (`npm run build`) thành công 100% không phát sinh lỗi.

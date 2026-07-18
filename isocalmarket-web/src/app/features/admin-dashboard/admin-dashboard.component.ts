@@ -11,6 +11,8 @@ import { TooltipDirective } from '@shared/components/tooltip/tooltip.directive';
 import { CustomDateTimeRangeComponent, DateTimeRangeValue } from '@shared/components/custom-date-time-range/custom-date-time-range.component';
 import { FormsModule } from '@angular/forms';
 import { HttpParams } from '@angular/common/http';
+import { CustomSelectComponent } from '@shared/components/custom-select/custom-select.component';
+import { CustomSearchInputComponent } from '@shared/components/custom-search-input/custom-search-input.component';
 
 @Component({
   selector: 'app-admin-dashboard',
@@ -24,7 +26,9 @@ import { HttpParams } from '@angular/common/http';
     IconComponent,
     TooltipDirective,
     FormsModule,
-    CustomDateTimeRangeComponent
+    CustomDateTimeRangeComponent,
+    CustomSelectComponent,
+    CustomSearchInputComponent
   ],
   templateUrl: './admin-dashboard.component.html',
   styles: [`
@@ -35,13 +39,27 @@ import { HttpParams } from '@angular/common/http';
 })
 export class AdminDashboardComponent implements OnInit {
   private readonly apiService = inject(ApiService);
-  private readonly stateService = inject(StateService);
+  public readonly stateService = inject(StateService);
 
   public readonly stats = signal<any>(null);
   public readonly loading = signal<boolean>(true);
   public selectedDateRange: DateTimeRangeValue = { startDate: '', endDate: '' };
 
+  // low stock filter/search signals
+  public readonly selectedCategory = signal<string>('');
+  public readonly lowStockSearch = signal<string>('');
+  public rawSearchQuery = '';
+
+  public get categoryOptions() {
+    const list = this.stateService.productStore.categories().map((c) => ({
+      label: c.name,
+      value: c.id,
+    }));
+    return [{ label: 'Tất cả danh mục', value: '' }, ...list];
+  }
+
   ngOnInit() {
+    this.stateService.productStore.fetchCategories().subscribe();
     this.loadStats();
   }
 
@@ -54,6 +72,12 @@ export class AdminDashboardComponent implements OnInit {
     if (this.selectedDateRange.endDate) {
       params = params.set('end_date', this.selectedDateRange.endDate);
     }
+    if (this.selectedCategory()) {
+      params = params.set('low_stock_category_id', this.selectedCategory());
+    }
+    if (this.lowStockSearch().trim()) {
+      params = params.set('low_stock_search', this.lowStockSearch().trim());
+    }
 
     this.apiService.get<any>('v1/admin/dashboard-stats', params).subscribe({
       next: (res) => {
@@ -65,5 +89,10 @@ export class AdminDashboardComponent implements OnInit {
         this.loading.set(false);
       }
     });
+  }
+
+  public onSearchLowStock(query: string) {
+    this.lowStockSearch.set(query);
+    this.loadStats();
   }
 }

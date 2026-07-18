@@ -25,7 +25,10 @@ class B2bController extends Controller
     public function index(Request $request)
     {
         try {
-            $products = $this->productService->getAllActiveProducts(null, 'active', null, 'active');
+            $categoryId = $request->query('category_id');
+            $search = $request->query('search');
+
+            $products = $this->productService->getAllActiveProducts($categoryId, 'active', $search, 'active');
 
             $data = array_map(function ($product) {
                 $category = $product->getCategoryId() ? \App\Infrastructure\Persistence\Eloquent\CategoryModel::find($product->getCategoryId()) : null;

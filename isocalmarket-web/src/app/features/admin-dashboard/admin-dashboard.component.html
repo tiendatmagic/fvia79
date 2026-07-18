@@ -156,6 +156,31 @@
       >
     </div>
 
+    <!-- Thanh tìm kiếm & bộ lọc tồn kho thấp -->
+    <div class="grid grid-cols-1 md:grid-cols-3 gap-4 bg-slate-50/50 dark:bg-slate-950/20 border border-slate-200/30 dark:border-slate-800/30 rounded-2xl p-4 sm:p-5">
+      <div class="form-field md:col-span-2">
+        <label class="text-xs font-bold text-slate-400 dark:text-slate-500 uppercase tracking-wider block mb-1">Tìm kiếm sản phẩm</label>
+        <app-custom-search-input
+          [placeholder]="'Tìm kiếm theo tên sản phẩm cảnh báo...'"
+          [(ngModel)]="rawSearchQuery"
+          name="rawSearchQuery"
+          (valueChange)="onSearchLowStock($event)"
+          [debounce]="500"
+          containerClass="w-full"
+        />
+      </div>
+      <div class="form-field md:col-span-1">
+        <label class="text-xs font-bold text-slate-400 dark:text-slate-500 uppercase tracking-wider block mb-1">Danh mục</label>
+        <app-custom-select
+          [options]="categoryOptions"
+          [value]="selectedCategory()"
+          (valueChange)="selectedCategory.set($event); loadStats()"
+          valueKey="value"
+          labelKey="label"
+        />
+      </div>
+    </div>
+
     <div
       *ngIf="stats().low_stock_products.length === 0"
       class="flex flex-col items-center justify-center py-8 text-center space-y-2"

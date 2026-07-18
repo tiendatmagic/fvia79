@@ -13,6 +13,7 @@ import { TooltipDirective } from '@shared/components/tooltip/tooltip.directive';
 import { ModalService } from '@core/services/modal.service';
 import { PaginationComponent } from '@shared/components/pagination/pagination.component';
 import { UserFormModalComponent } from './user-form-modal/user-form-modal.component';
+import { CustomSelectComponent } from '@shared/components/custom-select/custom-select.component';
 
 @Component({
   selector: 'app-admin-users',
@@ -28,7 +29,8 @@ import { UserFormModalComponent } from './user-form-modal/user-form-modal.compon
     IconComponent,
     CustomSearchInputComponent,
     TooltipDirective,
-    PaginationComponent
+    PaginationComponent,
+    CustomSelectComponent
   ],
   templateUrl: './admin-users.component.html',
   styles: [`
@@ -44,6 +46,13 @@ export class AdminUsersComponent implements OnInit {
   public searchQuery = '';
   private readonly _searchQuery = signal('');
 
+  public readonly selectedRoleFilter = signal<string>('');
+  public readonly roleOptions = [
+    { label: 'Tất cả vai trò', value: '' },
+    { label: 'Quản trị viên (Admin)', value: 'admin' },
+    { label: 'Người dùng (User)', value: 'user' }
+  ];
+
   public readonly currentPage = signal<number>(1);
   public readonly limit = 10;
 
@@ -56,7 +65,8 @@ export class AdminUsersComponent implements OnInit {
     this.state.userStore.fetchUsers(
       page,
       this.limit,
-      this._searchQuery().trim() || undefined
+      this._searchQuery().trim() || undefined,
+      this.selectedRoleFilter() || undefined
     ).subscribe();
   }
 
@@ -72,6 +82,7 @@ export class AdminUsersComponent implements OnInit {
   public onRefresh() {
     this.searchQuery = '';
     this._searchQuery.set('');
+    this.selectedRoleFilter.set('');
     this.fetchUsers(1);
     this.state.showToast('Đã làm mới danh sách!', 'success');
   }

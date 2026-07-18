@@ -16,7 +16,40 @@ class B2bAdminController extends Controller
     public function indexUsers(Request $request)
     {
         try {
-            $users = UserModel::orderBy('created_at', 'desc')
+            $page = (int)$request->query('page', 1);
+            $limit = (int)$request->query('limit', 10);
+            $search = $request->query('search');
+            $role = $request->query('role');
+            $hasApiKey = $request->query('has_api_key');
+
+            $query = UserModel::query();
+
+            if ($search) {
+                $query->where(function ($q) use ($search) {
+                    $q->where('name', 'like', "%{$search}%")
+                      ->orWhere('email', 'like', "%{$search}%")
+                      ->orWhere('phone', 'like', "%{$search}%");
+                });
+            }
+
+            if ($role) {
+                $query->where('role', $role);
+            }
+
+            if ($hasApiKey !== null && $hasApiKey !== '') {
+                if ($hasApiKey === 'yes' || $hasApiKey === '1' || $hasApiKey === 'true') {
+                    $query->whereNotNull('api_key')->where('api_key', '!=', '');
+                } else {
+                    $query->where(function ($q) {
+                        $q->whereNull('api_key')->orWhere('api_key', '');
+                    });
+                }
+            }
+
+            $total = $query->count();
+            $users = $query->orderBy('created_at', 'desc')
+                ->skip(($page - 1) * $limit)
+                ->take($limit)
                 ->get()
                 ->map(function ($u) {
                     return [
@@ -32,7 +65,13 @@ class B2bAdminController extends Controller
 
             return response()->json([
                 'success' => true,
-                'users' => $users
+                'users' => $users,
+                'pagination' => [
+                    'total' => $total,
+                    'page' => $page,
+                    'limit' => $limit,
+                    'last_page' => (int)ceil($total / $limit)
+                ]
             ]);
         } catch (\Exception $e) {
             return response()->json(['message' => 'Failed to fetch B2B users: ' . $e->getMessage()], 500);
@@ -48,9 +87,31 @@ class B2bAdminController extends Controller
         try {
             $page = (int)$request->query('page', 1);
             $limit = (int)$request->query('limit', 10);
+            $status = $request->query('status');
+            $userId = $request->query('user_id');
+            $search = $request->query('search');
 
-            $query = OrderModel::with(['items', 'user'])
-                ->orderBy('created_at', 'desc');
+            $query = OrderModel::with(['items', 'user']);
+
+            if ($status) {
+                $query->where('status', $status);
+            }
+
+            if ($userId) {
+                $query->where('user_id', $userId);
+            }
+
+            if ($search) {
+                $query->where(function ($q) use ($search) {
+                    $q->where('order_code', 'like', "%{$search}%")
+                      ->orWhereHas('user', function ($uq) use ($search) {
+                          $uq->where('name', 'like', "%{$search}%")
+                             ->orWhere('email', 'like', "%{$search}%");
+                      });
+                });
+            }
+
+            $query->orderBy('created_at', 'desc');
 
             $total = $query->count();
             $orders = $query->skip(($page - 1) * $limit)

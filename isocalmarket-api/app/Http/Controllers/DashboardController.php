@@ -43,7 +43,18 @@ class DashboardController extends Controller
                 }
             }
 
-            $products = ProductModel::where('status', 'active')->get();
+            $lowStockCategoryId = $request->query('low_stock_category_id');
+            $lowStockSearch = $request->query('low_stock_search');
+
+            $productQuery = ProductModel::where('status', 'active');
+            if ($lowStockCategoryId) {
+                $productQuery->where('category_id', $lowStockCategoryId);
+            }
+            if ($lowStockSearch) {
+                $productQuery->where('name', 'like', "%{$lowStockSearch}%");
+            }
+
+            $products = $productQuery->get();
             $lowStockProducts = [];
 
             foreach ($products as $product) {

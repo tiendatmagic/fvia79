@@ -42,7 +42,7 @@ class UserRepository implements UserRepositoryInterface
         return $model ? UserMapper::toDomain($model) : null;
     }
 
-    public function findAllPaginated(int $page, int $limit, ?string $search = null): array
+    public function findAllPaginated(int $page, int $limit, ?string $search = null, ?string $role = null): array
     {
         $query = UserModel::query();
         if ($search) {
@@ -51,6 +51,9 @@ class UserRepository implements UserRepositoryInterface
                   ->orWhere('email', 'like', "%{$search}%")
                   ->orWhere('phone', 'like', "%{$search}%");
             });
+        }
+        if ($role) {
+            $query->where('role', $role);
         }
 
         $total = $query->count();
