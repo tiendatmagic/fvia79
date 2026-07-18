@@ -59,7 +59,13 @@ export class CartModalComponent {
         this.modalRef.close('success');
       },
       error: (err) => {
-        this.state.showToast(err.error?.message || 'Có lỗi xảy ra khi tạo đơn hàng!', 'error');
+        let msg = err.error?.message || 'Có lỗi xảy ra khi tạo đơn hàng!';
+        if (msg.includes('Product is not available or has been discontinued')) {
+          msg = 'Sản phẩm không khả dụng hoặc đã bị ngừng kinh doanh. Vui lòng kiểm tra lại giỏ hàng!';
+        } else if (msg.includes('does not have enough stock available')) {
+          msg = 'Một hoặc nhiều sản phẩm trong giỏ hàng không đủ số lượng tồn kho khả dụng!';
+        }
+        this.state.showToast(msg, 'error');
         this.isSubmitting = false;
       }
     });

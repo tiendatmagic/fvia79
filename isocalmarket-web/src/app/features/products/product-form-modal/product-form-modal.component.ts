@@ -59,6 +59,11 @@ export class ProductFormModalComponent implements OnInit {
   ngOnInit() {
     this.state.productStore.fetchCategories().subscribe();
     if (this.modalData) {
+      if (this.modalData.is_deleted) {
+        this.state.showToast('Không thể chỉnh sửa sản phẩm đã bị xóa mềm!', 'error');
+        this.modalRef.close(false);
+        return;
+      }
       this.isEditMode = true;
       this.editingId = this.modalData.id;
       this.categoryId = this.modalData.category_id || '';

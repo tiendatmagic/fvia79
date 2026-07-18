@@ -53,7 +53,7 @@ export class AdminDashboardComponent implements OnInit {
   public rawSearchQuery = '';
 
   public readonly thresholdOptions = [
-    { label: '< 5 items (rất thấp)', value: '5' },
+    { label: '< 5 items', value: '5' },
     { label: '< 10 items', value: '10' },
     { label: '< 50 items', value: '50' },
     { label: '< 100 items', value: '100' },

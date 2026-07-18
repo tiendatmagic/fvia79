@@ -160,6 +160,14 @@ class ProductController extends Controller
     public function update(CreateProductRequest $request, $id)
     {
         try {
+            $product = $this->productService->getProductById($id);
+            if (!$product) {
+                return response()->json(['message' => 'Product not found.'], 404);
+            }
+            if ($product->isDeleted()) {
+                return response()->json(['message' => 'Cannot update a soft-deleted product.'], 400);
+            }
+
             $product = $this->productService->updateProduct(
                 $id,
                 $request->name,

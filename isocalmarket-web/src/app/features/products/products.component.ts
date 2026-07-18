@@ -133,6 +133,10 @@ export class ProductsComponent implements OnInit {
   }
 
   public openEditDrawer(product: any) {
+    if (product.is_deleted) {
+      this.state.showToast('Không thể chỉnh sửa sản phẩm đã bị xóa mềm!', 'error');
+      return;
+    }
     this.modalService.open(ProductFormModalComponent, {
       title: 'Cập Nhật Sản Phẩm',
       size: 'lg',

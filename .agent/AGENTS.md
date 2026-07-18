@@ -1073,3 +1073,12 @@
       1. Import `ActivatedRoute` từ `@angular/router` và inject vào class.
       2. Trong `ngOnInit()`, sau khi `fetchProducts()` tải xong danh sách sản phẩm, kiểm tra nếu `product_id` tồn tại trong `route.snapshot.queryParams` thì truyền trực tiếp `productId` này vào phương thức `openImportDrawer(productId)` để tự động mở modal nhập kho có chọn sẵn sản phẩm cần nhập.
       3. Giải pháp này giúp giữ nguyên bộ lọc bảng hiển thị ở background đằng sau modal, không làm thay đổi hay cưỡng ép thay đổi bộ lọc chung của trang Inventory khi người dùng click phím tắt ngoài Dashboard.
+1076: 
+  - **[CHẶN CHỈNH SỬA SẢN PHẨM SOFT-DELETED]**:
+    - Yêu cầu: Đảm bảo khi sản phẩm đã bị xóa mềm (soft deleted), nhất định không cho phép sửa thông tin sản phẩm đó.
+    - Giải pháp & Triển khai:
+      1. **Backend Service**: Cập nhật hàm `updateProduct` trong [ProductService.php](file:///d:/git/isocalmarket/isocalmarket-api/app/Application/Services/ProductService.php) để kiểm tra `$product->isDeleted()`. Nếu đúng, ném ra ngoại lệ ngăn cản cập nhật: *"Cannot update a soft-deleted product."*
+      2. **Backend Controller**: Cập nhật hàm `update` trong [ProductController.php](file:///d:/git/isocalmarket/isocalmarket-api/app/Http/Controllers/ProductController.php). Thực hiện kiểm tra trạng thái sản phẩm bằng `getProductById($id)`. Nếu sản phẩm đã bị xóa mềm, trả về phản hồi JSON lỗi với mã trạng thái `400 Bad Request` và thông điệp tương ứng.
+      3. **Frontend Component**: Cập nhật [products.component.ts](file:///d:/git/isocalmarket/isocalmarket-web/src/app/features/products/products.component.ts) kiểm tra `product.is_deleted` tại hàm `openEditDrawer()`. Nếu đúng, chặn mở modal và hiển thị thông báo lỗi bằng Toast: *"Không thể chỉnh sửa sản phẩm đã bị xóa mềm!"*.
+      4. **Frontend Form Modal**: Cập nhật [product-form-modal.component.ts](file:///d:/git/isocalmarket/isocalmarket-web/src/app/features/products/product-form-modal/product-form-modal.component.ts) kiểm tra `modalData.is_deleted` tại hàm `ngOnInit()`. Nếu sản phẩm đã bị xóa mềm, đóng modal lập tức và báo lỗi Toast tương tự để làm lớp bảo vệ dự phòng.
+      5. **Xác minh**: Chạy unit test suite của Backend (`php artisan test`) thành công và kiểm tra biên dịch Frontend (`npm run build`) hoàn thành thành công 100% không phát sinh lỗi.

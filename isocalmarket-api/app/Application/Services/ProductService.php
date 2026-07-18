@@ -49,6 +49,10 @@ class ProductService
             throw new \Exception('Product not found.');
         }
 
+        if ($product->isDeleted()) {
+            throw new \Exception('Cannot update a soft-deleted product.');
+        }
+
         $finalSlug = $slug ?: Str::slug($name);
         if ($finalSlug !== $product->getSlug()) {
             $existing = $this->productRepository->findBySlug($finalSlug);
