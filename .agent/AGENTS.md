@@ -1021,4 +1021,6 @@
          - Xây dựng `AdminUsersComponent` dạng bảng quản lý trực quan, hiển thị ngắn gọn ID/API Key kèm tooltip, tích hợp dynamic modal `UserFormModalComponent` cho form thêm/sửa, tuân thủ nghiêm ngặt rule responsive bảng và thiết kế nút bấm có viền mờ nhạt.
          - Tích hợp liên kết vào Desktop Sidebar (`sidebar.component.html`) và Mobile Sidebar Drawer (`app.html`).
       5. **Xác minh**: Chạy `php artisan migrate:fresh --seed` và `php artisan test` thành công. Biên dịch Angular `npm run build` thành công 100% không phát sinh bất kỳ lỗi nào.
-
+      6. **Sửa lỗi & Tối ưu**:
+         - Khắc phục lỗi Duplicate API call bằng cách gán `[loading]="state.authStore.authLoading()"` và chèn guard chặn click spam khi sinh API Key.
+         - Cập nhật background và text color của các khung mã code/CURL/JSON trong tài liệu `User API` tương thích động theo chế độ sáng/tối (Light/Dark Mode) thông qua màu dịu `bg-slate-50 border-slate-200/60 text-slate-700` (ở Light Mode) và `bg-slate-900/60 border-slate-800/40 text-slate-300` (ở Dark Mode), nút copy đổi màu chữ hover tương ứng.
