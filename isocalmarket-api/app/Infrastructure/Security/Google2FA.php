@@ -46,12 +46,10 @@ class Google2FA
             // Pack slice thời gian về chuỗi nhị phân 64-bit
             $time = pack('N*', 0) . pack('N*', $slice);
             
-            // Tính toán HMAC-SHA1
             $hmac = hash_hmac('sha1', $time, $key, true);
             
             $offset = ord(substr($hmac, -1)) & 0x0F;
             
-            // Trích xuất 4 byte từ offset
             $hashpart = substr($hmac, $offset, 4);
             
             // Unpack giá trị số nguyên 32-bit

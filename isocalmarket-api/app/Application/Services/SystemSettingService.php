@@ -37,7 +37,6 @@ class SystemSettingService
         $setting = new SystemSetting($key, $value, $description);
         $this->settingRepository->save($setting);
 
-        // Xóa cache cũ
         Cache::forget("system_setting:{$key}");
         Cache::forget("system_settings_all");
     }

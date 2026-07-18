@@ -11,21 +11,16 @@ import { DepositHistoryItem } from '../deposit-history/deposit-history.component
 export class DepositStore {
   private readonly api = inject(ApiService);
 
-  // States
   public readonly loading = signal<boolean>(false);
-  public readonly rate = signal<number>(26500); // Tỷ giá fallback mặc định
+  public readonly rate = signal<number>(26500);
   public readonly currentInvoice = signal<DepositHistoryItem | null>(null);
   
-  // History States
   public readonly historyList = signal<DepositHistoryItem[]>([]);
   public readonly totalItems = signal<number>(0);
   public readonly lastPage = signal<number>(1);
   public readonly currentPage = signal<number>(1);
 
-  /**
-   * Tải tỷ giá USDT/VND động từ backend
-   */
-  public fetchRate(): Observable<{ rate: number }> {
+    public fetchRate(): Observable<{ rate: number }> {
     this.loading.set(true);
     return this.api.get<{ rate: number }>('v1/deposit/rate').pipe(
       tap(res => {
@@ -37,10 +32,7 @@ export class DepositStore {
     );
   }
 
-  /**
-   * Tạo lệnh nạp tiền mới
-   */
-  public createDeposit(amountUsdt: number): Observable<{ message: string; invoice: DepositHistoryItem }> {
+    public createDeposit(amountUsdt: number): Observable<{ message: string; invoice: DepositHistoryItem }> {
     this.loading.set(true);
     return this.api.post<{ message: string; invoice: DepositHistoryItem }>('v1/deposit', { amount_usdt: amountUsdt }).pipe(
       tap(res => {
@@ -52,10 +44,7 @@ export class DepositStore {
     );
   }
 
-  /**
-   * Lấy lịch sử nạp tiền có phân trang, lọc và tìm kiếm
-   */
-  public fetchHistory(
+    public fetchHistory(
     page: number,
     limit: number,
     search?: string,
@@ -95,10 +84,7 @@ export class DepositStore {
     );
   }
 
-  /**
-   * Lấy chi tiết một hóa đơn nạp
-   */
-  public fetchInvoice(id: string): Observable<{ invoice: DepositHistoryItem }> {
+    public fetchInvoice(id: string): Observable<{ invoice: DepositHistoryItem }> {
     this.loading.set(true);
     return this.api.get<{ invoice: DepositHistoryItem }>(`v1/deposit/invoice/${id}`).pipe(
       tap(res => {
@@ -110,20 +96,14 @@ export class DepositStore {
     );
   }
 
-  /**
-   * Hủy lệnh nạp tiền
-   */
-  public cancelInvoice(id: string): Observable<{ message: string }> {
+    public cancelInvoice(id: string): Observable<{ message: string }> {
     this.loading.set(true);
     return this.api.post<{ message: string }>(`v1/deposit/invoice/${id}/cancel`, {}).pipe(
       finalize(() => this.loading.set(false))
     );
   }
 
-  /**
-   * BOT tự động kiểm tra giao dịch nạp tiền
-   */
-  public checkTransaction(id: string): Observable<{ success: boolean; message: string }> {
+    public checkTransaction(id: string): Observable<{ success: boolean; message: string }> {
     this.loading.set(true);
     return this.api.post<{ success: boolean; message: string }>(`v1/deposit/invoice/${id}/check`, {}).pipe(
       finalize(() => this.loading.set(false))

@@ -52,7 +52,6 @@ export class DepositHistoryComponent implements OnInit {
   public readonly state = inject(StateService);
   private readonly router = inject(Router);
 
-  // Phân trang & bộ lọc
   public readonly currentPage = signal<number>(1);
   public readonly itemsPerPage = 10;
   
@@ -72,7 +71,6 @@ export class DepositHistoryComponent implements OnInit {
 
   ngOnInit() {
     this.fetchPage(1);
-    // Đồng thời fetch tỷ giá CoinGecko để cập nhật tỷ giá hiển thị (nếu có)
     this.state.depositStore.fetchRate().subscribe();
   }
 
@@ -96,7 +94,6 @@ export class DepositHistoryComponent implements OnInit {
     this.fetchPage(1);
   }
 
-  // Chuyển hướng xem hóa đơn
   public viewInvoice(item: DepositHistoryItem) {
     if (item.status === 'pending_payment') {
       this.router.navigate(['/deposit/invoice', item.id]);

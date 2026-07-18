@@ -37,7 +37,6 @@ export class DepositComponent implements OnInit {
   private readonly router = inject(Router);
   private readonly modalService = inject(ModalService);
 
-  // Trạng thái form
   public amountUsdt: number | null = null;
   public vndEquivalent = 0;
   public selectedNetwork = 'BEP20';

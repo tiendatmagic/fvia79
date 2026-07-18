@@ -1,6 +1,5 @@
 <div class="max-w-[1530px] mx-auto w-full p-4 sm:p-6 space-y-6">
-  <!-- Tiêu đề trang -->
-  <app-page-header
+    <app-page-header
     title="Admin API"
     description="Cổng kết nối đặc quyền dành cho Admin để tự động hóa quản lý đại lý, cập nhật số dư và đối soát hệ thống."
   >
@@ -15,8 +14,7 @@
     </ng-container>
   </app-page-header>
 
-  <!-- Card 1: API Key của Admin & Cấu hình -->
-  <div app-card class="p-6 space-y-5">
+    <div app-card class="p-6 space-y-5">
     <div class="flex items-center gap-2 border-b border-slate-100 dark:border-slate-800/60 pb-3">
       <app-icon name="key" class="w-5 h-5 text-[var(--color-primary)]" />
       <h3 class="text-sm font-black text-slate-700 dark:text-slate-300 uppercase tracking-wider">
@@ -24,8 +22,7 @@
       </h3>
     </div>
 
-    <!-- Cảnh báo bảo mật -->
-    <div
+        <div
       class="bg-amber-50 dark:bg-amber-950/30 border border-amber-200/60 dark:border-amber-900/50 rounded-2xl p-5 flex items-start gap-4 text-xs font-semibold leading-relaxed"
     >
       <div
@@ -44,8 +41,7 @@
       </div>
     </div>
 
-    <!-- Hướng dẫn sử dụng & Cảnh báo -->
-    <div
+        <div
       class="bg-blue-50/50 dark:bg-slate-900/30 border border-blue-100/50 dark:border-slate-800/50 text-blue-700 dark:text-slate-300 rounded-2xl p-4 sm:p-5 text-xs font-semibold leading-relaxed"
     >
       Sử dụng API Key này để xác thực khi gọi các B2B Admin API bằng cách truyền trực tiếp trên URL (Query
@@ -64,10 +60,8 @@
       >
     </div>
 
-    <!-- API Base URL và API Key containers -->
-    <div class="flex flex-col md:flex-row items-stretch md:items-center gap-4">
-      <!-- Base URL -->
-      <div
+        <div class="flex flex-col md:flex-row items-stretch md:items-center gap-4">
+            <div
         class="relative flex-1 flex items-center bg-slate-50 dark:bg-slate-950 h-12 px-4 pr-12 rounded-xl border border-slate-200/60 dark:border-slate-900 min-w-0"
       >
         <span
@@ -89,8 +83,7 @@
         </button>
       </div>
 
-      <!-- Admin API Key -->
-      <div
+            <div
         class="relative flex-1 flex items-center bg-slate-50 dark:bg-slate-950 h-12 px-4 pr-12 rounded-xl border border-slate-200/60 dark:border-slate-900 min-w-0"
       >
         <span
@@ -116,8 +109,7 @@
     </div>
   </div>
 
-  <!-- Card 2: Tài liệu tích hợp B2B Admin API -->
-  <div app-card class="p-6 space-y-6">
+    <div app-card class="p-6 space-y-6">
     <div
       class="flex flex-col md:flex-row md:items-center md:justify-between border-b border-slate-100 dark:border-slate-800/60 pb-3 gap-2"
     >
@@ -132,11 +124,9 @@
       </span>
     </div>
 
-    <!-- API LIST -->
-    <div class="space-y-8 divide-y divide-slate-100 dark:divide-slate-800">
+        <div class="space-y-8 divide-y divide-slate-100 dark:divide-slate-800">
       
-      <!-- API 1: List B2B Resellers -->
-      <div class="pt-0 space-y-4">
+            <div class="pt-0 space-y-4">
         <div class="flex items-start gap-3">
           <div class="w-7 h-7 rounded-full bg-[var(--color-primary)]/10 text-[var(--color-primary)] text-xs font-black flex items-center justify-center shrink-0 mt-0.5">
             1
@@ -161,8 +151,7 @@
         </div>
 
         <div class="space-y-3">
-          <!-- Curl -->
-          <div class="space-y-1.5">
+                    <div class="space-y-1.5">
             <span class="text-[10px] font-bold text-slate-400 dark:text-slate-500 uppercase tracking-wider block">Mẫu gọi API (CURL)</span>
             <div class="relative bg-slate-50 dark:bg-slate-950 rounded-xl border border-slate-200/60 dark:border-slate-900 overflow-hidden">
               <div class="overflow-x-auto p-3.5 pr-12 font-mono text-xs text-slate-700 dark:text-slate-300 leading-relaxed">
@@ -178,8 +167,7 @@
             </div>
           </div>
 
-          <!-- URL trực tiếp -->
-          <div class="space-y-1.5">
+                    <div class="space-y-1.5">
             <span class="text-[10px] font-bold text-slate-400 dark:text-slate-500 uppercase tracking-wider block">URL gọi trực tiếp</span>
             <div class="relative bg-slate-50 dark:bg-slate-950 rounded-xl border border-slate-200/60 dark:border-slate-900 overflow-hidden">
               <div class="overflow-x-auto p-3.5 pr-12 font-mono text-xs text-slate-700 dark:text-slate-300 leading-relaxed">
@@ -195,12 +183,10 @@
             </div>
           </div>
 
-          <!-- Tham số URL (Query Parameters) -->
-          <div class="space-y-1.5">
+                    <div class="space-y-1.5">
             <span class="text-[10px] font-bold text-slate-400 dark:text-slate-500 uppercase tracking-wider block">Tham số URL (Query Parameters)</span>
             <div class="bg-slate-50 dark:bg-slate-950 border border-slate-200/60 dark:border-slate-900 rounded-xl p-4 space-y-4">
-              <!-- api_key -->
-              <div class="flex flex-col sm:flex-row items-start gap-2 sm:gap-4 text-xs font-semibold border-b border-slate-100 dark:border-slate-800/60 pb-3">
+                            <div class="flex flex-col sm:flex-row items-start gap-2 sm:gap-4 text-xs font-semibold border-b border-slate-100 dark:border-slate-800/60 pb-3">
                 <div class="min-w-[120px] font-mono text-[var(--color-primary)] font-bold">
                   api_key
                 </div>
@@ -215,8 +201,7 @@
                 </div>
               </div>
 
-              <!-- page -->
-              <div class="flex flex-col sm:flex-row items-start gap-2 sm:gap-4 text-xs font-semibold border-b border-slate-100 dark:border-slate-800/60 pb-3">
+                            <div class="flex flex-col sm:flex-row items-start gap-2 sm:gap-4 text-xs font-semibold border-b border-slate-100 dark:border-slate-800/60 pb-3">
                 <div class="min-w-[120px] font-mono text-[var(--color-primary)] font-bold">
                   page
                 </div>
@@ -231,8 +216,7 @@
                 </div>
               </div>
 
-              <!-- limit -->
-              <div class="flex flex-col sm:flex-row items-start gap-2 sm:gap-4 text-xs font-semibold border-b border-slate-100 dark:border-slate-800/60 pb-3">
+                            <div class="flex flex-col sm:flex-row items-start gap-2 sm:gap-4 text-xs font-semibold border-b border-slate-100 dark:border-slate-800/60 pb-3">
                 <div class="min-w-[120px] font-mono text-[var(--color-primary)] font-bold">
                   limit
                 </div>
@@ -247,8 +231,7 @@
                 </div>
               </div>
 
-              <!-- search -->
-              <div class="flex flex-col sm:flex-row items-start gap-2 sm:gap-4 text-xs font-semibold border-b border-slate-100 dark:border-slate-800/60 pb-3">
+                            <div class="flex flex-col sm:flex-row items-start gap-2 sm:gap-4 text-xs font-semibold border-b border-slate-100 dark:border-slate-800/60 pb-3">
                 <div class="min-w-[120px] font-mono text-[var(--color-primary)] font-bold">
                   search
                 </div>
@@ -263,8 +246,7 @@
                 </div>
               </div>
 
-              <!-- role -->
-              <div class="flex flex-col sm:flex-row items-start gap-2 sm:gap-4 text-xs font-semibold border-b border-slate-100 dark:border-slate-800/60 pb-3">
+                            <div class="flex flex-col sm:flex-row items-start gap-2 sm:gap-4 text-xs font-semibold border-b border-slate-100 dark:border-slate-800/60 pb-3">
                 <div class="min-w-[120px] font-mono text-[var(--color-primary)] font-bold">
                   role
                 </div>
@@ -279,8 +261,7 @@
                 </div>
               </div>
 
-              <!-- has_api_key -->
-              <div class="flex flex-col sm:flex-row items-start gap-2 sm:gap-4 text-xs font-semibold">
+                            <div class="flex flex-col sm:flex-row items-start gap-2 sm:gap-4 text-xs font-semibold">
                 <div class="min-w-[120px] font-mono text-[var(--color-primary)] font-bold">
                   has_api_key
                 </div>
@@ -297,8 +278,7 @@
             </div>
           </div>
 
-          <!-- Response -->
-          <div class="space-y-1.5">
+                    <div class="space-y-1.5">
             <span class="text-[10px] font-bold text-slate-400 dark:text-slate-500 uppercase tracking-wider block">RESPONSE MẪU (JSON)</span>
             <div class="bg-slate-50 dark:bg-slate-950 rounded-xl p-4 font-mono text-xs text-slate-700 dark:text-slate-300 overflow-x-auto leading-relaxed border border-slate-200/60 dark:border-slate-900">
               <pre class="whitespace-pre">{{ '{' }}
@@ -320,8 +300,7 @@
         </div>
       </div>
 
-      <!-- API 2: List wholesale orders -->
-      <div class="pt-8 space-y-4">
+            <div class="pt-8 space-y-4">
         <div class="flex items-start gap-3">
           <div class="w-7 h-7 rounded-full bg-[var(--color-primary)]/10 text-[var(--color-primary)] text-xs font-black flex items-center justify-center shrink-0 mt-0.5">
             2
@@ -346,8 +325,7 @@
         </div>
 
         <div class="space-y-3">
-          <!-- Curl -->
-          <div class="space-y-1.5">
+                    <div class="space-y-1.5">
             <span class="text-[10px] font-bold text-slate-400 dark:text-slate-500 uppercase tracking-wider block">Mẫu gọi API (CURL)</span>
             <div class="relative bg-slate-50 dark:bg-slate-950 rounded-xl border border-slate-200/60 dark:border-slate-900 overflow-hidden">
               <div class="overflow-x-auto p-3.5 pr-12 font-mono text-xs text-slate-700 dark:text-slate-300 leading-relaxed">
@@ -363,8 +341,7 @@
             </div>
           </div>
 
-          <!-- URL trực tiếp -->
-          <div class="space-y-1.5">
+                    <div class="space-y-1.5">
             <span class="text-[10px] font-bold text-slate-400 dark:text-slate-500 uppercase tracking-wider block">URL gọi trực tiếp</span>
             <div class="relative bg-slate-50 dark:bg-slate-950 rounded-xl border border-slate-200/60 dark:border-slate-900 overflow-hidden">
               <div class="overflow-x-auto p-3.5 pr-12 font-mono text-xs text-slate-700 dark:text-slate-300 leading-relaxed">
@@ -380,12 +357,10 @@
             </div>
           </div>
 
-          <!-- Query Params Spec -->
-          <div class="space-y-1.5">
+                    <div class="space-y-1.5">
             <span class="text-[10px] font-bold text-slate-400 dark:text-slate-500 uppercase tracking-wider block">Tham số URL (Query Parameters)</span>
             <div class="bg-slate-50 dark:bg-slate-950 border border-slate-200/60 dark:border-slate-900 rounded-xl p-4 space-y-4">
-              <!-- Field 1: page -->
-              <div class="flex flex-col sm:flex-row items-start gap-2 sm:gap-4 text-xs font-semibold border-b border-slate-100 dark:border-slate-800/60 pb-3">
+                            <div class="flex flex-col sm:flex-row items-start gap-2 sm:gap-4 text-xs font-semibold border-b border-slate-100 dark:border-slate-800/60 pb-3">
                 <div class="min-w-[120px] font-mono text-[var(--color-primary)] font-bold">
                   page
                 </div>
@@ -400,8 +375,7 @@
                 </div>
               </div>
 
-              <!-- Field 2: limit -->
-              <div class="flex flex-col sm:flex-row items-start gap-2 sm:gap-4 text-xs font-semibold border-b border-slate-100 dark:border-slate-800/60 pb-3">
+                            <div class="flex flex-col sm:flex-row items-start gap-2 sm:gap-4 text-xs font-semibold border-b border-slate-100 dark:border-slate-800/60 pb-3">
                 <div class="min-w-[120px] font-mono text-[var(--color-primary)] font-bold">
                   limit
                 </div>
@@ -416,8 +390,7 @@
                 </div>
               </div>
 
-              <!-- Field 3: status -->
-              <div class="flex flex-col sm:flex-row items-start gap-2 sm:gap-4 text-xs font-semibold border-b border-slate-100 dark:border-slate-800/60 pb-3">
+                            <div class="flex flex-col sm:flex-row items-start gap-2 sm:gap-4 text-xs font-semibold border-b border-slate-100 dark:border-slate-800/60 pb-3">
                 <div class="min-w-[120px] font-mono text-[var(--color-primary)] font-bold">
                   status
                 </div>
@@ -432,8 +405,7 @@
                 </div>
               </div>
 
-              <!-- Field 4: user_id -->
-              <div class="flex flex-col sm:flex-row items-start gap-2 sm:gap-4 text-xs font-semibold border-b border-slate-100 dark:border-slate-800/60 pb-3">
+                            <div class="flex flex-col sm:flex-row items-start gap-2 sm:gap-4 text-xs font-semibold border-b border-slate-100 dark:border-slate-800/60 pb-3">
                 <div class="min-w-[120px] font-mono text-[var(--color-primary)] font-bold">
                   user_id
                 </div>
@@ -448,8 +420,7 @@
                 </div>
               </div>
 
-              <!-- Field 5: search -->
-              <div class="flex flex-col sm:flex-row items-start gap-2 sm:gap-4 text-xs font-semibold">
+                            <div class="flex flex-col sm:flex-row items-start gap-2 sm:gap-4 text-xs font-semibold">
                 <div class="min-w-[120px] font-mono text-[var(--color-primary)] font-bold">
                   search
                 </div>
@@ -466,8 +437,7 @@
             </div>
           </div>
 
-          <!-- Response -->
-          <div class="space-y-1.5">
+                    <div class="space-y-1.5">
             <span class="text-[10px] font-bold text-slate-400 dark:text-slate-500 uppercase tracking-wider block">RESPONSE MẪU (JSON)</span>
             <div class="bg-slate-50 dark:bg-slate-950 rounded-xl p-4 font-mono text-xs text-slate-700 dark:text-slate-300 overflow-x-auto leading-relaxed border border-slate-200/60 dark:border-slate-900">
               <pre class="whitespace-pre">{{ '{' }}
@@ -499,8 +469,7 @@
         </div>
       </div>
 
-      <!-- API 3: Import Inventory -->
-      <div class="pt-8 space-y-4">
+            <div class="pt-8 space-y-4">
         <div class="flex items-start gap-3">
           <div class="w-7 h-7 rounded-full bg-[var(--color-primary)]/10 text-[var(--color-primary)] text-xs font-black flex items-center justify-center shrink-0 mt-0.5">
             3
@@ -525,12 +494,10 @@
         </div>
 
         <div class="space-y-4">
-          <!-- Tham số yêu cầu -->
-          <div class="space-y-1.5">
+                    <div class="space-y-1.5">
             <span class="text-[10px] font-bold text-slate-400 dark:text-slate-500 uppercase tracking-wider block">Tham số yêu cầu (Parameters)</span>
             <div class="bg-slate-50 dark:bg-slate-950 border border-slate-200/60 dark:border-slate-900 rounded-xl p-4 space-y-4">
-              <!-- Param 1: id -->
-              <div class="flex flex-col sm:flex-row items-start gap-2 sm:gap-4 text-xs font-semibold border-b border-slate-100 dark:border-slate-800/60 pb-3">
+                            <div class="flex flex-col sm:flex-row items-start gap-2 sm:gap-4 text-xs font-semibold border-b border-slate-100 dark:border-slate-800/60 pb-3">
                 <div class="min-w-[120px] font-mono text-[var(--color-primary)] font-bold">
                   id
                 </div>
@@ -545,8 +512,7 @@
                 </div>
               </div>
 
-              <!-- Param 2: batch_name -->
-              <div class="flex flex-col sm:flex-row items-start gap-2 sm:gap-4 text-xs font-semibold border-b border-slate-100 dark:border-slate-800/60 pb-3">
+                            <div class="flex flex-col sm:flex-row items-start gap-2 sm:gap-4 text-xs font-semibold border-b border-slate-100 dark:border-slate-800/60 pb-3">
                 <div class="min-w-[120px] font-mono text-[var(--color-primary)] font-bold">
                   batch_name
                 </div>
@@ -561,8 +527,7 @@
                 </div>
               </div>
 
-              <!-- Param 3: content -->
-              <div class="flex flex-col sm:flex-row items-start gap-2 sm:gap-4 text-xs font-semibold border-b border-slate-100 dark:border-slate-800/60 pb-3">
+                            <div class="flex flex-col sm:flex-row items-start gap-2 sm:gap-4 text-xs font-semibold border-b border-slate-100 dark:border-slate-800/60 pb-3">
                 <div class="min-w-[120px] font-mono text-[var(--color-primary)] font-bold">
                   content
                 </div>
@@ -577,8 +542,7 @@
                 </div>
               </div>
 
-              <!-- Param 4: file -->
-              <div class="flex flex-col sm:flex-row items-start gap-2 sm:gap-4 text-xs font-semibold">
+                            <div class="flex flex-col sm:flex-row items-start gap-2 sm:gap-4 text-xs font-semibold">
                 <div class="min-w-[120px] font-mono text-[var(--color-primary)] font-bold">
                   file
                 </div>
@@ -595,10 +559,8 @@
             </div>
           </div>
 
-          <!-- Curl Blocks -->
-          <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-            <!-- JSON Import Curl -->
-            <div class="space-y-1.5">
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                        <div class="space-y-1.5">
               <div class="flex items-center justify-between">
                 <span class="text-[10px] font-bold text-slate-400 dark:text-slate-500 uppercase tracking-wider block">Ví dụ gửi JSON hàng loạt</span>
                 <div class="flex items-center gap-1.5 border-b border-slate-200/40 dark:border-slate-800/40 pb-0.5">
@@ -644,8 +606,7 @@
               </div>
             </div>
 
-            <!-- File Upload Curl -->
-            <div class="space-y-1.5">
+                        <div class="space-y-1.5">
               <span class="text-[10px] font-bold text-slate-400 dark:text-slate-500 uppercase tracking-wider block">Ví dụ tải file</span>
               <div class="relative bg-slate-50 dark:bg-slate-950 rounded-xl border border-slate-200/60 dark:border-slate-900 overflow-hidden min-h-[120px]">
                 <div class="overflow-x-auto p-3.5 pr-12 font-mono text-xs text-slate-700 dark:text-slate-300 leading-relaxed">
@@ -665,8 +626,7 @@
             </div>
           </div>
 
-            <!-- Response -->
-            <div class="space-y-1.5">
+                        <div class="space-y-1.5">
               <span class="text-[10px] font-bold text-slate-400 dark:text-slate-500 uppercase tracking-wider block">RESPONSE MẪU (JSON)</span>
               <div class="bg-slate-50 dark:bg-slate-950 rounded-xl p-4 font-mono text-xs text-slate-700 dark:text-slate-300 overflow-x-auto leading-relaxed border border-slate-200/60 dark:border-slate-900">
                 <pre class="whitespace-pre">{{ '{' }}
@@ -687,8 +647,7 @@
           </div>
         </div>
 
-        <!-- API 4: B2B System Statistics -->
-        <div class="pt-8 space-y-4">
+                <div class="pt-8 space-y-4">
           <div class="flex items-start gap-3">
             <div class="w-7 h-7 rounded-full bg-[var(--color-primary)]/10 text-[var(--color-primary)] text-xs font-black flex items-center justify-center shrink-0 mt-0.5">
               4
@@ -713,8 +672,7 @@
           </div>
 
           <div class="space-y-3">
-            <!-- Curl -->
-            <div class="space-y-1.5">
+                        <div class="space-y-1.5">
               <span class="text-[10px] font-bold text-slate-400 dark:text-slate-500 uppercase tracking-wider block">Mẫu gọi API (CURL)</span>
               <div class="relative bg-slate-50 dark:bg-slate-950 rounded-xl border border-slate-200/60 dark:border-slate-900 overflow-hidden">
                 <div class="overflow-x-auto p-3.5 pr-12 font-mono text-xs text-slate-700 dark:text-slate-300 leading-relaxed">
@@ -730,8 +688,7 @@
               </div>
             </div>
 
-            <!-- URL trực tiếp -->
-            <div class="space-y-1.5">
+                        <div class="space-y-1.5">
               <span class="text-[10px] font-bold text-slate-400 dark:text-slate-500 uppercase tracking-wider block">URL gọi trực tiếp</span>
               <div class="relative bg-slate-50 dark:bg-slate-950 rounded-xl border border-slate-200/60 dark:border-slate-900 overflow-hidden">
                 <div class="overflow-x-auto p-3.5 pr-12 font-mono text-xs text-slate-700 dark:text-slate-300 leading-relaxed">
@@ -747,12 +704,10 @@
               </div>
             </div>
 
-            <!-- Query Parameters -->
-            <div class="space-y-1.5">
+                        <div class="space-y-1.5">
               <span class="text-[10px] font-bold text-slate-400 dark:text-slate-500 uppercase tracking-wider block">Tham số URL (Query Parameters)</span>
               <div class="bg-slate-50 dark:bg-slate-950 border border-slate-200/60 dark:border-slate-900 rounded-xl p-4 space-y-4">
-                <!-- api_key -->
-                <div class="flex flex-col sm:flex-row items-start gap-2 sm:gap-4 text-xs font-semibold border-b border-slate-100 dark:border-slate-800/60 pb-3">
+                                <div class="flex flex-col sm:flex-row items-start gap-2 sm:gap-4 text-xs font-semibold border-b border-slate-100 dark:border-slate-800/60 pb-3">
                   <div class="min-w-[120px] font-mono text-[var(--color-primary)] font-bold">
                     api_key
                   </div>
@@ -767,8 +722,7 @@
                   </div>
                 </div>
 
-                <!-- start_date -->
-                <div class="flex flex-col sm:flex-row items-start gap-2 sm:gap-4 text-xs font-semibold border-b border-slate-100 dark:border-slate-800/60 pb-3">
+                                <div class="flex flex-col sm:flex-row items-start gap-2 sm:gap-4 text-xs font-semibold border-b border-slate-100 dark:border-slate-800/60 pb-3">
                   <div class="min-w-[120px] font-mono text-[var(--color-primary)] font-bold">
                     start_date
                   </div>
@@ -783,8 +737,7 @@
                   </div>
                 </div>
 
-                <!-- end_date -->
-                <div class="flex flex-col sm:flex-row items-start gap-2 sm:gap-4 text-xs font-semibold">
+                                <div class="flex flex-col sm:flex-row items-start gap-2 sm:gap-4 text-xs font-semibold">
                   <div class="min-w-[120px] font-mono text-[var(--color-primary)] font-bold">
                     end_date
                   </div>
@@ -801,8 +754,7 @@
               </div>
             </div>
 
-            <!-- Response -->
-            <div class="space-y-1.5">
+                        <div class="space-y-1.5">
               <span class="text-[10px] font-bold text-slate-400 dark:text-slate-500 uppercase tracking-wider block">RESPONSE MẪU (JSON)</span>
               <div class="bg-slate-50 dark:bg-slate-950 rounded-xl p-4 font-mono text-xs text-slate-700 dark:text-slate-300 overflow-x-auto leading-relaxed border border-slate-200/60 dark:border-slate-900">
                 <pre class="whitespace-pre">{{ '{' }}

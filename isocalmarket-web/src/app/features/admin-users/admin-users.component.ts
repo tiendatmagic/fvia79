@@ -48,8 +48,7 @@ export class AdminUsersComponent implements OnInit {
   public searchQuery = '';
   private readonly _searchQuery = signal('');
 
-  /** Set chứa id các user đang hiện API key */
-  public readonly visibleApiKeys = new Set<string>();
+    public readonly visibleApiKeys = new Set<string>();
 
   public toggleApiKeyVisibility(userId: string) {
     if (this.visibleApiKeys.has(userId)) {

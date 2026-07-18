@@ -69,22 +69,19 @@
           </tr>
         </thead>
         <tbody class="divide-y divide-slate-100 dark:divide-slate-900/50">
-          <!-- Loading skeleton -->
-          <tr *ngIf="loading()">
+                    <tr *ngIf="loading()">
             <td colspan="7" class="p-6">
               <app-skeleton-loader [type]="'table'" [rows]="5" [showHeader]="false" />
             </td>
           </tr>
 
-          <!-- Empty state -->
-          <tr *ngIf="!loading() && orders().length === 0">
+                    <tr *ngIf="!loading() && orders().length === 0">
             <td colspan="7" class="py-12 text-center text-sm font-semibold text-slate-400">
               Không tìm thấy đơn hàng nào.
             </td>
           </tr>
 
-          <!-- Data rows -->
-          @if (!loading()) {
+                    @if (!loading()) {
             <tr
               *ngFor="let order of orders()"
               class="text-sm font-semibold text-slate-600 dark:text-slate-300 hover:bg-slate-50/30 dark:hover:bg-slate-900/5"

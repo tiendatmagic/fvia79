@@ -14,7 +14,6 @@ class DepositService
     private DepositRepositoryInterface $depositRepository;
     private UserRepositoryInterface $userRepository;
 
-    // Địa chỉ ví nhận USDT BEP20 của chủ sàn (cấu hình động qua .env hoặc lấy mặc định)
     private string $adminWalletAddress;
     // API Key của blockchain scanner (cấu hình qua .env, hỗ trợ BscScan/Etherscan...)
     private string $scannerApiKey;
@@ -58,7 +57,6 @@ class DepositService
     {
         return Cache::remember('usdt_to_vnd_rate', 600, function () {
             try {
-                // Gọi API CoinGecko
                 $response = Http::timeout(5)
                     ->withHeaders(['accept' => 'application/json'])
                     ->get('https://api.coingecko.com/api/v3/simple/price', [
@@ -114,7 +112,6 @@ class DepositService
         // Làm tròn số tiền nạp gốc về 2 chữ số thập phân
         $baseAmount = round($amountUsdt, 2);
 
-        // Lấy tất cả số tiền cần trả (amount_to_pay) của các hóa đơn cùng lượng tiền gốc đang chờ thanh toán
         $activeAmounts = \App\Infrastructure\Persistence\Eloquent\DepositModel::where('status', 'pending_payment')
             ->where('amount_usdt', $baseAmount)
             ->pluck('amount_to_pay')
@@ -143,7 +140,6 @@ class DepositService
         $amountVnd = round($baseAmount * $rate, 2);
 
         // Sinh mã lệnh nạp ngắn gọn tăng dần (dạng string số, VD: 232)
-        // Lấy mã code số lớn nhất hiện tại
         $latest = \App\Infrastructure\Persistence\Eloquent\DepositModel::orderBy('created_at', 'desc')->first();
         $nextCode = $latest ? (string) ((int) $latest->code + 1) : '232';
 
@@ -198,12 +194,10 @@ class DepositService
     ): array {
         $query = \App\Infrastructure\Persistence\Eloquent\DepositModel::where('user_id', $userId);
 
-        // Lọc theo trạng thái
         if ($status) {
             $query->where('status', $status);
         }
 
-        // Lọc theo khoảng ngày tạo
         if ($startDate) {
             $query->where('created_at', '>=', $startDate . ' 00:00:00');
         }
@@ -211,7 +205,6 @@ class DepositService
             $query->where('created_at', '<=', $endDate . ' 23:59:59');
         }
 
-        // Tìm kiếm theo mã lệnh hoặc số tiền
         if ($search) {
             $query->where(function ($q) use ($search) {
                 $q->where('code', 'like', "%{$search}%")
@@ -259,7 +252,6 @@ class DepositService
         $tokenContract = strtolower($this->tokenContractAddress);
         
         try {
-            // Gọi Etherscan API lấy danh sách các giao dịch ERC-20 gần đây của địa chỉ ví chủ sàn
             $response = Http::timeout(10)->get('https://api.etherscan.io/api', [
                 'module' => 'account',
                 'action' => 'tokentx',
@@ -315,7 +307,6 @@ class DepositService
                         $deposit->setTxHash($txHash);
                         $this->depositRepository->save($deposit);
 
-                        // Cộng balance vào user
                         $user = $this->userRepository->find($userId);
                         if ($user) {
                             $user->addBalance($deposit->getAmountUsdt());

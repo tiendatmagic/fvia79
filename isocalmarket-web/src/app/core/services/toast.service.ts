@@ -18,7 +18,6 @@ export class ToastService {
 
     // Từ điển dịch thông điệp từ tiếng Anh sang tiếng Việt
     const dictionary: Record<string, string> = {
-      // Auth & Profile
       'Invalid email/username or password.': 'Tài khoản hoặc mật khẩu không chính xác!',
       'Unauthorized.': 'Phiên đăng nhập không hợp lệ hoặc đã hết hạn!',
       'Too Many Attempts.': 'Bạn đã thử quá nhiều lần. Vui lòng chờ vài phút rồi thử lại!',
@@ -40,21 +39,18 @@ export class ToastService {
       'Successfully confirmed 2FA.': 'Đã kích hoạt bảo mật 2FA thành công!',
       'Successfully disabled 2FA.': 'Đã hủy kích hoạt bảo mật 2FA!',
 
-      // Products & Categories
       'Product created successfully.': 'Tạo sản phẩm thành công!',
       'Product updated successfully.': 'Cập nhật sản phẩm thành công!',
       'Product deleted successfully.': 'Xóa sản phẩm thành công!',
       'Product not found.': 'Không tìm thấy sản phẩm trong hệ thống!',
       'Category not found.': 'Không tìm thấy danh mục!',
 
-      // Inventory
       'Inventory batch created successfully.': 'Tạo lô hàng thành công!',
       'Inventory batch updated successfully.': 'Cập nhật lô hàng thành công!',
       'Inventory batch deleted successfully.': 'Xóa lô hàng thành công!',
       'Inventory batch not found.': 'Không tìm thấy lô hàng trong kho!',
       'No resource keys found in raw data.': 'Không tìm thấy tài nguyên nào trong dữ liệu nhập vào!',
 
-      // Orders
       'Order created successfully.': 'Đặt hàng thành công!',
       'Order not found.': 'Không tìm thấy đơn hàng!',
       'Insufficient stock for product.': 'Không đủ hàng trong kho cho sản phẩm này!',

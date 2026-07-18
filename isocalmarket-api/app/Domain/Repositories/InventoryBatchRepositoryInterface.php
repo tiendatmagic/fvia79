@@ -17,11 +17,7 @@ interface InventoryBatchRepositoryInterface
 
     public function save(InventoryBatch $batch): InventoryBatch;
 
-    /**
-     * @param array $filters
-     * @return InventoryBatch[]
-     */
-    public function findAll(array $filters): array;
+        public function findAll(array $filters): array;
 
     public function findAllPaginated(array $filters, int $page, int $limit): array;
 

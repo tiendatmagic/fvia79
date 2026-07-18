@@ -52,7 +52,6 @@ class AuthService
         return $user;
     }
 
-
     public function generateAccessToken(User $user): string
     {
         $payload = [
@@ -117,7 +116,6 @@ class AuthService
             'sub' => $user->getId(),
             'scope' => '2fa'
         ];
-        // Hết hạn sau 5 phút
         return $this->jwtService->generateToken($payload, 300);
     }
 

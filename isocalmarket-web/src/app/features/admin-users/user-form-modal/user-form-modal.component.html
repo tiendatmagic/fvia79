@@ -1,6 +1,5 @@
 <form (ngSubmit)="onSubmit()" class="space-y-4 p-1">
-  <!-- Tên và Email -->
-  <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+    <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
     <div class="form-field">
       <label class="text-xs font-bold text-slate-400 dark:text-slate-500 uppercase tracking-wider block mb-1">
         Tên thành viên <span class="text-rose-500">*</span>
@@ -28,8 +27,7 @@
     </div>
   </div>
 
-  <!-- SĐT và Mật khẩu -->
-  <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+    <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
     <div class="form-field">
       <label class="text-xs font-bold text-slate-400 dark:text-slate-500 uppercase tracking-wider block mb-1">
         Số điện thoại
@@ -56,8 +54,7 @@
     </div>
   </div>
 
-  <!-- Phân quyền và Số dư -->
-  <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+    <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
     <div class="form-field">
       <label class="text-xs font-bold text-slate-400 dark:text-slate-500 uppercase tracking-wider block mb-1">
         Vai trò thành viên
@@ -84,8 +81,7 @@
     </div>
   </div>
 
-  <!-- Trạng thái tài khoản (Chỉ hiện khi ở chế độ sửa) -->
-  <div class="form-field" *ngIf="isEditMode">
+    <div class="form-field" *ngIf="isEditMode">
     <label class="text-xs font-bold text-slate-400 dark:text-slate-500 uppercase tracking-wider block mb-1">
       Trạng thái tài khoản
     </label>
@@ -97,8 +93,7 @@
     />
   </div>
 
-  <!-- Quản lý B2B API Key (Chỉ hiện khi ở chế độ sửa) -->
-  <div class="pt-2 mt-2" *ngIf="isEditMode">
+    <div class="pt-2 mt-2" *ngIf="isEditMode">
     <label class="text-xs font-bold text-slate-400 dark:text-slate-500 uppercase tracking-wider block mb-2">
       Quản lý B2B API Key
     </label>
@@ -131,8 +126,7 @@
     </div>
   </div>
 
-  <!-- Nút Hành động -->
-  <div class="flex justify-end gap-3 pt-2 mt-6">
+    <div class="flex justify-end gap-3 pt-2 mt-6">
     <button
       type="button"
       (click)="onClose()"

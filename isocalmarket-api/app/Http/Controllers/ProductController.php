@@ -92,7 +92,6 @@ class ProductController extends Controller
         }
     }
 
-
     public function show($id)
     {
         try {
@@ -101,7 +100,6 @@ class ProductController extends Controller
                 return response()->json(['message' => 'Product not found.'], 404);
             }
 
-            // Bảo mật: Nếu sản phẩm đã bị xóa mềm, chỉ cho phép admin xem chi tiết
             $user = $this->getAuthenticatedUser($request);
             $isAdmin = $user && $user->role === 'admin';
             if ($product->isDeleted() && !$isAdmin) {

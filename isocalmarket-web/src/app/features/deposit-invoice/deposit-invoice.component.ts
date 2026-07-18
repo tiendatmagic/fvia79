@@ -33,10 +33,8 @@ export class DepositInvoiceComponent implements OnInit, OnDestroy {
   private readonly router = inject(Router);
   public readonly state = inject(StateService);
 
-  // Ví nhận USDT BEP20 của chủ sàn (được lấy động từ backend)
   public readonly adminWalletAddress = signal('');
 
-  // Lệnh nạp tiền hiện tại
   public invoice: DepositHistoryItem | null = null;
 
   // Loading & Error states (dùng Signal để đảm bảo Angular change detection)
@@ -48,7 +46,7 @@ export class DepositInvoiceComponent implements OnInit, OnDestroy {
   public readonly countdownText = signal('15:00');
   private timerSubscription: Subscription | null = null;
 
-  public isCancelling = false; // Guard chống spam click nút Hủy
+  public isCancelling = false;
   public isChecking = false;
 
   ngOnInit() {
@@ -76,7 +74,6 @@ export class DepositInvoiceComponent implements OnInit, OnDestroy {
         this.isLoadingInvoice.set(false);
         this.invoice = res.invoice;
 
-        // Nếu admin chưa set ví nhận tiền (hoặc ví rỗng), báo lỗi
         const wallet = res.invoice?.adminWalletAddress || '';
         if (!wallet.trim()) {
           this.invoiceError.set('Quản trị viên hệ thống chưa cấu hình địa chỉ ví nhận USDT. Vui lòng liên hệ hỗ trợ!');
@@ -84,7 +81,6 @@ export class DepositInvoiceComponent implements OnInit, OnDestroy {
         }
         this.adminWalletAddress.set(wallet);
         
-        // Nếu hóa đơn không ở trạng thái Chờ thanh toán, quay về trang nạp tiền
         if (this.invoice.status !== 'pending_payment') {
           this.state.showToast('Lệnh nạp tiền này đã được xử lý hoặc đã hết hạn!', 'warning');
           setTimeout(() => {
@@ -196,7 +192,7 @@ export class DepositInvoiceComponent implements OnInit, OnDestroy {
 
   // Hủy lệnh nạp tiền chủ động
   public cancelInvoice() {
-    if (!this.invoice || this.isCancelling) return; // Guard chống spam click
+    if (!this.invoice || this.isCancelling) return;
 
     this.isCancelling = true;
     this.state.depositStore.cancelInvoice(this.invoice.id).pipe(
@@ -228,7 +224,6 @@ export class DepositInvoiceComponent implements OnInit, OnDestroy {
         if (res.success) {
           this.stopCountdown();
           this.state.showToast('Nạp tiền thành công! Số dư tài khoản đã được cập nhật.', 'success');
-          // Reload user profile để cập nhật số dư hiển thị trên Header
           this.state.authStore.checkMe().subscribe();
           this.router.navigate(['/deposit/history']);
         } else {

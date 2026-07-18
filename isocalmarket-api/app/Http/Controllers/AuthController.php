@@ -86,7 +86,6 @@ class AuthController extends Controller
                 'Lax'
             );
 
-            // Trả thêm cookie login_indicator (không HttpOnly) để FE nhận biết trạng thái đăng nhập
             $loggedInCookie = cookie(
                 'auth_logged_in',
                 'true',

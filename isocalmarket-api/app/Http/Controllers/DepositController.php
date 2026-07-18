@@ -116,7 +116,6 @@ class DepositController extends Controller
             $endDate
         );
 
-        // Map items
         $historyData['items'] = array_map(
             fn($d) => $this->formatDeposit($d),
             $historyData['items']

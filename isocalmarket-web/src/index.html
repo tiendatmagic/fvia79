@@ -7,8 +7,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <link rel="icon" type="image/svg+xml" href="assets/logo.svg" />
 
-    <!-- Inline Script khôi phục Theme lập tức, loại bỏ hiện tượng FOUC (nhấp nháy trắng) -->
-    <script>
+        <script>
       (function () {
         const savedTheme = localStorage.getItem('theme_mode');
         const systemDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
@@ -22,8 +21,7 @@
       })();
     </script>
 
-    <!-- Inline CSS cho Splash Screen Loading siêu nhẹ -->
-    <style>
+        <style>
       :root {
         --splash-bg: #f8fafc;
         --splash-text: #0f172a;
@@ -115,8 +113,7 @@
   </head>
   <body>
     <app-root>
-      <!-- Màn hình chào Splash Screen, hiển thị ngay lập tức khi reload trang -->
-      <div class="app-splash-screen">
+            <div class="app-splash-screen">
         <div class="app-splash-logo-container">
           <div class="app-splash-logo-glow"></div>
           <img src="assets/logo.svg" class="app-splash-logo" alt="Logo" />

@@ -54,7 +54,6 @@ class CategoryService
             throw new \Exception('Category not found.');
         }
 
-        // Kiểm tra xem có sản phẩm nào thuộc danh mục này không
         $hasProducts = ProductModel::where('category_id', $id)->exists();
         if ($hasProducts) {
             throw new \Exception('Cannot delete category containing active products.');

@@ -19,7 +19,6 @@ class OrderRepository implements OrderRepositoryInterface
             $model = OrderMapper::toPersistence($order);
             $model->save();
 
-            // Xóa các items cũ nếu có (trong trường hợp update)
             if ($order->getId()) {
                 OrderItemModel::where('order_id', $model->id)->delete();
             }

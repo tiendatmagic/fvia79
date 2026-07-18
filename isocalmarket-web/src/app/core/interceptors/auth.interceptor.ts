@@ -88,7 +88,6 @@ function handle401Error(
         isRefreshing = false;
         refreshDone$.next(false);
 
-        // Reset thông tin user hiện tại để tránh việc LoginComponent tự chuyển hướng ngược lại Dashboard
         authStore.currentUser.set(null);
 
         if (typeof document !== 'undefined') {

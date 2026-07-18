@@ -163,7 +163,6 @@ class B2bController extends Controller
                 })
                 ->first();
 
-            // Hỗ trợ tìm kiếm theo tiền tố API- cũ để tương thích ngược
             if (!$orderModel && str_starts_with($orderCode, 'API-')) {
                 $hex = strtolower(substr($orderCode, 4));
                 $orderModel = \App\Infrastructure\Persistence\Eloquent\OrderModel::where('user_id', $userId)

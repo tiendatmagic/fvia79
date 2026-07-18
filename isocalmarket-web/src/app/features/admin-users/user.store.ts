@@ -12,17 +12,13 @@ export class UserStore {
   private readonly api = inject(ApiService);
   private readonly toast = inject(ToastService);
 
-  // States
   public readonly users = signal<any[]>([]);
   public readonly totalItems = signal<number>(0);
   public readonly lastPage = signal<number>(1);
   public readonly currentPage = signal<number>(1);
   public readonly loading = signal<boolean>(false);
 
-  /**
-   * Lấy danh sách thành viên phân trang & tìm kiếm
-   */
-  public fetchUsers(page: number, limit: number, search?: string, role?: string, startDate?: string, endDate?: string): Observable<any> {
+    public fetchUsers(page: number, limit: number, search?: string, role?: string, startDate?: string, endDate?: string): Observable<any> {
     this.loading.set(true);
 
     let params = new HttpParams()
@@ -62,10 +58,7 @@ export class UserStore {
     );
   }
 
-  /**
-   * Tạo thành viên mới
-   */
-  public createUser(data: any): Observable<any> {
+    public createUser(data: any): Observable<any> {
     this.loading.set(true);
     return this.api.post<any>('v1/admin/users', data).pipe(
       tap(() => {
@@ -80,10 +73,7 @@ export class UserStore {
     );
   }
 
-  /**
-   * Cập nhật thành viên
-   */
-  public updateUser(id: string, data: any): Observable<any> {
+    public updateUser(id: string, data: any): Observable<any> {
     this.loading.set(true);
     return this.api.put<any>(`v1/admin/users/${id}`, data).pipe(
       tap(() => {
@@ -98,10 +88,7 @@ export class UserStore {
     );
   }
 
-  /**
-   * Xóa thành viên
-   */
-  public deleteUser(id: string): Observable<any> {
+    public deleteUser(id: string): Observable<any> {
     this.loading.set(true);
     return this.api.delete<any>(`v1/admin/users/${id}`).pipe(
       tap(() => {

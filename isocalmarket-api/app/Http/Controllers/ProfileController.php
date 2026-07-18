@@ -80,7 +80,6 @@ class ProfileController extends Controller
             return response()->json(['message' => '2FA is already enabled.'], 400);
         }
 
-        // Sinh khóa bí mật mới
         $secret = Google2FA::generateSecretKey();
         $userModel->google2fa_secret = $secret;
         $userModel->save();

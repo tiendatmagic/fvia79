@@ -141,7 +141,6 @@ class AdminUserController extends Controller
                 return response()->json(['message' => 'User not found.'], 404);
             }
 
-            // Edit basic details
             $updatedUser = new User(
                 $user->getId(),
                 $request->name,
