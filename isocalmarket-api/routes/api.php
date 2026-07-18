@@ -21,6 +21,8 @@ Route::prefix('v1')->group(function () {
         Route::get('/b2b/products', ['App\Http\Controllers\B2bController', 'index']);
         Route::get('/b2b/products/{id}', ['App\Http\Controllers\B2bController', 'show']);
         Route::post('/b2b/buy', ['App\Http\Controllers\B2bController', 'buy']);
+        Route::get('/b2b/me', ['App\Http\Controllers\B2bController', 'me']);
+        Route::get('/b2b/orders/{order_code}', ['App\Http\Controllers\B2bController', 'showOrder']);
     });
 
     Route::middleware(['jwt.auth'])->group(function () {

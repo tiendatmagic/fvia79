@@ -86,6 +86,30 @@ export class UserApiComponent {
     this.copyToClipboard(text, 'đường dẫn Buy Product');
   }
 
+  public copyGetMeCurl() {
+    const key = this.apiKey() || 'API_KEY_CUA_BAN';
+    const text = `curl -X GET "${this.siteUrl()}/api/v1/b2b/me" -H "X-API-KEY: ${key}"`;
+    this.copyToClipboard(text, 'mẫu CURL Get Me');
+  }
+
+  public copyGetMeUrl() {
+    const key = this.apiKey() || 'API_KEY_CUA_BAN';
+    const text = `${this.siteUrl()}/api/v1/b2b/me?api_key=${key}`;
+    this.copyToClipboard(text, 'đường dẫn Get Me');
+  }
+
+  public copyGetOrderCurl() {
+    const key = this.apiKey() || 'API_KEY_CUA_BAN';
+    const text = `curl -X GET "${this.siteUrl()}/api/v1/b2b/orders/ORDER_CODE" -H "X-API-KEY: ${key}"`;
+    this.copyToClipboard(text, 'mẫu CURL Get Order Detail');
+  }
+
+  public copyGetOrderUrl() {
+    const key = this.apiKey() || 'API_KEY_CUA_BAN';
+    const text = `${this.siteUrl()}/api/v1/b2b/orders/ORDER_CODE?api_key=${key}`;
+    this.copyToClipboard(text, 'đường dẫn Get Order Detail');
+  }
+
   public regenerateKey() {
     if (this.state.authStore.authLoading()) return;
     this.state.authStore.regenerateApiKey().subscribe();
