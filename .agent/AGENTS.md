@@ -1260,3 +1260,13 @@
     - **Yêu cầu**: Khắc phục lỗi lưu cài đặt hệ thống thất bại do Moralis Web3 API Key (JWT) quá dài vượt quá giới hạn 255 ký tự của validation.
     - **Giải pháp & Triển khai**: Cập nhật validation của `scanner_api_key` trong [SystemSettingController.php](file:///d:/git/isocalmarket/isocalmarket-api/app/Http/Controllers/SystemSettingController.php) từ `max:255` lên `max:1000`.
     - **Xác minh**: Admin lưu cài đặt thành công mà không còn bị chặn.
+
+  - **[CẢI TIỆN UX] Modal xác nhận nạp tiền thành công trực quan**:
+    - **Yêu cầu**: Thay thế thông báo Toast và điều hướng tự động khi nạp tiền thành công bằng một Modal popup hiển thị thành công trực quan cho người dùng chọn: Đóng (quay lại mua sắm) hoặc Xem lịch sử nạp.
+    - **Giải pháp & Triển khai**:
+      1. **Modal chúc mừng**: Thêm phương thức `showSuccessModal()` vào [deposit-invoice.component.ts](file:///d:/git/isocalmarket/isocalmarket-web/src/app/features/deposit-invoice/deposit-invoice.component.ts) sử dụng `ModalService.confirm()` dựng hộp thoại chúc mừng nạp tiền thành công đẹp mắt.
+      2. **Chuyển hướng thông minh**:
+         - Bấm "Xem lịch sử nạp": Chuyển hướng tới trang `/deposit/history` để xem chi tiết.
+         - Bấm "Đóng": Chuyển hướng tới trang cửa hàng `/storefront` để khách hàng tiếp tục mua sắm ngay lập tức với số dư mới.
+      3. **Tích hợp sự kiện**: Gọi hàm modal này ở cả 2 luồng: quét ngầm polling tự động nhận diện và quét thủ công (click kiểm tra giao dịch).
+    - **Xác minh**: Chạy thử nghiệm thành công, trải nghiệm nạp tiền trơn tru và thân thiện hơn.

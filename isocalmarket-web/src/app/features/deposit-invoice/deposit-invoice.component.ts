@@ -179,11 +179,7 @@ export class DepositInvoiceComponent implements OnInit, OnDestroy {
         next: (res) => {
           if (res && res.invoice) {
             if (res.invoice.status === 'completed') {
-              this.stopCountdown();
-              this.stopStatusPolling();
-              this.state.showToast('Nạp tiền thành công! Số dư tài khoản đã được cập nhật.', 'success');
-              this.state.authStore.checkMe().subscribe();
-              this.router.navigate(['/deposit/history']);
+              this.showSuccessModal();
             } else if (res.invoice.status === 'failed' || res.invoice.status === 'expired') {
               this.stopCountdown();
               this.stopStatusPolling();
@@ -290,10 +286,7 @@ export class DepositInvoiceComponent implements OnInit, OnDestroy {
     ).subscribe({
       next: (res) => {
         if (res.success) {
-          this.stopCountdown();
-          this.state.showToast('Nạp tiền thành công! Số dư tài khoản đã được cập nhật.', 'success');
-          this.state.authStore.checkMe().subscribe();
-          this.router.navigate(['/deposit/history']);
+          this.showSuccessModal();
         } else {
           this.state.showToast(res.message, 'error');
         }
@@ -306,6 +299,27 @@ export class DepositInvoiceComponent implements OnInit, OnDestroy {
           msg = 'Hệ thống đối soát bị lỗi do Quản trị viên chưa cấu hình Scanner API Key!';
         }
         this.state.showToast(msg, 'error');
+      }
+    });
+  }
+
+  private showSuccessModal() {
+    this.stopCountdown();
+    this.stopStatusPolling();
+    this.state.authStore.checkMe().subscribe();
+
+    this.modalService.confirm({
+      title: 'Nạp tiền thành công!',
+      variant: 'success',
+      description: 'Hệ thống đã ghi nhận giao dịch nạp tiền thành công! Số dư tài khoản của bạn đã được cập nhật đầy đủ.',
+      confirmText: 'Xem lịch sử nạp',
+      cancelText: 'Đóng',
+      confirmButtonClass: 'btn-primary'
+    }).afterClosed$.subscribe((viewHistory?: boolean) => {
+      if (viewHistory) {
+        this.router.navigate(['/deposit/history']);
+      } else {
+        this.router.navigate(['/storefront']);
       }
     });
   }

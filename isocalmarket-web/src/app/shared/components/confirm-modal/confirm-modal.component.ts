@@ -19,6 +19,7 @@ export class ConfirmModalComponent implements OnInit {
   @Input() cancelText = 'Hủy bỏ';
   @Input() confirmButtonClass = 'btn-danger';
   @Input() isSubmitting = false;
+  @Input() variant: 'success' | 'warning' | 'danger' | 'info' = 'danger';
 
   @Output() confirm = new EventEmitter<void>();
   @Output() cancel = new EventEmitter<void>();
@@ -43,6 +44,7 @@ export class ConfirmModalComponent implements OnInit {
       this.cancelText = this.modalData.cancelText || this.cancelText;
       this.confirmButtonClass = this.modalData.confirmButtonClass || this.confirmButtonClass;
       this.isSubmitting = this.modalData.isSubmitting || this.isSubmitting;
+      this.variant = this.modalData.variant || this.variant;
     }
   }
 
