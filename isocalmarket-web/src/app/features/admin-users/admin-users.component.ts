@@ -14,6 +14,7 @@ import { ModalService } from '@core/services/modal.service';
 import { PaginationComponent } from '@shared/components/pagination/pagination.component';
 import { UserFormModalComponent } from './user-form-modal/user-form-modal.component';
 import { CustomSelectComponent } from '@shared/components/custom-select/custom-select.component';
+import { CustomDateTimeRangeComponent, DateTimeRangeValue } from '@shared/components/custom-date-time-range/custom-date-time-range.component';
 
 @Component({
   selector: 'app-admin-users',
@@ -30,7 +31,8 @@ import { CustomSelectComponent } from '@shared/components/custom-select/custom-s
     CustomSearchInputComponent,
     TooltipDirective,
     PaginationComponent,
-    CustomSelectComponent
+    CustomSelectComponent,
+    CustomDateTimeRangeComponent
   ],
   templateUrl: './admin-users.component.html',
   styles: [`
@@ -47,6 +49,7 @@ export class AdminUsersComponent implements OnInit {
   private readonly _searchQuery = signal('');
 
   public readonly selectedRoleFilter = signal<string>('');
+  public readonly selectedDateRange = signal<DateTimeRangeValue>({ startDate: '', endDate: '' });
   public readonly roleOptions = [
     { label: 'Tất cả vai trò', value: '' },
     { label: 'Quản trị viên (Admin)', value: 'admin' },
@@ -66,7 +69,9 @@ export class AdminUsersComponent implements OnInit {
       page,
       this.limit,
       this._searchQuery().trim() || undefined,
-      this.selectedRoleFilter() || undefined
+      this.selectedRoleFilter() || undefined,
+      this.selectedDateRange().startDate || undefined,
+      this.selectedDateRange().endDate || undefined
     ).subscribe();
   }
 
@@ -83,6 +88,7 @@ export class AdminUsersComponent implements OnInit {
     this.searchQuery = '';
     this._searchQuery.set('');
     this.selectedRoleFilter.set('');
+    this.selectedDateRange.set({ startDate: '', endDate: '' });
     this.fetchUsers(1);
     this.state.showToast('Đã làm mới danh sách!', 'success');
   }

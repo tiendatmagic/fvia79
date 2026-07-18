@@ -42,7 +42,7 @@ class UserRepository implements UserRepositoryInterface
         return $model ? UserMapper::toDomain($model) : null;
     }
 
-    public function findAllPaginated(int $page, int $limit, ?string $search = null, ?string $role = null): array
+    public function findAllPaginated(int $page, int $limit, ?string $search = null, ?string $role = null, ?string $startDate = null, ?string $endDate = null): array
     {
         $query = UserModel::query();
         if ($search) {
@@ -54,6 +54,12 @@ class UserRepository implements UserRepositoryInterface
         }
         if ($role) {
             $query->where('role', $role);
+        }
+        if ($startDate) {
+            $query->where('created_at', '>=', $startDate);
+        }
+        if ($endDate) {
+            $query->where('created_at', '<=', $endDate);
         }
 
         $total = $query->count();

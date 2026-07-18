@@ -22,7 +22,7 @@ export class UserStore {
   /**
    * Lấy danh sách thành viên phân trang & tìm kiếm
    */
-  public fetchUsers(page: number, limit: number, search?: string, role?: string): Observable<any> {
+  public fetchUsers(page: number, limit: number, search?: string, role?: string, startDate?: string, endDate?: string): Observable<any> {
     this.loading.set(true);
 
     let params = new HttpParams()
@@ -35,6 +35,14 @@ export class UserStore {
 
     if (role) {
       params = params.set('role', role);
+    }
+
+    if (startDate) {
+      params = params.set('start_date', startDate);
+    }
+
+    if (endDate) {
+      params = params.set('end_date', endDate);
     }
 
     return this.api.get<any>('v1/admin/users', params).pipe(

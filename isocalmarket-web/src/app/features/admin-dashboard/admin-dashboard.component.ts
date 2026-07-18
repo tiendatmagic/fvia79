@@ -43,6 +43,7 @@ export class AdminDashboardComponent implements OnInit {
 
   public readonly stats = signal<any>(null);
   public readonly loading = signal<boolean>(true);
+  public readonly lowStockLoading = signal<boolean>(true);
   public selectedDateRange: DateTimeRangeValue = { startDate: '', endDate: '' };
 
   // low stock filter/search signals
@@ -63,8 +64,14 @@ export class AdminDashboardComponent implements OnInit {
     this.loadStats();
   }
 
-  public loadStats() {
-    this.loading.set(true);
+  public loadStats(isLowStockFilter: boolean = false) {
+    if (isLowStockFilter) {
+      this.lowStockLoading.set(true);
+    } else {
+      this.loading.set(true);
+      this.lowStockLoading.set(true);
+    }
+
     let params = new HttpParams();
     if (this.selectedDateRange.startDate) {
       params = params.set('start_date', this.selectedDateRange.startDate);
@@ -83,16 +90,18 @@ export class AdminDashboardComponent implements OnInit {
       next: (res) => {
         this.stats.set(res);
         this.loading.set(false);
+        this.lowStockLoading.set(false);
       },
       error: (err) => {
         this.stateService.showToast('Không thể tải số liệu thống kê!', 'error');
         this.loading.set(false);
+        this.lowStockLoading.set(false);
       }
     });
   }
 
   public onSearchLowStock(query: string) {
     this.lowStockSearch.set(query);
-    this.loadStats();
+    this.loadStats(true);
   }
 }
