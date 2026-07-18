@@ -58,13 +58,13 @@
         <span>Tổng số lượng:</span>
         <span class="text-slate-700 dark:text-slate-300 font-extrabold">{{ cart.totalItems() }} sản phẩm</span>
       </div>
-      <div class="flex justify-between text-sm font-black border-t border-slate-100 dark:border-slate-800/60 pt-2.5">
+      <div class="flex justify-between text-sm font-black pt-2.5">
         <span class="text-slate-700 dark:text-slate-300">Tổng tiền thanh toán:</span>
         <span class="text-[var(--color-primary)] font-black">{{ cart.totalAmount() | number }} VND</span>
       </div>
     </div>
 
-    <div class="pt-6 border-t border-slate-100 dark:border-slate-800/60 flex items-center justify-end gap-3 shrink-0">
+    <div class="pt-4 flex items-center justify-end gap-3 shrink-0">
       <button
         app-button
         (click)="onClose()"
