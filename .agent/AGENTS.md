@@ -1225,3 +1225,8 @@
       1. **Tích hợp ModalService**: Inject `ModalService` vào [deposit-invoice.component.ts](file:///d:/git/isocalmarket/isocalmarket-web/src/app/features/deposit-invoice/deposit-invoice.component.ts).
       2. **Modal cấu hình**: Sử dụng hàm `confirm()` để dựng hộp thoại xác nhận hủy lệnh, tích hợp nội dung cảnh báo màu vàng nổi bật dạng HTML (`descriptionHtml`): *"Lưu ý quan trọng: Nếu bạn đã thực hiện chuyển khoản rồi, vui lòng KHÔNG hủy lệnh nạp này! BOT sẽ không thể tự động đối soát cộng tiền khi lệnh đã bị hủy."*
       3. **Xác minh**: Giao diện hiển thị rõ ràng, cản trở việc click hủy nhầm hiệu quả.
+
+  - **[BẢO MẬT] Khóa đuôi số lẻ hóa đơn đã hủy/hết hạn trong 10 phút**:
+    - **Yêu cầu**: Ngăn chặn kẻ gian tạo hóa đơn nạp tiền trùng số lẻ để "cướp" giao dịch của người dùng vừa hủy hóa đơn, hoặc đối soát nhầm giao dịch cũ.
+    - **Giải pháp & Triển khai**: Cập nhật hàm `createDeposit` trong [DepositService.php](file:///d:/git/isocalmarket/isocalmarket-api/app/Application/Services/DepositService.php). Khi tìm số lẻ trống tiếp theo, hệ thống không chỉ kiểm tra các hóa đơn đang chờ thanh toán mà còn giữ khóa (lock) tất cả các số lẻ của hóa đơn vừa hủy hoặc hết hạn trong vòng 10 phút.
+    - **Xác minh**: Chạy thử nghiệm thành công, hệ thống cấp số lẻ tiếp theo chính xác và an toàn.

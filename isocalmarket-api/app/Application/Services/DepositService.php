@@ -38,7 +38,7 @@ class DepositService
 
         $this->adminWalletAddress = $this->settingService->getSetting('admin_wallet_address', '');
         $this->scannerApiKey = $this->settingService->getSetting('scanner_api_key', '');
-        
+
         // Cấu hình linh hoạt token đối soát (mặc định là USDT BEP20 trên BSC)
         $this->tokenContractAddress = env('TOKEN_CONTRACT_ADDRESS', '0x55d398326f99059ff775485246999027b3197955');
         $this->tokenDecimals = (int) env('TOKEN_DECIMALS', 18);
@@ -75,7 +75,7 @@ class DepositService
                         return $rate;
                     }
                 }
-                
+
                 Log::warning("CoinGecko API call succeeded but response format was invalid: " . $response->body());
             } catch (\Exception $e) {
                 Log::error("Failed to fetch USDT rate from CoinGecko: " . $e->getMessage());
@@ -115,11 +115,18 @@ class DepositService
         }
 
         $rate = $this->getUsdtToVndRate();
-        
+
         // Làm tròn số tiền nạp gốc về 2 chữ số thập phân
         $baseAmount = round($amountUsdt, 2);
 
-        $activeAmounts = \App\Infrastructure\Persistence\Eloquent\DepositModel::where('status', 'pending_payment')
+        // Khóa các số tiền lẻ đang chờ thanh toán HOẶC mới bị hủy/hết hạn trong vòng 10 phút để tránh trùng lặp hoặc cướp giao dịch
+        $activeAmounts = \App\Infrastructure\Persistence\Eloquent\DepositModel::where(function ($q) {
+            $q->where('status', 'pending_payment')
+                ->orWhere(function ($sub) {
+                    $sub->whereIn('status', ['failed', 'expired'])
+                        ->where('updated_at', '>=', now()->subMinutes(10));
+                });
+        })
             ->where('amount_usdt', $baseAmount)
             ->pluck('amount_to_pay')
             ->toArray();
@@ -226,9 +233,9 @@ class DepositService
         if ($search) {
             $query->where(function ($q) use ($search) {
                 $q->where('code', 'like', "%{$search}%")
-                  ->orWhere('amount_usdt', 'like', "%{$search}%")
-                  ->orWhere('amount_to_pay', 'like', "%{$search}%")
-                  ->orWhere('tx_hash', 'like', "%{$search}%");
+                    ->orWhere('amount_usdt', 'like', "%{$search}%")
+                    ->orWhere('amount_to_pay', 'like', "%{$search}%")
+                    ->orWhere('tx_hash', 'like', "%{$search}%");
             });
         }
 
@@ -268,7 +275,7 @@ class DepositService
 
         $adminWallet = strtolower($this->adminWalletAddress);
         $tokenContract = strtolower($this->tokenContractAddress);
-        
+
         try {
             if ($this->cachedTransactions === null) {
                 // Moralis API: GET /api/v2.2/{address}/erc20/transfers
@@ -293,59 +300,59 @@ class DepositService
 
             $transactions = $this->cachedTransactions;
 
-                    foreach ($transactions as $tx) {
-                        // 1. Kiểm tra token có khớp với token đối soát cấu hình không
-                        if (strtolower($tx['address'] ?? '') !== $tokenContract) {
-                            continue;
-                        }
+            foreach ($transactions as $tx) {
+                // 1. Kiểm tra token có khớp với token đối soát cấu hình không
+                if (strtolower($tx['address'] ?? '') !== $tokenContract) {
+                    continue;
+                }
 
-                        // 2. Kiểm tra ví nhận có phải ví chủ sàn không
-                        if (strtolower($tx['to_address'] ?? '') !== $adminWallet) {
-                            continue;
-                        }
+                // 2. Kiểm tra ví nhận có phải ví chủ sàn không
+                if (strtolower($tx['to_address'] ?? '') !== $adminWallet) {
+                    continue;
+                }
 
-                        // 3. Quy đổi số lượng chuyển khoản từ wei sang giá trị thực dựa trên Decimals cấu hình
-                        $txValueUsdt = (float) ($tx['value'] ?? 0) / pow(10, $this->tokenDecimals);
-                        $amountToPay = $deposit->getAmountToPay();
+                // 3. Quy đổi số lượng chuyển khoản từ wei sang giá trị thực dựa trên Decimals cấu hình
+                $txValueUsdt = (float) ($tx['value'] ?? 0) / pow(10, $this->tokenDecimals);
+                $amountToPay = $deposit->getAmountToPay();
 
-                        // 4. So khớp số lượng thực nhận (dung sai làm tròn cực nhỏ 0.0001)
-                        if (abs($txValueUsdt - $amountToPay) > 0.00009) {
-                            continue;
-                        }
+                // 4. So khớp số lượng thực nhận (dung sai làm tròn cực nhỏ 0.0001)
+                if (abs($txValueUsdt - $amountToPay) > 0.00009) {
+                    continue;
+                }
 
-                        // 5. Kiểm tra mã băm TxHash này đã được dùng đối soát trước đó chưa
-                        $txHash = $tx['transaction_hash'] ?? '';
-                        if ($this->depositRepository->isTxHashUsed($txHash)) {
-                            continue;
-                        }
+                // 5. Kiểm tra mã băm TxHash này đã được dùng đối soát trước đó chưa
+                $txHash = $tx['transaction_hash'] ?? '';
+                if ($this->depositRepository->isTxHashUsed($txHash)) {
+                    continue;
+                }
 
-                        // 6. Kiểm tra giao dịch có diễn ra trong vòng 15 phút (900 giây) kể từ lúc tạo hóa đơn không
-                        // Moralis trả về block_timestamp dạng ISO 8601: "2026-07-18T17:54:12.000Z"
-                        $invoiceCreatedEpoch = $deposit->getCreatedAt()->getTimestamp();
-                        $txEpoch = isset($tx['block_timestamp'])
-                            ? (new \DateTime($tx['block_timestamp']))->getTimestamp()
-                            : 0;
-                        $timeDiff = $txEpoch - $invoiceCreatedEpoch;
-                        if ($timeDiff < -60 || $timeDiff > 900) {
-                            continue;
-                        }
+                // 6. Kiểm tra giao dịch có diễn ra trong vòng 15 phút (900 giây) kể từ lúc tạo hóa đơn không
+                // Moralis trả về block_timestamp dạng ISO 8601: "2026-07-18T17:54:12.000Z"
+                $invoiceCreatedEpoch = $deposit->getCreatedAt()->getTimestamp();
+                $txEpoch = isset($tx['block_timestamp'])
+                    ? (new \DateTime($tx['block_timestamp']))->getTimestamp()
+                    : 0;
+                $timeDiff = $txEpoch - $invoiceCreatedEpoch;
+                if ($timeDiff < -60 || $timeDiff > 900) {
+                    continue;
+                }
 
-                        // Tìm thấy giao dịch khớp hoàn toàn! Tiến hành cộng tiền và hoàn thành hóa đơn
-                        \Illuminate\Support\Facades\DB::transaction(function () use ($deposit, $txHash, $userId) {
-                            $deposit->setStatus('completed');
-                            $deposit->setTxHash($txHash);
-                            $this->depositRepository->save($deposit);
+                // Tìm thấy giao dịch khớp hoàn toàn! Tiến hành cộng tiền và hoàn thành hóa đơn
+                \Illuminate\Support\Facades\DB::transaction(function () use ($deposit, $txHash, $userId) {
+                    $deposit->setStatus('completed');
+                    $deposit->setTxHash($txHash);
+                    $this->depositRepository->save($deposit);
 
-                            $user = $this->userRepository->findById($userId);
-                            if ($user) {
-                                $user->addBalance($deposit->getAmountUsdt());
-                                $this->userRepository->save($user);
-                            }
-                        });
-
-                        Log::info("Deposit successfully matched and processed: Invoice #{$deposit->getCode()}, Amount: {$deposit->getAmountUsdt()} USDT, TxHash: {$txHash}");
-                        return true;
+                    $user = $this->userRepository->findById($userId);
+                    if ($user) {
+                        $user->addBalance($deposit->getAmountUsdt());
+                        $this->userRepository->save($user);
                     }
+                });
+
+                Log::info("Deposit successfully matched and processed: Invoice #{$deposit->getCode()}, Amount: {$deposit->getAmountUsdt()} USDT, TxHash: {$txHash}");
+                return true;
+            }
         } catch (\Exception $e) {
             Log::error("Failed to query Moralis transactions: " . $e->getMessage());
         }
@@ -355,7 +362,7 @@ class DepositService
 
     /**
      * Tự động quét và đối soát toàn bộ hóa đơn nạp USDT BEP20 đang ở trạng thái pending_payment
-     * 
+     *
      * @param \Closure|null $logCallback Hàm callback để in log ra màn hình console khi chạy Artisan
      */
     public function checkAllPendingDeposits(?\Closure $logCallback = null): void
@@ -394,4 +401,3 @@ class DepositService
         }
     }
 }
-
