@@ -2,7 +2,6 @@ import { Component, OnInit, inject, signal } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { StateService } from '@core/services/state.service';
-import { SkeletonLoaderComponent } from '@shared/components/skeleton-loader/skeleton-loader.component';
 import { ButtonComponent } from '@shared/components/button/button.component';
 import { BadgeComponent } from '@shared/components/badge/badge.component';
 import { CardComponent } from '@shared/components/card/card.component';
@@ -15,6 +14,7 @@ import { PaginationComponent } from '@shared/components/pagination/pagination.co
 import { UserFormModalComponent } from './user-form-modal/user-form-modal.component';
 import { CustomSelectComponent } from '@shared/components/custom-select/custom-select.component';
 import { CustomDateTimeRangeComponent, DateTimeRangeValue } from '@shared/components/custom-date-time-range/custom-date-time-range.component';
+import { TableComponent, TableCellDirective, TableColumn } from '@shared/components/table/table.component';
 
 @Component({
   selector: 'app-admin-users',
@@ -22,7 +22,6 @@ import { CustomDateTimeRangeComponent, DateTimeRangeValue } from '@shared/compon
   imports: [
     CommonModule,
     FormsModule,
-    SkeletonLoaderComponent,
     ButtonComponent,
     BadgeComponent,
     CardComponent,
@@ -32,7 +31,9 @@ import { CustomDateTimeRangeComponent, DateTimeRangeValue } from '@shared/compon
     TooltipDirective,
     PaginationComponent,
     CustomSelectComponent,
-    CustomDateTimeRangeComponent
+    CustomDateTimeRangeComponent,
+    TableComponent,
+    TableCellDirective,
   ],
   templateUrl: './admin-users.component.html',
   styles: [`
@@ -44,6 +45,17 @@ import { CustomDateTimeRangeComponent, DateTimeRangeValue } from '@shared/compon
 export class AdminUsersComponent implements OnInit {
   public readonly state = inject(StateService);
   private readonly modalService = inject(ModalService);
+
+  public readonly columns: TableColumn[] = [
+    { key: 'id', label: 'ID', sortable: true },
+    { key: 'name', label: 'Tên thành viên', sortable: true },
+    { key: 'email', label: 'Liên hệ (Email/SĐT)', sortable: true },
+    { key: 'role', label: 'Vai trò', sortable: true, align: 'center' },
+    { key: 'balance', label: 'Số dư', sortable: true, align: 'right' },
+    { key: 'api_key', label: 'B2B API Key', sortable: true },
+    { key: 'status', label: 'Trạng thái', sortable: true, align: 'center' },
+    { key: 'actions', label: 'Thao tác', sortable: false, align: 'right' }
+  ];
 
   public searchQuery = '';
   private readonly _searchQuery = signal('');

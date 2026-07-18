@@ -53,132 +53,105 @@
   </div>
 
   <div app-card class="overflow-hidden flex flex-col !p-0">
-    <div class="overflow-x-auto">
-      <table class="w-full text-left border-collapse">
-        <thead>
-          <tr
-            class="border-b border-slate-100 dark:border-slate-800/80 text-xs font-bold text-slate-400 uppercase tracking-wider bg-slate-50/50 dark:bg-slate-900/10"
+    <app-table
+      [columns]="columns"
+      [data]="orders()"
+      [loading]="loading()"
+      emptyText="Không tìm thấy đơn hàng nào."
+    >
+      <ng-template appTableCell="order_code" let-row="row">
+        <div class="flex items-center gap-1.5">
+          <button
+            (click)="viewDetail(row.id)"
+            [appTooltip]="row.order_code"
+            class="font-mono font-bold text-[var(--color-primary)] hover:underline underline-offset-2 transition-opacity hover:opacity-80 pb-0.5 border-b border-dashed border-slate-300 dark:border-slate-700"
           >
-            <th class="py-4 px-6 whitespace-nowrap">Mã đơn hàng</th>
-            <th class="py-4 px-6 whitespace-nowrap">Khách hàng (Email)</th>
-            <th class="py-4 px-6 text-right whitespace-nowrap">Tổng tiền</th>
-            <th class="py-4 px-6 text-center whitespace-nowrap">Số lượng mua</th>
-            <th class="py-4 px-6 text-center whitespace-nowrap">Trạng thái</th>
-            <th class="py-4 px-6 whitespace-nowrap">Ngày mua</th>
-            <th class="py-4 px-6 text-right whitespace-nowrap">Thao tác</th>
-          </tr>
-        </thead>
-        <tbody class="divide-y divide-slate-100 dark:divide-slate-900/50">
-                    <tr *ngIf="loading()">
-            <td colspan="7" class="p-6">
-              <app-skeleton-loader [type]="'table'" [rows]="5" [showHeader]="false" />
-            </td>
-          </tr>
+            #{{ row.order_code | slice: 0 : 8 }}...{{ row.order_code | slice: -4 }}
+          </button>
+          <button
+            (click)="
+              copyToClipboard(row.order_code, 'Đã sao chép mã đơn hàng!');
+              $event.stopPropagation()
+            "
+            class="p-1 hover:bg-slate-100 dark:hover:bg-slate-800 rounded transition-colors text-slate-400 hover:text-slate-600 dark:hover:text-slate-200 cursor-pointer"
+            [appTooltip]="'Sao chép mã đơn hàng'"
+          >
+            <app-icon name="copy" class="w-3.5 h-3.5" />
+          </button>
+        </div>
+      </ng-template>
 
-                    <tr *ngIf="!loading() && orders().length === 0">
-            <td colspan="7" class="py-12 text-center text-sm font-semibold text-slate-400">
-              Không tìm thấy đơn hàng nào.
-            </td>
-          </tr>
+      <ng-template appTableCell="customer_email" let-row="row">
+        <span class="truncate max-w-xs block" [appTooltip]="row.customer_email || 'N/A'">
+          {{ row.customer_email || 'N/A' }}
+        </span>
+      </ng-template>
 
-                    @if (!loading()) {
-            <tr
-              *ngFor="let order of orders()"
-              class="text-sm font-semibold text-slate-600 dark:text-slate-300 hover:bg-slate-50/30 dark:hover:bg-slate-900/5"
-            >
-              <td class="py-4 px-6 text-xs whitespace-nowrap">
-                <div class="flex items-center gap-1.5">
-                  <button
-                    (click)="viewDetail(order.id)"
-                    [appTooltip]="order.order_code"
-                    class="font-mono font-bold text-[var(--color-primary)] hover:underline underline-offset-2 transition-opacity hover:opacity-80 pb-0.5 border-b border-dashed border-slate-300 dark:border-slate-700"
-                  >
-                    #{{ order.order_code | slice: 0 : 8 }}...{{ order.order_code | slice: -4 }}
-                  </button>
-                  <button
-                    (click)="
-                      copyToClipboard(order.order_code, 'Đã sao chép mã đơn hàng!');
-                      $event.stopPropagation()
-                    "
-                    class="p-1 hover:bg-slate-100 dark:hover:bg-slate-800 rounded transition-colors text-slate-400 hover:text-slate-600 dark:hover:text-slate-200 cursor-pointer"
-                    [appTooltip]="'Sao chép mã đơn hàng'"
-                  >
-                    <app-icon name="copy" class="w-3.5 h-3.5" />
-                  </button>
-                </div>
-              </td>
-              <td class="py-4 px-6 text-slate-500 dark:text-slate-400 whitespace-nowrap">
-                <span class="truncate max-w-xs block" [appTooltip]="order.customer_email || 'N/A'">
-                  {{ order.customer_email || 'N/A' }}
-                </span>
-              </td>
-              <td
-                class="py-4 px-6 text-right font-bold text-[var(--color-primary)] dark:text-blue-400 whitespace-nowrap"
-              >
-                <span [appTooltip]="(order.total_price | number) + ' VND'">
-                  {{ order.total_price | number }} VND
-                </span>
-              </td>
-              <td class="py-4 px-6 text-center whitespace-nowrap">
-                <app-badge
-                  variant="neutral"
-                  size="lg"
-                  rounded="md"
-                  [appTooltip]="'Số lượng mua: ' + order.items_count"
-                >
-                  {{ order.items_count }}
-                </app-badge>
-              </td>
-              <td class="py-4 px-6 text-center whitespace-nowrap">
-                <app-badge
-                  [variant]="
-                    order.status === 'paid'
-                      ? 'success'
-                      : order.status === 'pending'
-                        ? 'warning'
-                        : 'danger'
-                  "
-                  size="sm"
-                  rounded="full"
-                  [appTooltip]="
-                    order.status === 'paid'
-                      ? 'Đã thanh toán'
-                      : order.status === 'pending'
-                        ? 'Chờ thanh toán'
-                        : 'Đã hủy'
-                  "
-                >
-                  {{
-                    order.status === 'paid'
-                      ? 'Đã thanh toán'
-                      : order.status === 'pending'
-                        ? 'Chờ thanh toán'
-                        : 'Đã hủy'
-                  }}
-                </app-badge>
-              </td>
-              <td class="py-4 px-6 text-xs text-slate-400 whitespace-nowrap">
-                <span [appTooltip]="order.created_at">
-                  {{ order.created_at }}
-                </span>
-              </td>
-              <td class="py-4 px-6 text-right whitespace-nowrap">
-                <div class="flex items-center justify-end gap-2 whitespace-nowrap">
-                  <button
-                    (click)="viewDetail(order.id)"
-                    class="text-xs font-bold px-3 py-1.5 rounded-lg border border-teal-500/20 dark:border-teal-500/30 hover:bg-teal-100 dark:hover:bg-teal-950/40 text-teal-600 dark:text-teal-400 bg-teal-50 dark:bg-teal-950/20 hover:scale-105 active:scale-95 transition-all cursor-pointer flex items-center gap-1 shrink-0"
-                    [appTooltip]="'Xem chi tiết'"
-                  >
-                    <app-icon name="eye" class="w-3.5 h-3.5" />
-                    <span>Chi tiết</span>
-                  </button>
-                </div>
-              </td>
-            </tr>
-          }
-        </tbody>
-      </table>
-    </div>
+      <ng-template appTableCell="total_price" let-row="row">
+        <span [appTooltip]="(row.total_price | number) + ' VND'">
+          {{ row.total_price | number }} VND
+        </span>
+      </ng-template>
+
+      <ng-template appTableCell="items_count" let-row="row">
+        <app-badge
+          variant="neutral"
+          size="lg"
+          rounded="md"
+          [appTooltip]="'Số lượng mua: ' + row.items_count"
+        >
+          {{ row.items_count }}
+        </app-badge>
+      </ng-template>
+
+      <ng-template appTableCell="status" let-row="row">
+        <app-badge
+          [variant]="
+            row.status === 'paid'
+              ? 'success'
+              : row.status === 'pending'
+                ? 'warning'
+                : 'danger'
+          "
+          size="sm"
+          rounded="full"
+          [appTooltip]="
+            row.status === 'paid'
+              ? 'Đã thanh toán'
+              : row.status === 'pending'
+                ? 'Chờ thanh toán'
+                : 'Đã hủy'
+          "
+        >
+          {{
+            row.status === 'paid'
+              ? 'Đã thanh toán'
+              : row.status === 'pending'
+                ? 'Chờ thanh toán'
+                : 'Đã hủy'
+          }}
+        </app-badge>
+      </ng-template>
+
+      <ng-template appTableCell="created_at" let-row="row">
+        <span [appTooltip]="row.created_at">
+          {{ row.created_at }}
+        </span>
+      </ng-template>
+
+      <ng-template appTableCell="actions" let-row="row">
+        <div class="flex items-center justify-end gap-2 whitespace-nowrap">
+          <button
+            (click)="viewDetail(row.id)"
+            class="text-xs font-bold px-3 py-1.5 rounded-lg border border-teal-500/20 dark:border-teal-500/30 hover:bg-teal-100 dark:hover:bg-teal-950/40 text-teal-600 dark:text-teal-400 bg-teal-50 dark:bg-teal-950/20 hover:scale-105 active:scale-95 transition-all cursor-pointer flex items-center gap-1 shrink-0"
+            [appTooltip]="'Xem chi tiết'"
+          >
+            <app-icon name="eye" class="w-3.5 h-3.5" />
+            <span>Chi tiết</span>
+          </button>
+        </div>
+      </ng-template>
+    </app-table>
 
     <app-pagination
       [currentPage]="currentPage()"

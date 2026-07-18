@@ -69,207 +69,143 @@
   </div>
 
     <div app-card class="overflow-hidden !p-0">
-    <div class="overflow-x-auto">
-      <table class="w-full text-left border-collapse">
-        <thead>
-          <tr
-            class="border-b border-slate-200/30 dark:border-slate-800/30 bg-slate-50/50 dark:bg-slate-950/20"
+    <app-table
+      [columns]="columns"
+      [data]="state.userStore.users()"
+      [loading]="state.userStore.loading()"
+      emptyText="Không tìm thấy thành viên nào. Nhấp vào nút 'Thêm thành viên' để tạo tài khoản mới!"
+    >
+      <ng-template appTableCell="id" let-row="row">
+        <div class="flex items-center gap-1.5">
+          <span
+            [appTooltip]="row.id"
+            class="font-mono font-bold text-[var(--color-primary)] border-b border-dashed border-slate-300 dark:border-slate-700 pb-0.5"
           >
-            <th
-              class="py-4 px-6 text-xs font-bold text-slate-400 uppercase tracking-wider whitespace-nowrap"
+            #{{ row.id | slice: 0 : 8 }}...{{ row.id | slice: -4 }}
+          </span>
+          <button
+            (click)="copyApiKey(row.id)"
+            class="p-1 hover:bg-slate-100 dark:hover:bg-slate-800 rounded transition-colors text-slate-400 hover:text-slate-600 dark:hover:text-slate-200 cursor-pointer"
+            [appTooltip]="'Sao chép ID đầy đủ'"
+          >
+            <app-icon name="copy" class="w-3.5 h-3.5" />
+          </button>
+        </div>
+      </ng-template>
+
+      <ng-template appTableCell="name" let-row="row">
+        <span class="text-sm font-extrabold text-slate-700 dark:text-slate-200">
+          {{ row.name }}
+        </span>
+      </ng-template>
+
+      <ng-template appTableCell="email" let-row="row">
+        <div class="flex flex-col">
+          <span class="text-xs font-semibold text-slate-500 dark:text-slate-400">
+            {{ row.email }}
+          </span>
+          <span class="text-[10px] font-bold text-slate-400 dark:text-slate-500">
+            {{ row.phone || 'Chưa cập nhật SĐT' }}
+          </span>
+        </div>
+      </ng-template>
+
+      <ng-template appTableCell="role" let-row="row">
+        <app-badge [variant]="row.role === 'admin' ? 'warning' : 'neutral'">
+          {{ row.role === 'admin' ? 'Quản trị viên' : 'Khách hàng' }}
+        </app-badge>
+      </ng-template>
+
+      <ng-template appTableCell="balance" let-row="row">
+        <span class="text-sm font-extrabold text-[var(--color-primary)]">
+          {{ row.balance | number }} VND
+        </span>
+      </ng-template>
+
+      <ng-template appTableCell="api_key" let-row="row">
+        <div class="flex items-center gap-1.5" *ngIf="row.api_key; else noApiKey">
+          @if (!visibleApiKeys.has(row.id)) {
+            <span
+              class="text-xs font-bold font-mono text-slate-400 dark:text-slate-500 bg-slate-100 dark:bg-slate-900/60 px-2 py-1 rounded tracking-widest select-none"
             >
-              ID
-            </th>
-            <th
-              class="py-4 px-6 text-xs font-bold text-slate-400 uppercase tracking-wider whitespace-nowrap"
+              ••••••••••••
+            </span>
+          } @else {
+            <span
+              [appTooltip]="row.api_key"
+              class="text-xs font-bold font-mono text-slate-700 dark:text-slate-300 bg-slate-100 dark:bg-slate-900/60 px-2 py-1 rounded cursor-help"
             >
-              Tên thành viên
-            </th>
-            <th
-              class="py-4 px-6 text-xs font-bold text-slate-400 uppercase tracking-wider whitespace-nowrap"
-            >
-              Liên hệ (Email/SĐT)
-            </th>
-            <th
-              class="py-4 px-6 text-xs font-bold text-slate-400 uppercase tracking-wider text-center whitespace-nowrap"
-            >
-              Vai trò
-            </th>
-            <th
-              class="py-4 px-6 text-xs font-bold text-slate-400 uppercase tracking-wider text-right whitespace-nowrap"
-            >
-              Số dư
-            </th>
-            <th
-              class="py-4 px-6 text-xs font-bold text-slate-400 uppercase tracking-wider whitespace-nowrap"
-            >
-              B2B API Key
-            </th>
-            <th
-              class="py-4 px-6 text-xs font-bold text-slate-400 uppercase tracking-wider text-center whitespace-nowrap"
-            >
-              Trạng thái
-            </th>
-            <th
-              class="py-4 px-6 text-xs font-bold text-slate-400 uppercase tracking-wider text-right whitespace-nowrap"
-            >
-              Thao tác
-            </th>
-          </tr>
-        </thead>
-        <tbody>
-                    <tr *ngIf="state.userStore.loading()">
-            <td colspan="8" class="p-6">
-              <app-skeleton-loader [type]="'table'" [rows]="5" [showHeader]="false" />
-            </td>
-          </tr>
-
-                    <tr *ngIf="!state.userStore.loading() && state.userStore.users().length === 0">
-            <td colspan="8" class="py-12 text-center text-sm font-semibold text-slate-400">
-              Không tìm thấy thành viên nào. Nhấp vào nút "Thêm thành viên" để tạo tài khoản mới!
-            </td>
-          </tr>
-
-                    @if (!state.userStore.loading()) {
-            <tr
-              *ngFor="let user of state.userStore.users()"
-              class="border-b border-slate-100/50 dark:border-slate-900/40 hover:bg-slate-50/40 dark:hover:bg-slate-900/10 transition-colors duration-150"
-            >
-                            <td class="py-4.5 px-6 whitespace-nowrap">
-                <div
-                  class="flex items-center gap-1.5 text-xs font-bold font-mono text-slate-400 dark:text-slate-500"
-                >
-                  <span [appTooltip]="user.id" class="cursor-help">
-                    #{{ user.id | slice: 0 : 8 }}...{{ user.id | slice: -4 }}
-                  </span>
-                  <button
-                    (click)="copyApiKey(user.id)"
-                    class="p-0.5 text-slate-300 hover:text-[var(--color-primary)] transition-colors active:scale-90"
-                    title="Sao chép ID đầy đủ"
-                  >
-                    <app-icon name="copy" class="w-3.5 h-3.5" />
-                  </button>
-                </div>
-              </td>
-
-                            <td class="py-4.5 px-6 whitespace-nowrap">
-                <span class="text-sm font-extrabold text-slate-800 dark:text-slate-200">
-                  {{ user.name }}
-                </span>
-              </td>
-
-                            <td class="py-4.5 px-6 whitespace-nowrap">
-                <div class="flex flex-col">
-                  <span class="text-xs font-semibold text-slate-500 dark:text-slate-400">
-                    {{ user.email }}
-                  </span>
-                  <span class="text-[10px] font-bold text-slate-400 dark:text-slate-500">
-                    {{ user.phone || 'Chưa cập nhật SĐT' }}
-                  </span>
-                </div>
-              </td>
-
-                            <td class="py-4.5 px-6 text-center whitespace-nowrap">
-                <app-badge [variant]="user.role === 'admin' ? 'warning' : 'neutral'">
-                  {{ user.role === 'admin' ? 'Quản trị viên' : 'Khách hàng' }}
-                </app-badge>
-              </td>
-
-                            <td class="py-4.5 px-6 text-right whitespace-nowrap">
-                <span class="text-sm font-extrabold text-[var(--color-primary)]">
-                  {{ user.balance | number }} VND
-                </span>
-              </td>
-
-                            <td class="py-4.5 px-6 whitespace-nowrap">
-                <div class="flex items-center gap-1.5" *ngIf="user.api_key; else noApiKey">
-                                    @if (!visibleApiKeys.has(user.id)) {
-                    <span
-                      class="text-xs font-bold font-mono text-slate-400 dark:text-slate-500 bg-slate-100 dark:bg-slate-900/60 px-2 py-1 rounded tracking-widest select-none"
-                    >
-                      ••••••••••••
-                    </span>
-                  } @else {
-                    <span
-                      [appTooltip]="user.api_key"
-                      class="text-xs font-bold font-mono text-slate-700 dark:text-slate-300 bg-slate-100 dark:bg-slate-900/60 px-2 py-1 rounded cursor-help"
-                    >
-                      {{ user.api_key | slice: 0 : 12 }}...{{ user.api_key | slice: -4 }}
-                    </span>
-                  }
-
-                                    <button
-                    (click)="toggleApiKeyVisibility(user.id)"
-                    class="p-1 text-slate-400 hover:text-[var(--color-primary)] transition-colors active:scale-90"
-                    [title]="visibleApiKeys.has(user.id) ? 'Ẩn API Key' : 'Hiện API Key'"
-                  >
-                    @if (visibleApiKeys.has(user.id)) {
-                      <svg xmlns="http://www.w3.org/2000/svg" class="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
-                        <path stroke-linecap="round" stroke-linejoin="round" d="M13.875 18.825A10.05 10.05 0 0112 19c-5.523 0-10-4.477-10-7s4.477-7 10-7a9.953 9.953 0 015.825 1.875M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
-                        <path stroke-linecap="round" stroke-linejoin="round" d="M3 3l18 18" />
-                      </svg>
-                    } @else {
-                      <svg xmlns="http://www.w3.org/2000/svg" class="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
-                        <path stroke-linecap="round" stroke-linejoin="round" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
-                        <path stroke-linecap="round" stroke-linejoin="round" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.477 0 8.268 2.943 9.542 7-1.274 4.057-5.065 7-9.542 7-4.477 0-8.268-2.943-9.542-7z" />
-                      </svg>
-                    }
-                  </button>
-
-                                    @if (visibleApiKeys.has(user.id)) {
-                    <button
-                      (click)="copyApiKey(user.api_key)"
-                      class="p-1 text-slate-400 hover:text-[var(--color-primary)] transition-colors active:scale-90"
-                      title="Sao chép API Key"
-                    >
-                      <app-icon name="copy" class="w-3.5 h-3.5" />
-                    </button>
-                  }
-                </div>
-                <ng-template #noApiKey>
-                  <span
-                    class="text-xs font-semibold text-slate-400 dark:text-slate-500 italic select-none"
-                  >
-                    Chưa tạo API Key
-                  </span>
-                </ng-template>
-              </td>
-
-                            <td class="py-4.5 px-6 text-center whitespace-nowrap">
-                <app-badge
-                  [variant]="user.status === 'active' ? 'success' : 'danger'"
-                  size="sm"
-                  rounded="md"
-                >
-                  {{ user.status === 'active' ? 'Hoạt động' : 'Đã khóa' }}
-                </app-badge>
-              </td>
-
-                            <td class="py-4.5 px-6 text-right whitespace-nowrap">
-                <div class="flex items-center justify-end gap-2 whitespace-nowrap">
-                  <button
-                    (click)="openEditModal(user)"
-                    class="flex items-center gap-1 px-2.5 py-1 text-xs font-extrabold text-[var(--color-primary)] border border-[var(--color-primary)]/20 bg-[var(--color-primary)]/5 dark:bg-[var(--color-primary)]/10 hover:bg-[var(--color-primary)]/10 rounded-lg transition-all cursor-pointer"
-                    title="Sửa thông tin"
-                  >
-                    <app-icon name="edit" class="w-3.5 h-3.5" />
-                    Sửa
-                  </button>
-                  <button
-                    (click)="deleteUser(user)"
-                    class="flex items-center gap-1 px-2.5 py-1 text-xs font-extrabold text-rose-600 border border-rose-500/20 bg-rose-50 dark:bg-rose-950/20 hover:bg-rose-100 dark:hover:bg-rose-950/40 rounded-lg transition-all cursor-pointer"
-                    title="Xóa thành viên"
-                  >
-                    <app-icon name="trash" class="w-3.5 h-3.5" />
-                    Xóa
-                  </button>
-                </div>
-              </td>
-            </tr>
+              {{ row.api_key | slice: 0 : 12 }}...{{ row.api_key | slice: -4 }}
+            </span>
           }
-        </tbody>
-      </table>
-    </div>
+
+          <button
+            (click)="toggleApiKeyVisibility(row.id)"
+            class="p-1 text-slate-400 hover:text-[var(--color-primary)] hover:bg-slate-100 dark:hover:bg-slate-800 rounded transition-colors cursor-pointer"
+            [appTooltip]="visibleApiKeys.has(row.id) ? 'Ẩn API Key' : 'Hiện API Key'"
+          >
+            @if (visibleApiKeys.has(row.id)) {
+              <svg xmlns="http://www.w3.org/2000/svg" class="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                <path stroke-linecap="round" stroke-linejoin="round" d="M13.875 18.825A10.05 10.05 0 0112 19c-5.523 0-10-4.477-10-7s4.477-7 10-7a9.953 9.953 0 015.825 1.875M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
+                <path stroke-linecap="round" stroke-linejoin="round" d="M3 3l18 18" />
+              </svg>
+            } @else {
+              <svg xmlns="http://www.w3.org/2000/svg" class="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                <path stroke-linecap="round" stroke-linejoin="round" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
+                <path stroke-linecap="round" stroke-linejoin="round" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.477 0 8.268 2.943 9.542 7-1.274 4.057-5.065 7-9.542 7-4.477 0-8.268-2.943-9.542-7z" />
+              </svg>
+            }
+          </button>
+
+          @if (visibleApiKeys.has(row.id)) {
+            <button
+              (click)="copyApiKey(row.api_key)"
+              class="p-1 hover:bg-slate-100 dark:hover:bg-slate-800 rounded transition-colors text-slate-400 hover:text-slate-600 dark:hover:text-slate-200 cursor-pointer"
+              [appTooltip]="'Sao chép API Key'"
+            >
+              <app-icon name="copy" class="w-3.5 h-3.5" />
+            </button>
+          }
+        </div>
+        <ng-template #noApiKey>
+          <span class="text-xs font-semibold text-slate-400 dark:text-slate-500 italic select-none">
+            Chưa tạo API Key
+          </span>
+        </ng-template>
+      </ng-template>
+
+      <ng-template appTableCell="status" let-row="row">
+        <app-badge
+          [variant]="row.status === 'active' ? 'success' : 'danger'"
+          size="sm"
+          rounded="md"
+          [appTooltip]="row.status === 'active' ? 'Hoạt động' : 'Đã khóa'"
+        >
+          {{ row.status === 'active' ? 'Hoạt động' : 'Đã khóa' }}
+        </app-badge>
+      </ng-template>
+
+      <ng-template appTableCell="actions" let-row="row">
+        <div class="flex items-center justify-end gap-2 whitespace-nowrap">
+          <button
+            (click)="openEditModal(row)"
+            class="text-xs font-bold px-3 py-1.5 rounded-lg border border-[var(--color-primary)]/20 hover:bg-[var(--color-primary)]/10 text-[var(--color-primary)] bg-[var(--color-primary)]/5 dark:bg-[var(--color-primary)]/10 dark:border-[var(--color-primary)]/30 dark:hover:bg-[var(--color-primary)]/20 hover:scale-105 active:scale-95 transition-all cursor-pointer flex items-center gap-1 shrink-0"
+            [appTooltip]="'Chỉnh sửa'"
+          >
+            <app-icon name="edit" class="w-3.5 h-3.5" />
+            <span>Sửa</span>
+          </button>
+          <button
+            (click)="deleteUser(row)"
+            class="text-xs font-bold px-3 py-1.5 rounded-lg border border-rose-500/20 dark:border-rose-500/30 hover:bg-rose-100 dark:hover:bg-rose-950/40 text-rose-600 dark:text-rose-400 bg-rose-50 dark:bg-rose-950/20 hover:scale-105 active:scale-95 transition-all cursor-pointer flex items-center gap-1 shrink-0"
+            [appTooltip]="'Xóa'"
+          >
+            <app-icon name="trash" class="w-3.5 h-3.5" />
+            <span>Xóa</span>
+          </button>
+        </div>
+      </ng-template>
+    </app-table>
 
     <app-pagination
       [currentPage]="state.userStore.currentPage()"

@@ -252,60 +252,51 @@
           Tuyệt vời! Kho hàng đầy đủ.
         </p>
         <p class="text-xs text-slate-400">
-          Không có sản phẩm nào nằm dưới ngưỡng cảnh báo 5 tài nguyên.
+          Không có sản phẩm nào nằm dưới ngưỡng cảnh báo của bộ lọc.
         </p>
       </div>
 
-      <div *ngIf="stats().low_stock_products.length > 0" class="overflow-x-auto">
-        <table class="w-full text-left border-collapse">
-          <thead>
-            <tr
-              class="border-b border-slate-100 dark:border-slate-800/80 text-xs font-bold text-slate-400 uppercase tracking-wider"
+      <div *ngIf="stats().low_stock_products.length > 0">
+        <app-table
+          [columns]="lowStockColumns"
+          [data]="stats().low_stock_products"
+          [loading]="lowStockLoading()"
+          emptyText="Tuyệt vời! Kho hàng đầy đủ."
+        >
+          <ng-template appTableCell="name" let-row="row">
+            <span class="truncate max-w-[200px] block font-bold text-slate-800 dark:text-slate-100" [appTooltip]="row.name">
+              {{ row.name }}
+            </span>
+          </ng-template>
+
+          <ng-template appTableCell="price" let-row="row">
+            <span [appTooltip]="(row.price | number) + ' VND'">
+              {{ row.price | number }} VND
+            </span>
+          </ng-template>
+
+          <ng-template appTableCell="available_count" let-row="row">
+            <app-badge
+              variant="danger"
+              size="sm"
+              rounded="full"
+              [appTooltip]="'Còn lại: ' + row.available_count"
             >
-              <th class="py-3 px-4">Tên sản phẩm</th>
-              <th class="py-3 px-4 text-right">Đơn giá</th>
-              <th class="py-3 px-4 text-center">Tồn kho khả dụng</th>
-              <th class="py-3 px-4 text-right">Thao tác</th>
-            </tr>
-          </thead>
-          <tbody class="divide-y divide-slate-50 dark:divide-slate-900/60">
-            <tr
-              *ngFor="let item of stats().low_stock_products"
-              class="text-sm font-semibold text-slate-600 dark:text-slate-300"
+              Còn lại: {{ row.available_count }}
+            </app-badge>
+          </ng-template>
+
+          <ng-template appTableCell="actions" let-row="row">
+            <a
+              routerLink="/admin/inventory"
+              [queryParams]="{ product_id: row.id }"
+              class="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-[var(--color-primary)] text-white text-xs font-extrabold hover:scale-105 active:scale-95 transition-all shadow-sm shadow-blue-500/10 cursor-pointer"
             >
-              <td class="py-4 px-4 font-bold text-slate-800 dark:text-slate-100">
-                <span class="truncate max-w-[200px] block" [appTooltip]="item.name">
-                  {{ item.name }}
-                </span>
-              </td>
-              <td class="py-4 px-4 text-right">
-                <span [appTooltip]="(item.price | number) + ' VND'">
-                  {{ item.price | number }} VND
-                </span>
-              </td>
-              <td class="py-4 px-4 text-center">
-                <app-badge
-                  variant="danger"
-                  size="sm"
-                  rounded="full"
-                  [appTooltip]="'Còn lại: ' + item.available_count"
-                >
-                  Còn lại: {{ item.available_count }}
-                </app-badge>
-              </td>
-              <td class="py-4 px-4 text-right">
-                <a
-                  routerLink="/admin/inventory"
-                  [queryParams]="{ product_id: item.id }"
-                  class="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-[var(--color-primary)] text-white text-xs font-extrabold hover:scale-105 active:scale-95 transition-all shadow-sm shadow-blue-500/10 cursor-pointer"
-                >
-                  <app-icon name="upload" class="w-3.5 h-3.5" />
-                  Nhập kho
-                </a>
-              </td>
-            </tr>
-          </tbody>
-        </table>
+              <app-icon name="upload" class="w-3.5 h-3.5" />
+              Nhập kho
+            </a>
+          </ng-template>
+        </app-table>
       </div>
     </ng-container>
   </app-card>

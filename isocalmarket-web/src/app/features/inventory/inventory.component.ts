@@ -2,7 +2,6 @@ import { Component, OnInit, inject, signal, computed } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { StateService } from '@core/services/state.service';
-import { SkeletonLoaderComponent } from '@shared/components/skeleton-loader/skeleton-loader.component';
 import { CustomSelectComponent } from '@shared/components/custom-select/custom-select.component';
 import { ButtonComponent } from '@shared/components/button/button.component';
 import { BadgeComponent } from '@shared/components/badge/badge.component';
@@ -16,6 +15,7 @@ import { EditInventoryModalComponent } from './edit-inventory-modal/edit-invento
 import { CustomSearchInputComponent } from '@shared/components/custom-search-input/custom-search-input.component';
 import { TooltipDirective } from '@shared/components/tooltip/tooltip.directive';
 import { ActivatedRoute } from '@angular/router';
+import { TableComponent, TableCellDirective, TableColumn } from '@shared/components/table/table.component';
 
 @Component({
   selector: 'app-inventory',
@@ -23,7 +23,6 @@ import { ActivatedRoute } from '@angular/router';
   imports: [
     CommonModule,
     FormsModule,
-    SkeletonLoaderComponent,
     CustomSelectComponent,
     ButtonComponent,
     BadgeComponent,
@@ -33,6 +32,8 @@ import { ActivatedRoute } from '@angular/router';
     PaginationComponent,
     CustomSearchInputComponent,
     TooltipDirective,
+    TableComponent,
+    TableCellDirective,
   ],
   templateUrl: './inventory.component.html',
   styles: [`
@@ -45,6 +46,15 @@ export class InventoryComponent implements OnInit {
   public readonly state = inject(StateService);
   private readonly modalService = inject(ModalService);
   private readonly route = inject(ActivatedRoute);
+
+  public readonly columns: TableColumn[] = [
+    { key: 'id', label: 'ID Lô', sortable: true },
+    { key: 'product_id', label: 'Tên sản phẩm', sortable: true },
+    { key: 'batch_name', label: 'Tên Lô Hàng', sortable: true },
+    { key: 'available_count', label: 'Số lượng (Khả dụng / Ban đầu)', sortable: true, align: 'center' },
+    { key: 'status', label: 'Trạng thái', sortable: true, align: 'center' },
+    { key: 'actions', label: 'Thao tác', sortable: false, align: 'right' }
+  ];
 
   public selectedProductFilter = '';
   public selectedStatusFilter = '';

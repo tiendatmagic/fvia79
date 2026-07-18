@@ -62,185 +62,137 @@
   </div>
 
   <div app-card class="overflow-hidden !p-0">
-    <div class="overflow-x-auto">
-      <table class="w-full text-left border-collapse">
-        <thead>
-          <tr
-            class="border-b border-slate-200/30 dark:border-slate-800/30 bg-slate-50/50 dark:bg-slate-950/20"
+    <app-table
+      [columns]="columns"
+      [data]="state.inventoryStore.items()"
+      [loading]="state.inventoryStore.loading()"
+      emptyText="Không tìm thấy tài nguyên nào trong kho."
+    >
+      <ng-template appTableCell="id" let-row="row">
+        <div class="flex items-center gap-1.5">
+          <span
+            [appTooltip]="row.id"
+            class="font-mono font-bold text-[var(--color-primary)] border-b border-dashed border-slate-300 dark:border-slate-700 pb-0.5"
           >
-            <th
-              class="py-4 px-6 text-xs font-bold text-slate-400 uppercase tracking-wider whitespace-nowrap"
-            >
-              ID Lô
-            </th>
-            <th
-              class="py-4 px-6 text-xs font-bold text-slate-400 uppercase tracking-wider whitespace-nowrap"
-            >
-              Tên sản phẩm
-            </th>
-            <th
-              class="py-4 px-6 text-xs font-bold text-slate-400 uppercase tracking-wider whitespace-nowrap"
-            >
-              Tên Lô Hàng
-            </th>
-            <th
-              class="py-4 px-6 text-xs font-bold text-slate-400 uppercase tracking-wider text-center whitespace-nowrap"
-            >
-              Số lượng (Khả dụng / Ban đầu)
-            </th>
-            <th
-              class="py-4 px-6 text-xs font-bold text-slate-400 uppercase tracking-wider text-center whitespace-nowrap"
-            >
-              Trạng thái
-            </th>
-            <th
-              class="py-4 px-6 text-xs font-bold text-slate-400 uppercase tracking-wider text-right whitespace-nowrap"
-            >
-              Thao tác
-            </th>
-          </tr>
-        </thead>
-        <tbody>
-          <tr *ngIf="state.inventoryStore.loading()">
-            <td colspan="6" class="p-6">
-              <app-skeleton-loader [type]="'table'" [rows]="5" [showHeader]="false" />
-            </td>
-          </tr>
+            #{{ row.id | slice: 0 : 8 }}...{{ row.id | slice: -4 }}
+          </span>
+          <button
+            (click)="
+              copyToClipboard(row.id, 'Đã sao chép mã tài nguyên!');
+              $event.stopPropagation()
+            "
+            class="p-1 hover:bg-slate-100 dark:hover:bg-slate-800 rounded transition-colors text-slate-400 hover:text-slate-600 dark:hover:text-slate-200 cursor-pointer"
+            [appTooltip]="'Sao chép ID đầy đủ'"
+          >
+            <app-icon name="copy" class="w-3.5 h-3.5" />
+          </button>
+        </div>
+      </ng-template>
 
-          <tr *ngIf="!state.inventoryStore.loading() && state.inventoryStore.items().length === 0">
-            <td colspan="6" class="py-12 text-center text-sm font-semibold text-slate-400">
-              Không tìm thấy tài nguyên nào trong kho.
-            </td>
-          </tr>
+      <ng-template appTableCell="product_id" let-row="row">
+        <span
+          class="text-sm font-extrabold text-slate-800 dark:text-white truncate max-w-xs block"
+          [appTooltip]="getProductName(row.product_id)"
+        >
+          {{ getProductName(row.product_id) }}
+        </span>
+      </ng-template>
 
-          @if (!state.inventoryStore.loading()) {
-            <tr
-              *ngFor="let item of state.inventoryStore.items()"
-              class="border-b border-slate-200/30 dark:border-slate-800/30 hover:bg-slate-50/30 dark:hover:bg-slate-950/10 transition-colors"
-            >
-              <td class="py-4 px-6 text-xs whitespace-nowrap">
-                <div class="flex items-center gap-1.5">
-                  <span
-                    [appTooltip]="item.id"
-                    class="font-mono font-bold text-[var(--color-primary)] border-b border-dashed border-slate-300 dark:border-slate-700 pb-0.5"
-                  >
-                    #{{ item.id | slice: 0 : 8 }}...{{ item.id | slice: -4 }}
-                  </span>
-                  <button
-                    (click)="
-                      copyToClipboard(item.id, 'Đã sao chép mã tài nguyên!');
-                      $event.stopPropagation()
-                    "
-                    class="p-1 hover:bg-slate-100 dark:hover:bg-slate-800 rounded transition-colors text-slate-400 hover:text-slate-600 dark:hover:text-slate-200 cursor-pointer"
-                    [appTooltip]="'Sao chép ID đầy đủ'"
-                  >
-                    <app-icon name="copy" class="w-3.5 h-3.5" />
-                  </button>
-                </div>
-              </td>
-              <td class="py-4 px-6 whitespace-nowrap">
-                <span
-                  class="text-sm font-extrabold text-slate-800 dark:text-white truncate max-w-xs block"
-                  [appTooltip]="getProductName(item.product_id)"
-                >
-                  {{ getProductName(item.product_id) }}
-                </span>
-              </td>
-              <td class="py-4 px-6 whitespace-nowrap">
-                <span
-                  class="text-sm font-semibold text-slate-700 dark:text-slate-300 truncate max-w-[150px] block"
-                  [appTooltip]="item.batch_name"
-                >
-                  {{ item.batch_name }}
-                </span>
-              </td>
-              <td class="py-4 px-6 text-center whitespace-nowrap">
-                <app-badge
-                  [variant]="
-                    item.available_count === 0
-                      ? 'danger'
-                      : item.available_count === item.initial_count
-                        ? 'success'
-                        : 'warning'
-                  "
-                  size="md"
-                  rounded="md"
-                  [appTooltip]="
-                    'Khả dụng: ' + item.available_count + ' / Ban đầu: ' + item.initial_count
-                  "
-                >
-                  {{ item.available_count }} / {{ item.initial_count }}
-                </app-badge>
-              </td>
-              <td class="py-4 px-6 text-center whitespace-nowrap">
-                <app-badge
-                  [variant]="
-                    item.status === 'active'
-                      ? 'success'
-                      : item.status === 'completed'
-                        ? 'primary'
-                        : 'warning'
-                  "
-                  size="sm"
-                  rounded="md"
-                  [appTooltip]="
-                    item.status === 'active'
-                      ? 'Hoạt động'
-                      : item.status === 'completed'
-                        ? 'Hoàn thành'
-                        : 'Tạm khóa'
-                  "
-                >
-                  {{
-                    item.status === 'active'
-                      ? 'Hoạt động'
-                      : item.status === 'completed'
-                        ? 'Hoàn thành'
-                        : 'Tạm khóa'
-                  }}
-                </app-badge>
-              </td>
-              <td class="py-4 px-6 text-right whitespace-nowrap">
-                <div class="flex items-center justify-end gap-2 whitespace-nowrap">
-                  <button
-                    (click)="openEditModal(item)"
-                    [disabled]="loadingItemId() !== null"
-                    [class.opacity-50]="loadingItemId() !== null"
-                    [class.pointer-events-none]="loadingItemId() !== null"
-                    class="text-xs font-bold px-3 py-1.5 rounded-lg border border-[var(--color-primary)]/20 hover:bg-[var(--color-primary)]/10 text-[var(--color-primary)] bg-[var(--color-primary)]/5 dark:bg-[var(--color-primary)]/10 dark:border-[var(--color-primary)]/30 dark:hover:bg-[var(--color-primary)]/20 hover:scale-105 active:scale-95 transition-all cursor-pointer flex items-center gap-1 shrink-0"
-                    [appTooltip]="'Chỉnh sửa'"
-                  >
-                    @if (loadingItemId() === item.id) {
-                      <div
-                        class="w-3.5 h-3.5 rounded-full border border-current border-t-transparent animate-spin shrink-0"
-                      ></div>
-                    } @else {
-                      <app-icon name="edit" class="w-3.5 h-3.5" />
-                    }
-                    <span>Sửa</span>
-                  </button>
-                  <button
-                    (click)="confirmDeleteItem(item)"
-                    class="text-xs font-bold px-3 py-1.5 rounded-lg border border-rose-500/20 dark:border-rose-500/30 hover:bg-rose-100 dark:hover:bg-rose-950/40 text-rose-600 dark:text-rose-400 bg-rose-50 dark:bg-rose-950/20 hover:scale-105 active:scale-95 transition-all cursor-pointer flex items-center gap-1 shrink-0"
-                    [appTooltip]="'Xóa'"
-                  >
-                    <app-icon name="trash" class="w-3.5 h-3.5" />
-                    <span>Xóa</span>
-                  </button>
-                </div>
-              </td>
-            </tr>
-          }
-        </tbody>
-      </table>
-      <app-pagination
-        [currentPage]="state.inventoryStore.currentPage()"
-        [totalPages]="state.inventoryStore.lastPage()"
-        [totalItems]="state.inventoryStore.totalItems()"
-        [itemsPerPage]="limit"
-        [itemName]="'tài nguyên'"
-        (pageChange)="fetchPage($event)"
-      />
-    </div>
+      <ng-template appTableCell="batch_name" let-row="row">
+        <span
+          class="text-sm font-semibold text-slate-700 dark:text-slate-300 truncate max-w-[150px] block"
+          [appTooltip]="row.batch_name"
+        >
+          {{ row.batch_name }}
+        </span>
+      </ng-template>
+
+      <ng-template appTableCell="available_count" let-row="row">
+        <app-badge
+          [variant]="
+            row.available_count === 0
+              ? 'danger'
+              : row.available_count === row.initial_count
+                ? 'success'
+                : 'warning'
+          "
+          size="md"
+          rounded="md"
+          [appTooltip]="
+            'Khả dụng: ' + row.available_count + ' / Ban đầu: ' + row.initial_count
+          "
+        >
+          {{ row.available_count }} / {{ row.initial_count }}
+        </app-badge>
+      </ng-template>
+
+      <ng-template appTableCell="status" let-row="row">
+        <app-badge
+          [variant]="
+            row.status === 'active'
+              ? 'success'
+              : row.status === 'completed'
+                ? 'primary'
+                : 'warning'
+          "
+          size="sm"
+          rounded="md"
+          [appTooltip]="
+            row.status === 'active'
+              ? 'Hoạt động'
+              : row.status === 'completed'
+                ? 'Hoàn thành'
+                : 'Tạm khóa'
+          "
+        >
+          {{
+            row.status === 'active'
+              ? 'Hoạt động'
+              : row.status === 'completed'
+                ? 'Hoàn thành'
+                : 'Tạm khóa'
+          }}
+        </app-badge>
+      </ng-template>
+
+      <ng-template appTableCell="actions" let-row="row">
+        <div class="flex items-center justify-end gap-2 whitespace-nowrap">
+          <button
+            (click)="openEditModal(row)"
+            [disabled]="loadingItemId() !== null"
+            [class.opacity-50]="loadingItemId() !== null"
+            [class.pointer-events-none]="loadingItemId() !== null"
+            class="text-xs font-bold px-3 py-1.5 rounded-lg border border-[var(--color-primary)]/20 hover:bg-[var(--color-primary)]/10 text-[var(--color-primary)] bg-[var(--color-primary)]/5 dark:bg-[var(--color-primary)]/10 dark:border-[var(--color-primary)]/30 dark:hover:bg-[var(--color-primary)]/20 hover:scale-105 active:scale-95 transition-all cursor-pointer flex items-center gap-1 shrink-0"
+            [appTooltip]="'Chỉnh sửa'"
+          >
+            @if (loadingItemId() === row.id) {
+              <div
+                class="w-3.5 h-3.5 rounded-full border border-current border-t-transparent animate-spin shrink-0"
+              ></div>
+            } @else {
+              <app-icon name="edit" class="w-3.5 h-3.5" />
+            }
+            <span>Sửa</span>
+          </button>
+          <button
+            (click)="confirmDeleteItem(row)"
+            class="text-xs font-bold px-3 py-1.5 rounded-lg border border-rose-500/20 dark:border-rose-500/30 hover:bg-rose-100 dark:hover:bg-rose-950/40 text-rose-600 dark:text-rose-400 bg-rose-50 dark:bg-rose-950/20 hover:scale-105 active:scale-95 transition-all cursor-pointer flex items-center gap-1 shrink-0"
+            [appTooltip]="'Xóa'"
+          >
+            <app-icon name="trash" class="w-3.5 h-3.5" />
+            <span>Xóa</span>
+          </button>
+        </div>
+      </ng-template>
+    </app-table>
+
+    <app-pagination
+      [currentPage]="state.inventoryStore.currentPage()"
+      [totalPages]="state.inventoryStore.lastPage()"
+      [totalItems]="state.inventoryStore.totalItems()"
+      [itemsPerPage]="limit"
+      [itemName]="'tài nguyên'"
+      (pageChange)="fetchPage($event)"
+    />
   </div>
 </div>

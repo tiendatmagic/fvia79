@@ -2,7 +2,6 @@ import { Component, OnInit, inject, signal } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { Router } from '@angular/router';
 import { StateService } from '@core/services/state.service';
-import { SkeletonLoaderComponent } from '@shared/components/skeleton-loader/skeleton-loader.component';
 import { PaginationComponent } from '@shared/components/pagination/pagination.component';
 import { BadgeComponent } from '@shared/components/badge/badge.component';
 import { CardComponent } from '@shared/components/card/card.component';
@@ -13,6 +12,7 @@ import { CustomSelectComponent } from '@shared/components/custom-select/custom-s
 import { CustomDateTimeRangeComponent, DateTimeRangeValue } from '@shared/components/custom-date-time-range/custom-date-time-range.component';
 import { TooltipDirective } from '@shared/components/tooltip/tooltip.directive';
 import { FormsModule } from '@angular/forms';
+import { TableComponent, TableCellDirective, TableColumn } from '@shared/components/table/table.component';
 
 @Component({
   selector: 'app-orders',
@@ -20,7 +20,6 @@ import { FormsModule } from '@angular/forms';
   imports: [
     CommonModule,
     FormsModule,
-    SkeletonLoaderComponent,
     PaginationComponent,
     BadgeComponent,
     CardComponent,
@@ -29,7 +28,9 @@ import { FormsModule } from '@angular/forms';
     CustomSearchInputComponent,
     TooltipDirective,
     CustomSelectComponent,
-    CustomDateTimeRangeComponent
+    CustomDateTimeRangeComponent,
+    TableComponent,
+    TableCellDirective,
   ],
   templateUrl: './orders.component.html',
   styles: [`
@@ -41,6 +42,14 @@ import { FormsModule } from '@angular/forms';
 export class OrdersComponent implements OnInit {
   public readonly state = inject(StateService);
   private readonly router = inject(Router);
+
+  public readonly columns: TableColumn[] = [
+    { key: 'order_code', label: 'Mã đơn hàng', sortable: true },
+    { key: 'created_at', label: 'Ngày mua', sortable: true },
+    { key: 'total_price', label: 'Tổng tiền', sortable: true },
+    { key: 'status', label: 'Trạng thái', sortable: true, align: 'center' },
+    { key: 'actions', label: 'Thao tác', sortable: false, align: 'right' }
+  ];
 
   public readonly currentPage = signal<number>(1);
   public readonly limit = 10;

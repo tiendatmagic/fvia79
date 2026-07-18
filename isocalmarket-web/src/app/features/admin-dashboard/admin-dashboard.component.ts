@@ -13,6 +13,7 @@ import { FormsModule } from '@angular/forms';
 import { HttpParams } from '@angular/common/http';
 import { CustomSelectComponent } from '@shared/components/custom-select/custom-select.component';
 import { CustomSearchInputComponent } from '@shared/components/custom-search-input/custom-search-input.component';
+import { TableComponent, TableCellDirective, TableColumn } from '@shared/components/table/table.component';
 
 @Component({
   selector: 'app-admin-dashboard',
@@ -28,7 +29,9 @@ import { CustomSearchInputComponent } from '@shared/components/custom-search-inp
     FormsModule,
     CustomDateTimeRangeComponent,
     CustomSelectComponent,
-    CustomSearchInputComponent
+    CustomSearchInputComponent,
+    TableComponent,
+    TableCellDirective,
   ],
   templateUrl: './admin-dashboard.component.html',
   styles: [`
@@ -40,6 +43,13 @@ import { CustomSearchInputComponent } from '@shared/components/custom-search-inp
 export class AdminDashboardComponent implements OnInit {
   private readonly apiService = inject(ApiService);
   public readonly stateService = inject(StateService);
+
+  public readonly lowStockColumns: TableColumn[] = [
+    { key: 'name', label: 'Tên sản phẩm', sortable: true },
+    { key: 'price', label: 'Đơn giá', sortable: true, align: 'right' },
+    { key: 'available_count', label: 'Tồn kho khả dụng', sortable: true, align: 'center' },
+    { key: 'actions', label: 'Thao tác', sortable: false, align: 'right' }
+  ];
 
   public readonly stats = signal<any>(null);
   public readonly loading = signal<boolean>(true);

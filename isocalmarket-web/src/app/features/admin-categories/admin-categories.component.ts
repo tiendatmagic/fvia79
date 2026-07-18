@@ -2,7 +2,6 @@ import { Component, OnInit, inject, signal, computed } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { StateService } from '@core/services/state.service';
-import { SkeletonLoaderComponent } from '@shared/components/skeleton-loader/skeleton-loader.component';
 import { ButtonComponent } from '@shared/components/button/button.component';
 import { CardComponent } from '@shared/components/card/card.component';
 import { PageHeaderComponent } from '@shared/components/page-header/page-header.component';
@@ -15,6 +14,7 @@ import { CustomSelectComponent } from '@shared/components/custom-select/custom-s
 import { CustomDateTimeRangeComponent } from '@shared/components/custom-date-time-range/custom-date-time-range.component';
 import { PaginationComponent } from '@shared/components/pagination/pagination.component';
 import { BadgeComponent } from '@shared/components/badge/badge.component';
+import { TableComponent, TableCellDirective, TableColumn } from '@shared/components/table/table.component';
 
 @Component({
   selector: 'app-admin-categories',
@@ -22,7 +22,6 @@ import { BadgeComponent } from '@shared/components/badge/badge.component';
   imports: [
     CommonModule,
     FormsModule,
-    SkeletonLoaderComponent,
     ButtonComponent,
     CardComponent,
     PageHeaderComponent,
@@ -32,7 +31,9 @@ import { BadgeComponent } from '@shared/components/badge/badge.component';
     CustomSelectComponent,
     CustomDateTimeRangeComponent,
     PaginationComponent,
-    BadgeComponent
+    BadgeComponent,
+    TableComponent,
+    TableCellDirective,
   ],
   templateUrl: './admin-categories.component.html',
   styles: [`
@@ -44,6 +45,16 @@ import { BadgeComponent } from '@shared/components/badge/badge.component';
 export class AdminCategoriesComponent implements OnInit {
   public readonly state = inject(StateService);
   private readonly modalService = inject(ModalService);
+
+  public readonly columns: TableColumn[] = [
+    { key: 'id', label: 'ID', sortable: true },
+    { key: 'name', label: 'Tên danh mục', sortable: true },
+    { key: 'slug', label: 'Slug', sortable: true },
+    { key: 'description', label: 'Mô tả chi tiết', sortable: true },
+    { key: 'products_count', label: 'Số sản phẩm', sortable: true, align: 'center' },
+    { key: 'created_at', label: 'Ngày tạo', sortable: true },
+    { key: 'actions', label: 'Thao tác', sortable: false, align: 'right' }
+  ];
 
   public searchQuery = '';
   private readonly _searchQuery = signal('');

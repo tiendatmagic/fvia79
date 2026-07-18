@@ -14,6 +14,8 @@ import { PaginationComponent } from '@shared/components/pagination/pagination.co
 import { CustomSelectComponent } from '@shared/components/custom-select/custom-select.component';
 import { ModalService } from '@core/services/modal.service';
 import { CartModalComponent } from './cart-modal/cart-modal.component';
+import { TableComponent, TableCellDirective, TableColumn } from '@shared/components/table/table.component';
+import { TooltipDirective } from '@shared/components/tooltip/tooltip.directive';
 
 @Component({
   selector: 'app-storefront',
@@ -29,7 +31,10 @@ import { CartModalComponent } from './cart-modal/cart-modal.component';
     BadgeComponent,
     CardComponent,
     IconComponent,
-    PaginationComponent
+    PaginationComponent,
+    TableComponent,
+    TableCellDirective,
+    TooltipDirective,
   ],
   templateUrl: './storefront.component.html',
   styles: [`
@@ -43,6 +48,13 @@ export class StorefrontComponent implements OnInit {
   public readonly cart = inject(CartStore);
   private readonly router = inject(Router);
   private readonly modalService = inject(ModalService);
+
+  public readonly columns: TableColumn[] = [
+    { key: 'name', label: 'Tên sản phẩm', sortable: true },
+    { key: 'price', label: 'Đơn giá', sortable: true, align: 'right' },
+    { key: 'available_count', label: 'Tồn kho khả dụng', sortable: true, align: 'center' },
+    { key: 'actions', label: 'Thao tác', sortable: false, align: 'right' }
+  ];
 
   public searchQuery = '';
 

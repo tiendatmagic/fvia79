@@ -62,212 +62,151 @@
   </div>
 
   <div app-card class="overflow-hidden !p-0">
-    <div class="overflow-x-auto">
-      <table class="w-full text-left border-collapse">
-        <thead>
-          <tr
-            class="border-b border-slate-200/30 dark:border-slate-800/30 bg-slate-50/50 dark:bg-slate-950/20"
+    <app-table
+      [columns]="columns"
+      [data]="filteredProducts()"
+      [loading]="state.productStore.loading()"
+      emptyText="Chưa có sản phẩm nào. Nhấp vào nút 'Thêm Sản Phẩm' để bắt đầu!"
+    >
+      <ng-template appTableCell="id" let-row="row">
+        <div class="flex items-center gap-1.5">
+          <span
+            [appTooltip]="row.is_deleted ? '' : row.id"
+            class="font-mono font-bold text-[var(--color-primary)] border-b border-dashed border-slate-300 dark:border-slate-700 pb-0.5"
+            [ngClass]="{ 'line-through': row.is_deleted }"
           >
-            <th
-              class="py-4 px-6 text-xs font-bold text-slate-400 uppercase tracking-wider whitespace-nowrap"
-            >
-              ID
-            </th>
-            <th
-              class="py-4 px-6 text-xs font-bold text-slate-400 uppercase tracking-wider whitespace-nowrap"
-            >
-              Tên sản phẩm
-            </th>
-            <th
-              class="py-4 px-6 text-xs font-bold text-slate-400 uppercase tracking-wider whitespace-nowrap"
-            >
-              Slug
-            </th>
-            <th
-              class="py-4 px-6 text-xs font-bold text-slate-400 uppercase tracking-wider whitespace-nowrap"
-            >
-              Đơn giá (VND)
-            </th>
-            <th
-              class="py-4 px-6 text-xs font-bold text-slate-400 uppercase tracking-wider text-center whitespace-nowrap"
-            >
-              Tồn kho khả dụng
-            </th>
-            <th
-              class="py-4 px-6 text-xs font-bold text-slate-400 uppercase tracking-wider text-center whitespace-nowrap"
-            >
-              Trạng thái
-            </th>
-            <th
-              class="py-4 px-6 text-xs font-bold text-slate-400 uppercase tracking-wider text-right whitespace-nowrap"
-            >
-              Thao tác
-            </th>
-          </tr>
-        </thead>
-        <tbody>
-          <tr *ngIf="state.productStore.loading()">
-            <td colspan="7" class="p-6">
-              <app-skeleton-loader [type]="'table'" [rows]="5" [showHeader]="false" />
-            </td>
-          </tr>
+            #{{ row.id | slice: 0 : 8 }}...{{ row.id | slice: -4 }}
+          </span>
+          <button
+            (click)="
+              copyToClipboard(row.id, 'Đã sao chép mã sản phẩm!'); $event.stopPropagation()
+            "
+            class="p-1 hover:bg-slate-100 dark:hover:bg-slate-800 rounded transition-colors text-slate-400 hover:text-slate-600 dark:hover:text-slate-200 cursor-pointer"
+            [appTooltip]="row.is_deleted ? '' : 'Sao chép ID đầy đủ'"
+          >
+            <app-icon name="copy" class="w-3.5 h-3.5" />
+          </button>
+        </div>
+      </ng-template>
 
-          <tr *ngIf="!state.productStore.loading() && filteredProducts().length === 0">
-            <td colspan="7" class="py-12 text-center text-sm font-semibold text-slate-400">
-              Chưa có sản phẩm nào. Nhấp vào nút "Thêm Sản Phẩm" để bắt đầu!
-            </td>
-          </tr>
-
-          @if (!state.productStore.loading()) {
-            <tr
-              *ngFor="let p of filteredProducts()"
-              class="border-b border-slate-200/30 dark:border-slate-800/30 hover:bg-slate-50/30 dark:hover:bg-slate-950/10 transition-colors"
+      <ng-template appTableCell="name" let-row="row">
+        <div class="flex flex-col">
+          <div class="flex items-center gap-2">
+            <span
+              class="font-black text-slate-800 dark:text-white truncate max-w-xs block"
+              [appTooltip]="row.is_deleted ? '' : row.name"
               [ngClass]="{
-                'opacity-50 bg-slate-100/40 dark:bg-slate-900/10 text-slate-400 dark:text-slate-500':
-                  p.is_deleted,
+                'line-through text-slate-400 dark:text-slate-500': row.is_deleted,
               }"
+              >{{ row.name }}</span
             >
-              <td class="py-4 px-6 text-xs whitespace-nowrap">
-                <div class="flex items-center gap-1.5">
-                  <span
-                    [appTooltip]="p.is_deleted ? '' : p.id"
-                    class="font-mono font-bold text-[var(--color-primary)] border-b border-dashed border-slate-300 dark:border-slate-700 pb-0.5"
-                    [ngClass]="{ 'line-through': p.is_deleted }"
-                  >
-                    #{{ p.id | slice: 0 : 8 }}...{{ p.id | slice: -4 }}
-                  </span>
-                  <button
-                    (click)="
-                      copyToClipboard(p.id, 'Đã sao chép mã sản phẩm!'); $event.stopPropagation()
-                    "
-                    class="p-1 hover:bg-slate-100 dark:hover:bg-slate-800 rounded transition-colors text-slate-400 hover:text-slate-600 dark:hover:text-slate-200 cursor-pointer"
-                    [appTooltip]="p.is_deleted ? '' : 'Sao chép ID đầy đủ'"
-                  >
-                    <app-icon name="copy" class="w-3.5 h-3.5" />
-                  </button>
-                </div>
-              </td>
-              <td class="py-4 px-6 min-w-[200px]">
-                <div class="flex flex-col">
-                  <div class="flex items-center gap-2">
-                    <span
-                      class="font-black text-slate-800 dark:text-white truncate max-w-xs block"
-                      [appTooltip]="p.is_deleted ? '' : p.name"
-                      [ngClass]="{
-                        'line-through text-slate-400 dark:text-slate-500': p.is_deleted,
-                      }"
-                      >{{ p.name }}</span
-                    >
-                  </div>
-                  <p
-                    class="text-xs text-slate-400 dark:text-slate-500 font-semibold line-clamp-2 max-w-xs"
-                    [appTooltip]="p.is_deleted ? '' : p.description || 'Không có mô tả.'"
-                    [ngClass]="{ 'line-through': p.is_deleted }"
-                  >
-                    {{ p.description || 'Không có mô tả.' }}
-                  </p>
-                  @if (p.attributes && p.attributes.length > 0) {
-                    <div class="flex flex-wrap gap-1 mt-1.5">
-                      @for (attr of p.attributes; track $index) {
-                        <span
-                          class="inline-flex items-center text-xs font-black px-1.5 py-0.5 rounded-md bg-[var(--color-primary)]/5 dark:bg-[var(--color-primary)]/10 text-[var(--color-primary)] border border-[var(--color-primary)]/10"
-                          [appTooltip]="p.is_deleted ? '' : attr.label + ': ' + attr.value"
-                          [ngClass]="{ 'line-through opacity-70': p.is_deleted }"
-                        >
-                          {{ attr.label }}: {{ attr.value }}
-                        </span>
-                      }
-                    </div>
-                  }
-                </div>
-              </td>
-              <td
-                class="py-4 px-6 text-xs font-semibold text-slate-400 dark:text-slate-500 whitespace-nowrap"
-              >
+          </div>
+          <p
+            class="text-xs text-slate-400 dark:text-slate-500 font-semibold line-clamp-2 max-w-xs"
+            [appTooltip]="row.is_deleted ? '' : row.description || 'Không có mô tả.'"
+            [ngClass]="{ 'line-through': row.is_deleted }"
+          >
+            {{ row.description || 'Không có mô tả.' }}
+          </p>
+          @if (row.attributes && row.attributes.length > 0) {
+            <div class="flex flex-wrap gap-1 mt-1.5">
+              @for (attr of row.attributes; track $index) {
                 <span
-                  class="truncate max-w-[120px] block"
-                  [appTooltip]="p.is_deleted ? '' : p.slug"
-                  [ngClass]="{ 'line-through': p.is_deleted }"
-                  >{{ p.slug }}</span
+                  class="inline-flex items-center text-xs font-black px-1.5 py-0.5 rounded-md bg-[var(--color-primary)]/5 dark:bg-[var(--color-primary)]/10 text-[var(--color-primary)] border border-[var(--color-primary)]/10"
+                  [appTooltip]="row.is_deleted ? '' : attr.label + ': ' + attr.value"
+                  [ngClass]="{ 'line-through opacity-70': row.is_deleted }"
                 >
-              </td>
-              <td
-                class="py-4 px-6 text-sm font-black text-slate-800 dark:text-white whitespace-nowrap"
-              >
-                <span
-                  [appTooltip]="p.is_deleted ? '' : (p.price | number: '1.0-0') + ' VND'"
-                  [ngClass]="{ 'line-through': p.is_deleted }"
-                  >{{ p.price | number: '1.0-0' }} VND</span
-                >
-              </td>
-              <td class="py-4 px-6 text-center whitespace-nowrap">
-                <app-badge
-                  [variant]="p.available_count > 0 ? 'success' : 'danger'"
-                  size="lg"
-                  rounded="md"
-                  [appTooltip]="p.is_deleted ? '' : 'Tồn kho khả dụng: ' + p.available_count"
-                  [ngClass]="{ 'line-through': p.is_deleted }"
-                >
-                  {{ p.available_count }}
-                </app-badge>
-              </td>
-              <td class="py-4 px-6 text-center whitespace-nowrap">
-                @if (p.is_deleted) {
-                  <app-badge
-                    variant="danger"
-                    size="sm"
-                    rounded="md"
-                    [appTooltip]="p.is_deleted ? '' : 'Sản phẩm đã bị xóa mềm'"
-                  >
-                    Đã xóa
-                  </app-badge>
-                } @else {
-                  <app-badge
-                    [variant]="p.status === 'active' ? 'success' : 'neutral'"
-                    size="sm"
-                    rounded="md"
-                    [appTooltip]="p.status === 'active' ? 'Hoạt động' : 'Ngưng hoạt động'"
-                  >
-                    {{ p.status === 'active' ? 'Hoạt động' : 'Ngưng hoạt động' }}
-                  </app-badge>
-                }
-              </td>
-              <td class="py-4 px-6 text-right whitespace-nowrap">
-                <div class="flex items-center justify-end gap-2 whitespace-nowrap">
-                  @if (p.is_deleted) {
-                    <button
-                      (click)="restoreProduct(p)"
-                      class="text-xs font-bold px-3 py-1.5 rounded-lg border border-emerald-500/20 dark:border-emerald-500/30 hover:bg-emerald-100 dark:hover:bg-emerald-950/40 text-emerald-600 dark:text-emerald-400 bg-emerald-50 dark:bg-emerald-950/20 hover:scale-105 active:scale-95 transition-all cursor-pointer flex items-center gap-1 shrink-0"
-                      [appTooltip]="'Khôi phục'"
-                    >
-                      <app-icon name="sync" class="w-3.5 h-3.5" />
-                      <span>Khôi phục</span>
-                    </button>
-                  } @else {
-                    <button
-                      (click)="openEditDrawer(p)"
-                      class="text-xs font-bold px-3 py-1.5 rounded-lg border border-[var(--color-primary)]/20 hover:bg-[var(--color-primary)]/10 text-[var(--color-primary)] bg-[var(--color-primary)]/5 dark:bg-[var(--color-primary)]/10 dark:border-[var(--color-primary)]/30 dark:hover:bg-[var(--color-primary)]/20 hover:scale-105 active:scale-95 transition-all cursor-pointer flex items-center gap-1 shrink-0"
-                      [appTooltip]="'Chỉnh sửa'"
-                    >
-                      <app-icon name="edit" class="w-3.5 h-3.5" />
-                      <span>Sửa</span>
-                    </button>
-                    <button
-                      (click)="confirmDelete(p)"
-                      class="text-xs font-bold px-3 py-1.5 rounded-lg border border-rose-500/20 dark:border-rose-500/30 hover:bg-rose-100 dark:hover:bg-rose-950/40 text-rose-600 dark:text-rose-400 bg-rose-50 dark:bg-rose-950/20 hover:scale-105 active:scale-95 transition-all cursor-pointer flex items-center gap-1 shrink-0"
-                      [appTooltip]="'Xóa'"
-                    >
-                      <app-icon name="trash" class="w-3.5 h-3.5" />
-                      <span>Xóa</span>
-                    </button>
-                  }
-                </div>
-              </td>
-            </tr>
+                  {{ attr.label }}: {{ attr.value }}
+                </span>
+              }
+            </div>
           }
-        </tbody>
-      </table>
-    </div>
+        </div>
+      </ng-template>
+
+      <ng-template appTableCell="slug" let-row="row">
+        <span
+          class="truncate max-w-[120px] block"
+          [appTooltip]="row.is_deleted ? '' : row.slug"
+          [ngClass]="{ 'line-through': row.is_deleted }"
+          >{{ row.slug }}</span
+        >
+      </ng-template>
+
+      <ng-template appTableCell="price" let-row="row">
+        <span
+          [appTooltip]="row.is_deleted ? '' : (row.price | number: '1.0-0') + ' VND'"
+          [ngClass]="{ 'line-through': row.is_deleted }"
+          >{{ row.price | number: '1.0-0' }} VND</span
+        >
+      </ng-template>
+
+      <ng-template appTableCell="available_count" let-row="row">
+        <app-badge
+          [variant]="row.available_count > 0 ? 'success' : 'danger'"
+          size="lg"
+          rounded="md"
+          [appTooltip]="row.is_deleted ? '' : 'Tồn kho khả dụng: ' + row.available_count"
+          [ngClass]="{ 'line-through': row.is_deleted }"
+        >
+          {{ row.available_count }}
+        </app-badge>
+      </ng-template>
+
+      <ng-template appTableCell="status" let-row="row">
+        @if (row.is_deleted) {
+          <app-badge
+            variant="danger"
+            size="sm"
+            rounded="md"
+            [appTooltip]="row.is_deleted ? '' : 'Sản phẩm đã bị xóa mềm'"
+          >
+            Đã xóa
+          </app-badge>
+        } @else {
+          <app-badge
+            [variant]="row.status === 'active' ? 'success' : 'neutral'"
+            size="sm"
+            rounded="md"
+            [appTooltip]="row.status === 'active' ? 'Hoạt động' : 'Ngưng hoạt động'"
+          >
+            {{ row.status === 'active' ? 'Hoạt động' : 'Ngưng hoạt động' }}
+          </app-badge>
+        }
+      </ng-template>
+
+      <ng-template appTableCell="actions" let-row="row">
+        <div class="flex items-center justify-end gap-2 whitespace-nowrap">
+          @if (row.is_deleted) {
+            <button
+              (click)="restoreProduct(row)"
+              class="text-xs font-bold px-3 py-1.5 rounded-lg border border-emerald-500/20 dark:border-emerald-500/30 hover:bg-emerald-100 dark:hover:bg-emerald-950/40 text-emerald-600 dark:text-emerald-400 bg-emerald-50 dark:bg-emerald-950/20 hover:scale-105 active:scale-95 transition-all cursor-pointer flex items-center gap-1 shrink-0"
+              [appTooltip]="'Khôi phục'"
+            >
+              <app-icon name="sync" class="w-3.5 h-3.5" />
+              <span>Khôi phục</span>
+            </button>
+          } @else {
+            <button
+              (click)="openEditDrawer(row)"
+              class="text-xs font-bold px-3 py-1.5 rounded-lg border border-[var(--color-primary)]/20 hover:bg-[var(--color-primary)]/10 text-[var(--color-primary)] bg-[var(--color-primary)]/5 dark:bg-[var(--color-primary)]/10 dark:border-[var(--color-primary)]/30 dark:hover:bg-[var(--color-primary)]/20 hover:scale-105 active:scale-95 transition-all cursor-pointer flex items-center gap-1 shrink-0"
+              [appTooltip]="'Chỉnh sửa'"
+            >
+              <app-icon name="edit" class="w-3.5 h-3.5" />
+              <span>Sửa</span>
+            </button>
+            <button
+              (click)="confirmDelete(row)"
+              class="text-xs font-bold px-3 py-1.5 rounded-lg border border-rose-500/20 dark:border-rose-500/30 hover:bg-rose-100 dark:hover:bg-rose-950/40 text-rose-600 dark:text-rose-400 bg-rose-50 dark:bg-rose-950/20 hover:scale-105 active:scale-95 transition-all cursor-pointer flex items-center gap-1 shrink-0"
+              [appTooltip]="'Xóa'"
+            >
+              <app-icon name="trash" class="w-3.5 h-3.5" />
+              <span>Xóa</span>
+            </button>
+          }
+        </div>
+      </ng-template>
+    </app-table>
 
     <app-pagination
       [currentPage]="state.productStore.currentPage()"

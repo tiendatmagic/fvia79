@@ -62,140 +62,92 @@
   </div>
 
   <div app-card class="overflow-hidden !p-0">
-    <div class="overflow-x-auto">
-      <table class="w-full text-left border-collapse">
-        <thead>
-          <tr
-            class="border-b border-slate-200/30 dark:border-slate-800/30 bg-slate-50/50 dark:bg-slate-950/20"
+    <app-table
+      [columns]="columns"
+      [data]="filteredCategories()"
+      [loading]="state.productStore.loading()"
+      emptyText="Chưa có danh mục nào. Nhấp vào nút 'Thêm Danh Mục' để bắt đầu!"
+    >
+      <ng-template appTableCell="id" let-row="row">
+        <div class="flex items-center gap-1.5">
+          <span
+            [appTooltip]="row.id"
+            class="font-mono font-bold text-[var(--color-primary)] border-b border-dashed border-slate-300 dark:border-slate-700 pb-0.5"
           >
-            <th
-              class="py-4 px-6 text-xs font-bold text-slate-400 uppercase tracking-wider whitespace-nowrap"
-            >
-              ID
-            </th>
-            <th
-              class="py-4 px-6 text-xs font-bold text-slate-400 uppercase tracking-wider whitespace-nowrap"
-            >
-              Tên danh mục
-            </th>
-            <th
-              class="py-4 px-6 text-xs font-bold text-slate-400 uppercase tracking-wider whitespace-nowrap"
-            >
-              Slug
-            </th>
-            <th
-              class="py-4 px-6 text-xs font-bold text-slate-400 uppercase tracking-wider whitespace-nowrap"
-            >
-              Mô tả chi tiết
-            </th>
-            <th
-              class="py-4 px-6 text-xs font-bold text-slate-400 uppercase tracking-wider text-center whitespace-nowrap"
-            >
-              Số sản phẩm
-            </th>
-            <th
-              class="py-4 px-6 text-xs font-bold text-slate-400 uppercase tracking-wider whitespace-nowrap"
-            >
-              Ngày tạo
-            </th>
-            <th
-              class="py-4 px-6 text-xs font-bold text-slate-400 uppercase tracking-wider text-right whitespace-nowrap"
-            >
-              Thao tác
-            </th>
-          </tr>
-        </thead>
-        <tbody>
-          <tr *ngIf="state.productStore.loading()">
-            <td colspan="7" class="p-6">
-              <app-skeleton-loader [type]="'table'" [rows]="5" [showHeader]="false" />
-            </td>
-          </tr>
+            #{{ row.id | slice: 0 : 8 }}...{{ row.id | slice: -4 }}
+          </span>
+        </div>
+      </ng-template>
 
-          <tr *ngIf="!state.productStore.loading() && filteredCategories().length === 0">
-            <td colspan="7" class="py-12 text-center text-sm font-semibold text-slate-400">
-              Chưa có danh mục nào. Nhấp vào nút "Thêm Danh Mục" để bắt đầu!
-            </td>
-          </tr>
+      <ng-template appTableCell="name" let-row="row">
+        <span
+          class="text-sm font-extrabold text-slate-700 dark:text-slate-200 line-clamp-2"
+          [appTooltip]="row.name"
+        >
+          {{ row.name }}
+        </span>
+      </ng-template>
 
-          @if (!state.productStore.loading()) {
-            <tr
-              *ngFor="let c of filteredCategories()"
-              class="border-b border-slate-200/30 dark:border-slate-800/30 hover:bg-slate-50/30 dark:hover:bg-slate-950/10 transition-colors"
-            >
-              <td class="py-4 px-6 text-xs whitespace-nowrap">
-                <div class="flex items-center gap-1.5">
-                  <span
-                    [appTooltip]="c.id"
-                    class="font-mono font-bold text-[var(--color-primary)] border-b border-dashed border-slate-300 dark:border-slate-700 pb-0.5"
-                  >
-                    #{{ c.id | slice: 0 : 8 }}...{{ c.id | slice: -4 }}
-                  </span>
-                </div>
-              </td>
-              <td class="py-4 px-6 min-w-[220px] max-w-[320px]">
-                <span
-                  class="text-sm font-extrabold text-slate-700 dark:text-slate-200 line-clamp-2"
-                  [appTooltip]="c.name"
-                >
-                  {{ c.name }}
-                </span>
-              </td>
-              <td
-                class="py-4 px-6 text-sm font-mono text-slate-500 dark:text-slate-400 whitespace-nowrap"
-                [appTooltip]="c.slug"
-              >
-                {{ c.slug }}
-              </td>
-              <td
-                class="py-4 px-6 text-sm text-slate-500 dark:text-slate-400 min-w-[200px] max-w-[400px] truncate"
-                [appTooltip]="c.description || 'Không có mô tả.'"
-              >
-                {{ c.description || '-' }}
-              </td>
-              <td class="py-4 px-6 text-center whitespace-nowrap">
-                <app-badge
-                  [variant]="c.products_count > 0 ? 'success' : 'danger'"
-                  size="lg"
-                  rounded="md"
-                  [appTooltip]="'Số sản phẩm: ' + (c.products_count ?? 0)"
-                >
-                  {{ c.products_count ?? 0 }}
-                </app-badge>
-              </td>
-              <td
-                class="py-4 px-6 text-sm text-slate-500 dark:text-slate-400 whitespace-nowrap"
-                [appTooltip]="
-                  (c.created_at ? (c.created_at | date: 'dd/MM/yyyy HH:mm') : '-') || ''
-                "
-              >
-                {{ c.created_at | date: 'dd/MM/yyyy HH:mm' }}
-              </td>
-              <td class="py-4 px-6 text-right whitespace-nowrap">
-                <div class="flex items-center justify-end gap-2 whitespace-nowrap">
-                  <button
-                    (click)="openEditModal(c)"
-                    class="text-xs font-bold px-3 py-1.5 rounded-lg border border-[var(--color-primary)]/20 hover:bg-[var(--color-primary)]/10 text-[var(--color-primary)] bg-[var(--color-primary)]/5 dark:bg-[var(--color-primary)]/10 dark:border-[var(--color-primary)]/30 dark:hover:bg-[var(--color-primary)]/20 hover:scale-105 active:scale-95 transition-all cursor-pointer flex items-center gap-1 shrink-0"
-                    [appTooltip]="'Chỉnh sửa'"
-                  >
-                    <app-icon name="edit" class="w-3.5 h-3.5" />
-                    <span>Sửa</span>
-                  </button>
-                  <button
-                    (click)="confirmDelete(c)"
-                    class="text-xs font-bold px-3 py-1.5 rounded-lg border border-rose-500/20 dark:border-rose-500/30 hover:bg-rose-100 dark:hover:bg-rose-950/40 text-rose-600 dark:text-rose-400 bg-rose-50 dark:bg-rose-950/20 hover:scale-105 active:scale-95 transition-all cursor-pointer flex items-center gap-1 shrink-0"
-                    [appTooltip]="'Xóa'"
-                  >
-                    <app-icon name="trash" class="w-3.5 h-3.5" />
-                    <span>Xóa</span>
-                  </button>
-                </div>
-              </td>
-            </tr>
-          }
-        </tbody>
-      </table>
-    </div>
+      <ng-template appTableCell="slug" let-row="row">
+        <span
+          class="text-sm font-mono text-slate-500 dark:text-slate-400 whitespace-nowrap"
+          [appTooltip]="row.slug"
+        >
+          {{ row.slug }}
+        </span>
+      </ng-template>
+
+      <ng-template appTableCell="description" let-row="row">
+        <span
+          class="text-sm text-slate-500 dark:text-slate-400 min-w-[200px] max-w-[400px] truncate block"
+          [appTooltip]="row.description || 'Không có mô tả.'"
+        >
+          {{ row.description || '-' }}
+        </span>
+      </ng-template>
+
+      <ng-template appTableCell="products_count" let-row="row">
+        <app-badge
+          [variant]="row.products_count > 0 ? 'success' : 'danger'"
+          size="lg"
+          rounded="md"
+          [appTooltip]="'Số sản phẩm: ' + (row.products_count ?? 0)"
+        >
+          {{ row.products_count ?? 0 }}
+        </app-badge>
+      </ng-template>
+
+      <ng-template appTableCell="created_at" let-row="row">
+        <span
+          [appTooltip]="
+            (row.created_at ? (row.created_at | date: 'dd/MM/yyyy HH:mm') : '-') || ''
+          "
+        >
+          {{ row.created_at | date: 'dd/MM/yyyy HH:mm' }}
+        </span>
+      </ng-template>
+
+      <ng-template appTableCell="actions" let-row="row">
+        <div class="flex items-center justify-end gap-2 whitespace-nowrap">
+          <button
+            (click)="openEditModal(row)"
+            class="text-xs font-bold px-3 py-1.5 rounded-lg border border-[var(--color-primary)]/20 hover:bg-[var(--color-primary)]/10 text-[var(--color-primary)] bg-[var(--color-primary)]/5 dark:bg-[var(--color-primary)]/10 dark:border-[var(--color-primary)]/30 dark:hover:bg-[var(--color-primary)]/20 hover:scale-105 active:scale-95 transition-all cursor-pointer flex items-center gap-1 shrink-0"
+            [appTooltip]="'Chỉnh sửa'"
+          >
+            <app-icon name="edit" class="w-3.5 h-3.5" />
+            <span>Sửa</span>
+          </button>
+          <button
+            (click)="confirmDelete(row)"
+            class="text-xs font-bold px-3 py-1.5 rounded-lg border border-rose-500/20 dark:border-rose-500/30 hover:bg-rose-100 dark:hover:bg-rose-950/40 text-rose-600 dark:text-rose-400 bg-rose-50 dark:bg-rose-950/20 hover:scale-105 active:scale-95 transition-all cursor-pointer flex items-center gap-1 shrink-0"
+            [appTooltip]="'Xóa'"
+          >
+            <app-icon name="trash" class="w-3.5 h-3.5" />
+            <span>Xóa</span>
+          </button>
+        </div>
+      </ng-template>
+    </app-table>
 
     <app-pagination
       [currentPage]="state.productStore.currentCategoryPage()"

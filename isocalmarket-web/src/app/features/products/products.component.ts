@@ -2,7 +2,6 @@ import { Component, OnInit, inject, signal, computed } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { StateService } from '@core/services/state.service';
-import { SkeletonLoaderComponent } from '@shared/components/skeleton-loader/skeleton-loader.component';
 import { ButtonComponent } from '@shared/components/button/button.component';
 import { BadgeComponent } from '@shared/components/badge/badge.component';
 import { CardComponent } from '@shared/components/card/card.component';
@@ -14,6 +13,7 @@ import { ModalService } from '@core/services/modal.service';
 import { ProductFormModalComponent } from './product-form-modal/product-form-modal.component';
 import { CustomSelectComponent } from '@shared/components/custom-select/custom-select.component';
 import { PaginationComponent } from '@shared/components/pagination/pagination.component';
+import { TableComponent, TableCellDirective, TableColumn } from '@shared/components/table/table.component';
 
 @Component({
   selector: 'app-products',
@@ -21,7 +21,6 @@ import { PaginationComponent } from '@shared/components/pagination/pagination.co
   imports: [
     CommonModule,
     FormsModule,
-    SkeletonLoaderComponent,
     ButtonComponent,
     BadgeComponent,
     CardComponent,
@@ -31,6 +30,8 @@ import { PaginationComponent } from '@shared/components/pagination/pagination.co
     TooltipDirective,
     CustomSelectComponent,
     PaginationComponent,
+    TableComponent,
+    TableCellDirective,
   ],
   templateUrl: './products.component.html',
   styles: [`
@@ -42,6 +43,16 @@ import { PaginationComponent } from '@shared/components/pagination/pagination.co
 export class ProductsComponent implements OnInit {
   public readonly state = inject(StateService);
   private readonly modalService = inject(ModalService);
+
+  public readonly columns: TableColumn[] = [
+    { key: 'id', label: 'ID', sortable: true },
+    { key: 'name', label: 'Tên sản phẩm', sortable: true },
+    { key: 'slug', label: 'Slug', sortable: true },
+    { key: 'price', label: 'Đơn giá (VND)', sortable: true },
+    { key: 'available_count', label: 'Tồn kho khả dụng', sortable: true, align: 'center' },
+    { key: 'status', label: 'Trạng thái', sortable: true, align: 'center' },
+    { key: 'actions', label: 'Thao tác', sortable: false, align: 'right' }
+  ];
 
   public searchQuery = '';
   private readonly _searchQuery = signal('');

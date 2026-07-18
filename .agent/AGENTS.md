@@ -1082,3 +1082,28 @@
       3. **Frontend Component**: Cập nhật [products.component.ts](file:///d:/git/isocalmarket/isocalmarket-web/src/app/features/products/products.component.ts) kiểm tra `product.is_deleted` tại hàm `openEditDrawer()`. Nếu đúng, chặn mở modal và hiển thị thông báo lỗi bằng Toast: *"Không thể chỉnh sửa sản phẩm đã bị xóa mềm!"*.
       4. **Frontend Form Modal**: Cập nhật [product-form-modal.component.ts](file:///d:/git/isocalmarket/isocalmarket-web/src/app/features/products/product-form-modal/product-form-modal.component.ts) kiểm tra `modalData.is_deleted` tại hàm `ngOnInit()`. Nếu sản phẩm đã bị xóa mềm, đóng modal lập tức và báo lỗi Toast tương tự để làm lớp bảo vệ dự phòng.
       5. **Xác minh**: Chạy unit test suite của Backend (`php artisan test`) thành công và kiểm tra biên dịch Frontend (`npm run build`) hoàn thành thành công 100% không phát sinh lỗi.
+
+  - **[HOÀN THÀNH] QUÉT LẠI VÀ DỌN DẸP COMMENT RÁC, JSDOC TRÊN CẢ 2 DỰ ÁN (ANGULAR-WEB3-WALLET & ISOCALMARKET)**:
+    - **Yêu cầu:** Rà soát và xóa các comment rác, comment JSDoc, comment HTML và comment CSS/PHP thừa, giữ cho mã nguồn phẳng, sạch sẽ tối đa.
+    - **Thực hiện:**
+      1. **angular-web3-wallet & isocalmarket-web (Frontend):** Quét triệt để thư mục `src/app/`, loại bỏ tất cả comment JSDoc `/** ... */` trên class/inputs/outputs/methods, xóa 100% comment HTML `<!-- ... -->` và CSS block comments.
+      2. **isocalmarket-api (Backend Laravel):** Quét an toàn trong thư mục `app/` để xóa comment dòng đơn `//` hiển nhiên. Không xử lý inline comments ở đuôi dòng và không xóa các dòng bắt đầu bằng `#[` (PHP8 Attributes) để tránh lỗi cú pháp.
+      3. **Xác minh:** Biên dịch thành công 100% cả hai frontend và chạy test backend thành công `passed 14/14 tests`.
+
+  - **[HOÀN THÀNH] Triển Khai Hệ Thống Bảng Dùng Chung (Shared Table Component)**:
+    - **Yêu cầu**: Sao chép component Table từ `D:\git\angular-web3-wallet\src\app\shared\components\table` sang dự án, kế thừa và áp dụng cho tất cả các trang/tính năng, hỗ trợ sắp xếp theo cột (sorting) và responsive.
+    - **Thực hiện**:
+      1. Đã tạo và cấu hình thành công component dùng chung `TableComponent` và `TableCellDirective` cùng mảng cấu hình `TableColumn[]` tại `isocalmarket-web/src/app/shared/components/table`.
+      2. Đã refactor toàn bộ các trang và component bảng thô trong hệ thống sang sử dụng component bảng dùng chung:
+         - **ProductsComponent** (Quản lý sản phẩm)
+         - **InventoryComponent** (Quản lý kho hàng)
+         - **OrdersComponent** (Lịch sử đơn hàng khách hàng)
+         - **AdminOrdersComponent** (Quản lý đơn hàng admin)
+         - **AdminUsersComponent** (Quản lý thành viên admin)
+         - **AdminCategoriesComponent** (Quản lý danh mục admin)
+         - **AdminDashboardComponent** (Bảng cảnh báo tồn kho thấp ở Dashboard)
+         - **DepositHistoryComponent** (Lịch sử nạp tiền)
+         - **StorefrontComponent** (Chế độ xem List ở trang chủ cửa hàng)
+      3. Cấu hình import `TableComponent`, `TableCellDirective`, `TableColumn` và `TooltipDirective` đầy đủ cho các module tương ứng.
+      4. Chạy biên dịch Angular production build (`npm run build`) thành công 100% không phát sinh bất kỳ lỗi biên dịch nào.
+

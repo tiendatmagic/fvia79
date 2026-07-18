@@ -4,7 +4,6 @@ import { FormsModule } from '@angular/forms';
 import { Router } from '@angular/router';
 import { ApiService } from '@core/services/api.service';
 import { StateService } from '@core/services/state.service';
-import { SkeletonLoaderComponent } from '@shared/components/skeleton-loader/skeleton-loader.component';
 import { PaginationComponent } from '@shared/components/pagination/pagination.component';
 import { BadgeComponent } from '@shared/components/badge/badge.component';
 import { CardComponent } from '@shared/components/card/card.component';
@@ -15,6 +14,7 @@ import { CustomSearchInputComponent } from '@shared/components/custom-search-inp
 import { TooltipDirective } from '@shared/components/tooltip/tooltip.directive';
 import { CustomSelectComponent } from '@shared/components/custom-select/custom-select.component';
 import { CustomDateTimeRangeComponent, DateTimeRangeValue } from '@shared/components/custom-date-time-range/custom-date-time-range.component';
+import { TableComponent, TableCellDirective, TableColumn } from '@shared/components/table/table.component';
 
 @Component({
   selector: 'app-admin-orders',
@@ -22,7 +22,6 @@ import { CustomDateTimeRangeComponent, DateTimeRangeValue } from '@shared/compon
   imports: [
     CommonModule,
     FormsModule,
-    SkeletonLoaderComponent,
     PaginationComponent,
     BadgeComponent,
     CardComponent,
@@ -32,6 +31,8 @@ import { CustomDateTimeRangeComponent, DateTimeRangeValue } from '@shared/compon
     TooltipDirective,
     CustomSelectComponent,
     CustomDateTimeRangeComponent,
+    TableComponent,
+    TableCellDirective,
   ],
   templateUrl: './admin-orders.component.html',
   styles: [`
@@ -44,6 +45,16 @@ export class AdminOrdersComponent implements OnInit {
   private readonly apiService = inject(ApiService);
   public readonly stateService = inject(StateService);
   private readonly router = inject(Router);
+
+  public readonly columns: TableColumn[] = [
+    { key: 'order_code', label: 'Mã đơn hàng', sortable: true },
+    { key: 'customer_email', label: 'Khách hàng (Email)', sortable: true },
+    { key: 'total_price', label: 'Tổng tiền', sortable: true, align: 'right' },
+    { key: 'items_count', label: 'Số lượng mua', sortable: true, align: 'center' },
+    { key: 'status', label: 'Trạng thái', sortable: true, align: 'center' },
+    { key: 'created_at', label: 'Ngày mua', sortable: true },
+    { key: 'actions', label: 'Thao tác', sortable: false, align: 'right' }
+  ];
 
   public readonly orders = signal<any[]>([]);
   public readonly total = signal<number>(0);

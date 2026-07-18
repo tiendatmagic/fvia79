@@ -53,147 +53,83 @@
   </div>
 
   <div app-card class="overflow-hidden !p-0">
-        <div class="overflow-x-auto">
-      <table class="w-full text-left border-collapse">
-        <thead>
-          <tr
-            class="border-b border-slate-200/30 dark:border-slate-800/30 bg-slate-50/50 dark:bg-slate-950/20"
+    <app-table
+      [columns]="columns"
+      [data]="state.depositStore.historyList()"
+      [loading]="state.depositStore.loading()"
+      emptyText="Không tìm thấy lệnh nạp tiền nào!"
+      emptyIcon="archive"
+    >
+      <ng-template appTableCell="code" let-row="row">
+        <span class="font-mono font-black text-slate-700 dark:text-slate-300">
+          #{{ row.code }}
+        </span>
+      </ng-template>
+
+      <ng-template appTableCell="amountUsdt" let-row="row">
+        <span class="text-sm font-extrabold text-slate-855 dark:text-white">
+          {{ row.amountUsdt }} USDT
+        </span>
+        <div class="text-[10px] text-slate-400 dark:text-slate-500 font-bold mt-0.5">
+          (Thực chuyển: {{ row.amountToPay | number: '1.4-4' }} USDT)
+        </div>
+      </ng-template>
+
+      <ng-template appTableCell="amountVnd" let-row="row">
+        <span class="text-xs font-black text-slate-600 dark:text-slate-400">
+          {{ row.amountVnd | number }} VNĐ
+        </span>
+      </ng-template>
+
+      <ng-template appTableCell="status" let-row="row">
+        <app-badge
+          [variant]="
+            row.status === 'completed'
+              ? 'success'
+              : row.status === 'pending_payment'
+                ? 'warning'
+                : row.status === 'expired'
+                  ? 'neutral'
+                  : 'danger'
+          "
+        >
+          {{
+            row.status === 'completed'
+              ? 'Thành công'
+              : row.status === 'pending_payment'
+                ? 'Chờ thanh toán'
+                : row.status === 'expired'
+                  ? 'Đã hết hạn'
+                  : 'Thất bại'
+          }}
+        </app-badge>
+      </ng-template>
+
+      <ng-template appTableCell="createdAt" let-row="row">
+        <span class="text-xs text-slate-500 dark:text-slate-400">
+          {{ row.createdAt }}
+        </span>
+      </ng-template>
+
+      <ng-template appTableCell="actions" let-row="row">
+        <div class="flex items-center justify-end gap-2 whitespace-nowrap">
+          <button
+            *ngIf="row.status === 'pending_payment'"
+            type="button"
+            (click)="viewInvoice(row)"
+            class="text-xs font-bold px-3 py-1.5 rounded-lg border border-[var(--color-primary)]/20 dark:border-[var(--color-primary)]/30 hover:bg-[var(--color-primary)]/10 text-[var(--color-primary)] bg-[var(--color-primary)]/5 hover:scale-105 active:scale-95 transition-all cursor-pointer flex items-center gap-1 shrink-0"
           >
-            <th
-              class="py-4 px-6 text-xs font-bold text-slate-400 uppercase tracking-wider whitespace-nowrap"
-            >
-              Mã lệnh
-            </th>
-            <th
-              class="py-4 px-6 text-xs font-bold text-slate-400 uppercase tracking-wider whitespace-nowrap"
-            >
-              Số lượng (USDT)
-            </th>
-            <th
-              class="py-4 px-6 text-xs font-bold text-slate-400 uppercase tracking-wider whitespace-nowrap"
-            >
-              Số tiền VND
-            </th>
-            <th
-              class="py-4 px-6 text-xs font-bold text-slate-400 uppercase tracking-wider whitespace-nowrap"
-            >
-              Trạng thái
-            </th>
-            <th
-              class="py-4 px-6 text-xs font-bold text-slate-400 uppercase tracking-wider whitespace-nowrap"
-            >
-              Thời gian tạo
-            </th>
-            <th
-              class="py-4 px-6 text-xs font-bold text-slate-400 uppercase tracking-wider text-right whitespace-nowrap"
-            >
-              Thao tác
-            </th>
-          </tr>
-        </thead>
-        <tbody>
-                    <tr *ngIf="state.depositStore.loading()">
-            <td colspan="6" class="p-6">
-              <app-skeleton-loader [type]="'table'" [rows]="5" [showHeader]="false" />
-            </td>
-          </tr>
-
-                    <tr
-            *ngIf="!state.depositStore.loading() && state.depositStore.historyList().length === 0"
+            <span>Thanh toán</span>
+            <app-icon name="chevron-right" class="w-3.5 h-3.5" />
+          </button>
+          <span
+            *ngIf="row.status !== 'pending_payment'"
+            class="text-xs text-slate-400 dark:text-slate-600 font-bold mr-4"
+            >-</span
           >
-            <td
-              colspan="6"
-              class="py-12 text-center text-slate-400 dark:text-slate-500 font-semibold"
-            >
-              <app-icon
-                name="archive"
-                class="w-8 h-8 mx-auto mb-2 opacity-50 text-slate-300 dark:text-slate-650"
-              />
-              <p class="text-xs font-extrabold uppercase tracking-wider">
-                Không tìm thấy lệnh nạp tiền nào!
-              </p>
-            </td>
-          </tr>
-
-                    <ng-container *ngIf="!state.depositStore.loading()">
-            <tr
-              *ngFor="let item of state.depositStore.historyList()"
-              class="border-b border-slate-200/30 dark:border-slate-800/30 hover:bg-slate-50/30 dark:hover:bg-slate-950/10 transition-colors"
-            >
-                            <td
-                class="py-4 px-6 text-xs font-mono font-black text-slate-700 dark:text-slate-300 whitespace-nowrap"
-              >
-                #{{ item.code }}
-              </td>
-
-                            <td
-                class="py-4 px-6 text-sm font-extrabold text-slate-855 dark:text-white whitespace-nowrap"
-              >
-                {{ item.amountUsdt }} USDT
-                <div class="text-[10px] text-slate-400 dark:text-slate-500 font-bold mt-0.5">
-                  (Thực chuyển: {{ item.amountToPay | number: '1.4-4' }} USDT)
-                </div>
-              </td>
-
-                            <td
-                class="py-4 px-6 text-xs font-black text-slate-600 dark:text-slate-400 whitespace-nowrap"
-              >
-                {{ item.amountVnd | number }} VNĐ
-              </td>
-
-                            <td class="py-4 px-6 whitespace-nowrap">
-                <app-badge
-                  [variant]="
-                    item.status === 'completed'
-                      ? 'success'
-                      : item.status === 'pending_payment'
-                        ? 'warning'
-                        : item.status === 'expired'
-                          ? 'neutral'
-                          : 'danger'
-                  "
-                >
-                  {{
-                    item.status === 'completed'
-                      ? 'Thành công'
-                      : item.status === 'pending_payment'
-                        ? 'Chờ thanh toán'
-                        : item.status === 'expired'
-                          ? 'Đã hết hạn'
-                          : 'Thất bại'
-                  }}
-                </app-badge>
-              </td>
-
-                            <td
-                class="py-4 px-6 text-xs font-semibold text-slate-500 dark:text-slate-400 whitespace-nowrap"
-              >
-                {{ item.createdAt }}
-              </td>
-
-                            <td class="py-4 px-6 text-right whitespace-nowrap">
-                <div class="flex items-center justify-end gap-2 whitespace-nowrap">
-                  <button
-                    *ngIf="item.status === 'pending_payment'"
-                    type="button"
-                    (click)="viewInvoice(item)"
-                    class="text-xs font-bold px-3 py-1.5 rounded-lg border border-[var(--color-primary)]/20 dark:border-[var(--color-primary)]/30 hover:bg-[var(--color-primary)]/10 text-[var(--color-primary)] bg-[var(--color-primary)]/5 hover:scale-105 active:scale-95 transition-all cursor-pointer flex items-center gap-1 shrink-0"
-                  >
-                    <span>Thanh toán</span>
-                    <app-icon name="chevron-right" class="w-3.5 h-3.5" />
-                  </button>
-                  <span
-                    *ngIf="item.status !== 'pending_payment'"
-                    class="text-xs text-slate-400 dark:text-slate-600 font-bold mr-4"
-                    >-</span
-                  >
-                </div>
-              </td>
-            </tr>
-          </ng-container>
-        </tbody>
-      </table>
-    </div>
+        </div>
+      </ng-template>
+    </app-table>
 
     <app-pagination
       [currentPage]="state.depositStore.currentPage()"

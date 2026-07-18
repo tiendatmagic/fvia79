@@ -7,11 +7,11 @@ import { IconComponent } from '@shared/components/icon/icon.component';
 import { PaginationComponent } from '@shared/components/pagination/pagination.component';
 import { PageHeaderComponent } from '@shared/components/page-header/page-header.component';
 import { CardComponent } from '@shared/components/card/card.component';
-import { SkeletonLoaderComponent } from '@shared/components/skeleton-loader/skeleton-loader.component';
 import { CustomSearchInputComponent } from '@shared/components/custom-search-input/custom-search-input.component';
 import { CustomSelectComponent } from '@shared/components/custom-select/custom-select.component';
 import { CustomDateTimeRangeComponent, DateTimeRangeValue } from '@shared/components/custom-date-time-range/custom-date-time-range.component';
 import { FormsModule } from '@angular/forms';
+import { TableComponent, TableCellDirective, TableColumn } from '@shared/components/table/table.component';
 
 export interface DepositHistoryItem {
   id: string;
@@ -36,10 +36,11 @@ export interface DepositHistoryItem {
     PaginationComponent,
     PageHeaderComponent,
     CardComponent,
-    SkeletonLoaderComponent,
     CustomSearchInputComponent,
     CustomSelectComponent,
-    CustomDateTimeRangeComponent
+    CustomDateTimeRangeComponent,
+    TableComponent,
+    TableCellDirective,
   ],
   templateUrl: './deposit-history.component.html',
   styles: [`
@@ -51,6 +52,15 @@ export interface DepositHistoryItem {
 export class DepositHistoryComponent implements OnInit {
   public readonly state = inject(StateService);
   private readonly router = inject(Router);
+
+  public readonly columns: TableColumn[] = [
+    { key: 'code', label: 'Mã lệnh', sortable: true },
+    { key: 'amountUsdt', label: 'Số lượng (USDT)', sortable: true },
+    { key: 'amountVnd', label: 'Số tiền VND', sortable: true },
+    { key: 'status', label: 'Trạng thái', sortable: true },
+    { key: 'createdAt', label: 'Thời gian tạo', sortable: true },
+    { key: 'actions', label: 'Thao tác', sortable: false, align: 'right' }
+  ];
 
   public readonly currentPage = signal<number>(1);
   public readonly itemsPerPage = 10;
