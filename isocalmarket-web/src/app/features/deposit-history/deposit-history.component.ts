@@ -14,6 +14,7 @@ import { FormsModule } from '@angular/forms';
 import { TableComponent, TableCellDirective, TableColumn } from '@shared/components/table/table.component';
 import { ModalService } from '@core/services/modal.service';
 import { DepositDetailModalComponent } from './deposit-detail-modal.component';
+import { TooltipDirective } from '@shared/components/tooltip/tooltip.directive';
 
 export interface DepositHistoryItem {
   id: string;
@@ -44,6 +45,7 @@ export interface DepositHistoryItem {
     CustomDateTimeRangeComponent,
     TableComponent,
     TableCellDirective,
+    TooltipDirective,
   ],
   templateUrl: './deposit-history.component.html',
   styles: [`
