@@ -27,6 +27,10 @@ import { ModalService } from '@core/services/modal.service';
     :host {
       display: block;
     }
+    .mask-security {
+      -webkit-text-security: disc !important;
+      text-security: disc !important;
+    }
   `]
 })
 export class AdminSettingsComponent implements OnInit {

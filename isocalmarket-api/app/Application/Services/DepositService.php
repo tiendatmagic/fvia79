@@ -270,36 +270,36 @@ class DepositService
         $tokenContract = strtolower($this->tokenContractAddress);
         
         try {
-            $response = Http::timeout(10)->get('https://api.etherscan.io/v2/api', [
-                'chainid' => 56,
-                'module' => 'account',
-                'action' => 'tokentx',
-                'address' => $adminWallet,
-                'startblock' => 0,
-                'endblock' => 99999999,
-                'sort' => 'desc',
-                'apikey' => $this->scannerApiKey
-            ]);
+            // Moralis API: GET /api/v2.2/{address}/erc20/transfers
+            // Auth via X-API-Key header, chain=bsc, filter by USDT contract
+            $response = Http::timeout(10)
+                ->withHeader('X-API-Key', $this->scannerApiKey)
+                ->get("https://deep-index.moralis.io/api/v2.2/{$adminWallet}/erc20/transfers", [
+                    'chain'               => 'bsc',
+                    'contract_addresses'  => [$this->tokenContractAddress],
+                    'order'               => 'DESC',
+                    'limit'               => 100,
+                ]);
 
             if ($response->successful()) {
                 $result = $response->json();
-                
-                if (isset($result['status']) && $result['status'] === '1' && is_array($result['result'])) {
+
+                if (isset($result['result']) && is_array($result['result'])) {
                     $transactions = $result['result'];
-                    
+
                     foreach ($transactions as $tx) {
                         // 1. Kiểm tra token có khớp với token đối soát cấu hình không
-                        if (strtolower($tx['contractAddress']) !== $tokenContract) {
+                        if (strtolower($tx['address'] ?? '') !== $tokenContract) {
                             continue;
                         }
 
                         // 2. Kiểm tra ví nhận có phải ví chủ sàn không
-                        if (strtolower($tx['to']) !== $adminWallet) {
+                        if (strtolower($tx['to_address'] ?? '') !== $adminWallet) {
                             continue;
                         }
 
                         // 3. Quy đổi số lượng chuyển khoản từ wei sang giá trị thực dựa trên Decimals cấu hình
-                        $txValueUsdt = (float) $tx['value'] / pow(10, $this->tokenDecimals);
+                        $txValueUsdt = (float) ($tx['value'] ?? 0) / pow(10, $this->tokenDecimals);
                         $amountToPay = $deposit->getAmountToPay();
 
                         // 4. So khớp số lượng thực nhận (dung sai làm tròn cực nhỏ 0.0001)
@@ -308,16 +308,19 @@ class DepositService
                         }
 
                         // 5. Kiểm tra mã băm TxHash này đã được dùng đối soát trước đó chưa
-                        $txHash = $tx['hash'];
+                        $txHash = $tx['transaction_hash'] ?? '';
                         if ($this->depositRepository->isTxHashUsed($txHash)) {
                             continue;
                         }
 
                         // 6. Kiểm tra giao dịch có diễn ra trong vòng 15 phút (900 giây) kể từ lúc tạo hóa đơn không
+                        // Moralis trả về block_timestamp dạng ISO 8601: "2026-07-18T17:54:12.000Z"
                         $invoiceCreatedEpoch = $deposit->getCreatedAt()->getTimestamp();
-                        $txEpoch = (int) $tx['timeStamp'];
+                        $txEpoch = isset($tx['block_timestamp'])
+                            ? (new \DateTime($tx['block_timestamp']))->getTimestamp()
+                            : 0;
                         $timeDiff = $txEpoch - $invoiceCreatedEpoch;
-                        if ($timeDiff < -60 || $timeDiff > 900) { // Cho phép dung sai 60 giây trước khi tạo lệnh do lệch đồng hồ mạng
+                        if ($timeDiff < -60 || $timeDiff > 900) {
                             continue;
                         }
 
@@ -336,13 +339,13 @@ class DepositService
                         return true;
                     }
                 } else {
-                    Log::warning("Etherscan API response status error: " . json_encode($result));
+                    Log::warning("Moralis API response error: " . json_encode($result));
                 }
             } else {
-                Log::error("Etherscan API HTTP status code error: " . $response->status());
+                Log::error("Moralis API HTTP error: " . $response->status() . " - " . $response->body());
             }
         } catch (\Exception $e) {
-            Log::error("Failed to query Etherscan transactions: " . $e->getMessage());
+            Log::error("Failed to query Moralis transactions: " . $e->getMessage());
         }
 
         return false;

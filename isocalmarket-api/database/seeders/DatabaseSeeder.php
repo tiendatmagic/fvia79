@@ -665,7 +665,7 @@ class DatabaseSeeder extends Seeder
             [
                 'key' => 'scanner_api_key',
                 'value' => env('SCANNER_API_KEY', ''),
-                'description' => 'API Key của Etherscan để kiểm tra giao dịch nạp tiền',
+                'description' => 'API Key của Moralis để đối soát giao dịch nạp tiền tự động',
                 'created_at' => now(),
                 'updated_at' => now(),
             ],

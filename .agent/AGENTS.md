@@ -1200,4 +1200,11 @@
       1. **DepositStore**: Cập nhật [deposit.store.ts](file:///d:/git/isocalmarket/isocalmarket-web/src/app/features/deposit/deposit.store.ts), loại bỏ việc đột biến trạng thái `loading.set(true)` trong các phương thức write/action: `createDeposit()`, `cancelInvoice()`, và `checkTransaction()`. Chỉ giữ lại trạng thái loading cho các API đọc dữ liệu như `fetchRate()`, `fetchHistory()`, `fetchInvoice()`.
       2. **Component Indicators**: Form và các phần tử nhập liệu vẫn hiển thị nguyên vẹn, các nút bấm xử lý tương ứng vẫn hiển thị vòng xoay loading spinner độc lập (`isSubmitting`, `isCancelling`, `isChecking`) để báo hiệu chính xác tiến trình xử lý.
       3. **Xác minh**: Ứng dụng hoạt động mượt mà, trực quan và biên dịch Angular thành công.
-
+  - **[MIGRATION] Chuyển đổi API quét giao dịch sang Moralis & Tối ưu hoá Admin Settings**:
+    - **Yêu cầu**: Giải quyết lỗi Etherscan API V2 Free Plan không hỗ trợ quét giao dịch trên BNB Smart Chain (BSC - chainid=56). Thay đổi trường nhập API key trong mục cài đặt admin thành textarea do API key của Moralis rất dài (dạng JWT token).
+    - **Giải pháp & Triển khai**:
+      1. **Backend API**: Cập nhật [DepositService.php](file:///d:/git/isocalmarket/isocalmarket-api/app/Application/Services/DepositService.php), chuyển đổi endpoint quét từ Etherscan V2 sang Moralis API (`/erc20/transfers?chain=bsc`). Định cấu hình header xác thực `X-API-Key` và map lại các trường dữ liệu tương ứng của Moralis (`transaction_hash`, `to_address`, `block_timestamp`).
+      2. **Database Seeder**: Thay đổi description của trường cấu hình `scanner_api_key` trong [DatabaseSeeder.php](file:///d:/git/isocalmarket/isocalmarket-api/database/seeders/DatabaseSeeder.php) để hướng dẫn dùng Moralis.
+      3. **Frontend UI**: Thay đổi ô input của `scanner_api_key` thành `<textarea>` với 3 dòng nhập liệu trong [admin-settings.component.html](file:///d:/git/isocalmarket/isocalmarket-web/src/app/features/admin-settings/admin-settings.component.html) để người dùng dễ dàng dán JWT Token dài.
+      4. **Che giấu bảo mật**: Thêm class `.mask-security` sử dụng thuộc tính `-webkit-text-security: disc` trong stylesheet của [admin-settings.component.ts](file:///d:/git/isocalmarket/isocalmarket-web/src/app/features/admin-settings/admin-settings.component.ts), giúp che giấu API key thành dấu chấm tròn tương tự ô password khi ở trạng thái ẩn, và hiển thị lại khi nhấn nút Toggle Eye.
+      5. **Xác minh**: Chạy thử nghiệm đối soát tự động thành công và liên kết lấy API key Moralis được điều hướng chính xác.

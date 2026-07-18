@@ -64,39 +64,42 @@
             </div>
 
             <div class="form-field md:col-span-2">
-              <label>Etherscan API Key</label>
+              <label>Moralis API Key</label>
               <div class="relative mt-1">
-                <input
-                  [type]="showApiKey() ? 'text' : 'password'"
+                <textarea
                   name="scanner_api_key"
-                  class="form-input w-full pr-12"
-                  placeholder="Nhập API Key Etherscan..."
+                  class="form-input w-full pr-12 py-3 font-mono text-xs leading-relaxed resize-none"
+                  [class.mask-security]="!showApiKey()"
+                  rows="5"
+                  placeholder="Nhập API Key Moralis (Token JWT)..."
                   [(ngModel)]="form.scanner_api_key"
                   [disabled]="isLocked()"
                   required
-                />
+                ></textarea>
                 <button
                   type="button"
                   (click)="toggleApiKeyVisibility()"
-                  class="absolute inset-y-0 right-0 pr-4 flex items-center text-slate-400 hover:text-slate-600 dark:hover:text-slate-200 transition-colors"
+                  class="absolute top-3 right-0 pr-4 flex items-center text-slate-400 hover:text-slate-600 dark:hover:text-slate-200 transition-colors"
                 >
                   <app-icon [name]="showApiKey() ? 'eye-slash' : 'eye'" class="w-5 h-5" />
                 </button>
               </div>
               <p class="mt-1.5 text-xs text-slate-400 dark:text-slate-500">
-                Sử dụng <span class="font-bold text-slate-600 dark:text-slate-300">Etherscan API V2</span> để tự động đối soát giao dịch nạp USDT trên BSC (BEP-20).
-                Yêu cầu tài khoản <span class="font-bold text-amber-500">Etherscan Pro</span> để hỗ trợ BSC (chainid=56).
-                <a href="https://etherscan.io/apidashboard" target="_blank" class="text-primary hover:underline font-bold inline-flex items-center gap-0.5 ml-1 cursor-pointer">
-                  Lấy API Key tại đây <app-icon name="external-link" class="w-3 h-3" />
+                Sử dụng <span class="font-bold text-slate-600 dark:text-slate-300">Moralis API Key</span> (định dạng JWT token dài) để tự động đối soát giao dịch nạp USDT trên BSC (BEP-20).
+                <a href="https://admin.moralis.io/" target="_blank" class="text-primary hover:underline font-bold inline-flex items-center gap-0.5 ml-1 cursor-pointer">
+                  Đến trang quản trị Moralis <app-icon name="external-link" class="w-3 h-3" />
                 </a>
               </p>
-              <div class="mt-2 flex items-start gap-2 bg-amber-50 dark:bg-amber-950/20 border border-amber-200/50 dark:border-amber-800/40 rounded-lg p-2.5">
-                <app-icon name="warning" class="w-4 h-4 text-amber-500 shrink-0 mt-0.5" />
-                <p class="text-xs text-amber-700 dark:text-amber-400 font-semibold leading-relaxed">
-                  Etherscan Free Plan <strong>không hỗ trợ BSC</strong>. Cần nâng cấp lên Pro Plan hoặc sử dụng API Key từ
-                  <a href="https://bscscan.com/myapikey" target="_blank" class="underline font-bold">bscscan.com/myapikey</a>
-                  (miễn phí, dành riêng cho BSC) kết hợp với endpoint BscScan.
-                </p>
+              <div class="mt-2 flex items-start gap-2 bg-slate-50 dark:bg-slate-900/60 border border-slate-200/50 dark:border-slate-800/40 rounded-lg p-2.5">
+                <app-icon name="info" class="w-4 h-4 text-[var(--color-primary)] shrink-0 mt-0.5" />
+                <div class="text-xs text-slate-600 dark:text-slate-400 font-semibold leading-relaxed">
+                  <strong>Hướng dẫn lấy API Key Moralis miễn phí:</strong>
+                  <ol class="list-decimal pl-4 mt-1 space-y-1">
+                    <li>Đăng ký hoặc Đăng nhập tài khoản tại <a href="https://admin.moralis.io/" target="_blank" class="underline font-bold text-primary">admin.moralis.io</a>.</li>
+                    <li>Truy cập mục <strong>API Keys</strong> ở menu bên trái.</li>
+                    <li>Copy chuỗi <strong>Web3 API Key</strong> và dán vào ô nhập liệu ở trên.</li>
+                  </ol>
+                </div>
               </div>
             </div>
           </div>
