@@ -20,7 +20,8 @@ class UserMapper
             $model->refresh_token_expired_at ? new \DateTime($model->refresh_token_expired_at->toDateTimeString()) : null,
             $model->phone,
             $model->google2fa_secret,
-            $model->google2fa_enabled
+            $model->google2fa_enabled,
+            $model->api_key
         );
     }
 
@@ -41,6 +42,7 @@ class UserMapper
         $model->refresh_token_expired_at = $entity->getRefreshTokenExpiredAt();
         $model->google2fa_secret = $entity->getGoogle2faSecret();
         $model->google2fa_enabled = $entity->isGoogle2faEnabled();
+        $model->api_key = $entity->getApiKey();
 
         return $model;
     }

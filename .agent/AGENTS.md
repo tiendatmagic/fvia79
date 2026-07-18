@@ -1003,8 +1003,22 @@
       3. **API Controllers**: Viết `SystemSettingController` cung cấp API lấy và cập nhật cấu hình cho admin, đăng ký route tại `api.php`.
       4. **Frontend**: Tạo Slice Store `SystemSettingStore` quản lý state. Thêm route `/admin/settings`, đăng ký menu liên kết tại Sidebar Desktop (`sidebar.component.html`) và Mobile (`app.html`).
       5. **UI Component**: Xây dựng `AdminSettingsComponent` (ts & html) tuân thủ `design.md`, sử dụng card kính mờ, form field tiêu chuẩn và skeleton loader. Chuyển đổi tên cấu hình sang Etherscan API Key, thêm nút ẩn/hiện API Key bằng icon con mắt (`eye` / `eye-slash`), link hướng dẫn `https://etherscan.io/apidashboard`, và bổ sung chế độ khóa/mở khóa bảo mật (`isLocked` = true mặc định).
-      6. **Xác minh**: Chạy `php artisan test` và `npm run build` thành công 100% không có lỗi.
-
-
-
+      6. **Xác minh**: Chạy `php artisan test` và `npm run build` thành công 100% không có lỗi.  - **[PHÁT TRIỂN TÍNH NĂNG USER API & QUẢN LÝ THÀNH VIÊN]**:
+    - Yêu cầu: Bổ sung tính năng User API (B2B API Key) cho cả khách hàng và quản trị viên, đi kèm giao diện sinh/làm mới API Key, xem tài liệu tích hợp (CURL, URL mẫu, JSON phản hồi). Đồng thời xây dựng tính năng Quản lý thành viên (CRUD, đổi mật khẩu, nạp/trừ số dư, và tạo/thu hồi API Key) cho Admin.
+    - Giải pháp & Triển khai:
+      1. **Database**: Tạo migration bổ sung cột `api_key` dạng VARCHAR UNIQUE vào bảng `users`. Cập nhật `DatabaseSeeder.php` để sinh sẵn API Key mặc định cho tài khoản admin/customer mẫu.
+      2. **Backend Services & Controllers**:
+         - Viết `B2bAuthMiddleware` để nhận diện khóa API Key truyền qua URL parameter (`?api_key=...`), HTTP Header `X-API-KEY` hoặc Authorization Header Bearer.
+         - Viết `B2bController` xử lý lấy danh sách sản phẩm, chi tiết sản phẩm và mua sản phẩm thông qua API (tự động kiểm tra ví VND của người dùng, thực hiện trừ tiền và giao tài khoản ngay lập tức).
+         - Viết `AdminUserController` cung cấp API CRUD người dùng, phân trang và tìm kiếm.
+         - Thêm endpoint `generateApiKey()` trong `ProfileController` để người dùng cá nhân có thể tự sinh/làm mới API Key của mình.
+      3. **Frontend Slice Stores & Routers**:
+         - Tạo `UserStore` để đồng bộ quản lý danh sách thành viên ở frontend.
+         - Cập nhật `AuthStore` thêm hàm call `/profile/api-key`.
+         - Đăng ký các route `/user-api` và `/admin/users` vào `app.routes.ts`.
+      4. **UI Components**:
+         - Xây dựng `UserApiComponent` (ts & html) hiển thị API Key cá nhân và tài liệu tích hợp API B2B cực kỳ chi tiết, dùng helper tránh quote-escape lỗi trong Angular template, hỗ trợ copy một chạm.
+         - Xây dựng `AdminUsersComponent` dạng bảng quản lý trực quan, hiển thị ngắn gọn ID/API Key kèm tooltip, tích hợp dynamic modal `UserFormModalComponent` cho form thêm/sửa, tuân thủ nghiêm ngặt rule responsive bảng và thiết kế nút bấm có viền mờ nhạt.
+         - Tích hợp liên kết vào Desktop Sidebar (`sidebar.component.html`) và Mobile Sidebar Drawer (`app.html`).
+      5. **Xác minh**: Chạy `php artisan migrate:fresh --seed` và `php artisan test` thành công. Biên dịch Angular `npm run build` thành công 100% không phát sinh bất kỳ lỗi nào.
 

@@ -15,15 +15,18 @@ class OrderService
     private OrderRepositoryInterface $orderRepository;
     private ProductRepositoryInterface $productRepository;
     private InventoryBatchRepositoryInterface $inventoryRepository;
+    private \App\Domain\Repositories\UserRepositoryInterface $userRepository;
 
     public function __construct(
         OrderRepositoryInterface $orderRepository,
         ProductRepositoryInterface $productRepository,
-        InventoryBatchRepositoryInterface $inventoryRepository
+        InventoryBatchRepositoryInterface $inventoryRepository,
+        \App\Domain\Repositories\UserRepositoryInterface $userRepository
     ) {
         $this->orderRepository = $orderRepository;
         $this->productRepository = $productRepository;
         $this->inventoryRepository = $inventoryRepository;
+        $this->userRepository = $userRepository;
     }
 
     public function createOrder(string $userId, array $itemsInput): Order
@@ -90,6 +93,19 @@ class OrderService
                     $deliveredKeys
                 );
             }
+
+            // Kiểm tra và trừ tiền từ số dư của người dùng
+            $user = $this->userRepository->findById($userId);
+            if (!$user) {
+                throw new \Exception('Không tìm thấy tài khoản người dùng.');
+            }
+
+            if ($user->getBalance() < $totalPrice) {
+                throw new \Exception("Số dư không đủ để thanh toán đơn hàng (Yêu cầu: " . number_format($totalPrice) . " VND, Hiện có: " . number_format($user->getBalance()) . " VND).");
+            }
+
+            $user->setBalance($user->getBalance() - $totalPrice);
+            $this->userRepository->save($user);
 
             $order = new Order(null, $userId, $orderCode, $totalPrice, 'paid', $orderItems);
             $savedOrder = $this->orderRepository->save($order);

@@ -41,6 +41,11 @@ export const routes: Routes = [
     canActivate: [AuthGuard]
   },
   {
+    path: 'user-api',
+    loadComponent: () => import('@features/user-api/user-api.component').then(m => m.UserApiComponent),
+    canActivate: [AuthGuard]
+  },
+  {
     path: 'deposit',
     canActivate: [AuthGuard],
     children: [
@@ -82,6 +87,10 @@ export const routes: Routes = [
       {
         path: 'orders',
         loadComponent: () => import('@features/admin-orders/admin-orders.component').then(m => m.AdminOrdersComponent)
+      },
+      {
+        path: 'users',
+        loadComponent: () => import('@features/admin-users/admin-users.component').then(m => m.AdminUsersComponent)
       },
       {
         path: 'settings',

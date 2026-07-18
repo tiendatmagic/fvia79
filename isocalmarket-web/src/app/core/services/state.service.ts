@@ -7,6 +7,7 @@ import { ProductStore } from '../../features/products/product.store';
 import { InventoryStore } from '../../features/inventory/inventory.store';
 import { OrderStore } from '../../features/orders/order.store';
 import { DepositStore } from '../../features/deposit/deposit.store';
+import { UserStore } from '../../features/admin-users/user.store';
 import { Web3Service } from './web3.service';
 
 @Injectable({
@@ -22,6 +23,7 @@ export class StateService {
   public readonly inventoryStore = inject(InventoryStore);
   public readonly orderStore = inject(OrderStore);
   public readonly depositStore = inject(DepositStore);
+  public readonly userStore = inject(UserStore);
   
   private readonly web3Service = inject(Web3Service);
 
@@ -35,7 +37,8 @@ export class StateService {
     this.productStore.loading() || 
     this.inventoryStore.loading() || 
     this.orderStore.loading() ||
-    this.depositStore.loading()
+    this.depositStore.loading() ||
+    this.userStore.loading()
   );
 
   public readonly isDarkMode = this.themeService.isDarkMode;

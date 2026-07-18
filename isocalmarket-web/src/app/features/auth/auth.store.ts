@@ -186,6 +186,24 @@ export class AuthStore {
     );
   }
 
+  public regenerateApiKey(): Observable<any> {
+    this.authLoading.set(true);
+    return this.api.post<any>('v1/profile/api-key', {}).pipe(
+      tap((res) => {
+        if (res && res.user) {
+          this.currentUser.set(res.user);
+          this.toast.showToast('Tạo API Key mới thành công!', 'success');
+        }
+      }),
+      catchError((err) => {
+        const msg = err.error?.message || 'Không thể tạo API Key mới!';
+        this.toast.showToast(msg, 'error');
+        return of(null);
+      }),
+      finalize(() => this.authLoading.set(false))
+    );
+  }
+
   public changePassword(data: any) {
     this.authLoading.set(true);
     return this.api.put<any>('v1/profile/password', data).pipe(

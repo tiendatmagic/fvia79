@@ -35,4 +35,47 @@ class UserRepository implements UserRepositoryInterface
         $model->save();
         return UserMapper::toDomain($model);
     }
+
+    public function findByApiKey(string $apiKey): ?User
+    {
+        $model = UserModel::where('api_key', $apiKey)->first();
+        return $model ? UserMapper::toDomain($model) : null;
+    }
+
+    public function findAllPaginated(int $page, int $limit, ?string $search = null): array
+    {
+        $query = UserModel::query();
+        if ($search) {
+            $query->where(function ($q) use ($search) {
+                $q->where('name', 'like', "%{$search}%")
+                  ->orWhere('email', 'like', "%{$search}%")
+                  ->orWhere('phone', 'like', "%{$search}%");
+            });
+        }
+
+        $total = $query->count();
+        $models = $query->orderBy('created_at', 'desc')
+            ->skip(($page - 1) * $limit)
+            ->take($limit)
+            ->get();
+
+        $users = [];
+        foreach ($models as $model) {
+            $users[] = UserMapper::toDomain($model);
+        }
+
+        return [
+            'items' => $users,
+            'total' => $total
+        ];
+    }
+
+    public function delete(string $id): bool
+    {
+        $model = UserModel::find($id);
+        if ($model) {
+            return (bool) $model->delete();
+        }
+        return false;
+    }
 }

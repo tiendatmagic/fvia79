@@ -169,4 +169,33 @@ class ProfileController extends Controller
             ]
         ]);
     }
+
+    /**
+     * POST /v1/profile/api-key
+     * Sinh/Làm mới API Key cho người dùng hiện tại
+     */
+    public function generateApiKey(Request $request)
+    {
+        $userModel = Auth::user();
+        if (!$userModel) {
+            return response()->json(['message' => 'Unauthorized.'], 401);
+        }
+
+        $userModel->api_key = 'B2B-KEY-' . \Illuminate\Support\Str::random(16);
+        $userModel->save();
+
+        return response()->json([
+            'message' => 'API Key generated successfully.',
+            'user' => [
+                'id' => $userModel->id,
+                'name' => $userModel->name,
+                'email' => $userModel->email,
+                'phone' => $userModel->phone,
+                'role' => $userModel->role,
+                'google2fa_enabled' => $userModel->google2fa_enabled,
+                'api_key' => $userModel->api_key,
+                'balance' => $userModel->balance
+            ]
+        ]);
+    }
 }

@@ -23,7 +23,8 @@ class DatabaseSeeder extends Seeder
             'name'     => 'admin',
             'email'    => 'admin@isocalmarket.com',
             'password' => Hash::make('Admin@Isocal2025!'),
-            'role'     => 'admin'
+            'role'     => 'admin',
+            'api_key'  => 'B2B-KEY-admin'
         ]);
 
         $customers = [];
@@ -39,7 +40,8 @@ class DatabaseSeeder extends Seeder
                 'email'    => $email,
                 'password' => Hash::make('password'),
                 'role'     => 'customer',
-                'phone'    => '098' . rand(1000000, 9999999)
+                'phone'    => '098' . rand(1000000, 9999999),
+                'api_key'  => 'B2B-KEY-customer' . ($index + 1)
             ]);
         }
 

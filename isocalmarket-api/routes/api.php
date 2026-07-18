@@ -16,6 +16,13 @@ Route::prefix('v1')->group(function () {
     Route::get('/products/{id}', ['App\Http\Controllers\ProductController', 'show']);
     Route::get('/categories', ['App\Http\Controllers\CategoryController', 'index']);
 
+    // B2B API Routes - protected by B2B API Key middleware
+    Route::middleware(['b2b.auth'])->group(function () {
+        Route::get('/b2b/products', ['App\Http\Controllers\B2bController', 'index']);
+        Route::get('/b2b/products/{id}', ['App\Http\Controllers\B2bController', 'show']);
+        Route::post('/b2b/buy', ['App\Http\Controllers\B2bController', 'buy']);
+    });
+
     Route::middleware(['jwt.auth'])->group(function () {
         Route::post('/auth/logout', ['App\Http\Controllers\AuthController', 'logout']);
         Route::get('/auth/me', ['App\Http\Controllers\AuthController', 'me']);
@@ -26,6 +33,7 @@ Route::prefix('v1')->group(function () {
         Route::post('/profile/2fa/enable', ['App\Http\Controllers\ProfileController', 'enable2Fa']);
         Route::post('/profile/2fa/confirm', ['App\Http\Controllers\ProfileController', 'confirm2Fa']);
         Route::post('/profile/2fa/disable', ['App\Http\Controllers\ProfileController', 'disable2Fa']);
+        Route::post('/profile/api-key', ['App\Http\Controllers\ProfileController', 'generateApiKey']);
 
         Route::post('/orders', ['App\Http\Controllers\OrderController', 'store']);
         Route::get('/orders', ['App\Http\Controllers\OrderController', 'index']);
@@ -44,6 +52,12 @@ Route::prefix('v1')->group(function () {
 
             Route::get('/admin/settings', ['App\Http\Controllers\SystemSettingController', 'index']);
             Route::put('/admin/settings', ['App\Http\Controllers\SystemSettingController', 'update']);
+
+            // Admin Member Management (CRUD)
+            Route::get('/admin/users', ['App\Http\Controllers\AdminUserController', 'index']);
+            Route::post('/admin/users', ['App\Http\Controllers\AdminUserController', 'store']);
+            Route::put('/admin/users/{id}', ['App\Http\Controllers\AdminUserController', 'update']);
+            Route::delete('/admin/users/{id}', ['App\Http\Controllers\AdminUserController', 'destroy']);
 
             Route::post('/products', ['App\Http\Controllers\ProductController', 'store']);
             Route::put('/products/{id}', ['App\Http\Controllers\ProductController', 'update']);

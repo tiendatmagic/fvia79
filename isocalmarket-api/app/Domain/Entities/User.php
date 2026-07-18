@@ -15,6 +15,7 @@ class User
     private ?string $phone;
     private ?string $google2faSecret;
     private bool $google2faEnabled;
+    private ?string $apiKey;
 
     public function __construct(
         ?string $id,
@@ -27,7 +28,8 @@ class User
         ?\DateTime $refreshTokenExpiredAt = null,
         ?string $phone = null,
         ?string $google2faSecret = null,
-        bool $google2faEnabled = false
+        bool $google2faEnabled = false,
+        ?string $apiKey = null
     ) {
         $this->id = $id;
         $this->name = $name;
@@ -40,6 +42,7 @@ class User
         $this->phone = $phone;
         $this->google2faSecret = $google2faSecret;
         $this->google2faEnabled = $google2faEnabled;
+        $this->apiKey = $apiKey;
     }
 
     public function getId(): ?string
@@ -136,5 +139,15 @@ class User
     public function addBalance(float $amount): void
     {
         $this->balance += $amount;
+    }
+
+    public function getApiKey(): ?string
+    {
+        return $this->apiKey;
+    }
+
+    public function setApiKey(?string $apiKey): void
+    {
+        $this->apiKey = $apiKey;
     }
 }
