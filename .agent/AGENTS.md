@@ -964,11 +964,13 @@
          - Cập nhật hàm `getAvailableCount` để kiểm tra và lấy trực tiếp dữ liệu từ quan hệ đã được load sẵn trong RAM, giảm từ `1 + N` query xuống còn đúng `2` query duy nhất cho toàn bộ danh sách sản phẩm.
       3. **Xác minh**: Chạy `php artisan migrate` và `php artisan test` hoàn thành 100% test case passed.
 
-  - **[TỐI ƯU RESPONSIVE LAYOUT & BREAKPOINT CO HẸP]**:
-    - Yêu cầu: Khắc phục lỗi co hẹp quá mức giao diện trang cửa hàng (Storefront) và menu bị lỗi/chèn ép ở độ rộng màn hình trung bình tầm 770px.
+  - **[TỐI ƯU RESPONSIVE LAYOUT & BỘ LỌC, TIÊU ĐỀ DI ĐỘNG]**:
+    - Yêu cầu: Khắc phục lỗi co hẹp quá mức giao diện trang cửa hàng (Storefront) ở độ rộng màn hình trung bình tầm 770px, tối ưu hiển thị bộ lọc và tránh gãy dòng tiêu đề/badge trên thiết bị di động.
     - Giải pháp & Triển khai:
       1. **Chuyển đổi Breakpoint**: Nâng breakpoint kích hoạt layout cố định (Desktop Sidebar) và Header dịch chuyển từ `md` (768px) lên `lg` (1024px).
       2. **Layout app.html**: Cập nhật container Sidebar di động thành `lg:hidden` và container chứa router-outlet dịch lề từ `md:pl-72` sang `lg:pl-72`.
       3. **Header**: Cập nhật header padding-left và z-index thành `lg:pl-72 lg:z-30`. Cập nhật Hamburger menu và Logo thành `lg:hidden`.
       4. **Sidebar**: Cập nhật sidebar cố định thành `hidden lg:flex`.
-      5. **Xác minh**: Chạy `npm run build` thành công 100% không có lỗi.
+      5. **Tối ưu bộ lọc Storefront**: Ẩn nhãn `"Chế độ xem:"` và `"Sắp xếp danh mục:"` cùng văn bản nút `"Dạng Card"`, `"Dạng List"` trên mobile bằng class `hidden sm:inline`. Đổi container bộ lọc sang `flex-row items-center justify-between` và thu gọn dropdown sang `w-40 sm:w-56` để xếp ngang siêu gọn.
+      6. **Tối ưu tiêu đề nhóm**: Đổi container tiêu đề nhóm và badge số lượng sang `flex-col sm:flex-row gap-3` để trên mobile tự xếp dọc giúp tiêu đề chiếm trọn chiều rộng, không bị badge ép gây rớt chữ. Bổ sung `shrink-0 whitespace-nowrap self-start` cho badge để chống gãy dòng. Căn chỉnh icon `items-start` và hạ size chữ tiêu đề xuống `text-base sm:text-lg`.
+      7. **Xác minh**: Chạy `npm run build` thành công 100% không có lỗi.
