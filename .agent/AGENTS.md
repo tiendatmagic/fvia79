@@ -1132,3 +1132,8 @@
       3. Danh mục này hoàn toàn là ảo và được dựng động, do đó không tồn tại trong cơ sở dữ liệu và không thể bị xóa ở giao diện Quản lý danh mục.
       4. Hoàn toàn tương thích với cơ chế phân trang động và chế độ hiển thị Card/List hiện có của Storefront mà không cần sửa đổi file template HTML.
       5. Đã chạy biên dịch kiểm tra dự án frontend thành công (`npm run build`) không có lỗi.
+
+  - **[SỬA LỖI] Ràng buộc khóa ngoại khi xóa danh mục chứa sản phẩm bị xóa mềm**:
+    - **Nhận diện lỗi**: Khi xóa một danh mục đang chứa sản phẩm đã bị xóa mềm (soft-deleted), hệ thống có thể bị crash với mã lỗi SQL `IntegrityConstraintViolationException` do vi phạm ràng buộc khóa ngoại `RESTRICT` từ phía cơ sở dữ liệu.
+    - **Nguyên nhân**: Hàm `deleteCategory()` trong [CategoryService.php](file:///d:/git/isocalmarket/isocalmarket-api/app/Application/Services/CategoryService.php) kiểm tra sự tồn tại của sản phẩm liên kết bằng `ProductModel::where('category_id', $id)->exists()`. Vì truy vấn này tự động loại trừ các sản phẩm đã xóa mềm, hệ thống tưởng rằng danh mục trống và tiến hành gửi lệnh SQL xóa, dẫn đến bị MySQL chặn lại.
+    - **Giải pháp khắc phục**: Cập nhật kiểm tra thành `ProductModel::withTrashed()->where('category_id', $id)->exists()` để phát hiện cả những sản phẩm đã xóa mềm, ngăn chặn hành động xóa danh mục và ném ra thông báo lỗi nghiệp vụ rõ ràng, tránh gây crash SQL.

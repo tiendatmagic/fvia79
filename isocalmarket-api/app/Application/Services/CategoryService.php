@@ -60,9 +60,9 @@ class CategoryService
             throw new \Exception('Category not found.');
         }
 
-        $hasProducts = ProductModel::where('category_id', $id)->exists();
+        $hasProducts = ProductModel::withTrashed()->where('category_id', $id)->exists();
         if ($hasProducts) {
-            throw new \Exception('Cannot delete category containing active products.');
+            throw new \Exception('Cannot delete category containing products.');
         }
 
         return $this->categoryRepository->delete($id);
