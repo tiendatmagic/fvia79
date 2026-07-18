@@ -7,9 +7,10 @@ import { HttpClient } from '@angular/common/http';
 import { environment } from '@environments/environment';
 import { ToastService } from '@core/services/toast.service';
 import { UiStateService } from '@core/services/ui-state.service';
+import { AuthStore } from '../../features/auth/auth.store';
 
 let isRefreshing = false;
-const refreshDone$ = new BehaviorSubject<boolean>(false);
+const refreshDone$ = new BehaviorSubject<boolean | null>(null);
 const cancelPending$ = new Subject<void>();
 let lastOverloadToastTime = 0;
 const TOAST_DEBOUNCE_MS = 3000;
@@ -22,6 +23,7 @@ export const authInterceptor: HttpInterceptorFn = (
   const http = inject(HttpClient);
   const toastService = inject(ToastService);
   const uiStateService = inject(UiStateService);
+  const authStore = inject(AuthStore);
 
   const isBypassCancel = req.url.includes('/auth/refresh') || req.url.includes('/auth/logout');
 
@@ -54,7 +56,7 @@ export const authInterceptor: HttpInterceptorFn = (
         || req.url.includes('/v1/auth/login') || req.url.includes('/v1/auth/register');
 
       if (error.status === 401 && isApiRequest && !isRefreshRequest && !isAuthEndpoint) {
-        return handle401Error(req, next, http, router);
+        return handle401Error(req, next, http, router, authStore);
       }
 
       return throwError(() => error);
@@ -66,11 +68,12 @@ function handle401Error(
   originalReq: HttpRequest<unknown>,
   next: HttpHandlerFn,
   http: HttpClient,
-  router: Router
+  router: Router,
+  authStore: AuthStore
 ): Observable<any> {
   if (!isRefreshing) {
     isRefreshing = true;
-    refreshDone$.next(false);
+    refreshDone$.next(null);
 
     const refreshUrl = `${environment.apiBaseUrl}/v1/auth/refresh`;
 
@@ -85,6 +88,9 @@ function handle401Error(
         isRefreshing = false;
         refreshDone$.next(false);
 
+        // Reset thông tin user hiện tại để tránh việc LoginComponent tự chuyển hướng ngược lại Dashboard
+        authStore.currentUser.set(null);
+
         if (typeof document !== 'undefined') {
           document.cookie = 'auth_logged_in=; path=/; expires=Thu, 01 Jan 1970 00:00:00 GMT';
         }
@@ -96,8 +102,14 @@ function handle401Error(
   }
 
   return refreshDone$.pipe(
-    filter(done => done === true),
+    filter(done => done !== null),
     take(1),
-    switchMap(() => next(originalReq))
+    switchMap(success => {
+      if (success) {
+        return next(originalReq);
+      } else {
+        return throwError(() => new HttpErrorResponse({ status: 401, statusText: 'Unauthorized' }));
+      }
+    })
   );
 }

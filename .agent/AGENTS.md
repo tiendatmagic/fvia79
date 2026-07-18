@@ -939,3 +939,12 @@
       2. **Giao diện**: Thêm các class Tailwind `cursor-pointer hover:opacity-80 active:scale-95 transition-all` và thuộc tính `title="Click để copy số tiền"` giúp phần tử phản hồi trực quan khi di chuột vào hoặc click.
       3. **Xác minh**: Chạy `npm run build` thành công 100%.
 
+  - **[TẠO LỆNH FORCED LOGOUT TOÀN HỆ THỐNG (FORCE LOGOUT ALL)]**:
+    - Yêu cầu: Tạo 1 lệnh duy nhất để dọn dẹp/xóa sạch toàn bộ token (cả Access Token & Refresh Token) ra khỏi hệ thống, ép buộc toàn bộ user trên mọi thiết bị đăng xuất ngay lập tức.
+    - Giải pháp & Triển khai:
+      1. Đã đăng ký một Artisan Command mới `auth:force-logout-all` trong [console.php](file:///d:/git/isocalmarket/isocalmarket-api/routes/console.php).
+      2. Khi chạy, lệnh sẽ xóa sạch toàn bộ `refresh_token_hash` và `refresh_token_expired_at` trong Database (bảng `users`) của tất cả người dùng, ngăn chặn tuyệt đối việc làm mới (refresh) token.
+      3. Đồng thời, lệnh sẽ kích hoạt lệnh con `key:generate` để tạo lại `APP_KEY` mới trong file `.env`. Việc này làm cho mọi JWT Access Token đang được lưu trữ ở cookie client ngay lập tức bị sai chữ ký và mất hiệu lực hoàn toàn mà không cần chờ hết hạn 30 phút.
+      4. Chạy kiểm tra helper command `php artisan auth:force-logout-all --help` thành công.
+
+
