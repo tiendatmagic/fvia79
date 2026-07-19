@@ -137,9 +137,6 @@ class DepositService
             if (empty($binanceApiKeySetting) || empty($binanceApiSecretSetting)) {
                 throw new \RuntimeException("The administrator has not configured the Binance API Key/Secret yet.");
             }
-            if (empty($payerBinanceId)) {
-                throw new \RuntimeException("The payer Binance ID is required.");
-            }
         }
 
         if ($amountUsdt < 0.1) {
@@ -478,11 +475,7 @@ class DepositService
                         continue;
                     }
 
-                    // Kiểm tra Binance ID người gửi
-                    $payerId = $tx['payerInfo']['payerId'] ?? '';
-                    if (empty($payerId) || $payerId !== $deposit->getPayerBinanceId()) {
-                        continue;
-                    }
+                    // Không kiểm tra Binance ID người gửi theo cấu hình mới, đối soát hoàn toàn bằng số tiền lẻ giống BEP-20
 
                     // Kiểm tra orderId này đã được dùng đối soát chưa
                     $orderId = $tx['orderId'] ?? '';

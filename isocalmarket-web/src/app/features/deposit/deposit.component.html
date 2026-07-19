@@ -61,7 +61,7 @@
             <div class="space-y-1">
               <h4 class="text-xs font-black text-amber-800 dark:text-amber-300 uppercase tracking-wider">Lưu ý nạp Binance</h4>
               <p class="text-xs text-amber-700 dark:text-amber-400 leading-relaxed font-semibold">
-                Chuyển khoản USDT nội bộ Binance Pay hoàn toàn miễn phí. Vui lòng nhập đúng **Binance ID** của bạn để hệ thống tự động đối soát chính xác.
+                Chuyển khoản USDT nội bộ Binance Pay hoàn toàn miễn phí. Vui lòng chuyển chính xác **số tiền lẻ** để hệ thống tự động đối soát và cộng tiền ngay lập tức.
               </p>
             </div>
           </div>
@@ -78,13 +78,11 @@
           </div>
         } @else {
           <div class="form-field">
-            <label class="text-xs font-bold text-slate-400 dark:text-slate-500 uppercase tracking-wider block mb-1">Binance ID của bạn</label>
-            <app-custom-input
-              [(ngModel)]="payerBinanceId"
-              name="payerBinanceId"
-              type="text"
-              placeholder="Nhập Binance ID của bạn (ví dụ: 12345678)"
-            />
+            <label class="text-xs font-bold text-slate-400 dark:text-slate-500 uppercase tracking-wider block mb-1">Cổng thanh toán</label>
+            <div class="text-sm font-extrabold text-slate-800 dark:text-white bg-slate-100/70 dark:bg-slate-900 px-3.5 py-2.5 rounded-xl border border-slate-200/20 dark:border-slate-800/40 select-none flex items-center gap-2">
+              <span class="w-2.5 h-2.5 rounded-full bg-amber-500 animate-pulse"></span>
+              Binance Pay (Chuyển khoản nội bộ miễn phí)
+            </div>
           </div>
         }
 

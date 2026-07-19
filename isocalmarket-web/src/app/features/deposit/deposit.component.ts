@@ -74,17 +74,11 @@ export class DepositComponent implements OnInit {
       return;
     }
 
-    if (this.paymentMethod === 'binance' && (!this.payerBinanceId || this.payerBinanceId.trim().length < 8)) {
-      this.state.showToast('Vui lòng nhập Binance ID hợp lệ của bạn (tối thiểu 8 ký số)!', 'error');
-      return;
-    }
-
     this.isSubmitting = true;
 
     this.state.depositStore.createDeposit(
       this.amountUsdt, 
-      this.paymentMethod, 
-      this.paymentMethod === 'binance' ? this.payerBinanceId : undefined
+      this.paymentMethod
     ).subscribe({
       next: (res) => {
         this.state.showToast('Tạo lệnh nạp tiền thành công! Đang chuyển đến hóa đơn thanh toán.', 'success');

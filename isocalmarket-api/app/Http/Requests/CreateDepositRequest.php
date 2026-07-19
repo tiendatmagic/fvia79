@@ -22,7 +22,7 @@ class CreateDepositRequest extends FormRequest
         return [
             'amount_usdt' => 'required|numeric|min:0.1|max:100000',
             'payment_method' => 'required|string|in:bep20,binance',
-            'payer_binance_id' => 'required_if:payment_method,binance|nullable|string|min:8|max:30',
+            'payer_binance_id' => 'nullable|string|max:50',
         ];
     }
 }
