@@ -48,19 +48,22 @@
           placeholder="Nhập số điện thoại (VD: 0981xxx)"
         />
       </div>
+    </div>
 
-      <div class="space-y-1.5">
-        <label class="text-xs font-bold text-slate-400 dark:text-slate-500 uppercase tracking-wider block">
-          Mật khẩu {{ isEditMode ? '(Để trống nếu giữ nguyên)' : '*' }}
-        </label>
-        <app-custom-input
-          [(ngModel)]="password"
-          name="password"
-          type="password"
-          placeholder="Nhập mật khẩu (tối thiểu 6 ký tự)"
-          [required]="!isEditMode"
-        />
-      </div>
+    <div class="space-y-1.5">
+      <label class="text-xs font-bold text-slate-400 dark:text-slate-500 uppercase tracking-wider block">
+        Mật khẩu <span *ngIf="!isEditMode" class="text-rose-500">*</span>
+      </label>
+      <app-custom-input
+        [(ngModel)]="password"
+        name="password"
+        type="password"
+        [placeholder]="isEditMode ? 'Nhập mật khẩu mới...' : 'Nhập mật khẩu (tối thiểu 6 ký tự)'"
+        [required]="!isEditMode"
+      />
+      <p *ngIf="isEditMode" class="text-xs text-slate-400 dark:text-slate-500 italic mt-1">
+        * Để trống nếu giữ nguyên mật khẩu
+      </p>
     </div>
   </div>
 

@@ -119,7 +119,7 @@ export class AdminUsersComponent implements OnInit {
   public openAddModal() {
     const ref = this.modalService.open(UserFormModalComponent, {
       title: 'Thêm thành viên mới',
-      size: 'md',
+      size: 'lg',
       closeOnBackdropClick: true
     });
 
@@ -133,7 +133,7 @@ export class AdminUsersComponent implements OnInit {
   public openEditModal(user: any) {
     const ref = this.modalService.open(UserFormModalComponent, {
       title: 'Sửa thông tin thành viên',
-      size: 'md',
+      size: 'lg',
       closeOnBackdropClick: true,
       data: user
     });
