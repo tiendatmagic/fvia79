@@ -467,11 +467,11 @@ class DepositService
                         continue;
                     }
 
-                    $txValueUsdt = (float) ($tx['orderAmount'] ?? 0);
+                    $txValueUsdt = (float) ($tx['amount'] ?? 0);
                     $amountToPay = $deposit->getAmountToPay();
 
                     // So khớp số lượng thực nhận chính xác 100% không dung sai
-                    if (round($txValueUsdt, 4) !== round($amountToPay, 4)) {
+                    if ($txValueUsdt <= 0 || round($txValueUsdt, 4) !== round($amountToPay, 4)) {
                         continue;
                     }
 
