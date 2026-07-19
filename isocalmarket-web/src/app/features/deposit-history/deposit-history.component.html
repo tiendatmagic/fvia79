@@ -61,9 +61,12 @@
       emptyIcon="archive"
     >
       <ng-template appTableCell="code" let-row="row">
-        <span class="font-mono font-black text-slate-700 dark:text-slate-300">
+        <a
+          [routerLink]="['/deposit/invoice', row.id]"
+          class="font-mono font-black text-[var(--color-primary)] hover:underline hover:text-[var(--color-primary)]/80 transition-colors cursor-pointer"
+        >
           #{{ row.code }}
-        </span>
+        </a>
       </ng-template>
 
       <ng-template appTableCell="amountUsdt" let-row="row">

@@ -1414,4 +1414,10 @@
          - Cập nhật [deposit-history.component.ts](file:///d:/git/isocalmarket/isocalmarket-web/src/app/features/deposit-history/deposit-history.component.ts) xóa thuộc tính này trong interface.
     - **Xác minh**: Chạy unit test backend (`php artisan test`) đạt 14/14 tests pass, biên dịch frontend Angular thành công 100%.
 
+  - **[GIAO DIỆN & TỐI ƯU UX] Liên kết mã lệnh với trang hóa đơn chi tiết**:
+    - **Yêu cầu**: Chuyển đổi mã lệnh nạp tiền dạng chữ tĩnh trên trang Lịch sử nạp tiền thành liên kết để người dùng click vào có thể xem trực tiếp hóa đơn/chi tiết thanh toán tương ứng.
+    - **Giải pháp & Triển khai**: Cập nhật [deposit-history.component.html](file:///d:/git/isocalmarket/isocalmarket-web/src/app/features/deposit-history/deposit-history.component.html), đổi thẻ `<span>` của cột `code` thành thẻ `<a>` dùng `[routerLink]="['/deposit/invoice', row.id]"` và áp dụng màu text chính của hệ thống kèm hover gạch chân.
+    - **Xác minh**: Biên dịch ứng dụng Angular thành công 100% không phát sinh lỗi.
+
+
 
