@@ -1326,8 +1326,23 @@
     - **Giải pháp & Triển khai**: Cập nhật hàm `onSubmit()` trong [user-form-modal.component.ts](file:///d:/git/isocalmarket/isocalmarket-web/src/app/features/admin-users/user-form-modal/user-form-modal.component.ts), thêm logic kiểm tra độ dài mật khẩu (`password.length < 6`) khi tạo mới và khi đổi mật khẩu để hiển thị Toast thông báo lỗi ngay lập tức mà không cần gửi API.
     - **Xác minh**: Chạy thử nghiệm thành công, trải nghiệm phản hồi mượt mà và trực quan hơn.
 
+  - **[TÍNH NĂNG & THIẾT KẾ] Tối ưu viền Header, Tách Tab Form Thành Viên & Tính năng Reset 2FA**:
+    - **Yêu cầu**: Sửa đổi viền ô User ở Header đậm hơn. Chia form thêm/sửa thành viên thành các tab riêng để tránh quá dài, bỏ bắt buộc trường Tên thành viên, và bổ sung chức năng cho Admin tắt/reset Google 2FA của thành viên.
+    - **Giải pháp & Triển khai**:
+      1. **Header UI**: Tăng độ đậm nhạt của viền ô thông tin tài khoản trong [header.component.html](file:///d:/git/isocalmarket/isocalmarket-web/src/app/shared/layout/header/header.component.html) lên `border-slate-300/80` (Light) và `dark:border-slate-700/80` (Dark).
+      2. **Backend API**: Đổi validation `'name'` thành `nullable` trong [AdminUserController.php](file:///d:/git/isocalmarket/isocalmarket-api/app/Http/Controllers/AdminUserController.php), và thêm method + route `POST /admin/users/{id}/reset-2fa` để Admin tắt 2FA của tài khoản khi có yêu cầu.
+      3. **Frontend Tab UI**: Tái thiết kế [user-form-modal.component.html](file:///d:/git/isocalmarket/isocalmarket-web/src/app/features/admin-users/user-form-modal/user-form-modal.component.html) sang layout 3 Tab: *Thông tin*, *Phân quyền*, và *Bảo mật & API* (Tab bảo mật chỉ xuất hiện khi Sửa).
+      4. **Xử lý sự kiện**: Khi validation lỗi, [user-form-modal.component.ts](file:///d:/git/isocalmarket/isocalmarket-web/src/app/features/admin-users/user-form-modal/user-form-modal.component.ts) tự động chuyển tab về vị trí lỗi. Nút **Reset 2FA** được kết nối qua `ModalService.confirm` và gọi API tương ứng mượt mà.
+    - **Xác minh**: Chạy `npm run build` kiểm tra dự án Angular biên dịch thành công 100% không phát sinh bất kỳ cảnh báo hay lỗi cú pháp nào.
 
-
+  - **[BẢO MẬT & TỐI ƯU] Sửa Lỗi Login Validation, Chuyển Sang Switch 2FA & Chống Duplicate API**:
+    - **Yêu cầu**: Sửa lỗi không cho phép đăng nhập bằng username ở backend (do rule validation email cũ bắt buộc có format email). Đồng thời tối ưu thiết kế từ nút bấm icon bật tắt 2FA sang dạng Switch component phẳng và hiện đại hơn, đồng thời ngăn ngừa triệt để lỗi duplicate API do nhấp đúp/nhấp liên tiếp.
+    - **Giải pháp & Triển khai**:
+      1. **Backend Login**: Cập nhật [LoginRequest.php](file:///d:/git/isocalmarket/isocalmarket-api/app/Http/Requests/LoginRequest.php) thay đổi rule validation của email từ `'required|string|email'` sang `'required|string'` để cho phép chấp nhận cả chuỗi username (như `admin`) khi đăng nhập.
+      2. **Frontend UI**: Trong [user-form-modal.component.html](file:///d:/git/isocalmarket/isocalmarket-web/src/app/features/admin-users/user-form-modal/user-form-modal.component.html), thay thế 100% khối box nút bấm Bật/Tắt 2FA cũ bằng component `<app-custom-switch>` dùng thuộc tính `type="full"`.
+      3. **Frontend Logic**: Trong [user-form-modal.component.ts](file:///d:/git/isocalmarket/isocalmarket-web/src/app/features/admin-users/user-form-modal/user-form-modal.component.ts), import `CustomSwitchComponent` và khai báo biến logic `isConfirming`. Viết hàm trung gian `onToggle2Fa($event)` điều phối bật/tắt.
+      4. **Chống Duplicate**: Thêm biến `isConfirming` để chặn (guard) lập tức các click spam mở nhiều confirm modal trùng lặp. Đồng thời, cấu hình tự động hoàn tác (revert) giá trị của switch trên UI nếu người dùng click "Hủy" trên Confirm Modal hoặc API bị lỗi.
+    - **Xác minh**: Đã chạy `npm run build` thành công 100%. Đăng nhập bằng `admin` hoặc `email` đã hoạt động bình thường, và switch toggle kích hoạt/hủy 2FA mượt mà, hiển thị QR code chuẩn xác.
 
 
 

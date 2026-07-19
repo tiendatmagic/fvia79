@@ -104,6 +104,7 @@ class AuthController extends Controller
                 'message' => 'Login successful.',
                 'user' => [
                     'id' => $user->getId(),
+                    'username' => $user->getUsername(),
                     'name' => $user->getName(),
                     'email' => $user->getEmail(),
                     'phone' => $user->getPhone(),

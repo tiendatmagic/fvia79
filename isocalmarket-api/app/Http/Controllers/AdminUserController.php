@@ -40,6 +40,7 @@ class AdminUserController extends Controller
             $data = array_map(function (User $user) {
                 return [
                     'id' => $user->getId(),
+                    'username' => $user->getUsername(),
                     'name' => $user->getName(),
                     'email' => $user->getEmail(),
                     'phone' => $user->getPhone(),
@@ -73,11 +74,11 @@ class AdminUserController extends Controller
     {
         $request->validate([
             'username' => 'required|string|min:3|max:50|unique:users,username|regex:/^[a-zA-Z0-9_]+$/',
-            'name' => 'nullable|string|max:255',
-            'email' => 'required|string|email|max:255|unique:users,email',
-            'phone' => 'nullable|string|max:20',
-            'role' => 'required|string|in:admin,customer',
-            'balance' => 'nullable|numeric|min:0',
+            'name'     => 'nullable|string|max:255',
+            'email'    => 'required|string|email|max:255|unique:users,email',
+            'phone'    => 'nullable|string|max:20',
+            'role'     => 'required|string|in:admin,customer',
+            'balance'  => 'nullable|numeric|min:0',
             'password' => 'required|string|min:6',
         ]);
 
@@ -105,11 +106,12 @@ class AdminUserController extends Controller
             return response()->json([
                 'message' => 'User created successfully.',
                 'user' => [
-                    'id' => $savedUser->getId(),
-                    'name' => $savedUser->getName(),
-                    'email' => $savedUser->getEmail(),
-                    'phone' => $savedUser->getPhone(),
-                    'role' => $savedUser->getRole(),
+                    'id'      => $savedUser->getId(),
+                    'username'=> $savedUser->getUsername(),
+                    'name'    => $savedUser->getName(),
+                    'email'   => $savedUser->getEmail(),
+                    'phone'   => $savedUser->getPhone(),
+                    'role'    => $savedUser->getRole(),
                     'balance' => $savedUser->getBalance(),
                     'api_key' => $savedUser->getApiKey()
                 ]
@@ -126,16 +128,16 @@ class AdminUserController extends Controller
     public function update(Request $request, $id)
     {
         $request->validate([
-            'username' => 'required|string|min:3|max:50|regex:/^[a-zA-Z0-9_]+$/|unique:users,username,' . $id,
-            'name' => 'nullable|string|max:255',
-            'email' => 'required|string|email|max:255|unique:users,email,' . $id,
-            'phone' => 'nullable|string|max:20',
-            'role' => 'required|string|in:admin,customer',
-            'balance' => 'nullable|numeric|min:0',
-            'password' => 'nullable|string|min:6',
-            'status' => 'nullable|string|in:active,banned',
+            'username'         => 'required|string|min:3|max:50|regex:/^[a-zA-Z0-9_]+$/|unique:users,username,' . $id,
+            'name'             => 'nullable|string|max:255',
+            'email'            => 'required|string|email|max:255|unique:users,email,' . $id,
+            'phone'            => 'nullable|string|max:20',
+            'role'             => 'required|string|in:admin,customer',
+            'balance'          => 'nullable|numeric|min:0',
+            'password'         => 'nullable|string|min:6',
+            'status'           => 'nullable|string|in:active,banned',
             'generate_api_key' => 'nullable|boolean',
-            'revoke_api_key' => 'nullable|boolean'
+            'revoke_api_key'   => 'nullable|boolean',
         ]);
 
         try {
@@ -151,7 +153,7 @@ class AdminUserController extends Controller
                 $request->email,
                 $request->password ? Hash::make($request->password) : $user->getPassword(),
                 $request->role,
-                $user->getBalance(), // Khóa sửa số dư trực tiếp từ form update profile
+                $user->getBalance(),
                 $user->getRefreshTokenHash(),
                 $user->getRefreshTokenExpiredAt(),
                 $request->phone,
@@ -172,14 +174,15 @@ class AdminUserController extends Controller
             return response()->json([
                 'message' => 'User updated successfully.',
                 'user' => [
-                    'id' => $savedUser->getId(),
-                    'name' => $savedUser->getName(),
-                    'email' => $savedUser->getEmail(),
-                    'phone' => $savedUser->getPhone(),
-                    'role' => $savedUser->getRole(),
+                    'id'      => $savedUser->getId(),
+                    'username'=> $savedUser->getUsername(),
+                    'name'    => $savedUser->getName(),
+                    'email'   => $savedUser->getEmail(),
+                    'phone'   => $savedUser->getPhone(),
+                    'role'    => $savedUser->getRole(),
                     'balance' => $savedUser->getBalance(),
                     'api_key' => $savedUser->getApiKey(),
-                    'status' => $savedUser->getStatus()
+                    'status'  => $savedUser->getStatus()
                 ]
             ]);
         } catch (\Exception $e) {
@@ -194,7 +197,7 @@ class AdminUserController extends Controller
     public function adjustBalance(Request $request, $id)
     {
         $request->validate([
-            'type' => 'required|string|in:add,subtract',
+            'type'   => 'required|string|in:add,subtract',
             'amount' => 'required|numeric|min:1',
             'reason' => 'nullable|string|max:500',
         ]);
@@ -206,9 +209,9 @@ class AdminUserController extends Controller
                     return response()->json(['message' => 'User not found.'], 404);
                 }
 
-                $type = $request->input('type');
-                $amount = (float) $request->input('amount');
-                $reason = trim($request->input('reason'));
+                $type           = $request->input('type');
+                $amount         = (float) $request->input('amount');
+                $reason         = trim($request->input('reason'));
                 $currentBalance = $user->getBalance();
 
                 if ($type === 'subtract' && $currentBalance < $amount) {
@@ -230,9 +233,9 @@ class AdminUserController extends Controller
                 return response()->json([
                     'message' => 'User balance adjusted successfully.',
                     'user' => [
-                        'id' => $savedUser->getId(),
-                        'name' => $savedUser->getName(),
-                        'email' => $savedUser->getEmail(),
+                        'id'      => $savedUser->getId(),
+                        'name'    => $savedUser->getName(),
+                        'email'   => $savedUser->getEmail(),
                         'balance' => $savedUser->getBalance(),
                     ]
                 ]);
@@ -264,4 +267,87 @@ class AdminUserController extends Controller
             return response()->json(['message' => 'Failed to delete user: ' . $e->getMessage()], 500);
         }
     }
+
+    /**
+     * POST /api/v1/admin/users/{id}/reset-2fa
+     * Admin tắt 2FA cho thành viên (khi user mất thiết bị xác thực)
+     */
+    public function reset2fa($id)
+    {
+        try {
+            $user = $this->userRepository->findById($id);
+            if (!$user) {
+                return response()->json(['message' => 'User not found.'], 404);
+            }
+
+            $updatedUser = new User(
+                $user->getId(),
+                $user->getUsername(),
+                $user->getName(),
+                $user->getEmail(),
+                $user->getPassword(),
+                $user->getRole(),
+                $user->getBalance(),
+                $user->getRefreshTokenHash(),
+                $user->getRefreshTokenExpiredAt(),
+                $user->getPhone(),
+                null,  // google2fa_secret
+                false, // google2fa_enabled
+                $user->getApiKey(),
+                $user->getStatus()
+            );
+
+            $this->userRepository->save($updatedUser);
+
+            return response()->json(['message' => '2FA has been disabled for this user.']);
+        } catch (\Exception $e) {
+            return response()->json(['message' => 'Failed to reset 2FA: ' . $e->getMessage()], 500);
+        }
+    }
+
+    /**
+     * POST /api/v1/admin/users/{id}/enable-2fa
+     * Admin bật 2FA giùm cho thành viên (sinh secret và kích hoạt luôn)
+     */
+    public function enable2fa($id)
+    {
+        try {
+            $user = $this->userRepository->findById($id);
+            if (!$user) {
+                return response()->json(['message' => 'User not found.'], 404);
+            }
+
+            $secret = \App\Infrastructure\Security\Google2FA::generateSecretKey();
+
+            $updatedUser = new User(
+                $user->getId(),
+                $user->getUsername(),
+                $user->getName(),
+                $user->getEmail(),
+                $user->getPassword(),
+                $user->getRole(),
+                $user->getBalance(),
+                $user->getRefreshTokenHash(),
+                $user->getRefreshTokenExpiredAt(),
+                $user->getPhone(),
+                $secret,  // google2fa_secret
+                true,     // google2fa_enabled
+                $user->getApiKey(),
+                $user->getStatus()
+            );
+
+            $this->userRepository->save($updatedUser);
+
+            $qrCodeUrl = \App\Infrastructure\Security\Google2FA::getQrCodeUrl($user->getEmail(), $secret);
+
+            return response()->json([
+                'message' => '2FA has been enabled for this user successfully.',
+                'secret' => $secret,
+                'qr_code_url' => $qrCodeUrl
+            ]);
+        } catch (\Exception $e) {
+            return response()->json(['message' => 'Failed to enable 2FA: ' . $e->getMessage()], 500);
+        }
+    }
 }
+

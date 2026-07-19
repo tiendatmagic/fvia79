@@ -75,6 +75,8 @@ Route::prefix('v1')->group(function () {
             Route::post('/admin/users', ['App\Http\Controllers\AdminUserController', 'store']);
             Route::put('/admin/users/{id}', ['App\Http\Controllers\AdminUserController', 'update']);
             Route::post('/admin/users/{id}/adjust-balance', ['App\Http\Controllers\AdminUserController', 'adjustBalance']);
+            Route::post('/admin/users/{id}/reset-2fa', ['App\Http\Controllers\AdminUserController', 'reset2fa']);
+            Route::post('/admin/users/{id}/enable-2fa', ['App\Http\Controllers\AdminUserController', 'enable2fa']);
             Route::delete('/admin/users/{id}', ['App\Http\Controllers\AdminUserController', 'destroy']);
 
             Route::post('/products', ['App\Http\Controllers\ProductController', 'store']);
