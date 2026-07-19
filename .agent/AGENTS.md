@@ -1307,12 +1307,14 @@
     - **Giải pháp & Triển khai**: Cập nhật [admin-users.component.html](file:///d:/git/isocalmarket/isocalmarket-web/src/app/features/admin-users/admin-users.component.html), đổi variant badge của Khách hàng từ `'neutral'` sang `'primary'`.
     - **Xác minh**: Badge Khách hàng hiển thị tông màu chủ đạo thương hiệu (Primary) sang trọng và bắt mắt, hài hòa với badge màu cam (Warning) của Quản trị viên.
 
-  - **[GIAO DIỆN & TỐI ƯU LAYOUT] Mở rộng Modal thành viên & Tách ô Mật khẩu xuống dòng riêng**:
-    - **Yêu cầu**: Nâng kích thước modal Thêm / Sửa thành viên rộng hơn (cỡ `lg`) và tách ô nhập Mật khẩu xuống dòng riêng biệt thay vì nằm cùng hàng ngang với Số điện thoại.
+  - **[GIAO DIỆN & TỐI ƯU LAYOUT] Mở rộng Modal thành viên (cỡ 3xl) & Ghép hàng Số điện thoại & Mật khẩu**:
+    - **Yêu cầu**: Nâng kích thước modal Thêm / Sửa thành viên rộng hơn nữa (cỡ `3xl`), và đưa Số điện thoại & Mật khẩu về nằm cùng một hàng ngang.
     - **Giải pháp & Triển khai**:
-      1. Trong [admin-users.component.ts](file:///d:/git/isocalmarket/isocalmarket-web/src/app/features/admin-users/admin-users.component.ts): Đổi `size: 'md'` thành `size: 'lg'` cho cả 2 hàm `openAddModal()` và `openEditModal()`.
-      2. Trong [user-form-modal.component.html](file:///d:/git/isocalmarket/isocalmarket-web/src/app/features/admin-users/user-form-modal/user-form-modal.component.html): Tách khối ô nhập Mật khẩu ra khỏi grid 2 cột của Số điện thoại, đưa Mật khẩu xuống dòng riêng full-width bên dưới với nhãn và ghi chú "(Để trống nếu giữ nguyên mật khẩu)" rõ ràng, thoáng mát.
-    - **Xác minh**: Modal rộng rãi, chuyên nghiệp, thông thoáng và 100% không còn bị chật chội hay lệch ô nhập liệu.
+      1. Trong [admin-users.component.ts](file:///d:/git/isocalmarket/isocalmarket-web/src/app/features/admin-users/admin-users.component.ts): Cập nhật `size` cho cả `openAddModal()` và `openEditModal()` thành `'3xl'`.
+      2. Trong [user-form-modal.component.html](file:///d:/git/isocalmarket/isocalmarket-web/src/app/features/admin-users/user-form-modal/user-form-modal.component.html): Gom ô nhập "Số điện thoại" và "Mật khẩu" vào chung một div grid 2 cột (`grid-cols-1 md:grid-cols-2 gap-4`). Giữ nguyên chữ gợi ý `* Để trống nếu giữ nguyên mật khẩu` ở phía dưới ô nhập Mật khẩu.
+    - **Xác minh**: Giao diện modal rất rộng rãi, thoáng đẹp và hiển thị các trường dữ liệu trên cùng một hàng ngay ngắn.
+
+
 
 
 
