@@ -64,13 +64,16 @@ class DepositController extends Controller
 
     /**
      * Xem chi tiết hóa đơn
+     * Admin có thể xem bất kỳ invoice nào, user chỉ xem được invoice của mình
      */
     public function showInvoice(string $id): JsonResponse
     {
-        $userId = Auth::id();
+        $user = Auth::user();
         $deposit = $this->depositService->getInvoice($id);
 
-        if (!$deposit || $deposit->getUserId() !== $userId) {
+        $isAdmin = $user && $user->role === 'admin';
+
+        if (!$deposit || (!$isAdmin && $deposit->getUserId() !== $user->id)) {
             return response()->json([
                 'message' => 'Deposit invoice not found.'
             ], 404);

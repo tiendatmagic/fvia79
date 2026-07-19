@@ -53,6 +53,11 @@ export class DepositInvoiceComponent implements OnInit, OnDestroy {
   public isCancelling = false;
   public isChecking = false;
 
+  // Admin có thể xem bất kỳ invoice nào nhưng không thao tác thay user
+  public get isAdmin(): boolean {
+    return this.state.authStore.currentUser()?.role === 'admin';
+  }
+
   private visibilityHandler = () => {
     if (document.hidden) {
       this.stopStatusPolling();

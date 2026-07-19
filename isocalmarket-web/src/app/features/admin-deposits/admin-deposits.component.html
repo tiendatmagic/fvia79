@@ -91,12 +91,13 @@
       <!-- Mã hóa đơn -->
       <ng-template appTableCell="code" let-row="row">
         <div class="flex items-center gap-1.5">
-          <span
-            [appTooltip]="'ID hóa đơn: ' + row.id"
-            class="font-mono font-bold text-[var(--color-primary)] border-b border-dashed border-slate-300 dark:border-slate-700 pb-0.5"
+          <a
+            [routerLink]="['/deposit/invoice', row.id]"
+            [appTooltip]="'Xem chi tiết lệnh nạp #' + row.code"
+            class="font-mono font-bold text-[var(--color-primary)] hover:underline border-b border-dashed border-slate-300 dark:border-slate-700 pb-0.5 transition-colors cursor-pointer"
           >
             #{{ row.code }}
-          </span>
+          </a>
         </div>
       </ng-template>
 
@@ -210,6 +211,16 @@
           <ng-container *ngIf="row.status === 'completed'">
             <span class="text-xs text-slate-400 dark:text-slate-500 italic px-2"> Đã xử lý </span>
           </ng-container>
+
+          <!-- Nút Chi tiết cho tất cả các row -->
+          <a
+            [routerLink]="['/deposit/invoice', row.id]"
+            class="px-2.5 py-1.5 rounded-lg border text-xs font-extrabold text-teal-600 dark:text-teal-400 border-teal-500/20 dark:border-teal-500/30 bg-teal-50 dark:bg-teal-950/20 hover:bg-teal-100 dark:hover:bg-teal-950/40 hover:scale-105 active:scale-95 transition-all cursor-pointer flex items-center gap-1 shrink-0"
+            [appTooltip]="'Xem chi tiết lệnh nạp'"
+          >
+            <app-icon name="eye" class="w-3.5 h-3.5" />
+            Chi tiết
+          </a>
         </div>
       </ng-template>
     </app-table>

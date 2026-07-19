@@ -1,6 +1,7 @@
 import { Component, OnInit, inject, signal } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
+import { RouterModule } from '@angular/router';
 import { StateService } from '@core/services/state.service';
 import { ModalService } from '@core/services/modal.service';
 import { BadgeComponent } from '@shared/components/badge/badge.component';
@@ -22,6 +23,7 @@ import { ApproveDepositModalComponent } from './approve-deposit-modal/approve-de
   imports: [
     CommonModule,
     FormsModule,
+    RouterModule,
     BadgeComponent,
     CardComponent,
     PageHeaderComponent,

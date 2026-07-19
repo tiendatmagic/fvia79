@@ -86,22 +86,22 @@
   </div>
 
   <!-- Nút bấm ở Footer -->
-  <div
-    class="flex items-center justify-end gap-3 pt-3 border-t border-slate-100 dark:border-slate-800/60"
-  >
+  <div class="flex gap-3 pt-3 border-t border-slate-100 dark:border-slate-800/60">
     <button
       type="button"
+      app-button
+      [variant]="'cancel'"
       (click)="onClose()"
-      class="px-4 py-2.5 text-sm font-extrabold text-slate-600 dark:text-slate-400 hover:text-slate-800 dark:hover:text-white rounded-xl hover:bg-slate-100 dark:hover:bg-slate-900 transition-colors cursor-pointer"
+      class="flex-1"
     >
       Hủy bỏ
     </button>
     <button
       type="submit"
       app-button
-      variant="primary"
+      [variant]="'primary'"
       [loading]="isSubmitting"
-      class="px-5 py-2.5 text-sm font-extrabold rounded-xl bg-gradient-to-r from-[var(--color-primary)] to-[var(--color-secondary)] text-white shadow-md active:scale-95 transition-all cursor-pointer flex items-center gap-1.5"
+      class="flex-1"
     >
       Xác nhận duyệt
     </button>
