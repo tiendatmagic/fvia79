@@ -26,6 +26,10 @@ export interface DepositHistoryItem {
   createdAt: string;
   adminWalletAddress?: string;
   txHash?: string;
+  paymentMethod?: string;
+  payerBinanceId?: string;
+  adminBinanceId?: string;
+  adminBinanceQr?: string;
 }
 
 @Component({

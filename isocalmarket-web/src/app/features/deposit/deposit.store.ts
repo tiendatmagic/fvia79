@@ -34,8 +34,15 @@ export class DepositStore {
     );
   }
 
-  public createDeposit(amountUsdt: number): Observable<{ message: string; invoice: DepositHistoryItem }> {
-    return this.api.post<{ message: string; invoice: DepositHistoryItem }>('v1/deposit', { amount_usdt: amountUsdt }).pipe(
+  public createDeposit(amountUsdt: number, paymentMethod: string = 'bep20', payerBinanceId?: string): Observable<{ message: string; invoice: DepositHistoryItem }> {
+    const body: any = {
+      amount_usdt: amountUsdt,
+      payment_method: paymentMethod
+    };
+    if (payerBinanceId) {
+      body.payer_binance_id = payerBinanceId;
+    }
+    return this.api.post<{ message: string; invoice: DepositHistoryItem }>('v1/deposit', body).pipe(
       tap(res => {
         if (res && res.invoice) {
           this.currentInvoice.set(res.invoice);

@@ -1373,3 +1373,19 @@
       3. **Frontend Logic**: Cập nhật [deposit.component.ts](file:///d:/git/isocalmarket/isocalmarket-web/src/app/features/deposit/deposit.component.ts#L67-L87) kiểm tra ràng buộc `amountUsdt > 100000` trước khi gửi và bắt lỗi hiển thị tương ứng nếu backend trả về lỗi liên quan đến giới hạn tối đa 100,000 USDT.
     - **Xác minh**: Chạy build frontend (`npm run build`) và unit test backend (`php artisan test`) đều thành công 100%.
 
+  - **[TÍNH NĂNG MỚI] Tích hợp nạp tiền USDT qua Binance ID (Binance Pay) & Đối soát API**:
+    - **Yêu cầu**: Thêm phương thức nạp tiền Binance ID tự động tăng số tiền lẻ để đối soát. Quản lý cấu hình API Key, Secret và Binance ID của Admin tại trang Cấu hình Admin.
+    - **Giải pháp & Triển khai**:
+      1. **Database & Migration**: Tạo migration bổ sung `payment_method`, `payer_binance_id`, `admin_binance_id` vào bảng `deposits`. Thêm 4 cài đặt `admin_binance_id`, `admin_binance_qr`, `binance_api_key`, `binance_api_secret` vào bảng `system_settings`. Đã chạy migration thành công.
+      2. **Backend Services & Controller**:
+         - Cập nhật `DepositModel`, Domain Entity `Deposit`, và `DepositMapper`.
+         - Cập nhật validation trong `CreateDepositRequest` và truyền tham số tạo trong `DepositController`.
+         - Trong `DepositService`, xây dựng logic check giao dịch rẽ nhánh: Nếu là `binance`, ký chữ ký bảo mật HMAC-SHA256 gửi request lên Binance Spot API `GET /sapi/v1/pay/transactions` để quét lịch sử giao dịch nhận USDT. Đối soát chính xác số tiền lẻ + Binance ID người nạp + TxHash (`orderId` của Binance).
+         - Cập nhật `SystemSettingController` cho phép validation và lưu các trường cấu hình Binance mới.
+      3. **Frontend UI & Components**:
+         - Cập nhật interface `DepositHistoryItem` và action `createDeposit` trong `deposit.store.ts` để truyền payload mới.
+         - Cập nhật `deposit.component.html` và `.ts` hiển thị tab chọn phương thức nạp (BEP-20 / Binance Pay), yêu cầu người dùng điền Binance ID của họ nếu chọn nạp Binance.
+         - Cập nhật `deposit-invoice.component.html` và `.ts` để hiển thị động hướng dẫn nạp tiền tương ứng: nạp qua Binance ID, hiển thị Binance ID Admin và ảnh QR tĩnh nếu Admin cấu hình.
+         - Cập nhật `admin-settings.component.html` & `.ts` bổ sung các trường cấu hình Binance Pay mới kèm tính năng Toggle Eye che giấu/hiển thị bảo mật cho các trường API Key & Secret.
+    - **Xác minh**: Chạy unit test backend (`php artisan test`) đạt 14/14 test pass, biên dịch frontend Angular (`npm run build`) thành công 100%.
+

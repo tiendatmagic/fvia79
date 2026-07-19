@@ -8,6 +8,10 @@ export interface SystemSettingsPayload {
   scanner_api_key: string;
   token_cleanup_days?: number;
   usdt_exchange_rate?: number;
+  admin_binance_id?: string;
+  admin_binance_qr?: string;
+  binance_api_key?: string;
+  binance_api_secret?: string;
 }
 
 @Injectable({
@@ -26,7 +30,11 @@ export class SystemSettingStore {
     admin_wallet_address: '',
     scanner_api_key: '',
     token_cleanup_days: 7,
-    usdt_exchange_rate: 0
+    usdt_exchange_rate: 0,
+    admin_binance_id: '',
+    admin_binance_qr: '',
+    binance_api_key: '',
+    binance_api_secret: ''
   });
 
   private cachedSettings: SystemSettingsPayload | null = null;

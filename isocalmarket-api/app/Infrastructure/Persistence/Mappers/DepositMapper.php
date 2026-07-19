@@ -19,6 +19,9 @@ class DepositMapper
             $model->tx_hash,
             $model->admin_wallet_address,
             $model->status,
+            $model->payment_method ?: 'bep20',
+            $model->payer_binance_id,
+            $model->admin_binance_id,
             $model->created_at ? new \DateTime($model->created_at->toDateTimeString()) : null,
             $model->updated_at ? new \DateTime($model->updated_at->toDateTimeString()) : null
         );
@@ -39,6 +42,9 @@ class DepositMapper
         $model->tx_hash = $entity->getTxHash();
         $model->admin_wallet_address = $entity->getAdminWalletAddress();
         $model->status = $entity->getStatus();
+        $model->payment_method = $entity->getPaymentMethod();
+        $model->payer_binance_id = $entity->getPayerBinanceId();
+        $model->admin_binance_id = $entity->getAdminBinanceId();
 
         return $model;
     }

@@ -93,12 +93,21 @@ export class DepositInvoiceComponent implements OnInit, OnDestroy {
         this.isLoadingInvoice.set(false);
         this.invoice = res.invoice;
 
-        const wallet = res.invoice?.adminWalletAddress || '';
-        if (!wallet.trim()) {
-          this.invoiceError.set('Quản trị viên hệ thống chưa cấu hình địa chỉ ví nhận USDT. Vui lòng liên hệ hỗ trợ!');
-          return;
+        const method = res.invoice?.paymentMethod || 'bep20';
+        if (method === 'bep20') {
+          const wallet = res.invoice?.adminWalletAddress || '';
+          if (!wallet.trim()) {
+            this.invoiceError.set('Quản trị viên hệ thống chưa cấu hình địa chỉ ví nhận USDT. Vui lòng liên hệ hỗ trợ!');
+            return;
+          }
+          this.adminWalletAddress.set(wallet);
+        } else if (method === 'binance') {
+          const binanceId = res.invoice?.adminBinanceId || '';
+          if (!binanceId.trim()) {
+            this.invoiceError.set('Quản trị viên hệ thống chưa cấu hình Binance ID nhận tiền. Vui lòng liên hệ hỗ trợ!');
+            return;
+          }
         }
-        this.adminWalletAddress.set(wallet);
         
         if (this.invoice.status !== 'pending_payment') {
           this.state.showToast('Lệnh nạp tiền này đã được xử lý hoặc đã hết hạn!', 'warning');
@@ -296,7 +305,11 @@ export class DepositInvoiceComponent implements OnInit, OnDestroy {
     if (this.isChecking || !this.invoice) return;
     this.isChecking = true;
 
-    this.state.showToast('Hệ thống BOT đang quét giao dịch tự động trên chuỗi BNB Smart Chain...', 'warning');
+    if (this.invoice.paymentMethod === 'binance') {
+      this.state.showToast('Hệ thống BOT đang quét giao dịch tự động trên cổng Binance Pay...', 'warning');
+    } else {
+      this.state.showToast('Hệ thống BOT đang quét giao dịch tự động trên chuỗi BNB Smart Chain...', 'warning');
+    }
 
     this.state.depositStore.checkTransaction(this.invoice.id).pipe(
       finalize(() => this.isChecking = false)

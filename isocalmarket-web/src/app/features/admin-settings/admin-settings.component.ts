@@ -42,6 +42,8 @@ export class AdminSettingsComponent implements OnInit {
   public readonly submitting = this.store.submitting;
   public readonly isLocked = signal<boolean>(true);
   public readonly showApiKey = signal<boolean>(false);
+  public readonly showBinanceKey = signal<boolean>(false);
+  public readonly showBinanceSecret = signal<boolean>(false);
 
   // Tab management
   public readonly activeTab = signal<'general' | 'maintenance'>('general');
@@ -51,7 +53,11 @@ export class AdminSettingsComponent implements OnInit {
     admin_wallet_address: '',
     scanner_api_key: '',
     token_cleanup_days: 7,
-    usdt_exchange_rate: 0
+    usdt_exchange_rate: 0,
+    admin_binance_id: '',
+    admin_binance_qr: '',
+    binance_api_key: '',
+    binance_api_secret: ''
   };
 
   ngOnInit(): void {
@@ -78,6 +84,14 @@ export class AdminSettingsComponent implements OnInit {
     this.showApiKey.set(!this.showApiKey());
   }
 
+  public toggleBinanceKeyVisibility(): void {
+    this.showBinanceKey.set(!this.showBinanceKey());
+  }
+
+  public toggleBinanceSecretVisibility(): void {
+    this.showBinanceSecret.set(!this.showBinanceSecret());
+  }
+
   public changeTab(tab: 'general' | 'maintenance'): void {
     this.activeTab.set(tab);
   }
@@ -101,6 +115,25 @@ export class AdminSettingsComponent implements OnInit {
     if (!this.form.scanner_api_key.trim()) {
       this.toast.showToast('API Key Scanner không được để trống!', 'warning');
       return;
+    }
+
+    const binanceId = this.form.admin_binance_id?.trim();
+    const binanceKey = this.form.binance_api_key?.trim();
+    const binanceSecret = this.form.binance_api_secret?.trim();
+
+    if (binanceId || binanceKey || binanceSecret) {
+      if (!binanceId) {
+        this.toast.showToast('Binance ID nhận tiền không được để trống!', 'warning');
+        return;
+      }
+      if (!binanceKey) {
+        this.toast.showToast('Binance API Key không được để trống!', 'warning');
+        return;
+      }
+      if (!binanceSecret) {
+        this.toast.showToast('Binance API Secret không được để trống!', 'warning');
+        return;
+      }
     }
 
     this.store.updateSettings(this.form).subscribe({

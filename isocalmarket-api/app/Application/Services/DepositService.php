@@ -53,6 +53,22 @@ class DepositService
     }
 
     /**
+     * Lấy Binance ID nhận tiền của Admin
+     */
+    public function getAdminBinanceIdSetting(): string
+    {
+        return $this->settingService->getSetting('admin_binance_id', '');
+    }
+
+    /**
+     * Lấy ảnh QR Binance Pay của Admin
+     */
+    public function getAdminBinanceQrSetting(): string
+    {
+        return $this->settingService->getSetting('admin_binance_qr', '');
+    }
+
+    /**
      * Lấy tỷ giá USDT/VND từ CoinGecko API (Free)
      * Cache kết quả trong 10 phút (600 giây)
      */
@@ -99,23 +115,38 @@ class DepositService
     /**
      * Lập lệnh nạp tiền mới cho người dùng
      */
-    public function createDeposit(string $userId, float $amountUsdt): Deposit
+    public function createDeposit(string $userId, float $amountUsdt, string $paymentMethod = 'bep20', ?string $payerBinanceId = null): Deposit
     {
         $this->adminWalletAddress = $this->settingService->getSetting('admin_wallet_address', '');
         $this->scannerApiKey = $this->settingService->getSetting('scanner_api_key', '');
+        $adminBinanceIdSetting = $this->settingService->getSetting('admin_binance_id', '');
+        $binanceApiKeySetting = $this->settingService->getSetting('binance_api_key', '');
+        $binanceApiSecretSetting = $this->settingService->getSetting('binance_api_secret', '');
 
-        if (empty($this->adminWalletAddress)) {
-            throw new \RuntimeException("The administrator has not configured the receiving USDT wallet address yet.");
-        }
-        if (empty($this->scannerApiKey)) {
-            throw new \RuntimeException("The administrator has not configured the scanner API key yet.");
+        if ($paymentMethod === 'bep20') {
+            if (empty($this->adminWalletAddress)) {
+                throw new \RuntimeException("The administrator has not configured the receiving USDT wallet address yet.");
+            }
+            if (empty($this->scannerApiKey)) {
+                throw new \RuntimeException("The administrator has not configured the scanner API key yet.");
+            }
+        } else if ($paymentMethod === 'binance') {
+            if (empty($adminBinanceIdSetting)) {
+                throw new \RuntimeException("The administrator has not configured the receiving Binance ID yet.");
+            }
+            if (empty($binanceApiKeySetting) || empty($binanceApiSecretSetting)) {
+                throw new \RuntimeException("The administrator has not configured the Binance API Key/Secret yet.");
+            }
+            if (empty($payerBinanceId)) {
+                throw new \RuntimeException("The payer Binance ID is required.");
+            }
         }
 
         if ($amountUsdt < 0.1) {
             throw new \RuntimeException("The deposit amount must be at least 0.1 USDT.");
         }
 
-        return \Illuminate\Support\Facades\DB::transaction(function () use ($userId, $amountUsdt) {
+        return \Illuminate\Support\Facades\DB::transaction(function () use ($userId, $amountUsdt, $paymentMethod, $payerBinanceId, $adminBinanceIdSetting) {
             // Chặn tạo nhiều hóa đơn nếu đang có hóa đơn chờ thanh toán chưa giải quyết (với lock)
             $hasPending = \App\Infrastructure\Persistence\Eloquent\DepositModel::where('user_id', $userId)
                 ->where('status', 'pending_payment')
@@ -176,8 +207,11 @@ class DepositService
                 amountToPay: $amountToPay,
                 amountVnd: $amountVnd,
                 txHash: null,
-                adminWalletAddress: $this->adminWalletAddress,
-                status: 'pending_payment'
+                adminWalletAddress: $paymentMethod === 'bep20' ? $this->adminWalletAddress : null,
+                status: 'pending_payment',
+                paymentMethod: $paymentMethod,
+                payerBinanceId: $paymentMethod === 'binance' ? $payerBinanceId : null,
+                adminBinanceId: $paymentMethod === 'binance' ? $adminBinanceIdSetting : null
             );
 
             return $this->depositRepository->save($deposit);
@@ -271,111 +305,219 @@ class DepositService
      */
     public function checkTransaction(string $id, string $userId): bool
     {
-        $this->adminWalletAddress = $this->settingService->getSetting('admin_wallet_address', '');
-        $this->scannerApiKey = $this->settingService->getSetting('scanner_api_key', '');
-
-        if (empty($this->adminWalletAddress)) {
-            throw new \RuntimeException("The administrator has not configured the receiving USDT wallet address yet.");
-        }
-        if (empty($this->scannerApiKey)) {
-            throw new \RuntimeException("The administrator has not configured the scanner API key yet.");
-        }
-
-        $adminWallet = strtolower($this->adminWalletAddress);
-        $tokenContract = strtolower($this->tokenContractAddress);
-
-        // Fetch Moralis API ngoài transaction để tránh giữ lock lâu trong lúc chờ HTTP response
-        if ($this->cachedTransactions === null) {
-            $response = Http::timeout(10)
-                ->withHeader('X-API-Key', $this->scannerApiKey)
-                ->get("https://deep-index.moralis.io/api/v2.2/{$adminWallet}/erc20/transfers", [
-                    'chain'               => 'bsc',
-                    'contract_addresses'  => [$this->tokenContractAddress],
-                    'order'               => 'DESC',
-                    'limit'               => 100,
-                ]);
-
-            if ($response->successful()) {
-                $result = $response->json();
-                $this->cachedTransactions = $result['result'] ?? [];
-            } else {
-                Log::error("Moralis API HTTP error: " . $response->status() . " - " . $response->body());
-                throw new \RuntimeException("Unable to connect to blockchain scanner API. Please try again later.");
-            }
-        }
-
-        $transactions = $this->cachedTransactions;
-
-        // Vá CVE-1: Bọc toàn bộ check deposit status, isTxHashUsed và credit tiền trong 1 DB transaction với pessimistic lock (lockForUpdate)
-        return \Illuminate\Support\Facades\DB::transaction(function () use ($id, $userId, $adminWallet, $tokenContract, $transactions) {
-            $depositModel = \App\Infrastructure\Persistence\Eloquent\DepositModel::where('id', $id)
-                ->lockForUpdate()
-                ->first();
-
-            if (!$depositModel) {
-                return false;
-            }
-
-            $deposit = \App\Infrastructure\Persistence\Mappers\DepositMapper::toDomain($depositModel);
-
-            if ($deposit->getUserId() !== $userId || $deposit->getStatus() !== 'pending_payment') {
-                Log::warning("Deposit check request invalid or already processed for invoice ID: {$id}");
-                return false;
-            }
-
-            foreach ($transactions as $tx) {
-                // 1. Kiểm tra token có khớp với token đối soát cấu hình không
-                if (strtolower($tx['address'] ?? '') !== $tokenContract) {
-                    continue;
-                }
-
-                // 2. Kiểm tra ví nhận có phải ví chủ sàn không
-                if (strtolower($tx['to_address'] ?? '') !== $adminWallet) {
-                    continue;
-                }
-
-                // 3. Quy đổi số lượng chuyển khoản từ wei sang giá trị thực
-                $txValueUsdt = (float) ($tx['value'] ?? 0) / pow(10, $this->tokenDecimals);
-                $amountToPay = $deposit->getAmountToPay();
-
-                // 4. So khớp số lượng thực nhận chính xác 100% không dung sai (Vá CVE-4)
-                if (round($txValueUsdt, 4) !== round($amountToPay, 4)) {
-                    continue;
-                }
-
-                // 5. Kiểm tra mã băm TxHash này đã được dùng đối soát chưa (Vá CVE-1 & CVE-3 - thực hiện trong lock)
-                $txHash = $tx['transaction_hash'] ?? '';
-                if (empty($txHash) || $this->depositRepository->isTxHashUsed($txHash)) {
-                    continue;
-                }
-
-                // 6. Kiểm tra giao dịch có diễn ra trong vòng 15 phút (900 giây) kể từ lúc tạo hóa đơn không
-                $invoiceCreatedEpoch = $deposit->getCreatedAt()->getTimestamp();
-                $txEpoch = isset($tx['block_timestamp'])
-                    ? (new \DateTime($tx['block_timestamp']))->getTimestamp()
-                    : 0;
-                $timeDiff = $txEpoch - $invoiceCreatedEpoch;
-                if ($timeDiff < -60 || $timeDiff > 900) {
-                    continue;
-                }
-
-                // Giao dịch khớp hoàn toàn! Cập nhật hóa đơn & cộng tiền user trong cùng transaction lock
-                $deposit->setStatus('completed');
-                $deposit->setTxHash($txHash);
-                $this->depositRepository->save($deposit);
-
-                $user = $this->userRepository->findById($userId);
-                if ($user) {
-                    $user->addBalance($deposit->getAmountVnd());
-                    $this->userRepository->save($user);
-                }
-
-                Log::info("Deposit successfully matched and processed: Invoice #{$deposit->getCode()}, Amount: {$deposit->getAmountUsdt()} USDT, TxHash: {$txHash}");
-                return true;
-            }
-
+        $depositModel = \App\Infrastructure\Persistence\Eloquent\DepositModel::where('id', $id)->first();
+        if (!$depositModel) {
             return false;
-        });
+        }
+
+        $paymentMethod = $depositModel->payment_method ?: 'bep20';
+
+        if ($paymentMethod === 'bep20') {
+            $this->adminWalletAddress = $this->settingService->getSetting('admin_wallet_address', '');
+            $this->scannerApiKey = $this->settingService->getSetting('scanner_api_key', '');
+
+            if (empty($this->adminWalletAddress)) {
+                throw new \RuntimeException("The administrator has not configured the receiving USDT wallet address yet.");
+            }
+            if (empty($this->scannerApiKey)) {
+                throw new \RuntimeException("The administrator has not configured the scanner API key yet.");
+            }
+
+            $adminWallet = strtolower($this->adminWalletAddress);
+            $tokenContract = strtolower($this->tokenContractAddress);
+
+            // Fetch Moralis API ngoài transaction để tránh giữ lock lâu trong lúc chờ HTTP response
+            if ($this->cachedTransactions === null) {
+                $response = Http::timeout(10)
+                    ->withHeader('X-API-Key', $this->scannerApiKey)
+                    ->get("https://deep-index.moralis.io/api/v2.2/{$adminWallet}/erc20/transfers", [
+                        'chain'               => 'bsc',
+                        'contract_addresses'  => [$this->tokenContractAddress],
+                        'order'               => 'DESC',
+                        'limit'               => 100,
+                    ]);
+
+                if ($response->successful()) {
+                    $result = $response->json();
+                    $this->cachedTransactions = $result['result'] ?? [];
+                } else {
+                    Log::error("Moralis API HTTP error: " . $response->status() . " - " . $response->body());
+                    throw new \RuntimeException("Unable to connect to blockchain scanner API. Please try again later.");
+                }
+            }
+
+            $transactions = $this->cachedTransactions;
+
+            // Vá CVE-1: Bọc toàn bộ check deposit status, isTxHashUsed và credit tiền trong 1 DB transaction với pessimistic lock (lockForUpdate)
+            return \Illuminate\Support\Facades\DB::transaction(function () use ($id, $userId, $adminWallet, $tokenContract, $transactions) {
+                $depositModel = \App\Infrastructure\Persistence\Eloquent\DepositModel::where('id', $id)
+                    ->lockForUpdate()
+                    ->first();
+
+                if (!$depositModel) {
+                    return false;
+                }
+
+                $deposit = \App\Infrastructure\Persistence\Mappers\DepositMapper::toDomain($depositModel);
+
+                if ($deposit->getUserId() !== $userId || $deposit->getStatus() !== 'pending_payment') {
+                    Log::warning("Deposit check request invalid or already processed for invoice ID: {$id}");
+                    return false;
+                }
+
+                foreach ($transactions as $tx) {
+                    // 1. Kiểm tra token có khớp với token đối soát cấu hình không
+                    if (strtolower($tx['address'] ?? '') !== $tokenContract) {
+                        continue;
+                    }
+
+                    // 2. Kiểm tra ví nhận có phải ví chủ sàn không
+                    if (strtolower($tx['to_address'] ?? '') !== $adminWallet) {
+                        continue;
+                    }
+
+                    // 3. Quy đổi số lượng chuyển khoản từ wei sang giá trị thực
+                    $txValueUsdt = (float) ($tx['value'] ?? 0) / pow(10, $this->tokenDecimals);
+                    $amountToPay = $deposit->getAmountToPay();
+
+                    // 4. So khớp số lượng thực nhận chính xác 100% không dung sai (Vá CVE-4)
+                    if (round($txValueUsdt, 4) !== round($amountToPay, 4)) {
+                        continue;
+                    }
+
+                    // 5. Kiểm tra mã băm TxHash này đã được dùng đối soát chưa (Vá CVE-1 & CVE-3 - thực hiện trong lock)
+                    $txHash = $tx['transaction_hash'] ?? '';
+                    if (empty($txHash) || $this->depositRepository->isTxHashUsed($txHash)) {
+                        continue;
+                    }
+
+                    // 6. Kiểm tra giao dịch có diễn ra trong vòng 15 phút (900 giây) kể từ lúc tạo hóa đơn không
+                    $invoiceCreatedEpoch = $deposit->getCreatedAt()->getTimestamp();
+                    $txEpoch = isset($tx['block_timestamp'])
+                        ? (new \DateTime($tx['block_timestamp']))->getTimestamp()
+                        : 0;
+                    $timeDiff = $txEpoch - $invoiceCreatedEpoch;
+                    if ($timeDiff < -60 || $timeDiff > 900) {
+                        continue;
+                    }
+
+                    // Giao dịch khớp hoàn toàn! Cập nhật hóa đơn & cộng tiền user trong cùng transaction lock
+                    $deposit->setStatus('completed');
+                    $deposit->setTxHash($txHash);
+                    $this->depositRepository->save($deposit);
+
+                    $user = $this->userRepository->findById($userId);
+                    if ($user) {
+                        $user->addBalance($deposit->getAmountVnd());
+                        $this->userRepository->save($user);
+                    }
+
+                    Log::info("Deposit successfully matched and processed: Invoice #{$deposit->getCode()}, Amount: {$deposit->getAmountUsdt()} USDT, TxHash: {$txHash}");
+                    return true;
+                }
+
+                return false;
+            });
+        } else if ($paymentMethod === 'binance') {
+            $binanceApiKey = $this->settingService->getSetting('binance_api_key', '');
+            $binanceApiSecret = $this->settingService->getSetting('binance_api_secret', '');
+
+            if (empty($binanceApiKey) || empty($binanceApiSecret)) {
+                throw new \RuntimeException("The administrator has not configured the Binance API Key/Secret yet.");
+            }
+
+            if ($this->cachedTransactions === null) {
+                $timestamp = round(microtime(true) * 1000);
+                $queryString = "timestamp=" . $timestamp . "&recvWindow=60000";
+                $signature = hash_hmac('sha256', $queryString, $binanceApiSecret);
+
+                $response = Http::timeout(10)
+                    ->withHeaders([
+                        'X-MBX-APIKEY' => $binanceApiKey
+                    ])
+                    ->get("https://api.binance.com/sapi/v1/pay/transactions?" . $queryString . "&signature=" . $signature);
+
+                if ($response->successful()) {
+                    $result = $response->json();
+                    $this->cachedTransactions = $result['data'] ?? [];
+                } else {
+                    Log::error("Binance Pay API HTTP error: " . $response->status() . " - " . $response->body());
+                    throw new \RuntimeException("Unable to connect to Binance Pay API. Please try again later.");
+                }
+            }
+
+            $transactions = $this->cachedTransactions;
+
+            return \Illuminate\Support\Facades\DB::transaction(function () use ($id, $userId, $transactions) {
+                $depositModel = \App\Infrastructure\Persistence\Eloquent\DepositModel::where('id', $id)
+                    ->lockForUpdate()
+                    ->first();
+
+                if (!$depositModel) {
+                    return false;
+                }
+
+                $deposit = \App\Infrastructure\Persistence\Mappers\DepositMapper::toDomain($depositModel);
+
+                if ($deposit->getUserId() !== $userId || $deposit->getStatus() !== 'pending_payment') {
+                    Log::warning("Binance Pay check request invalid or already processed for invoice ID: {$id}");
+                    return false;
+                }
+
+                foreach ($transactions as $tx) {
+                    $currency = $tx['currency'] ?? '';
+                    if (strtoupper($currency) !== 'USDT') {
+                        continue;
+                    }
+
+                    $txValueUsdt = (float) ($tx['orderAmount'] ?? 0);
+                    $amountToPay = $deposit->getAmountToPay();
+
+                    // So khớp số lượng thực nhận chính xác 100% không dung sai
+                    if (round($txValueUsdt, 4) !== round($amountToPay, 4)) {
+                        continue;
+                    }
+
+                    // Kiểm tra Binance ID người gửi
+                    $payerId = $tx['payerInfo']['payerId'] ?? '';
+                    if (empty($payerId) || $payerId !== $deposit->getPayerBinanceId()) {
+                        continue;
+                    }
+
+                    // Kiểm tra orderId này đã được dùng đối soát chưa
+                    $orderId = $tx['orderId'] ?? '';
+                    if (empty($orderId) || $this->depositRepository->isTxHashUsed($orderId)) {
+                        continue;
+                    }
+
+                    // Kiểm tra thời gian giao dịch trong vòng 15 phút (900 giây)
+                    $invoiceCreatedEpoch = $deposit->getCreatedAt()->getTimestamp();
+                    $txEpoch = isset($tx['transactionTime'])
+                        ? round((float)$tx['transactionTime'] / 1000)
+                        : 0;
+                    $timeDiff = $txEpoch - $invoiceCreatedEpoch;
+                    if ($timeDiff < -60 || $timeDiff > 900) {
+                        continue;
+                    }
+
+                    // Giao dịch khớp hoàn toàn!
+                    $deposit->setStatus('completed');
+                    $deposit->setTxHash($orderId);
+                    $this->depositRepository->save($deposit);
+
+                    $user = $this->userRepository->findById($userId);
+                    if ($user) {
+                        $user->addBalance($deposit->getAmountVnd());
+                        $this->userRepository->save($user);
+                    }
+
+                    Log::info("Binance Pay Deposit successfully matched and processed: Invoice #{$deposit->getCode()}, Amount: {$deposit->getAmountUsdt()} USDT, Binance Order ID: {$orderId}");
+                    return true;
+                }
+
+                return false;
+            });
+        }
     }
 
     /**

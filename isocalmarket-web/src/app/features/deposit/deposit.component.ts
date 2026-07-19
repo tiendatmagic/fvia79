@@ -40,6 +40,8 @@ export class DepositComponent implements OnInit {
   public amountUsdt: number | null = null;
   public vndEquivalent = 0;
   public selectedNetwork = 'BEP20';
+  public paymentMethod = 'bep20';
+  public payerBinanceId = '';
   public isSubmitting = false;
 
   ngOnInit() {
@@ -72,9 +74,18 @@ export class DepositComponent implements OnInit {
       return;
     }
 
+    if (this.paymentMethod === 'binance' && (!this.payerBinanceId || this.payerBinanceId.trim().length < 8)) {
+      this.state.showToast('Vui lòng nhập Binance ID hợp lệ của bạn (tối thiểu 8 ký số)!', 'error');
+      return;
+    }
+
     this.isSubmitting = true;
 
-    this.state.depositStore.createDeposit(this.amountUsdt).subscribe({
+    this.state.depositStore.createDeposit(
+      this.amountUsdt, 
+      this.paymentMethod, 
+      this.paymentMethod === 'binance' ? this.payerBinanceId : undefined
+    ).subscribe({
       next: (res) => {
         this.state.showToast('Tạo lệnh nạp tiền thành công! Đang chuyển đến hóa đơn thanh toán.', 'success');
         setTimeout(() => {

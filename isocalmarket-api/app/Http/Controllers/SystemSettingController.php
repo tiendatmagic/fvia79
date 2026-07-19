@@ -36,6 +36,10 @@ class SystemSettingController extends Controller
             'scanner_api_key' => 'sometimes|required|string|max:1000',
             'token_cleanup_days' => 'sometimes|required|integer|min:1|max:365',
             'usdt_exchange_rate' => 'sometimes|required|numeric|min:0|max:1000000',
+            'admin_binance_id' => 'sometimes|nullable|string|max:100',
+            'admin_binance_qr' => 'sometimes|nullable|string|max:500',
+            'binance_api_key' => 'sometimes|nullable|string|max:200',
+            'binance_api_secret' => 'sometimes|nullable|string|max:200',
         ], [
             'admin_wallet_address.regex' => 'The admin wallet address must be a valid BEP20/EVM address starting with 0x followed by 40 hex characters.',
         ]);
@@ -52,6 +56,18 @@ class SystemSettingController extends Controller
         }
         if ($request->has('usdt_exchange_rate')) {
             $settingsToSave['usdt_exchange_rate'] = (string)$request->input('usdt_exchange_rate');
+        }
+        if ($request->has('admin_binance_id')) {
+            $settingsToSave['admin_binance_id'] = $request->input('admin_binance_id') ?: '';
+        }
+        if ($request->has('admin_binance_qr')) {
+            $settingsToSave['admin_binance_qr'] = $request->input('admin_binance_qr') ?: '';
+        }
+        if ($request->has('binance_api_key')) {
+            $settingsToSave['binance_api_key'] = $request->input('binance_api_key') ?: '';
+        }
+        if ($request->has('binance_api_secret')) {
+            $settingsToSave['binance_api_secret'] = $request->input('binance_api_secret') ?: '';
         }
 
         if (!empty($settingsToSave)) {

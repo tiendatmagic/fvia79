@@ -13,6 +13,9 @@ class Deposit
     private ?string $txHash;
     private ?string $adminWalletAddress;
     private string $status;
+    private string $paymentMethod;
+    private ?string $payerBinanceId;
+    private ?string $adminBinanceId;
     private ?\DateTime $createdAt;
     private ?\DateTime $updatedAt;
 
@@ -26,6 +29,9 @@ class Deposit
         ?string $txHash = null,
         ?string $adminWalletAddress = null,
         string $status = 'pending_payment',
+        string $paymentMethod = 'bep20',
+        ?string $payerBinanceId = null,
+        ?string $adminBinanceId = null,
         ?\DateTime $createdAt = null,
         ?\DateTime $updatedAt = null
     ) {
@@ -38,6 +44,9 @@ class Deposit
         $this->txHash = $txHash;
         $this->adminWalletAddress = $adminWalletAddress;
         $this->status = $status;
+        $this->paymentMethod = $paymentMethod;
+        $this->payerBinanceId = $payerBinanceId;
+        $this->adminBinanceId = $adminBinanceId;
         $this->createdAt = $createdAt;
         $this->updatedAt = $updatedAt;
     }
@@ -105,5 +114,35 @@ class Deposit
     public function getUpdatedAt(): ?\DateTime
     {
         return $this->updatedAt;
+    }
+
+    public function getPaymentMethod(): string
+    {
+        return $this->paymentMethod;
+    }
+
+    public function setPaymentMethod(string $paymentMethod): void
+    {
+        $this->paymentMethod = $paymentMethod;
+    }
+
+    public function getPayerBinanceId(): ?string
+    {
+        return $this->payerBinanceId;
+    }
+
+    public function setPayerBinanceId(?string $payerBinanceId): void
+    {
+        $this->payerBinanceId = $payerBinanceId;
+    }
+
+    public function getAdminBinanceId(): ?string
+    {
+        return $this->adminBinanceId;
+    }
+
+    public function setAdminBinanceId(?string $adminBinanceId): void
+    {
+        $this->adminBinanceId = $adminBinanceId;
     }
 }

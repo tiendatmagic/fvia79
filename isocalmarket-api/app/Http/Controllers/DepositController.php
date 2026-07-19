@@ -35,9 +35,11 @@ class DepositController extends Controller
     {
         $userId = Auth::id();
         $amountUsdt = (float) $request->input('amount_usdt');
+        $paymentMethod = $request->input('payment_method', 'bep20');
+        $payerBinanceId = $request->input('payer_binance_id');
 
         try {
-            $deposit = $this->depositService->createDeposit($userId, $amountUsdt);
+            $deposit = $this->depositService->createDeposit($userId, $amountUsdt, $paymentMethod, $payerBinanceId);
         } catch (\RuntimeException $e) {
             $activeInvoice = \App\Infrastructure\Persistence\Eloquent\DepositModel::where('user_id', $userId)
                 ->where('status', 'pending_payment')
@@ -183,6 +185,10 @@ class DepositController extends Controller
             'amountVnd' => $deposit->getAmountVnd(),
             'txHash' => $deposit->getTxHash(),
             'status' => $deposit->getStatus(),
+            'paymentMethod' => $deposit->getPaymentMethod(),
+            'payerBinanceId' => $deposit->getPayerBinanceId(),
+            'adminBinanceId' => $deposit->getAdminBinanceId() ?: $this->depositService->getAdminBinanceIdSetting(),
+            'adminBinanceQr' => $this->depositService->getAdminBinanceQrSetting(),
             'createdAt' => $deposit->getCreatedAt() ? $deposit->getCreatedAt()->format('c') : null,
             'updatedAt' => $deposit->getUpdatedAt() ? $deposit->getUpdatedAt()->format('c') : null,
             'adminWalletAddress' => $deposit->getAdminWalletAddress() ?: $this->depositService->getAdminWalletAddress(),
