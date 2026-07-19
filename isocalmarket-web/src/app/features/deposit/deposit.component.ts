@@ -63,8 +63,12 @@ export class DepositComponent implements OnInit {
   public onCreateInvoice() {
     if (this.isSubmitting) return;
 
-    if (this.amountUsdt === null || this.amountUsdt === undefined || this.amountUsdt < 0.1) {
-      this.state.showToast('Số lượng USDT nạp tối thiểu là 0.1 USDT!', 'error');
+    if (this.amountUsdt === null || this.amountUsdt === undefined || this.amountUsdt < 0.1 || this.amountUsdt > 100000) {
+      if (this.amountUsdt !== null && this.amountUsdt !== undefined && this.amountUsdt > 100000) {
+        this.state.showToast('Số lượng USDT nạp tối đa là 100,000 USDT!', 'error');
+      } else {
+        this.state.showToast('Số lượng USDT nạp tối thiểu là 0.1 USDT!', 'error');
+      }
       return;
     }
 
@@ -84,6 +88,9 @@ export class DepositComponent implements OnInit {
 
         if (msg.toLowerCase().includes('at least 0.1')) {
           msg = 'Số lượng USDT nạp tối thiểu là 0.1 USDT!';
+          this.state.showToast(msg, 'error');
+        } else if (msg.toLowerCase().includes('greater than 100000') || msg.includes('100000')) {
+          msg = 'Số lượng USDT nạp tối đa là 100,000 USDT!';
           this.state.showToast(msg, 'error');
         } else if (msg.includes('configured the receiving USDT wallet')) {
           msg = 'Quản trị viên hệ thống chưa cấu hình địa chỉ ví nhận USDT nạp tiền! Vui lòng quay lại sau.';

@@ -46,8 +46,9 @@
             [(ngModel)]="amountUsdt"
             name="amountUsdt"
             type="number"
-            placeholder="Nhập số lượng USDT (Tối thiểu 0.1 USDT)"
+            placeholder="Nhập số lượng USDT (Tối thiểu 0.1 USDT, Tối đa 100,000 USDT)"
             [min]="0.1"
+            [max]="100000"
             (ngModelChange)="onAmountChange()"
           />
         </div>

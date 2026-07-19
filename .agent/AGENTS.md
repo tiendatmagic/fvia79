@@ -1365,3 +1365,11 @@
          - Cập nhật [user-api.component.html](file:///d:/git/isocalmarket/isocalmarket-web/src/app/features/user-api/user-api.component.html) bổ sung tham số `page`, `limit` vào bảng query parameters và cập nhật mẫu JSON Response phân trang mới.
     - **Xác minh**: Chạy unit test backend (`php artisan test`) thành công và kiểm tra build frontend.
 
+  - **[CẤU HÌNH & VALIDATION] Nâng giới hạn nạp tiền tối đa lên 100,000 USDT ở cả FE và BE**:
+    - **Yêu cầu**: Thay đổi giới hạn nạp tối đa từ 10,000 USDT lên 100,000 USDT ở cả Frontend và Backend.
+    - **Giải pháp & Triển khai**:
+      1. **Backend**: Cập nhật [CreateDepositRequest.php](file:///d:/git/isocalmarket/isocalmarket-api/app/Http/Requests/CreateDepositRequest.php#L23) đổi rule validation của `amount_usdt` từ `max:10000` thành `max:100000`.
+      2. **Frontend UI**: Cập nhật [deposit.component.html](file:///d:/git/isocalmarket/isocalmarket-web/src/app/features/deposit/deposit.component.html#L48-L50) đổi placeholder thành `Nhập số lượng USDT (Tối thiểu 0.1 USDT, Tối đa 100,000 USDT)` và đặt thuộc tính `[max]="100000"` cho custom input.
+      3. **Frontend Logic**: Cập nhật [deposit.component.ts](file:///d:/git/isocalmarket/isocalmarket-web/src/app/features/deposit/deposit.component.ts#L67-L87) kiểm tra ràng buộc `amountUsdt > 100000` trước khi gửi và bắt lỗi hiển thị tương ứng nếu backend trả về lỗi liên quan đến giới hạn tối đa 100,000 USDT.
+    - **Xác minh**: Chạy build frontend (`npm run build`) và unit test backend (`php artisan test`) đều thành công 100%.
+
