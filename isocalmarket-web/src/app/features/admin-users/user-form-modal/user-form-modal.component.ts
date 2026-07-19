@@ -1,4 +1,4 @@
-import { Component, inject, OnInit } from '@angular/core';
+import { Component, inject, OnInit, ChangeDetectorRef } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { ModalRef, MODAL_DATA } from '@core/services/modal-ref';
@@ -45,6 +45,7 @@ export class UserFormModalComponent implements OnInit {
   public readonly state = inject(StateService);
   private readonly apiService = inject(ApiService);
   private readonly modalService = inject(ModalService);
+  private readonly cdr = inject(ChangeDetectorRef);
 
   public isEditMode = false;
   public editingId: any = null;
@@ -144,7 +145,10 @@ export class UserFormModalComponent implements OnInit {
 
       this.isResetting2fa = true;
       this.apiService.post(`v1/admin/users/${this.editingId}/reset-2fa`, {}).pipe(
-        finalize(() => this.isResetting2fa = false)
+        finalize(() => {
+          this.isResetting2fa = false;
+          this.cdr.detectChanges();
+        })
       ).subscribe({
         next: () => {
           this.google2fa_enabled = false;
@@ -153,10 +157,12 @@ export class UserFormModalComponent implements OnInit {
           this.adminGeneratedSecret = '';
           this.adminGeneratedQrUrl = '';
           this.state.showToast('Đã tắt 2FA cho tài khoản này!', 'success');
+          this.cdr.detectChanges();
         },
         error: () => {
           this.google2fa_enabled = true;
           this.state.showToast('Không thể tắt 2FA, vui lòng thử lại!', 'error');
+          this.cdr.detectChanges();
         }
       });
     });
@@ -181,7 +187,10 @@ export class UserFormModalComponent implements OnInit {
 
       this.isEnabling2fa = true;
       this.apiService.post<any>(`v1/admin/users/${this.editingId}/enable-2fa`, {}).pipe(
-        finalize(() => this.isEnabling2fa = false)
+        finalize(() => {
+          this.isEnabling2fa = false;
+          this.cdr.detectChanges();
+        })
       ).subscribe({
         next: (res) => {
           this.google2fa_enabled = true;
@@ -190,10 +199,12 @@ export class UserFormModalComponent implements OnInit {
           this.adminGeneratedSecret = res.secret;
           this.adminGeneratedQrUrl = res.qr_code_url;
           this.state.showToast('Đã kích hoạt 2FA thành công!', 'success');
+          this.cdr.detectChanges();
         },
         error: () => {
           this.google2fa_enabled = false;
           this.state.showToast('Không thể kích hoạt 2FA, vui lòng thử lại!', 'error');
+          this.cdr.detectChanges();
         }
       });
     });
@@ -243,6 +254,7 @@ export class UserFormModalComponent implements OnInit {
           const u = this.state.userStore.users().find(x => x.id === this.editingId);
           if (u) {
             this.balance = u.balance;
+            this.cdr.detectChanges();
           }
         });
       }
