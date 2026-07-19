@@ -44,7 +44,11 @@ class ProductRepository implements ProductRepositoryInterface
         }
 
         if ($categoryId) {
-            $query->where('category_id', $categoryId);
+            if ($categoryId === 'null' || $categoryId === 'none' || $categoryId === 'other') {
+                $query->whereNull('category_id');
+            } else {
+                $query->where('category_id', $categoryId);
+            }
         }
         if ($search) {
             $query->where(function ($q) use ($search) {
@@ -76,7 +80,11 @@ class ProductRepository implements ProductRepositoryInterface
         }
 
         if ($categoryId) {
-            $query->where('category_id', $categoryId);
+            if ($categoryId === 'null' || $categoryId === 'none' || $categoryId === 'other') {
+                $query->whereNull('category_id');
+            } else {
+                $query->where('category_id', $categoryId);
+            }
         }
         if ($search) {
             $query->where(function ($q) use ($search) {
@@ -144,5 +152,83 @@ class ProductRepository implements ProductRepositoryInterface
             return (bool) $model->restore();
         }
         return false;
+    }
+
+    public function findGroupedActiveProducts(int $limit, ?string $search = null): array
+    {
+        // 1. Lấy toàn bộ categories active
+        $categories = \App\Infrastructure\Persistence\Eloquent\CategoryModel::orderBy('name', 'asc')->get();
+
+        $grouped = [];
+
+        // 2. Query sản phẩm cho từng danh mục
+        foreach ($categories as $cat) {
+            $query = ProductModel::query()
+                ->where('status', 'active')
+                ->where('category_id', $cat->id);
+
+            if ($search) {
+                $query->where(function ($q) use ($search) {
+                    $this->applyAccentInsensitiveSearch($q, 'name', $search);
+                });
+            }
+
+            $total = $query->count();
+            if ($total > 0) {
+                $models = $query->with(['activeBatches:id,product_id,initial_count,sold_count,status,created_at'])
+                    ->orderBy('created_at', 'desc')
+                    ->take($limit)
+                    ->get();
+
+                $products = [];
+                foreach ($models as $model) {
+                    $availableCount = $this->getAvailableCount($model);
+                    $products[] = ProductMapper::toDomain($model, $availableCount);
+                }
+
+                $grouped[] = [
+                    'id' => $cat->id,
+                    'name' => $cat->name,
+                    'description' => $cat->description,
+                    'products' => $products,
+                    'total' => $total
+                ];
+            }
+        }
+
+        // 3. Query sản phẩm không có danh mục (other)
+        $queryOther = ProductModel::query()
+            ->where('status', 'active')
+            ->whereNull('category_id');
+
+        if ($search) {
+            $queryOther->where(function ($q) use ($search) {
+                $this->applyAccentInsensitiveSearch($q, 'name', $search);
+            });
+        }
+
+        $totalOther = $queryOther->count();
+        if ($totalOther > 0) {
+            $modelsOther = $queryOther->with(['activeBatches:id,product_id,initial_count,sold_count,status,created_at'])
+                ->orderBy('created_at', 'desc')
+                ->take($limit)
+                ->get();
+
+            $productsOther = [];
+            foreach ($modelsOther as $model) {
+                $availableCount = $this->getAvailableCount($model);
+                $productsOther[] = ProductMapper::toDomain($model, $availableCount);
+            }
+
+            $grouped[] = [
+                'id' => 'other',
+                'name' => 'Sản phẩm khác',
+                'description' => 'Các sản phẩm chưa được xếp vào danh mục cụ thể.',
+                'products' => $productsOther,
+                'total' => $totalOther
+            ];
+        }
+
+        return $grouped;
     }
 }

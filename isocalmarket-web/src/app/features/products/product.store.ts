@@ -130,6 +130,40 @@ export class ProductStore {
     );
   }
 
+  public getProductsRaw(page?: number, limit?: number, categoryId?: string, search?: string, status?: string, filterDeleted?: string) {
+    let params = new HttpParams();
+    if (page !== undefined) {
+      params = params.set('page', page.toString());
+    }
+    if (limit !== undefined) {
+      params = params.set('limit', limit.toString());
+    }
+    if (categoryId) {
+      params = params.set('category_id', categoryId);
+    }
+    if (search) {
+      params = params.set('search', search);
+    }
+    if (status) {
+      params = params.set('status', status);
+    }
+    if (filterDeleted) {
+      params = params.set('filter_deleted', filterDeleted);
+    }
+    return this.api.get<any>('v1/products', params);
+  }
+
+  public fetchGroupedProducts(limit?: number, search?: string) {
+    let params = new HttpParams();
+    if (limit !== undefined) {
+      params = params.set('limit', limit.toString());
+    }
+    if (search) {
+      params = params.set('search', search);
+    }
+    return this.api.get<any>('v1/products/grouped', params);
+  }
+
   public fetchProducts(page?: number, limit?: number, categoryId?: string, search?: string, status?: string, filterDeleted?: string) {
     const isStorefrontLoad = page === undefined && limit === undefined && categoryId === undefined && search === undefined && status === 'active' && filterDeleted === undefined;
     if (!isStorefrontLoad) {

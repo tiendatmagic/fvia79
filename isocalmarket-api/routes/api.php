@@ -12,6 +12,7 @@ Route::prefix('v1')->group(function () {
 
     Route::post('/auth/refresh', ['App\Http\Controllers\AuthController', 'refresh']);
 
+    Route::get('/products/grouped', ['App\Http\Controllers\ProductController', 'indexGrouped']);
     Route::get('/products', ['App\Http\Controllers\ProductController', 'index']);
     Route::get('/products/{id}', ['App\Http\Controllers\ProductController', 'show']);
     Route::get('/categories', ['App\Http\Controllers\CategoryController', 'index']);

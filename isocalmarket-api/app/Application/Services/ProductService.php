@@ -57,6 +57,11 @@ class ProductService
         return $this->productRepository->findAllActivePaginated($page, $limit, $categoryId, $status, $search, $filterDeleted);
     }
 
+    public function getGroupedActiveProducts(int $limit, ?string $search = null): array
+    {
+        return $this->productRepository->findGroupedActiveProducts($limit, $search);
+    }
+
     public function getProductById(string $id): ?Product
     {
         return $this->productRepository->findById($id);

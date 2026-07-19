@@ -18,17 +18,17 @@ class B2bController extends Controller
         $this->orderService = $orderService;
     }
 
-    /**
-     * GET /api/v1/b2b/products
-     * Lấy danh sách sản phẩm hoạt động
-     */
     public function index(Request $request)
     {
         try {
+            $page = (int)$request->query('page', 1);
+            $limit = (int)$request->query('limit', 10);
             $categoryId = $request->query('category_id');
             $search = $request->query('search');
 
-            $products = $this->productService->getAllActiveProducts($categoryId, 'active', $search, 'active');
+            $result = $this->productService->getActiveProductsPaginated($page, $limit, $categoryId, 'active', $search, 'active');
+            $products = $result['items'];
+            $total = $result['total'];
 
             $data = array_map(function ($product) {
                 $category = $product->getCategoryId() ? \App\Infrastructure\Persistence\Eloquent\CategoryModel::find($product->getCategoryId()) : null;
@@ -41,7 +41,16 @@ class B2bController extends Controller
                 ];
             }, $products);
 
-            return response()->json($data);
+            return response()->json([
+                'success' => true,
+                'products' => $data,
+                'pagination' => [
+                    'total' => $total,
+                    'page' => $page,
+                    'limit' => $limit,
+                    'last_page' => (int)ceil($total / $limit)
+                ]
+            ]);
         } catch (\Exception $e) {
             return response()->json(['message' => 'Failed to fetch products: ' . $e->getMessage()], 500);
         }

@@ -71,89 +71,115 @@ export class StorefrontComponent implements OnInit {
     });
   }
   
-  public readonly limit = 12;
+  public readonly limit = 8;
   public readonly categoryPages = signal<{ [catId: string]: number }>({});
   public readonly viewMode = signal<'card' | 'list'>('card');
   public readonly categorySort = signal<'az' | 'za' | 'default'>('az');
+
+  public readonly groupedProductsState = signal<any[]>([]);
 
   public readonly sortOptions = [
     { label: 'Tên danh mục (A - Z)', value: 'az' },
     { label: 'Tên danh mục (Z - A)', value: 'za' },
     { label: 'Thứ tự mặc định', value: 'default' }
   ];
-  public readonly filteredProducts = computed(() => {
-    return this.state.productStore.products();
-  });
 
   public readonly groupedProducts = computed(() => {
-    const list = this.filteredProducts();
-    const categories = this.state.productStore.categories();
-    
-    const groups: { [key: string]: any[] } = {};
-    list.forEach(p => {
-      const catId = p.category_id || 'other';
-      if (!groups[catId]) {
-        groups[catId] = [];
-      }
-      groups[catId].push(p);
-    });
-
-    const mapped = categories.map(cat => ({
-      id: cat.id,
-      name: cat.name,
-      description: cat.description,
-      products: groups[cat.id] || []
-    })).filter(g => g.products.length > 0);
-
+    const groups = this.groupedProductsState();
     const sortVal = this.categorySort();
+    
+    const otherGroup = groups.find(g => g.id === 'other');
+    const actualGroups = groups.filter(g => g.id !== 'other');
+
     if (sortVal === 'az') {
-      mapped.sort((a, b) => a.name.localeCompare(b.name, 'vi', { sensitivity: 'base' }));
+      actualGroups.sort((a, b) => a.name.localeCompare(b.name, 'vi', { sensitivity: 'base' }));
     } else if (sortVal === 'za') {
-      mapped.sort((a, b) => b.name.localeCompare(a.name, 'vi', { sensitivity: 'base' }));
+      actualGroups.sort((a, b) => b.name.localeCompare(a.name, 'vi', { sensitivity: 'base' }));
     }
 
-    if (groups['other'] && groups['other'].length > 0) {
-      mapped.push({
-        id: 'other',
-        name: 'Sản phẩm khác',
-        description: 'Các sản phẩm chưa được xếp vào danh mục cụ thể.',
-        products: groups['other']
-      });
+    const sorted = [...actualGroups];
+    if (otherGroup) {
+      sorted.push(otherGroup);
     }
 
-    return mapped;
+    return sorted;
   });
 
+  public loadAllGroupedProducts() {
+    this.state.productStore.loading.set(true);
+    this.state.productStore.fetchGroupedProducts(this.limit, this.searchQuery.trim() || undefined).subscribe({
+      next: (res: any[]) => {
+        const initialPages: { [catId: string]: number } = {};
+        const list = (res || []).map(group => {
+          initialPages[group.id] = 1;
+          return {
+            ...group,
+            loading: false
+          };
+        });
+        this.groupedProductsState.set(list);
+        this.categoryPages.set(initialPages);
+        this.state.productStore.loading.set(false);
+      },
+      error: () => {
+        this.groupedProductsState.set([]);
+        this.state.productStore.loading.set(false);
+      }
+    });
+  }
+
+  public loadProductsForCategory(catId: string, page: number) {
+    const searchVal = this.searchQuery.trim() || undefined;
+    
+    this.groupedProductsState.update(list =>
+      list.map(group => group.id === catId ? { ...group, loading: true } : group)
+    );
+
+    const apiCategoryId = catId === 'other' ? 'other' : catId;
+
+    this.state.productStore.getProductsRaw(
+      page,
+      this.limit,
+      apiCategoryId,
+      searchVal,
+      'active'
+    ).subscribe({
+      next: (res: any) => {
+        const items = res?.data || [];
+        const total = res?.meta?.total || 0;
+
+        this.groupedProductsState.update(list =>
+          list.map(group => group.id === catId ? { ...group, products: items, total, loading: false } : group)
+        );
+
+        this.categoryPages.update(prev => ({
+          ...prev,
+          [catId]: page
+        }));
+      },
+      error: () => {
+        this.groupedProductsState.update(list =>
+          list.map(group => group.id === catId ? { ...group, loading: false } : group)
+        );
+      }
+    });
+  }
+
   ngOnInit() {
-    this.state.productStore.fetchCategories().subscribe();
-    this.state.productStore.fetchProducts(undefined, undefined, undefined, undefined, 'active').subscribe();
+    this.loadAllGroupedProducts();
   }
 
   public onSearch(query: string) {
     this.searchQuery = query;
-    this.state.productStore.fetchProducts(
-      undefined,
-      undefined,
-      undefined,
-      query.trim() || undefined,
-      'active'
-    ).subscribe();
+    this.loadAllGroupedProducts();
   }
 
   public getCategoryPage(catId: string): number {
     return this.categoryPages()[catId] || 1;
   }
 
-  public getPaginatedProductsForCategory(products: any[], catId: string): any[] {
-    const page = this.getCategoryPage(catId);
-    return products.slice((page - 1) * this.limit, page * this.limit);
-  }
-
   public onCategoryPageChange(catId: string, page: number) {
-    this.categoryPages.update(prev => ({
-      ...prev,
-      [catId]: page
-    }));
+    this.loadProductsForCategory(catId, page);
   }
 
   public getTotalPages(totalItems: number): number {

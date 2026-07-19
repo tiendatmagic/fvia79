@@ -16,4 +16,5 @@ interface ProductRepositoryInterface
     public function save(Product $product): Product;
     public function delete(string $id): bool;
     public function restore(string $id): bool;
+    public function findGroupedActiveProducts(int $limit, ?string $search = null): array;
 }

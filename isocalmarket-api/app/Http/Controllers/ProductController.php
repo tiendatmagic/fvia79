@@ -19,7 +19,7 @@ class ProductController extends Controller
     {
         try {
             $page = $request->query('page');
-            $limit = $request->query('limit', 10);
+            $limit = $request->query('limit', 8);
             $categoryId = $request->query('category_id');
             $search = $request->query('search');
             $status = $request->query('status');
@@ -89,6 +89,44 @@ class ProductController extends Controller
             return response()->json($data);
         } catch (\Exception $e) {
             return response()->json(['message' => 'Cannot fetch products: ' . $e->getMessage()], 500);
+        }
+    }
+
+    public function indexGrouped(Request $request)
+    {
+        try {
+            $limit = (int)$request->query('limit', 8);
+            $search = $request->query('search');
+
+            $groupedData = $this->productService->getGroupedActiveProducts($limit, $search);
+
+            $result = array_map(function ($group) {
+                $mappedProducts = array_map(function ($product) {
+                    return [
+                        'id' => $product->getId(),
+                        'category_id' => $product->getCategoryId(),
+                        'name' => $product->getName(),
+                        'slug' => $product->getSlug(),
+                        'description' => $product->getDescription(),
+                        'price' => $product->getPrice(),
+                        'status' => $product->getStatus(),
+                        'available_count' => $product->getAvailableCount(),
+                        'attributes' => $product->getAttributes()
+                    ];
+                }, $group['products']);
+
+                return [
+                    'id' => $group['id'],
+                    'name' => $group['name'],
+                    'description' => $group['description'],
+                    'products' => $mappedProducts,
+                    'total' => $group['total']
+                ];
+            }, $groupedData);
+
+            return response()->json($result);
+        } catch (\Exception $e) {
+            return response()->json(['message' => 'Cannot fetch grouped products: ' . $e->getMessage()], 500);
         }
     }
 

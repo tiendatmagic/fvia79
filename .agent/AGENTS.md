@@ -1344,7 +1344,24 @@
       4. **Che/Hiện & Sao chép**: Tích hợp mã che dạng dấu chấm `••••` và nút con mắt Toggle (sử dụng SVG Eye/Eye-slash). Thêm nút Sao chép (copy) liên kết qua hàm `copyToClipboard()` dùng chung, áp dụng `$event.stopPropagation()` tránh lỗi click bubble kích hoạt nhầm toggle switch.
     - **Xác minh**: Đã chạy `npm run build` thành công 100%. Mọi logic hoạt động ổn định và an toàn.
 
+  - **[PHÂN TRANG & CẤU HÌNH] Thay đổi số lượng bản ghi hiển thị trên mỗi trang cửa hàng (Storefront) thành 8**:
+    - **Yêu cầu**: Thay đổi số lượng sản phẩm phân trang mặc định trên mỗi trang từ 12 thành 8 cho trang cửa hàng (Storefront) ở cả Frontend và Backend.
+    - **Giải pháp & Triển khai**:
+      1. **Frontend**: Cập nhật [storefront.component.ts](file:///d:/git/isocalmarket/isocalmarket-web/src/app/features/storefront/storefront.component.ts), đổi `limit = 12` thành `limit = 8`.
+      2. **Backend**: Cập nhật [ProductController.php](file:///d:/git/isocalmarket/isocalmarket-api/app/Http/Controllers/ProductController.php), đổi `$limit = $request->query('limit', 10);` thành `$limit = $request->query('limit', 8);` để default limit là 8.
+    - **Xác minh**: Chạy unit test backend (`php artisan test`) thành công và kiểm tra build frontend.
 
-
-
+  - **[PHÂN TRANG BACKEND STOREFRONT & B2B USER API] Chuyển đổi phân trang Client-side sang Server-side cho Storefront & Phân trang API B2B**:
+    - **Yêu cầu**: Phân trang hoàn toàn từ Backend cho trang Storefront (mỗi danh mục tải 8 sản phẩm/trang) và phân trang cho B2B User API lấy sản phẩm.
+    - **Giải pháp & Triển khai**:
+      1. **Backend**:
+         - Cập nhật [ProductRepository.php](file:///d:/git/isocalmarket/isocalmarket-api/app/Infrastructure/Persistence/Repositories/ProductRepository.php) hỗ trợ `whereNull('category_id')` khi `category_id` truyền lên là `'other'`, `'null'`, hoặc `'none'` để lọc sản phẩm không danh mục.
+         - Cập nhật `index()` trong [B2bController.php](file:///d:/git/isocalmarket/isocalmarket-api/app/Http/Controllers/B2bController.php) sử dụng `getActiveProductsPaginated()` và định dạng payload trả về dạng `{ success: true, products: [...], pagination: { ... } }`.
+      2. **Frontend Storefront**:
+         - Thêm phương thức `getProductsRaw()` vào [product.store.ts](file:///d:/git/isocalmarket/isocalmarket-web/src/app/features/products/product.store.ts) là một wrapper HTTP thuần không làm thay đổi state chung và không tự động hủy request cũ (`unsubscribe`).
+         - Cập nhật [storefront.component.ts](file:///d:/git/isocalmarket/isocalmarket-web/src/app/features/storefront/storefront.component.ts): Sử dụng `getProductsRaw()` thay cho `fetchProducts()` để các request lấy sản phẩm song song của từng danh mục không bị hủy lẫn nhau. Tích hợp signal `categoryProducts` quản lý phân trang backend độc lập.
+         - Cập nhật [storefront.component.html](file:///d:/git/isocalmarket/isocalmarket-web/src/app/features/storefront/storefront.component.html): Lấy sản phẩm từ signal state riêng, hiển thị skeleton loader động riêng cho danh mục đang tải thay vì chớp toàn trang.
+      3. **Tài liệu B2B**:
+         - Cập nhật [user-api.component.html](file:///d:/git/isocalmarket/isocalmarket-web/src/app/features/user-api/user-api.component.html) bổ sung tham số `page`, `limit` vào bảng query parameters và cập nhật mẫu JSON Response phân trang mới.
+    - **Xác minh**: Chạy unit test backend (`php artisan test`) thành công và kiểm tra build frontend.
 

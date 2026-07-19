@@ -66,7 +66,7 @@
   </div>
 
     <div class="space-y-10">
-        <app-skeleton-loader *ngIf="state.productStore.loading()" [type]="'card-grid'" [cards]="8" />
+        <app-skeleton-loader *ngIf="state.productStore.loading() && groupedProducts().length === 0" [type]="'card-grid'" [cards]="8" />
 
         <div *ngIf="!state.productStore.loading() && groupedProducts().length === 0" app-card class="text-center py-12">
       <p class="text-sm font-semibold text-slate-400">Không tìm thấy sản phẩm nào phù hợp!</p>
@@ -85,23 +85,151 @@
             </p>
           </div>
           <app-badge variant="neutral" size="sm" rounded="lg" class="shrink-0 whitespace-nowrap self-start">
-            {{ group.products.length }} dòng sản phẩm
+            {{ group.total }} dòng sản phẩm
           </app-badge>
         </div>
 
-                @if (viewMode() === 'card') {
-                    <div class="grid grid-cols-1 sm:grid-cols-[repeat(auto-fill,minmax(265px,1fr))] gap-6">
-            <div
-              app-card
-              [interactive]="true"
-              *ngFor="let p of getPaginatedProductsForCategory(group.products, group.id)"
-              class="p-5 space-y-4 flex flex-col justify-between !bg-white/80 dark:!bg-slate-900/80 border border-slate-200/40 dark:border-slate-800/40"
-            >
-                            <div class="space-y-2">
-                <div class="flex items-start justify-between gap-4">
-                  <h4 class="text-base font-extrabold text-slate-800 dark:text-white line-clamp-2">
-                    {{ p.name }}
-                  </h4>
+        @if (group.loading) {
+          <app-skeleton-loader [type]="viewMode() === 'card' ? 'card-grid' : 'table'" [cards]="8" [showHeader]="false" />
+        } @else {
+          @if (viewMode() === 'card') {
+            <div class="grid grid-cols-1 sm:grid-cols-[repeat(auto-fill,minmax(265px,1fr))] gap-6">
+              <div
+                app-card
+                [interactive]="true"
+                *ngFor="let p of group.products"
+                class="p-5 space-y-4 flex flex-col justify-between !bg-white/80 dark:!bg-slate-900/80 border border-slate-200/40 dark:border-slate-800/40"
+              >
+                <div class="space-y-2">
+                  <div class="flex items-start justify-between gap-4">
+                    <h4 class="text-base font-extrabold text-slate-800 dark:text-white line-clamp-2">
+                      {{ p.name }}
+                    </h4>
+                    <app-badge
+                      [variant]="p.available_count > 0 ? 'success' : 'danger'"
+                      size="sm"
+                      rounded="md"
+                      class="shrink-0"
+                    >
+                      {{ p.available_count > 0 ? 'Còn hàng' : 'Hết hàng' }}
+                    </app-badge>
+                  </div>
+
+                  <p class="text-xs text-slate-400 dark:text-slate-500 font-semibold line-clamp-3">
+                    {{ p.description || 'Chưa có mô tả chi tiết cho sản phẩm này.' }}
+                  </p>
+
+                  @if (p.attributes && p.attributes.length > 0) {
+                    <div class="flex flex-wrap gap-1.5 pt-1">
+                      @for (attr of p.attributes; track $index) {
+                        <span class="inline-flex items-center text-xs font-extrabold px-2 py-0.5 rounded bg-[var(--color-primary)]/5 dark:bg-[var(--color-primary)]/10 text-[var(--color-primary)] border border-[var(--color-primary)]/15">
+                          {{ attr.value }}
+                        </span>
+                      }
+                    </div>
+                  }
+
+                  <div class="text-xs font-extrabold text-slate-400 pt-1 flex items-center gap-1.5">
+                    <app-icon name="check-circle" class="w-3.5 h-3.5 text-emerald-500" />
+                    <span>Còn lại: <strong class="text-slate-700 dark:text-slate-200">{{ p.available_count }}</strong> sản phẩm</span>
+                  </div>
+                </div>
+
+                <div class="pt-3 space-y-3">
+                  <div class="flex items-baseline justify-between w-full">
+                    <span class="text-xs text-slate-400 dark:text-slate-500 font-bold uppercase tracking-wider">Đơn giá</span>
+                    <p class="text-lg font-black text-[var(--color-primary)]">
+                      {{ p.price | number:'1.0-0' }} <span class="text-xs font-bold">VND</span>
+                    </p>
+                  </div>
+
+                  <button app-button
+                    (click)="addToCart(p)"
+                    [disabled]="p.available_count <= 0"
+                    variant="primary"
+                    class="w-full py-2.5 px-4 rounded-xl bg-gradient-to-r from-[var(--color-primary)] to-[var(--color-secondary)] text-white text-xs font-extrabold active:scale-95 transition-all shadow-sm shadow-[var(--color-primary)]/10 cursor-pointer disabled:opacity-50 disabled:pointer-events-none"
+                  >
+                    Mua Ngay
+                  </button>
+                </div>
+              </div>
+            </div>
+          } @else if (viewMode() === 'list') {
+            <div class="hidden lg:block overflow-hidden">
+              <app-table
+                [columns]="columns"
+                [data]="group.products"
+                [loading]="group.loading"
+                emptyText="Không có sản phẩm nào."
+              >
+                <ng-template appTableCell="name" let-row="row">
+                  <div class="space-y-1.5 py-1">
+                    <div class="text-sm font-extrabold text-slate-800 dark:text-white">
+                      {{ row.name }}
+                    </div>
+                    <p *ngIf="row.description" class="text-xs text-slate-400 dark:text-slate-500 font-semibold line-clamp-1 max-w-xl">
+                      {{ row.description }}
+                    </p>
+                    @if (row.attributes && row.attributes.length > 0) {
+                      <div class="flex flex-wrap gap-1">
+                        @for (attr of row.attributes; track $index) {
+                          <span class="inline-flex items-center text-xs font-extrabold px-1.5 py-0.5 rounded bg-[var(--color-primary)]/5 dark:bg-[var(--color-primary)]/10 text-[var(--color-primary)] border border-[var(--color-primary)]/10">
+                            {{ attr.value }}
+                          </span>
+                        }
+                      </div>
+                    }
+                  </div>
+                </ng-template>
+
+                <ng-template appTableCell="price" let-row="row">
+                  <span class="font-black text-[var(--color-primary)] text-sm whitespace-nowrap" [appTooltip]="(row.price | number) + ' VND'">
+                    {{ row.price | number:'1.0-0' }} <span class="text-xs font-bold">VND</span>
+                  </span>
+                </ng-template>
+
+                <ng-template appTableCell="available_count" let-row="row">
+                  <div class="flex flex-col items-center gap-1 shrink-0">
+                    <app-badge
+                      [variant]="row.available_count > 0 ? 'success' : 'danger'"
+                      size="sm"
+                      rounded="md"
+                    >
+                      {{ row.available_count > 0 ? 'Còn hàng' : 'Hết hàng' }}
+                    </app-badge>
+                    <span class="text-xs text-slate-400 dark:text-slate-500 font-bold whitespace-nowrap">
+                      Còn lại: {{ row.available_count }}
+                    </span>
+                  </div>
+                </ng-template>
+
+                <ng-template appTableCell="actions" let-row="row">
+                  <button app-button
+                    (click)="addToCart(row)"
+                    [disabled]="row.available_count <= 0"
+                    variant="primary"
+                    class="py-1.5 px-3.5 rounded-lg bg-gradient-to-r from-[var(--color-primary)] to-[var(--color-secondary)] text-white text-xs font-extrabold active:scale-95 transition-all shadow-sm shadow-[var(--color-primary)]/10 cursor-pointer disabled:opacity-50 disabled:pointer-events-none whitespace-nowrap shrink-0"
+                  >
+                    Mua Ngay
+                  </button>
+                </ng-template>
+              </app-table>
+            </div>
+
+            <div class="block lg:hidden border border-slate-200/40 dark:border-slate-800/40 rounded-xl bg-white/80 dark:bg-slate-950/80 backdrop-blur-md divide-y divide-slate-100 dark:divide-slate-900/30 overflow-hidden">
+              <div
+                *ngFor="let p of group.products"
+                class="p-4 space-y-3"
+              >
+                <div class="flex items-start justify-between gap-3">
+                  <div class="space-y-1 min-w-0 flex-1">
+                    <h4 class="text-sm font-extrabold text-slate-800 dark:text-white break-words">
+                      {{ p.name }}
+                    </h4>
+                    <p *ngIf="p.description" class="text-xs text-slate-400 dark:text-slate-500 font-semibold line-clamp-2">
+                      {{ p.description }}
+                    </p>
+                  </div>
                   <app-badge
                     [variant]="p.available_count > 0 ? 'success' : 'danger'"
                     size="sm"
@@ -112,167 +240,43 @@
                   </app-badge>
                 </div>
 
-                <p class="text-xs text-slate-400 dark:text-slate-500 font-semibold line-clamp-3">
-                  {{ p.description || 'Chưa có mô tả chi tiết cho sản phẩm này.' }}
-                </p>
-
-                                @if (p.attributes && p.attributes.length > 0) {
-                  <div class="flex flex-wrap gap-1.5 pt-1">
-                    @for (attr of p.attributes; track $index) {
-                      <span class="inline-flex items-center text-xs font-extrabold px-2 py-0.5 rounded bg-[var(--color-primary)]/5 dark:bg-[var(--color-primary)]/10 text-[var(--color-primary)] border border-[var(--color-primary)]/15">
-                        {{ attr.value }}
-                      </span>
-                    }
-                  </div>
-                }
-
-                <div class="text-xs font-extrabold text-slate-400 pt-1 flex items-center gap-1.5">
-                  <app-icon name="check-circle" class="w-3.5 h-3.5 text-emerald-500" />
-                  <span>Còn lại: <strong class="text-slate-700 dark:text-slate-200">{{ p.available_count }}</strong> sản phẩm</span>
-                </div>
-              </div>
-
-                            <div class="pt-3 space-y-3">
-                <div class="flex items-baseline justify-between w-full">
-                  <span class="text-xs text-slate-400 dark:text-slate-500 font-bold uppercase tracking-wider">Đơn giá</span>
-                  <p class="text-lg font-black text-[var(--color-primary)]">
-                    {{ p.price | number:'1.0-0' }} <span class="text-xs font-bold">VND</span>
-                  </p>
-                </div>
-
-                <button app-button
-                  (click)="addToCart(p)"
-                  [disabled]="p.available_count <= 0"
-                  variant="primary"
-                  class="w-full py-2.5 px-4 rounded-xl bg-gradient-to-r from-[var(--color-primary)] to-[var(--color-secondary)] text-white text-xs font-extrabold active:scale-95 transition-all shadow-sm shadow-[var(--color-primary)]/10 cursor-pointer disabled:opacity-50 disabled:pointer-events-none"
-                >
-                  Mua Ngay
-                </button>
-              </div>
-            </div>
-          </div>
-        } @else if (viewMode() === 'list') {
-          <div class="hidden lg:block overflow-hidden">
-            <app-table
-              [columns]="columns"
-              [data]="getPaginatedProductsForCategory(group.products, group.id)"
-              [loading]="state.productStore.loading()"
-              emptyText="Không có sản phẩm nào."
-            >
-              <ng-template appTableCell="name" let-row="row">
-                <div class="space-y-1.5 py-1">
-                  <div class="text-sm font-extrabold text-slate-800 dark:text-white">
-                    {{ row.name }}
-                  </div>
-                  <p *ngIf="row.description" class="text-xs text-slate-400 dark:text-slate-500 font-semibold line-clamp-1 max-w-xl">
-                    {{ row.description }}
-                  </p>
-                  @if (row.attributes && row.attributes.length > 0) {
-                    <div class="flex flex-wrap gap-1">
-                      @for (attr of row.attributes; track $index) {
-                        <span class="inline-flex items-center text-xs font-extrabold px-1.5 py-0.5 rounded bg-[var(--color-primary)]/5 dark:bg-[var(--color-primary)]/10 text-[var(--color-primary)] border border-[var(--color-primary)]/10">
-                          {{ attr.value }}
-                        </span>
-                      }
-                    </div>
+                <div *ngIf="p.attributes && p.attributes.length > 0" class="flex flex-wrap gap-1">
+                  @for (attr of p.attributes; track $index) {
+                    <span class="inline-flex items-center text-[10px] font-extrabold px-1.5 py-0.5 rounded bg-[var(--color-primary)]/5 dark:bg-[var(--color-primary)]/10 text-[var(--color-primary)] border border-[var(--color-primary)]/10">
+                      {{ attr.value }}
+                    </span>
                   }
                 </div>
-              </ng-template>
 
-              <ng-template appTableCell="price" let-row="row">
-                <span class="font-black text-[var(--color-primary)] text-sm whitespace-nowrap" [appTooltip]="(row.price | number) + ' VND'">
-                  {{ row.price | number:'1.0-0' }} <span class="text-xs font-bold">VND</span>
-                </span>
-              </ng-template>
+                <div class="flex items-center justify-between gap-3 pt-1">
+                  <div class="space-y-0.5 min-w-0 shrink-0">
+                    <div class="text-xs text-slate-400 dark:text-slate-500 font-bold whitespace-nowrap">
+                      Còn lại: <span class="text-slate-700 dark:text-slate-200">{{ p.available_count }}</span>
+                    </div>
+                    <div class="text-sm font-black text-[var(--color-primary)] whitespace-nowrap">
+                      {{ p.price | number:'1.0-0' }} <span class="text-xs font-bold">VND</span>
+                    </div>
+                  </div>
 
-              <ng-template appTableCell="available_count" let-row="row">
-                <div class="flex flex-col items-center gap-1 shrink-0">
-                  <app-badge
-                    [variant]="row.available_count > 0 ? 'success' : 'danger'"
-                    size="sm"
-                    rounded="md"
+                  <button app-button
+                    (click)="addToCart(p)"
+                    [disabled]="p.available_count <= 0"
+                    variant="primary"
+                    class="py-1.5 px-4 rounded-lg bg-gradient-to-r from-[var(--color-primary)] to-[var(--color-secondary)] text-white text-xs font-extrabold active:scale-95 transition-all shadow-sm shadow-[var(--color-primary)]/10 cursor-pointer disabled:opacity-50 disabled:pointer-events-none whitespace-nowrap shrink-0"
                   >
-                    {{ row.available_count > 0 ? 'Còn hàng' : 'Hết hàng' }}
-                  </app-badge>
-                  <span class="text-xs text-slate-400 dark:text-slate-500 font-bold whitespace-nowrap">
-                    Còn lại: {{ row.available_count }}
-                  </span>
+                    Mua Ngay
+                  </button>
                 </div>
-              </ng-template>
-
-              <ng-template appTableCell="actions" let-row="row">
-                <button app-button
-                  (click)="addToCart(row)"
-                  [disabled]="row.available_count <= 0"
-                  variant="primary"
-                  class="py-1.5 px-3.5 rounded-lg bg-gradient-to-r from-[var(--color-primary)] to-[var(--color-secondary)] text-white text-xs font-extrabold active:scale-95 transition-all shadow-sm shadow-[var(--color-primary)]/10 cursor-pointer disabled:opacity-50 disabled:pointer-events-none whitespace-nowrap shrink-0"
-                >
-                  Mua Ngay
-                </button>
-              </ng-template>
-            </app-table>
-          </div>
-
-                    <div class="block lg:hidden border border-slate-200/40 dark:border-slate-800/40 rounded-xl bg-white/80 dark:bg-slate-950/80 backdrop-blur-md divide-y divide-slate-100 dark:divide-slate-900/30 overflow-hidden">
-            <div
-              *ngFor="let p of getPaginatedProductsForCategory(group.products, group.id)"
-              class="p-4 space-y-3"
-            >
-                            <div class="flex items-start justify-between gap-3">
-                <div class="space-y-1 min-w-0 flex-1">
-                  <h4 class="text-sm font-extrabold text-slate-800 dark:text-white break-words">
-                    {{ p.name }}
-                  </h4>
-                  <p *ngIf="p.description" class="text-xs text-slate-400 dark:text-slate-500 font-semibold line-clamp-2">
-                    {{ p.description }}
-                  </p>
-                </div>
-                <app-badge
-                  [variant]="p.available_count > 0 ? 'success' : 'danger'"
-                  size="sm"
-                  rounded="md"
-                  class="shrink-0"
-                >
-                  {{ p.available_count > 0 ? 'Còn hàng' : 'Hết hàng' }}
-                </app-badge>
-              </div>
-
-                            <div *ngIf="p.attributes && p.attributes.length > 0" class="flex flex-wrap gap-1">
-                @for (attr of p.attributes; track $index) {
-                  <span class="inline-flex items-center text-[10px] font-extrabold px-1.5 py-0.5 rounded bg-[var(--color-primary)]/5 dark:bg-[var(--color-primary)]/10 text-[var(--color-primary)] border border-[var(--color-primary)]/10">
-                    {{ attr.value }}
-                  </span>
-                }
-              </div>
-
-                            <div class="flex items-center justify-between gap-3 pt-1">
-                <div class="space-y-0.5 min-w-0 shrink-0">
-                  <div class="text-xs text-slate-400 dark:text-slate-500 font-bold whitespace-nowrap">
-                    Còn lại: <span class="text-slate-700 dark:text-slate-200">{{ p.available_count }}</span>
-                  </div>
-                  <div class="text-sm font-black text-[var(--color-primary)] whitespace-nowrap">
-                    {{ p.price | number:'1.0-0' }} <span class="text-xs font-bold">VND</span>
-                  </div>
-                </div>
-
-                <button app-button
-                  (click)="addToCart(p)"
-                  [disabled]="p.available_count <= 0"
-                  variant="primary"
-                  class="py-1.5 px-4 rounded-lg bg-gradient-to-r from-[var(--color-primary)] to-[var(--color-secondary)] text-white text-xs font-extrabold active:scale-95 transition-all shadow-sm shadow-[var(--color-primary)]/10 cursor-pointer disabled:opacity-50 disabled:pointer-events-none whitespace-nowrap shrink-0"
-                >
-                  Mua Ngay
-                </button>
               </div>
             </div>
-          </div>
+          }
         }
 
-                <div class="flex justify-center pt-4" *ngIf="group.products.length > limit">
+        <div class="flex justify-center pt-4" *ngIf="group.total > limit">
           <app-pagination
             [currentPage]="getCategoryPage(group.id)"
-            [totalPages]="getTotalPages(group.products.length)"
-            [totalItems]="group.products.length"
+            [totalPages]="getTotalPages(group.total)"
+            [totalItems]="group.total"
             [itemsPerPage]="limit"
             [itemName]="'sản phẩm'"
             (pageChange)="onCategoryPageChange(group.id, $event)"
