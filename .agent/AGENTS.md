@@ -1389,3 +1389,29 @@
          - Cập nhật `admin-settings.component.html` & `.ts` bổ sung các trường cấu hình Binance Pay mới kèm tính năng Toggle Eye che giấu/hiển thị bảo mật cho các trường API Key & Secret.
     - **Xác minh**: Chạy unit test backend (`php artisan test`) đạt 14/14 test pass, biên dịch frontend Angular (`npm run build`) thành công 100%.
 
+  - **[GIAO DIỆN & TỐI ƯU UX] Gắn dấu hoa thị (*) đỏ cho các trường bắt buộc**:
+    - **Yêu cầu**: Thêm dấu hoa thị (*) đỏ cho tất cả các trường nhập liệu bắt buộc trong toàn bộ hệ thống để người dùng dễ nhận biết và tuân thủ quy chuẩn thiết kế.
+    - **Giải pháp & Triển khai**:
+      1. **Cấu hình hệ thống (Admin Settings)**: Thêm `<span class="text-red-500">*</span>` vào trường "Thời gian giữ lại token (Ngày)" trong tab Bảo trì và 3 trường bắt buộc trong phần "Cổng nạp tiền Binance Pay (Binance ID)" bao gồm: *Binance ID nhận tiền*, *Binance API Key*, và *Binance API Secret* (riêng trường *Đường dẫn ảnh QR Binance Pay* được để tùy chọn vì hệ thống tự động sinh mã QR từ Binance ID nếu thiếu) trong [admin-settings.component.html](file:///d:/git/isocalmarket/isocalmarket-web/src/app/features/admin-settings/admin-settings.component.html).
+      2. **Yêu cầu nạp tiền (Deposit)**: Thêm `<span class="text-red-500">*</span>` cho nhãn "Số lượng USDT muốn nạp" trong [deposit.component.html](file:///d:/git/isocalmarket/isocalmarket-web/src/app/features/deposit/deposit.component.html).
+      3. **Chỉnh sửa kho (Edit Inventory)**: Thêm `<span class="text-red-500">*</span>` vào các nhãn "Sản phẩm", "Trạng thái", và "Tên Lô Hàng" (là những trường bắt buộc kiểm tra theo form request backend) trong [edit-inventory-modal.component.html](file:///d:/git/isocalmarket/isocalmarket-web/src/app/features/inventory/edit-inventory-modal/edit-inventory-modal.component.html).
+      4. **Thông tin sản phẩm (Product Form)**: Thêm `<span class="text-red-500">*</span>` vào nhãn "Trạng thái" trong [product-form-modal.component.html](file:///d:/git/isocalmarket/isocalmarket-web/src/app/features/products/product-form-modal/product-form-modal.component.html).
+      5. **Nhập kho hàng loạt (Import Inventory)**: Thêm `<span class="text-red-500">*</span>` vào nhãn "Tên Lô Hàng" trong [import-inventory-modal.component.html](file:///d:/git/isocalmarket/isocalmarket-web/src/app/features/inventory/import-inventory-modal/import-inventory-modal.component.html).
+    - **Xác minh**: Chạy build frontend Angular (`npm run build`) thành công 100% không phát sinh bất kỳ lỗi biên dịch nào.
+
+  - **[TÍNH NĂNG & DỌN DẸP CODE] Loại bỏ hoàn toàn Đường dẫn ảnh QR Binance Pay**:
+    - **Yêu cầu**: Xóa bỏ trường nhập liệu và lưu trữ "Đường dẫn ảnh QR Binance Pay" ở cả Frontend và Backend để hệ thống tự động vẽ QR Code từ Binance ID thay vì bắt Admin cấu hình thủ công.
+    - **Giải pháp & Triển khai**:
+      1. **Database Migration**: Tạo và chạy migration `2026_07_19_160908_remove_admin_binance_qr_from_system_settings.php` để xóa dòng cấu hình `admin_binance_qr` ra khỏi bảng `system_settings`.
+      2. **Backend**:
+         - Cập nhật [SystemSettingController.php](file:///d:/git/isocalmarket/isocalmarket-api/app/Http/Controllers/SystemSettingController.php) loại bỏ trường `admin_binance_qr` khỏi validation và logic cập nhật.
+         - Cập nhật [DepositService.php](file:///d:/git/isocalmarket/isocalmarket-api/app/Application/Services/DepositService.php) gỡ bỏ hàm `getAdminBinanceQrSetting()`.
+         - Cập nhật [DepositController.php](file:///d:/git/isocalmarket/isocalmarket-api/app/Http/Controllers/DepositController.php) loại bỏ thuộc tính `adminBinanceQr` khỏi payload JSON trả về của hóa đơn nạp.
+      3. **Frontend**:
+         - Cập nhật [admin-settings.component.html](file:///d:/git/isocalmarket/isocalmarket-web/src/app/features/admin-settings/admin-settings.component.html) xóa bỏ hẳn ô nhập liệu `admin_binance_qr`.
+         - Cập nhật [admin-settings.component.ts](file:///d:/git/isocalmarket/isocalmarket-web/src/app/features/admin-settings/admin-settings.component.ts) và [system-setting.store.ts](file:///d:/git/isocalmarket/isocalmarket-web/src/app/features/admin-settings/system-setting.store.ts) gỡ bỏ khai báo và reset trường này.
+         - Cập nhật [deposit-invoice.component.html](file:///d:/git/isocalmarket/isocalmarket-web/src/app/features/deposit-invoice/deposit-invoice.component.html) đơn giản hóa việc hiển thị QR code, luôn luôn vẽ động QR Code từ `adminBinanceId` thay vì kiểm tra ảnh QR.
+         - Cập nhật [deposit-history.component.ts](file:///d:/git/isocalmarket/isocalmarket-web/src/app/features/deposit-history/deposit-history.component.ts) xóa thuộc tính này trong interface.
+    - **Xác minh**: Chạy unit test backend (`php artisan test`) đạt 14/14 tests pass, biên dịch frontend Angular thành công 100%.
+
+

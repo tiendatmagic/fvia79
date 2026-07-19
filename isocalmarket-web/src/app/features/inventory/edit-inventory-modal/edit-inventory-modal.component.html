@@ -2,7 +2,7 @@
   <div class="grid grid-cols-1 sm:grid-cols-2 gap-6">
     <div class="form-field">
       <label class="text-xs font-black text-slate-400 uppercase tracking-wider block mb-2"
-        >Sản phẩm</label
+        >Sản phẩm <span class="text-red-500">*</span></label
       >
       <app-custom-select
         [options]="productOptions"
@@ -14,7 +14,7 @@
 
     <div class="form-field">
       <label class="text-xs font-black text-slate-400 uppercase tracking-wider block mb-2"
-        >Trạng thái</label
+        >Trạng thái <span class="text-red-500">*</span></label
       >
       <app-custom-select
         [options]="statusOptions"
@@ -27,7 +27,7 @@
 
   <div class="form-field">
     <label class="text-xs font-black text-slate-400 uppercase tracking-wider block mb-2"
-      >Tên Lô Hàng</label
+      >Tên Lô Hàng <span class="text-red-500">*</span></label
     >
     <app-custom-input
       [placeholder]="'Nhập tên lô hàng...'"

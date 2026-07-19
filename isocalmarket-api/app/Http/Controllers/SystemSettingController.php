@@ -37,7 +37,6 @@ class SystemSettingController extends Controller
             'token_cleanup_days' => 'sometimes|required|integer|min:1|max:365',
             'usdt_exchange_rate' => 'sometimes|required|numeric|min:0|max:1000000',
             'admin_binance_id' => 'sometimes|nullable|string|max:100',
-            'admin_binance_qr' => 'sometimes|nullable|string|max:500',
             'binance_api_key' => 'sometimes|nullable|string|max:200',
             'binance_api_secret' => 'sometimes|nullable|string|max:200',
         ], [
@@ -60,9 +59,7 @@ class SystemSettingController extends Controller
         if ($request->has('admin_binance_id')) {
             $settingsToSave['admin_binance_id'] = $request->input('admin_binance_id') ?: '';
         }
-        if ($request->has('admin_binance_qr')) {
-            $settingsToSave['admin_binance_qr'] = $request->input('admin_binance_qr') ?: '';
-        }
+
         if ($request->has('binance_api_key')) {
             $settingsToSave['binance_api_key'] = $request->input('binance_api_key') ?: '';
         }

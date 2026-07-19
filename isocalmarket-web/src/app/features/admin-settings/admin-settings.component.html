@@ -161,7 +161,7 @@
             </div>
 
             <div class="form-field">
-              <label>Binance ID nhận tiền</label>
+              <label>Binance ID nhận tiền <span class="text-red-500">*</span></label>
               <div class="relative mt-1">
                 <input
                   type="text"
@@ -177,26 +177,10 @@
               </p>
             </div>
 
-            <div class="form-field">
-              <label>Đường dẫn ảnh QR Binance Pay (Tĩnh)</label>
-              <div class="relative mt-1">
-                <input
-                  type="text"
-                  name="admin_binance_qr"
-                  class="form-input w-full"
-                  placeholder="Nhập URL ảnh QR chuyển khoản Binance Pay"
-                  [(ngModel)]="form.admin_binance_qr"
-                  [disabled]="isLocked()"
-                />
-              </div>
-              <p class="mt-1.5 text-xs text-slate-400 dark:text-slate-500">
-                Đường dẫn tới ảnh QR Code nạp tiền Binance Pay tĩnh để hiển thị cho khách quét
-                nhanh.
-              </p>
-            </div>
+
 
             <div class="form-field md:col-span-2">
-              <label>Binance API Key</label>
+              <label>Binance API Key <span class="text-red-500">*</span></label>
               <div class="relative mt-1">
                 <input
                   type="text"
@@ -222,7 +206,7 @@
             </div>
 
             <div class="form-field md:col-span-2">
-              <label>Binance API Secret</label>
+              <label>Binance API Secret <span class="text-red-500">*</span></label>
               <div class="relative mt-1">
                 <input
                   type="text"
@@ -244,6 +228,43 @@
               <p class="mt-1.5 text-xs text-slate-400 dark:text-slate-500">
                 API Secret Key tương ứng của Binance API Key ở trên.
               </p>
+            </div>
+
+            <!-- Hướng dẫn cấu hình Binance Pay -->
+            <div class="md:col-span-2 mt-2">
+              <div
+                class="flex items-start gap-2 bg-slate-50 dark:bg-slate-900/60 border border-slate-200/50 dark:border-slate-800/40 rounded-lg p-2.5"
+              >
+                <app-icon name="info" class="w-4 h-4 text-[var(--color-primary)] shrink-0 mt-0.5" />
+                <div
+                  class="text-xs text-slate-600 dark:text-slate-400 font-semibold leading-relaxed"
+                >
+                  <strong>Hướng dẫn lấy Binance ID & Binance API Key:</strong>
+                  <ol class="list-decimal pl-4 mt-1 space-y-1">
+                    <li>
+                      <strong>Binance ID:</strong> Đăng nhập tài khoản Binance, truy cập trang cá nhân (Profile) hoặc mục <strong>Binance Pay</strong> ở ứng dụng di động để lấy số <strong>Pay ID / UID</strong> của bạn.
+                    </li>
+                    <li>
+                      <strong>Binance API Key & Secret:</strong> Truy cập 
+                      <a
+                        href="https://www.binance.com/en/my/settings/api-management"
+                        target="_blank"
+                        class="underline font-bold text-primary"
+                        >Quản lý API (API Management)</a
+                      > trên Binance.
+                    </li>
+                    <li>
+                      Nhấp vào <strong>Tạo API (Create API)</strong> -> Chọn <strong>Khóa API do hệ thống tạo (System generated)</strong>.
+                    </li>
+                    <li>
+                      Đặt tên cho API và thực hiện xác thực bảo mật để lấy <strong>API Key</strong> và <strong>API Secret</strong>.
+                    </li>
+                    <li>
+                      <strong>Lưu ý bảo mật quan trọng:</strong> Chỉ bật quyền <strong>Đọc dữ liệu (Enable Reading)</strong>. Tuyệt đối KHÔNG kích hoạt các quyền giao dịch, rút tiền hoặc Future để bảo đảm an toàn.
+                    </li>
+                  </ol>
+                </div>
+              </div>
             </div>
           </div>
 
@@ -480,7 +501,7 @@
           </div>
           <div class="space-y-5">
             <div class="form-field max-w-sm">
-              <label>Thời gian giữ lại token (Ngày)</label>
+              <label>Thời gian giữ lại token (Ngày) <span class="text-red-500">*</span></label>
               <input
                 type="number"
                 [(ngModel)]="tokenCleanupDays"

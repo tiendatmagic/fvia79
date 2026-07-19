@@ -188,7 +188,6 @@ class DepositController extends Controller
             'paymentMethod' => $deposit->getPaymentMethod(),
             'payerBinanceId' => $deposit->getPayerBinanceId(),
             'adminBinanceId' => $deposit->getAdminBinanceId() ?: $this->depositService->getAdminBinanceIdSetting(),
-            'adminBinanceQr' => $this->depositService->getAdminBinanceQrSetting(),
             'createdAt' => $deposit->getCreatedAt() ? $deposit->getCreatedAt()->format('c') : null,
             'updatedAt' => $deposit->getUpdatedAt() ? $deposit->getUpdatedAt()->format('c') : null,
             'adminWalletAddress' => $deposit->getAdminWalletAddress() ?: $this->depositService->getAdminWalletAddress(),

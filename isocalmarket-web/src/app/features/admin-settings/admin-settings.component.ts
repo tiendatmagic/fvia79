@@ -55,7 +55,6 @@ export class AdminSettingsComponent implements OnInit {
     token_cleanup_days: 7,
     usdt_exchange_rate: 0,
     admin_binance_id: '',
-    admin_binance_qr: '',
     binance_api_key: '',
     binance_api_secret: ''
   };

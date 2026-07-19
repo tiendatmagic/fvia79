@@ -29,7 +29,6 @@ export interface DepositHistoryItem {
   paymentMethod?: string;
   payerBinanceId?: string;
   adminBinanceId?: string;
-  adminBinanceQr?: string;
 }
 
 @Component({

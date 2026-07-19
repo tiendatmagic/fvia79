@@ -127,15 +127,7 @@
 
         @if (invoice.paymentMethod === 'binance') {
           <div class="bg-white p-3 rounded-2xl border border-slate-200/50 shadow-md">
-            @if (invoice.adminBinanceQr) {
-              <img
-                [src]="invoice.adminBinanceQr"
-                class="w-[200px] h-[200px] object-contain rounded-xl"
-                alt="QR Binance Pay"
-              />
-            } @else {
-              <qr-code [value]="invoice.adminBinanceId || ''" [size]="200" />
-            }
+            <qr-code [value]="invoice.adminBinanceId || ''" [size]="200" />
           </div>
         } @else {
           <div class="bg-white p-3 rounded-2xl border border-slate-200/50 shadow-md">

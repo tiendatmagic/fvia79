@@ -60,13 +60,6 @@ class DepositService
         return $this->settingService->getSetting('admin_binance_id', '');
     }
 
-    /**
-     * Lấy ảnh QR Binance Pay của Admin
-     */
-    public function getAdminBinanceQrSetting(): string
-    {
-        return $this->settingService->getSetting('admin_binance_qr', '');
-    }
 
     /**
      * Lấy tỷ giá USDT/VND từ CoinGecko API (Free)
