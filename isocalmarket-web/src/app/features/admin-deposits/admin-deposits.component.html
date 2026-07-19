@@ -1,4 +1,4 @@
-<div class="max-w-[1530px] mx-auto w-full p-4 sm:p-6 space-y-6">
+<div class="max-w-[1530px] mx-auto w-full px-4 sm:px-6 py-6 space-y-6">
   <app-page-header
     title="Quản Lý Nạp Tiền"
     description="Xem danh sách toàn bộ các yêu cầu nạp tiền hệ thống, duyệt thủ công khi xảy ra lỗi blockchain đối soát hoặc từ chối các hóa đơn nạp không hợp lệ."
@@ -81,7 +81,7 @@
   </div>
 
   <!-- Bảng danh sách nạp tiền -->
-  <div app-card class="overflow-hidden !p-0">
+  <div app-card class="overflow-hidden flex flex-col !p-0">
     <app-table
       [columns]="columns"
       [data]="depositStore.deposits()"
@@ -225,21 +225,13 @@
       </ng-template>
     </app-table>
 
-    <!-- Phân trang -->
-    <div
-      *ngIf="depositStore.totalItems() > 0"
-      class="px-6 py-4 flex items-center justify-between border-t border-slate-100 dark:border-slate-800/60 bg-slate-50/20 dark:bg-slate-900/10"
-    >
-      <div class="text-xs text-slate-500 dark:text-slate-400">
-        Hiển thị trang {{ depositStore.currentPage() }} / {{ depositStore.lastPage() }} (Tổng cộng
-        {{ depositStore.totalItems() }} hóa đơn nạp)
-      </div>
-      <app-pagination
-        [currentPage]="depositStore.currentPage()"
-        [totalPages]="depositStore.lastPage()"
-        [totalItems]="depositStore.totalItems()"
-        (pageChange)="fetchDeposits($event)"
-      />
-    </div>
+    <app-pagination
+      [currentPage]="depositStore.currentPage()"
+      [totalPages]="depositStore.lastPage()"
+      [totalItems]="depositStore.totalItems()"
+      [itemsPerPage]="limit"
+      [itemName]="'lệnh nạp'"
+      (pageChange)="fetchDeposits($event)"
+    />
   </div>
 </div>
