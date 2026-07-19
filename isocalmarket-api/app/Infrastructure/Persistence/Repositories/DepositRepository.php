@@ -56,7 +56,7 @@ class DepositRepository implements DepositRepositoryInterface
     public function isTxHashUsed(string $txHash): bool
     {
         return DepositModel::where('tx_hash', $txHash)
-            ->where('status', 'completed')
+            ->whereNotNull('tx_hash')
             ->exists();
     }
 }

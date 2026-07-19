@@ -43,8 +43,13 @@ class DepositController extends Controller
                 ->where('status', 'pending_payment')
                 ->first();
 
+            $msg = $e->getMessage();
+            if (str_contains($msg, 'configured the receiving USDT wallet') || str_contains($msg, 'configured the scanner API key')) {
+                $msg = 'System configuration error. Please contact the administrator.';
+            }
+
             return response()->json([
-                'message' => $e->getMessage(),
+                'message' => $msg,
                 'active_invoice_id' => $activeInvoice ? $activeInvoice->id : null
             ], 400);
         }
@@ -98,6 +103,13 @@ class DepositController extends Controller
      */
     public function history(Request $request): JsonResponse
     {
+        $request->validate([
+            'start_date' => 'nullable|date_format:Y-m-d',
+            'end_date' => 'nullable|date_format:Y-m-d',
+            'page' => 'nullable|integer|min:1',
+            'limit' => 'nullable|integer|min:1|max:100',
+        ]);
+
         $userId = Auth::id();
         $page = (int) $request->query('page', 1);
         $limit = (int) $request->query('limit', 10);
@@ -134,9 +146,14 @@ class DepositController extends Controller
         try {
             $matched = $this->depositService->checkTransaction($id, $userId);
         } catch (\RuntimeException $e) {
+            $msg = $e->getMessage();
+            if (str_contains($msg, 'configured the receiving USDT wallet') || str_contains($msg, 'configured the scanner API key')) {
+                $msg = 'System configuration error. Please contact the administrator.';
+            }
+
             return response()->json([
                 'success' => false,
-                'message' => $e->getMessage()
+                'message' => $msg
             ], 400);
         }
 

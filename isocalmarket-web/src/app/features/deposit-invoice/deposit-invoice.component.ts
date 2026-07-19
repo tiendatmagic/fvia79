@@ -53,13 +53,27 @@ export class DepositInvoiceComponent implements OnInit, OnDestroy {
   public isCancelling = false;
   public isChecking = false;
 
+  private visibilityHandler = () => {
+    if (document.hidden) {
+      this.stopStatusPolling();
+    } else if (this.invoice && this.invoice.id && this.invoice.status === 'pending_payment') {
+      this.startStatusPolling(this.invoice.id);
+    }
+  };
+
   ngOnInit() {
     this.loadInvoice();
+    if (typeof document !== 'undefined') {
+      document.addEventListener('visibilitychange', this.visibilityHandler);
+    }
   }
 
   ngOnDestroy() {
     this.stopCountdown();
     this.stopStatusPolling();
+    if (typeof document !== 'undefined') {
+      document.removeEventListener('visibilitychange', this.visibilityHandler);
+    }
   }
 
   // Tải chi tiết hóa đơn từ Backend API
@@ -171,10 +185,13 @@ export class DepositInvoiceComponent implements OnInit, OnDestroy {
     }
   }
 
-  // Polling tự động quét trạng thái hóa đơn ngầm mỗi 10 giây
+  // Polling tự động quét trạng thái hóa đơn ngầm mỗi 30 giây (Vá CVE-8)
   private startStatusPolling(invoiceId: string) {
     this.stopStatusPolling();
-    this.pollingSubscription = interval(10000).subscribe(() => {
+    this.pollingSubscription = interval(30000).subscribe(() => {
+      if (typeof document !== 'undefined' && document.hidden) {
+        return;
+      }
       this.state.depositStore.fetchInvoice(invoiceId, true).subscribe({
         next: (res) => {
           if (res && res.invoice) {
