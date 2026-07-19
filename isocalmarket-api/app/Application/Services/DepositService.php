@@ -593,9 +593,9 @@ class DepositService
                 throw new \RuntimeException("This deposit invoice has already been completed.");
             }
 
-            $finalTxHash = $txHash ?: 'manual_approved_by_admin_' . $adminId;
+            $finalTxHash = $txHash ?: 'manual_approved_by_admin_' . $id;
 
-            if ($txHash && $this->depositRepository->isTxHashUsed($txHash)) {
+            if ($this->depositRepository->isTxHashUsed($finalTxHash)) {
                 throw new \RuntimeException("This transaction hash has already been used for another deposit.");
             }
 
