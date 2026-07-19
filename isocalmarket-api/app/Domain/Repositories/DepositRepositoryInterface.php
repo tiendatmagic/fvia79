@@ -26,4 +26,17 @@ interface DepositRepositoryInterface
      * Kiểm tra xem TxHash này đã được sử dụng đối soát chưa
      */
     public function isTxHashUsed(string $txHash): bool;
+
+    /**
+     * Lấy danh sách toàn bộ lệnh nạp tiền có phân trang, tìm kiếm và lọc dành cho admin
+     */
+    public function findAllPaginated(
+        int $page = 1,
+        int $limit = 10,
+        ?string $search = null,
+        ?string $status = null,
+        ?string $paymentMethod = null,
+        ?string $startDate = null,
+        ?string $endDate = null
+    ): array;
 }

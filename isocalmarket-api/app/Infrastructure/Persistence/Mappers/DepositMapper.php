@@ -9,6 +9,9 @@ class DepositMapper
 {
     public static function toDomain(DepositModel $model): Deposit
     {
+        $userEmail = $model->relationLoaded('user') && $model->user ? $model->user->email : null;
+        $userName = $model->relationLoaded('user') && $model->user ? ($model->user->name ?: $model->user->username) : null;
+
         return new Deposit(
             $model->id,
             $model->user_id,
@@ -23,7 +26,9 @@ class DepositMapper
             $model->payer_binance_id,
             $model->admin_binance_id,
             $model->created_at ? new \DateTime($model->created_at->toDateTimeString()) : null,
-            $model->updated_at ? new \DateTime($model->updated_at->toDateTimeString()) : null
+            $model->updated_at ? new \DateTime($model->updated_at->toDateTimeString()) : null,
+            $userEmail,
+            $userName
         );
     }
 

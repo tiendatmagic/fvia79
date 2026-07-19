@@ -164,16 +164,16 @@
               >
                 <ng-template appTableCell="name" let-row="row">
                   <div class="space-y-1.5 py-1">
-                    <div class="text-sm font-extrabold text-slate-800 dark:text-white">
+                    <div class="text-sm font-extrabold text-slate-800 dark:text-white" [appTooltip]="row.name">
                       {{ row.name }}
                     </div>
-                    <p *ngIf="row.description" class="text-xs text-slate-400 dark:text-slate-500 font-semibold line-clamp-1 max-w-xl">
+                    <p *ngIf="row.description" class="text-xs text-slate-400 dark:text-slate-500 font-semibold line-clamp-1 max-w-xl" [appTooltip]="row.description">
                       {{ row.description }}
                     </p>
                     @if (row.attributes && row.attributes.length > 0) {
                       <div class="flex flex-wrap gap-1">
                         @for (attr of row.attributes; track $index) {
-                          <span class="inline-flex items-center text-xs font-extrabold px-1.5 py-0.5 rounded bg-[var(--color-primary)]/5 dark:bg-[var(--color-primary)]/10 text-[var(--color-primary)] border border-[var(--color-primary)]/10">
+                          <span class="inline-flex items-center text-xs font-extrabold px-1.5 py-0.5 rounded bg-[var(--color-primary)]/5 dark:bg-[var(--color-primary)]/10 text-[var(--color-primary)] border border-[var(--color-primary)]/10" [appTooltip]="attr.label + ': ' + attr.value">
                             {{ attr.value }}
                           </span>
                         }
@@ -194,10 +194,11 @@
                       [variant]="row.available_count > 0 ? 'success' : 'danger'"
                       size="sm"
                       rounded="md"
+                      [appTooltip]="row.available_count > 0 ? 'Còn hàng' : 'Hết hàng'"
                     >
                       {{ row.available_count > 0 ? 'Còn hàng' : 'Hết hàng' }}
                     </app-badge>
-                    <span class="text-xs text-slate-400 dark:text-slate-500 font-bold whitespace-nowrap">
+                    <span class="text-xs text-slate-400 dark:text-slate-500 font-bold whitespace-nowrap" [appTooltip]="'Tồn kho khả dụng: ' + row.available_count">
                       Còn lại: {{ row.available_count }}
                     </span>
                   </div>

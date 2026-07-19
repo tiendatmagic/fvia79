@@ -1418,6 +1418,39 @@
     - **Yêu cầu**: Chuyển đổi mã lệnh nạp tiền dạng chữ tĩnh trên trang Lịch sử nạp tiền thành liên kết để người dùng click vào có thể xem trực tiếp hóa đơn/chi tiết thanh toán tương ứng.
     - **Giải pháp & Triển khai**: Cập nhật [deposit-history.component.html](file:///d:/git/isocalmarket/isocalmarket-web/src/app/features/deposit-history/deposit-history.component.html), đổi thẻ `<span>` của cột `code` thành thẻ `<a>` dùng `[routerLink]="['/deposit/invoice', row.id]"` và áp dụng màu text chính của hệ thống kèm hover gạch chân.
     - **Xác minh**: Biên dịch ứng dụng Angular thành công 100% không phát sinh lỗi.
+  - **[BẢO MẬT & ĐỐI SOÁT] Việt hóa thông báo Toast khi kiểm tra giao dịch nạp tiền**:
+    - **Yêu cầu**: Việt hóa toàn bộ thông báo Toast khi người dùng click nút kiểm tra giao dịch nạp tiền cho cả 2 cổng thanh toán: USDT BEP-20 và Binance Pay (Binance ID).
+    - **Giải pháp & Triển khai**:
+      1. Cập nhật [deposit-invoice.component.ts](file:///d:/git/isocalmarket/isocalmarket-web/src/app/features/deposit-invoice/deposit-invoice.component.ts) thêm phương thức `translateCheckMessage(msg: string): string` để dịch các thông điệp phản hồi từ API sang tiếng Việt tương ứng.
+      2. Tự động kiểm tra loại hình cổng thanh toán (`paymentMethod` là `'binance'` hay `'bep20'`) để hiển thị thông báo chưa quét thấy giao dịch một cách chi tiết và chính xác nhất cho từng cổng (yêu cầu kiểm tra Binance ID và số tiền lẻ so với kiểm tra địa chỉ ví USDT và số tiền lẻ).
+      3. Dịch các thông báo lỗi liên kết hoặc lỗi chưa cấu hình hệ thống từ API Admin Settings sang tiếng Việt.
+    - **Xác minh**: Chạy biên dịch Angular (`npm run build`) thành công 100% không có lỗi.
 
+  - **[TÍNH NĂNG] Quản lý nạp tiền cho Admin (Deposit Management)**:
+    - **Yêu cầu**: Cho phép Admin xem danh sách, lọc, tìm kiếm và duyệt thủ công hoặc từ chối các lệnh nạp tiền USDT của tất cả người dùng trong hệ thống. Khi duyệt thủ công, hệ thống tự động cập nhật trạng thái hóa đơn và cộng số dư cho người dùng một cách an toàn và nhất quán.
+    - **Giải pháp & Triển khai**:
+      1. **Backend**:
+         - Cập nhật domain entity `Deposit` và `DepositMapper` để tải thêm dữ liệu `userName`, `userEmail` từ quan hệ Eloquent `user`.
+         - Bổ sung phương thức `findAllPaginated` trong `DepositRepositoryInterface` và triển khai trong `DepositRepository` để truy vấn danh sách hóa đơn nạp của toàn hệ thống kèm phân trang 10 bản ghi mặc định, tìm kiếm và lọc đa dạng.
+         - Xây dựng nghiệp vụ duyệt thủ công an toàn với `DB::transaction` và Pessimistic Locking (`lockForUpdate`) cùng phương thức từ chối nạp tiền trong `DepositService`.
+         - Tạo mới `AdminDepositController` cung cấp các API `index`, `approve`, `reject` và đăng ký route tương ứng trong `routes/api.php` có bảo vệ bằng middleware `admin`.
+      2. **Frontend**:
+         - Tạo mới `AdminDepositStore` quản lý state nạp tiền của Admin.
+         - Xây dựng component `AdminDepositsComponent` hiển thị bảng danh sách các lệnh nạp tiền hệ thống, tích hợp các bộ lọc và tìm kiếm, sử dụng các shared components có sẵn (`app-page-header`, `app-table`, `app-badge`, `app-pagination`).
+         - Xây dựng modal động `ApproveDepositModalComponent` cho phép Admin nhập mã băm giao dịch `tx_hash` (hoặc Binance Order ID) tùy chọn khi duyệt thủ công.
+         - Đăng ký lazy route trong `app.routes.ts` bảo vệ qua `AdminGuard` và liên kết menu "Quản lý nạp tiền" vào Sidebar & Mobile Sidebar.
+    - **Xác minh**:
+         - Chạy unit test backend (`php artisan test --filter=AdminDepositTest`) thành công 100% (4 tests, 9 assertions).
+         - Biên dịch Angular frontend (`npm run build`) thành công 100% không phát sinh bất kỳ lỗi cú pháp hoặc compiler nào.
+
+  - **[GIAO DIỆN & TỐI ƯU UX] Đồng bộ hóa Tooltip cho tất cả các bảng (Tables)**:
+    - **Yêu cầu**: Rà soát lại toàn bộ các trang chức năng có chứa bảng dữ liệu (`<app-table>`), đảm bảo tất cả các cột hiển thị thông tin rút gọn, ID, TxHash, Trạng thái đều được trang bị thuộc tính `[appTooltip]` để người dùng dễ dàng xem thông tin đầy đủ.
+    - **Giải pháp & Triển khai**:
+      1. Rà soát thấy 6 trang quản trị khác (`admin-users`, `admin-orders`, `products`, `inventory`, `admin-categories`, `admin-dashboard`) đã có tooltip đầy đủ.
+      2. Tiến hành bổ sung `[appTooltip]` cho 3 trang còn thiếu/chưa hoàn thiện:
+         - **Lịch sử nạp tiền** ([deposit-history.component.html](file:///d:/git/isocalmarket/isocalmarket-web/src/app/features/deposit-history/deposit-history.component.html)): Thêm tooltip cho cột mã nạp, số tiền USDT, số tiền VND, trạng thái badge, và thời gian tạo.
+         - **Danh sách sản phẩm Storefront** ([storefront.component.html](file:///d:/git/isocalmarket/isocalmarket-web/src/app/features/storefront/storefront.component.html)): Thêm tooltip cho tên sản phẩm, mô tả sản phẩm, thuộc tính động, trạng thái badge và số lượng tồn kho.
+         - **Quản lý nạp tiền Admin** ([admin-deposits.component.html](file:///d:/git/isocalmarket/isocalmarket-web/src/app/features/admin-deposits/admin-deposits.component.html)): Bổ sung tooltip chi tiết cho cột ID hóa đơn nạp, tên/email thành viên, số tiền USDT, số tiền VND, phương thức, trạng thái và thời gian tạo/mã TxHash (fix lỗi ép kiểu null của date pipe bằng cách gán `|| ''`).
+    - **Xác minh**: Biên dịch ứng dụng Angular (`npm run build`) thành công 100% không phát sinh lỗi.
 
 

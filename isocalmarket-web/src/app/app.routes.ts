@@ -97,6 +97,10 @@ export const routes: Routes = [
         loadComponent: () => import('@features/admin-settings/admin-settings.component').then(m => m.AdminSettingsComponent)
       },
       {
+        path: 'deposits',
+        loadComponent: () => import('@features/admin-deposits/admin-deposits.component').then(m => m.AdminDepositsComponent)
+      },
+      {
         path: 'api',
         loadComponent: () => import('@features/admin-api/admin-api.component').then(m => m.AdminApiComponent)
       }

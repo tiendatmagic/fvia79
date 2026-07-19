@@ -557,4 +557,95 @@ class DepositService
             }
         }
     }
+
+    /**
+     * Lấy danh sách nạp tiền phân trang dành cho Admin
+     */
+    public function getDepositsPaginatedForAdmin(
+        int $page = 1,
+        int $limit = 10,
+        ?string $search = null,
+        ?string $status = null,
+        ?string $paymentMethod = null,
+        ?string $startDate = null,
+        ?string $endDate = null
+    ): array {
+        return $this->depositRepository->findAllPaginated($page, $limit, $search, $status, $paymentMethod, $startDate, $endDate);
+    }
+
+    /**
+     * Admin duyệt thủ công hóa đơn nạp tiền
+     */
+    public function approveDepositManually(string $id, ?string $txHash, string $adminId): bool
+    {
+        return \Illuminate\Support\Facades\DB::transaction(function () use ($id, $txHash, $adminId) {
+            $depositModel = \App\Infrastructure\Persistence\Eloquent\DepositModel::where('id', $id)
+                ->lockForUpdate()
+                ->first();
+
+            if (!$depositModel) {
+                throw new \RuntimeException("Deposit invoice not found.");
+            }
+
+            $deposit = \App\Infrastructure\Persistence\Mappers\DepositMapper::toDomain($depositModel);
+
+            if ($deposit->getStatus() === 'completed') {
+                throw new \RuntimeException("This deposit invoice has already been completed.");
+            }
+
+            $finalTxHash = $txHash ?: 'manual_approved_by_admin_' . $adminId;
+
+            if ($txHash && $this->depositRepository->isTxHashUsed($txHash)) {
+                throw new \RuntimeException("This transaction hash has already been used for another deposit.");
+            }
+
+            $deposit->setStatus('completed');
+            $deposit->setTxHash($finalTxHash);
+            $this->depositRepository->save($deposit);
+
+            $user = $this->userRepository->findById($deposit->getUserId());
+            if (!$user) {
+                throw new \RuntimeException("User not found for this deposit.");
+            }
+            $user->addBalance($deposit->getAmountVnd());
+            $this->userRepository->save($user);
+
+            Log::info("Admin [{$adminId}] manually approved Deposit ID [{$id}]: Code={$deposit->getCode()}, Amount={$deposit->getAmountUsdt()} USDT ({$deposit->getAmountVnd()} VND), Payer ID/Wallet=" . ($deposit->getPayerBinanceId() ?: $deposit->getAdminWalletAddress()) . ", TxHash={$finalTxHash}");
+
+            return true;
+        });
+    }
+
+    /**
+     * Admin từ chối/hủy hóa đơn nạp tiền
+     */
+    public function rejectDepositManually(string $id, string $adminId): bool
+    {
+        return \Illuminate\Support\Facades\DB::transaction(function () use ($id, $adminId) {
+            $depositModel = \App\Infrastructure\Persistence\Eloquent\DepositModel::where('id', $id)
+                ->lockForUpdate()
+                ->first();
+
+            if (!$depositModel) {
+                throw new \RuntimeException("Deposit invoice not found.");
+            }
+
+            $deposit = \App\Infrastructure\Persistence\Mappers\DepositMapper::toDomain($depositModel);
+
+            if ($deposit->getStatus() === 'completed') {
+                throw new \RuntimeException("Cannot reject a completed deposit invoice.");
+            }
+
+            if ($deposit->getStatus() === 'failed') {
+                throw new \RuntimeException("This deposit invoice is already in failed status.");
+            }
+
+            $deposit->setStatus('failed');
+            $this->depositRepository->save($deposit);
+
+            Log::info("Admin [{$adminId}] manually rejected Deposit ID [{$id}]: Code={$deposit->getCode()}");
+
+            return true;
+        });
+    }
 }

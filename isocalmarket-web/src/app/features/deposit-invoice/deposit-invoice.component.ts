@@ -318,19 +318,59 @@ export class DepositInvoiceComponent implements OnInit, OnDestroy {
         if (res.success) {
           this.showSuccessModal();
         } else {
-          this.state.showToast(res.message, 'error');
+          this.state.showToast(this.translateCheckMessage(res.message), 'error');
         }
       },
       error: (err) => {
-        let msg = err?.error?.message || 'BOT chưa phát hiện giao dịch USDT hợp lệ của bạn!';
-        if (msg.includes('configured the receiving USDT wallet')) {
-          msg = 'Hệ thống đối soát bị lỗi do Quản trị viên chưa cấu hình địa chỉ ví nhận tiền!';
-        } else if (msg.includes('configured the scanner API key')) {
-          msg = 'Hệ thống đối soát bị lỗi do Quản trị viên chưa cấu hình Scanner API Key!';
-        }
+        const rawMsg = err?.error?.message || '';
+        const msg = this.translateCheckMessage(rawMsg);
         this.state.showToast(msg, 'error');
       }
     });
+  }
+
+  private translateCheckMessage(msg: string): string {
+    if (!msg) {
+      return 'BOT chưa phát hiện giao dịch USDT hợp lệ của bạn!';
+    }
+
+    const lowerMsg = msg.toLowerCase();
+
+    // Lỗi chưa cấu hình địa chỉ ví nhận USDT nạp tiền
+    if (lowerMsg.includes('receiving usdt wallet') || lowerMsg.includes('receiving wallet')) {
+      return 'Hệ thống đối soát bị lỗi do Quản trị viên chưa cấu hình địa chỉ ví nhận tiền!';
+    }
+
+    // Lỗi chưa cấu hình Scanner API Key
+    if (lowerMsg.includes('scanner api key')) {
+      return 'Hệ thống đối soát bị lỗi do Quản trị viên chưa cấu hình Scanner API Key!';
+    }
+
+    // Lỗi chưa cấu hình Binance API Key/Secret
+    if (lowerMsg.includes('binance api key/secret') || lowerMsg.includes('binance api key') || lowerMsg.includes('binance_api_key')) {
+      return 'Hệ thống đối soát bị lỗi do Quản trị viên chưa cấu hình Binance API Key/Secret!';
+    }
+
+    // Lỗi không thể kết nối tới blockchain scanner API
+    if (lowerMsg.includes('blockchain scanner api') || lowerMsg.includes('deep-index.moralis.io')) {
+      return 'Không thể kết nối với API quét blockchain. Vui lòng thử lại sau!';
+    }
+
+    // Lỗi không thể kết nối tới Binance Pay API
+    if (lowerMsg.includes('binance pay api') || lowerMsg.includes('api.binance.com')) {
+      return 'Không thể kết nối với API Binance Pay. Vui lòng thử lại sau!';
+    }
+
+    // Lỗi chưa phát hiện giao dịch nạp tiền
+    if (lowerMsg.includes('could not detect') || lowerMsg.includes('not detect your usdt payment')) {
+      if (this.invoice?.paymentMethod === 'binance') {
+        return 'Hệ thống chưa phát hiện giao dịch USDT của bạn qua cổng Binance Pay. Vui lòng đảm bảo bạn đã chuyển chính xác số tiền (bao gồm cả phần số lẻ thập phân) vào đúng Binance ID nhận trong vòng 15 phút.';
+      } else {
+        return 'Hệ thống chưa phát hiện giao dịch USDT của bạn trên mạng lưới BSC (BEP-20). Vui lòng đảm bảo bạn đã chuyển chính xác số tiền (bao gồm cả phần số lẻ thập phân) vào đúng địa chỉ ví nhận trong vòng 15 phút.';
+      }
+    }
+
+    return msg;
   }
 
   private showSuccessModal() {

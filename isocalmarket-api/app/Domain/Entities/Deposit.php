@@ -18,6 +18,8 @@ class Deposit
     private ?string $adminBinanceId;
     private ?\DateTime $createdAt;
     private ?\DateTime $updatedAt;
+    private ?string $userEmail;
+    private ?string $userName;
 
     public function __construct(
         ?string $id,
@@ -33,7 +35,9 @@ class Deposit
         ?string $payerBinanceId = null,
         ?string $adminBinanceId = null,
         ?\DateTime $createdAt = null,
-        ?\DateTime $updatedAt = null
+        ?\DateTime $updatedAt = null,
+        ?string $userEmail = null,
+        ?string $userName = null
     ) {
         $this->id = $id;
         $this->userId = $userId;
@@ -49,6 +53,8 @@ class Deposit
         $this->adminBinanceId = $adminBinanceId;
         $this->createdAt = $createdAt;
         $this->updatedAt = $updatedAt;
+        $this->userEmail = $userEmail;
+        $this->userName = $userName;
     }
 
     public function getId(): ?string
@@ -144,5 +150,15 @@ class Deposit
     public function setAdminBinanceId(?string $adminBinanceId): void
     {
         $this->adminBinanceId = $adminBinanceId;
+    }
+
+    public function getUserEmail(): ?string
+    {
+        return $this->userEmail;
+    }
+
+    public function getUserName(): ?string
+    {
+        return $this->userName;
     }
 }

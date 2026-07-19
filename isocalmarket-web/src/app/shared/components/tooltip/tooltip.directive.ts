@@ -39,39 +39,14 @@ export class TooltipDirective implements OnDestroy {
     this.tooltipEl = this.renderer.createElement('div');
     this.renderer.appendChild(this.tooltipEl, this.renderer.createText(this.text));
 
-    const classes = [
-      'fixed',
-      'z-[9999]',
-      'px-2.5',
-      'py-1.5',
-      'text-xs',
-      'font-bold',
-      'text-slate-100',
-      'dark:text-slate-200',
-      'bg-slate-950/90',
-      'dark:bg-slate-900/95',
-      'border',
-      'border-slate-800/80',
-      'dark:border-slate-700/50',
-      'rounded-lg',
-      'shadow-lg',
-      'shadow-black/25',
-      'pointer-events-none',
-      'select-none',
-      'backdrop-blur-sm',
-      'opacity-0',
-      'transition-all',
-      'duration-150',
-      'ease-out'
-    ];
-    classes.forEach(c => this.renderer.addClass(this.tooltipEl!, c));
+    this.renderer.addClass(this.tooltipEl, 'app-tooltip');
     this.renderer.appendChild(document.body, this.tooltipEl);
 
     this.updatePosition();
 
     requestAnimationFrame(() => {
       if (this.tooltipEl) {
-        this.renderer.removeClass(this.tooltipEl, 'opacity-0');
+        this.renderer.addClass(this.tooltipEl, 'app-tooltip-show');
         this.updatePosition(true);
       }
     });
@@ -125,7 +100,7 @@ export class TooltipDirective implements OnDestroy {
 
     const el = this.tooltipEl;
     this.tooltipEl = null;
-    this.renderer.addClass(el, 'opacity-0');
+    this.renderer.removeClass(el, 'app-tooltip-show');
     this.renderer.setStyle(el, 'transform', el.style.transform + ' scale(0.95)');
 
     setTimeout(() => {

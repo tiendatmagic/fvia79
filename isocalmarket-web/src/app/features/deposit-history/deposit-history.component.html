@@ -63,6 +63,7 @@
       <ng-template appTableCell="code" let-row="row">
         <a
           [routerLink]="['/deposit/invoice', row.id]"
+          [appTooltip]="'Xem hóa đơn #' + row.code"
           class="font-mono font-black text-[var(--color-primary)] hover:underline hover:text-[var(--color-primary)]/80 transition-colors cursor-pointer"
         >
           #{{ row.code }}
@@ -70,7 +71,7 @@
       </ng-template>
 
       <ng-template appTableCell="amountUsdt" let-row="row">
-        <span class="text-sm font-extrabold text-slate-855 dark:text-white">
+        <span class="text-sm font-extrabold text-slate-855 dark:text-white" [appTooltip]="row.amountUsdt + ' USDT (Thực gửi: ' + (row.amountToPay | number: '1.4-4') + ' USDT)'">
           {{ row.amountUsdt }} USDT
         </span>
         <div class="text-[10px] text-slate-400 dark:text-slate-500 font-bold mt-0.5">
@@ -79,7 +80,7 @@
       </ng-template>
 
       <ng-template appTableCell="amountVnd" let-row="row">
-        <span class="text-xs font-black text-slate-600 dark:text-slate-400">
+        <span class="text-xs font-black text-slate-600 dark:text-slate-400" [appTooltip]="(row.amountVnd | number) + ' VNĐ'">
           {{ row.amountVnd | number }} VNĐ
         </span>
       </ng-template>
@@ -95,6 +96,15 @@
                   ? 'neutral'
                   : 'danger'
           "
+          [appTooltip]="
+            row.status === 'completed'
+              ? 'Thành công'
+              : row.status === 'pending_payment'
+                ? 'Chờ thanh toán'
+                : row.status === 'expired'
+                  ? 'Đã hết hạn'
+                  : 'Thất bại'
+          "
         >
           {{
             row.status === 'completed'
@@ -109,7 +119,7 @@
       </ng-template>
 
       <ng-template appTableCell="createdAt" let-row="row">
-        <span class="text-xs text-slate-500 dark:text-slate-400">
+        <span class="text-xs text-slate-500 dark:text-slate-400" [appTooltip]="row.createdAt">
           {{ row.createdAt }}
         </span>
       </ng-template>

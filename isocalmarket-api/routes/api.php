@@ -94,6 +94,11 @@ Route::prefix('v1')->group(function () {
             Route::get('/inventory/items/{id}', ['App\Http\Controllers\InventoryController', 'show']);
             Route::put('/inventory/items/{id}', ['App\Http\Controllers\InventoryController', 'update']);
             Route::delete('/inventory/items/{id}', ['App\Http\Controllers\InventoryController', 'destroy']);
+
+            // Admin Deposit Management
+            Route::get('/admin/deposits', ['App\Http\Controllers\AdminDepositController', 'index']);
+            Route::post('/admin/deposits/{id}/approve', ['App\Http\Controllers\AdminDepositController', 'approve']);
+            Route::post('/admin/deposits/{id}/reject', ['App\Http\Controllers\AdminDepositController', 'reject']);
         });
     });
 });
