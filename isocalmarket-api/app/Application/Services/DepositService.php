@@ -162,7 +162,7 @@ class DepositService
                 }
             }
 
-            $amountVnd = round($baseAmount * $rate, 2);
+            $amountVnd = round($baseAmount * $rate);
 
             // Sinh mã lệnh nạp ngắn gọn tăng dần với lock để tránh trùng code (Vá CVE-5)
             $latest = \App\Infrastructure\Persistence\Eloquent\DepositModel::orderBy('created_at', 'desc')->lockForUpdate()->first();
