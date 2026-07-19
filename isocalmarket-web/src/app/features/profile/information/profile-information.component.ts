@@ -20,6 +20,7 @@ import { finalize } from 'rxjs/operators';
 export class ProfileInformationComponent implements OnInit {
   public readonly state = inject(StateService);
 
+  public username = '';
   public name = '';
   public email = '';
   public phone = '';
@@ -28,6 +29,7 @@ export class ProfileInformationComponent implements OnInit {
   ngOnInit() {
     const user = this.state.authStore.currentUser();
     if (user) {
+      this.username = user.username || '';
       this.name = user.name;
       this.email = user.email;
       this.phone = user.phone || '';
@@ -36,8 +38,14 @@ export class ProfileInformationComponent implements OnInit {
 
   public onSave() {
     if (this.isSubmitting) return;
+
+    if (!this.name) {
+      this.state.showToast('Vui lòng điền họ tên thành viên!', 'error');
+      return;
+    }
+
     this.isSubmitting = true;
-    this.state.authStore.updateProfile(this.phone)
+    this.state.authStore.updateProfile(this.name, this.phone)
       .pipe(finalize(() => this.isSubmitting = false))
       .subscribe();
   }

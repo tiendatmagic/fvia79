@@ -72,11 +72,12 @@ class AdminUserController extends Controller
     public function store(Request $request)
     {
         $request->validate([
-            'name' => 'required|string|max:255|unique:users,name',
+            'username' => 'required|string|min:3|max:50|unique:users,username|regex:/^[a-zA-Z0-9_]+$/',
+            'name' => 'required|string|max:255',
             'email' => 'required|string|email|max:255|unique:users,email',
             'phone' => 'nullable|string|max:20',
             'role' => 'required|string|in:admin,customer',
-            'balance' => 'required|numeric|min:0',
+            'balance' => 'nullable|numeric|min:0',
             'password' => 'required|string|min:6',
         ]);
 
@@ -85,11 +86,12 @@ class AdminUserController extends Controller
 
             $user = new User(
                 null,
+                $request->username,
                 $request->name,
                 $request->email,
                 Hash::make($request->password),
                 $request->role,
-                (float)$request->balance,
+                (float)($request->balance ?? 0),
                 null,
                 null,
                 $request->phone,
@@ -124,7 +126,8 @@ class AdminUserController extends Controller
     public function update(Request $request, $id)
     {
         $request->validate([
-            'name' => 'required|string|max:255|unique:users,name,' . $id,
+            'username' => 'required|string|min:3|max:50|regex:/^[a-zA-Z0-9_]+$/|unique:users,username,' . $id,
+            'name' => 'required|string|max:255',
             'email' => 'required|string|email|max:255|unique:users,email,' . $id,
             'phone' => 'nullable|string|max:20',
             'role' => 'required|string|in:admin,customer',
@@ -143,6 +146,7 @@ class AdminUserController extends Controller
 
             $updatedUser = new User(
                 $user->getId(),
+                $request->username ?? $user->getUsername(),
                 $request->name,
                 $request->email,
                 $request->password ? Hash::make($request->password) : $user->getPassword(),

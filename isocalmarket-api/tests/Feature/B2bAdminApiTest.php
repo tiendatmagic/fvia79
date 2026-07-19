@@ -22,6 +22,7 @@ class B2bAdminApiTest extends TestCase
         // Create Admin user
         $this->adminUser = UserModel::create([
             'id' => '019f6699-e6d2-70f2-89bd-d3b93946a77a',
+            'username' => 'admin_test',
             'name' => 'B2B Admin',
             'email' => 'admin_test@isocalmarket.com',
             'password' => bcrypt('password123'),
@@ -33,6 +34,7 @@ class B2bAdminApiTest extends TestCase
         // Create normal Reseller user
         $this->normalUser = UserModel::create([
             'id' => '019f6699-e6d2-70f2-89bd-d3b93946a77b',
+            'username' => 'reseller_test',
             'name' => 'B2B Reseller',
             'email' => 'reseller_test@isocalmarket.com',
             'password' => bcrypt('password123'),

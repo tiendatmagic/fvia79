@@ -21,6 +21,7 @@ class AuthController extends Controller
     {
         try {
             $user = $this->authService->register(
+                $request->username,
                 $request->name,
                 $request->email,
                 $request->password
@@ -30,6 +31,7 @@ class AuthController extends Controller
                 'message' => 'Registration successful.',
                 'user' => [
                     'id' => $user->getId(),
+                    'username' => $user->getUsername(),
                     'name' => $user->getName(),
                     'email' => $user->getEmail(),
                     'role' => $user->getRole()
@@ -187,6 +189,7 @@ class AuthController extends Controller
                 'message' => 'Login successful.',
                 'user' => [
                     'id' => $user->getId(),
+                    'username' => $user->getUsername(),
                     'name' => $user->getName(),
                     'email' => $user->getEmail(),
                     'phone' => $user->getPhone(),
@@ -249,6 +252,7 @@ class AuthController extends Controller
             'message' => 'Token refreshed.',
             'user' => [
                 'id' => $user->getId(),
+                'username' => $user->getUsername(),
                 'name' => $user->getName(),
                 'email' => $user->getEmail(),
                 'phone' => $user->getPhone(),
@@ -288,6 +292,7 @@ class AuthController extends Controller
         return response()->json([
             'user' => [
                 'id' => $userModel->id,
+                'username' => $userModel->username,
                 'name' => $userModel->name,
                 'email' => $userModel->email,
                 'phone' => $userModel->phone,

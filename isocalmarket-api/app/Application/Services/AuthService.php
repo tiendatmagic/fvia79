@@ -21,34 +21,40 @@ class AuthService
         $this->jwtService = $jwtService;
     }
 
-    public function register(string $name, string $email, string $password): User
+    public function register(string $username, ?string $name, string $email, string $password): User
     {
-        $existing = $this->userRepository->findByEmail($email);
-        if ($existing) {
+        $existingEmail = $this->userRepository->findByEmail($email);
+        if ($existingEmail) {
             throw new \Exception('Email already registered.');
         }
-
+ 
+        $existingUsername = $this->userRepository->findByEmailOrUsername($username);
+        if ($existingUsername) {
+            throw new \Exception('Username already taken.');
+        }
+ 
+        $displayName = !empty($name) ? $name : $username;
         $hashedPassword = Hash::make($password);
-        $user = new User(null, $name, $email, $hashedPassword, 'customer');
+        $user = new User(null, $username, $displayName, $email, $hashedPassword, 'customer');
         return $this->userRepository->save($user);
     }
-
+ 
     public function login(string $login, string $password): ?User
     {
         $user = $this->userRepository->findByEmailOrUsername($login);
-
+ 
         if (!$user) {
             return null;
         }
-
+ 
         if (!Hash::check($password, $user->getPassword())) {
             return null;
         }
-
+ 
         if ($user->isBanned()) {
             throw new \Exception('Your account has been banned. Please contact administrator.');
         }
-
+ 
         return $user;
     }
 

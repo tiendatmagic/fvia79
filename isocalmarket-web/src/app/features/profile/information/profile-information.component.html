@@ -6,23 +6,32 @@
     </p>
   </div>
 
+  <hr class="border-slate-200/40 dark:border-slate-800/40" />
+
   <form (ngSubmit)="onSave()" class="space-y-5">
     <div class="form-field">
-      <label class="text-xs font-bold text-slate-500 uppercase tracking-wider block mb-1.5"
-        >Tên tài khoản</label
+      <label class="text-xs font-bold text-slate-400 dark:text-slate-500 uppercase tracking-wider block mb-1.5"
+        >Tên đăng nhập (Username)</label
       >
-      <app-custom-input [(ngModel)]="name" name="name" [disabled]="true" />
+      <app-custom-input [(ngModel)]="username" name="username" [disabled]="true" />
     </div>
 
     <div class="form-field">
-      <label class="text-xs font-bold text-slate-500 uppercase tracking-wider block mb-1.5"
+      <label class="text-xs font-bold text-slate-400 dark:text-slate-500 uppercase tracking-wider block mb-1.5"
+        >Họ và Tên <span class="text-red-500">*</span></label
+      >
+      <app-custom-input [(ngModel)]="name" name="name" placeholder="Nhập họ và tên của bạn" />
+    </div>
+
+    <div class="form-field">
+      <label class="text-xs font-bold text-slate-400 dark:text-slate-500 uppercase tracking-wider block mb-1.5"
         >Email</label
       >
       <app-custom-input [(ngModel)]="email" name="email" [disabled]="true" />
     </div>
 
     <div class="form-field">
-      <label class="text-xs font-bold text-slate-500 uppercase tracking-wider block mb-1.5"
+      <label class="text-xs font-bold text-slate-400 dark:text-slate-500 uppercase tracking-wider block mb-1.5"
         >Số điện thoại</label
       >
       <app-custom-input

@@ -20,6 +20,22 @@
         <label
           class="text-xs font-bold text-slate-400 dark:text-slate-500 uppercase tracking-wider block"
         >
+          Tên đăng nhập (Username) <span class="text-rose-500">*</span>
+        </label>
+        <app-custom-input
+          [(ngModel)]="username"
+          name="username"
+          type="text"
+          placeholder="Nhập tên đăng nhập (VD: admin, customer1)"
+          [disabled]="isEditMode"
+          required
+        />
+      </div>
+
+      <div class="space-y-1.5">
+        <label
+          class="text-xs font-bold text-slate-400 dark:text-slate-500 uppercase tracking-wider block"
+        >
           Tên thành viên <span class="text-rose-500">*</span>
         </label>
         <app-custom-input
@@ -30,7 +46,9 @@
           required
         />
       </div>
+    </div>
 
+    <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
       <div class="space-y-1.5">
         <label
           class="text-xs font-bold text-slate-400 dark:text-slate-500 uppercase tracking-wider block"
@@ -45,9 +63,7 @@
           required
         />
       </div>
-    </div>
 
-    <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
       <div class="space-y-1.5">
         <label
           class="text-xs font-bold text-slate-400 dark:text-slate-500 uppercase tracking-wider block"
@@ -61,7 +77,9 @@
           placeholder="Nhập số điện thoại (VD: 0981xxx)"
         />
       </div>
+    </div>
 
+    <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
       <div class="space-y-1.5">
         <label
           class="text-xs font-bold text-slate-400 dark:text-slate-500 uppercase tracking-wider block"
@@ -129,21 +147,6 @@
           valueKey="value"
           labelKey="label"
           [(value)]="status"
-        />
-      </div>
-
-      <div class="space-y-1.5" *ngIf="!isEditMode">
-        <label
-          class="text-xs font-bold text-slate-400 dark:text-slate-500 uppercase tracking-wider block"
-        >
-          Số dư ban đầu (VND)
-        </label>
-        <app-custom-input
-          [(ngModel)]="balance"
-          name="balance"
-          type="number"
-          placeholder="0"
-          [min]="0"
         />
       </div>
     </div>

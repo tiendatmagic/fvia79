@@ -1,6 +1,6 @@
 <div class="space-y-6 pb-2">
   <div class="form-field">
-    <label class="text-xs font-black text-slate-400 uppercase tracking-wider block mb-2">Tên sản phẩm</label>
+    <label class="text-xs font-black text-slate-400 uppercase tracking-wider block mb-2">Tên sản phẩm <span class="text-red-500">*</span></label>
     <app-custom-input
       [placeholder]="'Ví dụ: Facebook VIA US'"
       [(ngModel)]="name"
@@ -31,7 +31,7 @@
   </div>
 
   <div class="form-field">
-    <label class="text-xs font-black text-slate-400 uppercase tracking-wider block mb-2">Đơn giá (VND)</label>
+    <label class="text-xs font-black text-slate-400 uppercase tracking-wider block mb-2">Đơn giá (VND) <span class="text-red-500">*</span></label>
     <app-custom-input
       [placeholder]="'Nhập đơn giá'"
       [(ngModel)]="price"

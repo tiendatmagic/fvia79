@@ -20,13 +20,14 @@ class DatabaseSeeder extends Seeder
     {
         // 1. Tạo Admin và Khách hàng
         $admin = UserModel::create([
+            'username' => 'admin',
             'name'     => 'admin',
             'email'    => 'admin@isocalmarket.com',
             'password' => Hash::make('Admin@Isocal2025!'),
             'role'     => 'admin',
             'api_key'  => 'B2B-KEY-admin'
         ]);
-
+ 
         $customers = [];
         $customerNames = [
             'Nguyễn Văn A',
@@ -40,10 +41,11 @@ class DatabaseSeeder extends Seeder
             'Bùi Văn I',
             'Ngô Thị K'
         ];
-
+ 
         foreach ($customerNames as $index => $name) {
             $email = 'customer' . ($index + 1) . '@isocalmarket.com';
             $customers[] = UserModel::create([
+                'username' => 'customer' . ($index + 1),
                 'name'     => $name,
                 'email'    => $email,
                 'password' => Hash::make('password'),

@@ -5,6 +5,7 @@ namespace App\Domain\Entities;
 class User
 {
     private ?string $id;
+    private string $username;
     private string $name;
     private string $email;
     private string $password;
@@ -17,9 +18,10 @@ class User
     private bool $google2faEnabled;
     private ?string $apiKey;
     private string $status;
-
+ 
     public function __construct(
         ?string $id,
+        string $username,
         string $name,
         string $email,
         string $password,
@@ -34,6 +36,7 @@ class User
         string $status = 'active'
     ) {
         $this->id = $id;
+        $this->username = $username;
         $this->name = $name;
         $this->email = $email;
         $this->password = $password;
@@ -47,12 +50,22 @@ class User
         $this->apiKey = $apiKey;
         $this->status = $status;
     }
-
+ 
     public function getId(): ?string
     {
         return $this->id;
     }
-
+ 
+    public function getUsername(): string
+    {
+        return $this->username;
+    }
+ 
+    public function setUsername(string $username): void
+    {
+        $this->username = $username;
+    }
+ 
     public function getName(): string
     {
         return $this->name;

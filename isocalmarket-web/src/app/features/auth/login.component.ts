@@ -56,8 +56,22 @@ export class LoginComponent {
     }
 
     if (!this.email || !this.password) {
-      this.state.showToast('Vui lòng điền đầy đủ email và mật khẩu!', 'error');
+      this.state.showToast('Vui lòng điền đầy đủ thông tin đăng nhập và mật khẩu!', 'error');
       return;
+    }
+
+    if (this.email.includes('@')) {
+      const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+      if (!emailRegex.test(this.email)) {
+        this.state.showToast('Địa chỉ email không đúng định dạng!', 'error');
+        return;
+      }
+    } else {
+      const usernameRegex = /^[a-zA-Z0-9_]{3,50}$/;
+      if (!usernameRegex.test(this.email)) {
+        this.state.showToast('Tên đăng nhập không đúng định dạng (3-50 ký tự, không dấu, không cách)!', 'error');
+        return;
+      }
     }
 
     this.state.authStore.login({ email: this.email, password: this.password }, this.returnUrl).subscribe((res: any) => {

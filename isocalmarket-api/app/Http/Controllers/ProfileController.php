@@ -10,11 +10,12 @@ use Illuminate\Support\Facades\Hash;
 class ProfileController extends Controller
 {
     /**
-     * Cập nhật thông tin cơ bản (chỉ cho phép số điện thoại)
+     * Cập nhật thông tin cơ bản (cho phép Họ tên và số điện thoại, KHÔNG cho phép đổi username/email)
      */
     public function update(Request $request)
     {
         $request->validate([
+            'name'  => 'required|string|max:255',
             'phone' => 'nullable|string|max:20',
         ]);
 
@@ -23,6 +24,7 @@ class ProfileController extends Controller
             return response()->json(['message' => 'Unauthorized.'], 401);
         }
 
+        $userModel->name = $request->name;
         $userModel->phone = $request->phone;
         $userModel->save();
 
@@ -30,6 +32,7 @@ class ProfileController extends Controller
             'message' => 'Profile updated successfully.',
             'user' => [
                 'id' => $userModel->id,
+                'username' => $userModel->username,
                 'name' => $userModel->name,
                 'email' => $userModel->email,
                 'phone' => $userModel->phone,

@@ -11,6 +11,7 @@ class UserMapper
     {
         return new User(
             $model->id,
+            $model->username ?? '',
             $model->name,
             $model->email,
             $model->password,
@@ -25,14 +26,15 @@ class UserMapper
             $model->status ?? 'active'
         );
     }
-
+ 
     public static function toPersistence(User $entity): UserModel
     {
         $model = new UserModel();
         if ($entity->getId()) {
             $model = UserModel::find($entity->getId()) ?: $model;
         }
-
+ 
+        $model->username = $entity->getUsername();
         $model->name = $entity->getName();
         $model->email = $entity->getEmail();
         $model->phone = $entity->getPhone();
@@ -45,7 +47,7 @@ class UserMapper
         $model->google2fa_enabled = $entity->isGoogle2faEnabled();
         $model->api_key = $entity->getApiKey();
         $model->status = $entity->getStatus();
-
+ 
         return $model;
     }
 }

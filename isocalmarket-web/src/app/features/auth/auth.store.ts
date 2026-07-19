@@ -46,8 +46,16 @@ export class AuthStore {
       'Invalid email/username or password.': 'Tài khoản hoặc mật khẩu không chính xác!',
       'Unauthorized.': 'Phiên đăng nhập không hợp lệ. Vui lòng đăng nhập lại!',
       'Too Many Attempts.': 'Bạn đã thử quá nhiều lần. Vui lòng chờ vài phút rồi thử lại!',
+      'Email already registered.': 'Email này đã được sử dụng. Vui lòng chọn email khác!',
+      'Username already taken.': 'Tên đăng nhập này đã được sử dụng. Vui lòng chọn tên khác!',
       'The email has already been taken.': 'Email này đã được sử dụng. Vui lòng chọn email khác!',
       'The name has already been taken.': 'Tên tài khoản này đã tồn tại. Vui lòng chọn tên khác!',
+      'The username has already been taken.': 'Tên đăng nhập này đã được sử dụng. Vui lòng chọn tên khác!',
+      'Username must only contain letters, numbers, and underscores.': 'Tên đăng nhập chỉ được chứa chữ cái, chữ số và dấu gạch dưới!',
+      'Username must be at least 3 characters.': 'Tên đăng nhập phải có ít nhất 3 ký tự!',
+      'Email must be a valid email address.': 'Địa chỉ email không đúng định dạng!',
+      'Password must be at least 6 characters.': 'Mật khẩu phải có ít nhất 6 ký tự!',
+      'Password confirmation does not match.': 'Mật khẩu xác nhận không khớp!',
       'The email field must be a valid email address.': 'Địa chỉ email không đúng định dạng!',
       'The password field must be at least 6 characters.': 'Mật khẩu phải có ít nhất 6 ký tự!',
       'Invalid or expired verification token.': 'Mã xác thực đã hết hạn. Vui lòng đăng nhập lại từ đầu!',
@@ -187,9 +195,9 @@ export class AuthStore {
     );
   }
 
-  public updateProfile(phone: string) {
+  public updateProfile(name: string, phone: string) {
     this.authLoading.set(true);
-    return this.api.put<any>('v1/profile', { phone }).pipe(
+    return this.api.put<any>('v1/profile', { name, phone }).pipe(
       tap((res) => {
         this.currentUser.set(res.user);
         this.toast.showToast('Cập nhật thông tin thành công!', 'success');

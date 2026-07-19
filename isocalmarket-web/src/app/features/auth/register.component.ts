@@ -23,7 +23,7 @@ export class RegisterComponent {
   public readonly state = inject(StateService);
   private readonly router = inject(Router);
 
-  public name = '';
+  public username = '';
   public email = '';
   public password = '';
   public passwordConfirmation = '';
@@ -40,8 +40,25 @@ export class RegisterComponent {
   public onSubmit() {
     if (this.state.authStore.authLoading()) return;
 
-    if (!this.name || !this.email || !this.password || !this.passwordConfirmation) {
-      this.state.showToast('Vui lòng điền đầy đủ các thông tin!', 'error');
+    if (!this.username || !this.email || !this.password || !this.passwordConfirmation) {
+      this.state.showToast('Vui lòng điền đầy đủ các thông tin bắt buộc!', 'error');
+      return;
+    }
+
+    const usernameRegex = /^[a-zA-Z0-9_]{3,50}$/;
+    if (!usernameRegex.test(this.username)) {
+      this.state.showToast('Tên đăng nhập không đúng định dạng (3-50 ký tự, không chứa dấu hay khoảng trắng)!', 'error');
+      return;
+    }
+
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    if (!emailRegex.test(this.email)) {
+      this.state.showToast('Địa chỉ email không đúng định dạng!', 'error');
+      return;
+    }
+
+    if (this.password.length < 6) {
+      this.state.showToast('Mật khẩu phải có ít nhất 6 ký tự!', 'error');
       return;
     }
 
@@ -51,7 +68,7 @@ export class RegisterComponent {
     }
 
     this.state.authStore.register({
-      name: this.name,
+      username: this.username.toLowerCase(),
       email: this.email,
       password: this.password,
       password_confirmation: this.passwordConfirmation

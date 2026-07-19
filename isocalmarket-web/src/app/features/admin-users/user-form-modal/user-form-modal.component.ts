@@ -37,6 +37,7 @@ export class UserFormModalComponent implements OnInit {
   public isEditMode = false;
   public editingId: any = null;
 
+  public username = '';
   public name = '';
   public email = '';
   public phone = '';
@@ -65,6 +66,7 @@ export class UserFormModalComponent implements OnInit {
     if (this.modalData) {
       this.isEditMode = true;
       this.editingId = this.modalData.id;
+      this.username = this.modalData.username || '';
       this.name = this.modalData.name;
       this.email = this.modalData.email;
       this.phone = this.modalData.phone || '';
@@ -120,17 +122,35 @@ export class UserFormModalComponent implements OnInit {
   public onSubmit() {
     if (this.isSubmitting) return;
 
-    if (!this.name || !this.email) {
-      this.state.showToast('Vui lòng điền Tên và Email hợp lệ!', 'error');
+    if (!this.username || !this.name || !this.email) {
+      this.state.showToast('Vui lòng điền đầy đủ Tên đăng nhập, Tên và Email hợp lệ!', 'error');
       return;
     }
 
-    if (!this.isEditMode && !this.password) {
-      this.state.showToast('Vui lòng điền Mật khẩu cho tài khoản mới!', 'error');
+    const usernameRegex = /^[a-zA-Z0-9_]{3,50}$/;
+    if (!usernameRegex.test(this.username)) {
+      this.state.showToast('Tên đăng nhập không đúng định dạng (3-50 ký tự, không dấu, không cách)!', 'error');
       return;
+    }
+
+    if (!this.isEditMode) {
+      if (!this.password) {
+        this.state.showToast('Vui lòng điền Mật khẩu cho tài khoản mới!', 'error');
+        return;
+      }
+      if (this.password.length < 6) {
+        this.state.showToast('Mật khẩu phải có ít nhất 6 ký tự!', 'error');
+        return;
+      }
+    } else {
+      if (this.password && this.password.length < 6) {
+        this.state.showToast('Mật khẩu mới phải có ít nhất 6 ký tự!', 'error');
+        return;
+      }
     }
 
     const data: any = {
+      username: this.username.toLowerCase(),
       name: this.name,
       email: this.email,
       phone: this.phone || null,

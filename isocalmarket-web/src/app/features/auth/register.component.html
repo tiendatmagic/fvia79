@@ -18,19 +18,20 @@
     }
 
         <form (ngSubmit)="onSubmit()" class="space-y-5">
+
       <div class="form-field">
-        <label>Họ và Tên</label>
+        <label>Tên đăng nhập (Username) <span class="text-red-500">*</span></label>
         <app-custom-input
-          [placeholder]="'Nhập họ và tên'"
-          [(ngModel)]="name"
-          name="name"
+          [placeholder]="'Nhập tên đăng nhập (viết liền không dấu)'"
+          [(ngModel)]="username"
+          name="username"
           type="text"
           required
         />
       </div>
 
       <div class="form-field">
-        <label>Email</label>
+        <label>Email <span class="text-red-500">*</span></label>
         <app-custom-input
           [placeholder]="'Nhập địa chỉ email'"
           [(ngModel)]="email"
@@ -41,7 +42,7 @@
       </div>
 
       <div class="form-field">
-        <label>Mật khẩu</label>
+        <label>Mật khẩu <span class="text-red-500">*</span></label>
         <app-custom-input
           [placeholder]="'Nhập mật khẩu (tối thiểu 6 ký tự)'"
           [(ngModel)]="password"
@@ -52,7 +53,7 @@
       </div>
 
       <div class="form-field">
-        <label>Xác nhận mật khẩu</label>
+        <label>Xác nhận mật khẩu <span class="text-red-500">*</span></label>
         <app-custom-input
           [placeholder]="'Nhập lại mật khẩu'"
           [(ngModel)]="passwordConfirmation"

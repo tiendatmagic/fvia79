@@ -1314,6 +1314,20 @@
       2. Trong [user-form-modal.component.html](file:///d:/git/isocalmarket/isocalmarket-web/src/app/features/admin-users/user-form-modal/user-form-modal.component.html): Gom ô nhập "Số điện thoại" và "Mật khẩu" vào chung một div grid 2 cột (`grid-cols-1 md:grid-cols-2 gap-4`). Giữ nguyên chữ gợi ý `* Để trống nếu giữ nguyên mật khẩu` ở phía dưới ô nhập Mật khẩu.
     - **Xác minh**: Giao diện modal rất rộng rãi, thoáng đẹp và hiển thị các trường dữ liệu trên cùng một hàng ngay ngắn.
 
+  - **[TỐI ƯU UX FORM] Bỏ ô nhập Số dư ban đầu khi thêm mới thành viên**:
+    - **Yêu cầu**: Ẩn/loại bỏ trường nhập liệu "Số dư ban đầu (VND)" khi quản trị viên thực hiện thêm mới một thành viên ở cả Frontend và Backend.
+    - **Giải pháp & Triển khai**:
+      1. **Frontend**: Cập nhật [user-form-modal.component.html](file:///d:/git/isocalmarket/isocalmarket-web/src/app/features/admin-users/user-form-modal/user-form-modal.component.html), xóa bỏ hoàn toàn phần block input "Số dư ban đầu" khi `!isEditMode` (ở Create Mode, số dư mặc định bắt đầu bằng `0`).
+      2. **Backend**: Cập nhật [AdminUserController.php](file:///d:/git/isocalmarket/isocalmarket-api/app/Http/Controllers/AdminUserController.php), đổi rule validation của `balance` từ `required` thành `nullable` trong hàm `store()`. Đồng thời gán mặc định là `0` nếu payload gửi lên không chứa trường `balance` (`(float)($request->balance ?? 0)`).
+    - **Xác minh**: Chạy thành công toàn bộ suite test PHP backend (`php artisan test`) và frontend compile, mọi chức năng hoạt động trơn tru.
+
+  - **[BẢO MẬT & UX] Bổ sung Validation Mật khẩu tối thiểu 6 ký tự tại Frontend**:
+    - **Yêu cầu**: Validate độ dài mật khẩu tối thiểu 6 ký tự ngay tại Frontend để tránh gửi request rỗng/sai định dạng và nhận lỗi 422 từ Backend.
+    - **Giải pháp & Triển khai**: Cập nhật hàm `onSubmit()` trong [user-form-modal.component.ts](file:///d:/git/isocalmarket/isocalmarket-web/src/app/features/admin-users/user-form-modal/user-form-modal.component.ts), thêm logic kiểm tra độ dài mật khẩu (`password.length < 6`) khi tạo mới và khi đổi mật khẩu để hiển thị Toast thông báo lỗi ngay lập tức mà không cần gửi API.
+    - **Xác minh**: Chạy thử nghiệm thành công, trải nghiệm phản hồi mượt mà và trực quan hơn.
+
+
+
 
 
 

@@ -24,7 +24,7 @@ class UserRepository implements UserRepositoryInterface
     public function findByEmailOrUsername(string $login): ?User
     {
         $model = UserModel::where('email', $login)
-            ->orWhere('name', $login)
+            ->orWhere('username', $login)
             ->first();
         return $model ? UserMapper::toDomain($model) : null;
     }
