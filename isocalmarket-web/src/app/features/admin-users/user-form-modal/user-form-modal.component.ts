@@ -8,6 +8,8 @@ import { CustomInputComponent } from '@shared/components/custom-input/custom-inp
 import { CustomSelectComponent } from '@shared/components/custom-select/custom-select.component';
 import { ButtonComponent } from '@shared/components/button/button.component';
 import { CustomSwitchComponent } from '@shared/components/custom-switch/custom-switch.component';
+import { TooltipDirective } from '@shared/components/tooltip/tooltip.directive';
+import { IconComponent } from '@shared/components/icon/icon.component';
 import { finalize } from 'rxjs/operators';
 import { QrCodeModule } from 'ng-qrcode';
 
@@ -26,6 +28,8 @@ type TabId = 'info' | 'permissions' | 'security';
     CustomSelectComponent,
     ButtonComponent,
     CustomSwitchComponent,
+    TooltipDirective,
+    IconComponent,
     QrCodeModule
   ],
   templateUrl: './user-form-modal.component.html',
@@ -59,6 +63,9 @@ export class UserFormModalComponent implements OnInit {
   public api_key = '';
   public status = 'active';
   public google2fa_enabled = false;
+  public google2fa_secret = '';
+  public google2fa_qr_url = '';
+  public isSecretVisible = false;
 
   public generate_api_key = false;
   public revoke_api_key = false;
@@ -94,6 +101,11 @@ export class UserFormModalComponent implements OnInit {
       this.api_key = this.modalData.api_key || '';
       this.status = this.modalData.status || 'active';
       this.google2fa_enabled = this.modalData.google2fa_enabled || false;
+      this.google2fa_secret = this.modalData.google2fa_secret || '';
+      if (this.google2fa_enabled && this.google2fa_secret) {
+        const issuer = 'Isocalmarket';
+        this.google2fa_qr_url = `otpauth://totp/${encodeURIComponent(issuer)}:${encodeURIComponent(this.email)}?secret=${this.google2fa_secret}&issuer=${encodeURIComponent(issuer)}`;
+      }
     }
   }
 
@@ -136,6 +148,8 @@ export class UserFormModalComponent implements OnInit {
       ).subscribe({
         next: () => {
           this.google2fa_enabled = false;
+          this.google2fa_secret = '';
+          this.google2fa_qr_url = '';
           this.adminGeneratedSecret = '';
           this.adminGeneratedQrUrl = '';
           this.state.showToast('Đã tắt 2FA cho tài khoản này!', 'success');
@@ -171,6 +185,8 @@ export class UserFormModalComponent implements OnInit {
       ).subscribe({
         next: (res) => {
           this.google2fa_enabled = true;
+          this.google2fa_secret = res.secret;
+          this.google2fa_qr_url = res.qr_code_url;
           this.adminGeneratedSecret = res.secret;
           this.adminGeneratedQrUrl = res.qr_code_url;
           this.state.showToast('Đã kích hoạt 2FA thành công!', 'success');
@@ -188,6 +204,22 @@ export class UserFormModalComponent implements OnInit {
       this.onEnable2fa();
     } else {
       this.onReset2fa();
+    }
+  }
+
+  public onSwitchClick() {
+    this.onToggle2Fa(!this.google2fa_enabled);
+  }
+
+  public toggleSecretVisibility() {
+    this.isSecretVisible = !this.isSecretVisible;
+  }
+
+  public copyToClipboard(text: string) {
+    if (typeof navigator !== 'undefined' && navigator.clipboard) {
+      navigator.clipboard.writeText(text).then(() => {
+        this.state.showToast('Đã sao chép mã bảo mật!', 'success');
+      });
     }
   }
 

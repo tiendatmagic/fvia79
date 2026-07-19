@@ -48,6 +48,7 @@ class AdminUserController extends Controller
                     'balance' => $user->getBalance(),
                     'api_key' => $user->getApiKey(),
                     'google2fa_enabled' => $user->isGoogle2faEnabled(),
+                    'google2fa_secret' => $user->getGoogle2faSecret(),
                     'status' => $user->getStatus()
                 ];
             }, $users);
@@ -113,6 +114,8 @@ class AdminUserController extends Controller
                     'phone'   => $savedUser->getPhone(),
                     'role'    => $savedUser->getRole(),
                     'balance' => $savedUser->getBalance(),
+                    'google2fa_enabled' => $savedUser->isGoogle2faEnabled(),
+                    'google2fa_secret' => $savedUser->getGoogle2faSecret(),
                     'api_key' => $savedUser->getApiKey()
                 ]
             ], 201);
@@ -181,6 +184,8 @@ class AdminUserController extends Controller
                     'phone'   => $savedUser->getPhone(),
                     'role'    => $savedUser->getRole(),
                     'balance' => $savedUser->getBalance(),
+                    'google2fa_enabled' => $savedUser->isGoogle2faEnabled(),
+                    'google2fa_secret' => $savedUser->getGoogle2faSecret(),
                     'api_key' => $savedUser->getApiKey(),
                     'status'  => $savedUser->getStatus()
                 ]

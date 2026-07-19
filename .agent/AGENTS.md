@@ -1335,14 +1335,15 @@
       4. **Xử lý sự kiện**: Khi validation lỗi, [user-form-modal.component.ts](file:///d:/git/isocalmarket/isocalmarket-web/src/app/features/admin-users/user-form-modal/user-form-modal.component.ts) tự động chuyển tab về vị trí lỗi. Nút **Reset 2FA** được kết nối qua `ModalService.confirm` và gọi API tương ứng mượt mà.
     - **Xác minh**: Chạy `npm run build` kiểm tra dự án Angular biên dịch thành công 100% không phát sinh bất kỳ cảnh báo hay lỗi cú pháp nào.
 
-  - **[BẢO MẬT & TỐI ƯU] Sửa Lỗi Login Validation, Chuyển Sang Switch 2FA & Chống Duplicate API**:
-    - **Yêu cầu**: Sửa lỗi không cho phép đăng nhập bằng username ở backend (do rule validation email cũ bắt buộc có format email). Đồng thời tối ưu thiết kế từ nút bấm icon bật tắt 2FA sang dạng Switch component phẳng và hiện đại hơn, đồng thời ngăn ngừa triệt để lỗi duplicate API do nhấp đúp/nhấp liên tiếp.
+  - **[BẢO MẬT & TỐI ƯU] Tối Ưu Trải Nghiệm Gạt Switch 2FA & Hiển Thị QR Code Kèm Khóa Bí Mật**:
+    - **Yêu cầu**: Sửa lỗi switch tự gạt trước khi bấm Xác nhận ở Confirm Modal. Đồng thời hiển thị luôn mã QR và Secret Key (có tính năng che/hiện) bất cứ khi nào 2FA được bật (kể cả tài khoản đã bật từ trước).
     - **Giải pháp & Triển khai**:
-      1. **Backend Login**: Cập nhật [LoginRequest.php](file:///d:/git/isocalmarket/isocalmarket-api/app/Http/Requests/LoginRequest.php) thay đổi rule validation của email từ `'required|string|email'` sang `'required|string'` để cho phép chấp nhận cả chuỗi username (như `admin`) khi đăng nhập.
-      2. **Frontend UI**: Trong [user-form-modal.component.html](file:///d:/git/isocalmarket/isocalmarket-web/src/app/features/admin-users/user-form-modal/user-form-modal.component.html), thay thế 100% khối box nút bấm Bật/Tắt 2FA cũ bằng component `<app-custom-switch>` dùng thuộc tính `type="full"`.
-      3. **Frontend Logic**: Trong [user-form-modal.component.ts](file:///d:/git/isocalmarket/isocalmarket-web/src/app/features/admin-users/user-form-modal/user-form-modal.component.ts), import `CustomSwitchComponent` và khai báo biến logic `isConfirming`. Viết hàm trung gian `onToggle2Fa($event)` điều phối bật/tắt.
-      4. **Chống Duplicate**: Thêm biến `isConfirming` để chặn (guard) lập tức các click spam mở nhiều confirm modal trùng lặp. Đồng thời, cấu hình tự động hoàn tác (revert) giá trị của switch trên UI nếu người dùng click "Hủy" trên Confirm Modal hoặc API bị lỗi.
-    - **Xác minh**: Đã chạy `npm run build` thành công 100%. Đăng nhập bằng `admin` hoặc `email` đã hoạt động bình thường, và switch toggle kích hoạt/hủy 2FA mượt mà, hiển thị QR code chuẩn xác.
+      1. **Backend API**: Bổ sung trả về trường `google2fa_secret` trong responses của `AdminUserController` ở các method `index()`, `store()`, và `update()`.
+      2. **Frontend UI Switch**: Gán thuộc tính `pointer-events-none` cho `<app-custom-switch>` và bọc ngoài bằng thẻ div bắt sự kiện `(click)="onSwitchClick()"`. Nhờ đó, công tắc switch sẽ không tự động gạt cho tới khi tiến trình API hoàn tất thành công.
+      3. **Mã QR & Secret**: Cho phép hiển thị QR Code và Secret Key bất cứ lúc nào `google2fa_enabled && google2fa_secret` có giá trị.
+      4. **Che/Hiện & Sao chép**: Tích hợp mã che dạng dấu chấm `••••` và nút con mắt Toggle (sử dụng SVG Eye/Eye-slash). Thêm nút Sao chép (copy) liên kết qua hàm `copyToClipboard()` dùng chung, áp dụng `$event.stopPropagation()` tránh lỗi click bubble kích hoạt nhầm toggle switch.
+    - **Xác minh**: Đã chạy `npm run build` thành công 100%. Mọi logic hoạt động ổn định và an toàn.
+
 
 
 

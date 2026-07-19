@@ -215,14 +215,15 @@
             Xác thực 2 lớp (2FA)
           </h4>
 
-          <div class="p-4 rounded-2xl border transition-all"
+          <div class="p-4 rounded-2xl border transition-all cursor-pointer select-none"
             [ngClass]="google2fa_enabled
               ? 'bg-emerald-50/60 dark:bg-emerald-950/10 border-emerald-200/40 dark:border-emerald-900/30'
               : 'bg-slate-50 dark:bg-slate-900/60 border-slate-200/50 dark:border-slate-800/40'"
+            (click)="onSwitchClick()"
           >
             <app-custom-switch
+              class="pointer-events-none"
               [checked]="google2fa_enabled"
-              (checkedChange)="onToggle2Fa($event)"
               [disabled]="isEnabling2fa || isResetting2fa || isConfirming"
               [label]="google2fa_enabled ? 'Đã kích hoạt bảo mật 2FA' : 'Chưa kích hoạt bảo mật 2FA'"
               [description]="google2fa_enabled ? 'Tài khoản đang được bảo vệ bởi mã xác thực Google Authenticator.' : 'Bật 2FA giúp bảo vệ tài khoản khỏi các rủi ro mất mát dữ liệu và tấn công mật khẩu.'"
@@ -230,29 +231,59 @@
             />
           </div>
 
-          @if (adminGeneratedSecret) {
+          @if (google2fa_enabled && google2fa_secret) {
             <div class="mt-4 p-4 rounded-2xl bg-amber-50/50 dark:bg-amber-950/10 border border-amber-200/40 dark:border-amber-900/30 space-y-4">
               <p class="text-xs text-amber-700 dark:text-amber-400 font-extrabold flex items-center gap-1.5">
                 <svg class="w-4 h-4 shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                   <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" />
                 </svg>
-                Cần gửi thông tin dưới đây cho thành viên quét/nhập vào Google Authenticator:
+                Thông tin cấu hình Google Authenticator của thành viên:
               </p>
               
               <div class="flex flex-col sm:flex-row items-center gap-4 justify-center bg-white dark:bg-slate-900 p-4 rounded-xl border border-slate-200/40 dark:border-slate-800/40 shadow-xs">
                 <qr-code
-                  [value]="adminGeneratedQrUrl"
+                  [value]="google2fa_qr_url"
                   [size]="130"
                   class="block p-1.5 bg-white rounded-lg border border-slate-200/40 shadow-xs shrink-0"
                 />
                 
-                <div class="text-center sm:text-left space-y-2 min-w-0">
+                <div class="text-center sm:text-left space-y-2 min-w-0 flex-1">
                   <div class="space-y-0.5">
                     <span class="text-[10px] uppercase font-black text-slate-400 block tracking-wider">Khóa bí mật (Secret Key)</span>
-                    <code class="text-sm font-black text-[var(--color-primary)] font-mono tracking-widest block select-all truncate">{{ adminGeneratedSecret }}</code>
+                    <div class="flex items-center gap-2">
+                      <code class="text-sm font-black text-[var(--color-primary)] font-mono tracking-widest block truncate select-all">
+                        {{ isSecretVisible ? google2fa_secret : '••••••••••••••••' }}
+                      </code>
+                      <button
+                        type="button"
+                        (click)="toggleSecretVisibility(); $event.stopPropagation()"
+                        class="p-1 text-slate-400 hover:text-[var(--color-primary)] hover:bg-slate-100 dark:hover:bg-slate-800 rounded transition-colors cursor-pointer shrink-0"
+                        [appTooltip]="isSecretVisible ? 'Ẩn khóa bí mật' : 'Hiển thị khóa bí mật'"
+                      >
+                        @if (isSecretVisible) {
+                          <svg xmlns="http://www.w3.org/2000/svg" class="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                            <path stroke-linecap="round" stroke-linejoin="round" d="M13.875 18.825A10.05 10.05 0 0112 19c-5.523 0-10-4.477-10-7s4.477-7 10-7a9.953 9.953 0 015.825 1.875M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
+                            <path stroke-linecap="round" stroke-linejoin="round" d="M3 3l18 18" />
+                          </svg>
+                        } @else {
+                          <svg xmlns="http://www.w3.org/2000/svg" class="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                            <path stroke-linecap="round" stroke-linejoin="round" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
+                            <path stroke-linecap="round" stroke-linejoin="round" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.477 0 8.268 2.943 9.542 7-1.274 4.057-5.065 7-9.542 7-4.477 0-8.268-2.943-9.542-7z" />
+                          </svg>
+                        }
+                      </button>
+                      <button
+                        type="button"
+                        (click)="copyToClipboard(google2fa_secret); $event.stopPropagation()"
+                        class="p-1 hover:bg-slate-100 dark:hover:bg-slate-800 rounded transition-colors text-slate-400 hover:text-slate-600 dark:hover:text-slate-200 cursor-pointer shrink-0"
+                        [appTooltip]="'Sao chép khóa bí mật'"
+                      >
+                        <app-icon name="copy" class="w-3.5 h-3.5" />
+                      </button>
+                    </div>
                   </div>
-                  <p class="text-[10px] text-slate-400 dark:text-slate-500 leading-normal max-w-[220px]">
-                    User có thể quét QR Code này hoặc tự nhập mã khóa bí mật thủ công trên app.
+                  <p class="text-[10px] text-slate-400 dark:text-slate-500 leading-normal max-w-[240px]">
+                    Thành viên có thể quét QR Code này hoặc tự nhập mã khóa bí mật thủ công trên ứng dụng Authenticator của họ.
                   </p>
                 </div>
               </div>
