@@ -61,7 +61,7 @@ export class AdminUsersComponent implements OnInit {
   public searchQuery = '';
   private readonly _searchQuery = signal('');
 
-    public readonly visibleApiKeys = new Set<string>();
+  public readonly visibleApiKeys = new Set<string>();
 
   public toggleApiKeyVisibility(userId: string) {
     if (this.visibleApiKeys.has(userId)) {
@@ -75,8 +75,8 @@ export class AdminUsersComponent implements OnInit {
   public readonly selectedDateRange = signal<DateTimeRangeValue>({ startDate: '', endDate: '' });
   public readonly roleOptions = [
     { label: 'Tất cả vai trò', value: '' },
-    { label: 'Quản trị viên (Admin)', value: 'admin' },
-    { label: 'Người dùng (User)', value: 'user' }
+    { label: 'Quản trị viên', value: 'admin' },
+    { label: 'Người dùng', value: 'user' }
   ];
 
   public readonly currentPage = signal<number>(1);

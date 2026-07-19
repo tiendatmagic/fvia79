@@ -1292,3 +1292,18 @@
       3. **Tái thiết kế UI Form**: Phân nhóm dữ liệu khoa học trong [user-form-modal.component.html](file:///d:/git/isocalmarket/isocalmarket-web/src/app/features/admin-users/user-form-modal/user-form-modal.component.html), đổi ô số dư thành dạng Readonly kèm nút **"Cộng / Trừ Số Dư"**.
       4. **Thao tác nhanh**: Thêm nút **"Cộng/Trừ tiền"** trên cột Thao tác của bảng [admin-users.component.html](file:///d:/git/isocalmarket/isocalmarket-web/src/app/features/admin-users/admin-users.component.html).
     - **Xác minh**: Chạy build Angular và kiểm tra cú pháp PHP thành công 100%.
+
+  - **[SỬA ĐỊNH DẠNG] Loại bỏ hoàn toàn số thập phân lẻ cho tiền VND**:
+    - **Yêu cầu**: Đơn vị tiền tệ Việt Nam Đồng (VND) không sử dụng số thập phân lẻ (như `22,860.82 VND`), cần làm tròn thành số nguyên nguyên vẹn (`22,861 VND`).
+    - **Giải pháp & Triển khai**:
+      1. **Backend Service**: Cập nhật `createDeposit` trong [DepositService.php](file:///d:/git/isocalmarket/isocalmarket-api/app/Application/Services/DepositService.php) tính toán tiền VND làm tròn số nguyên `round($baseAmount * $rate)` (thay vì 2 chữ số thập phân).
+      2. **Domain Entity**: Cập nhật `setBalance` và `addBalance` trong [User.php](file:///d:/git/isocalmarket/isocalmarket-api/app/Domain/Entities/User.php) tự động làm tròn `round()` số dư tài khoản về số nguyên.
+      3. **Frontend Display**: Cập nhật pipe định dạng số dư trong [admin-users.component.html](file:///d:/git/isocalmarket/isocalmarket-web/src/app/features/admin-users/admin-users.component.html) thành `{{ row.balance | number:'1.0-0' }} VND`.
+      4. **Dữ liệu hiện có**: Đã chạy câu lệnh cập nhật làm tròn số dư hiện tại trong cơ sở dữ liệu (`UPDATE users SET balance = ROUND(balance)`).
+    - **Xác minh**: Số dư của tài khoản Admin từ `22,860.82 VND` đã được làm tròn chuẩn thành `22,861 VND`.
+
+  - **[GIAO DIỆN & MÀU SẮC] Đồng bộ màu sắc Badge vai trò "Khách hàng"**:
+    - **Yêu cầu**: Cấp màu sắc nổi bật cho badge vai trò "Khách hàng" trên bảng Quản lý thành viên (`/admin/users`) để đồng bộ màu sắc với vai trò "Quản trị viên".
+    - **Giải pháp & Triển khai**: Cập nhật [admin-users.component.html](file:///d:/git/isocalmarket/isocalmarket-web/src/app/features/admin-users/admin-users.component.html), đổi variant badge của Khách hàng từ `'neutral'` sang `'primary'`.
+    - **Xác minh**: Badge Khách hàng hiển thị tông màu chủ đạo thương hiệu (Primary) sang trọng và bắt mắt, hài hòa với badge màu cam (Warning) của Quản trị viên.
+

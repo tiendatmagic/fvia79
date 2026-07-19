@@ -111,7 +111,7 @@
       </ng-template>
 
       <ng-template appTableCell="role" let-row="row">
-        <app-badge [variant]="row.role === 'admin' ? 'warning' : 'neutral'">
+        <app-badge [variant]="row.role === 'admin' ? 'warning' : 'primary'">
           {{ row.role === 'admin' ? 'Quản trị viên' : 'Khách hàng' }}
         </app-badge>
       </ng-template>
