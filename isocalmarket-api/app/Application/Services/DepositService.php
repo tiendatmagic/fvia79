@@ -192,9 +192,17 @@ class DepositService
 
             $amountVnd = round($baseAmount * $rate);
 
-            // Sinh mã lệnh nạp ngắn gọn tăng dần với lock để tránh trùng code (Vá CVE-5)
-            $latest = \App\Infrastructure\Persistence\Eloquent\DepositModel::orderBy('created_at', 'desc')->lockForUpdate()->first();
-            $nextCode = $latest ? (string) ((int) $latest->code + 1) : '232';
+            // Sinh mã lệnh nạp gồm 6 ký tự (chữ viết hoa + số) không trùng lặp (loại bỏ 0, O, 1, I để tránh nhầm lẫn)
+            $chars = '23456789ABCDEFGHJKLMNPQRSTUVWXYZ';
+            do {
+                $nextCode = '';
+                for ($i = 0; $i < 6; $i++) {
+                    $nextCode .= $chars[random_int(0, strlen($chars) - 1)];
+                }
+                $exists = \App\Infrastructure\Persistence\Eloquent\DepositModel::where('code', $nextCode)
+                    ->lockForUpdate()
+                    ->exists();
+            } while ($exists);
 
             $deposit = new Deposit(
                 id: null, // Sẽ tự sinh UUIDv7 ở Model

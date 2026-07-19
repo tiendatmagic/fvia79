@@ -109,38 +109,38 @@ export class DepositInvoiceComponent implements OnInit, OnDestroy {
           }
         }
         
-        if (this.invoice.status !== 'pending_payment') {
-          this.state.showToast('Lệnh nạp tiền này đã được xử lý hoặc đã hết hạn!', 'warning');
-          setTimeout(() => {
-            this.router.navigate(['/deposit/history']);
-          }, 50);
-          return;
-        }
+        if (this.invoice.status === 'pending_payment') {
+          // Tính toán đếm ngược thực tế dựa trên thời gian tạo tuyệt đối
+          if (this.invoice.createdAt) {
+            const createdTime = new Date(this.invoice.createdAt).getTime();
+            this.expirationTime = createdTime + (900 * 1000); // 15 phút từ lúc tạo
 
-        // Tính toán đếm ngược thực tế dựa trên thời gian tạo tuyệt đối
-        if (this.invoice.createdAt) {
-          const createdTime = new Date(this.invoice.createdAt).getTime();
-          this.expirationTime = createdTime + (900 * 1000); // 15 phút từ lúc tạo
+            const nowTime = Date.now();
+            const remaining = Math.max(0, Math.floor((this.expirationTime - nowTime) / 1000));
 
-          const nowTime = Date.now();
-          const remaining = Math.max(0, Math.floor((this.expirationTime - nowTime) / 1000));
-
-          if (remaining <= 0) {
-            this.timeLeft.set(0);
-            setTimeout(() => {
-              this.onInvoiceExpired();
-            }, 50);
+            if (remaining <= 0) {
+              this.timeLeft.set(0);
+              setTimeout(() => {
+                this.onInvoiceExpired();
+              }, 50);
+            } else {
+              this.timeLeft.set(remaining);
+              this.startCountdown();
+              this.startStatusPolling(this.invoice.id);
+            }
           } else {
-            this.timeLeft.set(remaining);
+            this.expirationTime = Date.now() + (900 * 1000);
             this.startCountdown();
-            this.startStatusPolling(this.invoice.id);
+            if (this.invoice.id) {
+              this.startStatusPolling(this.invoice.id);
+            }
           }
         } else {
-          this.expirationTime = Date.now() + (900 * 1000);
-          this.startCountdown();
-          if (this.invoice.id) {
-            this.startStatusPolling(this.invoice.id);
-          }
+          // Hóa đơn đã hoàn thành/hết hạn, không chạy countdown và polling
+          this.stopCountdown();
+          this.stopStatusPolling();
+          this.timeLeft.set(0);
+          this.countdownText.set('00:00');
         }
       },
       error: (err) => {
