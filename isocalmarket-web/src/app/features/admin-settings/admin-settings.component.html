@@ -177,8 +177,6 @@
               </p>
             </div>
 
-
-
             <div class="form-field md:col-span-2">
               <label>Binance API Key <span class="text-red-500">*</span></label>
               <div class="relative mt-1">
@@ -239,13 +237,13 @@
                 <div
                   class="text-xs text-slate-600 dark:text-slate-400 font-semibold leading-relaxed"
                 >
-                  <strong>Hướng dẫn lấy Binance ID & Binance API Key:</strong>
+                  <strong>Hướng dẫn lấy Binance ID &amp; Binance API Key:</strong>
                   <ol class="list-decimal pl-4 mt-1 space-y-1">
                     <li>
                       <strong>Binance ID:</strong> Đăng nhập tài khoản Binance, truy cập trang cá nhân (Profile) hoặc mục <strong>Binance Pay</strong> ở ứng dụng di động để lấy số <strong>Pay ID / UID</strong> của bạn.
                     </li>
                     <li>
-                      <strong>Binance API Key & Secret:</strong> Truy cập 
+                      <strong>Binance API Key &amp; Secret:</strong> Truy cập
                       <a
                         href="https://www.binance.com/en/my/settings/api-management"
                         target="_blank"
@@ -299,27 +297,20 @@
     <!-- TAB 2: Bảo trì & Tối ưu -->
     @if (activeTab() === 'maintenance') {
       <div class="space-y-6">
-        <!-- Quick Clean All Cache -->
-        <div
-          app-card
-          class="p-0 overflow-hidden bg-gradient-to-r from-[var(--color-primary)]/10 via-[var(--color-secondary)]/5 to-transparent border border-[var(--color-primary)]/20"
-        >
+
+        <!-- Quick Clean All Cache - Featured card -->
+        <app-card class="!p-0 overflow-hidden bg-gradient-to-r from-[var(--color-primary)]/10 via-[var(--color-secondary)]/5 to-transparent border border-[var(--color-primary)]/20">
           <div class="px-6 py-5 flex flex-col sm:flex-row sm:items-center justify-between gap-4">
             <div class="flex items-start gap-4">
-              <div
-                class="shrink-0 w-10 h-10 rounded-xl bg-[var(--color-primary)]/10 flex items-center justify-center text-[var(--color-primary)]"
-              >
+              <div class="shrink-0 w-10 h-10 rounded-xl bg-[var(--color-primary)]/10 flex items-center justify-center text-[var(--color-primary)]">
                 <app-icon name="trash" class="w-5 h-5"></app-icon>
               </div>
               <div class="min-w-0">
-                <h4
-                  class="text-base font-black text-[var(--color-primary)] uppercase tracking-wider flex items-center gap-2"
-                >
+                <h4 class="text-base font-black text-[var(--color-primary)] uppercase tracking-wider">
                   Dọn dẹp nhanh hệ thống
                 </h4>
                 <p class="text-sm text-slate-600 dark:text-slate-400 mt-1">
-                  Xóa toàn bộ các tệp cache (views, cấu hình, định tuyến, tệp tối ưu hóa) và thiết
-                  lập lại trạng thái tối ưu chỉ với 1 click.
+                  Xóa toàn bộ các tệp cache (views, cấu hình, định tuyến, tệp tối ưu hóa) và thiết lập lại trạng thái tối ưu chỉ với 1 click.
                 </p>
               </div>
             </div>
@@ -334,30 +325,23 @@
               <span>Xóa tất cả cache</span>
             </button>
           </div>
-        </div>
+        </app-card>
 
         <!-- Cache & Views Maintenance -->
-        <div app-card class="p-0 overflow-hidden">
+        <app-card class="!p-0 overflow-hidden">
           <div class="px-6 py-4 border-b border-slate-100 dark:border-slate-800/60">
-            <div>
-              <h4
-                class="text-base font-black text-slate-800 dark:text-white uppercase tracking-wider"
-              >
-                BẢO TRÌ CACHE & VIEW
-              </h4>
-              <p class="text-sm text-slate-400 mt-0.5">
-                Quản lý bộ nhớ đệm cấu hình, tệp biên dịch và hệ thống định tuyến.
-              </p>
-            </div>
+            <h4 class="text-base font-black text-slate-800 dark:text-white uppercase tracking-wider">
+              BẢO TRÌ CACHE &amp; VIEW
+            </h4>
+            <p class="text-sm text-slate-400 mt-0.5">
+              Quản lý bộ nhớ đệm cấu hình, tệp biên dịch và hệ thống định tuyến.
+            </p>
           </div>
-
           <div class="divide-y divide-slate-100 dark:divide-slate-800/60">
             <!-- Clear Views -->
             <div class="flex items-center justify-between px-6 py-4 gap-4">
               <div class="min-w-0">
-                <p class="text-base font-bold text-slate-800 dark:text-slate-200">
-                  Làm mới compiled views
-                </p>
+                <p class="text-base font-bold text-slate-800 dark:text-slate-200">Làm mới compiled views</p>
                 <p class="text-sm text-slate-400 mt-1">
                   Xóa các Blade views đã biên dịch để bắt buộc cập nhật lại giao diện mới nhất.
                 </p>
@@ -373,16 +357,12 @@
                 <span>Làm mới</span>
               </button>
             </div>
-
             <!-- Clear Config -->
             <div class="flex items-center justify-between px-6 py-4 gap-4">
               <div class="min-w-0">
-                <p class="text-base font-bold text-slate-800 dark:text-slate-200">
-                  Xóa cấu hình cache
-                </p>
+                <p class="text-base font-bold text-slate-800 dark:text-slate-200">Xóa cấu hình cache</p>
                 <p class="text-sm text-slate-400 mt-1">
-                  Làm mới bộ nhớ đệm của cấu hình dự án, áp dụng khi thay đổi các biến môi trường
-                  .env.
+                  Làm mới bộ nhớ đệm của cấu hình dự án, áp dụng khi thay đổi các biến môi trường .env.
                 </p>
               </div>
               <button
@@ -396,16 +376,12 @@
                 <span>Xóa cache</span>
               </button>
             </div>
-
             <!-- Clear Routes -->
             <div class="flex items-center justify-between px-6 py-4 gap-4">
               <div class="min-w-0">
-                <p class="text-base font-bold text-slate-800 dark:text-slate-200">
-                  Xóa định tuyến cache
-                </p>
+                <p class="text-base font-bold text-slate-800 dark:text-slate-200">Xóa định tuyến cache</p>
                 <p class="text-sm text-slate-400 mt-1">
-                  Xóa bộ nhớ đệm của hệ thống định tuyến Laravel API, cần thiết khi đăng ký thêm
-                  route mới.
+                  Xóa bộ nhớ đệm của hệ thống định tuyến Laravel API, cần thiết khi đăng ký thêm route mới.
                 </p>
               </div>
               <button
@@ -420,30 +396,23 @@
               </button>
             </div>
           </div>
-        </div>
+        </app-card>
 
         <!-- Performance Optimization -->
-        <div app-card class="p-0 overflow-hidden">
+        <app-card class="!p-0 overflow-hidden">
           <div class="px-6 py-4 border-b border-slate-100 dark:border-slate-800/60">
-            <div>
-              <h4
-                class="text-base font-black text-slate-800 dark:text-white uppercase tracking-wider"
-              >
-                TỐI ƯU HÓA HIỆU NĂNG
-              </h4>
-              <p class="text-sm text-slate-400 mt-0.5">
-                Biên dịch và cache đồng loạt cấu hình, định tuyến và views để tăng tốc độ tải ứng
-                dụng.
-              </p>
-            </div>
+            <h4 class="text-base font-black text-slate-800 dark:text-white uppercase tracking-wider">
+              TỐI ƯU HÓA HIỆU NĂNG
+            </h4>
+            <p class="text-sm text-slate-400 mt-0.5">
+              Biên dịch và cache đồng loạt cấu hình, định tuyến và views để tăng tốc độ tải ứng dụng.
+            </p>
           </div>
           <div class="divide-y divide-slate-100 dark:divide-slate-800/60">
             <!-- Optimize -->
             <div class="flex items-center justify-between px-6 py-4 gap-4">
               <div class="min-w-0">
-                <p class="text-base font-bold text-slate-800 dark:text-slate-200">
-                  Tối ưu hóa hiệu năng
-                </p>
+                <p class="text-base font-bold text-slate-800 dark:text-slate-200">Tối ưu hóa hiệu năng</p>
                 <p class="text-sm text-slate-400 mt-1">
                   Thực thi lệnh cache tối ưu hóa toàn diện cho dự án Laravel ở chế độ Production.
                 </p>
@@ -462,12 +431,9 @@
             <!-- Clear Optimize -->
             <div class="flex items-center justify-between px-6 py-4 gap-4">
               <div class="min-w-0">
-                <p class="text-base font-bold text-slate-800 dark:text-slate-200">
-                  Xóa cache tối ưu hóa
-                </p>
+                <p class="text-base font-bold text-slate-800 dark:text-slate-200">Xóa cache tối ưu hóa</p>
                 <p class="text-sm text-slate-400 mt-1">
-                  Gỡ bỏ tất cả các tệp cache tối ưu hóa để cho phép các thay đổi mới trong code có
-                  hiệu lực.
+                  Gỡ bỏ tất cả các tệp cache tối ưu hóa để cho phép các thay đổi mới trong code có hiệu lực.
                 </p>
               </div>
               <button
@@ -482,25 +448,20 @@
               </button>
             </div>
           </div>
-        </div>
+        </app-card>
 
         <!-- Token Maintenance Configuration -->
-        <div app-card class="p-6 space-y-6 overflow-hidden">
-          <div class="pb-2 border-b border-slate-100 dark:border-slate-800/60">
-            <div>
-              <h4
-                class="text-base font-black text-slate-800 dark:text-white uppercase tracking-wider"
-              >
-                BẢO TRÌ SANCTUM TOKEN
-              </h4>
-              <p class="text-sm text-slate-400 mt-0.5">
-                Xóa bỏ các token đăng nhập cũ hoặc đã hết hạn trong database để giải phóng dung
-                lượng.
-              </p>
-            </div>
+        <app-card class="!p-0 overflow-hidden">
+          <div class="px-6 py-4 border-b border-slate-100 dark:border-slate-800/60">
+            <h4 class="text-base font-black text-slate-800 dark:text-white uppercase tracking-wider">
+              BẢO TRÌ SANCTUM TOKEN
+            </h4>
+            <p class="text-sm text-slate-400 mt-0.5">
+              Xóa bỏ các token đăng nhập cũ hoặc đã hết hạn trong database để giải phóng dung lượng.
+            </p>
           </div>
-          <div class="space-y-5">
-            <div class="form-field max-w-sm">
+          <div class="px-6 py-5 space-y-5">
+            <div class="form-field max-w-xs">
               <label>Thời gian giữ lại token (Ngày) <span class="text-red-500">*</span></label>
               <input
                 type="number"
@@ -512,7 +473,7 @@
                 placeholder="Ví dụ: 7"
               />
             </div>
-            <div class="flex flex-wrap gap-3 pt-2">
+            <div class="flex flex-wrap gap-3">
               <button
                 app-button
                 variant="primary"
@@ -545,7 +506,8 @@
               </button>
             </div>
           </div>
-        </div>
+        </app-card>
+
       </div>
     }
   }

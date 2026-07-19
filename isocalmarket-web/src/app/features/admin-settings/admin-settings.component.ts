@@ -111,7 +111,7 @@ export class AdminSettingsComponent implements OnInit, OnDestroy {
   }
 
   public changeTab(tab: 'general' | 'maintenance'): void {
-    this.router.navigate(['..', tab], { relativeTo: this.route });
+    this.router.navigate(['/admin/settings', tab]);
   }
 
   public onSubmit(): void {
