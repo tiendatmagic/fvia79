@@ -92,8 +92,9 @@ export const routes: Routes = [
         path: 'users',
         loadComponent: () => import('@features/admin-users/admin-users.component').then(m => m.AdminUsersComponent)
       },
+      { path: 'settings', redirectTo: 'settings/general', pathMatch: 'full' },
       {
-        path: 'settings',
+        path: 'settings/:tab',
         loadComponent: () => import('@features/admin-settings/admin-settings.component').then(m => m.AdminSettingsComponent)
       },
       {

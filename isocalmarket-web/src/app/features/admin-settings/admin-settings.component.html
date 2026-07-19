@@ -504,7 +504,8 @@
               <label>Thời gian giữ lại token (Ngày) <span class="text-red-500">*</span></label>
               <input
                 type="number"
-                [(ngModel)]="tokenCleanupDays"
+                [ngModel]="tokenCleanupDays()"
+                (ngModelChange)="tokenCleanupDays.set($event)"
                 min="1"
                 max="365"
                 class="form-input mt-1 w-full"

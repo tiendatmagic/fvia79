@@ -1,6 +1,8 @@
-import { Component, OnInit, inject, signal } from '@angular/core';
+import { Component, OnInit, OnDestroy, inject, signal } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
+import { ActivatedRoute, Router } from '@angular/router';
+import { Subscription } from 'rxjs';
 import { SystemSettingStore, SystemSettingsPayload } from './system-setting.store';
 import { PageHeaderComponent } from '@shared/components/page-header/page-header.component';
 import { CardComponent } from '@shared/components/card/card.component';
@@ -33,10 +35,13 @@ import { ModalService } from '@core/services/modal.service';
     }
   `]
 })
-export class AdminSettingsComponent implements OnInit {
+export class AdminSettingsComponent implements OnInit, OnDestroy {
   public readonly store = inject(SystemSettingStore);
   private readonly toast = inject(ToastService);
   private readonly modalService = inject(ModalService);
+  private readonly route = inject(ActivatedRoute);
+  private readonly router = inject(Router);
+  private routeSub?: Subscription;
 
   public readonly loading = this.store.loading;
   public readonly submitting = this.store.submitting;
@@ -45,7 +50,7 @@ export class AdminSettingsComponent implements OnInit {
   public readonly showBinanceKey = signal<boolean>(false);
   public readonly showBinanceSecret = signal<boolean>(false);
 
-  // Tab management
+  // Tab management - driven by route param
   public readonly activeTab = signal<'general' | 'maintenance'>('general');
   public readonly tokenCleanupDays = signal<number>(7);
 
@@ -60,6 +65,16 @@ export class AdminSettingsComponent implements OnInit {
   };
 
   ngOnInit(): void {
+    // Sync active tab from URL param
+    this.routeSub = this.route.paramMap.subscribe(params => {
+      const tab = params.get('tab');
+      if (tab === 'maintenance') {
+        this.activeTab.set('maintenance');
+      } else {
+        this.activeTab.set('general');
+      }
+    });
+
     this.store.fetchSettings().subscribe({
       next: (settings) => {
         if (settings) {
@@ -73,6 +88,10 @@ export class AdminSettingsComponent implements OnInit {
         this.toast.showToast('Không thể tải cấu hình hệ thống!', 'error');
       }
     });
+  }
+
+  ngOnDestroy(): void {
+    this.routeSub?.unsubscribe();
   }
 
   public toggleLock(): void {
@@ -92,7 +111,7 @@ export class AdminSettingsComponent implements OnInit {
   }
 
   public changeTab(tab: 'general' | 'maintenance'): void {
-    this.activeTab.set(tab);
+    this.router.navigate(['..', tab], { relativeTo: this.route });
   }
 
   public onSubmit(): void {
