@@ -1,0 +1,138 @@
+<form (ngSubmit)="onSubmit()" class="space-y-5 p-1">
+  <!-- Bảng thông tin người dùng được điều chỉnh -->
+  <div
+    class="p-4 bg-slate-50 dark:bg-slate-900/60 border border-slate-200/50 dark:border-slate-800/40 rounded-2xl flex items-center justify-between gap-4"
+  >
+    <div class="min-w-0">
+      <span
+        class="text-[10px] font-extrabold text-slate-400 dark:text-slate-500 uppercase tracking-wider block mb-0.5"
+        >Thành viên điều chỉnh</span
+      >
+      <h4 class="text-sm font-extrabold text-slate-800 dark:text-white truncate">
+        {{ data.user.name }}
+      </h4>
+      <p class="text-xs text-slate-500 dark:text-slate-400 truncate">{{ data.user.email }}</p>
+    </div>
+    <div class="text-right shrink-0">
+      <span
+        class="text-[10px] font-extrabold text-slate-400 dark:text-slate-500 uppercase tracking-wider block mb-0.5"
+        >Số dư hiện tại</span
+      >
+      <span class="text-base font-extrabold text-[var(--color-primary)] font-mono block">
+        {{ currentBalance | number: '1.0-0' }} ₫
+      </span>
+    </div>
+  </div>
+
+  <!-- Lựa chọn loại thao tác: Cộng hoặc Trừ -->
+  <div class="space-y-1.5">
+    <label
+      class="text-xs font-bold text-slate-400 dark:text-slate-500 uppercase tracking-wider block"
+    >
+      Loại thao tác điều chỉnh <span class="text-rose-500">*</span>
+    </label>
+    <div class="grid grid-cols-2 gap-3">
+      <button
+        type="button"
+        (click)="type = 'add'"
+        class="py-3 px-4 rounded-xl border flex items-center justify-center gap-2 font-extrabold text-sm transition-all cursor-pointer"
+        [ngClass]="{
+          'border-emerald-500 bg-emerald-50 text-emerald-700 dark:bg-emerald-950/30 dark:text-emerald-400 shadow-sm':
+            type === 'add',
+          'border-slate-200/60 dark:border-slate-800 text-slate-600 dark:text-slate-400 hover:bg-slate-50 dark:hover:bg-slate-900':
+            type !== 'add',
+        }"
+      >
+        <svg class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+          <path
+            stroke-linecap="round"
+            stroke-linejoin="round"
+            stroke-width="2.5"
+            d="M12 6v6m0 0v6m0-6h6m-6 0H6"
+          />
+        </svg>
+        Cộng tiền
+      </button>
+
+      <button
+        type="button"
+        (click)="type = 'subtract'"
+        class="py-3 px-4 rounded-xl border flex items-center justify-center gap-2 font-extrabold text-sm transition-all cursor-pointer"
+        [ngClass]="{
+          'border-rose-500 bg-rose-50 text-rose-700 dark:bg-rose-950/30 dark:text-rose-400 shadow-sm':
+            type === 'subtract',
+          'border-slate-200/60 dark:border-slate-800 text-slate-600 dark:text-slate-400 hover:bg-slate-50 dark:hover:bg-slate-900':
+            type !== 'subtract',
+        }"
+      >
+        <svg class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M20 12H4" />
+        </svg>
+        Trừ tiền
+      </button>
+    </div>
+  </div>
+
+  <!-- Nhập số tiền -->
+  <div class="space-y-1.5">
+    <label
+      class="text-xs font-bold text-slate-400 dark:text-slate-500 uppercase tracking-wider block"
+    >
+      Số tiền {{ type === 'add' ? 'cộng thêm' : 'khấu trừ' }} (VND)
+      <span class="text-rose-500">*</span>
+    </label>
+    <app-custom-input
+      [(ngModel)]="amount"
+      name="amount"
+      type="number"
+      placeholder="Nhập số tiền VND (VD: 50000)"
+      [min]="1"
+      required
+    />
+  </div>
+
+  <!-- Cảnh báo nếu trừ quá số dư -->
+  <div
+    *ngIf="isSubtractExceeded"
+    class="p-3 bg-rose-50 dark:bg-rose-950/30 border border-rose-200/60 dark:border-rose-800/40 rounded-xl flex gap-2.5 items-start"
+  >
+    <svg
+      class="w-5 h-5 text-rose-500 shrink-0 mt-0.5"
+      fill="none"
+      viewBox="0 0 24 24"
+      stroke="currentColor"
+    >
+      <path
+        stroke-linecap="round"
+        stroke-linejoin="round"
+        stroke-width="2"
+        d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"
+      />
+    </svg>
+    <p class="text-xs font-extrabold text-rose-700 dark:text-rose-400 leading-normal">
+      Số tiền khấu trừ ({{ amount | number: '1.0-0' }} ₫) không được lớn hơn số dư hiện có của thành
+      viên ({{ currentBalance | number: '1.0-0' }} ₫)!
+    </p>
+  </div>
+
+  <!-- Actions -->
+  <div class="flex justify-end gap-3 pt-2 mt-4">
+    <button
+      type="button"
+      (click)="onClose()"
+      class="px-4.5 py-2.5 rounded-xl border border-slate-200/60 dark:border-slate-800/80 hover:bg-slate-50 dark:hover:bg-slate-900 text-slate-600 dark:text-slate-400 font-extrabold text-sm transition-all cursor-pointer"
+    >
+      Hủy
+    </button>
+    <button
+      type="submit"
+      app-button
+      [variant]="type === 'add' ? 'primary' : 'danger'"
+      [loading]="isSubmitting"
+      [disabled]="!amount || amount <= 0 || isSubtractExceeded"
+      class="px-6 py-2.5 rounded-xl font-extrabold text-sm active:scale-[0.98] transition-all cursor-pointer"
+    >
+      Xác nhận {{ type === 'add' ? 'cộng tiền' : 'trừ tiền' }}
+    </button>
+  </div>
+</form>

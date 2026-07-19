@@ -144,4 +144,23 @@ export class UserStore {
       finalize(() => this.loading.set(false))
     );
   }
+
+  public adjustBalance(id: string, type: 'add' | 'subtract', amount: number, reason: string): Observable<any> {
+    this.loading.set(true);
+    return this.api.post<any>(`v1/admin/users/${id}/adjust-balance`, { type, amount, reason }).pipe(
+      tap(() => {
+        this.clearCache();
+        this.toast.showToast('Điều chỉnh số dư thành viên thành công!', 'success');
+      }),
+      catchError((err) => {
+        let msg = err.error?.message || 'Không thể điều chỉnh số dư!';
+        if (msg.includes('Insufficient user balance')) {
+          msg = 'Số dư người dùng không đủ để thực hiện trừ tiền!';
+        }
+        this.toast.showToast(msg, 'error');
+        return of(null);
+      }),
+      finalize(() => this.loading.set(false))
+    );
+  }
 }

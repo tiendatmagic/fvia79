@@ -128,7 +128,7 @@ class AdminUserController extends Controller
             'email' => 'required|string|email|max:255|unique:users,email,' . $id,
             'phone' => 'nullable|string|max:20',
             'role' => 'required|string|in:admin,customer',
-            'balance' => 'required|numeric|min:0',
+            'balance' => 'nullable|numeric|min:0',
             'password' => 'nullable|string|min:6',
             'status' => 'nullable|string|in:active,banned',
             'generate_api_key' => 'nullable|boolean',
@@ -147,7 +147,7 @@ class AdminUserController extends Controller
                 $request->email,
                 $request->password ? Hash::make($request->password) : $user->getPassword(),
                 $request->role,
-                (float)$request->balance,
+                $user->getBalance(), // Khóa sửa số dư trực tiếp từ form update profile
                 $user->getRefreshTokenHash(),
                 $user->getRefreshTokenExpiredAt(),
                 $request->phone,
@@ -180,6 +180,61 @@ class AdminUserController extends Controller
             ]);
         } catch (\Exception $e) {
             return response()->json(['message' => 'Failed to update user: ' . $e->getMessage()], 500);
+        }
+    }
+
+    /**
+     * POST /api/v1/admin/users/{id}/adjust-balance
+     * Điều chỉnh số dư thành viên (Cộng / Trừ) có ghi nhận lý do
+     */
+    public function adjustBalance(Request $request, $id)
+    {
+        $request->validate([
+            'type' => 'required|string|in:add,subtract',
+            'amount' => 'required|numeric|min:1',
+            'reason' => 'nullable|string|max:500',
+        ]);
+
+        try {
+            return \Illuminate\Support\Facades\DB::transaction(function () use ($request, $id) {
+                $user = $this->userRepository->findById($id);
+                if (!$user) {
+                    return response()->json(['message' => 'User not found.'], 404);
+                }
+
+                $type = $request->input('type');
+                $amount = (float) $request->input('amount');
+                $reason = trim($request->input('reason'));
+                $currentBalance = $user->getBalance();
+
+                if ($type === 'subtract' && $currentBalance < $amount) {
+                    return response()->json([
+                        'message' => 'Insufficient user balance. Cannot subtract more than current balance.'
+                    ], 400);
+                }
+
+                if ($type === 'add') {
+                    $user->addBalance($amount);
+                } else {
+                    $user->deductBalance($amount);
+                }
+
+                $savedUser = $this->userRepository->save($user);
+
+                \Illuminate\Support\Facades\Log::info("Admin [" . Auth::id() . "] adjusted balance for User [{$id}]: Type={$type}, Amount={$amount}, Reason='{$reason}', NewBalance=" . $savedUser->getBalance());
+
+                return response()->json([
+                    'message' => 'User balance adjusted successfully.',
+                    'user' => [
+                        'id' => $savedUser->getId(),
+                        'name' => $savedUser->getName(),
+                        'email' => $savedUser->getEmail(),
+                        'balance' => $savedUser->getBalance(),
+                    ]
+                ]);
+            });
+        } catch (\Exception $e) {
+            return response()->json(['message' => 'Failed to adjust balance: ' . $e->getMessage()], 500);
         }
     }
 

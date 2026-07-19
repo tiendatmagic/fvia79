@@ -8,6 +8,9 @@ import { CustomSelectComponent } from '@shared/components/custom-select/custom-s
 import { ButtonComponent } from '@shared/components/button/button.component';
 import { finalize } from 'rxjs/operators';
 
+import { ModalService } from '@core/services/modal.service';
+import { AdjustBalanceModalComponent } from '../adjust-balance-modal/adjust-balance-modal.component';
+
 @Component({
   selector: 'app-user-form-modal',
   standalone: true,
@@ -29,6 +32,7 @@ export class UserFormModalComponent implements OnInit {
   private readonly modalRef = inject(ModalRef);
   private readonly modalData = inject(MODAL_DATA);
   public readonly state = inject(StateService);
+  private readonly modalService = inject(ModalService);
 
   public isEditMode = false;
   public editingId: any = null;
@@ -81,6 +85,32 @@ export class UserFormModalComponent implements OnInit {
     this.revoke_api_key = true;
     this.generate_api_key = false;
     this.api_key = '';
+  }
+
+  public openAdjustBalance() {
+    if (!this.isEditMode || !this.editingId) return;
+
+    this.modalService.open(AdjustBalanceModalComponent, {
+      title: 'Điều chỉnh số dư thành viên',
+      size: 'md',
+      data: {
+        user: {
+          id: this.editingId,
+          name: this.name,
+          email: this.email,
+          balance: this.balance
+        }
+      }
+    }).afterClosed$.subscribe((updated?: boolean) => {
+      if (updated) {
+        this.state.userStore.fetchUsers(this.state.userStore.currentPage(), 10).subscribe(() => {
+          const u = this.state.userStore.users().find(x => x.id === this.editingId);
+          if (u) {
+            this.balance = u.balance;
+          }
+        });
+      }
+    });
   }
 
   public onClose() {

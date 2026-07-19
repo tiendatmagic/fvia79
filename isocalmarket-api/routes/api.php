@@ -70,10 +70,11 @@ Route::prefix('v1')->group(function () {
             Route::post('/admin/maintenance/clean-tokens', ['App\Http\Controllers\SystemSettingController', 'cleanTokens']);
             Route::post('/admin/maintenance/clean-all-tokens', ['App\Http\Controllers\SystemSettingController', 'cleanAllTokens']);
 
-            // Admin Member Management (CRUD)
+            // Admin Member Management (CRUD & Balance Adjustment)
             Route::get('/admin/users', ['App\Http\Controllers\AdminUserController', 'index']);
             Route::post('/admin/users', ['App\Http\Controllers\AdminUserController', 'store']);
             Route::put('/admin/users/{id}', ['App\Http\Controllers\AdminUserController', 'update']);
+            Route::post('/admin/users/{id}/adjust-balance', ['App\Http\Controllers\AdminUserController', 'adjustBalance']);
             Route::delete('/admin/users/{id}', ['App\Http\Controllers\AdminUserController', 'destroy']);
 
             Route::post('/products', ['App\Http\Controllers\ProductController', 'store']);

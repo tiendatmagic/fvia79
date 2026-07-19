@@ -12,6 +12,7 @@ import { TooltipDirective } from '@shared/components/tooltip/tooltip.directive';
 import { ModalService } from '@core/services/modal.service';
 import { PaginationComponent } from '@shared/components/pagination/pagination.component';
 import { UserFormModalComponent } from './user-form-modal/user-form-modal.component';
+import { AdjustBalanceModalComponent } from './adjust-balance-modal/adjust-balance-modal.component';
 import { CustomSelectComponent } from '@shared/components/custom-select/custom-select.component';
 import { CustomDateTimeRangeComponent, DateTimeRangeValue } from '@shared/components/custom-date-time-range/custom-date-time-range.component';
 import { TableComponent, TableCellDirective, TableColumn } from '@shared/components/table/table.component';
@@ -135,6 +136,21 @@ export class AdminUsersComponent implements OnInit {
       size: 'md',
       closeOnBackdropClick: true,
       data: user
+    });
+
+    ref.afterClosed$.subscribe((success: any) => {
+      if (success) {
+        this.fetchUsers(this.currentPage());
+      }
+    });
+  }
+
+  public openAdjustBalanceModal(user: any) {
+    const ref = this.modalService.open(AdjustBalanceModalComponent, {
+      title: 'Điều chỉnh số dư thành viên',
+      size: 'md',
+      closeOnBackdropClick: true,
+      data: { user }
     });
 
     ref.afterClosed$.subscribe((success: any) => {

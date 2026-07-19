@@ -1270,3 +1270,25 @@
          - Bấm "Đóng": Chuyển hướng tới trang cửa hàng `/storefront` để khách hàng tiếp tục mua sắm ngay lập tức với số dư mới.
       3. **Tích hợp sự kiện**: Gọi hàm modal này ở cả 2 luồng: quét ngầm polling tự động nhận diện và quét thủ công (click kiểm tra giao dịch).
     - **Xác minh**: Chạy thử nghiệm thành công, trải nghiệm nạp tiền trơn tru và thân thiện hơn.
+
+  - **[BẢO MẬT & VÁ LỖ HỔNG] Khắc phục toàn bộ 11 lỗ hổng bảo mật chức năng nạp tiền USDT BEP20**:
+    - **Nội dung kiểm tra**: Phân tích toàn bộ luồng nạp tiền, phát hiện và vá 11 lỗ hổng (CVE-1 tới CVE-11).
+    - **Giải pháp triển khai**:
+      1. **CVE-1 & CVE-4 & CVE-5 (Race Condition & Exact Amount)**: Bọc logic check status, `isTxHashUsed` và cộng tiền user trong `DB::transaction` với pessimistic lock (`lockForUpdate()`) trong [DepositService.php](file:///d:/git/isocalmarket/isocalmarket-api/app/Application/Services/DepositService.php). So khớp đúng chính xác 100% số tiền 4 chữ số thập phân (`round($txValueUsdt, 4) === round($amountToPay, 4)`).
+      2. **CVE-2 (Rate Limit)**: Thêm `throttle:10,1` cho API check transaction trong [api.php](file:///d:/git/isocalmarket/isocalmarket-api/routes/api.php).
+      3. **CVE-3 (TxHash Check)**: Cập nhật `isTxHashUsed()` kiểm tra `tx_hash IS NOT NULL` trên toàn DB trong [DepositRepository.php](file:///d:/git/isocalmarket/isocalmarket-api/app/Infrastructure/Persistence/Repositories/DepositRepository.php).
+      4. **CVE-6 (Silent Fail Cancel)**: Ném `RuntimeException` khi Moralis API timeout/lỗi trong `cancelInvoice()`, tránh vô tình làm `expired` đơn của người dùng.
+      5. **CVE-7 (Max USDT Validation)**: Thêm rule `max:10000` vào [CreateDepositRequest.php](file:///d:/git/isocalmarket/isocalmarket-api/app/Http/Requests/CreateDepositRequest.php).
+      6. **CVE-8 (Polling Tối ưu)**: Tăng polling interval từ 10s lên 30s và ngưng polling khi ẩn tab trình duyệt trong [deposit-invoice.component.ts](file:///d:/git/isocalmarket/isocalmarket-web/src/app/features/deposit-invoice/deposit-invoice.component.ts).
+      7. **CVE-9 & CVE-11 (Sanitize & Date Validation)**: Sanitize thông điệp lỗi hệ thống và validate định dạng ngày `date_format:Y-m-d` trong [DepositController.php](file:///d:/git/isocalmarket/isocalmarket-api/app/Http/Controllers/DepositController.php).
+      8. **CVE-10 (Cache Reset)**: Làm mới `cachedTransactions = null` trước mỗi đợt quét batch trong `checkAllPendingDeposits()`.
+    - **Xác minh**: `php -l` và `npm run build` hoàn toàn không có lỗi.
+
+  - **[TÍNH NĂNG MỚI & UI REDESIGN] Cộng / Trừ Số Dư Chuyên Biệt & Tái Thiết Kế UI Form Thành Viên**:
+    - **Yêu cầu**: Khóa gõ đè số dư trực tiếp trong form thành viên (tránh nhầm lẫn/mất kiểm toán), xây dựng Modal cộng/trừ số dư riêng biệt có nhập lý do và tái thiết kế UI form thành viên hiện đại.
+    - **Giải pháp triển khai**:
+      1. **Backend API**: Thêm API `POST /api/v1/admin/users/{id}/adjust-balance` trong [AdminUserController.php](file:///d:/git/isocalmarket/isocalmarket-api/app/Http/Controllers/AdminUserController.php) có `DB::transaction`, hỗ trợ `add` / `subtract` số dư, chặn khấu trừ quá số dư hiện có và ghi nhận lý do. Khóa gõ đè số dư từ API `update()`.
+      2. **Frontend Modal Chuyên Biệt**: Tạo [AdjustBalanceModalComponent](file:///d:/git/isocalmarket/isocalmarket-web/src/app/features/admin-users/adjust-balance-modal/adjust-balance-modal.component.ts) cho phép chọn nút Segment Cộng (+)/Trừ (-), nhập số tiền và hiển thị số dư mới (đã gỡ bỏ ô nhập Lý do theo yêu cầu).
+      3. **Tái thiết kế UI Form**: Phân nhóm dữ liệu khoa học trong [user-form-modal.component.html](file:///d:/git/isocalmarket/isocalmarket-web/src/app/features/admin-users/user-form-modal/user-form-modal.component.html), đổi ô số dư thành dạng Readonly kèm nút **"Cộng / Trừ Số Dư"**.
+      4. **Thao tác nhanh**: Thêm nút **"Cộng/Trừ tiền"** trên cột Thao tác của bảng [admin-users.component.html](file:///d:/git/isocalmarket/isocalmarket-web/src/app/features/admin-users/admin-users.component.html).
+    - **Xác minh**: Chạy build Angular và kiểm tra cú pháp PHP thành công 100%.
