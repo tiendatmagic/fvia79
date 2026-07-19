@@ -73,7 +73,7 @@ class AdminUserController extends Controller
     {
         $request->validate([
             'username' => 'required|string|min:3|max:50|unique:users,username|regex:/^[a-zA-Z0-9_]+$/',
-            'name' => 'required|string|max:255',
+            'name' => 'nullable|string|max:255',
             'email' => 'required|string|email|max:255|unique:users,email',
             'phone' => 'nullable|string|max:20',
             'role' => 'required|string|in:admin,customer',
@@ -127,7 +127,7 @@ class AdminUserController extends Controller
     {
         $request->validate([
             'username' => 'required|string|min:3|max:50|regex:/^[a-zA-Z0-9_]+$/|unique:users,username,' . $id,
-            'name' => 'required|string|max:255',
+            'name' => 'nullable|string|max:255',
             'email' => 'required|string|email|max:255|unique:users,email,' . $id,
             'phone' => 'nullable|string|max:20',
             'role' => 'required|string|in:admin,customer',
