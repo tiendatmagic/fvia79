@@ -1,4 +1,4 @@
-<div class="max-w-[1530px] mx-auto w-full p-4 sm:p-6 space-y-6">
+<div class="max-w-[1530px] mx-auto w-full px-4 sm:px-6 py-6 space-y-6">
   <app-page-header
     title="Quản Lý Kho Hàng Số"
     description="Import tài khoản hàng loạt và kiểm soát trạng thái của từng tài nguyên kỹ thuật số."
@@ -24,10 +24,10 @@
   </app-page-header>
 
   <div
-    class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 bg-slate-50 dark:bg-slate-900/40 border border-slate-200/30 dark:border-slate-800/30 rounded-2xl p-4 sm:p-5"
+    class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 bg-slate-50/50 dark:bg-slate-950/20 border border-slate-200/30 dark:border-slate-800/30 rounded-2xl p-4 sm:p-5"
   >
     <div class="form-field">
-      <label>Bộ lọc Sản phẩm</label>
+      <label class="text-xs font-bold text-slate-400 dark:text-slate-500 uppercase tracking-wider block mb-1">Sản phẩm</label>
       <app-custom-select
         [options]="productFilterOptions"
         valueKey="value"
@@ -38,7 +38,7 @@
     </div>
 
     <div class="form-field">
-      <label>Bộ lọc Trạng thái</label>
+      <label class="text-xs font-bold text-slate-400 dark:text-slate-500 uppercase tracking-wider block mb-1">Trạng thái item</label>
       <app-custom-select
         [options]="statusFilterOptions"
         valueKey="value"
@@ -49,7 +49,7 @@
     </div>
 
     <div class="form-field">
-      <label>Tìm kiếm</label>
+      <label class="text-xs font-bold text-slate-400 dark:text-slate-500 uppercase tracking-wider block mb-1">Tìm kiếm kho hàng</label>
       <app-custom-search-input
         [placeholder]="'Tìm kiếm kho hàng...'"
         [(ngModel)]="searchQuery"

@@ -76,7 +76,7 @@ export class BadgeComponent {
         break;
       case 'neutral':
         classes.push(
-          'bg-slate-100 dark:bg-slate-800/50 text-slate-600 dark:text-slate-300 border border-slate-200 dark:border-slate-700/50',
+          'bg-slate-500/10 dark:bg-slate-500/20 text-slate-600 dark:text-slate-400 border border-slate-500/20 dark:border-slate-500/30',
         );
         break;
       case 'ultra':

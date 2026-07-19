@@ -1443,14 +1443,15 @@
          - Chạy unit test backend (`php artisan test --filter=AdminDepositTest`) thành công 100% (4 tests, 9 assertions).
          - Biên dịch Angular frontend (`npm run build`) thành công 100% không phát sinh bất kỳ lỗi cú pháp hoặc compiler nào.
 
-  - **[GIAO DIỆN & TỐI ƯU UX] Đồng bộ hóa Tooltip cho tất cả các bảng (Tables)**:
-    - **Yêu cầu**: Rà soát lại toàn bộ các trang chức năng có chứa bảng dữ liệu (`<app-table>`), đảm bảo tất cả các cột hiển thị thông tin rút gọn, ID, TxHash, Trạng thái đều được trang bị thuộc tính `[appTooltip]` để người dùng dễ dàng xem thông tin đầy đủ.
+  - **[GIAO DIỆN & TỐI ƯU UX] Giải quyết lỗi hiển thị và đồng bộ hóa Tooltip cho tất cả các bảng (Tables)**:
+    - **Yêu cầu**: Sửa lỗi tooltip không hiển thị trên giao diện và rà soát lại toàn bộ các trang chức năng có chứa bảng dữ liệu (`<app-table>`), bổ sung thuộc tính `[appTooltip]` còn thiếu.
     - **Giải pháp & Triển khai**:
-      1. Rà soát thấy 6 trang quản trị khác (`admin-users`, `admin-orders`, `products`, `inventory`, `admin-categories`, `admin-dashboard`) đã có tooltip đầy đủ.
-      2. Tiến hành bổ sung `[appTooltip]` cho 3 trang còn thiếu/chưa hoàn thiện:
+      1. **Khắc phục lỗi hiển thị**: Nguyên nhân tooltip không hiển thị do Tailwind JIT không biên dịch các class động trong danh sách `classes` ở file JS/TS của `TooltipDirective`. Đã khắc phục bằng cách định nghĩa các class `.app-tooltip` và `.app-tooltip-show` tĩnh trong [styles.scss](file:///d:/git/isocalmarket/isocalmarket-web/src/styles.scss) để đảm bảo trình duyệt biên dịch chính xác, đồng thời tinh chỉnh lại [tooltip.directive.ts](file:///d:/git/isocalmarket/isocalmarket-web/src/app/shared/components/tooltip/tooltip.directive.ts) gọn gàng hơn.
+      2. **Bổ sung tooltip cho các trang còn thiếu/chưa hoàn thiện**:
+         - **Quản lý thành viên** ([admin-users.component.html](file:///d:/git/isocalmarket/isocalmarket-web/src/app/features/admin-users/admin-users.component.html)): Thêm tooltip cho tên thành viên, email/SĐT, vai trò, số dư, và trạng thái API Key khi ẩn/chưa tạo.
          - **Lịch sử nạp tiền** ([deposit-history.component.html](file:///d:/git/isocalmarket/isocalmarket-web/src/app/features/deposit-history/deposit-history.component.html)): Thêm tooltip cho cột mã nạp, số tiền USDT, số tiền VND, trạng thái badge, và thời gian tạo.
          - **Danh sách sản phẩm Storefront** ([storefront.component.html](file:///d:/git/isocalmarket/isocalmarket-web/src/app/features/storefront/storefront.component.html)): Thêm tooltip cho tên sản phẩm, mô tả sản phẩm, thuộc tính động, trạng thái badge và số lượng tồn kho.
-         - **Quản lý nạp tiền Admin** ([admin-deposits.component.html](file:///d:/git/isocalmarket/isocalmarket-web/src/app/features/admin-deposits/admin-deposits.component.html)): Bổ sung tooltip chi tiết cho cột ID hóa đơn nạp, tên/email thành viên, số tiền USDT, số tiền VND, phương thức, trạng thái và thời gian tạo/mã TxHash (fix lỗi ép kiểu null của date pipe bằng cách gán `|| ''`).
+         - **Quản lý nạp tiền Admin** ([admin-deposits.component.html](file:///d:/git/isocalmarket/isocalmarket-web/src/app/features/admin-deposits/admin-deposits.component.html)): Bổ sung tooltip chi tiết cho cột ID hóa đơn nạp, tên/email thành viên, số tiền USDT, số tiền VND, phương thức, trạng thái và thời gian tạo/mã TxHash (đã fix lỗi ép kiểu null bằng `|| ''`).
     - **Xác minh**: Biên dịch ứng dụng Angular (`npm run build`) thành công 100% không phát sinh lỗi.
 
 

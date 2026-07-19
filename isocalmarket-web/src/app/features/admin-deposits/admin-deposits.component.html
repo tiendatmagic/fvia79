@@ -19,7 +19,9 @@
     class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 bg-slate-50/50 dark:bg-slate-950/20 border border-slate-200/30 dark:border-slate-800/30 rounded-2xl p-4 sm:p-5"
   >
     <div class="form-field">
-      <label class="text-xs font-bold text-slate-400 dark:text-slate-500 uppercase tracking-wider block mb-1">
+      <label
+        class="text-xs font-bold text-slate-400 dark:text-slate-500 uppercase tracking-wider block mb-1"
+      >
         Khoảng thời gian nạp
       </label>
       <app-custom-date-time-range
@@ -32,7 +34,9 @@
     </div>
 
     <div class="form-field">
-      <label class="text-xs font-bold text-slate-400 dark:text-slate-500 uppercase tracking-wider block mb-1">
+      <label
+        class="text-xs font-bold text-slate-400 dark:text-slate-500 uppercase tracking-wider block mb-1"
+      >
         Trạng thái
       </label>
       <app-custom-select
@@ -45,7 +49,9 @@
     </div>
 
     <div class="form-field">
-      <label class="text-xs font-bold text-slate-400 dark:text-slate-500 uppercase tracking-wider block mb-1">
+      <label
+        class="text-xs font-bold text-slate-400 dark:text-slate-500 uppercase tracking-wider block mb-1"
+      >
         Phương thức nạp
       </label>
       <app-custom-select
@@ -58,7 +64,9 @@
     </div>
 
     <div class="form-field">
-      <label class="text-xs font-bold text-slate-400 dark:text-slate-500 uppercase tracking-wider block mb-1">
+      <label
+        class="text-xs font-bold text-slate-400 dark:text-slate-500 uppercase tracking-wider block mb-1"
+      >
         Tìm kiếm lệnh nạp
       </label>
       <app-custom-search-input
@@ -94,7 +102,10 @@
 
       <!-- Thành viên -->
       <ng-template appTableCell="userName" let-row="row">
-        <div class="flex flex-col min-w-[200px]" [appTooltip]="(row.userName || 'Không tên') + ' (' + row.userEmail + ')'">
+        <div
+          class="flex flex-col min-w-[200px]"
+          [appTooltip]="(row.userName || 'Không tên') + ' (' + row.userEmail + ')'"
+        >
           <span class="text-sm font-extrabold text-slate-700 dark:text-slate-200">
             {{ row.userName || 'Không tên' }}
           </span>
@@ -107,10 +118,16 @@
       <!-- Số tiền USDT -->
       <ng-template appTableCell="amountUsdt" let-row="row">
         <div class="flex flex-col text-right font-mono">
-          <span class="text-sm font-extrabold text-slate-700 dark:text-slate-200" [appTooltip]="row.amountUsdt + ' USDT'">
+          <span
+            class="text-sm font-extrabold text-slate-700 dark:text-slate-200"
+            [appTooltip]="row.amountUsdt + ' USDT'"
+          >
             {{ row.amountUsdt | number: '1.2-4' }}
           </span>
-          <span class="text-[10px] text-slate-400 dark:text-slate-500 leading-none mt-0.5" [appTooltip]="'Số tiền lẻ cần thanh toán thực tế'">
+          <span
+            class="text-xs text-slate-400 dark:text-slate-500 leading-none mt-0.5"
+            [appTooltip]="'Số tiền lẻ cần thanh toán thực tế'"
+          >
             Thực gửi: {{ row.amountToPay | number: '1.4-4' }}
           </span>
         </div>
@@ -118,14 +135,20 @@
 
       <!-- Quy đổi VND -->
       <ng-template appTableCell="amountVnd" let-row="row">
-        <span class="font-mono font-bold text-emerald-600 dark:text-emerald-400 text-sm" [appTooltip]="'+' + (row.amountVnd | number: '1.0-0') + ' ₫'">
+        <span
+          class="font-mono font-bold text-emerald-600 dark:text-emerald-400 text-sm"
+          [appTooltip]="'+' + (row.amountVnd | number: '1.0-0') + ' ₫'"
+        >
           +{{ row.amountVnd | number: '1.0-0' }} ₫
         </span>
       </ng-template>
 
       <!-- Phương thức -->
       <ng-template appTableCell="paymentMethod" let-row="row">
-        <span class="text-xs font-bold text-slate-600 dark:text-slate-400" [appTooltip]="getMethodText(row.paymentMethod)">
+        <span
+          class="text-xs font-bold text-slate-600 dark:text-slate-400"
+          [appTooltip]="getMethodText(row.paymentMethod)"
+        >
           {{ getMethodText(row.paymentMethod) }}
         </span>
       </ng-template>
@@ -140,8 +163,14 @@
       <!-- Thời gian tạo -->
       <ng-template appTableCell="createdAt" let-row="row">
         <div class="flex flex-col text-xs text-slate-500 dark:text-slate-400">
-          <span [appTooltip]="(row.createdAt | date: 'yyyy-MM-dd HH:mm:ss') || ''">{{ row.createdAt | date: 'yyyy-MM-dd HH:mm:ss' }}</span>
-          <span *ngIf="row.txHash" class="text-[10px] font-mono text-slate-400 truncate max-w-[120px] mt-0.5" [appTooltip]="'Mã giao dịch: ' + row.txHash">
+          <span [appTooltip]="(row.createdAt | date: 'yyyy-MM-dd HH:mm:ss') || ''">{{
+            row.createdAt | date: 'yyyy-MM-dd HH:mm:ss'
+          }}</span>
+          <span
+            *ngIf="row.txHash"
+            class="text-xs font-mono text-slate-400 truncate max-w-[120px] mt-0.5"
+            [appTooltip]="'Mã giao dịch: ' + row.txHash"
+          >
             Tx: {{ row.txHash }}
           </span>
         </div>
@@ -150,7 +179,13 @@
       <!-- Thao tác -->
       <ng-template appTableCell="actions" let-row="row">
         <div class="flex items-center justify-end gap-2 whitespace-nowrap">
-          <ng-container *ngIf="row.status === 'pending_payment' || row.status === 'expired' || row.status === 'failed'">
+          <ng-container
+            *ngIf="
+              row.status === 'pending_payment' ||
+              row.status === 'expired' ||
+              row.status === 'failed'
+            "
+          >
             <button
               (click)="openApproveModal(row)"
               class="px-2.5 py-1.5 rounded-lg border text-xs font-extrabold text-[var(--color-primary)] border-[var(--color-primary)]/20 bg-[var(--color-primary)]/5 hover:bg-[var(--color-primary)]/10 dark:bg-[var(--color-primary)]/10 dark:hover:bg-[var(--color-primary)]/20 transition-all cursor-pointer flex items-center gap-1"
@@ -173,9 +208,7 @@
           </ng-container>
 
           <ng-container *ngIf="row.status === 'completed'">
-            <span class="text-xs text-slate-400 dark:text-slate-500 italic px-2">
-              Đã xử lý
-            </span>
+            <span class="text-xs text-slate-400 dark:text-slate-500 italic px-2"> Đã xử lý </span>
           </ng-container>
         </div>
       </ng-template>
@@ -187,7 +220,8 @@
       class="px-6 py-4 flex items-center justify-between border-t border-slate-100 dark:border-slate-800/60 bg-slate-50/20 dark:bg-slate-900/10"
     >
       <div class="text-xs text-slate-500 dark:text-slate-400">
-        Hiển thị trang {{ depositStore.currentPage() }} / {{ depositStore.lastPage() }} (Tổng cộng {{ depositStore.totalItems() }} hóa đơn nạp)
+        Hiển thị trang {{ depositStore.currentPage() }} / {{ depositStore.lastPage() }} (Tổng cộng
+        {{ depositStore.totalItems() }} hóa đơn nạp)
       </div>
       <app-pagination
         [currentPage]="depositStore.currentPage()"

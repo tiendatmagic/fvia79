@@ -1,15 +1,17 @@
 <div class="max-w-[1530px] mx-auto w-full px-4 sm:px-6 py-6 space-y-6">
-
-    <div class="relative bg-gradient-to-r from-[var(--color-primary)]/10 to-[var(--color-secondary)]/10 backdrop-blur-md border border-slate-200/50 dark:border-slate-800/50 rounded-2xl p-6 sm:p-10 flex flex-col md:flex-row md:items-center justify-between gap-6 overflow-hidden">
+  <div
+    class="relative bg-gradient-to-r from-[var(--color-primary)]/10 to-[var(--color-secondary)]/10 backdrop-blur-md border border-slate-200/50 dark:border-slate-800/50 rounded-2xl p-6 sm:p-10 flex flex-col md:flex-row md:items-center justify-between gap-6 overflow-hidden"
+  >
     <div class="space-y-3 z-10">
       <h1 class="text-3xl sm:text-4xl font-black text-slate-900 dark:text-white leading-tight">
         Khám Phá Chợ Tài Nguyên Số Lớn Nhất
       </h1>
       <p class="text-sm sm:text-base text-slate-500 font-semibold max-w-xl">
-        Cung cấp tài khoản VIA Facebook, Gmail cổ, Netflix Premium, ChatGPT Plus, Proxy sạch 100% tốc độ cao và các dịch vụ bản quyền số an toàn, bảo mật.
+        Cung cấp tài khoản VIA Facebook, Gmail cổ, Netflix Premium, ChatGPT Plus, Proxy sạch 100%
+        tốc độ cao và các dịch vụ bản quyền số an toàn, bảo mật.
       </p>
 
-            <div class="max-w-md pt-2">
+      <div class="max-w-md pt-2">
         <app-custom-search-input
           [placeholder]="'Tìm kiếm tài nguyên số...'"
           [(ngModel)]="searchQuery"
@@ -20,30 +22,45 @@
       </div>
     </div>
 
-        <div class="absolute -right-16 -top-16 w-64 h-64 bg-[var(--color-primary)]/10 blur-[80px] rounded-full"></div>
-    <div class="absolute -left-16 -bottom-16 w-64 h-64 bg-[var(--color-secondary)]/10 blur-[80px] rounded-full"></div>
+    <div
+      class="absolute -right-16 -top-16 w-64 h-64 bg-[var(--color-primary)]/10 blur-[80px] rounded-full"
+    ></div>
+    <div
+      class="absolute -left-16 -bottom-16 w-64 h-64 bg-[var(--color-secondary)]/10 blur-[80px] rounded-full"
+    ></div>
   </div>
 
-    <div class="bg-white dark:bg-slate-900 border border-slate-200/80 dark:border-slate-800/80 p-3 sm:p-3.5 rounded-2xl flex flex-row items-center justify-between gap-4">
-        <div class="flex items-center gap-2">
-      <span class="text-xs text-slate-400 dark:text-slate-500 font-bold uppercase tracking-wider mr-1.5 hidden xl:inline">Chế độ xem:</span>
-      <div class="flex bg-slate-100 dark:bg-slate-950/60 p-1 rounded-xl border border-slate-200/40 dark:border-slate-800/40">
-                <button
+  <div
+    class="bg-white dark:bg-slate-900 border border-slate-200/80 dark:border-slate-800/80 p-3 sm:p-3.5 rounded-2xl flex flex-row items-center justify-between gap-4"
+  >
+    <div class="flex items-center gap-2">
+      <span
+        class="text-xs text-slate-400 dark:text-slate-500 font-bold uppercase tracking-wider mr-1.5 hidden xl:inline"
+        >Chế độ xem:</span
+      >
+      <div
+        class="flex bg-slate-100 dark:bg-slate-950/60 p-1 rounded-xl border border-slate-200/40 dark:border-slate-800/40"
+      >
+        <button
           (click)="viewMode.set('card')"
           class="flex items-center gap-1.5 px-2 xl:px-3 py-1.5 rounded-lg text-xs font-extrabold transition-all duration-200 cursor-pointer"
-          [ngClass]="viewMode() === 'card'
-            ? 'bg-white dark:bg-slate-900 text-[var(--color-primary)] shadow-sm'
-            : 'text-slate-500 hover:text-slate-800 dark:hover:text-slate-200'"
+          [ngClass]="
+            viewMode() === 'card'
+              ? 'bg-white dark:bg-slate-900 text-[var(--color-primary)] shadow-sm'
+              : 'text-slate-500 hover:text-slate-800 dark:hover:text-slate-200'
+          "
         >
           <app-icon name="grid" class="w-3.5 h-3.5" />
           <span class="hidden xl:inline">Dạng Card</span>
         </button>
-                <button
+        <button
           (click)="viewMode.set('list')"
           class="flex items-center gap-1.5 px-2 xl:px-3 py-1.5 rounded-lg text-xs font-extrabold transition-all duration-200 cursor-pointer"
-          [ngClass]="viewMode() === 'list'
-            ? 'bg-white dark:bg-slate-900 text-[var(--color-primary)] shadow-sm'
-            : 'text-slate-500 hover:text-slate-800 dark:hover:text-slate-200'"
+          [ngClass]="
+            viewMode() === 'list'
+              ? 'bg-white dark:bg-slate-900 text-[var(--color-primary)] shadow-sm'
+              : 'text-slate-500 hover:text-slate-800 dark:hover:text-slate-200'
+          "
         >
           <app-icon name="list" class="w-3.5 h-3.5" />
           <span class="hidden xl:inline">Dạng List</span>
@@ -51,8 +68,11 @@
       </div>
     </div>
 
-        <div class="flex items-center gap-3">
-      <span class="text-xs text-slate-400 dark:text-slate-500 font-bold uppercase tracking-wider hidden xl:inline">Sắp xếp danh mục:</span>
+    <div class="flex items-center gap-3">
+      <span
+        class="text-xs text-slate-400 dark:text-slate-500 font-bold uppercase tracking-wider hidden xl:inline"
+        >Sắp xếp danh mục:</span
+      >
       <div class="w-40 xl:w-56">
         <app-custom-select
           [options]="sortOptions"
@@ -65,32 +85,61 @@
     </div>
   </div>
 
-    <div class="space-y-10">
-        <app-skeleton-loader *ngIf="state.productStore.loading() && groupedProducts().length === 0" [type]="'card-grid'" [cards]="8" />
+  <div class="space-y-10">
+    <app-skeleton-loader
+      *ngIf="state.productStore.loading() && groupedProducts().length === 0"
+      [type]="'card-grid'"
+      [cards]="8"
+    />
 
-        <div *ngIf="!state.productStore.loading() && groupedProducts().length === 0" app-card class="text-center py-12">
+    <div
+      *ngIf="!state.productStore.loading() && groupedProducts().length === 0"
+      app-card
+      class="text-center py-12"
+    >
       <p class="text-sm font-semibold text-slate-400">Không tìm thấy sản phẩm nào phù hợp!</p>
     </div>
 
-        @if (!state.productStore.loading() && groupedProducts().length > 0) {
-      <div *ngFor="let group of groupedProducts()" app-card class="p-6 space-y-6 !bg-white/40 dark:!bg-slate-900/40 backdrop-blur-md border border-slate-200/50 dark:border-slate-800/50">
+    @if (!state.productStore.loading() && groupedProducts().length > 0) {
+      <div
+        *ngFor="let group of groupedProducts()"
+        app-card
+        class="p-6 space-y-6 !bg-white/40 dark:!bg-slate-900/40 backdrop-blur-md border border-slate-200/50 dark:border-slate-800/50"
+      >
         <div class="flex flex-col sm:flex-row sm:items-start justify-between gap-3 pb-2">
           <div class="space-y-1 min-w-0 w-full sm:w-auto">
-            <h3 class="text-base sm:text-lg font-black text-slate-800 dark:text-white flex items-start gap-2">
-              <app-icon name="list-bullet" class="w-5 h-5 text-[var(--color-primary)] shrink-0 mt-0.5" />
+            <h3
+              class="text-base sm:text-lg font-black text-slate-800 dark:text-white flex items-start gap-2"
+            >
+              <app-icon
+                name="list-bullet"
+                class="w-5 h-5 text-[var(--color-primary)] shrink-0 mt-0.5"
+              />
               <span class="break-words">{{ group.name }}</span>
             </h3>
-            <p *ngIf="group.description" class="text-xs text-slate-400 dark:text-slate-500 font-semibold break-words">
+            <p
+              *ngIf="group.description"
+              class="text-xs text-slate-400 dark:text-slate-500 font-semibold break-words"
+            >
               {{ group.description }}
             </p>
           </div>
-          <app-badge variant="neutral" size="sm" rounded="lg" class="shrink-0 whitespace-nowrap self-start">
+          <app-badge
+            variant="neutral"
+            size="sm"
+            rounded="lg"
+            class="shrink-0 whitespace-nowrap self-start"
+          >
             {{ group.total }} dòng sản phẩm
           </app-badge>
         </div>
 
         @if (group.loading) {
-          <app-skeleton-loader [type]="viewMode() === 'card' ? 'card-grid' : 'table'" [cards]="8" [showHeader]="false" />
+          <app-skeleton-loader
+            [type]="viewMode() === 'card' ? 'card-grid' : 'table'"
+            [cards]="8"
+            [showHeader]="false"
+          />
         } @else {
           @if (viewMode() === 'card') {
             <div class="grid grid-cols-1 sm:grid-cols-[repeat(auto-fill,minmax(265px,1fr))] gap-6">
@@ -102,7 +151,9 @@
               >
                 <div class="space-y-2">
                   <div class="flex items-start justify-between gap-4">
-                    <h4 class="text-base font-extrabold text-slate-800 dark:text-white line-clamp-2">
+                    <h4
+                      class="text-base font-extrabold text-slate-800 dark:text-white line-clamp-2"
+                    >
                       {{ p.name }}
                     </h4>
                     <app-badge
@@ -122,7 +173,9 @@
                   @if (p.attributes && p.attributes.length > 0) {
                     <div class="flex flex-wrap gap-1.5 pt-1">
                       @for (attr of p.attributes; track $index) {
-                        <span class="inline-flex items-center text-xs font-extrabold px-2 py-0.5 rounded bg-[var(--color-primary)]/5 dark:bg-[var(--color-primary)]/10 text-[var(--color-primary)] border border-[var(--color-primary)]/15">
+                        <span
+                          class="inline-flex items-center text-xs font-extrabold px-2 py-0.5 rounded bg-[var(--color-primary)]/5 dark:bg-[var(--color-primary)]/10 text-[var(--color-primary)] border border-[var(--color-primary)]/15"
+                        >
                           {{ attr.value }}
                         </span>
                       }
@@ -131,19 +184,29 @@
 
                   <div class="text-xs font-extrabold text-slate-400 pt-1 flex items-center gap-1.5">
                     <app-icon name="check-circle" class="w-3.5 h-3.5 text-emerald-500" />
-                    <span>Còn lại: <strong class="text-slate-700 dark:text-slate-200">{{ p.available_count }}</strong> sản phẩm</span>
+                    <span
+                      >Còn lại:
+                      <strong class="text-slate-700 dark:text-slate-200">{{
+                        p.available_count
+                      }}</strong>
+                      sản phẩm</span
+                    >
                   </div>
                 </div>
 
                 <div class="pt-3 space-y-3">
                   <div class="flex items-baseline justify-between w-full">
-                    <span class="text-xs text-slate-400 dark:text-slate-500 font-bold uppercase tracking-wider">Đơn giá</span>
+                    <span
+                      class="text-xs text-slate-400 dark:text-slate-500 font-bold uppercase tracking-wider"
+                      >Đơn giá</span
+                    >
                     <p class="text-lg font-black text-[var(--color-primary)]">
-                      {{ p.price | number:'1.0-0' }} <span class="text-xs font-bold">VND</span>
+                      {{ p.price | number: '1.0-0' }} <span class="text-xs font-bold">VND</span>
                     </p>
                   </div>
 
-                  <button app-button
+                  <button
+                    app-button
                     (click)="addToCart(p)"
                     [disabled]="p.available_count <= 0"
                     variant="primary"
@@ -164,16 +227,26 @@
               >
                 <ng-template appTableCell="name" let-row="row">
                   <div class="space-y-1.5 py-1">
-                    <div class="text-sm font-extrabold text-slate-800 dark:text-white" [appTooltip]="row.name">
+                    <div
+                      class="text-sm font-extrabold text-slate-800 dark:text-white"
+                      [appTooltip]="row.name"
+                    >
                       {{ row.name }}
                     </div>
-                    <p *ngIf="row.description" class="text-xs text-slate-400 dark:text-slate-500 font-semibold line-clamp-1 max-w-xl" [appTooltip]="row.description">
+                    <p
+                      *ngIf="row.description"
+                      class="text-xs text-slate-400 dark:text-slate-500 font-semibold line-clamp-1 max-w-xl"
+                      [appTooltip]="row.description"
+                    >
                       {{ row.description }}
                     </p>
                     @if (row.attributes && row.attributes.length > 0) {
                       <div class="flex flex-wrap gap-1">
                         @for (attr of row.attributes; track $index) {
-                          <span class="inline-flex items-center text-xs font-extrabold px-1.5 py-0.5 rounded bg-[var(--color-primary)]/5 dark:bg-[var(--color-primary)]/10 text-[var(--color-primary)] border border-[var(--color-primary)]/10" [appTooltip]="attr.label + ': ' + attr.value">
+                          <span
+                            class="inline-flex items-center text-xs font-extrabold px-1.5 py-0.5 rounded bg-[var(--color-primary)]/5 dark:bg-[var(--color-primary)]/10 text-[var(--color-primary)] border border-[var(--color-primary)]/10"
+                            [appTooltip]="attr.label + ': ' + attr.value"
+                          >
                             {{ attr.value }}
                           </span>
                         }
@@ -183,8 +256,11 @@
                 </ng-template>
 
                 <ng-template appTableCell="price" let-row="row">
-                  <span class="font-black text-[var(--color-primary)] text-sm whitespace-nowrap" [appTooltip]="(row.price | number) + ' VND'">
-                    {{ row.price | number:'1.0-0' }} <span class="text-xs font-bold">VND</span>
+                  <span
+                    class="font-black text-[var(--color-primary)] text-sm whitespace-nowrap"
+                    [appTooltip]="(row.price | number) + ' VND'"
+                  >
+                    {{ row.price | number: '1.0-0' }} <span class="text-xs font-bold">VND</span>
                   </span>
                 </ng-template>
 
@@ -198,14 +274,18 @@
                     >
                       {{ row.available_count > 0 ? 'Còn hàng' : 'Hết hàng' }}
                     </app-badge>
-                    <span class="text-xs text-slate-400 dark:text-slate-500 font-bold whitespace-nowrap" [appTooltip]="'Tồn kho khả dụng: ' + row.available_count">
+                    <span
+                      class="text-xs text-slate-400 dark:text-slate-500 font-bold whitespace-nowrap"
+                      [appTooltip]="'Tồn kho khả dụng: ' + row.available_count"
+                    >
                       Còn lại: {{ row.available_count }}
                     </span>
                   </div>
                 </ng-template>
 
                 <ng-template appTableCell="actions" let-row="row">
-                  <button app-button
+                  <button
+                    app-button
                     (click)="addToCart(row)"
                     [disabled]="row.available_count <= 0"
                     variant="primary"
@@ -217,17 +297,19 @@
               </app-table>
             </div>
 
-            <div class="block lg:hidden border border-slate-200/40 dark:border-slate-800/40 rounded-xl bg-white/80 dark:bg-slate-950/80 backdrop-blur-md divide-y divide-slate-100 dark:divide-slate-900/30 overflow-hidden">
-              <div
-                *ngFor="let p of group.products"
-                class="p-4 space-y-3"
-              >
+            <div
+              class="block lg:hidden border border-slate-200/40 dark:border-slate-800/40 rounded-xl bg-white/80 dark:bg-slate-950/80 backdrop-blur-md divide-y divide-slate-100 dark:divide-slate-900/30 overflow-hidden"
+            >
+              <div *ngFor="let p of group.products" class="p-4 space-y-3">
                 <div class="flex items-start justify-between gap-3">
                   <div class="space-y-1 min-w-0 flex-1">
                     <h4 class="text-sm font-extrabold text-slate-800 dark:text-white break-words">
                       {{ p.name }}
                     </h4>
-                    <p *ngIf="p.description" class="text-xs text-slate-400 dark:text-slate-500 font-semibold line-clamp-2">
+                    <p
+                      *ngIf="p.description"
+                      class="text-xs text-slate-400 dark:text-slate-500 font-semibold line-clamp-2"
+                    >
                       {{ p.description }}
                     </p>
                   </div>
@@ -243,7 +325,9 @@
 
                 <div *ngIf="p.attributes && p.attributes.length > 0" class="flex flex-wrap gap-1">
                   @for (attr of p.attributes; track $index) {
-                    <span class="inline-flex items-center text-[10px] font-extrabold px-1.5 py-0.5 rounded bg-[var(--color-primary)]/5 dark:bg-[var(--color-primary)]/10 text-[var(--color-primary)] border border-[var(--color-primary)]/10">
+                    <span
+                      class="inline-flex items-center text-xs font-extrabold px-1.5 py-0.5 rounded bg-[var(--color-primary)]/5 dark:bg-[var(--color-primary)]/10 text-[var(--color-primary)] border border-[var(--color-primary)]/10"
+                    >
                       {{ attr.value }}
                     </span>
                   }
@@ -251,15 +335,21 @@
 
                 <div class="flex items-center justify-between gap-3 pt-1">
                   <div class="space-y-0.5 min-w-0 shrink-0">
-                    <div class="text-xs text-slate-400 dark:text-slate-500 font-bold whitespace-nowrap">
-                      Còn lại: <span class="text-slate-700 dark:text-slate-200">{{ p.available_count }}</span>
+                    <div
+                      class="text-xs text-slate-400 dark:text-slate-500 font-bold whitespace-nowrap"
+                    >
+                      Còn lại:
+                      <span class="text-slate-700 dark:text-slate-200">{{
+                        p.available_count
+                      }}</span>
                     </div>
                     <div class="text-sm font-black text-[var(--color-primary)] whitespace-nowrap">
-                      {{ p.price | number:'1.0-0' }} <span class="text-xs font-bold">VND</span>
+                      {{ p.price | number: '1.0-0' }} <span class="text-xs font-bold">VND</span>
                     </div>
                   </div>
 
-                  <button app-button
+                  <button
+                    app-button
                     (click)="addToCart(p)"
                     [disabled]="p.available_count <= 0"
                     variant="primary"

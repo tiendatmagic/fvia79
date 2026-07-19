@@ -15,10 +15,12 @@
   </app-page-header>
 
   <div
-    class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 bg-slate-50 dark:bg-slate-900/40 border border-slate-200/30 dark:border-slate-800/30 rounded-2xl p-4 sm:p-5"
+    class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 bg-slate-50/50 dark:bg-slate-950/20 border border-slate-200/30 dark:border-slate-800/30 rounded-2xl p-4 sm:p-5"
   >
     <div class="form-field">
-      <label>Bộ lọc Khoảng thời gian</label>
+      <label class="text-xs font-bold text-slate-400 dark:text-slate-500 uppercase tracking-wider block mb-1">
+        Khoảng thời gian
+      </label>
       <app-custom-date-time-range
         [(ngModel)]="selectedDateRange"
         (ngModelChange)="fetchOrders(1)"
@@ -29,7 +31,9 @@
     </div>
 
     <div class="form-field">
-      <label>Bộ lọc Trạng thái</label>
+      <label class="text-xs font-bold text-slate-400 dark:text-slate-500 uppercase tracking-wider block mb-1">
+        Trạng thái
+      </label>
       <app-custom-select
         [options]="statusOptions"
         valueKey="value"
@@ -40,7 +44,9 @@
     </div>
 
     <div class="form-field">
-      <label>Tìm kiếm</label>
+      <label class="text-xs font-bold text-slate-400 dark:text-slate-500 uppercase tracking-wider block mb-1">
+        Tìm kiếm đơn hàng
+      </label>
       <app-custom-search-input
         [placeholder]="'Tìm kiếm đơn hàng...'"
         [(ngModel)]="searchQuery"
@@ -88,8 +94,8 @@
       </ng-template>
 
       <ng-template appTableCell="total_price" let-row="row">
-        <span [appTooltip]="(row.total_price | number) + ' VND'">
-          {{ row.total_price | number }} VND
+        <span class="font-mono font-bold text-emerald-600 dark:text-emerald-400 text-sm" [appTooltip]="(row.total_price | number: '1.0-0') + ' ₫'">
+          {{ row.total_price | number: '1.0-0' }} ₫
         </span>
       </ng-template>
 

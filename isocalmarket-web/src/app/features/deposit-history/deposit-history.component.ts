@@ -64,9 +64,9 @@ export class DepositHistoryComponent implements OnInit {
 
   public readonly columns: TableColumn[] = [
     { key: 'code', label: 'Mã lệnh', sortable: true },
-    { key: 'amountUsdt', label: 'Số lượng (USDT)', sortable: true },
-    { key: 'amountVnd', label: 'Số tiền VND', sortable: true },
-    { key: 'status', label: 'Trạng thái', sortable: true },
+    { key: 'amountUsdt', label: 'Số lượng (USDT)', sortable: true, align: 'right' },
+    { key: 'amountVnd', label: 'Quy đổi VND', sortable: true, align: 'right' },
+    { key: 'status', label: 'Trạng thái', sortable: true, align: 'center' },
     { key: 'createdAt', label: 'Thời gian tạo', sortable: true },
     { key: 'actions', label: 'Thao tác', sortable: false, align: 'right' }
   ];

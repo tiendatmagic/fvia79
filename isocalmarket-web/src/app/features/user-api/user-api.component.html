@@ -1,5 +1,5 @@
 <div class="max-w-[1530px] mx-auto w-full p-4 sm:p-6 space-y-6">
-    <app-page-header
+  <app-page-header
     title="User API"
     description="Tích hợp hệ thống B2B để đồng bộ danh sách sản phẩm, giá bán, tồn kho và tự động đặt hàng nhanh chóng."
   >
@@ -15,7 +15,7 @@
     </ng-container>
   </app-page-header>
 
-    <div app-card class="p-6 space-y-5">
+  <div app-card class="p-6 space-y-5">
     <div class="flex items-center gap-2 border-b border-slate-100 dark:border-slate-800/60 pb-3">
       <app-icon name="key" class="w-5 h-5 text-[var(--color-primary)]" />
       <h3 class="text-sm font-black text-slate-700 dark:text-slate-300 uppercase tracking-wider">
@@ -42,7 +42,7 @@
       >
     </div>
 
-        <div class="flex flex-col sm:flex-row items-stretch sm:items-center gap-3">
+    <div class="flex flex-col sm:flex-row items-stretch sm:items-center gap-3">
       <div
         class="relative flex-1 flex items-center bg-slate-50 dark:bg-slate-950 h-12 px-4 pr-20 rounded-xl border border-slate-200/60 dark:border-slate-900 min-w-0"
       >
@@ -54,7 +54,13 @@
         <span
           class="text-sm font-extrabold font-mono text-slate-700 dark:text-slate-300 truncate flex-1"
         >
-          {{ apiKey() ? (showApiKey() ? apiKey() : '••••••••••••••••••••••••••••••••') : 'Chưa cấu hình API Key' }}
+          {{
+            apiKey()
+              ? showApiKey()
+                ? apiKey()
+                : '••••••••••••••••••••••••••••••••'
+              : 'Chưa cấu hình API Key'
+          }}
         </span>
         @if (apiKey()) {
           <div class="absolute right-3.5 top-1/2 -translate-y-1/2 flex items-center gap-2">
@@ -89,7 +95,7 @@
     </div>
   </div>
 
-    <div app-card class="p-6 space-y-6">
+  <div app-card class="p-6 space-y-6">
     <div
       class="flex flex-col md:flex-row md:items-center md:justify-between border-b border-slate-100 dark:border-slate-800/60 pb-3 gap-2"
     >
@@ -104,8 +110,8 @@
       </span>
     </div>
 
-        <div class="space-y-8 divide-y divide-slate-100 dark:divide-slate-800">
-            <div class="pt-0 space-y-4">
+    <div class="space-y-8 divide-y divide-slate-100 dark:divide-slate-800">
+      <div class="pt-0 space-y-4">
         <div class="flex items-start gap-3">
           <div
             class="w-7 h-7 rounded-full bg-[var(--color-primary)]/10 text-[var(--color-primary)] text-xs font-black flex items-center justify-center shrink-0 mt-0.5"
@@ -117,14 +123,16 @@
               1. Lấy danh sách sản phẩm
             </h4>
             <p class="text-xs font-semibold text-slate-500 dark:text-slate-400 mt-1">
-              Lấy danh sách ID sản phẩm, tên, giá bán và số lượng có sẵn trong kho hàng có hỗ trợ phân trang. Hỗ trợ lọc theo danh mục (?category_id=...), tìm kiếm (?search=...), trang (?page=...) và giới hạn (?limit=...).
+              Lấy danh sách ID sản phẩm, tên, giá bán và số lượng có sẵn trong kho hàng có hỗ trợ
+              phân trang. Hỗ trợ lọc theo danh mục (?category_id=...), tìm kiếm (?search=...), trang
+              (?page=...) và giới hạn (?limit=...).
             </p>
           </div>
         </div>
 
         <div class="flex flex-wrap items-center gap-2">
           <span
-            class="text-[10px] font-black uppercase tracking-wider bg-blue-500 text-white px-2 py-0.5 rounded"
+            class="text-xs font-black uppercase tracking-wider bg-blue-500 text-white px-2 py-0.5 rounded"
           >
             GET
           </span>
@@ -136,9 +144,9 @@
         </div>
 
         <div class="space-y-3">
-                    <div class="space-y-1.5">
+          <div class="space-y-1.5">
             <span
-              class="text-[10px] font-bold text-slate-400 dark:text-slate-500 uppercase tracking-wider block"
+              class="text-xs font-bold text-slate-400 dark:text-slate-500 uppercase tracking-wider block"
               >Mẫu gọi API (CURL)</span
             >
             <div
@@ -160,9 +168,9 @@ curl -X GET "{{ siteUrl() }}/api/v1/b2b/products?api_key={{ apiKey() || 'API_KEY
             </div>
           </div>
 
-                    <div class="space-y-1.5">
+          <div class="space-y-1.5">
             <span
-              class="text-[10px] font-bold text-slate-400 dark:text-slate-500 uppercase tracking-wider block"
+              class="text-xs font-bold text-slate-400 dark:text-slate-500 uppercase tracking-wider block"
               >URL gọi trực tiếp</span
             >
             <div
@@ -172,7 +180,9 @@ curl -X GET "{{ siteUrl() }}/api/v1/b2b/products?api_key={{ apiKey() || 'API_KEY
                 class="overflow-x-auto p-3.5 pr-12 font-mono text-xs text-slate-700 dark:text-slate-300 leading-relaxed"
               >
                 <span class="text-[var(--color-primary)] font-semibold"
-                  >{{ siteUrl() }}/api/v1/b2b/products?api_key={{ apiKey() || 'API_KEY_CUA_BAN' }}</span
+                  >{{ siteUrl() }}/api/v1/b2b/products?api_key={{
+                    apiKey() || 'API_KEY_CUA_BAN'
+                  }}</span
                 >
               </div>
               <button
@@ -185,77 +195,115 @@ curl -X GET "{{ siteUrl() }}/api/v1/b2b/products?api_key={{ apiKey() || 'API_KEY
             </div>
           </div>
 
-                    <div class="space-y-1.5">
-            <span class="text-[10px] font-bold text-slate-400 dark:text-slate-500 uppercase tracking-wider block">Tham số URL (Query Parameters)</span>
-            <div class="bg-slate-50 dark:bg-slate-950 border border-slate-200/60 dark:border-slate-900 rounded-xl p-4 space-y-4">
-                            <div class="flex items-start gap-4 text-xs font-semibold border-b border-slate-100 dark:border-slate-800/60 pb-3">
+          <div class="space-y-1.5">
+            <span
+              class="text-xs font-bold text-slate-400 dark:text-slate-500 uppercase tracking-wider block"
+              >Tham số URL (Query Parameters)</span
+            >
+            <div
+              class="bg-slate-50 dark:bg-slate-950 border border-slate-200/60 dark:border-slate-900 rounded-xl p-4 space-y-4"
+            >
+              <div
+                class="flex items-start gap-4 text-xs font-semibold border-b border-slate-100 dark:border-slate-800/60 pb-3"
+              >
                 <div class="min-w-[120px] font-mono text-[var(--color-primary)] font-bold">
                   api_key
                 </div>
                 <div class="flex-1 space-y-1">
                   <div class="flex items-center gap-1.5">
-                    <span class="text-[10px] font-black uppercase bg-rose-500/10 text-rose-500 px-1.5 py-0.5 rounded">Bắt buộc</span>
-                    <span class="text-slate-400 dark:text-slate-500 font-mono text-[10px]">String</span>
+                    <span
+                      class="text-xs font-black uppercase bg-rose-500/10 text-rose-500 px-1.5 py-0.5 rounded"
+                      >Bắt buộc</span
+                    >
+                    <span class="text-slate-400 dark:text-slate-500 font-mono text-xs">String</span>
                   </div>
                   <p class="text-slate-500 dark:text-slate-400 font-semibold leading-relaxed">
-                    Khóa API Key của đại lý để xác thực quyền truy cập. Có thể truyền qua query parameter hoặc header <code class="font-mono text-[10px]">X-API-KEY</code>.
+                    Khóa API Key của đại lý để xác thực quyền truy cập. Có thể truyền qua query
+                    parameter hoặc header <code class="font-mono text-xs">X-API-KEY</code>.
                   </p>
                 </div>
               </div>
 
-                            <div class="flex items-start gap-4 text-xs font-semibold border-b border-slate-100 dark:border-slate-800/60 pb-3">
+              <div
+                class="flex items-start gap-4 text-xs font-semibold border-b border-slate-100 dark:border-slate-800/60 pb-3"
+              >
                 <div class="min-w-[120px] font-mono text-[var(--color-primary)] font-bold">
                   page
                 </div>
                 <div class="flex-1 space-y-1">
                   <div class="flex items-center gap-1.5">
-                    <span class="text-[10px] font-black uppercase bg-slate-100 dark:bg-slate-800 text-slate-500 px-1.5 py-0.5 rounded">Tùy chọn</span>
-                    <span class="text-slate-400 dark:text-slate-500 font-mono text-[10px]">Integer</span>
+                    <span
+                      class="text-xs font-black uppercase bg-slate-100 dark:bg-slate-800 text-slate-500 px-1.5 py-0.5 rounded"
+                      >Tùy chọn</span
+                    >
+                    <span class="text-slate-400 dark:text-slate-500 font-mono text-xs"
+                      >Integer</span
+                    >
                   </div>
                   <p class="text-slate-500 dark:text-slate-400 font-semibold leading-relaxed">
-                    Số thứ tự trang muốn lấy dữ liệu. Mặc định là <code class="font-mono text-[10px]">1</code>.
+                    Số thứ tự trang muốn lấy dữ liệu. Mặc định là
+                    <code class="font-mono text-xs">1</code>.
                   </p>
                 </div>
               </div>
 
-                            <div class="flex items-start gap-4 text-xs font-semibold border-b border-slate-100 dark:border-slate-800/60 pb-3">
+              <div
+                class="flex items-start gap-4 text-xs font-semibold border-b border-slate-100 dark:border-slate-800/60 pb-3"
+              >
                 <div class="min-w-[120px] font-mono text-[var(--color-primary)] font-bold">
                   limit
                 </div>
                 <div class="flex-1 space-y-1">
                   <div class="flex items-center gap-1.5">
-                    <span class="text-[10px] font-black uppercase bg-slate-100 dark:bg-slate-800 text-slate-500 px-1.5 py-0.5 rounded">Tùy chọn</span>
-                    <span class="text-slate-400 dark:text-slate-500 font-mono text-[10px]">Integer</span>
+                    <span
+                      class="text-xs font-black uppercase bg-slate-100 dark:bg-slate-800 text-slate-500 px-1.5 py-0.5 rounded"
+                      >Tùy chọn</span
+                    >
+                    <span class="text-slate-400 dark:text-slate-500 font-mono text-xs"
+                      >Integer</span
+                    >
                   </div>
                   <p class="text-slate-500 dark:text-slate-400 font-semibold leading-relaxed">
-                    Số lượng bản ghi tối đa trên một trang. Mặc định là <code class="font-mono text-[10px]">10</code>.
+                    Số lượng bản ghi tối đa trên một trang. Mặc định là
+                    <code class="font-mono text-xs">10</code>.
                   </p>
                 </div>
               </div>
 
-                            <div class="flex items-start gap-4 text-xs font-semibold border-b border-slate-100 dark:border-slate-800/60 pb-3">
+              <div
+                class="flex items-start gap-4 text-xs font-semibold border-b border-slate-100 dark:border-slate-800/60 pb-3"
+              >
                 <div class="min-w-[120px] font-mono text-[var(--color-primary)] font-bold">
                   category_id
                 </div>
                 <div class="flex-1 space-y-1">
                   <div class="flex items-center gap-1.5">
-                    <span class="text-[10px] font-black uppercase bg-slate-100 dark:bg-slate-800 text-slate-500 px-1.5 py-0.5 rounded">Tùy chọn</span>
-                    <span class="text-slate-400 dark:text-slate-500 font-mono text-[10px]">String (UUID)</span>
+                    <span
+                      class="text-xs font-black uppercase bg-slate-100 dark:bg-slate-800 text-slate-500 px-1.5 py-0.5 rounded"
+                      >Tùy chọn</span
+                    >
+                    <span class="text-slate-400 dark:text-slate-500 font-mono text-xs"
+                      >String (UUID)</span
+                    >
                   </div>
                   <p class="text-slate-500 dark:text-slate-400 font-semibold leading-relaxed">
-                    Mã danh mục sản phẩm cần lọc. Nếu không truyền sẽ lấy sản phẩm từ tất cả danh mục.
+                    Mã danh mục sản phẩm cần lọc. Nếu không truyền sẽ lấy sản phẩm từ tất cả danh
+                    mục.
                   </p>
                 </div>
               </div>
 
-                            <div class="flex items-start gap-4 text-xs font-semibold">
+              <div class="flex items-start gap-4 text-xs font-semibold">
                 <div class="min-w-[120px] font-mono text-[var(--color-primary)] font-bold">
                   search
                 </div>
                 <div class="flex-1 space-y-1">
                   <div class="flex items-center gap-1.5">
-                    <span class="text-[10px] font-black uppercase bg-slate-100 dark:bg-slate-800 text-slate-500 px-1.5 py-0.5 rounded">Tùy chọn</span>
-                    <span class="text-slate-400 dark:text-slate-500 font-mono text-[10px]">String</span>
+                    <span
+                      class="text-xs font-black uppercase bg-slate-100 dark:bg-slate-800 text-slate-500 px-1.5 py-0.5 rounded"
+                      >Tùy chọn</span
+                    >
+                    <span class="text-slate-400 dark:text-slate-500 font-mono text-xs">String</span>
                   </div>
                   <p class="text-slate-500 dark:text-slate-400 font-semibold leading-relaxed">
                     Từ khóa tìm kiếm theo tên sản phẩm.
@@ -265,16 +313,16 @@ curl -X GET "{{ siteUrl() }}/api/v1/b2b/products?api_key={{ apiKey() || 'API_KEY
             </div>
           </div>
 
-                    <div class="space-y-1.5">
+          <div class="space-y-1.5">
             <span
-              class="text-[10px] font-bold text-slate-400 dark:text-slate-500 uppercase tracking-wider block"
+              class="text-xs font-bold text-slate-400 dark:text-slate-500 uppercase tracking-wider block"
               >RESPONSE MẪU (JSON)</span
             >
             <div
               class="bg-slate-50 dark:bg-slate-950 rounded-xl p-4 font-mono text-xs text-slate-700 dark:text-slate-300 overflow-x-auto leading-relaxed border border-slate-200/60 dark:border-slate-900"
             >
-              <pre class="whitespace-pre">
-{{ '{' }}
+              <pre class="whitespace-pre"
+                >{{ '{' }}
   "success": true,
   "products": [
     {{ '{' }}
@@ -297,7 +345,7 @@ curl -X GET "{{ siteUrl() }}/api/v1/b2b/products?api_key={{ apiKey() || 'API_KEY
         </div>
       </div>
 
-            <div class="pt-6 space-y-4">
+      <div class="pt-6 space-y-4">
         <div class="flex items-start gap-3">
           <div
             class="w-7 h-7 rounded-full bg-[var(--color-primary)]/10 text-[var(--color-primary)] text-xs font-black flex items-center justify-center shrink-0 mt-0.5"
@@ -316,7 +364,7 @@ curl -X GET "{{ siteUrl() }}/api/v1/b2b/products?api_key={{ apiKey() || 'API_KEY
 
         <div class="flex flex-wrap items-center gap-2">
           <span
-            class="text-[10px] font-black uppercase tracking-wider bg-blue-500 text-white px-2 py-0.5 rounded"
+            class="text-xs font-black uppercase tracking-wider bg-blue-500 text-white px-2 py-0.5 rounded"
           >
             GET
           </span>
@@ -328,9 +376,9 @@ curl -X GET "{{ siteUrl() }}/api/v1/b2b/products?api_key={{ apiKey() || 'API_KEY
         </div>
 
         <div class="space-y-3">
-                    <div class="space-y-1.5">
+          <div class="space-y-1.5">
             <span
-              class="text-[10px] font-bold text-slate-400 dark:text-slate-500 uppercase tracking-wider block"
+              class="text-xs font-bold text-slate-400 dark:text-slate-500 uppercase tracking-wider block"
               >Mẫu gọi API (CURL)</span
             >
             <div
@@ -354,9 +402,9 @@ curl -X GET "{{ siteUrl() }}/api/v1/b2b/products/PRODUCT_ID?api_key={{
             </div>
           </div>
 
-                    <div class="space-y-1.5">
+          <div class="space-y-1.5">
             <span
-              class="text-[10px] font-bold text-slate-400 dark:text-slate-500 uppercase tracking-wider block"
+              class="text-xs font-bold text-slate-400 dark:text-slate-500 uppercase tracking-wider block"
               >URL gọi trực tiếp</span
             >
             <div
@@ -366,7 +414,9 @@ curl -X GET "{{ siteUrl() }}/api/v1/b2b/products/PRODUCT_ID?api_key={{
                 class="overflow-x-auto p-3.5 pr-12 font-mono text-xs text-slate-700 dark:text-slate-300 leading-relaxed"
               >
                 <span class="text-[var(--color-primary)] font-semibold"
-                  >{{ siteUrl() }}/api/v1/b2b/products/PRODUCT_ID?api_key={{ apiKey() || 'API_KEY_CUA_BAN' }}</span
+                  >{{ siteUrl() }}/api/v1/b2b/products/PRODUCT_ID?api_key={{
+                    apiKey() || 'API_KEY_CUA_BAN'
+                  }}</span
                 >
               </div>
               <button
@@ -379,9 +429,9 @@ curl -X GET "{{ siteUrl() }}/api/v1/b2b/products/PRODUCT_ID?api_key={{
             </div>
           </div>
 
-                    <div class="space-y-1.5">
+          <div class="space-y-1.5">
             <span
-              class="text-[10px] font-bold text-slate-400 dark:text-slate-500 uppercase tracking-wider block"
+              class="text-xs font-bold text-slate-400 dark:text-slate-500 uppercase tracking-wider block"
               >RESPONSE MẪU (JSON)</span
             >
             <div
@@ -401,7 +451,7 @@ curl -X GET "{{ siteUrl() }}/api/v1/b2b/products/PRODUCT_ID?api_key={{
         </div>
       </div>
 
-            <div class="pt-6 space-y-4">
+      <div class="pt-6 space-y-4">
         <div class="flex items-start gap-3">
           <div
             class="w-7 h-7 rounded-full bg-[var(--color-primary)]/10 text-[var(--color-primary)] text-xs font-black flex items-center justify-center shrink-0 mt-0.5"
@@ -421,7 +471,7 @@ curl -X GET "{{ siteUrl() }}/api/v1/b2b/products/PRODUCT_ID?api_key={{
 
         <div class="flex flex-wrap items-center gap-2">
           <span
-            class="text-[10px] font-black uppercase tracking-wider bg-teal-600 text-white px-2 py-0.5 rounded"
+            class="text-xs font-black uppercase tracking-wider bg-teal-600 text-white px-2 py-0.5 rounded"
           >
             POST
           </span>
@@ -433,30 +483,43 @@ curl -X GET "{{ siteUrl() }}/api/v1/b2b/products/PRODUCT_ID?api_key={{
         </div>
 
         <div class="space-y-3">
-                    <div class="space-y-2">
-                        <div class="flex items-center gap-1 border-b border-slate-200/60 dark:border-slate-900 pb-1">
+          <div class="space-y-2">
+            <div
+              class="flex items-center gap-1 border-b border-slate-200/60 dark:border-slate-900 pb-1"
+            >
               <button
                 (click)="activeTab.set('bash')"
-                [class]="activeTab() === 'bash'
-                  ? 'text-xs font-bold text-[var(--color-primary)] border-b-2 border-[var(--color-primary)] pb-1 px-3 -mb-1.5 transition-all cursor-pointer'
-                  : 'text-xs font-semibold text-slate-400 dark:text-slate-500 pb-1 px-3 -mb-1.5 hover:text-slate-600 dark:hover:text-slate-400 transition-all cursor-pointer'"
+                [class]="
+                  activeTab() === 'bash'
+                    ? 'text-xs font-bold text-[var(--color-primary)] border-b-2 border-[var(--color-primary)] pb-1 px-3 -mb-1.5 transition-all cursor-pointer'
+                    : 'text-xs font-semibold text-slate-400 dark:text-slate-500 pb-1 px-3 -mb-1.5 hover:text-slate-600 dark:hover:text-slate-400 transition-all cursor-pointer'
+                "
               >
                 Linux / macOS / Bash
               </button>
               <button
                 (click)="activeTab.set('cmd')"
-                [class]="activeTab() === 'cmd'
-                  ? 'text-xs font-bold text-[var(--color-primary)] border-b-2 border-[var(--color-primary)] pb-1 px-3 -mb-1.5 transition-all cursor-pointer'
-                  : 'text-xs font-semibold text-slate-400 dark:text-slate-500 pb-1 px-3 -mb-1.5 hover:text-slate-600 dark:hover:text-slate-400 transition-all cursor-pointer'"
+                [class]="
+                  activeTab() === 'cmd'
+                    ? 'text-xs font-bold text-[var(--color-primary)] border-b-2 border-[var(--color-primary)] pb-1 px-3 -mb-1.5 transition-all cursor-pointer'
+                    : 'text-xs font-semibold text-slate-400 dark:text-slate-500 pb-1 px-3 -mb-1.5 hover:text-slate-600 dark:hover:text-slate-400 transition-all cursor-pointer'
+                "
               >
                 Windows CMD
               </button>
             </div>
 
-                        @if (activeTab() === 'bash') {
-              <div class="relative bg-slate-50 dark:bg-slate-950 rounded-xl border border-slate-200/60 dark:border-slate-900 overflow-hidden mt-1.5">
-                <div class="overflow-x-auto p-3.5 pr-12 font-mono text-xs text-slate-700 dark:text-slate-300 leading-relaxed">
-                  <pre class="whitespace-pre">curl -X POST "{{ siteUrl() }}/api/v1/b2b/buy" -H "Content-Type: application/json" -H "X-API-KEY: {{ apiKey() || 'API_KEY_CUA_BAN' }}" -d '{{ '{' }}"product_id": "PRODUCT_ID", "quantity": 1{{ '}' }}'</pre>
+            @if (activeTab() === 'bash') {
+              <div
+                class="relative bg-slate-50 dark:bg-slate-950 rounded-xl border border-slate-200/60 dark:border-slate-900 overflow-hidden mt-1.5"
+              >
+                <div
+                  class="overflow-x-auto p-3.5 pr-12 font-mono text-xs text-slate-700 dark:text-slate-300 leading-relaxed"
+                >
+                  <pre class="whitespace-pre">
+curl -X POST "{{ siteUrl() }}/api/v1/b2b/buy" -H "Content-Type: application/json" -H "X-API-KEY: {{
+                      apiKey() || 'API_KEY_CUA_BAN'
+                    }}" -d '{{ '{' }}"product_id": "PRODUCT_ID", "quantity": 1{{ '}' }}'</pre>
                 </div>
                 <button
                   (click)="copyBuyCurl()"
@@ -467,9 +530,16 @@ curl -X GET "{{ siteUrl() }}/api/v1/b2b/products/PRODUCT_ID?api_key={{
                 </button>
               </div>
             } @else if (activeTab() === 'cmd') {
-              <div class="relative bg-slate-50 dark:bg-slate-950 rounded-xl border border-slate-200/60 dark:border-slate-900 overflow-hidden mt-1.5">
-                <div class="overflow-x-auto p-3.5 pr-12 font-mono text-xs text-slate-700 dark:text-slate-300 leading-relaxed">
-                  <pre class="whitespace-pre">curl -X POST "{{ siteUrl() }}/api/v1/b2b/buy" -H "Content-Type: application/json" -H "X-API-KEY: {{ apiKey() || 'API_KEY_CUA_BAN' }}" -d "{{ '{' }}\"product_id\": \"PRODUCT_ID\", \"quantity\": 1{{ '}' }}"</pre>
+              <div
+                class="relative bg-slate-50 dark:bg-slate-950 rounded-xl border border-slate-200/60 dark:border-slate-900 overflow-hidden mt-1.5"
+              >
+                <div
+                  class="overflow-x-auto p-3.5 pr-12 font-mono text-xs text-slate-700 dark:text-slate-300 leading-relaxed"
+                >
+                  <pre class="whitespace-pre">
+curl -X POST "{{ siteUrl() }}/api/v1/b2b/buy" -H "Content-Type: application/json" -H "X-API-KEY: {{
+                      apiKey() || 'API_KEY_CUA_BAN'
+                    }}" -d "{{ '{' }}\"product_id\": \"PRODUCT_ID\", \"quantity\": 1{{ '}' }}"</pre>
                 </div>
                 <button
                   (click)="copyBuyWindowsCurl()"
@@ -482,9 +552,9 @@ curl -X GET "{{ siteUrl() }}/api/v1/b2b/products/PRODUCT_ID?api_key={{
             }
           </div>
 
-                    <div class="space-y-1.5">
+          <div class="space-y-1.5">
             <span
-              class="text-[10px] font-bold text-slate-400 dark:text-slate-500 uppercase tracking-wider block"
+              class="text-xs font-bold text-slate-400 dark:text-slate-500 uppercase tracking-wider block"
               >URL gọi trực tiếp</span
             >
             <div
@@ -507,9 +577,9 @@ curl -X GET "{{ siteUrl() }}/api/v1/b2b/products/PRODUCT_ID?api_key={{
             </div>
           </div>
 
-                    <div class="space-y-1.5">
+          <div class="space-y-1.5">
             <span
-              class="text-[10px] font-bold text-slate-400 dark:text-slate-500 uppercase tracking-wider block"
+              class="text-xs font-bold text-slate-400 dark:text-slate-500 uppercase tracking-wider block"
               >Tham số Body (JSON Payload)</span
             >
             <div
@@ -522,10 +592,10 @@ curl -X GET "{{ siteUrl() }}/api/v1/b2b/products/PRODUCT_ID?api_key={{
                 <div class="flex-1 space-y-1">
                   <div class="flex items-center gap-1.5">
                     <span
-                      class="text-[10px] font-black uppercase bg-rose-500/10 text-rose-500 px-1.5 py-0.5 rounded"
+                      class="text-xs font-black uppercase bg-rose-500/10 text-rose-500 px-1.5 py-0.5 rounded"
                       >Bắt buộc</span
                     >
-                    <span class="text-slate-400 dark:text-slate-500 font-mono text-[10px]"
+                    <span class="text-slate-400 dark:text-slate-500 font-mono text-xs"
                       >String (UUID)</span
                     >
                   </div>
@@ -544,10 +614,10 @@ curl -X GET "{{ siteUrl() }}/api/v1/b2b/products/PRODUCT_ID?api_key={{
                 <div class="flex-1 space-y-1">
                   <div class="flex items-center gap-1.5">
                     <span
-                      class="text-[10px] font-black uppercase bg-rose-500/10 text-rose-500 px-1.5 py-0.5 rounded"
+                      class="text-xs font-black uppercase bg-rose-500/10 text-rose-500 px-1.5 py-0.5 rounded"
                       >Bắt buộc</span
                     >
-                    <span class="text-slate-400 dark:text-slate-500 font-mono text-[10px]"
+                    <span class="text-slate-400 dark:text-slate-500 font-mono text-xs"
                       >Integer (>= 1)</span
                     >
                   </div>
@@ -559,9 +629,9 @@ curl -X GET "{{ siteUrl() }}/api/v1/b2b/products/PRODUCT_ID?api_key={{
             </div>
           </div>
 
-                    <div class="space-y-1.5">
+          <div class="space-y-1.5">
             <span
-              class="text-[10px] font-bold text-slate-400 dark:text-slate-500 uppercase tracking-wider block"
+              class="text-xs font-bold text-slate-400 dark:text-slate-500 uppercase tracking-wider block"
               >RESPONSE MẪU (JSON)</span
             >
             <div
@@ -581,7 +651,7 @@ curl -X GET "{{ siteUrl() }}/api/v1/b2b/products/PRODUCT_ID?api_key={{
         </div>
       </div>
 
-            <div class="pt-8 space-y-4">
+      <div class="pt-8 space-y-4">
         <div class="flex items-start gap-3">
           <div
             class="w-7 h-7 rounded-full bg-[var(--color-primary)]/10 text-[var(--color-primary)] text-xs font-black flex items-center justify-center shrink-0 mt-0.5"
@@ -601,7 +671,7 @@ curl -X GET "{{ siteUrl() }}/api/v1/b2b/products/PRODUCT_ID?api_key={{
 
         <div class="flex flex-wrap items-center gap-2">
           <span
-            class="text-[10px] font-black uppercase tracking-wider bg-blue-500 text-white px-2 py-0.5 rounded"
+            class="text-xs font-black uppercase tracking-wider bg-blue-500 text-white px-2 py-0.5 rounded"
           >
             GET
           </span>
@@ -613,9 +683,9 @@ curl -X GET "{{ siteUrl() }}/api/v1/b2b/products/PRODUCT_ID?api_key={{
         </div>
 
         <div class="space-y-3">
-                    <div class="space-y-1.5">
+          <div class="space-y-1.5">
             <span
-              class="text-[10px] font-bold text-slate-400 dark:text-slate-500 uppercase tracking-wider block"
+              class="text-xs font-bold text-slate-400 dark:text-slate-500 uppercase tracking-wider block"
               >Mẫu gọi API (CURL)</span
             >
             <div
@@ -639,9 +709,9 @@ curl -X GET "{{ siteUrl() }}/api/v1/b2b/me" -H "X-API-KEY: {{
             </div>
           </div>
 
-                    <div class="space-y-1.5">
+          <div class="space-y-1.5">
             <span
-              class="text-[10px] font-bold text-slate-400 dark:text-slate-500 uppercase tracking-wider block"
+              class="text-xs font-bold text-slate-400 dark:text-slate-500 uppercase tracking-wider block"
               >URL gọi trực tiếp</span
             >
             <div
@@ -664,9 +734,9 @@ curl -X GET "{{ siteUrl() }}/api/v1/b2b/me" -H "X-API-KEY: {{
             </div>
           </div>
 
-                    <div class="space-y-1.5">
+          <div class="space-y-1.5">
             <span
-              class="text-[10px] font-bold text-slate-400 dark:text-slate-500 uppercase tracking-wider block"
+              class="text-xs font-bold text-slate-400 dark:text-slate-500 uppercase tracking-wider block"
               >RESPONSE MẪU (JSON)</span
             >
             <div
@@ -686,7 +756,7 @@ curl -X GET "{{ siteUrl() }}/api/v1/b2b/me" -H "X-API-KEY: {{
         </div>
       </div>
 
-            <div class="pt-8 space-y-4">
+      <div class="pt-8 space-y-4">
         <div class="flex items-start gap-3">
           <div
             class="w-7 h-7 rounded-full bg-[var(--color-primary)]/10 text-[var(--color-primary)] text-xs font-black flex items-center justify-center shrink-0 mt-0.5"
@@ -706,7 +776,7 @@ curl -X GET "{{ siteUrl() }}/api/v1/b2b/me" -H "X-API-KEY: {{
 
         <div class="flex flex-wrap items-center gap-2">
           <span
-            class="text-[10px] font-black uppercase tracking-wider bg-blue-500 text-white px-2 py-0.5 rounded"
+            class="text-xs font-black uppercase tracking-wider bg-blue-500 text-white px-2 py-0.5 rounded"
           >
             GET
           </span>
@@ -718,9 +788,9 @@ curl -X GET "{{ siteUrl() }}/api/v1/b2b/me" -H "X-API-KEY: {{
         </div>
 
         <div class="space-y-3">
-                    <div class="space-y-1.5">
+          <div class="space-y-1.5">
             <span
-              class="text-[10px] font-bold text-slate-400 dark:text-slate-500 uppercase tracking-wider block"
+              class="text-xs font-bold text-slate-400 dark:text-slate-500 uppercase tracking-wider block"
               >Mẫu gọi API (CURL)</span
             >
             <div
@@ -744,9 +814,9 @@ curl -X GET "{{ siteUrl() }}/api/v1/b2b/orders/ORDER_CODE" -H "X-API-KEY: {{
             </div>
           </div>
 
-                    <div class="space-y-1.5">
+          <div class="space-y-1.5">
             <span
-              class="text-[10px] font-bold text-slate-400 dark:text-slate-500 uppercase tracking-wider block"
+              class="text-xs font-bold text-slate-400 dark:text-slate-500 uppercase tracking-wider block"
               >URL gọi trực tiếp</span
             >
             <div
@@ -756,7 +826,9 @@ curl -X GET "{{ siteUrl() }}/api/v1/b2b/orders/ORDER_CODE" -H "X-API-KEY: {{
                 class="overflow-x-auto p-3.5 pr-12 font-mono text-xs text-slate-700 dark:text-slate-300 leading-relaxed"
               >
                 <span class="text-[var(--color-primary)] font-semibold"
-                  >{{ siteUrl() }}/api/v1/b2b/orders/ORDER_CODE?api_key={{ apiKey() || 'API_KEY_CUA_BAN' }}</span
+                  >{{ siteUrl() }}/api/v1/b2b/orders/ORDER_CODE?api_key={{
+                    apiKey() || 'API_KEY_CUA_BAN'
+                  }}</span
                 >
               </div>
               <button
@@ -769,9 +841,9 @@ curl -X GET "{{ siteUrl() }}/api/v1/b2b/orders/ORDER_CODE" -H "X-API-KEY: {{
             </div>
           </div>
 
-                    <div class="space-y-1.5">
+          <div class="space-y-1.5">
             <span
-              class="text-[10px] font-bold text-slate-400 dark:text-slate-500 uppercase tracking-wider block"
+              class="text-xs font-bold text-slate-400 dark:text-slate-500 uppercase tracking-wider block"
               >RESPONSE MẪU (JSON)</span
             >
             <div
