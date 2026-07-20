@@ -155,6 +155,21 @@ export class CouponStore {
     );
   }
 
+  public restoreCoupon(id: string) {
+    this.loading.set(true);
+    return this.api.post<any>(`v1/admin/coupons/${id}/restore`, {}).pipe(
+      tap(() => {
+        this.toast.showToast('Khôi phục mã giảm giá thành công!', 'success');
+      }),
+      catchError((err) => {
+        const msg = this.parseErrorMessage(err, 'Khôi phục mã giảm giá thất bại!');
+        this.toast.showToast(msg, 'error');
+        return of(null);
+      }),
+      finalize(() => this.loading.set(false))
+    );
+  }
+
   public validateCoupon(code: string, cartTotal: number) {
     return this.api.post<any>('v1/coupons/validate', { code, cart_total: cartTotal }).pipe(
       catchError((err) => {

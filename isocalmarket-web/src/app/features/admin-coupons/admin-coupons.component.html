@@ -24,7 +24,7 @@
   </app-page-header>
 
   <div
-    class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 bg-slate-50/50 dark:bg-slate-950/20 border border-slate-200/30 dark:border-slate-800/30 rounded-2xl p-4 sm:p-5"
+    class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 bg-slate-50/50 dark:bg-slate-950/20 border border-slate-200/30 dark:border-slate-800/30 rounded-2xl p-4 sm:p-5"
   >
     <div class="form-field">
       <label class="text-xs font-bold text-slate-400 dark:text-slate-500 uppercase tracking-wider block mb-1">Trạng thái</label>
@@ -45,17 +45,6 @@
         labelKey="label"
         [value]="typeFilter()"
         (valueChange)="typeFilter.set($event)"
-      />
-    </div>
-
-    <div class="form-field">
-      <label class="text-xs font-bold text-slate-400 dark:text-slate-500 uppercase tracking-wider block mb-1">Sắp xếp theo</label>
-      <app-custom-select
-        [options]="sortOptions"
-        valueKey="value"
-        labelKey="label"
-        [value]="sortFilter()"
-        (valueChange)="sortFilter.set($event)"
       />
     </div>
 
@@ -84,6 +73,7 @@
           <span
             class="font-mono font-black text-xs uppercase border border-dashed border-[var(--color-primary)]/40 px-2.5 py-1 rounded bg-[var(--color-primary)]/5 text-[var(--color-primary)] select-all tracking-wider"
             [appTooltip]="'Mã giảm giá: ' + row.code"
+            [ngClass]="{ 'line-through opacity-40 text-slate-400 dark:text-slate-500': row.is_deleted }"
           >
             {{ row.code }}
           </span>
@@ -103,6 +93,7 @@
           size="md"
           rounded="md"
           [appTooltip]="row.type === 'percentage' ? 'Giảm theo phần trăm tổng đơn' : 'Giảm số tiền cố định trên đơn'"
+          [ngClass]="{ 'line-through opacity-40': row.is_deleted }"
         >
           {{ row.type === 'percentage' ? 'Phần trăm (%)' : 'Số tiền cố định' }}
         </app-badge>
@@ -112,6 +103,7 @@
         <span
           class="font-extrabold text-slate-800 dark:text-slate-100 text-sm whitespace-nowrap"
           [appTooltip]="'Mức giảm: ' + (row.type === 'percentage' ? row.value + '%' : (row.value | number: '1.0-0') + ' VND')"
+          [ngClass]="{ 'line-through opacity-40 text-slate-400 dark:text-slate-500': row.is_deleted }"
         >
           @if (row.type === 'percentage') {
             {{ row.value }}%
@@ -125,15 +117,17 @@
         <span
           class="text-slate-600 dark:text-slate-300 font-semibold text-xs whitespace-nowrap"
           [appTooltip]="'Đơn hàng tối thiểu: ' + (row.min_spend | number: '1.0-0') + ' VND'"
+          [ngClass]="{ 'line-through opacity-40 text-slate-400 dark:text-slate-500': row.is_deleted }"
         >
           {{ row.min_spend | number: '1.0-0' }} VND
         </span>
       </ng-template>
 
-      <ng-template appTableCell="usage" let-row="row">
+      <ng-template appTableCell="used_count" let-row="row">
         <div
           class="flex flex-col items-center justify-center gap-0.5"
           [appTooltip]="'Đã dùng ' + row.used_count + ' / ' + (row.usage_limit === 0 ? 'Không giới hạn' : row.usage_limit + ' lượt')"
+          [ngClass]="{ 'line-through opacity-40 text-slate-400 dark:text-slate-500': row.is_deleted }"
         >
           <span class="text-xs font-black text-slate-700 dark:text-slate-200">
             {{ row.used_count }} / {{ row.usage_limit === 0 ? '∞' : row.usage_limit }}
@@ -149,10 +143,11 @@
         </div>
       </ng-template>
 
-      <ng-template appTableCell="date_range" let-row="row">
+      <ng-template appTableCell="start_date" let-row="row">
         <div
           class="flex flex-col gap-1 text-xs text-slate-600 dark:text-slate-400 whitespace-nowrap"
           [appTooltip]="'Thời gian: ' + (row.start_date | date: 'dd/MM/yyyy HH:mm') + ' - ' + (row.end_date | date: 'dd/MM/yyyy HH:mm')"
+          [ngClass]="{ 'line-through opacity-40 text-slate-400 dark:text-slate-500': row.is_deleted }"
         >
           <div class="flex items-center gap-1.5">
             <span class="text-[10px] bg-emerald-50 dark:bg-emerald-950/40 text-emerald-600 dark:text-emerald-400 border border-emerald-500/20 px-1.5 py-0.5 rounded font-black shrink-0">BĐ</span>
@@ -172,6 +167,7 @@
           size="sm"
           rounded="md"
           [appTooltip]="'Trạng thái mã: ' + statusInfo.label"
+          [ngClass]="{ 'opacity-60': row.is_deleted }"
         >
           {{ statusInfo.label }}
         </app-badge>
@@ -179,22 +175,33 @@
 
       <ng-template appTableCell="actions" let-row="row">
         <div class="flex items-center justify-end gap-2 whitespace-nowrap">
-          <button
-            (click)="openEditModal(row)"
-            class="text-xs font-bold px-3 py-1.5 rounded-lg border border-[var(--color-primary)]/20 hover:bg-[var(--color-primary)]/10 text-[var(--color-primary)] bg-[var(--color-primary)]/5 dark:bg-[var(--color-primary)]/10 dark:border-[var(--color-primary)]/30 dark:hover:bg-[var(--color-primary)]/20 hover:scale-105 active:scale-95 transition-all cursor-pointer flex items-center gap-1 shrink-0"
-            [appTooltip]="'Chỉnh sửa mã giảm giá'"
-          >
-            <app-icon name="edit" class="w-3.5 h-3.5" />
-            <span>Sửa</span>
-          </button>
-          <button
-            (click)="confirmDelete(row)"
-            class="text-xs font-bold px-3 py-1.5 rounded-lg border border-rose-500/20 dark:border-rose-500/30 hover:bg-rose-100 dark:hover:bg-rose-950/40 text-rose-600 dark:text-rose-400 bg-rose-50 dark:bg-rose-950/20 hover:scale-105 active:scale-95 transition-all cursor-pointer flex items-center gap-1 shrink-0"
-            [appTooltip]="'Xóa mã giảm giá'"
-          >
-            <app-icon name="trash" class="w-3.5 h-3.5" />
-            <span>Xóa</span>
-          </button>
+          @if (row.is_deleted) {
+            <button
+              (click)="restoreCoupon(row)"
+              class="text-xs font-bold px-3 py-1.5 rounded-lg border border-emerald-500/20 dark:border-emerald-500/30 hover:bg-emerald-100 dark:hover:bg-emerald-950/40 text-emerald-600 dark:text-emerald-400 bg-emerald-50 dark:bg-emerald-950/20 hover:scale-105 active:scale-95 transition-all cursor-pointer flex items-center gap-1 shrink-0"
+              [appTooltip]="'Khôi phục mã giảm giá'"
+            >
+              <app-icon name="sync" class="w-3.5 h-3.5" />
+              <span>Khôi phục</span>
+            </button>
+          } @else {
+            <button
+              (click)="openEditModal(row)"
+              class="text-xs font-bold px-3 py-1.5 rounded-lg border border-[var(--color-primary)]/20 hover:bg-[var(--color-primary)]/10 text-[var(--color-primary)] bg-[var(--color-primary)]/5 dark:bg-[var(--color-primary)]/10 dark:border-[var(--color-primary)]/30 dark:hover:bg-[var(--color-primary)]/20 hover:scale-105 active:scale-95 transition-all cursor-pointer flex items-center gap-1 shrink-0"
+              [appTooltip]="'Chỉnh sửa mã giảm giá'"
+            >
+              <app-icon name="edit" class="w-3.5 h-3.5" />
+              <span>Sửa</span>
+            </button>
+            <button
+              (click)="confirmDelete(row)"
+              class="text-xs font-bold px-3 py-1.5 rounded-lg border border-rose-500/20 dark:border-rose-500/30 hover:bg-rose-100 dark:hover:bg-rose-950/40 text-rose-600 dark:text-rose-400 bg-rose-50 dark:bg-rose-950/20 hover:scale-105 active:scale-95 transition-all cursor-pointer flex items-center gap-1 shrink-0"
+              [appTooltip]="'Xóa mã giảm giá'"
+            >
+              <app-icon name="trash" class="w-3.5 h-3.5" />
+              <span>Xóa</span>
+            </button>
+          }
         </div>
       </ng-template>
     </app-table>

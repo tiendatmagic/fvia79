@@ -37,6 +37,7 @@ class AdminCouponController extends Controller
                     'end_date' => $c->getEndDate()->format('Y-m-d H:i:s'),
                     'usage_limit' => $c->getUsageLimit(),
                     'used_count' => $c->getUsedCount(),
+                    'is_deleted' => $c->isDeleted(),
                     'created_at' => $c->getCreatedAt()?->format('Y-m-d H:i:s')
                 ], $coupons);
 
@@ -142,6 +143,19 @@ class AdminCouponController extends Controller
             $deleted = $this->couponService->deleteCoupon($id);
             if ($deleted) {
                 return response()->json(['message' => 'Coupon deleted successfully.']);
+            }
+            return response()->json(['message' => 'Coupon not found.'], 404);
+        } catch (\Exception $e) {
+            return response()->json(['message' => $e->getMessage()], 400);
+        }
+    }
+
+    public function restore($id)
+    {
+        try {
+            $restored = $this->couponService->restoreCoupon($id);
+            if ($restored) {
+                return response()->json(['message' => 'Coupon restored successfully.']);
             }
             return response()->json(['message' => 'Coupon not found.'], 404);
         } catch (\Exception $e) {

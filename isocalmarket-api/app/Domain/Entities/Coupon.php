@@ -14,6 +14,7 @@ class Coupon
     private int $usageLimit;
     private int $usedCount;
     private ?\DateTimeInterface $createdAt;
+    private ?\DateTimeInterface $deletedAt;
 
     public function __construct(
         ?string $id,
@@ -25,7 +26,8 @@ class Coupon
         \DateTimeInterface $endDate,
         int $usageLimit = 1,
         int $usedCount = 0,
-        ?\DateTimeInterface $createdAt = null
+        ?\DateTimeInterface $createdAt = null,
+        ?\DateTimeInterface $deletedAt = null
     ) {
         $this->id = $id;
         $this->code = $code;
@@ -37,6 +39,7 @@ class Coupon
         $this->usageLimit = $usageLimit;
         $this->usedCount = $usedCount;
         $this->createdAt = $createdAt;
+        $this->deletedAt = $deletedAt;
     }
 
     public function getId(): ?string
@@ -87,6 +90,16 @@ class Coupon
     public function getCreatedAt(): ?\DateTimeInterface
     {
         return $this->createdAt;
+    }
+
+    public function getDeletedAt(): ?\DateTimeInterface
+    {
+        return $this->deletedAt;
+    }
+
+    public function isDeleted(): bool
+    {
+        return $this->deletedAt !== null;
     }
 
     public function isValidForAmount(float $amount): bool

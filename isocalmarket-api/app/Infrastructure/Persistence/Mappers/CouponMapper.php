@@ -19,7 +19,8 @@ class CouponMapper
             $model->end_date,
             (int) $model->usage_limit,
             (int) $model->used_count,
-            $model->created_at
+            $model->created_at,
+            $model->deleted_at
         );
     }
 

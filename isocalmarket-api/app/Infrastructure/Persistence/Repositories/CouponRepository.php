@@ -44,7 +44,7 @@ class CouponRepository implements CouponRepositoryInterface
 
     public function findAllPaginated(int $page, int $limit, ?string $search = null): array
     {
-        $query = CouponModel::query();
+        $query = CouponModel::withTrashed();
         if ($search) {
             $query->where(function ($q) use ($search) {
                 $this->applyAccentInsensitiveSearch($q, 'code', $search);
@@ -73,6 +73,15 @@ class CouponRepository implements CouponRepositoryInterface
         $model = CouponModel::find($id);
         if ($model) {
             return (bool) $model->delete();
+        }
+        return false;
+    }
+
+    public function restore(string $id): bool
+    {
+        $model = CouponModel::withTrashed()->find($id);
+        if ($model) {
+            return (bool) $model->restore();
         }
         return false;
     }

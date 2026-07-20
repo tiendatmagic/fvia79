@@ -47,12 +47,12 @@ export class AdminCouponsComponent implements OnInit {
   private readonly toast = inject(ToastService);
 
   public readonly columns: TableColumn[] = [
-    { key: 'code', label: 'Mã giảm giá', sortable: false },
-    { key: 'type', label: 'Loại giảm giá', sortable: false },
-    { key: 'value', label: 'Mức giảm', sortable: false, align: 'right' },
-    { key: 'min_spend', label: 'Đơn tối thiểu', sortable: false, align: 'right' },
-    { key: 'usage', label: 'Lượt sử dụng', sortable: false, align: 'center' },
-    { key: 'date_range', label: 'Thời gian áp dụng', sortable: false },
+    { key: 'code', label: 'Mã giảm giá', sortable: true },
+    { key: 'type', label: 'Loại giảm giá', sortable: true },
+    { key: 'value', label: 'Mức giảm', sortable: true, align: 'right' },
+    { key: 'min_spend', label: 'Đơn tối thiểu', sortable: true, align: 'right' },
+    { key: 'used_count', label: 'Lượt sử dụng', sortable: true, align: 'center' },
+    { key: 'start_date', label: 'Thời gian áp dụng', sortable: true },
     { key: 'status', label: 'Trạng thái', sortable: false, align: 'center' },
     { key: 'actions', label: 'Thao tác', sortable: false, align: 'right' }
   ];
@@ -60,18 +60,18 @@ export class AdminCouponsComponent implements OnInit {
   public searchQuery = '';
   private readonly _searchQuery = signal('');
 
-  public readonly statusFilter = signal<string>('all');
+  public readonly statusFilter = signal<string>('active');
   public readonly typeFilter = signal<string>('all');
-  public readonly sortFilter = signal<string>('newest');
 
   public readonly currentPage = signal<number>(1);
   public readonly limit = 10;
 
   public readonly statusOptions = [
-    { label: 'Tất cả trạng thái', value: 'all' },
     { label: 'Đang diễn ra', value: 'active' },
     { label: 'Sắp diễn ra', value: 'upcoming' },
-    { label: 'Hết hạn / Hết lượt', value: 'expired' }
+    { label: 'Hết hạn / Hết lượt', value: 'expired' },
+    { label: 'Đã bị xóa', value: 'deleted' },
+    { label: 'Tất cả trạng thái', value: 'all' }
   ];
 
   public readonly typeOptions = [
@@ -80,49 +80,33 @@ export class AdminCouponsComponent implements OnInit {
     { label: 'Cố định (VND)', value: 'fixed' }
   ];
 
-  public readonly sortOptions = [
-    { label: 'Mới nhất', value: 'newest' },
-    { label: 'Cũ nhất', value: 'oldest' },
-    { label: 'Giá trị giảm cao nhất', value: 'value_desc' },
-    { label: 'Lượt dùng nhiều nhất', value: 'usage_desc' }
-  ];
-
   public readonly filteredCoupons = computed(() => {
     let list = [...this.couponStore.coupons()];
     const status = this.statusFilter();
     const type = this.typeFilter();
-    const sort = this.sortFilter();
     const now = new Date();
 
     if (status !== 'all') {
       list = list.filter(c => {
+        const isDeleted = !!c.is_deleted;
+        if (status === 'deleted') return isDeleted;
+        if (isDeleted) return false;
+
         const start = new Date(c.start_date);
         const end = new Date(c.end_date);
         end.setHours(23, 59, 59, 999);
         const isUsedUp = c.usage_limit > 0 && c.used_count >= c.usage_limit;
-        const isExpired = now > end || isUsedUp;
-        const isUpcoming = now < start;
-        const isActive = now >= start && now <= end && !isUsedUp;
 
-        if (status === 'active') return isActive;
-        if (status === 'upcoming') return isUpcoming;
-        if (status === 'expired') return isExpired;
+        if (status === 'active') return now >= start && now <= end && !isUsedUp;
+        if (status === 'upcoming') return now < start;
+        if (status === 'expired') return now > end || isUsedUp;
+
         return true;
       });
     }
 
     if (type !== 'all') {
       list = list.filter(c => c.type === type);
-    }
-
-    if (sort === 'newest') {
-      list.sort((a, b) => new Date(b.created_at || b.start_date).getTime() - new Date(a.created_at || a.start_date).getTime());
-    } else if (sort === 'oldest') {
-      list.sort((a, b) => new Date(a.created_at || a.start_date).getTime() - new Date(b.created_at || b.start_date).getTime());
-    } else if (sort === 'value_desc') {
-      list.sort((a, b) => Number(b.value) - Number(a.value));
-    } else if (sort === 'usage_desc') {
-      list.sort((a, b) => Number(b.used_count) - Number(a.used_count));
     }
 
     return list;
@@ -152,6 +136,10 @@ export class AdminCouponsComponent implements OnInit {
   }
 
   public getCouponStatus(coupon: any): { label: string; variant: 'success' | 'info' | 'danger' | 'warning' } {
+    if (coupon.is_deleted) {
+      return { label: 'Đã xóa', variant: 'danger' };
+    }
+
     const now = new Date();
     const start = new Date(coupon.start_date);
     const end = new Date(coupon.end_date);
@@ -179,6 +167,24 @@ export class AdminCouponsComponent implements OnInit {
         this.toast.showToast('Không thể sao chép!', 'error');
       });
     }
+  }
+
+  public restoreCoupon(coupon: any) {
+    this.modalService.confirm({
+      title: 'Xác nhận khôi phục mã giảm giá',
+      description: `Bạn có chắc chắn muốn khôi phục lại mã giảm giá '${coupon.code}'? Mã này sẽ hoạt động trở lại bình thường theo thời hạn áp dụng.`,
+      confirmText: 'Khôi phục mã',
+      cancelText: 'Hủy',
+      confirmButtonClass: 'btn-primary'
+    }).afterClosed$.subscribe((confirmed?: boolean) => {
+      if (confirmed) {
+        this.couponStore.restoreCoupon(coupon.id).subscribe((res) => {
+          if (res !== null) {
+            this.fetchCoupons();
+          }
+        });
+      }
+    });
   }
 
   public openCreateModal() {

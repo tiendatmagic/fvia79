@@ -1546,10 +1546,12 @@
     - Chuẩn hóa ô nhập Mã giảm giá tại [cart-modal.component.html](file:///d:/git/isocalmarket/isocalmarket-web/src/app/features/storefront/cart-modal/cart-modal.component.html) dùng `app-card`, `.form-field` và `.form-input`.
     - **Mốc thời gian mượt mà**: Cập nhật `Coupon.php`, `CouponService.php` và `OrderService.php` quy định mốc thời gian áp dụng từ **00:00:00 của ngày bắt đầu** đến **23:59:59 của ngày kết thúc**, tránh việc mã bị hết hạn sớm vô lý.
     - **Chống số tiền âm / giảm quá 100%**: Thêm `min($discount, $amount)` trong `Coupon.php` bảo vệ số tiền thanh toán không bị âm.
-  - **[DỊCH THÔNG BÁO LỖI TOAST CHUẨN TIẾNG VIỆT (FRONTEND)]**:
-    - **Thực hiện:** Cập nhật helper `parseErrorMessage()` trong [coupon.store.ts](file:///d:/git/isocalmarket/isocalmarket-web/src/app/features/admin-coupons/coupon.store.ts) tự động phân tích cả cấu trúc `err.error.errors` (422 validation response) lẫn `err.error.message`.
-    - **Kết quả:** Chuyển đổi toàn bộ các câu thông báo validation tiếng Anh từ Backend (như `"The code has already been taken."`, `"already exists"`, `"Duplicate entry"`) sang câu tiếng Việt chuẩn UI: **`"Mã giảm giá này đã tồn tại trên hệ thống!"`**.
-    - **Xác minh:** Biên dịch `npm run build` thành công 100%.
+  - **[TỐI ƯU FILTER BAR & SẮP XẾP TRÊN BẢNG (TABLE SORT)]**:
+    - **Thực hiện:** Đã loại bỏ ô select dư thừa "Sắp xếp theo" trong Filter Bar tại [admin-coupons.component.html](file:///d:/git/isocalmarket/isocalmarket-web/src/app/features/admin-coupons/admin-coupons.component.html) và [admin-coupons.component.ts](file:///d:/git/isocalmarket/isocalmarket-web/src/app/features/admin-coupons/admin-coupons.component.ts).
+    - **Cải tiến:**
+      1. Chuyển Filter Bar sang Grid 3 cột đẹp mắt: `Trạng thái`, `Loại giảm giá`, `Tìm kiếm mã giảm giá`.
+      2. Bật `sortable: true` trên các tiêu đề cột của bảng `app-table` (`code`, `type`, `value`, `min_spend`, `used_count`, `start_date`), cho phép nhấp trực tiếp vào tiêu đề cột để sắp xếp tăng/giảm dần theo chuẩn các bảng quản trị khác trong hệ thống.
+    - **Xác minh:** Biên dịch `npm run build` thành công `25.758s` 100%.
 
 
 

@@ -12,4 +12,5 @@ interface CouponRepositoryInterface
     public function findAll(): array;
     public function findAllPaginated(int $page, int $limit, ?string $search = null): array;
     public function delete(string $id): bool;
+    public function restore(string $id): bool;
 }

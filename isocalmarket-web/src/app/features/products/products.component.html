@@ -73,7 +73,7 @@
           <span
             [appTooltip]="row.is_deleted ? '' : row.id"
             class="font-mono font-bold text-[var(--color-primary)] border-b border-dashed border-slate-300 dark:border-slate-700 pb-0.5"
-            [ngClass]="{ 'line-through': row.is_deleted }"
+            [ngClass]="{ 'line-through opacity-40 text-slate-400 dark:text-slate-500': row.is_deleted }"
           >
             #{{ row.id | slice: 0 : 8 }}...{{ row.id | slice: -4 }}
           </span>
@@ -90,7 +90,7 @@
       </ng-template>
 
       <ng-template appTableCell="name" let-row="row">
-        <div class="flex flex-col">
+        <div class="flex flex-col" [ngClass]="{ 'opacity-40': row.is_deleted }">
           <div class="flex items-center gap-2">
             <span
               class="font-black text-slate-800 dark:text-white truncate max-w-xs block"
@@ -128,7 +128,7 @@
         <span
           class="truncate max-w-[120px] block"
           [appTooltip]="row.is_deleted ? '' : row.slug"
-          [ngClass]="{ 'line-through': row.is_deleted }"
+          [ngClass]="{ 'line-through opacity-40 text-slate-400 dark:text-slate-500': row.is_deleted }"
           >{{ row.slug }}</span
         >
       </ng-template>
@@ -136,7 +136,7 @@
       <ng-template appTableCell="price" let-row="row">
         <span
           [appTooltip]="row.is_deleted ? '' : (row.price | number: '1.0-0') + ' VND'"
-          [ngClass]="{ 'line-through': row.is_deleted }"
+          [ngClass]="{ 'line-through opacity-40 text-slate-400 dark:text-slate-500': row.is_deleted }"
           >{{ row.price | number: '1.0-0' }} VND</span
         >
       </ng-template>
@@ -147,7 +147,7 @@
           size="lg"
           rounded="md"
           [appTooltip]="row.is_deleted ? '' : 'Tồn kho khả dụng: ' + row.available_count"
-          [ngClass]="{ 'line-through': row.is_deleted }"
+          [ngClass]="{ 'line-through opacity-40': row.is_deleted }"
         >
           {{ row.available_count }}
         </app-badge>
@@ -160,6 +160,7 @@
             size="sm"
             rounded="md"
             [appTooltip]="row.is_deleted ? '' : 'Sản phẩm đã bị xóa mềm'"
+            class="opacity-60"
           >
             Đã xóa
           </app-badge>

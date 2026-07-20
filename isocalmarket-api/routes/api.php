@@ -78,6 +78,7 @@ Route::prefix('v1')->group(function () {
             Route::get('/admin/coupons/{id}', ['App\Http\Controllers\AdminCouponController', 'show']);
             Route::put('/admin/coupons/{id}', ['App\Http\Controllers\AdminCouponController', 'update']);
             Route::delete('/admin/coupons/{id}', ['App\Http\Controllers\AdminCouponController', 'destroy']);
+            Route::post('/admin/coupons/{id}/restore', ['App\Http\Controllers\AdminCouponController', 'restore']);
 
             // Admin Member Management (CRUD & Balance Adjustment)
             Route::get('/admin/users', ['App\Http\Controllers\AdminUserController', 'index']);

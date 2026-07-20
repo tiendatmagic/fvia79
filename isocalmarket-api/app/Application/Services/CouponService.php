@@ -102,6 +102,11 @@ class CouponService
         return $this->couponRepository->delete($id);
     }
 
+    public function restoreCoupon(string $id): bool
+    {
+        return $this->couponRepository->restore($id);
+    }
+
     public function validateCoupon(string $code, float $cartTotal): array
     {
         $coupon = $this->couponRepository->findByCode(strtoupper(trim($code)));
