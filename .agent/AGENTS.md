@@ -1552,9 +1552,14 @@
       1. Chuyển Filter Bar sang Grid 3 cột đẹp mắt: `Trạng thái`, `Loại giảm giá`, `Tìm kiếm mã giảm giá`.
       2. Bật `sortable: true` trên các tiêu đề cột của bảng `app-table` (`code`, `type`, `value`, `min_spend`, `used_count`, `start_date`), cho phép nhấp trực tiếp vào tiêu đề cột để sắp xếp tăng/giảm dần theo chuẩn các bảng quản trị khác trong hệ thống.
     - **Xác minh:** Biên dịch `npm run build` thành công `25.758s` 100%.
-  - **[ĐỒNG BỘ UI NÚT LÀM MỚI TẠI TRANG DASHBOARD]**:
-    - **Thực hiện:** Đã cập nhật tệp [admin-dashboard.component.html](file:///d:/git/isocalmarket/isocalmarket-web/src/app/features/admin-dashboard/admin-dashboard.component.html).
-    - **Cải tiến:** Đồng bộ class CSS của nút **Làm mới** (`px-4 py-2.5 text-sm font-extrabold text-slate-600 dark:text-slate-400 hover:text-primary bg-white dark:bg-slate-950 border border-slate-200/60 dark:border-slate-800/80 rounded-xl hover:bg-slate-50 dark:hover:bg-slate-900 transition-all cursor-pointer flex items-center gap-1.5`) khớp 100% với kích thước, màu nền (`bg-white dark:bg-slate-950`), padding và gap của nút Tải lại/Làm mới tại các trang quản lý khác (`products`, `admin-categories`, `admin-coupons`, `inventory`, `admin-orders`).
+  - **[CHUẨN HÓA LAYOUT TRANG CHI TIẾT ĐƠN HÀNG]**:
+    - **Vấn đề**: Trang chi tiết đơn hàng ([order-detail.component.html](file:///d:/git/isocalmarket/isocalmarket-web/src/app/features/orders/order-detail/order-detail.component.html)) sử dụng `max-w-3xl` hẹp và padding không đồng bộ với các trang quản lý khác trong hệ thống (`max-w-[1530px]`). Nút Quay lại trùng màu trắng với Card nên bị cảm giác dính liền vào đáy Card.
+    - **Cải tiến**:
+      1. Đã nâng cấp container chính lên `max-w-[1530px] mx-auto w-full px-4 sm:px-6 py-6 space-y-6` khớp 100% với tài liệu [design.md](file:///d:/git/isocalmarket/.agent/design.md) và các trang quản trị (`products`, `orders`, `inventory`, `admin-coupons`).
+      2. Tích hợp `app-page-header` với tiêu đề, mô tả và nút Quay lại tiêu chuẩn trên Header.
+      3. Tổ chức layout 2 cột linh hoạt (`grid grid-cols-1 lg:grid-cols-2 gap-6`) cho 2 khối "Thông tin đơn hàng" và "Sản phẩm đã mua", khối "Tài nguyên đã phân phối" hiển thị Full-width phía dưới cực kỳ cân đối.
+      4. Đổi nền nút Quay lại phía dưới sang `bg-slate-100 dark:bg-slate-800` tách biệt hoàn toàn về thị giác so với khối Card màu trắng phía trên.
+    - **Xác minh**: Biên dịch Angular `npm run build` thành công 100%.
 
 
 

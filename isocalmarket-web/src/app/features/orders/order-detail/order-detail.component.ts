@@ -8,6 +8,7 @@ import { SkeletonLoaderComponent } from '@shared/components/skeleton-loader/skel
 import { BadgeComponent } from '@shared/components/badge/badge.component';
 import { CardComponent } from '@shared/components/card/card.component';
 import { IconComponent } from '@shared/components/icon/icon.component';
+import { PageHeaderComponent } from '@shared/components/page-header/page-header.component';
 
 @Component({
   selector: 'app-order-detail',
@@ -18,7 +19,8 @@ import { IconComponent } from '@shared/components/icon/icon.component';
     SkeletonLoaderComponent,
     BadgeComponent,
     CardComponent,
-    IconComponent
+    IconComponent,
+    PageHeaderComponent
   ],
   templateUrl: './order-detail.component.html',
   styles: [`
