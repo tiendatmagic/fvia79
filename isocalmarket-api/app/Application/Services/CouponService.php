@@ -29,9 +29,14 @@ class CouponService
         return $this->couponRepository->findAll();
     }
 
-    public function getCouponsPaginated(int $page, int $limit, ?string $search = null): array
-    {
-        return $this->couponRepository->findAllPaginated($page, $limit, $search);
+    public function getCouponsPaginated(
+        int $page,
+        int $limit,
+        ?string $search = null,
+        ?string $status = null,
+        ?string $type = null
+    ): array {
+        return $this->couponRepository->findAllPaginated($page, $limit, $search, $status, $type);
     }
 
     public function createCoupon(array $data): Coupon

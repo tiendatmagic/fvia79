@@ -20,7 +20,7 @@ export class CouponStore {
   public readonly currentPage = signal<number>(1);
   public readonly lastPage = signal<number>(1);
 
-  public fetchCoupons(page: number, limit: number, search?: string) {
+  public fetchCoupons(page: number, limit: number, search?: string, status?: string, type?: string) {
     if (this.activeFetchCouponsSub) {
       this.activeFetchCouponsSub.unsubscribe();
     }
@@ -32,6 +32,14 @@ export class CouponStore {
 
     if (search) {
       params = params.set('search', search);
+    }
+
+    if (status) {
+      params = params.set('status', status);
+    }
+
+    if (type) {
+      params = params.set('type', type);
     }
 
     const subject = new Subject<any>();

@@ -33,7 +33,7 @@
         valueKey="value"
         labelKey="label"
         [value]="statusFilter()"
-        (valueChange)="statusFilter.set($event)"
+        (valueChange)="onStatusChange($event)"
       />
     </div>
 
@@ -44,7 +44,7 @@
         valueKey="value"
         labelKey="label"
         [value]="typeFilter()"
-        (valueChange)="typeFilter.set($event)"
+        (valueChange)="onTypeChange($event)"
       />
     </div>
 

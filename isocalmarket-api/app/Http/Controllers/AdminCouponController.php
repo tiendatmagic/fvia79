@@ -21,9 +21,17 @@ class AdminCouponController extends Controller
             $page = $request->query('page');
             $limit = $request->query('limit', 10);
             $search = $request->query('search');
+            $status = $request->query('status');
+            $type = $request->query('type');
 
             if ($page) {
-                $result = $this->couponService->getCouponsPaginated((int)$page, (int)$limit, $search);
+                $result = $this->couponService->getCouponsPaginated(
+                    (int)$page,
+                    (int)$limit,
+                    $search,
+                    $status,
+                    $type
+                );
                 $coupons = $result['items'];
                 $total = $result['total'];
 

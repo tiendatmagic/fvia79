@@ -81,35 +81,7 @@ export class AdminCouponsComponent implements OnInit {
   ];
 
   public readonly filteredCoupons = computed(() => {
-    let list = [...this.couponStore.coupons()];
-    const status = this.statusFilter();
-    const type = this.typeFilter();
-    const now = new Date();
-
-    if (status !== 'all') {
-      list = list.filter(c => {
-        const isDeleted = !!c.is_deleted;
-        if (status === 'deleted') return isDeleted;
-        if (isDeleted) return false;
-
-        const start = new Date(c.start_date);
-        const end = new Date(c.end_date);
-        end.setHours(23, 59, 59, 999);
-        const isUsedUp = c.usage_limit > 0 && c.used_count >= c.usage_limit;
-
-        if (status === 'active') return now >= start && now <= end && !isUsedUp;
-        if (status === 'upcoming') return now < start;
-        if (status === 'expired') return now > end || isUsedUp;
-
-        return true;
-      });
-    }
-
-    if (type !== 'all') {
-      list = list.filter(c => c.type === type);
-    }
-
-    return list;
+    return this.couponStore.coupons();
   });
 
   ngOnInit() {
@@ -120,8 +92,22 @@ export class AdminCouponsComponent implements OnInit {
     this.couponStore.fetchCoupons(
       this.currentPage(),
       this.limit,
-      this._searchQuery().trim() || undefined
+      this._searchQuery().trim() || undefined,
+      this.statusFilter(),
+      this.typeFilter()
     ).subscribe();
+  }
+
+  public onStatusChange(status: string) {
+    this.statusFilter.set(status);
+    this.currentPage.set(1);
+    this.fetchCoupons();
+  }
+
+  public onTypeChange(type: string) {
+    this.typeFilter.set(type);
+    this.currentPage.set(1);
+    this.fetchCoupons();
   }
 
   public fetchPage(page: number) {

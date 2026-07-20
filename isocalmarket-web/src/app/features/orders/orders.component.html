@@ -92,7 +92,9 @@
       </ng-template>
 
       <ng-template appTableCell="created_at" let-row="row">
-        <span [appTooltip]="row.created_at">{{ row.created_at }}</span>
+        <span class="text-xs text-slate-500 dark:text-slate-400 whitespace-nowrap" [appTooltip]="row.created_at">
+          {{ row.created_at | date: 'dd/MM/yyyy HH:mm' }}
+        </span>
       </ng-template>
 
       <ng-template appTableCell="total_price" let-row="row">

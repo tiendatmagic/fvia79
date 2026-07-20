@@ -42,9 +42,46 @@ class CouponRepository implements CouponRepositoryInterface
         return $coupons;
     }
 
-    public function findAllPaginated(int $page, int $limit, ?string $search = null): array
-    {
-        $query = CouponModel::withTrashed();
+    public function findAllPaginated(
+        int $page,
+        int $limit,
+        ?string $search = null,
+        ?string $status = null,
+        ?string $type = null
+    ): array {
+        $now = now()->toDateTimeString();
+
+        if ($status === 'deleted') {
+            $query = CouponModel::onlyTrashed();
+        } else if ($status === 'all') {
+            $query = CouponModel::withTrashed();
+        } else {
+            $query = CouponModel::query();
+        }
+
+        if ($status === 'active') {
+            $query->where('start_date', '<=', $now)
+                ->where('end_date', '>=', $now)
+                ->where(function ($q) {
+                    $q->where('usage_limit', 0)
+                        ->orWhereRaw('used_count < usage_limit');
+                });
+        } else if ($status === 'upcoming') {
+            $query->where('start_date', '>', $now);
+        } else if ($status === 'expired') {
+            $query->where(function ($q) use ($now) {
+                $q->where('end_date', '<', $now)
+                    ->orWhere(function ($sub) {
+                        $sub->where('usage_limit', '>', 0)
+                            ->whereRaw('used_count >= usage_limit');
+                    });
+            });
+        }
+
+        if ($type && $type !== 'all') {
+            $query->where('type', $type);
+        }
+
         if ($search) {
             $query->where(function ($q) use ($search) {
                 $this->applyAccentInsensitiveSearch($q, 'code', $search);

@@ -31,10 +31,13 @@
               [class.dark:hover:bg-slate-950/30]="col.sortable"
               [class.group]="col.sortable"
               class="px-6 py-4 text-[11px] font-extrabold text-slate-400 dark:text-slate-500 uppercase tracking-wider transition-colors duration-200"
-              [ngClass]="col.headerClass || ''"
+              [ngClass]="[
+                col.headerClass || '',
+                col.align === 'center' ? 'text-center' : col.align === 'right' ? 'text-right' : 'text-left'
+              ]"
             >
               <div
-                class="flex items-center gap-1.5"
+                class="flex items-center gap-1.5 w-full"
                 [ngClass]="{
                   'justify-start': !col.align || col.align === 'left',
                   'justify-center': col.align === 'center',
@@ -82,8 +85,10 @@
             @for (col of columns; track col.key) {
               <td
                 class="px-6 py-4 text-sm font-semibold text-slate-700 dark:text-slate-300"
-                [ngClass]="col.cellClass || ''"
-                [style.text-align]="col.align || 'left'"
+                [ngClass]="[
+                  col.cellClass || '',
+                  col.align === 'center' ? 'text-center' : col.align === 'right' ? 'text-right' : 'text-left'
+                ]"
               >
                 @if (getTemplate(col.key); as template) {
                   <ng-container

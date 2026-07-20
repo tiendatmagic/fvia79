@@ -142,8 +142,8 @@
       </ng-template>
 
       <ng-template appTableCell="createdAt" let-row="row">
-        <span class="text-xs text-slate-500 dark:text-slate-400" [appTooltip]="row.createdAt">
-          {{ row.createdAt }}
+        <span class="text-xs text-slate-500 dark:text-slate-400 whitespace-nowrap" [appTooltip]="row.createdAt">
+          {{ row.createdAt | date: 'dd/MM/yyyy HH:mm' }}
         </span>
       </ng-template>
       <ng-template appTableCell="actions" let-row="row">

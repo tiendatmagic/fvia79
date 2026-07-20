@@ -1571,5 +1571,15 @@
       3. Bổ sung `userId` vào hàm `formatDeposit` trong [DepositController.php](file:///d:/git/isocalmarket/isocalmarket-api/app/Http/Controllers/DepositController.php) và giao diện `DepositHistoryItem` tại Frontend.
     - **Xác minh**: Biên dịch ứng dụng Angular thành công không lỗi.
 
+  - **[SỬA LỖI TRÙNG LẤP HEADER LÊN TRANG VÀ BỘ LỌC COUPON PHÂN TRANG SAI]**:
+    - **Vấn đề**:
+      1. Khung tiêu đề đầu trang và nút thao tác ở tất cả các trang bị đè/che khuất bởi `app-header` do `header` có thuộc tính `sticky top-0` nhưng container chính `div` bọc `router-outlet` trong [app.html](file:///d:/git/isocalmarket/isocalmarket-web/src/app/app.html) thiếu padding-top tương ứng.
+      2. Bộ lọc `Trạng thái` và `Loại giảm giá` của mã giảm giá được lọc trực tiếp tại Client-side thông qua Computed Signal. Khi kết hợp với phân trang từ API, nó chỉ lọc trên danh sách 10 items hiện tại của trang dẫn đến việc số lượng hiển thị thực tế là 0 mặc dù thanh phân trang báo "Hiển thị 1-2 trên tổng số 2 mã giảm giá".
+    - **Giải pháp & Triển khai**:
+      1. Thêm class `pt-16 sm:pt-20` vào div bọc `router-outlet` trong [app.html](file:///d:/git/isocalmarket/isocalmarket-web/src/app/app.html) để đẩy toàn bộ nội dung trang xuống dưới thanh header một khoảng bằng đúng chiều cao của header (64px trên mobile và 80px trên desktop).
+      2. Chuyển đổi bộ lọc `status` và `type` của Coupons sang **Server-side**: Cập nhật [AdminCouponController.php](file:///d:/git/isocalmarket/isocalmarket-api/app/Http/Controllers/AdminCouponController.php), [CouponService.php](file:///d:/git/isocalmarket/isocalmarket-api/app/Application/Services/CouponService.php), [CouponRepository.php](file:///d:/git/isocalmarket/isocalmarket-api/app/Infrastructure/Persistence/Repositories/CouponRepository.php), và [CouponRepositoryInterface.php](file:///d:/git/isocalmarket/isocalmarket-api/app/Domain/Repositories/CouponRepositoryInterface.php) để nhận tham số lọc status/type từ query params và áp dụng trực tiếp trong câu lệnh SELECT database (hỗ trợ đếm tổng chính xác và phân trang chuẩn).
+      3. Cập nhật [coupon.store.ts](file:///d:/git/isocalmarket/isocalmarket-web/src/app/features/admin-coupons/coupon.store.ts) và [admin-coupons.component.ts](file:///d:/git/isocalmarket/isocalmarket-web/src/app/features/admin-coupons/admin-coupons.component.ts): Loại bỏ logic lọc computed ở frontend, thay thế bằng việc gửi request API mỗi khi thay đổi bộ lọc (`onStatusChange` và `onTypeChange`) đồng thời reset trang hiện tại về 1.
+    - **Xác minh**: Chạy biên dịch frontend thành công.
+
 
 
