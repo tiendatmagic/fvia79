@@ -1675,3 +1675,9 @@
       2. Thêm class `whitespace-nowrap` vào các nút `<button>` tab để ngăn chặn hoàn toàn việc trình duyệt tự động ngắt/rớt chữ xuống dòng.
     - **Xác minh:** Chạy biên dịch frontend `npm run build` thành công hoàn toàn không có lỗi.
 
+  - **[ĐỒNG BỘ SỐ DƯ TẠI TRANG CỬA HÀNG STOREFRONT]**:
+    - **Yêu cầu:** Tự động lấy và làm mới thông tin số dư tài khoản mới nhất của người dùng khi họ truy cập vào trang cửa hàng (Storefront).
+    - **Thực hiện:** Cập nhật tệp [storefront.component.ts](file:///d:/git/isocalmarket/isocalmarket-web/src/app/features/storefront/storefront.component.ts), gọi `this.state.authStore.checkMe(true).subscribe()` bên trong hàm `ngOnInit()` trước khi tải danh sách sản phẩm.
+    - **Xác minh:** Chạy biên dịch frontend `npm run build` thành công hoàn toàn không có lỗi.
+
+
