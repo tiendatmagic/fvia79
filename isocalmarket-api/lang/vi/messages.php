@@ -10,7 +10,7 @@ return [
     'coupon_not_started' => 'Mã giảm giá này chưa đến thời gian áp dụng.',
     'coupon_expired' => 'Mã giảm giá này đã hết hạn sử dụng.',
     'coupon_usage_exhausted' => 'Mã giảm giá này đã hết lượt sử dụng.',
-    'minimum_cart' => 'Giá trị giỏ hàng chưa đạt mức tối thiểu :amount VND.',
+    'minimum_cart' => 'Giá trị giỏ hàng chưa đạt mức tối thiểu :amount USD.',
     'inventory_conflict' => 'Dữ liệu lô hàng đã được cập nhật bởi một giao dịch khác. Vui lòng đóng modal và tải lại trang.',
     'cache_cleanup_success' => 'Toàn bộ cache hệ thống đã được dọn dẹp và tối ưu hóa thành công.',
     'cache_cleanup_log_error' => 'Lỗi khi xóa cứng thư mục cache data: :error',

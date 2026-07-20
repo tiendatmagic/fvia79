@@ -157,6 +157,11 @@ class User
         $this->balance = round($this->balance + $amount, 4);
     }
 
+    public function deductBalance(float $amount): void
+    {
+        $this->balance = round($this->balance - $amount, 4);
+    }
+
     public function getApiKey(): ?string
     {
         return $this->apiKey;

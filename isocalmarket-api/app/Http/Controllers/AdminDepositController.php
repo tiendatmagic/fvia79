@@ -74,7 +74,7 @@ class AdminDepositController extends Controller
     public function approve(Request $request, string $id): JsonResponse
     {
         $request->validate([
-            'tx_hash' => 'nullable|string|max:255',
+            'tx_hash' => 'required|string|max:255',
         ]);
 
         try {

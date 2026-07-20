@@ -144,10 +144,11 @@ class AdminUserController extends Controller
         ]);
 
         try {
-            $user = $this->userRepository->findById($id);
-            if (!$user) {
-                return response()->json(['message' => 'User not found.'], 404);
-            }
+            return \Illuminate\Support\Facades\DB::transaction(function () use ($request, $id) {
+                $user = $this->userRepository->findByIdForUpdate($id);
+                if (!$user) {
+                    return response()->json(['message' => 'User not found.'], 404);
+                }
 
             $updatedUser = new User(
                 $user->getId(),
@@ -172,24 +173,25 @@ class AdminUserController extends Controller
                 $updatedUser->setApiKey(null);
             }
 
-            $savedUser = $this->userRepository->save($updatedUser);
+                $savedUser = $this->userRepository->save($updatedUser);
 
-            return response()->json([
-                'message' => 'User updated successfully.',
-                'user' => [
-                    'id'      => $savedUser->getId(),
-                    'username'=> $savedUser->getUsername(),
-                    'name'    => $savedUser->getName(),
-                    'email'   => $savedUser->getEmail(),
-                    'phone'   => $savedUser->getPhone(),
-                    'role'    => $savedUser->getRole(),
-                    'balance' => $savedUser->getBalance(),
-                    'google2fa_enabled' => $savedUser->isGoogle2faEnabled(),
-                    'google2fa_secret' => $savedUser->getGoogle2faSecret(),
-                    'api_key' => $savedUser->getApiKey(),
-                    'status'  => $savedUser->getStatus()
-                ]
-            ]);
+                return response()->json([
+                    'message' => 'User updated successfully.',
+                    'user' => [
+                        'id'      => $savedUser->getId(),
+                        'username'=> $savedUser->getUsername(),
+                        'name'    => $savedUser->getName(),
+                        'email'   => $savedUser->getEmail(),
+                        'phone'   => $savedUser->getPhone(),
+                        'role'    => $savedUser->getRole(),
+                        'balance' => $savedUser->getBalance(),
+                        'google2fa_enabled' => $savedUser->isGoogle2faEnabled(),
+                        'google2fa_secret' => $savedUser->getGoogle2faSecret(),
+                        'api_key' => $savedUser->getApiKey(),
+                        'status'  => $savedUser->getStatus()
+                    ]
+                ]);
+            });
         } catch (\Exception $e) {
             return response()->json(['message' => 'Failed to update user: ' . $e->getMessage()], 500);
         }
@@ -209,7 +211,7 @@ class AdminUserController extends Controller
 
         try {
             return \Illuminate\Support\Facades\DB::transaction(function () use ($request, $id) {
-                $user = $this->userRepository->findById($id);
+                $user = $this->userRepository->findByIdForUpdate($id);
                 if (!$user) {
                     return response()->json(['message' => 'User not found.'], 404);
                 }

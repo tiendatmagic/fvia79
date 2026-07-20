@@ -10,7 +10,7 @@ return [
     'coupon_not_started' => 'This coupon is not active yet.',
     'coupon_expired' => 'This coupon has expired.',
     'coupon_usage_exhausted' => 'This coupon has reached its usage limit.',
-    'minimum_cart' => 'Cart total must be at least :amount VND.',
+    'minimum_cart' => 'Cart total must be at least :amount USD.',
     'inventory_conflict' => 'This inventory batch was updated by another transaction. Close the modal and reload the page.',
     'cache_cleanup_success' => 'All system caches were cleared and optimized successfully.',
     'cache_cleanup_log_error' => 'Failed to force-clear the cache data directory: :error',

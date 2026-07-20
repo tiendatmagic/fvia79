@@ -363,7 +363,7 @@ curl -X GET "{{ siteUrl() }}/api/v1/admin/b2b/users?api_key={{
       "email": "partner&#64;gmail.com",
       "phone": "0988777666",
       "role": "customer",
-      "balance": 1500000,
+      "balance": 1500.50,
       "has_api_key": true
     {{ '}' }}
   ]
@@ -599,7 +599,7 @@ curl -X GET "{{ siteUrl() }}/api/v1/admin/b2b/orders?api_key={{
         "name": "reseller_partner",
         "email": "partner&#64;gmail.com"
       {{ '}' }},
-      "total_price": 70000,
+      "total_price": 70.00,
       "discount_amount": 10000,
       "coupon_code": "DISCOUNT10",
       "status": "paid",
@@ -1043,7 +1043,7 @@ curl -X GET "{{ siteUrl() }}/api/v1/admin/b2b/stats?api_key={{
                 >{{ '{' }}
   "success": true,
   "data": {{ '{' }}
-    "total_revenue": 11868800,
+    "total_revenue": 11868.80,
     "total_orders": 55,
     "total_products": 52,
     "total_available_inventory": 680,

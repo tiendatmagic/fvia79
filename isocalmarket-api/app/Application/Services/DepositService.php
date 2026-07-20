@@ -4,7 +4,6 @@ namespace App\Application\Services;
 
 use App\Domain\Entities\Deposit;
 use App\Domain\Repositories\DepositRepositoryInterface;
-use App\Domain\Repositories\UserRepositoryInterface;
 use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\Http;
 use Illuminate\Support\Facades\Log;
@@ -12,7 +11,6 @@ use Illuminate\Support\Facades\Log;
 class DepositService
 {
     private DepositRepositoryInterface $depositRepository;
-    private UserRepositoryInterface $userRepository;
 
     private string $adminWalletAddress;
     // API Key của blockchain scanner (cấu hình qua .env, hỗ trợ BscScan/Etherscan...)
@@ -24,15 +22,14 @@ class DepositService
 
     private SystemSettingService $settingService;
 
-    private ?array $cachedTransactions = null;
+    private array $cachedBep20TransactionsByWallet = [];
+    private ?array $cachedBinanceTransactions = null;
 
     public function __construct(
         DepositRepositoryInterface $depositRepository,
-        UserRepositoryInterface $userRepository,
         SystemSettingService $settingService
     ) {
         $this->depositRepository = $depositRepository;
-        $this->userRepository = $userRepository;
         $this->settingService = $settingService;
 
         $this->adminWalletAddress = $this->settingService->getSetting('admin_wallet_address', '');
@@ -155,7 +152,6 @@ class DepositService
                             ->where('updated_at', '>=', now()->subMinutes(10));
                     });
             })
-                ->where('amount_usdt', $baseAmount)
                 ->lockForUpdate()
                 ->pluck('amount_to_pay')
                 ->toArray();
@@ -239,7 +235,7 @@ class DepositService
         }
 
         try {
-            $matched = $this->checkTransaction($id, $userId);
+            $matched = $this->checkTransaction($id, $deposit->getUserId());
             if ($matched) {
                 // Đã khớp giao dịch và cộng tiền thành công trên blockchain, không hủy nữa
                 return true;
@@ -249,9 +245,25 @@ class DepositService
             throw new \RuntimeException("Unable to verify payment status on blockchain right now. Please try again later.");
         }
 
-        $deposit->setStatus('expired');
-        $this->depositRepository->save($deposit);
-        return true;
+        return \Illuminate\Support\Facades\DB::transaction(function () use ($id, $userId) {
+            $depositModel = \App\Infrastructure\Persistence\Eloquent\DepositModel::where('id', $id)
+                ->lockForUpdate()
+                ->first();
+
+            if (!$depositModel || $depositModel->status !== 'pending_payment') {
+                return false;
+            }
+
+            $user = \App\Infrastructure\Persistence\Eloquent\UserModel::find($userId);
+            $isAdmin = $user && $user->role === 'admin';
+            if ($depositModel->user_id !== $userId && !$isAdmin) {
+                return false;
+            }
+
+            $depositModel->status = 'expired';
+            $depositModel->save();
+            return true;
+        });
     }
 
     /**
@@ -314,7 +326,8 @@ class DepositService
         $paymentMethod = $depositModel->payment_method ?: 'bep20';
 
         if ($paymentMethod === 'bep20') {
-            $this->adminWalletAddress = $this->settingService->getSetting('admin_wallet_address', '');
+            $this->adminWalletAddress = $depositModel->admin_wallet_address
+                ?: $this->settingService->getSetting('admin_wallet_address', '');
             $this->scannerApiKey = $this->settingService->getSetting('scanner_api_key', '');
 
             if (empty($this->adminWalletAddress)) {
@@ -328,7 +341,7 @@ class DepositService
             $tokenContract = strtolower($this->tokenContractAddress);
 
             // Fetch Moralis API ngoài transaction để tránh giữ lock lâu trong lúc chờ HTTP response
-            if ($this->cachedTransactions === null) {
+            if (!array_key_exists($adminWallet, $this->cachedBep20TransactionsByWallet)) {
                 $response = Http::timeout(10)
                     ->withHeader('X-API-Key', $this->scannerApiKey)
                     ->get("https://deep-index.moralis.io/api/v2.2/{$adminWallet}/erc20/transfers", [
@@ -340,14 +353,14 @@ class DepositService
 
                 if ($response->successful()) {
                     $result = $response->json();
-                    $this->cachedTransactions = $result['result'] ?? [];
+                    $this->cachedBep20TransactionsByWallet[$adminWallet] = $result['result'] ?? [];
                 } else {
                     Log::error("Moralis API HTTP error: " . $response->status() . " - " . $response->body());
                     throw new \RuntimeException("Unable to connect to blockchain scanner API. Please try again later.");
                 }
             }
 
-            $transactions = $this->cachedTransactions;
+            $transactions = $this->cachedBep20TransactionsByWallet[$adminWallet];
 
             // Vá CVE-1: Bọc toàn bộ check deposit status, isTxHashUsed và credit tiền trong 1 DB transaction với pessimistic lock (lockForUpdate)
             return \Illuminate\Support\Facades\DB::transaction(function () use ($id, $userId, $adminWallet, $tokenContract, $transactions) {
@@ -407,13 +420,7 @@ class DepositService
                     $deposit->setTxHash($txHash);
                     $this->depositRepository->save($deposit);
 
-                    $user = $this->userRepository->findById($userId);
-                    if ($user) {
-                        // Account balances are denominated in USDT. VND is only a
-                        // display/reference value captured when the invoice is created.
-                        $user->addBalance($deposit->getAmountUsdt());
-                        $this->userRepository->save($user);
-                    }
+                    $this->creditDepositToUser($deposit);
 
                     Log::info("Deposit successfully matched and processed: Invoice #{$deposit->getCode()}, Amount: {$deposit->getAmountUsdt()} USDT, TxHash: {$txHash}");
                     return true;
@@ -429,7 +436,7 @@ class DepositService
                 throw new \RuntimeException("The administrator has not configured the Binance API Key/Secret yet.");
             }
 
-            if ($this->cachedTransactions === null) {
+            if ($this->cachedBinanceTransactions === null) {
                 $timestamp = round(microtime(true) * 1000);
                 $queryString = "timestamp=" . $timestamp . "&recvWindow=60000";
                 $signature = hash_hmac('sha256', $queryString, $binanceApiSecret);
@@ -442,14 +449,18 @@ class DepositService
 
                 if ($response->successful()) {
                     $result = $response->json();
-                    $this->cachedTransactions = $result['data'] ?? [];
+                    if (($result['success'] ?? false) !== true || ($result['code'] ?? '') !== '000000') {
+                        Log::error('Binance Pay API returned an unsuccessful payload: ' . $response->body());
+                        throw new \RuntimeException('Binance Pay API rejected the transaction history request.');
+                    }
+                    $this->cachedBinanceTransactions = $result['data'] ?? [];
                 } else {
                     Log::error("Binance Pay API HTTP error: " . $response->status() . " - " . $response->body());
                     throw new \RuntimeException("Unable to connect to Binance Pay API. Please try again later.");
                 }
             }
 
-            $transactions = $this->cachedTransactions;
+            $transactions = $this->cachedBinanceTransactions;
 
             return \Illuminate\Support\Facades\DB::transaction(function () use ($id, $userId, $transactions) {
                 $depositModel = \App\Infrastructure\Persistence\Eloquent\DepositModel::where('id', $id)
@@ -483,9 +494,9 @@ class DepositService
 
                     // Không kiểm tra Binance ID người gửi theo cấu hình mới, đối soát hoàn toàn bằng số tiền lẻ giống BEP-20
 
-                    // Kiểm tra orderId này đã được dùng đối soát chưa
-                    $orderId = $tx['orderId'] ?? '';
-                    if (empty($orderId) || $this->depositRepository->isTxHashUsed($orderId)) {
+                    // Kiểm tra transactionId này đã được dùng đối soát chưa
+                    $transactionId = $tx['transactionId'] ?? '';
+                    if (empty($transactionId) || $this->depositRepository->isTxHashUsed($transactionId)) {
                         continue;
                     }
 
@@ -500,16 +511,12 @@ class DepositService
                     }
 
                     $deposit->setStatus('completed');
-                    $deposit->setTxHash($orderId);
+                    $deposit->setTxHash($transactionId);
                     $this->depositRepository->save($deposit);
 
-                    $user = $this->userRepository->findById($userId);
-                    if ($user) {
-                        $user->addBalance($deposit->getAmountUsdt());
-                        $this->userRepository->save($user);
-                    }
+                    $this->creditDepositToUser($deposit);
 
-                    Log::info("Binance Pay Deposit successfully matched and processed: Invoice #{$deposit->getCode()}, Amount: {$deposit->getAmountUsdt()} USDT, Binance Order ID: {$orderId}");
+                    Log::info("Binance Pay Deposit successfully matched and processed: Invoice #{$deposit->getCode()}, Amount: {$deposit->getAmountUsdt()} USDT, Binance Transaction ID: {$transactionId}");
                     return true;
                 }
 
@@ -533,7 +540,8 @@ class DepositService
         }
 
         // Xóa cache trước mỗi lần chạy batch (Vá CVE-10)
-        $this->cachedTransactions = null;
+        $this->cachedBep20TransactionsByWallet = [];
+        $this->cachedBinanceTransactions = null;
 
         foreach ($pendingDeposits as $deposit) {
             try {
@@ -549,8 +557,12 @@ class DepositService
                     $createdTime = $deposit->created_at->getTimestamp();
                     $now = time();
                     if (($now - $createdTime) > 960) {
-                        $deposit->update(['status' => 'expired']);
-                        if ($logCallback) $logCallback('info', "Deposit code {$deposit->code} has expired (exceeded 15 minutes window + 1 minute grace period).");
+                        $expired = \App\Infrastructure\Persistence\Eloquent\DepositModel::where('id', $deposit->id)
+                            ->where('status', 'pending_payment')
+                            ->update(['status' => 'expired']);
+                        if ($expired && $logCallback) {
+                            $logCallback('info', "Deposit code {$deposit->code} has expired (exceeded 15 minutes window + 1 minute grace period).");
+                        }
                     } else {
                         if ($logCallback) $logCallback('info', "Deposit code {$deposit->code} is still pending within the payment window.");
                     }
@@ -580,7 +592,7 @@ class DepositService
     /**
      * Admin duyệt thủ công hóa đơn nạp tiền
      */
-    public function approveDepositManually(string $id, ?string $txHash, string $adminId): bool
+    public function approveDepositManually(string $id, string $txHash, string $adminId): bool
     {
         return \Illuminate\Support\Facades\DB::transaction(function () use ($id, $txHash, $adminId) {
             $depositModel = \App\Infrastructure\Persistence\Eloquent\DepositModel::where('id', $id)
@@ -593,11 +605,14 @@ class DepositService
 
             $deposit = \App\Infrastructure\Persistence\Mappers\DepositMapper::toDomain($depositModel);
 
-            if ($deposit->getStatus() === 'completed') {
-                throw new \RuntimeException("This deposit invoice has already been completed.");
+            if (!in_array($deposit->getStatus(), ['pending_payment', 'expired'], true)) {
+                throw new \RuntimeException("Only pending or expired deposit invoices can be approved.");
             }
 
-            $finalTxHash = $txHash ?: 'manual_approved_by_admin_' . $id;
+            $finalTxHash = trim($txHash);
+            if ($finalTxHash === '') {
+                throw new \RuntimeException("A transaction ID/hash is required for manual approval.");
+            }
 
             if ($this->depositRepository->isTxHashUsed($finalTxHash)) {
                 throw new \RuntimeException("This transaction hash has already been used for another deposit.");
@@ -607,12 +622,7 @@ class DepositService
             $deposit->setTxHash($finalTxHash);
             $this->depositRepository->save($deposit);
 
-            $user = $this->userRepository->findById($deposit->getUserId());
-            if (!$user) {
-                throw new \RuntimeException("User not found for this deposit.");
-            }
-            $user->addBalance($deposit->getAmountUsdt());
-            $this->userRepository->save($user);
+            $this->creditDepositToUser($deposit);
 
             Log::info("Admin [{$adminId}] manually approved Deposit ID [{$id}]: Code={$deposit->getCode()}, Amount={$deposit->getAmountUsdt()} USDT ({$deposit->getAmountVnd()} VND), Payer ID/Wallet=" . ($deposit->getPayerBinanceId() ?: $deposit->getAdminWalletAddress()) . ", TxHash={$finalTxHash}");
 
@@ -651,5 +661,23 @@ class DepositService
 
             return true;
         });
+    }
+
+    /**
+     * Credit the invoice's USD balance while holding the user row lock.
+     * Callers must already be inside a database transaction.
+     */
+    private function creditDepositToUser(Deposit $deposit): void
+    {
+        $userModel = \App\Infrastructure\Persistence\Eloquent\UserModel::where('id', $deposit->getUserId())
+            ->lockForUpdate()
+            ->first();
+
+        if (!$userModel) {
+            throw new \RuntimeException('User not found for this deposit.');
+        }
+
+        $userModel->balance = round((float) $userModel->balance + $deposit->getAmountUsdt(), 4);
+        $userModel->save();
     }
 }

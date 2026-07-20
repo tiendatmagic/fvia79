@@ -108,7 +108,7 @@ export class AdminDepositStore {
     return subject.asObservable();
   }
 
-  public approveDeposit(id: string, txHash?: string): Observable<any> {
+  public approveDeposit(id: string, txHash: string): Observable<any> {
     this.loading.set(true);
     return this.api.post<any>(`v1/admin/deposits/${id}/approve`, { tx_hash: txHash }).pipe(
       tap((res) => {

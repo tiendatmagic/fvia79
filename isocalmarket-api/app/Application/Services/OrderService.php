@@ -150,7 +150,7 @@ class OrderService
             $finalPrice = max(0.0, $totalPrice - $discountAmount);
 
             // Kiểm tra và trừ tiền từ số dư của người dùng
-            $user = $this->userRepository->findById($userId);
+            $user = $this->userRepository->findByIdForUpdate($userId);
             if (!$user) {
                 throw new \Exception('User account not found.');
             }

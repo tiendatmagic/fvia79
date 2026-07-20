@@ -7,7 +7,7 @@ export type SupportedCurrency = 'USD' | 'VND';
 })
 export class CurrencyService {
   public readonly currentCurrency = signal<SupportedCurrency>(this.getInitialCurrency());
-  public readonly usdToVndRate = 25000;
+  public readonly usdToVndRate = signal<number>(this.getInitialUsdToVndRate());
 
   constructor() {}
 
@@ -24,6 +24,17 @@ export class CurrencyService {
     localStorage.setItem('app_currency', currency);
   }
 
+  public setUsdToVndRate(rate: number): void {
+    if (!Number.isFinite(rate) || rate <= 0) return;
+    this.usdToVndRate.set(rate);
+    localStorage.setItem('usd_to_vnd_rate', String(rate));
+  }
+
+  private getInitialUsdToVndRate(): number {
+    const savedRate = Number(localStorage.getItem('usd_to_vnd_rate'));
+    return Number.isFinite(savedRate) && savedRate > 0 ? savedRate : 26276;
+  }
+
   public format(amount: number | string | null | undefined): string {
     const numericAmount = Number(amount) || 0;
     const curr = this.currentCurrency();
@@ -37,7 +48,7 @@ export class CurrencyService {
       }).format(numericAmount);
     } else {
       // VND
-      const vndAmount = numericAmount * this.usdToVndRate;
+      const vndAmount = numericAmount * this.usdToVndRate();
       return new Intl.NumberFormat('vi-VN', {
         style: 'currency',
         currency: 'VND',

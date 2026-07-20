@@ -193,7 +193,7 @@
                 {{ 'user.current_balance' | translate }}
               </span>
               <span class="text-lg font-extrabold font-mono text-[var(--color-primary)] block">
-                {{ balance | number: '1.0-0' }} ₫
+                {{ balance | appCurrency }}
               </span>
             </div>
             <button

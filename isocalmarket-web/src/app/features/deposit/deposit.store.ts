@@ -4,12 +4,14 @@ import { HttpParams } from '@angular/common/http';
 import { tap, finalize } from 'rxjs/operators';
 import { Observable, Subscription, Subject } from 'rxjs';
 import { DepositHistoryItem } from '../deposit-history/deposit-history.component';
+import { CurrencyService } from '@core/services/currency.service';
 
 @Injectable({
   providedIn: 'root'
 })
 export class DepositStore {
   private readonly api = inject(ApiService);
+  private readonly currencyService = inject(CurrencyService);
  
   private activeFetchHistorySub?: Subscription;
 
@@ -28,6 +30,7 @@ export class DepositStore {
       tap(res => {
         if (res && res.rate) {
           this.rate.set(res.rate);
+          this.currencyService.setUsdToVndRate(res.rate);
         }
       }),
       finalize(() => this.loading.set(false))

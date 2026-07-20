@@ -15,6 +15,12 @@ class UserRepository implements UserRepositoryInterface
         return $model ? UserMapper::toDomain($model) : null;
     }
 
+    public function findByIdForUpdate(string $id): ?User
+    {
+        $model = UserModel::where('id', $id)->lockForUpdate()->first();
+        return $model ? UserMapper::toDomain($model) : null;
+    }
+
     public function findByEmail(string $email): ?User
     {
         $model = UserModel::where('email', $email)->first();

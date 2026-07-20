@@ -43,6 +43,7 @@ export class ApproveDepositModalComponent implements OnInit {
 
   public txHash = '';
   public readonly isSubmitting = signal(false);
+  public readonly showTxHashError = signal(false);
 
   ngOnInit() {}
 
@@ -53,9 +54,14 @@ export class ApproveDepositModalComponent implements OnInit {
   public onSubmit() {
     if (this.isSubmitting()) return;
 
+    if (!this.txHash.trim()) {
+      this.showTxHashError.set(true);
+      return;
+    }
+
     this.isSubmitting.set(true);
 
-    this.depositStore.approveDeposit(this.data.deposit.id, this.txHash.trim() || undefined).subscribe({
+    this.depositStore.approveDeposit(this.data.deposit.id, this.txHash.trim()).subscribe({
       next: (res) => {
         this.isSubmitting.set(false);
         if (res) {
