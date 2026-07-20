@@ -12,6 +12,7 @@ import { IconComponent } from '@shared/components/icon/icon.component';
 import { ToastService } from '@core/services/toast.service';
 import { ModalService } from '@core/services/modal.service';
 import { LanguageService } from '@core/services/language.service';
+import { TranslatePipe } from '@shared/pipes/translate.pipe';
 
 @Component({
   selector: 'app-admin-settings',
@@ -23,7 +24,8 @@ import { LanguageService } from '@core/services/language.service';
     CardComponent,
     ButtonComponent,
     SkeletonLoaderComponent,
-    IconComponent
+    IconComponent,
+    TranslatePipe
   ],
   templateUrl: './admin-settings.component.html',
   styles: [`

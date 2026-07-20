@@ -1,7 +1,7 @@
 <div class="max-w-[1530px] mx-auto w-full p-4 sm:p-6 space-y-6">
   <app-page-header
-    title="Admin API"
-    description="Cổng kết nối đặc quyền dành cho Admin để tự động hóa quản lý đại lý, cập nhật số dư và đối soát hệ thống."
+    [title]="'nav.admin_api' | translate"
+    [description]="'api.admin_description' | translate"
   >
     <ng-container actions>
       <a
@@ -9,7 +9,7 @@
         class="px-4 py-2.5 text-sm font-extrabold text-slate-600 dark:text-slate-400 hover:text-primary bg-white dark:bg-slate-950 border border-slate-200/60 dark:border-slate-800/80 rounded-xl hover:bg-slate-50 dark:hover:bg-slate-900 transition-all cursor-pointer flex items-center gap-1.5"
       >
         <app-icon name="key" class="w-4 h-4" />
-        Chuyển sang User API
+        {{ 'api.switch_to_user' | translate }}
       </a>
     </ng-container>
   </app-page-header>
@@ -18,7 +18,7 @@
     <div class="flex items-center gap-2 border-b border-slate-100 dark:border-slate-800/60 pb-3">
       <app-icon name="key" class="w-5 h-5 text-[var(--color-primary)]" />
       <h3 class="text-sm font-black text-slate-700 dark:text-slate-300 uppercase tracking-wider">
-        API Key của Admin & Cấu hình
+        {{ 'api.admin_key_section' | translate }}
       </h3>
     </div>
 
@@ -32,12 +32,10 @@
       </div>
       <div class="space-y-1">
         <h4 class="text-sm font-extrabold text-amber-800 dark:text-amber-300">
-          Cảnh báo bảo mật cấp cao!
+          {{ 'api.security_warning_title' | translate }}
         </h4>
         <p class="text-xs text-amber-700/90 dark:text-amber-400/80 leading-relaxed font-semibold">
-          Các cổng API dưới đây cho phép can thiệp trực tiếp vào tài khoản người dùng và số dư hệ
-          thống. Tuyệt đối không chia sẻ API Key của tài khoản Admin cho bất kỳ ai hoặc đẩy lên mã
-          nguồn công khai (Github, Gitlab).
+          {{ 'api.admin_security_warning_body' | translate }}
         </p>
       </div>
     </div>
@@ -45,19 +43,17 @@
     <div
       class="bg-blue-50/50 dark:bg-slate-900/30 border border-blue-100/50 dark:border-slate-800/50 text-blue-700 dark:text-slate-300 rounded-2xl p-4 sm:p-5 text-xs font-semibold leading-relaxed"
     >
-      Sử dụng API Key này để xác thực khi gọi các B2B Admin API bằng cách truyền trực tiếp trên URL
-      (Query param
+      {{ 'api.admin_key_instruction' | translate }}
       <code
         class="bg-blue-100 dark:bg-slate-800 px-1 py-0.5 rounded font-mono font-bold text-blue-800 dark:text-blue-300"
         >?api_key=...</code
-      >) hoặc truyền qua HTTP Header
+      >) {{ 'api.or_header' | translate }}
       <code
         class="bg-blue-100 dark:bg-slate-800 px-1 py-0.5 rounded font-mono font-bold text-blue-800 dark:text-blue-300"
         >X-API-KEY</code
       >.
       <strong class="text-rose-600 dark:text-rose-400 block mt-1"
-        >Tuyệt đối bảo mật và không chia sẻ khóa này cho người khác để tránh thất thoát tài
-        sản!</strong
+        >{{ 'api.admin_security_warning' | translate }}</strong
       >
     </div>
 
@@ -78,7 +74,7 @@
               ? showApiKey()
                 ? apiKey()
                 : '••••••••••••••••••••••••••••••••'
-              : 'Chưa cấu hình API Key'
+              : ('api.not_configured' | translate)
           }}
         </span>
         @if (apiKey()) {
@@ -86,14 +82,14 @@
             <button
               (click)="toggleShowApiKey()"
               class="text-slate-400 dark:text-slate-500 hover:text-[var(--color-primary)] dark:hover:text-white active:scale-95 transition-all p-1 cursor-pointer"
-              [title]="showApiKey() ? 'Ẩn API Key' : 'Hiển thị API Key'"
+              [title]="showApiKey() ? ('api.hide_key' | translate) : ('api.show_key' | translate)"
             >
               <app-icon [name]="showApiKey() ? 'eye-slash' : 'eye'" class="w-4 h-4" />
             </button>
             <button
               (click)="copyToClipboard(apiKey()!, 'Admin API Key')"
               class="text-slate-400 dark:text-slate-500 hover:text-[var(--color-primary)] dark:hover:text-white active:scale-95 transition-all p-1 cursor-pointer"
-              title="Sao chép Admin API Key"
+              [title]="'orders.copy' | translate"
             >
               <app-icon name="copy" class="w-4 h-4" />
             </button>
@@ -110,11 +106,11 @@
       <div class="flex items-center gap-2">
         <app-icon name="code" class="w-5 h-5 text-[var(--color-primary)]" />
         <h3 class="text-sm font-black text-slate-700 dark:text-slate-300 uppercase tracking-wider">
-          Tài liệu tích hợp B2B Admin API
+          {{ 'api.admin_docs_title' | translate }}
         </h3>
       </div>
       <span class="text-xs font-bold text-slate-400 dark:text-slate-500">
-        Cổng kết nối đặc quyền dành cho quản trị hệ thống và đối soát thành viên B2B
+        {{ 'api.admin_docs_subtitle' | translate }}
       </span>
     </div>
 
@@ -128,12 +124,10 @@
           </div>
           <div>
             <h4 class="text-sm font-extrabold text-slate-800 dark:text-white">
-              1. Lấy danh sách thành viên B2B
+              {{ 'api.admin_ep1_title' | translate }}
             </h4>
             <p class="text-xs font-semibold text-slate-500 dark:text-slate-400 mt-1">
-              Trả về danh sách thành viên trên hệ thống bao gồm hồ sơ, vai trò, số dư ví hiện tại và
-              trạng thái khóa API. Hỗ trợ phân trang (?page=1&limit=10), tìm kiếm (?search=...), lọc
-              theo vai trò (?role=...) và trạng thái API Key (?has_api_key=yes/no).
+              {{ 'api.admin_ep1_desc' | translate }}
             </p>
           </div>
         </div>
@@ -155,7 +149,7 @@
           <div class="space-y-1.5">
             <span
               class="text-xs font-bold text-slate-400 dark:text-slate-500 uppercase tracking-wider block"
-              >Mẫu gọi API (CURL)</span
+              >{{ 'api.curl_sample' | translate }}</span
             >
             <div
               class="relative bg-slate-50 dark:bg-slate-950 rounded-xl border border-slate-200/60 dark:border-slate-900 overflow-hidden"
@@ -165,7 +159,7 @@
               >
                 <pre class="whitespace-pre">
 curl -X GET "{{ siteUrl() }}/api/v1/admin/b2b/users?api_key={{
-                    apiKey() || 'API_KEY_CUA_BAN'
+                    apiKey() || 'YOUR_API_KEY'
                   }}"</pre>
               </div>
               <button
@@ -181,7 +175,7 @@ curl -X GET "{{ siteUrl() }}/api/v1/admin/b2b/users?api_key={{
           <div class="space-y-1.5">
             <span
               class="text-xs font-bold text-slate-400 dark:text-slate-500 uppercase tracking-wider block"
-              >URL gọi trực tiếp</span
+              >{{ 'api.direct_url' | translate }}</span
             >
             <div
               class="relative bg-slate-50 dark:bg-slate-950 rounded-xl border border-slate-200/60 dark:border-slate-900 overflow-hidden"
@@ -191,7 +185,7 @@ curl -X GET "{{ siteUrl() }}/api/v1/admin/b2b/users?api_key={{
               >
                 <span class="text-[var(--color-primary)] font-semibold"
                   >{{ siteUrl() }}/api/v1/admin/b2b/users?api_key={{
-                    apiKey() || 'API_KEY_CUA_BAN'
+                    apiKey() || 'YOUR_API_KEY'
                   }}</span
                 >
               </div>
@@ -208,7 +202,7 @@ curl -X GET "{{ siteUrl() }}/api/v1/admin/b2b/users?api_key={{
           <div class="space-y-1.5">
             <span
               class="text-xs font-bold text-slate-400 dark:text-slate-500 uppercase tracking-wider block"
-              >Tham số URL (Query Parameters)</span
+              >{{ 'api.query_params' | translate }}</span
             >
             <div
               class="bg-slate-50 dark:bg-slate-950 border border-slate-200/60 dark:border-slate-900 rounded-xl p-4 space-y-4"
@@ -223,13 +217,12 @@ curl -X GET "{{ siteUrl() }}/api/v1/admin/b2b/users?api_key={{
                   <div class="flex items-center gap-1.5">
                     <span
                       class="text-xs font-black uppercase bg-rose-500/10 text-rose-500 px-1.5 py-0.5 rounded"
-                      >Bắt buộc</span
+                      >{{ 'api.required' | translate }}</span
                     >
                     <span class="text-slate-400 dark:text-slate-500 font-mono text-xs">String</span>
                   </div>
                   <p class="text-slate-500 dark:text-slate-400 font-semibold leading-relaxed">
-                    Khóa API Key của Admin để xác thực. Có thể truyền qua query parameter hoặc
-                    header <code class="font-mono text-xs">X-API-KEY</code>.
+                    {{ 'api.admin_api_key_desc' | translate }}
                   </p>
                 </div>
               </div>
@@ -244,14 +237,14 @@ curl -X GET "{{ siteUrl() }}/api/v1/admin/b2b/users?api_key={{
                   <div class="flex items-center gap-1.5">
                     <span
                       class="text-xs font-black uppercase bg-slate-100 dark:bg-slate-800 text-slate-500 px-1.5 py-0.5 rounded"
-                      >Tùy chọn</span
+                      >{{ 'api.optional' | translate }}</span
                     >
                     <span class="text-slate-400 dark:text-slate-500 font-mono text-xs"
                       >Numeric</span
                     >
                   </div>
                   <p class="text-slate-500 dark:text-slate-400 font-semibold leading-relaxed">
-                    Số trang cần lấy dữ liệu. Mặc định là
+                    {{ 'api.page_desc' | translate }}
                     <code class="font-mono text-xs">1</code>.
                   </p>
                 </div>
@@ -267,14 +260,14 @@ curl -X GET "{{ siteUrl() }}/api/v1/admin/b2b/users?api_key={{
                   <div class="flex items-center gap-1.5">
                     <span
                       class="text-xs font-black uppercase bg-slate-100 dark:bg-slate-800 text-slate-500 px-1.5 py-0.5 rounded"
-                      >Tùy chọn</span
+                      >{{ 'api.optional' | translate }}</span
                     >
                     <span class="text-slate-400 dark:text-slate-500 font-mono text-xs"
                       >Numeric</span
                     >
                   </div>
                   <p class="text-slate-500 dark:text-slate-400 font-semibold leading-relaxed">
-                    Số lượng thành viên hiển thị trên mỗi trang. Mặc định là
+                    {{ 'api.admin_users_limit_desc' | translate }}
                     <code class="font-mono text-xs">10</code>.
                   </p>
                 </div>
@@ -290,12 +283,12 @@ curl -X GET "{{ siteUrl() }}/api/v1/admin/b2b/users?api_key={{
                   <div class="flex items-center gap-1.5">
                     <span
                       class="text-xs font-black uppercase bg-slate-100 dark:bg-slate-800 text-slate-500 px-1.5 py-0.5 rounded"
-                      >Tùy chọn</span
+                      >{{ 'api.optional' | translate }}</span
                     >
                     <span class="text-slate-400 dark:text-slate-500 font-mono text-xs">String</span>
                   </div>
                   <p class="text-slate-500 dark:text-slate-400 font-semibold leading-relaxed">
-                    Từ khóa tìm kiếm theo tên, email hoặc số điện thoại thành viên.
+                    {{ 'api.admin_users_search_desc' | translate }}
                   </p>
                 </div>
               </div>
@@ -310,13 +303,13 @@ curl -X GET "{{ siteUrl() }}/api/v1/admin/b2b/users?api_key={{
                   <div class="flex items-center gap-1.5">
                     <span
                       class="text-xs font-black uppercase bg-slate-100 dark:bg-slate-800 text-slate-500 px-1.5 py-0.5 rounded"
-                      >Tùy chọn</span
+                      >{{ 'api.optional' | translate }}</span
                     >
                     <span class="text-slate-400 dark:text-slate-500 font-mono text-xs">String</span>
                   </div>
                   <p class="text-slate-500 dark:text-slate-400 font-semibold leading-relaxed">
-                    Lọc theo vai trò của thành viên. Nhận giá trị:
-                    <code class="font-mono text-xs">admin</code> hoặc
+                    {{ 'api.admin_users_role_desc' | translate }}
+                    <code class="font-mono text-xs">admin</code> {{ 'api.or' | translate }}
                     <code class="font-mono text-xs">customer</code>.
                   </p>
                 </div>
@@ -332,18 +325,18 @@ curl -X GET "{{ siteUrl() }}/api/v1/admin/b2b/users?api_key={{
                   <div class="flex items-center gap-1.5">
                     <span
                       class="text-xs font-black uppercase bg-slate-100 dark:bg-slate-800 text-slate-500 px-1.5 py-0.5 rounded"
-                      >Tùy chọn</span
+                      >{{ 'api.optional' | translate }}</span
                     >
                     <span class="text-slate-400 dark:text-slate-500 font-mono text-xs"
                       >String / Boolean</span
                     >
                   </div>
                   <p class="text-slate-500 dark:text-slate-400 font-semibold leading-relaxed">
-                    Lọc theo trạng thái đã sinh API Key B2B hay chưa. Nhận giá trị:
+                    {{ 'api.admin_users_has_api_key_desc' | translate }}
                     <code class="font-mono text-xs">yes</code>/<code class="font-mono text-xs"
                       >no</code
                     >
-                    hoặc <code class="font-mono text-xs">1</code>/<code class="font-mono text-xs"
+                    {{ 'api.or' | translate }} <code class="font-mono text-xs">1</code>/<code class="font-mono text-xs"
                       >0</code
                     >.
                   </p>
@@ -355,7 +348,7 @@ curl -X GET "{{ siteUrl() }}/api/v1/admin/b2b/users?api_key={{
           <div class="space-y-1.5">
             <span
               class="text-xs font-bold text-slate-400 dark:text-slate-500 uppercase tracking-wider block"
-              >RESPONSE MẪU (JSON)</span
+              >{{ 'api.response_sample' | translate }}</span
             >
             <div
               class="bg-slate-50 dark:bg-slate-950 rounded-xl p-4 font-mono text-xs text-slate-700 dark:text-slate-300 overflow-x-auto leading-relaxed border border-slate-200/60 dark:border-slate-900"
@@ -367,7 +360,7 @@ curl -X GET "{{ siteUrl() }}/api/v1/admin/b2b/users?api_key={{
     {{ '{' }}
       "id": "019f6699-e6d2-70f2-89bd-d3b93946a77d",
       "name": "reseller_partner",
-      "email": "partner@gmail.com",
+      "email": "partner&#64;gmail.com",
       "phone": "0988777666",
       "role": "customer",
       "balance": 1500000,
@@ -389,12 +382,10 @@ curl -X GET "{{ siteUrl() }}/api/v1/admin/b2b/users?api_key={{
           </div>
           <div>
             <h4 class="text-sm font-extrabold text-slate-800 dark:text-white">
-              2. Lấy danh sách đơn hàng B2B toàn hệ thống
+              {{ 'api.admin_ep2_title' | translate }}
             </h4>
             <p class="text-xs font-semibold text-slate-500 dark:text-slate-400 mt-1">
-              Truy xuất thông tin tất cả đơn hàng đã mua qua kênh B2B của mọi thành viên. Hỗ trợ
-              phân trang (?page=1&limit=10), tìm kiếm (?search=...), lọc theo trạng thái
-              (?status=...) và đại lý (?user_id=...).
+              {{ 'api.admin_ep2_desc' | translate }}
             </p>
           </div>
         </div>
@@ -416,7 +407,7 @@ curl -X GET "{{ siteUrl() }}/api/v1/admin/b2b/users?api_key={{
           <div class="space-y-1.5">
             <span
               class="text-xs font-bold text-slate-400 dark:text-slate-500 uppercase tracking-wider block"
-              >Mẫu gọi API (CURL)</span
+              >{{ 'api.curl_sample' | translate }}</span
             >
             <div
               class="relative bg-slate-50 dark:bg-slate-950 rounded-xl border border-slate-200/60 dark:border-slate-900 overflow-hidden"
@@ -426,7 +417,7 @@ curl -X GET "{{ siteUrl() }}/api/v1/admin/b2b/users?api_key={{
               >
                 <pre class="whitespace-pre">
 curl -X GET "{{ siteUrl() }}/api/v1/admin/b2b/orders?api_key={{
-                    apiKey() || 'API_KEY_CUA_BAN'
+                    apiKey() || 'YOUR_API_KEY'
                   }}&page=1&limit=10"</pre>
               </div>
               <button
@@ -442,7 +433,7 @@ curl -X GET "{{ siteUrl() }}/api/v1/admin/b2b/orders?api_key={{
           <div class="space-y-1.5">
             <span
               class="text-xs font-bold text-slate-400 dark:text-slate-500 uppercase tracking-wider block"
-              >URL gọi trực tiếp</span
+              >{{ 'api.direct_url' | translate }}</span
             >
             <div
               class="relative bg-slate-50 dark:bg-slate-950 rounded-xl border border-slate-200/60 dark:border-slate-900 overflow-hidden"
@@ -452,7 +443,7 @@ curl -X GET "{{ siteUrl() }}/api/v1/admin/b2b/orders?api_key={{
               >
                 <span class="text-[var(--color-primary)] font-semibold"
                   >{{ siteUrl() }}/api/v1/admin/b2b/orders?api_key={{
-                    apiKey() || 'API_KEY_CUA_BAN'
+                    apiKey() || 'YOUR_API_KEY'
                   }}&page=1&limit=10</span
                 >
               </div>
@@ -469,7 +460,7 @@ curl -X GET "{{ siteUrl() }}/api/v1/admin/b2b/orders?api_key={{
           <div class="space-y-1.5">
             <span
               class="text-xs font-bold text-slate-400 dark:text-slate-500 uppercase tracking-wider block"
-              >Tham số URL (Query Parameters)</span
+              >{{ 'api.query_params' | translate }}</span
             >
             <div
               class="bg-slate-50 dark:bg-slate-950 border border-slate-200/60 dark:border-slate-900 rounded-xl p-4 space-y-4"
@@ -484,14 +475,14 @@ curl -X GET "{{ siteUrl() }}/api/v1/admin/b2b/orders?api_key={{
                   <div class="flex items-center gap-1.5">
                     <span
                       class="text-xs font-black uppercase bg-slate-100 dark:bg-slate-800 text-slate-500 px-1.5 py-0.5 rounded"
-                      >Tùy chọn</span
+                      >{{ 'api.optional' | translate }}</span
                     >
                     <span class="text-slate-400 dark:text-slate-500 font-mono text-xs"
                       >Numeric</span
                     >
                   </div>
                   <p class="text-slate-500 dark:text-slate-400 font-semibold leading-relaxed">
-                    Số trang cần lấy dữ liệu. Mặc định là
+                    {{ 'api.page_desc' | translate }}
                     <code class="font-mono text-xs">1</code>.
                   </p>
                 </div>
@@ -507,15 +498,15 @@ curl -X GET "{{ siteUrl() }}/api/v1/admin/b2b/orders?api_key={{
                   <div class="flex items-center gap-1.5">
                     <span
                       class="text-xs font-black uppercase bg-slate-100 dark:bg-slate-800 text-slate-500 px-1.5 py-0.5 rounded"
-                      >Tùy chọn</span
+                      >{{ 'api.optional' | translate }}</span
                     >
                     <span class="text-slate-400 dark:text-slate-500 font-mono text-xs"
                       >Numeric</span
                     >
                   </div>
                   <p class="text-slate-500 dark:text-slate-400 font-semibold leading-relaxed">
-                    Số lượng đơn hàng hiển thị trên mỗi trang. Mặc định là
-                    <code class="font-mono text-xs">10</code>, tối đa là
+                    {{ 'api.admin_orders_limit_desc' | translate }}
+                    <code class="font-mono text-xs">10</code>, {{ 'api.max' | translate }}
                     <code class="font-mono text-xs">20</code>.
                   </p>
                 </div>
@@ -531,12 +522,12 @@ curl -X GET "{{ siteUrl() }}/api/v1/admin/b2b/orders?api_key={{
                   <div class="flex items-center gap-1.5">
                     <span
                       class="text-xs font-black uppercase bg-slate-100 dark:bg-slate-800 text-slate-500 px-1.5 py-0.5 rounded"
-                      >Tùy chọn</span
+                      >{{ 'api.optional' | translate }}</span
                     >
                     <span class="text-slate-400 dark:text-slate-500 font-mono text-xs">String</span>
                   </div>
                   <p class="text-slate-500 dark:text-slate-400 font-semibold leading-relaxed">
-                    Lọc đơn hàng theo trạng thái. Nhận các giá trị:
+                    {{ 'api.admin_orders_status_desc' | translate }}
                     <code class="font-mono text-xs">paid</code>,
                     <code class="font-mono text-xs">pending</code>,
                     <code class="font-mono text-xs">cancelled</code>.
@@ -554,14 +545,14 @@ curl -X GET "{{ siteUrl() }}/api/v1/admin/b2b/orders?api_key={{
                   <div class="flex items-center gap-1.5">
                     <span
                       class="text-xs font-black uppercase bg-slate-100 dark:bg-slate-800 text-slate-500 px-1.5 py-0.5 rounded"
-                      >Tùy chọn</span
+                      >{{ 'api.optional' | translate }}</span
                     >
                     <span class="text-slate-400 dark:text-slate-500 font-mono text-xs"
                       >String (UUID)</span
                     >
                   </div>
                   <p class="text-slate-500 dark:text-slate-400 font-semibold leading-relaxed">
-                    Lọc đơn hàng của đại lý/thành viên cụ thể dựa trên mã ID tài khoản.
+                    {{ 'api.admin_orders_user_id_desc' | translate }}
                   </p>
                 </div>
               </div>
@@ -576,13 +567,12 @@ curl -X GET "{{ siteUrl() }}/api/v1/admin/b2b/orders?api_key={{
                   <div class="flex items-center gap-1.5">
                     <span
                       class="text-xs font-black uppercase bg-slate-100 dark:bg-slate-800 text-slate-500 px-1.5 py-0.5 rounded"
-                      >Tùy chọn</span
+                      >{{ 'api.optional' | translate }}</span
                     >
                     <span class="text-slate-400 dark:text-slate-500 font-mono text-xs">String</span>
                   </div>
                   <p class="text-slate-500 dark:text-slate-400 font-semibold leading-relaxed">
-                    Từ khóa tìm kiếm theo mã đơn hàng (`order_code`) hoặc thông tin đại lý
-                    (tên/email).
+                    {{ 'api.admin_orders_search_desc' | translate }}
                   </p>
                 </div>
               </div>
@@ -592,7 +582,7 @@ curl -X GET "{{ siteUrl() }}/api/v1/admin/b2b/orders?api_key={{
           <div class="space-y-1.5">
             <span
               class="text-xs font-bold text-slate-400 dark:text-slate-500 uppercase tracking-wider block"
-              >RESPONSE MẪU (JSON)</span
+              >{{ 'api.response_sample' | translate }}</span
             >
             <div
               class="bg-slate-50 dark:bg-slate-950 rounded-xl p-4 font-mono text-xs text-slate-700 dark:text-slate-300 overflow-x-auto leading-relaxed border border-slate-200/60 dark:border-slate-900"
@@ -607,7 +597,7 @@ curl -X GET "{{ siteUrl() }}/api/v1/admin/b2b/orders?api_key={{
       "user": {{ '{' }}
         "id": "019f6699-e6d2-70f2-89bd-d3b93946a77d",
         "name": "reseller_partner",
-        "email": "partner@gmail.com"
+        "email": "partner&#64;gmail.com"
       {{ '}' }},
       "total_price": 70000,
       "discount_amount": 10000,
@@ -638,11 +628,10 @@ curl -X GET "{{ siteUrl() }}/api/v1/admin/b2b/orders?api_key={{
           </div>
           <div>
             <h4 class="text-sm font-extrabold text-slate-800 dark:text-white">
-              3. Thêm kho sản phẩm (Nhập lô tài nguyên mới)
+              {{ 'api.admin_ep3_title' | translate }}
             </h4>
             <p class="text-xs font-semibold text-slate-500 dark:text-slate-400 mt-1">
-              Thêm dữ liệu kho hàng vào sản phẩm. Có thể gửi nội dung trực tiếp bằng JSON hoặc tải
-              file TXT thông qua multipart/form-data.
+              {{ 'api.admin_ep3_desc' | translate }}
             </p>
           </div>
         </div>
@@ -664,7 +653,7 @@ curl -X GET "{{ siteUrl() }}/api/v1/admin/b2b/orders?api_key={{
           <div class="space-y-1.5">
             <span
               class="text-xs font-bold text-slate-400 dark:text-slate-500 uppercase tracking-wider block"
-              >Tham số yêu cầu (Parameters)</span
+              >{{ 'api.parameters' | translate }}</span
             >
             <div
               class="bg-slate-50 dark:bg-slate-950 border border-slate-200/60 dark:border-slate-900 rounded-xl p-4 space-y-4"
@@ -677,14 +666,14 @@ curl -X GET "{{ siteUrl() }}/api/v1/admin/b2b/orders?api_key={{
                   <div class="flex items-center gap-1.5">
                     <span
                       class="text-xs font-black uppercase bg-rose-500/10 text-rose-500 px-1.5 py-0.5 rounded"
-                      >Bắt buộc</span
+                      >{{ 'api.required' | translate }}</span
                     >
                     <span class="text-slate-400 dark:text-slate-500 font-mono text-xs"
                       >String (URL)</span
                     >
                   </div>
                   <p class="text-slate-500 dark:text-slate-400 font-semibold leading-relaxed">
-                    ID sản phẩm trên URL. Sản phẩm phải thuộc quyền quản lý của bạn.
+                    {{ 'api.admin_ep3_id_desc' | translate }}
                   </p>
                 </div>
               </div>
@@ -699,15 +688,14 @@ curl -X GET "{{ siteUrl() }}/api/v1/admin/b2b/orders?api_key={{
                   <div class="flex items-center gap-1.5">
                     <span
                       class="text-xs font-black uppercase bg-slate-100 dark:bg-slate-800 text-slate-500 px-1.5 py-0.5 rounded"
-                      >Tùy chọn</span
+                      >{{ 'api.optional' | translate }}</span
                     >
                     <span class="text-slate-400 dark:text-slate-500 font-mono text-xs"
                       >String (Body)</span
                     >
                   </div>
                   <p class="text-slate-500 dark:text-slate-400 font-semibold leading-relaxed">
-                    Tên ký hiệu của lô hàng để dễ phân loại và đối soát (mặc định sẽ tự động sinh
-                    theo ngày giờ hiện tại).
+                    {{ 'api.admin_ep3_batch_desc' | translate }}
                   </p>
                 </div>
               </div>
@@ -722,15 +710,15 @@ curl -X GET "{{ siteUrl() }}/api/v1/admin/b2b/orders?api_key={{
                   <div class="flex items-center gap-1.5">
                     <span
                       class="text-xs font-black uppercase bg-rose-500/10 text-rose-500 px-1.5 py-0.5 rounded"
-                      >Bắt buộc*</span
+                      >{{ 'api.required_cond' | translate }}</span
                     >
                     <span class="text-slate-400 dark:text-slate-500 font-mono text-xs"
                       >String (Body)</span
                     >
                   </div>
                   <p class="text-slate-500 dark:text-slate-400 font-semibold leading-relaxed">
-                    Dữ liệu kho hàng dạng chuỗi nhiều dòng (phân cách bằng dấu xuống dòng
-                    <code class="font-mono text-xs">\n</code>). Bắt buộc nếu không gửi file.
+                    {{ 'api.admin_ep3_content_desc' | translate }}
+                    <code class="font-mono text-xs">\n</code>). {{ 'api.admin_ep3_content_note' | translate }}
                   </p>
                 </div>
               </div>
@@ -745,15 +733,15 @@ curl -X GET "{{ siteUrl() }}/api/v1/admin/b2b/orders?api_key={{
                   <div class="flex items-center gap-1.5">
                     <span
                       class="text-xs font-black uppercase bg-rose-500/10 text-rose-500 px-1.5 py-0.5 rounded"
-                      >Bắt buộc*</span
+                      >{{ 'api.required_cond' | translate }}</span
                     >
                     <span class="text-slate-400 dark:text-slate-500 font-mono text-xs"
                       >File (TXT)</span
                     >
                   </div>
                   <p class="text-slate-500 dark:text-slate-400 font-semibold leading-relaxed">
-                    Tải file định dạng văn bản <code class="font-mono text-xs">.txt</code> chứa dữ
-                    liệu sản phẩm qua multipart/form-data. Bắt buộc nếu không gửi content.
+                    {{ 'api.admin_ep3_file_desc' | translate }}
+                    <code class="font-mono text-xs">.txt</code> {{ 'api.admin_ep3_file_note' | translate }}
                   </p>
                 </div>
               </div>
@@ -765,7 +753,7 @@ curl -X GET "{{ siteUrl() }}/api/v1/admin/b2b/orders?api_key={{
               <div class="flex items-center justify-between">
                 <span
                   class="text-xs font-bold text-slate-400 dark:text-slate-500 uppercase tracking-wider block"
-                  >Ví dụ gửi JSON hàng loạt</span
+                  >{{ 'api.json_example' | translate }}</span
                 >
                 <div
                   class="flex items-center gap-1.5 border-b border-slate-200/40 dark:border-slate-800/40 pb-0.5"
@@ -802,16 +790,16 @@ curl -X GET "{{ siteUrl() }}/api/v1/admin/b2b/orders?api_key={{
                     <pre class="whitespace-pre">
 curl -X POST "{{ siteUrl() }}/api/v1/admin/b2b/products/PRODUCT_UUID/inventory" \
   -H "Content-Type: application/json" \
-  -H "X-API-KEY: {{ apiKey() || 'API_KEY_CUA_BAN' }}" \
-  -d '{{ '{' }}"batch_name": "Lô hàng mới", "content": "tai_khoan_1\ntai_khoan_2"{{ '}' }}'</pre>
+  -H "X-API-KEY: {{ apiKey() || 'YOUR_API_KEY' }}" \
+  -d '{{ '{' }}"batch_name": "New Batch", "content": "account_1\naccount_2"{{ '}' }}'</pre>
                   } @else {
                     <pre class="whitespace-pre">
 curl -X POST "{{ siteUrl() }}/api/v1/admin/b2b/products/PRODUCT_UUID/inventory" \
   -H "Content-Type: application/json" \
-  -H "X-API-KEY: {{ apiKey() || 'API_KEY_CUA_BAN' }}" \
+  -H "X-API-KEY: {{ apiKey() || 'YOUR_API_KEY' }}" \
   -d "{{
                         '{'
-                      }}\\\"batch_name\\\": \\\"Lô hàng mới\\\", \\\"content\\\": \\\"tai_khoan_1\\\\ntai_khoan_2\\\"{{
+                      }}\\\"batch_name\\\": \\\"New Batch\\\", \\\"content\\\": \\\"account_1\\\\naccount_2\\\"{{
                         '}'
                       }}"</pre>
                   }
@@ -833,7 +821,7 @@ curl -X POST "{{ siteUrl() }}/api/v1/admin/b2b/products/PRODUCT_UUID/inventory" 
             <div class="space-y-1.5">
               <span
                 class="text-xs font-bold text-slate-400 dark:text-slate-500 uppercase tracking-wider block"
-                >Ví dụ tải file</span
+                >{{ 'api.file_example' | translate }}</span
               >
               <div
                 class="relative bg-slate-50 dark:bg-slate-950 rounded-xl border border-slate-200/60 dark:border-slate-900 overflow-hidden min-h-[120px]"
@@ -843,8 +831,8 @@ curl -X POST "{{ siteUrl() }}/api/v1/admin/b2b/products/PRODUCT_UUID/inventory" 
                 >
                   <pre class="whitespace-pre">
 curl -X POST "{{ siteUrl() }}/api/v1/admin/b2b/products/PRODUCT_UUID/inventory" \
-  -H "X-API-KEY: {{ apiKey() || 'API_KEY_CUA_BAN' }}" \
-  -F "batch_name=Lô hàng mới" \
+  -H "X-API-KEY: {{ apiKey() || 'YOUR_API_KEY' }}" \
+  -F "batch_name=New Batch" \
   -F "file=@inventory.txt"</pre>
                 </div>
                 <button
@@ -861,7 +849,7 @@ curl -X POST "{{ siteUrl() }}/api/v1/admin/b2b/products/PRODUCT_UUID/inventory" 
           <div class="space-y-1.5">
             <span
               class="text-xs font-bold text-slate-400 dark:text-slate-500 uppercase tracking-wider block"
-              >RESPONSE MẪU (JSON)</span
+              >{{ 'api.response_sample' | translate }}</span
             >
             <div
               class="bg-slate-50 dark:bg-slate-950 rounded-xl p-4 font-mono text-xs text-slate-700 dark:text-slate-300 overflow-x-auto leading-relaxed border border-slate-200/60 dark:border-slate-900"
@@ -869,11 +857,11 @@ curl -X POST "{{ siteUrl() }}/api/v1/admin/b2b/products/PRODUCT_UUID/inventory" 
               <pre class="whitespace-pre"
                 >{{ '{' }}
   "success": true,
-  "message": "Successfully imported batch 'Lô hàng mới' with 2 resources.",
+  "message": "Successfully imported batch 'New Batch' with 2 resources.",
   "data": {{ '{' }}
     "id": "019f6699-e6d2-70f2-89bd-d3b93946a77d",
     "product_id": "PRODUCT_UUID",
-    "batch_name": "Lô hàng mới",
+    "batch_name": "New Batch",
     "initial_count": 2,
     "sold_count": 0,
     "available_count": 2,
@@ -894,11 +882,10 @@ curl -X POST "{{ siteUrl() }}/api/v1/admin/b2b/products/PRODUCT_UUID/inventory" 
           </div>
           <div>
             <h4 class="text-sm font-extrabold text-slate-800 dark:text-white">
-              4. Lấy số liệu thống kê hệ thống B2B
+              {{ 'api.admin_ep4_title' | translate }}
             </h4>
             <p class="text-xs font-semibold text-slate-500 dark:text-slate-400 mt-1">
-              Xem tổng quan số liệu hoạt động toàn hệ thống bao gồm: Doanh thu, Đơn hàng, Sản phẩm,
-              Tồn kho khả dụng và Tổng số người dùng.
+              {{ 'api.admin_ep4_desc' | translate }}
             </p>
           </div>
         </div>
@@ -920,7 +907,7 @@ curl -X POST "{{ siteUrl() }}/api/v1/admin/b2b/products/PRODUCT_UUID/inventory" 
           <div class="space-y-1.5">
             <span
               class="text-xs font-bold text-slate-400 dark:text-slate-500 uppercase tracking-wider block"
-              >Mẫu gọi API (CURL)</span
+              >{{ 'api.curl_sample' | translate }}</span
             >
             <div
               class="relative bg-slate-50 dark:bg-slate-950 rounded-xl border border-slate-200/60 dark:border-slate-900 overflow-hidden"
@@ -930,7 +917,7 @@ curl -X POST "{{ siteUrl() }}/api/v1/admin/b2b/products/PRODUCT_UUID/inventory" 
               >
                 <pre class="whitespace-pre">
 curl -X GET "{{ siteUrl() }}/api/v1/admin/b2b/stats?api_key={{
-                    apiKey() || 'API_KEY_CUA_BAN'
+                    apiKey() || 'YOUR_API_KEY'
                   }}"</pre>
               </div>
               <button
@@ -946,7 +933,7 @@ curl -X GET "{{ siteUrl() }}/api/v1/admin/b2b/stats?api_key={{
           <div class="space-y-1.5">
             <span
               class="text-xs font-bold text-slate-400 dark:text-slate-500 uppercase tracking-wider block"
-              >URL gọi trực tiếp</span
+              >{{ 'api.direct_url' | translate }}</span
             >
             <div
               class="relative bg-slate-50 dark:bg-slate-950 rounded-xl border border-slate-200/60 dark:border-slate-900 overflow-hidden"
@@ -956,7 +943,7 @@ curl -X GET "{{ siteUrl() }}/api/v1/admin/b2b/stats?api_key={{
               >
                 <span class="text-[var(--color-primary)] font-semibold"
                   >{{ siteUrl() }}/api/v1/admin/b2b/stats?api_key={{
-                    apiKey() || 'API_KEY_CUA_BAN'
+                    apiKey() || 'YOUR_API_KEY'
                   }}</span
                 >
               </div>
@@ -973,7 +960,7 @@ curl -X GET "{{ siteUrl() }}/api/v1/admin/b2b/stats?api_key={{
           <div class="space-y-1.5">
             <span
               class="text-xs font-bold text-slate-400 dark:text-slate-500 uppercase tracking-wider block"
-              >Tham số URL (Query Parameters)</span
+              >{{ 'api.query_params' | translate }}</span
             >
             <div
               class="bg-slate-50 dark:bg-slate-950 border border-slate-200/60 dark:border-slate-900 rounded-xl p-4 space-y-4"
@@ -988,12 +975,12 @@ curl -X GET "{{ siteUrl() }}/api/v1/admin/b2b/stats?api_key={{
                   <div class="flex items-center gap-1.5">
                     <span
                       class="text-xs font-black uppercase bg-rose-500/10 text-rose-500 px-1.5 py-0.5 rounded"
-                      >Bắt buộc</span
+                      >{{ 'api.required' | translate }}</span
                     >
                     <span class="text-slate-400 dark:text-slate-500 font-mono text-xs">String</span>
                   </div>
                   <p class="text-slate-500 dark:text-slate-400 font-semibold leading-relaxed">
-                    Khóa API Key của Admin để xác thực quyền truy cập.
+                    {{ 'api.admin_stats_api_key_desc' | translate }}
                   </p>
                 </div>
               </div>
@@ -1008,14 +995,14 @@ curl -X GET "{{ siteUrl() }}/api/v1/admin/b2b/stats?api_key={{
                   <div class="flex items-center gap-1.5">
                     <span
                       class="text-xs font-black uppercase bg-slate-100 dark:bg-slate-800 text-slate-500 px-1.5 py-0.5 rounded"
-                      >Tùy chọn</span
+                      >{{ 'api.optional' | translate }}</span
                     >
                     <span class="text-slate-400 dark:text-slate-500 font-mono text-xs"
                       >String (YYYY-MM-DD)</span
                     >
                   </div>
                   <p class="text-slate-500 dark:text-slate-400 font-semibold leading-relaxed">
-                    Ngày bắt đầu để tính toán doanh thu và đơn hàng.
+                    {{ 'api.stats_start_date_desc' | translate }}
                   </p>
                 </div>
               </div>
@@ -1030,14 +1017,14 @@ curl -X GET "{{ siteUrl() }}/api/v1/admin/b2b/stats?api_key={{
                   <div class="flex items-center gap-1.5">
                     <span
                       class="text-xs font-black uppercase bg-slate-100 dark:bg-slate-800 text-slate-500 px-1.5 py-0.5 rounded"
-                      >Tùy chọn</span
+                      >{{ 'api.optional' | translate }}</span
                     >
                     <span class="text-slate-400 dark:text-slate-500 font-mono text-xs"
                       >String (YYYY-MM-DD)</span
                     >
                   </div>
                   <p class="text-slate-500 dark:text-slate-400 font-semibold leading-relaxed">
-                    Ngày kết thúc để tính toán doanh thu và đơn hàng.
+                    {{ 'api.stats_end_date_desc' | translate }}
                   </p>
                 </div>
               </div>
@@ -1047,7 +1034,7 @@ curl -X GET "{{ siteUrl() }}/api/v1/admin/b2b/stats?api_key={{
           <div class="space-y-1.5">
             <span
               class="text-xs font-bold text-slate-400 dark:text-slate-500 uppercase tracking-wider block"
-              >RESPONSE MẪU (JSON)</span
+              >{{ 'api.response_sample' | translate }}</span
             >
             <div
               class="bg-slate-50 dark:bg-slate-950 rounded-xl p-4 font-mono text-xs text-slate-700 dark:text-slate-300 overflow-x-auto leading-relaxed border border-slate-200/60 dark:border-slate-900"

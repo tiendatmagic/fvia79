@@ -1,7 +1,7 @@
 <div class="max-w-[1530px] mx-auto w-full px-4 sm:px-6 space-y-6 py-6">
   <app-page-header
-    title="Cấu hình hệ thống"
-    subtitle="Quản lý địa chỉ ví nhận USDT nạp tiền và các khóa tích hợp với blockchain scanner"
+    [title]="'settings.title' | translate"
+    [description]="'settings.description' | translate"
   />
 
     <div class="flex items-center gap-2 border-b border-slate-200/50 dark:border-slate-800/50 overflow-x-auto scrollbar-none whitespace-nowrap flex-nowrap">
@@ -16,7 +16,7 @@
       [class.dark:hover:text-slate-200]="activeTab() !== 'general'"
     >
       <app-icon name="settings" class="w-4 h-4" />
-      Cấu hình thông tin hệ thống
+      {{ 'settings.tab_general' | translate }}
     </button>
     <button
       (click)="changeTab('maintenance')"
@@ -29,7 +29,7 @@
       [class.dark:hover:text-slate-200]="activeTab() !== 'maintenance'"
     >
       <app-icon name="clock" class="w-4 h-4" />
-      Bảo trì & Tối ưu
+      {{ 'settings.tab_maintenance' | translate }}
     </button>
   </div>
 
@@ -44,35 +44,34 @@
           <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
             <div class="form-field md:col-span-2">
               <label
-                >Địa chỉ ví nhận USDT của Admin (BEP20) <span class="text-red-500">*</span></label
+                >{{ 'settings.wallet_label' | translate }} <span class="text-red-500">*</span></label
               >
               <div class="relative mt-1">
                 <input
                   type="text"
                   name="admin_wallet_address"
                   class="form-input w-full pr-10"
-                  placeholder="Nhập địa chỉ ví USDT (ví dụ: 0xAB4a22a64bBC...)"
+                  [placeholder]="'settings.wallet_placeholder' | translate"
                   [(ngModel)]="form.admin_wallet_address"
                   [disabled]="isLocked()"
                   required
                 />
               </div>
               <p class="mt-1.5 text-xs text-slate-400 dark:text-slate-500">
-                Đây là địa chỉ ví BEP20 trên Binance Smart Chain sẽ nhận tiền nạp từ khách hàng. Hãy
-                chắc chắn địa chỉ này là chính xác để tránh mất mát tài sản.
+                {{ 'settings.wallet_hint' | translate }}
               </p>
             </div>
 
             <div class="form-field md:col-span-2">
               <label
-                >Tỷ giá quy đổi USDT sang VND cố định <span class="text-red-500">*</span></label
+                >{{ 'settings.exchange_rate_label' | translate }} <span class="text-red-500">*</span></label
               >
               <div class="relative mt-1">
                 <input
                   type="number"
                   name="usdt_exchange_rate"
                   class="form-input w-full"
-                  placeholder="Nhập tỷ giá cố định (ví dụ: 26500, nhập 0 để tự động lấy từ CoinGecko)"
+                  [placeholder]="'settings.exchange_rate_placeholder' | translate"
                   [(ngModel)]="form.usdt_exchange_rate"
                   [disabled]="isLocked()"
                   min="0"
@@ -80,11 +79,10 @@
                 />
               </div>
               <p class="mt-1.5 text-xs text-slate-400 dark:text-slate-500">
-                Thiết lập tỷ giá cố định (ví dụ: 26500) để quy đổi tiền nạp của khách hàng.
+                {{ 'settings.exchange_rate_hint' | translate }}
                 <span
                   class="font-bold text-[var(--color-primary)] dark:text-[var(--color-secondary)]"
-                  >Nhập 0 để hệ thống tự động lấy tỷ giá thời gian thực từ CoinGecko (cache 10 phút
-                  để tránh spam API)</span
+                  >{{ 'settings.exchange_rate_auto_hint' | translate }}</span
                 >.
               </p>
             </div>
@@ -97,7 +95,7 @@
                   class="form-textarea w-full pr-12 py-3 font-mono text-xs leading-relaxed resize-none"
                   [class.mask-security]="!showApiKey()"
                   rows="5"
-                  placeholder="Nhập API Key Moralis (Token JWT)..."
+                  [placeholder]="'settings.moralis_placeholder' | translate"
                   [(ngModel)]="form.scanner_api_key"
                   [disabled]="isLocked()"
                   required
@@ -111,15 +109,15 @@
                 </button>
               </div>
               <p class="mt-1.5 text-xs text-slate-400 dark:text-slate-500">
-                Sử dụng
+                {{ 'settings.moralis_hint' | translate }}
                 <span class="font-bold text-slate-600 dark:text-slate-300">Moralis API Key</span>
-                (định dạng JWT token dài) để tự động đối soát giao dịch nạp USDT trên BSC (BEP-20).
+                {{ 'settings.moralis_hint2' | translate }}
                 <a
                   href="https://admin.moralis.io/"
                   target="_blank"
                   class="text-primary hover:underline font-bold inline-flex items-center gap-0.5 ml-1 cursor-pointer"
                 >
-                  Đến trang quản trị Moralis <app-icon name="external-link" class="w-3 h-3" />
+                  {{ 'settings.moralis_link' | translate }} <app-icon name="external-link" class="w-3 h-3" />
                 </a>
               </p>
               <div
@@ -129,10 +127,10 @@
                 <div
                   class="text-xs text-slate-600 dark:text-slate-400 font-semibold leading-relaxed"
                 >
-                  <strong>Hướng dẫn lấy API Key Moralis miễn phí:</strong>
+                  <strong>{{ 'settings.moralis_guide_title' | translate }}</strong>
                   <ol class="list-decimal pl-4 mt-1 space-y-1">
                     <li>
-                      Đăng ký hoặc Đăng nhập tài khoản tại
+                      {{ 'settings.moralis_guide_1' | translate }}
                       <a
                         href="https://admin.moralis.io/"
                         target="_blank"
@@ -140,8 +138,8 @@
                         >admin.moralis.io</a
                       >.
                     </li>
-                    <li>Truy cập mục <strong>API Keys</strong> ở menu bên trái.</li>
-                    <li>Copy chuỗi <strong>Web3 API Key</strong> và dán vào ô nhập liệu ở trên.</li>
+                    <li>{{ 'settings.moralis_guide_2' | translate }}</li>
+                    <li>{{ 'settings.moralis_guide_3' | translate }}</li>
                   </ol>
                 </div>
               </div>
@@ -153,24 +151,24 @@
               <h4
                 class="text-sm font-extrabold text-slate-800 dark:text-white uppercase tracking-wider mb-2"
               >
-                Cổng nạp tiền Binance Pay (Binance ID)
+                {{ 'settings.binance_section' | translate }}
               </h4>
             </div>
 
             <div class="form-field">
-              <label>Binance ID nhận tiền <span class="text-red-500">*</span></label>
+              <label>{{ 'settings.binance_id_label' | translate }} <span class="text-red-500">*</span></label>
               <div class="relative mt-1">
                 <input
                   type="text"
                   name="admin_binance_id"
                   class="form-input w-full"
-                  placeholder="Nhập Binance ID (ví dụ: 12345678)"
+                  [placeholder]="'settings.binance_id_placeholder' | translate"
                   [(ngModel)]="form.admin_binance_id"
                   [disabled]="isLocked()"
                 />
               </div>
               <p class="mt-1.5 text-xs text-slate-400 dark:text-slate-500">
-                Binance ID của Admin sẽ nhận tiền nạp từ khách hàng.
+                {{ 'settings.binance_id_hint' | translate }}
               </p>
             </div>
 
@@ -182,7 +180,7 @@
                   name="binance_api_key"
                   class="form-input w-full pr-12"
                   [class.mask-security]="!showBinanceKey()"
-                  placeholder="Nhập Binance API Key..."
+                  [placeholder]="'settings.binance_key_placeholder' | translate"
                   [(ngModel)]="form.binance_api_key"
                   [disabled]="isLocked()"
                 />
@@ -195,8 +193,7 @@
                 </button>
               </div>
               <p class="mt-1.5 text-xs text-slate-400 dark:text-slate-500">
-                API Key của tài khoản Binance cá nhân dùng để đối soát. Đảm bảo API Key chỉ có quyền
-                đọc.
+                {{ 'settings.binance_key_hint' | translate }}
               </p>
             </div>
 
@@ -208,7 +205,7 @@
                   name="binance_api_secret"
                   class="form-input w-full pr-12"
                   [class.mask-security]="!showBinanceSecret()"
-                  placeholder="Nhập Binance API Secret..."
+                  [placeholder]="'settings.binance_secret_placeholder' | translate"
                   [(ngModel)]="form.binance_api_secret"
                   [disabled]="isLocked()"
                 />
@@ -221,7 +218,7 @@
                 </button>
               </div>
               <p class="mt-1.5 text-xs text-slate-400 dark:text-slate-500">
-                API Secret Key tương ứng của Binance API Key ở trên.
+                {{ 'settings.binance_secret_hint' | translate }}
               </p>
             </div>
 
@@ -233,29 +230,23 @@
                 <div
                   class="text-xs text-slate-600 dark:text-slate-400 font-semibold leading-relaxed"
                 >
-                  <strong>Hướng dẫn lấy Binance ID &amp; Binance API Key:</strong>
+                  <strong>{{ 'settings.binance_guide_title' | translate }}</strong>
                   <ol class="list-decimal pl-4 mt-1 space-y-1">
                     <li>
-                      <strong>Binance ID:</strong> Đăng nhập tài khoản Binance, truy cập trang cá nhân (Profile) hoặc mục <strong>Binance Pay</strong> ở ứng dụng di động để lấy số <strong>Pay ID / UID</strong> của bạn.
+                      <strong>Binance ID:</strong> {{ 'settings.binance_guide_1' | translate }}
                     </li>
                     <li>
-                      <strong>Binance API Key &amp; Secret:</strong> Truy cập
+                      <strong>Binance API Key &amp; Secret:</strong> {{ 'settings.binance_guide_2_prefix' | translate }}
                       <a
                         href="https://www.binance.com/en/my/settings/api-management"
                         target="_blank"
                         class="underline font-bold text-primary"
-                        >Quản lý API (API Management)</a
-                      > trên Binance.
+                        >{{ 'settings.binance_guide_2_link' | translate }}</a
+                      >.
                     </li>
-                    <li>
-                      Nhấp vào <strong>Tạo API (Create API)</strong> -> Chọn <strong>Khóa API do hệ thống tạo (System generated)</strong>.
-                    </li>
-                    <li>
-                      Đặt tên cho API và thực hiện xác thực bảo mật để lấy <strong>API Key</strong> và <strong>API Secret</strong>.
-                    </li>
-                    <li>
-                      <strong>Lưu ý bảo mật quan trọng:</strong> Chỉ bật quyền <strong>Đọc dữ liệu (Enable Reading)</strong>. Tuyệt đối KHÔNG kích hoạt các quyền giao dịch, rút tiền hoặc Future để bảo đảm an toàn.
-                    </li>
+                    <li>{{ 'settings.binance_guide_3' | translate }}</li>
+                    <li>{{ 'settings.binance_guide_4' | translate }}</li>
+                    <li><strong>{{ 'settings.binance_guide_5_title' | translate }}</strong> {{ 'settings.binance_guide_5_body' | translate }}</li>
                   </ol>
                 </div>
               </div>
@@ -271,7 +262,7 @@
               class="px-4 py-2.5 rounded-xl font-semibold flex items-center gap-2 hover:scale-[1.01] active:scale-[0.98] transition-all duration-300"
             >
               <app-icon [name]="isLocked() ? 'lock' : 'lock-open'" class="w-4 h-4" />
-              <span>{{ isLocked() ? 'Mở khóa để sửa' : 'Khóa chỉnh sửa' }}</span>
+              <span>{{ isLocked() ? ('settings.unlock' | translate) : ('settings.lock' | translate) }}</span>
             </button>
 
             @if (!isLocked()) {
@@ -282,7 +273,7 @@
                 [disabled]="!settingsForm.form.valid || submitting()"
                 class="px-6 py-2.5 rounded-xl font-bold bg-gradient-to-r from-[var(--color-primary)] to-[var(--color-secondary)] text-white hover:scale-[1.01] active:scale-[0.98] transition-all duration-300 shadow-md shadow-[var(--color-primary)]/20"
               >
-                Lưu cấu hình
+                {{ 'settings.save' | translate }}
               </button>
             }
           </div>
@@ -301,10 +292,10 @@
               </div>
               <div class="min-w-0">
                 <h4 class="text-base font-black text-[var(--color-primary)] uppercase tracking-wider">
-                  Dọn dẹp nhanh hệ thống
+                  {{ 'settings.quick_clean_title' | translate }}
                 </h4>
                 <p class="text-sm text-slate-600 dark:text-slate-400 mt-1">
-                  Xóa toàn bộ các tệp cache (views, cấu hình, định tuyến, tệp tối ưu hóa) và thiết lập lại trạng thái tối ưu chỉ với 1 click.
+                  {{ 'settings.quick_clean_desc' | translate }}
                 </p>
               </div>
             </div>
@@ -316,7 +307,7 @@
               (click)="runMaintenance('clear-all')"
               class="shrink-0 !bg-[var(--color-primary)] hover:!bg-[var(--color-primary)]/90 border-0 flex items-center gap-1.5 py-2.5 px-4 font-bold shadow-lg shadow-[var(--color-primary)]/20 cursor-pointer"
             >
-              <span>Xóa tất cả cache</span>
+              <span>{{ 'settings.clear_all_cache' | translate }}</span>
             </button>
           </div>
         </app-card>
@@ -324,18 +315,18 @@
                 <app-card class="!p-0 overflow-hidden">
           <div class="px-6 py-4 border-b border-slate-100 dark:border-slate-800/60">
             <h4 class="text-base font-black text-slate-800 dark:text-white uppercase tracking-wider">
-              BẢO TRÌ CACHE &amp; VIEW
+              {{ 'settings.cache_section_title' | translate }}
             </h4>
             <p class="text-sm text-slate-400 mt-0.5">
-              Quản lý bộ nhớ đệm cấu hình, tệp biên dịch và hệ thống định tuyến.
+              {{ 'settings.cache_section_desc' | translate }}
             </p>
           </div>
           <div class="divide-y divide-slate-100 dark:divide-slate-800/60">
                         <div class="flex items-center justify-between px-6 py-4 gap-4">
               <div class="min-w-0">
-                <p class="text-base font-bold text-slate-800 dark:text-slate-200">Làm mới compiled views</p>
+                <p class="text-base font-bold text-slate-800 dark:text-slate-200">{{ 'settings.clear_views_title' | translate }}</p>
                 <p class="text-sm text-slate-400 mt-1">
-                  Xóa các Blade views đã biên dịch để bắt buộc cập nhật lại giao diện mới nhất.
+                  {{ 'settings.clear_views_desc' | translate }}
                 </p>
               </div>
               <button
@@ -346,14 +337,14 @@
                 (click)="runMaintenance('clear-views')"
                 class="shrink-0 !bg-amber-500 hover:!bg-amber-600 border-0 cursor-pointer"
               >
-                <span>Làm mới</span>
+                <span>{{ 'settings.refresh' | translate }}</span>
               </button>
             </div>
                         <div class="flex items-center justify-between px-6 py-4 gap-4">
               <div class="min-w-0">
-                <p class="text-base font-bold text-slate-800 dark:text-slate-200">Xóa cấu hình cache</p>
+                <p class="text-base font-bold text-slate-800 dark:text-slate-200">{{ 'settings.clear_config_title' | translate }}</p>
                 <p class="text-sm text-slate-400 mt-1">
-                  Làm mới bộ nhớ đệm của cấu hình dự án, áp dụng khi thay đổi các biến môi trường .env.
+                  {{ 'settings.clear_config_desc' | translate }}
                 </p>
               </div>
               <button
@@ -364,14 +355,14 @@
                 (click)="runMaintenance('clear-config')"
                 class="shrink-0 cursor-pointer"
               >
-                <span>Xóa cache</span>
+                <span>{{ 'settings.clear_cache' | translate }}</span>
               </button>
             </div>
                         <div class="flex items-center justify-between px-6 py-4 gap-4">
               <div class="min-w-0">
-                <p class="text-base font-bold text-slate-800 dark:text-slate-200">Xóa định tuyến cache</p>
+                <p class="text-base font-bold text-slate-800 dark:text-slate-200">{{ 'settings.clear_routes_title' | translate }}</p>
                 <p class="text-sm text-slate-400 mt-1">
-                  Xóa bộ nhớ đệm của hệ thống định tuyến Laravel API, cần thiết khi đăng ký thêm route mới.
+                  {{ 'settings.clear_routes_desc' | translate }}
                 </p>
               </div>
               <button
@@ -382,7 +373,7 @@
                 (click)="runMaintenance('clear-routes')"
                 class="shrink-0 !bg-emerald-500 hover:!bg-emerald-600 border-0 cursor-pointer"
               >
-                <span>Xóa cache</span>
+                <span>{{ 'settings.clear_cache' | translate }}</span>
               </button>
             </div>
           </div>
@@ -391,18 +382,18 @@
                 <app-card class="!p-0 overflow-hidden">
           <div class="px-6 py-4 border-b border-slate-100 dark:border-slate-800/60">
             <h4 class="text-base font-black text-slate-800 dark:text-white uppercase tracking-wider">
-              TỐI ƯU HÓA HIỆU NĂNG
+              {{ 'settings.optimize_section_title' | translate }}
             </h4>
             <p class="text-sm text-slate-400 mt-0.5">
-              Biên dịch và cache đồng loạt cấu hình, định tuyến và views để tăng tốc độ tải ứng dụng.
+              {{ 'settings.optimize_section_desc' | translate }}
             </p>
           </div>
           <div class="divide-y divide-slate-100 dark:divide-slate-800/60">
                         <div class="flex items-center justify-between px-6 py-4 gap-4">
               <div class="min-w-0">
-                <p class="text-base font-bold text-slate-800 dark:text-slate-200">Tối ưu hóa hiệu năng</p>
+                <p class="text-base font-bold text-slate-800 dark:text-slate-200">{{ 'settings.optimize_title' | translate }}</p>
                 <p class="text-sm text-slate-400 mt-1">
-                  Thực thi lệnh cache tối ưu hóa toàn diện cho dự án Laravel ở chế độ Production.
+                  {{ 'settings.optimize_desc' | translate }}
                 </p>
               </div>
               <button
@@ -413,14 +404,14 @@
                 (click)="runMaintenance('optimize')"
                 class="shrink-0 !bg-emerald-500 hover:!bg-emerald-600 border-0 cursor-pointer"
               >
-                <span>Tối ưu hóa</span>
+                <span>{{ 'settings.optimize_btn' | translate }}</span>
               </button>
             </div>
                         <div class="flex items-center justify-between px-6 py-4 gap-4">
               <div class="min-w-0">
-                <p class="text-base font-bold text-slate-800 dark:text-slate-200">Xóa cache tối ưu hóa</p>
+                <p class="text-base font-bold text-slate-800 dark:text-slate-200">{{ 'settings.clear_optimize_title' | translate }}</p>
                 <p class="text-sm text-slate-400 mt-1">
-                  Gỡ bỏ tất cả các tệp cache tối ưu hóa để cho phép các thay đổi mới trong code có hiệu lực.
+                  {{ 'settings.clear_optimize_desc' | translate }}
                 </p>
               </div>
               <button
@@ -431,7 +422,7 @@
                 (click)="runMaintenance('clear-optimize')"
                 class="shrink-0 !bg-amber-500 hover:!bg-amber-600 border-0 cursor-pointer"
               >
-                <span>Xóa cache</span>
+                <span>{{ 'settings.clear_cache' | translate }}</span>
               </button>
             </div>
           </div>
@@ -440,15 +431,15 @@
                 <app-card class="!p-0 overflow-hidden">
           <div class="px-6 py-4 border-b border-slate-100 dark:border-slate-800/60">
             <h4 class="text-base font-black text-slate-800 dark:text-white uppercase tracking-wider">
-              BẢO TRÌ SANCTUM TOKEN
+              {{ 'settings.token_section_title' | translate }}
             </h4>
             <p class="text-sm text-slate-400 mt-0.5">
-              Xóa bỏ các token đăng nhập cũ hoặc đã hết hạn trong database để giải phóng dung lượng.
+              {{ 'settings.token_section_desc' | translate }}
             </p>
           </div>
           <div class="px-6 py-5 space-y-5">
             <div class="form-field max-w-xs">
-              <label>Thời gian giữ lại token (Ngày) <span class="text-red-500">*</span></label>
+              <label>{{ 'settings.token_days_label' | translate }} <span class="text-red-500">*</span></label>
               <input
                 type="number"
                 [ngModel]="tokenCleanupDays()"
@@ -456,7 +447,7 @@
                 min="1"
                 max="365"
                 class="form-input mt-1 w-full"
-                placeholder="Ví dụ: 7"
+                [placeholder]="'settings.token_days_placeholder' | translate"
               />
             </div>
             <div class="flex flex-wrap gap-3">
@@ -468,7 +459,7 @@
                 [disabled]="store.isSavingSettings() || store.isCleaningTokens()"
                 class="cursor-pointer"
               >
-                Lưu thiết lập
+                {{ 'settings.save_token_settings' | translate }}
               </button>
               <button
                 app-button
@@ -478,7 +469,7 @@
                 [disabled]="store.isSavingSettings() || store.isCleaningTokens()"
                 class="cursor-pointer"
               >
-                Dọn dẹp Token hết hạn
+                {{ 'settings.clean_expired_tokens' | translate }}
               </button>
               <button
                 app-button
@@ -488,7 +479,7 @@
                 [disabled]="store.isSavingSettings() || store.isCleaningTokens()"
                 class="cursor-pointer"
               >
-                Xóa tất cả Token
+                {{ 'settings.clean_all_tokens' | translate }}
               </button>
             </div>
           </div>

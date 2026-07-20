@@ -7,6 +7,7 @@ import { IconComponent } from '@shared/components/icon/icon.component';
 import { environment } from '@environments/environment';
 import { RouterModule } from '@angular/router';
 import { LanguageService } from '@core/services/language.service';
+import { TranslatePipe } from '@shared/pipes/translate.pipe';
 
 @Component({
   selector: 'app-admin-api',
@@ -16,7 +17,8 @@ import { LanguageService } from '@core/services/language.service';
     PageHeaderComponent,
     CardComponent,
     IconComponent,
-    RouterModule
+    RouterModule,
+    TranslatePipe
   ],
   templateUrl: './admin-api.component.html',
   styles: [`
