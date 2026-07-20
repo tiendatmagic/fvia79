@@ -1537,9 +1537,11 @@
     - Xóa bỏ hoàn toàn chuỗi API Key cứng giả lập (`B2B-KEY-admin`) trong `DatabaseSeeder.php` và toàn bộ mã nguồn backend.
     - Thêm hàm `UserModel::generateUniqueApiKey()` sinh chuỗi ngẫu nhiên đúng **16 ký tự** và tự động kiểm tra tính duy nhất trong cơ sở dữ liệu (`where('api_key', $key)->exists()`) trước khi lưu.
     - Áp dụng cơ chế tạo API Key duy nhất mới tại: [DatabaseSeeder.php](file:///d:/git/isocalmarket/isocalmarket-api/database/seeders/DatabaseSeeder.php), [ProfileController.php](file:///d:/git/isocalmarket/isocalmarket-api/app/Http/Controllers/ProfileController.php) và [AdminUserController.php](file:///d:/git/isocalmarket/isocalmarket-api/app/Http/Controllers/AdminUserController.php).
-  - **[CHUẨN HÓA FORM-INPUT VÀ CARD CHO Ô MÃ GIẢM GIÁ GIỎ HÀNG]**:
-    - Chuyển đổi khung nhập Mã giảm giá tại [cart-modal.component.html](file:///d:/git/isocalmarket/isocalmarket-web/src/app/features/storefront/cart-modal/cart-modal.component.html) sang sử dụng thẻ `app-card`, cấu trúc `form-field` và lớp CSS `form-input` chuẩn của toàn hệ thống (`styles.scss`).
-    - Đồng bộ chiều cao `h-[42px]`, màu nền, viền, font chữ, độ bo góc `rounded-xl` và hiệu ứng focus khớp 100% với tất cả ô nhập liệu khác.
+  - **[CHUẨN HÓA FORM-INPUT VÀ BẢO MẬT LOGIC MÃ GIẢM GIÁ]**:
+    - Chuẩn hóa ô nhập Mã giảm giá tại [cart-modal.component.html](file:///d:/git/isocalmarket/isocalmarket-web/src/app/features/storefront/cart-modal/cart-modal.component.html) dùng `app-card`, `.form-field` và `.form-input`.
+    - **Mốc thời gian mượt mà**: Cập nhật `Coupon.php`, `CouponService.php` và `OrderService.php` quy định mốc thời gian áp dụng từ **00:00:00 của ngày bắt đầu** đến **23:59:59 của ngày kết thúc**, tránh việc mã bị hết hạn sớm vô lý.
+    - **Chống số tiền âm / giảm quá 100%**: Thêm `min($discount, $amount)` trong `Coupon.php` bảo vệ số tiền thanh toán không bị âm.
+    - **Chống Race Condition & Spam**: Toàn bộ luồng checkout mua hàng (kiểm tra mã, trừ kho, tính lại giá trị và trừ số dư) được bảo vệ bằng `DB::transaction` nguyên tử.
     - Biên dịch `npm run build` thành công 100% không có bất kỳ lỗi nào.
-    - Biên dịch `npm run build` thành công 100% không có bất kỳ lỗi nào.
+
 

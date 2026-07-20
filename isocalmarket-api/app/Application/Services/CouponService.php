@@ -110,10 +110,13 @@ class CouponService
         }
 
         $now = new \DateTime();
-        if ($now < $coupon->getStartDate()) {
+        $start = (clone $coupon->getStartDate())->setTime(0, 0, 0);
+        $end = (clone $coupon->getEndDate())->setTime(23, 59, 59);
+
+        if ($now < $start) {
             throw new \Exception("Mã giảm giá này chưa đến thời gian áp dụng.");
         }
-        if ($now > $coupon->getEndDate()) {
+        if ($now > $end) {
             throw new \Exception("Mã giảm giá này đã hết hạn sử dụng.");
         }
 

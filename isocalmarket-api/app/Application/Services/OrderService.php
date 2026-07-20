@@ -110,9 +110,16 @@ class OrderService
                 }
 
                 $now = new \DateTime();
-                if ($now < $coupon->getStartDate() || $now > $coupon->getEndDate()) {
+                $start = (clone $coupon->getStartDate())->setTime(0, 0, 0);
+                $end = (clone $coupon->getEndDate())->setTime(23, 59, 59);
+
+                if ($now < $start) {
+                    throw new \Exception("Mã giảm giá này chưa đến thời gian áp dụng.");
+                }
+                if ($now > $end) {
                     throw new \Exception("Mã giảm giá này đã hết hạn sử dụng.");
                 }
+
                 if ($coupon->getUsageLimit() > 0 && $coupon->getUsedCount() >= $coupon->getUsageLimit()) {
                     throw new \Exception("Mã giảm giá này đã hết lượt sử dụng.");
                 }

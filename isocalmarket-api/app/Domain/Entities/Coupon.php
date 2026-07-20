@@ -92,7 +92,10 @@ class Coupon
     public function isValidForAmount(float $amount): bool
     {
         $now = new \DateTime();
-        if ($now < $this->startDate || $now > $this->endDate) {
+        $start = (clone $this->startDate)->setTime(0, 0, 0);
+        $end = (clone $this->endDate)->setTime(23, 59, 59);
+
+        if ($now < $start || $now > $end) {
             return false;
         }
 
@@ -114,7 +117,8 @@ class Coupon
         }
 
         if ($this->type === 'percentage') {
-            return round($amount * ($this->value / 100.0), 2);
+            $discount = round($amount * ($this->value / 100.0), 2);
+            return min($discount, $amount);
         }
 
         return min($this->value, $amount);
