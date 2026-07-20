@@ -111,7 +111,7 @@ class ProductRepository implements ProductRepositoryInterface
 
     public function findById(string $id): ?Product
     {
-        $model = ProductModel::withTrashed()->find($id);
+        $model = ProductModel::withTrashed()->with(['activeBatches:id,product_id,initial_count,sold_count,status,created_at'])->find($id);
         if (!$model) return null;
 
         $availableCount = $this->getAvailableCount($model);
@@ -120,7 +120,7 @@ class ProductRepository implements ProductRepositoryInterface
 
     public function findBySlug(string $slug): ?Product
     {
-        $model = ProductModel::withTrashed()->where('slug', $slug)->first();
+        $model = ProductModel::withTrashed()->with(['activeBatches:id,product_id,initial_count,sold_count,status,created_at'])->where('slug', $slug)->first();
         if (!$model) return null;
 
         $availableCount = $this->getAvailableCount($model);
@@ -158,28 +158,36 @@ class ProductRepository implements ProductRepositoryInterface
     {
         $categories = \App\Infrastructure\Persistence\Eloquent\CategoryModel::orderBy('name', 'asc')->get();
 
+        $productQuery = ProductModel::query()->where('status', 'active');
+        if ($search) {
+            $productQuery->where(function ($q) use ($search) {
+                $this->applyAccentInsensitiveSearch($q, 'name', $search);
+            });
+        }
+
+        $countsByCategory = (clone $productQuery)
+            ->selectRaw('category_id, COUNT(*) as aggregate')
+            ->groupBy('category_id')
+            ->pluck('aggregate', 'category_id');
+
+        if ($countsByCategory->isEmpty()) {
+            return [];
+        }
+
+        $allActiveProducts = (clone $productQuery)
+            ->with(['activeBatches:id,product_id,initial_count,sold_count,status,created_at'])
+            ->orderBy('created_at', 'desc')
+            ->get();
+
         $grouped = [];
+        $productsByCat = $allActiveProducts->groupBy(fn($p) => (string)($p->category_id ?? 'other'));
 
         foreach ($categories as $cat) {
-            $query = ProductModel::query()
-                ->where('status', 'active')
-                ->where('category_id', $cat->id);
-
-            if ($search) {
-                $query->where(function ($q) use ($search) {
-                    $this->applyAccentInsensitiveSearch($q, 'name', $search);
-                });
-            }
-
-            $total = $query->count();
-            if ($total > 0) {
-                $models = $query->with(['activeBatches:id,product_id,initial_count,sold_count,status,created_at'])
-                    ->orderBy('created_at', 'desc')
-                    ->take($limit)
-                    ->get();
-
+            $catId = (string) $cat->id;
+            if (isset($productsByCat[$catId])) {
+                $catProductsModels = $productsByCat[$catId]->take($limit);
                 $products = [];
-                foreach ($models as $model) {
+                foreach ($catProductsModels as $model) {
                     $availableCount = $this->getAvailableCount($model);
                     $products[] = ProductMapper::toDomain($model, $availableCount);
                 }
@@ -189,34 +197,20 @@ class ProductRepository implements ProductRepositoryInterface
                     'name' => $cat->name,
                     'description' => $cat->description,
                     'products' => $products,
-                    'total' => $total
+                    'total' => (int)($countsByCategory[$catId] ?? count($catProductsModels))
                 ];
             }
         }
 
-        $queryOther = ProductModel::query()
-            ->where('status', 'active')
-            ->whereNull('category_id');
-
-        if ($search) {
-            $queryOther->where(function ($q) use ($search) {
-                $this->applyAccentInsensitiveSearch($q, 'name', $search);
-            });
-        }
-
-        $totalOther = $queryOther->count();
-        if ($totalOther > 0) {
-            $modelsOther = $queryOther->with(['activeBatches:id,product_id,initial_count,sold_count,status,created_at'])
-                ->orderBy('created_at', 'desc')
-                ->take($limit)
-                ->get();
-
+        if (isset($productsByCat['other'])) {
+            $otherModels = $productsByCat['other']->take($limit);
             $productsOther = [];
-            foreach ($modelsOther as $model) {
+            foreach ($otherModels as $model) {
                 $availableCount = $this->getAvailableCount($model);
                 $productsOther[] = ProductMapper::toDomain($model, $availableCount);
             }
 
+            $totalOther = (int)($countsByCategory[''] ?? $countsByCategory[null] ?? count($otherModels));
             $grouped[] = [
                 'id' => 'other',
                 'name' => 'Sản phẩm khác',

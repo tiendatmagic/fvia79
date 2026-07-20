@@ -1,4 +1,4 @@
-import { Component, OnInit, inject, signal } from '@angular/core';
+import { Component, OnInit, inject, signal, ChangeDetectionStrategy } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { Router } from '@angular/router';
 import { StateService } from '@core/services/state.service';
@@ -17,6 +17,7 @@ import { TableComponent, TableCellDirective, TableColumn } from '@shared/compone
 @Component({
   selector: 'app-orders',
   standalone: true,
+  changeDetection: ChangeDetectionStrategy.OnPush,
   imports: [
     CommonModule,
     FormsModule,

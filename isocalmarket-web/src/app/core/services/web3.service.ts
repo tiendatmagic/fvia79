@@ -1,9 +1,5 @@
 import { Injectable, signal, inject, effect } from '@angular/core';
-import { createAppKit, type AppKit } from '@reown/appkit';
-import { EthersAdapter } from '@reown/appkit-adapter-ethers';
-import { mainnet, arbitrum, arbitrumSepolia, bsc, bscTestnet } from '@reown/appkit/networks';
-import { ApiController } from '@reown/appkit-controllers';
-import { BrowserProvider, formatEther } from 'ethers';
+import type { AppKit } from '@reown/appkit';
 import { environment } from '@environments/environment';
 import { ThemeService } from './theme.service';
 import { ToastService } from './toast.service';
@@ -28,23 +24,12 @@ export class Web3Service {
 
   public readonly POPULAR_CHAINS = POPULAR_CHAINS;
 
-  public readonly supportedChains = [arbitrum, mainnet, bsc, arbitrumSepolia, bscTestnet].map(chain => {
-    const popular = POPULAR_CHAINS.find(c => Number(c.chainId) === Number(chain.id));
-    if (popular) {
-      return {
-        ...chain,
-        rpcUrls: {
-          ...chain.rpcUrls,
-          default: { http: [popular.rpcUrl] }
-        },
-        blockExplorers: {
-          ...chain.blockExplorers,
-          default: { name: popular.name, url: popular.explorerUrl }
-        }
-      };
-    }
-    return chain;
-  });
+  public supportedChains: any[] = POPULAR_CHAINS.map(c => ({
+    id: Number(c.chainId),
+    name: c.name,
+    explorerUrl: c.explorerUrl,
+    rpcUrl: c.rpcUrl
+  }));
 
   private readonly themeService = inject(ThemeService);
   private readonly toastService = inject(ToastService);
@@ -69,7 +54,7 @@ export class Web3Service {
     });
   }
 
-  private initAppKit() {
+  private async initAppKit() {
     if (typeof window === 'undefined') return;
 
     const projectId = environment.walletConnectProjectId;
@@ -78,65 +63,95 @@ export class Web3Service {
       return;
     }
 
-    const isDark = this.themeService.isDarkMode();
+    try {
+      const [{ createAppKit }, { EthersAdapter }, networks] = await Promise.all([
+        import('@reown/appkit'),
+        import('@reown/appkit-adapter-ethers'),
+        import('@reown/appkit/networks')
+      ]);
 
-    this.modal = createAppKit({
-      adapters: [new EthersAdapter()],
-      networks: this.supportedChains as any,
-      defaultNetwork: this.supportedChains[0] as any,
-      allowUnsupportedChain: true,
-      metadata: {
-        name: 'Angular Web3 DApp',
-        description: 'Angular Web3 Application Framework',
-        url: window.location.origin,
-        icons: [window.location.origin + '/assets/logo.svg']
-      },
-      projectId,
-      themeMode: isDark ? 'dark' : 'light',
-      defaultAccountTypes: {
-        eip155: 'smartAccount'
-      },
-      features: {
-        analytics: false,
-        reownAuthentication: false
-      },
-      enableCoinbase: false
-    } as any);
-
-    this.modal.subscribeAccount(async (accountState) => {
-      const prevConnected = this.isConnected();
-      this.address.set(accountState.address || null);
-      this.isConnected.set(accountState.isConnected);
-
-      if (accountState.isConnected && accountState.address) {
-        await this.updateBalanceAndNetwork();
-        
-        const currentChainId = this.chainId();
-        if (currentChainId) {
-          this.checkAndUpdateNetworkState(currentChainId, false);
+      const { mainnet, arbitrum, arbitrumSepolia, bsc, bscTestnet } = networks;
+      const chains = [arbitrum, mainnet, bsc, arbitrumSepolia, bscTestnet].map(chain => {
+        const popular = POPULAR_CHAINS.find(c => Number(c.chainId) === Number(chain.id));
+        if (popular) {
+          return {
+            ...chain,
+            rpcUrls: {
+              ...chain.rpcUrls,
+              default: { http: [popular.rpcUrl] }
+            },
+            blockExplorers: {
+              ...chain.blockExplorers,
+              default: { name: popular.name, url: popular.explorerUrl }
+            }
+          };
         }
-      } else {
-        this.balance.set('0.0000');
-        this.chainId.set(null);
-        this.networkName.set('Unknown Network');
-        this.isWrongChain.set(false);
-        this.showWrongChainModal.set(false);
-        if (prevConnected) {
-          this.toastService.showToast('Đã ngắt kết nối ví!', 'error');
+        return chain;
+      });
+
+      this.supportedChains = chains;
+      const isDark = this.themeService.isDarkMode();
+
+      this.modal = createAppKit({
+        adapters: [new EthersAdapter()],
+        networks: chains as any,
+        defaultNetwork: chains[0] as any,
+        allowUnsupportedChain: true,
+        metadata: {
+          name: 'Angular Web3 DApp',
+          description: 'Angular Web3 Application Framework',
+          url: window.location.origin,
+          icons: [window.location.origin + '/assets/logo.svg']
+        },
+        projectId,
+        themeMode: isDark ? 'dark' : 'light',
+        defaultAccountTypes: {
+          eip155: 'smartAccount'
+        },
+        features: {
+          analytics: false,
+          reownAuthentication: false
+        },
+        enableCoinbase: false
+      } as any);
+
+      this.modal.subscribeAccount(async (accountState) => {
+        const prevConnected = this.isConnected();
+        this.address.set(accountState.address || null);
+        this.isConnected.set(accountState.isConnected);
+
+        if (accountState.isConnected && accountState.address) {
+          await this.updateBalanceAndNetwork();
+          
+          const currentChainId = this.chainId();
+          if (currentChainId) {
+            this.checkAndUpdateNetworkState(currentChainId, false);
+          }
+        } else {
+          this.balance.set('0.0000');
+          this.chainId.set(null);
+          this.networkName.set('Unknown Network');
+          this.isWrongChain.set(false);
+          this.showWrongChainModal.set(false);
+          if (prevConnected) {
+            this.toastService.showToast('Đã ngắt kết nối ví!', 'error');
+          }
         }
-      }
-    });
+      });
 
-    this.modal.subscribeNetwork((networkState) => {
-      if (networkState.chainId) {
-        const id = Number(networkState.chainId);
-        this.checkAndUpdateNetworkState(id, true);
-      }
+      this.modal.subscribeNetwork((networkState) => {
+        if (networkState.chainId) {
+          const id = Number(networkState.chainId);
+          this.checkAndUpdateNetworkState(id, true);
+        }
 
-      if (this.isConnected()) {
-        this.updateBalanceAndNetwork();
-      }
-    });
+        if (this.isConnected()) {
+          this.updateBalanceAndNetwork();
+        }
+      });
+    } catch (e) {
+      console.error('[Web3] Lỗi khởi tạo AppKit bất đồng bộ:', e);
+    }
   }
 
   private checkAndUpdateNetworkState(chainId: number, showToastAlert = true) {
@@ -157,7 +172,7 @@ export class Web3Service {
       this.showWrongChainModal.set(false);
       if (prevWrongChain) {
         try {
-          this.modal.close();
+          this.modal?.close();
         } catch (e) {
         }
       }
@@ -203,6 +218,7 @@ export class Web3Service {
       const currentAddress = this.address();
 
       if (walletProvider && currentAddress) {
+        const { BrowserProvider, formatEther } = await import('ethers');
         const ethersProvider = new BrowserProvider(walletProvider as any);
         const balanceVal = await ethersProvider.getBalance(currentAddress);
         const formattedBalance = formatEther(balanceVal);
@@ -278,6 +294,7 @@ export class Web3Service {
     if (!walletProvider) {
       throw new Error('Ví chưa được kết nối');
     }
+    const { BrowserProvider } = await import('ethers');
     const ethersProvider = new BrowserProvider(walletProvider as any);
 
     const currentAddress = this.address();
@@ -294,7 +311,7 @@ export class Web3Service {
     return await ethersProvider.getSigner();
   }
 
-  public getProvider() {
+  public async getProvider() {
     if (!this.modal) {
       throw new Error('Chức năng Web3 hiện đang bị tắt');
     }
@@ -302,6 +319,7 @@ export class Web3Service {
     if (!walletProvider) {
       throw new Error('Ví chưa được kết nối');
     }
+    const { BrowserProvider } = await import('ethers');
     return new BrowserProvider(walletProvider as any);
   }
 
