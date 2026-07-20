@@ -53,7 +53,6 @@ export class SystemSettingStore {
     return this.api.get<SystemSettingsPayload>('v1/admin/settings').pipe(
       tap(res => {
         if (res) {
-          // Parse token_cleanup_days sang number nếu backend trả về string
           if (res.token_cleanup_days) {
             res.token_cleanup_days = Number(res.token_cleanup_days);
           } else {

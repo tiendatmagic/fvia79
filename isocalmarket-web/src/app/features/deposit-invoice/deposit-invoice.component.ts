@@ -199,7 +199,6 @@ export class DepositInvoiceComponent implements OnInit, OnDestroy {
     }
   }
 
-  // Polling tự động quét trạng thái hóa đơn ngầm mỗi 30 giây (Vá CVE-8)
   private startStatusPolling(invoiceId: string) {
     this.stopStatusPolling();
     this.pollingSubscription = interval(30000).subscribe(() => {

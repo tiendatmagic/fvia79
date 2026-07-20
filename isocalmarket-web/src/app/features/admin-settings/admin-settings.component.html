@@ -4,8 +4,7 @@
     subtitle="Quản lý địa chỉ ví nhận USDT nạp tiền và các khóa tích hợp với blockchain scanner"
   />
 
-  <!-- Tab navigation -->
-  <div class="flex items-center gap-2 border-b border-slate-200/50 dark:border-slate-800/50 pb-px">
+    <div class="flex items-center gap-2 border-b border-slate-200/50 dark:border-slate-800/50 pb-px">
     <button
       (click)="changeTab('general')"
       class="px-5 py-3 border-b-2 font-bold text-sm transition-all flex items-center gap-2 cursor-pointer"
@@ -39,8 +38,7 @@
       <app-skeleton-loader type="form" [showHeader]="false" [rows]="2" buttonLayout="end" />
     </app-card>
   } @else {
-    <!-- TAB 1: Cấu hình chung -->
-    @if (activeTab() === 'general') {
+        @if (activeTab() === 'general') {
       <app-card>
         <form (ngSubmit)="onSubmit()" #settingsForm="ngForm" class="space-y-6">
           <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
@@ -149,8 +147,7 @@
               </div>
             </div>
 
-            <!-- Cấu hình Binance Pay -->
-            <div
+                        <div
               class="form-field md:col-span-2 pt-4 border-t border-slate-200/50 dark:border-slate-800/50"
             >
               <h4
@@ -228,8 +225,7 @@
               </p>
             </div>
 
-            <!-- Hướng dẫn cấu hình Binance Pay -->
-            <div class="md:col-span-2 mt-2">
+                        <div class="md:col-span-2 mt-2">
               <div
                 class="flex items-start gap-2 bg-slate-50 dark:bg-slate-900/60 border border-slate-200/50 dark:border-slate-800/40 rounded-lg p-2.5"
               >
@@ -294,12 +290,10 @@
       </app-card>
     }
 
-    <!-- TAB 2: Bảo trì & Tối ưu -->
-    @if (activeTab() === 'maintenance') {
+        @if (activeTab() === 'maintenance') {
       <div class="space-y-6">
 
-        <!-- Quick Clean All Cache - Featured card -->
-        <app-card class="!p-0 overflow-hidden bg-gradient-to-r from-[var(--color-primary)]/10 via-[var(--color-secondary)]/5 to-transparent border border-[var(--color-primary)]/20">
+                <app-card class="!p-0 overflow-hidden bg-gradient-to-r from-[var(--color-primary)]/10 via-[var(--color-secondary)]/5 to-transparent border border-[var(--color-primary)]/20">
           <div class="px-6 py-5 flex flex-col sm:flex-row sm:items-center justify-between gap-4">
             <div class="flex items-start gap-4">
               <div class="shrink-0 w-10 h-10 rounded-xl bg-[var(--color-primary)]/10 flex items-center justify-center text-[var(--color-primary)]">
@@ -327,8 +321,7 @@
           </div>
         </app-card>
 
-        <!-- Cache & Views Maintenance -->
-        <app-card class="!p-0 overflow-hidden">
+                <app-card class="!p-0 overflow-hidden">
           <div class="px-6 py-4 border-b border-slate-100 dark:border-slate-800/60">
             <h4 class="text-base font-black text-slate-800 dark:text-white uppercase tracking-wider">
               BẢO TRÌ CACHE &amp; VIEW
@@ -338,8 +331,7 @@
             </p>
           </div>
           <div class="divide-y divide-slate-100 dark:divide-slate-800/60">
-            <!-- Clear Views -->
-            <div class="flex items-center justify-between px-6 py-4 gap-4">
+                        <div class="flex items-center justify-between px-6 py-4 gap-4">
               <div class="min-w-0">
                 <p class="text-base font-bold text-slate-800 dark:text-slate-200">Làm mới compiled views</p>
                 <p class="text-sm text-slate-400 mt-1">
@@ -357,8 +349,7 @@
                 <span>Làm mới</span>
               </button>
             </div>
-            <!-- Clear Config -->
-            <div class="flex items-center justify-between px-6 py-4 gap-4">
+                        <div class="flex items-center justify-between px-6 py-4 gap-4">
               <div class="min-w-0">
                 <p class="text-base font-bold text-slate-800 dark:text-slate-200">Xóa cấu hình cache</p>
                 <p class="text-sm text-slate-400 mt-1">
@@ -376,8 +367,7 @@
                 <span>Xóa cache</span>
               </button>
             </div>
-            <!-- Clear Routes -->
-            <div class="flex items-center justify-between px-6 py-4 gap-4">
+                        <div class="flex items-center justify-between px-6 py-4 gap-4">
               <div class="min-w-0">
                 <p class="text-base font-bold text-slate-800 dark:text-slate-200">Xóa định tuyến cache</p>
                 <p class="text-sm text-slate-400 mt-1">
@@ -398,8 +388,7 @@
           </div>
         </app-card>
 
-        <!-- Performance Optimization -->
-        <app-card class="!p-0 overflow-hidden">
+                <app-card class="!p-0 overflow-hidden">
           <div class="px-6 py-4 border-b border-slate-100 dark:border-slate-800/60">
             <h4 class="text-base font-black text-slate-800 dark:text-white uppercase tracking-wider">
               TỐI ƯU HÓA HIỆU NĂNG
@@ -409,8 +398,7 @@
             </p>
           </div>
           <div class="divide-y divide-slate-100 dark:divide-slate-800/60">
-            <!-- Optimize -->
-            <div class="flex items-center justify-between px-6 py-4 gap-4">
+                        <div class="flex items-center justify-between px-6 py-4 gap-4">
               <div class="min-w-0">
                 <p class="text-base font-bold text-slate-800 dark:text-slate-200">Tối ưu hóa hiệu năng</p>
                 <p class="text-sm text-slate-400 mt-1">
@@ -428,8 +416,7 @@
                 <span>Tối ưu hóa</span>
               </button>
             </div>
-            <!-- Clear Optimize -->
-            <div class="flex items-center justify-between px-6 py-4 gap-4">
+                        <div class="flex items-center justify-between px-6 py-4 gap-4">
               <div class="min-w-0">
                 <p class="text-base font-bold text-slate-800 dark:text-slate-200">Xóa cache tối ưu hóa</p>
                 <p class="text-sm text-slate-400 mt-1">
@@ -450,8 +437,7 @@
           </div>
         </app-card>
 
-        <!-- Token Maintenance Configuration -->
-        <app-card class="!p-0 overflow-hidden">
+                <app-card class="!p-0 overflow-hidden">
           <div class="px-6 py-4 border-b border-slate-100 dark:border-slate-800/60">
             <h4 class="text-base font-black text-slate-800 dark:text-white uppercase tracking-wider">
               BẢO TRÌ SANCTUM TOKEN

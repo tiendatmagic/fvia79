@@ -1,6 +1,5 @@
 <div class="flex flex-col" style="min-height: 420px">
-  <!-- Tab Navigation -->
-  <div
+    <div
     class="flex items-center gap-1 px-1 pb-4 border-b border-slate-200/60 dark:border-slate-800/60"
   >
     <button
@@ -66,14 +65,11 @@
     }
   </div>
 
-  <!-- Tab Content -->
-  <form (ngSubmit)="onSubmit()" class="flex-1 flex flex-col pt-5">
-    <!-- TAB 1: Thông tin cơ bản -->
-    @if (activeTab === 'info') {
+    <form (ngSubmit)="onSubmit()" class="flex-1 flex flex-col pt-5">
+        @if (activeTab === 'info') {
       <div class="space-y-4 flex-1">
         <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-          <!-- Username -->
-          <div class="space-y-1.5">
+                    <div class="space-y-1.5">
             <label
               class="text-xs font-bold text-slate-400 dark:text-slate-500 uppercase tracking-wider block"
             >
@@ -94,8 +90,7 @@
             }
           </div>
 
-          <!-- Tên thành viên -->
-          <div class="space-y-1.5">
+                    <div class="space-y-1.5">
             <label
               class="text-xs font-bold text-slate-400 dark:text-slate-500 uppercase tracking-wider block"
             >
@@ -111,8 +106,7 @@
         </div>
 
         <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-          <!-- Email -->
-          <div class="space-y-1.5">
+                    <div class="space-y-1.5">
             <label
               class="text-xs font-bold text-slate-400 dark:text-slate-500 uppercase tracking-wider block"
             >
@@ -127,8 +121,7 @@
             />
           </div>
 
-          <!-- Số điện thoại -->
-          <div class="space-y-1.5">
+                    <div class="space-y-1.5">
             <label
               class="text-xs font-bold text-slate-400 dark:text-slate-500 uppercase tracking-wider block"
             >
@@ -143,8 +136,7 @@
           </div>
         </div>
 
-        <!-- Mật khẩu -->
-        <div class="space-y-1.5">
+                <div class="space-y-1.5">
           <label
             class="text-xs font-bold text-slate-400 dark:text-slate-500 uppercase tracking-wider block"
           >
@@ -168,12 +160,10 @@
       </div>
     }
 
-    <!-- TAB 2: Phân quyền & Tài khoản -->
-    @if (activeTab === 'permissions') {
+        @if (activeTab === 'permissions') {
       <div class="space-y-4 flex-1">
         <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-          <!-- Vai trò -->
-          <div class="space-y-1.5">
+                    <div class="space-y-1.5">
             <label
               class="text-xs font-bold text-slate-400 dark:text-slate-500 uppercase tracking-wider block"
             >
@@ -187,8 +177,7 @@
             />
           </div>
 
-          <!-- Trạng thái (chỉ Edit) -->
-          @if (isEditMode) {
+                    @if (isEditMode) {
             <div class="space-y-1.5">
               <label
                 class="text-xs font-bold text-slate-400 dark:text-slate-500 uppercase tracking-wider block"
@@ -205,8 +194,7 @@
           }
         </div>
 
-        <!-- Số dư & Điều chỉnh (chỉ Edit) -->
-        @if (isEditMode) {
+                @if (isEditMode) {
           <div
             class="p-4 bg-slate-50 dark:bg-slate-900/60 border border-slate-200/50 dark:border-slate-800/40 rounded-2xl flex items-center justify-between gap-4"
           >
@@ -252,11 +240,9 @@
       </div>
     }
 
-    <!-- TAB 3: Bảo mật & API (chỉ Edit) -->
-    @if (activeTab === 'security' && isEditMode) {
+        @if (activeTab === 'security' && isEditMode) {
       <div class="space-y-4 flex-1">
-        <!-- 2FA Status -->
-        <div>
+                <div>
           <h4
             class="text-xs font-extrabold text-[var(--color-primary)] uppercase tracking-wider flex items-center gap-2 mb-3"
           >
@@ -400,8 +386,7 @@
           }
         </div>
 
-        <!-- B2B API Key -->
-        <div>
+                <div>
           <h4
             class="text-xs font-extrabold text-[var(--color-primary)] uppercase tracking-wider flex items-center gap-2 mb-3"
           >
@@ -453,12 +438,10 @@
       </div>
     }
 
-    <!-- Actions (luôn hiển thị dưới cùng) -->
-    <div
+        <div
       class="flex justify-between items-center pt-5 mt-auto border-t border-slate-200/40 dark:border-slate-800/40"
     >
-      <!-- Tab navigation hints -->
-      <div class="flex gap-1">
+            <div class="flex gap-1">
         <button
           type="button"
           (click)="setTab('info')"

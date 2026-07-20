@@ -50,10 +50,8 @@ export class UserFormModalComponent implements OnInit {
   public isEditMode = false;
   public editingId: any = null;
 
-  // Tab state
   public activeTab: TabId = 'info';
 
-  // Form fields
   public username = '';
   public name = '';
   public email = '';

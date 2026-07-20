@@ -1,6 +1,5 @@
 <form (ngSubmit)="onSubmit()" class="space-y-5 p-1">
-  <!-- Bảng thông tin người dùng được điều chỉnh -->
-  <div
+    <div
     class="p-4 bg-slate-50 dark:bg-slate-900/60 border border-slate-200/50 dark:border-slate-800/40 rounded-2xl flex items-center justify-between gap-4"
   >
     <div class="min-w-0">
@@ -24,8 +23,7 @@
     </div>
   </div>
 
-  <!-- Lựa chọn loại thao tác: Cộng hoặc Trừ -->
-  <div class="space-y-1.5">
+    <div class="space-y-1.5">
     <label
       class="text-xs font-bold text-slate-400 dark:text-slate-500 uppercase tracking-wider block"
     >
@@ -73,8 +71,7 @@
     </div>
   </div>
 
-  <!-- Nhập số tiền -->
-  <div class="space-y-1.5">
+    <div class="space-y-1.5">
     <label
       class="text-xs font-bold text-slate-400 dark:text-slate-500 uppercase tracking-wider block"
     >
@@ -91,8 +88,7 @@
     />
   </div>
 
-  <!-- Cảnh báo nếu trừ quá số dư -->
-  <div
+    <div
     *ngIf="isSubtractExceeded"
     class="p-3 bg-rose-50 dark:bg-rose-950/30 border border-rose-200/60 dark:border-rose-800/40 rounded-xl flex gap-2.5 items-start"
   >
@@ -115,8 +111,7 @@
     </p>
   </div>
 
-  <!-- Actions -->
-  <div class="flex justify-end gap-3 pt-2 mt-4">
+    <div class="flex justify-end gap-3 pt-2 mt-4">
     <button
       type="button"
       (click)="onClose()"

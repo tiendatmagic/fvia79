@@ -14,8 +14,7 @@
     </ng-container>
   </app-page-header>
 
-  <!-- Bộ lọc tìm kiếm -->
-  <div
+    <div
     class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 bg-slate-50/50 dark:bg-slate-950/20 border border-slate-200/30 dark:border-slate-800/30 rounded-2xl p-4 sm:p-5"
   >
     <div class="form-field">
@@ -80,16 +79,14 @@
     </div>
   </div>
 
-  <!-- Bảng danh sách nạp tiền -->
-  <div app-card class="overflow-hidden flex flex-col !p-0">
+    <div app-card class="overflow-hidden flex flex-col !p-0">
     <app-table
       [columns]="columns"
       [data]="depositStore.deposits()"
       [loading]="depositStore.loading()"
       emptyText="Không tìm thấy yêu cầu nạp tiền nào trong hệ thống!"
     >
-      <!-- Mã hóa đơn -->
-      <ng-template appTableCell="code" let-row="row">
+            <ng-template appTableCell="code" let-row="row">
         <div class="flex items-center gap-1.5">
           <a
             [routerLink]="['/deposit/invoice', row.id]"
@@ -101,8 +98,7 @@
         </div>
       </ng-template>
 
-      <!-- Thành viên -->
-      <ng-template appTableCell="userName" let-row="row">
+            <ng-template appTableCell="userName" let-row="row">
         <div
           class="flex flex-col min-w-[200px]"
           [appTooltip]="(row.userName || 'Không tên') + ' (' + row.userEmail + ')'"
@@ -116,8 +112,7 @@
         </div>
       </ng-template>
 
-      <!-- Số tiền USDT -->
-      <ng-template appTableCell="amountUsdt" let-row="row">
+            <ng-template appTableCell="amountUsdt" let-row="row">
         <div class="flex flex-col text-right font-mono">
           <span
             class="text-sm font-extrabold text-slate-700 dark:text-slate-200"
@@ -134,8 +129,7 @@
         </div>
       </ng-template>
 
-      <!-- Quy đổi VND -->
-      <ng-template appTableCell="amountVnd" let-row="row">
+            <ng-template appTableCell="amountVnd" let-row="row">
         <span
           class="font-mono font-bold text-emerald-600 dark:text-emerald-400 text-sm"
           [appTooltip]="'+' + (row.amountVnd | number: '1.0-0') + ' ₫'"
@@ -144,8 +138,7 @@
         </span>
       </ng-template>
 
-      <!-- Phương thức -->
-      <ng-template appTableCell="paymentMethod" let-row="row">
+            <ng-template appTableCell="paymentMethod" let-row="row">
         <span
           class="text-xs font-bold text-slate-600 dark:text-slate-400"
           [appTooltip]="getMethodText(row.paymentMethod)"
@@ -154,15 +147,13 @@
         </span>
       </ng-template>
 
-      <!-- Trạng thái -->
-      <ng-template appTableCell="status" let-row="row">
+            <ng-template appTableCell="status" let-row="row">
         <app-badge [variant]="getBadgeVariant(row.status)" [appTooltip]="getStatusText(row.status)">
           {{ getStatusText(row.status) }}
         </app-badge>
       </ng-template>
 
-      <!-- Thời gian tạo -->
-      <ng-template appTableCell="createdAt" let-row="row">
+            <ng-template appTableCell="createdAt" let-row="row">
         <div class="flex flex-col text-xs text-slate-500 dark:text-slate-400">
           <span [appTooltip]="(row.createdAt | date: 'yyyy-MM-dd HH:mm:ss') || ''">{{
             row.createdAt | date: 'yyyy-MM-dd HH:mm:ss'
@@ -177,8 +168,7 @@
         </div>
       </ng-template>
 
-      <!-- Thao tác -->
-      <ng-template appTableCell="actions" let-row="row">
+            <ng-template appTableCell="actions" let-row="row">
         <div class="flex items-center justify-end gap-2 whitespace-nowrap">
           <ng-container
             *ngIf="
@@ -212,8 +202,7 @@
             <span class="text-xs text-slate-400 dark:text-slate-500 italic px-2"> Đã xử lý </span>
           </ng-container>
 
-          <!-- Nút Chi tiết cho tất cả các row -->
-          <a
+                    <a
             [routerLink]="['/deposit/invoice', row.id]"
             class="px-2.5 py-1.5 rounded-lg border text-xs font-extrabold text-teal-600 dark:text-teal-400 border-teal-500/20 dark:border-teal-500/30 bg-teal-50 dark:bg-teal-950/20 hover:bg-teal-100 dark:hover:bg-teal-950/40 hover:scale-105 active:scale-95 transition-all cursor-pointer flex items-center gap-1 shrink-0"
             [appTooltip]="'Xem chi tiết lệnh nạp'"

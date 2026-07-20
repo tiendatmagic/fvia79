@@ -1454,4 +1454,12 @@
          - **Quản lý nạp tiền Admin** ([admin-deposits.component.html](file:///d:/git/isocalmarket/isocalmarket-web/src/app/features/admin-deposits/admin-deposits.component.html)): Bổ sung tooltip chi tiết cho cột ID hóa đơn nạp, tên/email thành viên, số tiền USDT, số tiền VND, phương thức, trạng thái và thời gian tạo/mã TxHash (đã fix lỗi ép kiểu null bằng `|| ''`).
     - **Xác minh**: Biên dịch ứng dụng Angular (`npm run build`) thành công 100% không phát sinh lỗi.
 
+  - **[HOÀN THÀNH] RÀ SOÁT VÀ DỌN DẸP COMMENT RÁC, JSDOC TRÊN TOÀN BỘ ISOCALMARKET**:
+    - **Yêu cầu:** Loại bỏ tất cả comment JSDoc, comment HTML, comment SCSS/PHP rác mới phát sinh sau các đợt phát triển tính năng gần đây, giữ cho mã nguồn phẳng, sạch sẽ tối đa.
+    - **Thực hiện:**
+      1. **isocalmarket-web (Frontend):** Xóa toàn bộ comment JSDoc `/** ... */` trên class/inputs/outputs/methods, xóa 100% comment HTML `<!-- ... -->` và CSS block comments. Tối ưu hóa an toàn không xử lý các dòng comment inline ở đuôi để tránh làm hỏng các URL schema đặc biệt (như `otpauth://`).
+      2. **isocalmarket-api (Backend Laravel):** Quét an toàn trong thư mục `app/` để xóa comment dòng đơn `//` hiển nhiên. Không xử lý inline comments ở đuôi dòng và không xóa các dòng bắt đầu bằng `#[` (PHP8 Attributes) để tránh lỗi cú pháp.
+      3. **Xác minh:** Biên dịch frontend Angular thành công 100% và chạy test backend thành công `passed 18/18 tests` (56 assertions).
+
+
 

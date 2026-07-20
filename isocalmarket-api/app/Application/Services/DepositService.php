@@ -24,7 +24,6 @@ class DepositService
 
     private SystemSettingService $settingService;
 
-    // Bộ nhớ đệm lưu danh sách giao dịch chuỗi trong một phiên làm việc để tránh spam API
     private ?array $cachedTransactions = null;
 
     public function __construct(
@@ -60,7 +59,6 @@ class DepositService
         return $this->settingService->getSetting('admin_binance_id', '');
     }
 
-
     /**
      * Lấy tỷ giá USDT/VND từ CoinGecko API (Free)
      * Cache kết quả trong 10 phút (600 giây)
@@ -73,7 +71,6 @@ class DepositService
             return (float) $fixedRate;
         }
 
-        // 2. Nếu không cấu hình cố định, tự động lấy tỷ giá từ CoinGecko và Cache trong 10 phút
         return Cache::remember('usdt_to_vnd_rate', 600, function () {
             try {
                 $response = Http::timeout(5)
@@ -234,7 +231,6 @@ class DepositService
             return false;
         }
 
-        // Tự động kiểm tra đối soát lần cuối trước khi chuyển sang trạng thái hủy (Vá CVE-6)
         try {
             $matched = $this->checkTransaction($id, $userId);
             if ($matched) {
@@ -494,7 +490,6 @@ class DepositService
                         continue;
                     }
 
-                    // Giao dịch khớp hoàn toàn!
                     $deposit->setStatus('completed');
                     $deposit->setTxHash($orderId);
                     $this->depositRepository->save($deposit);

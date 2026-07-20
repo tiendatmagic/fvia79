@@ -156,12 +156,10 @@ class ProductRepository implements ProductRepositoryInterface
 
     public function findGroupedActiveProducts(int $limit, ?string $search = null): array
     {
-        // 1. Lấy toàn bộ categories active
         $categories = \App\Infrastructure\Persistence\Eloquent\CategoryModel::orderBy('name', 'asc')->get();
 
         $grouped = [];
 
-        // 2. Query sản phẩm cho từng danh mục
         foreach ($categories as $cat) {
             $query = ProductModel::query()
                 ->where('status', 'active')
@@ -196,7 +194,6 @@ class ProductRepository implements ProductRepositoryInterface
             }
         }
 
-        // 3. Query sản phẩm không có danh mục (other)
         $queryOther = ProductModel::query()
             ->where('status', 'active')
             ->whereNull('category_id');

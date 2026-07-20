@@ -1,6 +1,5 @@
 <div class="space-y-4" *ngIf="invoice">
-  <!-- Status Banner -->
-  <div
+    <div
     class="p-3.5 rounded-xl border flex items-center justify-between"
     [ngClass]="{
       'bg-emerald-500/10 border-emerald-500/20 text-emerald-600 dark:text-emerald-400':
@@ -39,8 +38,7 @@
     <span class="text-xs font-mono font-black">#{{ invoice.code }}</span>
   </div>
 
-  <!-- Detail Information Grid -->
-  <div
+    <div
     class="bg-slate-50 dark:bg-slate-950 border border-slate-100 dark:border-slate-800/60 rounded-xl p-4 space-y-3 text-xs leading-relaxed"
   >
     <div class="flex justify-between items-center py-0.5">
@@ -82,8 +80,7 @@
       <span class="font-bold text-slate-600 dark:text-slate-400">{{ invoice.createdAt }}</span>
     </div>
 
-    <!-- Admin Receiving Wallet -->
-    <div class="border-t border-slate-100 dark:border-slate-800/40 pt-2 space-y-1">
+        <div class="border-t border-slate-100 dark:border-slate-800/40 pt-2 space-y-1">
       <span class="text-slate-400 font-semibold">Ví nhận của Sàn (USDT BEP20):</span>
       <div
         class="flex items-center gap-1 bg-white dark:bg-slate-900 border border-slate-100 dark:border-slate-800/60 rounded-lg p-1.5 mt-1 font-mono text-xs text-slate-700 dark:text-slate-300 select-all justify-between"
@@ -100,8 +97,7 @@
       </div>
     </div>
 
-    <!-- Blockchain Tx Hash -->
-    <div class="border-t border-slate-100 dark:border-slate-800/40 pt-2 space-y-1">
+        <div class="border-t border-slate-100 dark:border-slate-800/40 pt-2 space-y-1">
       <span class="text-slate-400 font-semibold">Blockchain TxHash (Mã giao dịch):</span>
       <div *ngIf="invoice.txHash; else noHash">
         <div
@@ -136,8 +132,7 @@
     </div>
   </div>
 
-  <!-- Bottom Buttons -->
-  <div class="flex gap-3 pt-2">
+    <div class="flex gap-3 pt-2">
     <button
       app-button
       [variant]="'cancel'"

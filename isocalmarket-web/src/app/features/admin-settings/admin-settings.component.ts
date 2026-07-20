@@ -196,7 +196,6 @@ export class AdminSettingsComponent implements OnInit, OnDestroy {
     }
   }
 
-  // Lưu cài đặt Token Cleanup
   public saveTokenSettings(): void {
     const days = this.tokenCleanupDays();
     if (days < 1 || days > 365) {
