@@ -28,36 +28,53 @@
       <div class="relative">
         <button
           (click)="toggleLangDropdown($event)"
-          class="flex items-center gap-1.5 px-2.5 h-10 rounded-xl bg-white dark:bg-slate-900 border border-slate-200/50 dark:border-slate-800/50 shadow-sm text-xs font-black text-slate-700 dark:text-slate-200 hover:scale-[1.03] active:scale-[0.97] transition-all cursor-pointer"
+          class="flex items-center gap-1.5 px-3 h-10 rounded-xl border shadow-sm text-xs font-black transition-all cursor-pointer group"
+          [ngClass]="
+            showLangDropdown()
+              ? 'border-[var(--color-primary)] bg-[var(--color-primary)]/5 dark:bg-[var(--color-primary)]/10 text-[var(--color-primary)]'
+              : 'border-slate-200/50 dark:border-slate-800/50 bg-white dark:bg-slate-900 text-slate-700 dark:text-slate-200 hover:border-[var(--color-primary)]/60'
+          "
           [attr.aria-label]="'header.language_selector' | translate"
+          [attr.aria-expanded]="showLangDropdown()"
+          aria-haspopup="menu"
         >
           <span class="uppercase">{{ langService.currentLang() }}</span>
-          <app-icon name="chevron-down" class="w-3 h-3 text-slate-400" />
+          <app-icon
+            name="chevron-down"
+            class="w-3 h-3 text-slate-400 transition-transform group-hover:text-[var(--color-primary)]"
+            [class.rotate-180]="showLangDropdown()"
+            [class.text-[var(--color-primary)]]="showLangDropdown()"
+          />
         </button>
 
         @if (showLangDropdown()) {
           <div
-            class="absolute right-0 top-full mt-2 w-36 bg-white dark:bg-slate-900 border border-slate-200/60 dark:border-slate-800/60 rounded-2xl shadow-xl shadow-slate-900/10 dark:shadow-slate-950/40 p-1.5 z-50 flex flex-col gap-1"
+            class="absolute right-0 top-full mt-2 w-60 bg-white dark:bg-slate-900 border border-slate-200/60 dark:border-slate-800/60 rounded-2xl shadow-xl shadow-slate-900/10 dark:shadow-slate-950/40 p-1.5 z-50 flex flex-col"
             (click)="$event.stopPropagation()"
+            role="menu"
           >
             <button
               (click)="selectLang('en')"
-              class="w-full flex items-center justify-between px-3 py-2 rounded-xl text-xs font-extrabold transition-colors cursor-pointer"
+              class="w-full flex items-center justify-between gap-3 px-4 py-2.5 rounded-xl text-sm font-semibold transition-colors cursor-pointer"
               [ngClass]="langService.currentLang() === 'en' ? 'bg-[var(--color-primary)]/10 text-[var(--color-primary)]' : 'text-slate-700 dark:text-slate-300 hover:bg-slate-50 dark:hover:bg-slate-800/40'"
+              role="menuitemradio"
+              [attr.aria-checked]="langService.currentLang() === 'en'"
             >
-              <span>{{ 'header.english' | translate }}</span>
+              <span class="truncate">{{ 'header.english' | translate }}</span>
               @if (langService.currentLang() === 'en') {
-                <span class="w-1.5 h-1.5 rounded-full bg-[var(--color-primary)]"></span>
+                <span class="w-1.5 h-1.5 shrink-0 rounded-full bg-[var(--color-primary)]"></span>
               }
             </button>
             <button
               (click)="selectLang('vi')"
-              class="w-full flex items-center justify-between px-3 py-2 rounded-xl text-xs font-extrabold transition-colors cursor-pointer"
+              class="w-full flex items-center justify-between gap-3 px-4 py-2.5 rounded-xl text-sm font-semibold transition-colors cursor-pointer"
               [ngClass]="langService.currentLang() === 'vi' ? 'bg-[var(--color-primary)]/10 text-[var(--color-primary)]' : 'text-slate-700 dark:text-slate-300 hover:bg-slate-50 dark:hover:bg-slate-800/40'"
+              role="menuitemradio"
+              [attr.aria-checked]="langService.currentLang() === 'vi'"
             >
-        <span>{{ 'header.vietnamese' | translate }}</span>
+              <span class="truncate">{{ 'header.vietnamese' | translate }}</span>
               @if (langService.currentLang() === 'vi') {
-                <span class="w-1.5 h-1.5 rounded-full bg-[var(--color-primary)]"></span>
+                <span class="w-1.5 h-1.5 shrink-0 rounded-full bg-[var(--color-primary)]"></span>
               }
             </button>
           </div>
