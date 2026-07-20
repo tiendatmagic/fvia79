@@ -1498,3 +1498,12 @@
       4. Bổ sung thêm các bản dịch từ Profile, Product và Deposit Controller khác để tối ưu trải nghiệm người dùng toàn diện (đổi mật khẩu, 2FA, CRUD sản phẩm, tạo/hủy hóa đơn nạp tiền).
     - **Xác minh:** Biên dịch frontend Angular thành công 100% không lỗi.
 
+  - **[ĐỒNG BỘ HÓA GIAO DIỆN TABS TOÀN HỆ THỐNG]**:
+    - **Yêu cầu:** Sửa lỗi đường line gạch đáy tab hoạt động ở trang cấu hình `/admin/settings/general` và trang nạp tiền `/deposit` (tab BEP-20 / Binance Pay bị mất hoàn toàn đường gạch dưới do lỗi xung đột class CSS). Đồng thời đồng bộ thiết kế tab ở các modal (như thêm/sửa thành viên `user-form-modal` từ dạng pill bo tròn sang dạng tab có đường gạch dưới đồng bộ với toàn hệ thống).
+    - **Giải pháp & Triển khai:**
+      1. Khắc phục clashing class tại [deposit.component.html](file:///d:/git/isocalmarket/isocalmarket-web/src/app/features/deposit/deposit.component.html): Đưa class `border-transparent` vào điều kiện `[class.border-transparent]="paymentMethod !== '...'"` để tránh ghi đè lên màu viền `border-[var(--color-primary)]` khi active. Thêm `-mb-px` để viền đáy đè khớp lên container.
+      2. Tối ưu tabs tại [admin-settings.component.html](file:///d:/git/isocalmarket/isocalmarket-web/src/app/features/admin-settings/admin-settings.component.html): Loại bỏ `pb-px` ở container và thêm `-mb-px` ở các tab buttons để đường gạch đáy khớp với viền container.
+      3. Đồng bộ tab tại [user-form-modal.component.html](file:///d:/git/isocalmarket/isocalmarket-web/src/app/features/admin-users/user-form-modal/user-form-modal.component.html): Thiết kế lại các tab từ style pill (`bg-primary/10`) sang dạng tab gạch dưới chuẩn. Sử dụng component `<app-icon>` thống nhất thay cho các thẻ SVG code tay thô. Thêm `-mb-px` và chỉnh container khớp tuyệt đối.
+      4. Đồng bộ tab tại [user-api.component.html](file:///d:/git/isocalmarket/isocalmarket-web/src/app/features/user-api/user-api.component.html): Chuyển đổi sang `pb-2` kết hợp `-mb-px` và loại bỏ padding đáy container cũ để thống nhất layout tab line.
+    - **Xác minh:** Chạy biên dịch frontend thành công.
+

@@ -485,14 +485,14 @@ curl -X GET "{{ siteUrl() }}/api/v1/b2b/products/PRODUCT_ID?api_key={{
         <div class="space-y-3">
           <div class="space-y-2">
             <div
-              class="flex items-center gap-1 border-b border-slate-200/60 dark:border-slate-900 pb-1"
+              class="flex items-center gap-1 border-b border-slate-200/60 dark:border-slate-900"
             >
               <button
                 (click)="activeTab.set('bash')"
                 [class]="
                   activeTab() === 'bash'
-                    ? 'text-xs font-bold text-[var(--color-primary)] border-b-2 border-[var(--color-primary)] pb-1 px-3 -mb-1.5 transition-all cursor-pointer'
-                    : 'text-xs font-semibold text-slate-400 dark:text-slate-500 pb-1 px-3 -mb-1.5 hover:text-slate-600 dark:hover:text-slate-400 transition-all cursor-pointer'
+                    ? 'text-xs font-bold text-[var(--color-primary)] border-b-2 border-[var(--color-primary)] pb-2 px-3 -mb-px transition-all cursor-pointer'
+                    : 'text-xs font-semibold text-slate-400 dark:text-slate-500 border-b-2 border-transparent pb-2 px-3 -mb-px hover:text-slate-600 dark:hover:text-slate-400 transition-all cursor-pointer'
                 "
               >
                 Linux / macOS / Bash
@@ -501,8 +501,8 @@ curl -X GET "{{ siteUrl() }}/api/v1/b2b/products/PRODUCT_ID?api_key={{
                 (click)="activeTab.set('cmd')"
                 [class]="
                   activeTab() === 'cmd'
-                    ? 'text-xs font-bold text-[var(--color-primary)] border-b-2 border-[var(--color-primary)] pb-1 px-3 -mb-1.5 transition-all cursor-pointer'
-                    : 'text-xs font-semibold text-slate-400 dark:text-slate-500 pb-1 px-3 -mb-1.5 hover:text-slate-600 dark:hover:text-slate-400 transition-all cursor-pointer'
+                    ? 'text-xs font-bold text-[var(--color-primary)] border-b-2 border-[var(--color-primary)] pb-2 px-3 -mb-px transition-all cursor-pointer'
+                    : 'text-xs font-semibold text-slate-400 dark:text-slate-500 border-b-2 border-transparent pb-2 px-3 -mb-px hover:text-slate-600 dark:hover:text-slate-400 transition-all cursor-pointer'
                 "
               >
                 Windows CMD

@@ -171,7 +171,7 @@ export class UserFormModalComponent implements OnInit {
 
     this.isConfirming = true;
     this.modalService.confirm({
-      title: 'Kích hoạt 2FA giùm thành viên',
+      title: 'Kích hoạt 2FA cho thành viên',
       descriptionHtml: `Hệ thống sẽ tự động kích hoạt 2FA và sinh khóa bí mật cho tài khoản <strong>${this.email}</strong>. Bạn cần cung cấp khóa bí mật này hoặc gửi ảnh mã QR cho thành viên cấu hình trên ứng dụng Google Authenticator của họ.`,
       confirmText: 'Kích hoạt 2FA',
       cancelText: 'Hủy',

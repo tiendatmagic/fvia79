@@ -32,7 +32,8 @@
             (click)="paymentMethod = 'bep20'"
             [class.border-[var(--color-primary)]]="paymentMethod === 'bep20'"
             [class.text-[var(--color-primary)]]="paymentMethod === 'bep20'"
-            class="flex-1 pb-3 text-sm font-extrabold border-b-2 border-transparent transition-all cursor-pointer"
+            [class.border-transparent]="paymentMethod !== 'bep20'"
+            class="flex-1 pb-3 text-sm font-extrabold border-b-2 transition-all cursor-pointer -mb-px"
           >
             USDT BEP-20
           </button>
@@ -41,7 +42,8 @@
             (click)="paymentMethod = 'binance'"
             [class.border-[var(--color-primary)]]="paymentMethod === 'binance'"
             [class.text-[var(--color-primary)]]="paymentMethod === 'binance'"
-            class="flex-1 pb-3 text-sm font-extrabold border-b-2 border-transparent transition-all cursor-pointer"
+            [class.border-transparent]="paymentMethod !== 'binance'"
+            class="flex-1 pb-3 text-sm font-extrabold border-b-2 transition-all cursor-pointer -mb-px"
           >
             Binance Pay (Binance ID)
           </button>

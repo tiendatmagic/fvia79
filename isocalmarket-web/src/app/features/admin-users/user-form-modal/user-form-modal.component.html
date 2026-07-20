@@ -1,44 +1,36 @@
 <div class="flex flex-col" style="min-height: 420px">
   <div
-    class="flex items-center gap-1 px-1 pb-4 border-b border-slate-200/60 dark:border-slate-800/60"
+    class="flex items-center gap-2 border-b border-slate-200/60 dark:border-slate-800/60"
   >
     <button
       type="button"
       (click)="setTab('info')"
-      [class]="
-        activeTab === 'info'
-          ? 'flex items-center gap-2 px-4 py-2 rounded-xl text-xs font-extrabold bg-[var(--color-primary)]/10 text-[var(--color-primary)] transition-all cursor-pointer'
-          : 'flex items-center gap-2 px-4 py-2 rounded-xl text-xs font-bold text-slate-500 dark:text-slate-400 hover:bg-slate-100 dark:hover:bg-slate-800/50 transition-all cursor-pointer'
-      "
+      class="px-4 pb-3 border-b-2 text-xs font-bold transition-all flex items-center gap-2 cursor-pointer -mb-px"
+      [class.border-[var(--color-primary)]]="activeTab === 'info'"
+      [class.text-[var(--color-primary)]]="activeTab === 'info'"
+      [class.font-extrabold]="activeTab === 'info'"
+      [class.border-transparent]="activeTab !== 'info'"
+      [class.text-slate-500]="activeTab !== 'info'"
+      [class.hover:text-slate-800]="activeTab !== 'info'"
+      [class.dark:hover:text-slate-200]="activeTab !== 'info'"
     >
-      <svg class="w-3.5 h-3.5 shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-        <path
-          stroke-linecap="round"
-          stroke-linejoin="round"
-          stroke-width="2.5"
-          d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"
-        />
-      </svg>
+      <app-icon name="user" class="w-4 h-4" />
       Thông tin
     </button>
 
     <button
       type="button"
       (click)="setTab('permissions')"
-      [class]="
-        activeTab === 'permissions'
-          ? 'flex items-center gap-2 px-4 py-2 rounded-xl text-xs font-extrabold bg-[var(--color-primary)]/10 text-[var(--color-primary)] transition-all cursor-pointer'
-          : 'flex items-center gap-2 px-4 py-2 rounded-xl text-xs font-bold text-slate-500 dark:text-slate-400 hover:bg-slate-100 dark:hover:bg-slate-800/50 transition-all cursor-pointer'
-      "
+      class="px-4 pb-3 border-b-2 text-xs font-bold transition-all flex items-center gap-2 cursor-pointer -mb-px"
+      [class.border-[var(--color-primary)]]="activeTab === 'permissions'"
+      [class.text-[var(--color-primary)]]="activeTab === 'permissions'"
+      [class.font-extrabold]="activeTab === 'permissions'"
+      [class.border-transparent]="activeTab !== 'permissions'"
+      [class.text-slate-500]="activeTab !== 'permissions'"
+      [class.hover:text-slate-800]="activeTab !== 'permissions'"
+      [class.dark:hover:text-slate-200]="activeTab !== 'permissions'"
     >
-      <svg class="w-3.5 h-3.5 shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-        <path
-          stroke-linecap="round"
-          stroke-linejoin="round"
-          stroke-width="2.5"
-          d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z"
-        />
-      </svg>
+      <app-icon name="key" class="w-4 h-4" />
       Phân quyền
     </button>
 
@@ -46,20 +38,16 @@
       <button
         type="button"
         (click)="setTab('security')"
-        [class]="
-          activeTab === 'security'
-            ? 'flex items-center gap-2 px-4 py-2 rounded-xl text-xs font-extrabold bg-[var(--color-primary)]/10 text-[var(--color-primary)] transition-all cursor-pointer'
-            : 'flex items-center gap-2 px-4 py-2 rounded-xl text-xs font-bold text-slate-500 dark:text-slate-400 hover:bg-slate-100 dark:hover:bg-slate-800/50 transition-all cursor-pointer'
-        "
+        class="px-4 pb-3 border-b-2 text-xs font-bold transition-all flex items-center gap-2 cursor-pointer -mb-px"
+        [class.border-[var(--color-primary)]]="activeTab === 'security'"
+        [class.text-[var(--color-primary)]]="activeTab === 'security'"
+        [class.font-extrabold]="activeTab === 'security'"
+        [class.border-transparent]="activeTab !== 'security'"
+        [class.text-slate-500]="activeTab !== 'security'"
+        [class.hover:text-slate-800]="activeTab !== 'security'"
+        [class.dark:hover:text-slate-200]="activeTab !== 'security'"
       >
-        <svg class="w-3.5 h-3.5 shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-          <path
-            stroke-linecap="round"
-            stroke-linejoin="round"
-            stroke-width="2.5"
-            d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z"
-          />
-        </svg>
+        <app-icon name="shield-check" class="w-4 h-4" />
         Bảo mật & API
       </button>
     }
