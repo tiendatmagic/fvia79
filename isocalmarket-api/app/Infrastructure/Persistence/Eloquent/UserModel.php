@@ -32,6 +32,15 @@ class UserModel extends Authenticatable
         return (string) Str::uuid7();
     }
 
+    public static function generateUniqueApiKey(): string
+    {
+        do {
+            $key = Str::random(16);
+        } while (static::where('api_key', $key)->exists());
+
+        return $key;
+    }
+
     protected function casts(): array
     {
         return [
@@ -43,3 +52,5 @@ class UserModel extends Authenticatable
         ];
     }
 }
+
+

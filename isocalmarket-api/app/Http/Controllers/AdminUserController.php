@@ -84,7 +84,7 @@ class AdminUserController extends Controller
         ]);
 
         try {
-            $apiKey = 'B2B-KEY-' . Str::random(16);
+            $apiKey = \App\Infrastructure\Persistence\Eloquent\UserModel::generateUniqueApiKey();
 
             $user = new User(
                 null,
@@ -167,7 +167,7 @@ class AdminUserController extends Controller
             );
 
             if ($request->input('generate_api_key')) {
-                $updatedUser->setApiKey('B2B-KEY-' . Str::random(16));
+                $updatedUser->setApiKey(\App\Infrastructure\Persistence\Eloquent\UserModel::generateUniqueApiKey());
             } elseif ($request->input('revoke_api_key')) {
                 $updatedUser->setApiKey(null);
             }

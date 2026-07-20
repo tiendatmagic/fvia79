@@ -25,7 +25,7 @@ class DatabaseSeeder extends Seeder
             'email'    => 'admin@isocalmarket.com',
             'password' => Hash::make('Admin@Isocal2025!'),
             'role'     => 'admin',
-            'api_key'  => 'B2B-KEY-admin'
+            'api_key'  => UserModel::generateUniqueApiKey()
         ]);
  
         $customers = [];

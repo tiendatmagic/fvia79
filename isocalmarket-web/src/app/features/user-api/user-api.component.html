@@ -510,44 +510,92 @@ curl -X GET "{{ siteUrl() }}/api/v1/b2b/products/PRODUCT_ID?api_key={{
             </div>
 
             @if (activeTab() === 'bash') {
-              <div
-                class="relative bg-slate-50 dark:bg-slate-950 rounded-xl border border-slate-200/60 dark:border-slate-900 overflow-hidden mt-1.5"
-              >
+              <div class="space-y-2.5 mt-1.5">
+                <div class="text-[11px] font-bold text-slate-500 dark:text-slate-400">1. Mua 1 sản phẩm (Truyền product_id & quantity):</div>
                 <div
-                  class="overflow-x-auto p-3.5 pr-12 font-mono text-xs text-slate-700 dark:text-slate-300 leading-relaxed"
+                  class="relative bg-slate-50 dark:bg-slate-950 rounded-xl border border-slate-200/60 dark:border-slate-900 overflow-hidden"
                 >
-                  <pre class="whitespace-pre">
+                  <div
+                    class="overflow-x-auto p-3.5 pr-12 font-mono text-xs text-slate-700 dark:text-slate-300 leading-relaxed"
+                  >
+                    <pre class="whitespace-pre">
 curl -X POST "{{ siteUrl() }}/api/v1/b2b/buy" -H "Content-Type: application/json" -H "X-API-KEY: {{
-                      apiKey() || 'API_KEY_CUA_BAN'
-                    }}" -d '{{ '{' }}"product_id": "PRODUCT_ID", "quantity": 1, "coupon_code": "DISCOUNT10"{{ '}' }}'</pre>
+                        apiKey() || 'API_KEY_CUA_BAN'
+                      }}" -d '{{ '{' }}"product_id": "PRODUCT_ID", "quantity": 1, "coupon_code": "DISCOUNT10"{{ '}' }}'</pre>
+                  </div>
+                  <button
+                    (click)="copyBuyCurl()"
+                    class="absolute right-3.5 top-3.5 text-slate-400 dark:text-slate-500 hover:text-[var(--color-primary)] dark:hover:text-white transition-colors cursor-pointer"
+                    title="Copy Linux CURL Mua 1 SP"
+                  >
+                    <app-icon name="copy" class="w-4 h-4" />
+                  </button>
                 </div>
-                <button
-                  (click)="copyBuyCurl()"
-                  class="absolute right-3.5 top-3.5 text-slate-400 dark:text-slate-500 hover:text-[var(--color-primary)] dark:hover:text-white transition-colors cursor-pointer"
-                  title="Copy Linux CURL"
+
+                <div class="text-[11px] font-bold text-slate-500 dark:text-slate-400 pt-1">2. Mua nhiều sản phẩm cùng lúc (Truyền mảng items):</div>
+                <div
+                  class="relative bg-slate-50 dark:bg-slate-950 rounded-xl border border-slate-200/60 dark:border-slate-900 overflow-hidden"
                 >
-                  <app-icon name="copy" class="w-4 h-4" />
-                </button>
+                  <div
+                    class="overflow-x-auto p-3.5 pr-12 font-mono text-xs text-slate-700 dark:text-slate-300 leading-relaxed"
+                  >
+                    <pre class="whitespace-pre">
+curl -X POST "{{ siteUrl() }}/api/v1/b2b/buy" -H "Content-Type: application/json" -H "X-API-KEY: {{
+                        apiKey() || 'API_KEY_CUA_BAN'
+                      }}" -d '{{ '{' }}"items": [{{ '{' }}"product_id": "PRODUCT_ID_1", "quantity": 2{{ '}' }}, {{ '{' }}"product_id": "PRODUCT_ID_2", "quantity": 1{{ '}' }}], "coupon_code": "DISCOUNT10"{{ '}' }}'</pre>
+                  </div>
+                  <button
+                    (click)="copyBuyMultiCurl()"
+                    class="absolute right-3.5 top-3.5 text-slate-400 dark:text-slate-500 hover:text-[var(--color-primary)] dark:hover:text-white transition-colors cursor-pointer"
+                    title="Copy Linux CURL Mua nhiều SP"
+                  >
+                    <app-icon name="copy" class="w-4 h-4" />
+                  </button>
+                </div>
               </div>
             } @else if (activeTab() === 'cmd') {
-              <div
-                class="relative bg-slate-50 dark:bg-slate-950 rounded-xl border border-slate-200/60 dark:border-slate-900 overflow-hidden mt-1.5"
-              >
+              <div class="space-y-2.5 mt-1.5">
+                <div class="text-[11px] font-bold text-slate-500 dark:text-slate-400">1. Mua 1 sản phẩm (Windows CMD):</div>
                 <div
-                  class="overflow-x-auto p-3.5 pr-12 font-mono text-xs text-slate-700 dark:text-slate-300 leading-relaxed"
+                  class="relative bg-slate-50 dark:bg-slate-950 rounded-xl border border-slate-200/60 dark:border-slate-900 overflow-hidden"
                 >
-                  <pre class="whitespace-pre">
+                  <div
+                    class="overflow-x-auto p-3.5 pr-12 font-mono text-xs text-slate-700 dark:text-slate-300 leading-relaxed"
+                  >
+                    <pre class="whitespace-pre">
 curl -X POST "{{ siteUrl() }}/api/v1/b2b/buy" -H "Content-Type: application/json" -H "X-API-KEY: {{
-                      apiKey() || 'API_KEY_CUA_BAN'
-                    }}" -d "{{ '{' }}\"product_id\": \"PRODUCT_ID\", \"quantity\": 1, \"coupon_code\": \"DISCOUNT10\"{{ '}' }}"</pre>
+                        apiKey() || 'API_KEY_CUA_BAN'
+                      }}" -d "{{ '{' }}\"product_id\": \"PRODUCT_ID\", \"quantity\": 1, \"coupon_code\": \"DISCOUNT10\"{{ '}' }}"</pre>
+                  </div>
+                  <button
+                    (click)="copyBuyWindowsCurl()"
+                    class="absolute right-3.5 top-3.5 text-slate-400 dark:text-slate-500 hover:text-[var(--color-primary)] dark:hover:text-white transition-colors cursor-pointer"
+                    title="Copy Windows CMD CURL Mua 1 SP"
+                  >
+                    <app-icon name="copy" class="w-4 h-4" />
+                  </button>
                 </div>
-                <button
-                  (click)="copyBuyWindowsCurl()"
-                  class="absolute right-3.5 top-3.5 text-slate-400 dark:text-slate-500 hover:text-[var(--color-primary)] dark:hover:text-white transition-colors cursor-pointer"
-                  title="Copy Windows CMD CURL"
+
+                <div class="text-[11px] font-bold text-slate-500 dark:text-slate-400 pt-1">2. Mua nhiều sản phẩm cùng lúc (Windows CMD):</div>
+                <div
+                  class="relative bg-slate-50 dark:bg-slate-950 rounded-xl border border-slate-200/60 dark:border-slate-900 overflow-hidden"
                 >
-                  <app-icon name="copy" class="w-4 h-4" />
-                </button>
+                  <div
+                    class="overflow-x-auto p-3.5 pr-12 font-mono text-xs text-slate-700 dark:text-slate-300 leading-relaxed"
+                  >
+                    <pre class="whitespace-pre">
+curl -X POST "{{ siteUrl() }}/api/v1/b2b/buy" -H "Content-Type: application/json" -H "X-API-KEY: {{
+                        apiKey() || 'API_KEY_CUA_BAN'
+                      }}" -d "{{ '{' }}\"items\": [{{ '{' }}\"product_id\": \"PRODUCT_ID_1\", \"quantity\": 2{{ '}' }}, {{ '{' }}\"product_id\": \"PRODUCT_ID_2\", \"quantity\": 1{{ '}' }}], \"coupon_code\": \"DISCOUNT10\"{{ '}' }}"</pre>
+                  </div>
+                  <button
+                    (click)="copyBuyMultiWindowsCurl()"
+                    class="absolute right-3.5 top-3.5 text-slate-400 dark:text-slate-500 hover:text-[var(--color-primary)] dark:hover:text-white transition-colors cursor-pointer"
+                    title="Copy Windows CMD CURL Mua nhiều SP"
+                  >
+                    <app-icon name="copy" class="w-4 h-4" />
+                  </button>
+                </div>
               </div>
             }
           </div>

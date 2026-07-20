@@ -1532,6 +1532,14 @@
       - Đăng ký route `/admin/coupons` và bổ sung menu "Quản lý mã giảm giá" trong Sidebar Desktop & Mobile.
       - Tích hợp ô nhập mã giảm giá trong `CartModalComponent` với hiệu ứng debounce 500ms, hiển thị số tiền tạm tính & giảm giá trước khi đặt hàng.
       - Cập nhật `OrderDetailComponent` hiển thị số tiền giảm giá cho khách hàng và mã coupon dành riêng cho Admin.
-      - Cập nhật trang tài liệu User API (`user-api.component.html` & `.ts`) và Admin API (`admin-api.component.html`) bổ sung đầy đủ thông tin tham số `coupon_code`, `discount_amount`, `items` và ví dụ CURL.
-      - Biên dịch `npm run build` thành công 100% không phát sinh bất kỳ lỗi nào.
+      - Cập nhật trang tài liệu User API (`user-api.component.html` & `.ts`) và Admin API (`admin-api.component.html`) bổ sung đầy đủ thông tin tham số `coupon_code`, `discount_amount`, mảng mua nhiều `items` và chia làm 2 mẫu cURL mua 1 sản phẩm & mua nhiều sản phẩm rõ ràng.
+  - **[CHUẨN HÓA BẢO MẬT API KEY KHÁCH HÀNG]**:
+    - Xóa bỏ hoàn toàn chuỗi API Key cứng giả lập (`B2B-KEY-admin`) trong `DatabaseSeeder.php` và toàn bộ mã nguồn backend.
+    - Thêm hàm `UserModel::generateUniqueApiKey()` sinh chuỗi ngẫu nhiên đúng **16 ký tự** và tự động kiểm tra tính duy nhất trong cơ sở dữ liệu (`where('api_key', $key)->exists()`) trước khi lưu.
+    - Áp dụng cơ chế tạo API Key duy nhất mới tại: [DatabaseSeeder.php](file:///d:/git/isocalmarket/isocalmarket-api/database/seeders/DatabaseSeeder.php), [ProfileController.php](file:///d:/git/isocalmarket/isocalmarket-api/app/Http/Controllers/ProfileController.php) và [AdminUserController.php](file:///d:/git/isocalmarket/isocalmarket-api/app/Http/Controllers/AdminUserController.php).
+  - **[CHUẨN HÓA FORM-INPUT VÀ CARD CHO Ô MÃ GIẢM GIÁ GIỎ HÀNG]**:
+    - Chuyển đổi khung nhập Mã giảm giá tại [cart-modal.component.html](file:///d:/git/isocalmarket/isocalmarket-web/src/app/features/storefront/cart-modal/cart-modal.component.html) sang sử dụng thẻ `app-card`, cấu trúc `form-field` và lớp CSS `form-input` chuẩn của toàn hệ thống (`styles.scss`).
+    - Đồng bộ chiều cao `h-[42px]`, màu nền, viền, font chữ, độ bo góc `rounded-xl` và hiệu ứng focus khớp 100% với tất cả ô nhập liệu khác.
+    - Biên dịch `npm run build` thành công 100% không có bất kỳ lỗi nào.
+    - Biên dịch `npm run build` thành công 100% không có bất kỳ lỗi nào.
 

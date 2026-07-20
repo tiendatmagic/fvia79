@@ -183,7 +183,7 @@ class ProfileController extends Controller
             return response()->json(['message' => 'Unauthorized.'], 401);
         }
 
-        $userModel->api_key = 'B2B-KEY-' . \Illuminate\Support\Str::random(16);
+        $userModel->api_key = \App\Infrastructure\Persistence\Eloquent\UserModel::generateUniqueApiKey();
         $userModel->save();
 
         return response()->json([

@@ -1,13 +1,24 @@
 <div class="space-y-6 pb-2">
   <div *ngIf="cart.items().length === 0" class="text-center py-12 space-y-4">
-    <div class="w-16 h-16 bg-slate-50 dark:bg-slate-900 border border-slate-100 dark:border-slate-800 rounded-full flex items-center justify-center mx-auto text-slate-400">
+    <div
+      class="w-16 h-16 bg-slate-50 dark:bg-slate-900 border border-slate-100 dark:border-slate-800 rounded-full flex items-center justify-center mx-auto text-slate-400"
+    >
       <app-icon name="cart" class="w-8 h-8" />
     </div>
     <div class="space-y-1">
-      <p class="text-sm font-bold text-slate-800 dark:text-slate-200">Giỏ hàng của bạn đang trống</p>
-      <p class="text-xs text-slate-400">Vui lòng chọn thêm sản phẩm ở cửa hàng để tiếp tục thanh toán.</p>
+      <p class="text-sm font-bold text-slate-800 dark:text-slate-200">
+        Giỏ hàng của bạn đang trống
+      </p>
+      <p class="text-xs text-slate-400">
+        Vui lòng chọn thêm sản phẩm ở cửa hàng để tiếp tục thanh toán.
+      </p>
     </div>
-    <button app-button (click)="onClose()" [variant]="'cancel'" class="py-2.5 px-5 rounded-xl text-xs font-bold">
+    <button
+      app-button
+      (click)="onClose()"
+      [variant]="'cancel'"
+      class="py-2.5 px-5 rounded-xl text-xs font-bold"
+    >
       Tiếp tục mua hàng
     </button>
   </div>
@@ -19,12 +30,18 @@
         class="bg-slate-50/50 dark:bg-slate-900/10 border border-slate-100 dark:border-slate-800/60 p-4 rounded-xl flex items-center justify-between gap-4"
       >
         <div class="flex-1 min-w-0">
-          <p class="text-sm font-bold text-slate-800 dark:text-slate-200 truncate">{{ item.name }}</p>
-          <p class="text-xs font-bold text-[var(--color-primary)] mt-1">{{ item.price | number }} VND / cái</p>
+          <p class="text-sm font-bold text-slate-800 dark:text-slate-200 truncate">
+            {{ item.name }}
+          </p>
+          <p class="text-xs font-bold text-[var(--color-primary)] mt-1">
+            {{ item.price | number }} VND / cái
+          </p>
         </div>
 
         <div class="flex items-center gap-4 shrink-0">
-          <div class="flex items-center gap-2 border border-slate-200/50 dark:border-slate-800/80 rounded-lg p-1 bg-white dark:bg-slate-950">
+          <div
+            class="flex items-center gap-2 border border-slate-200/50 dark:border-slate-800/80 rounded-lg p-1 bg-white dark:bg-slate-950"
+          >
             <button
               (click)="cart.updateQuantity(item.id, item.quantity - 1)"
               class="w-6 h-6 rounded-md hover:bg-slate-100 dark:hover:bg-slate-900 flex items-center justify-center text-slate-500 hover:text-slate-700 dark:hover:text-slate-200 transition-all font-black text-sm active:scale-90"
@@ -54,48 +71,62 @@
     </div>
 
     <!-- Khung nhập Mã giảm giá -->
-    <div class="bg-slate-50 dark:bg-slate-900/30 border border-slate-200/60 dark:border-slate-800/60 p-3.5 rounded-xl space-y-2">
-      <label class="text-xs font-extrabold text-slate-700 dark:text-slate-300 uppercase tracking-wider flex items-center gap-1.5">
-        <app-icon name="gift" class="w-4 h-4 text-[var(--color-primary)]" />
-        Mã giảm giá (Nếu có)
-      </label>
-      <div class="relative">
-        <input
-          type="text"
-          [(ngModel)]="couponCode"
-          (ngModelChange)="onCouponInput($event)"
-          placeholder="Nhập mã ưu đãi..."
-          class="w-full bg-white dark:bg-slate-950 border border-slate-200 dark:border-slate-800 rounded-lg px-3 py-2 text-xs font-mono font-extrabold tracking-wider text-slate-800 dark:text-slate-100 uppercase focus:outline-none focus:border-[var(--color-primary)] transition-colors pr-8"
-        />
-        <div *ngIf="isValidatingCoupon()" class="absolute right-2.5 top-2.5">
-          <div class="w-4 h-4 border-2 border-[var(--color-primary)] border-t-transparent rounded-full animate-spin"></div>
+    <div app-card class="space-y-3">
+      <div class="form-field">
+        <div class="flex items-center justify-between">
+          <label class="text-xs font-black !text-slate-800 dark:!text-slate-100 uppercase tracking-wider">
+            Mã giảm giá
+          </label>
+          <span *ngIf="appliedCoupon()" class="text-[10px] font-extrabold uppercase bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 px-2 py-0.5 rounded-md border border-emerald-500/20">
+            Đã áp dụng
+          </span>
+        </div>
+        <div class="relative w-full">
+          <input
+            type="text"
+            [(ngModel)]="couponCode"
+            (ngModelChange)="onCouponInput($event)"
+            placeholder="NHẬP MÃ ƯU ĐÃI (VÍ DỤ: DISCOUNT10)..."
+            class="form-input !pr-10 font-mono font-extrabold uppercase tracking-wider"
+          />
+          <div *ngIf="isValidatingCoupon()" class="absolute right-3.5 top-1/2 -translate-y-1/2 flex items-center justify-center pointer-events-none">
+            <span class="w-4 h-4 rounded-full border-2 border-slate-200 border-t-[var(--color-primary)] dark:border-slate-700 dark:border-t-[var(--color-primary)] animate-spin"></span>
+          </div>
         </div>
       </div>
 
       <!-- Thông báo kết quả xác thực coupon -->
-      <div *ngIf="couponSuccess()" class="text-[11px] font-bold text-emerald-600 dark:text-emerald-400 flex items-center gap-1">
-        <app-icon name="check-circle" class="w-3.5 h-3.5" />
+      <div *ngIf="couponSuccess()" class="text-xs font-bold text-emerald-600 dark:text-emerald-400 flex items-center gap-1.5 pt-0.5">
+        <app-icon name="check-circle" class="w-4 h-4 shrink-0" />
         <span>{{ couponSuccess() }}</span>
       </div>
-      <div *ngIf="couponError()" class="text-[11px] font-bold text-rose-500 flex items-center gap-1">
-        <app-icon name="warning" class="w-3.5 h-3.5" />
+      <div *ngIf="couponError()" class="text-xs font-bold text-rose-500 flex items-center gap-1.5 pt-0.5">
+        <app-icon name="warning" class="w-4 h-4 shrink-0" />
         <span>{{ couponError() }}</span>
       </div>
     </div>
 
-    <!-- Tổng kết đơn hàng -->
-    <div class="bg-slate-50/50 dark:bg-slate-900/10 border border-slate-100 dark:border-slate-800/60 p-4 rounded-xl space-y-2">
+    <div
+      class="bg-slate-50/50 dark:bg-slate-900/10 border border-slate-100 dark:border-slate-800/60 p-4 rounded-xl space-y-2"
+    >
       <div class="flex justify-between text-xs font-bold text-slate-400">
         <span>Tổng số lượng:</span>
-        <span class="text-slate-700 dark:text-slate-300 font-extrabold">{{ cart.totalItems() }} sản phẩm</span>
+        <span class="text-slate-700 dark:text-slate-300 font-extrabold"
+          >{{ cart.totalItems() }} sản phẩm</span
+        >
       </div>
 
       <div class="flex justify-between text-xs font-bold text-slate-400">
         <span>Tạm tính:</span>
-        <span class="text-slate-700 dark:text-slate-300 font-extrabold">{{ cart.totalAmount() | number }} VND</span>
+        <span class="text-slate-700 dark:text-slate-300 font-extrabold"
+          >{{ cart.totalAmount() | number }} VND</span
+        >
       </div>
 
-      <div *ngIf="appliedCoupon()" class="flex justify-between text-xs font-extrabold text-emerald-600 dark:text-emerald-400">
+      <div
+        *ngIf="appliedCoupon()"
+        class="flex justify-between text-xs font-extrabold text-emerald-600 dark:text-emerald-400"
+      >
         <span>Giảm giá ({{ appliedCoupon().code }}):</span>
         <span>-{{ appliedCoupon().discount_amount | number }} VND</span>
       </div>
@@ -104,7 +135,9 @@
 
       <div class="flex justify-between text-sm font-black pt-1">
         <span class="text-slate-700 dark:text-slate-300">Tổng tiền thanh toán:</span>
-        <span class="text-[var(--color-primary)] font-black text-base">{{ getFinalTotal() | number }} VND</span>
+        <span class="text-[var(--color-primary)] font-black text-base"
+          >{{ getFinalTotal() | number }} VND</span
+        >
       </div>
     </div>
 
