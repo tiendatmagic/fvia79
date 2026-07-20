@@ -1595,6 +1595,13 @@
       1. Cập nhật `allowed_origins` trong [cors.php](file:///d:/git/isocalmarket/isocalmarket-api/config/cors.php) để thêm `https://isocalmarket.netlify.app` (không có dấu gạch chéo cuối trang theo tiêu chuẩn CORS).
       2. Cập nhật `apiBaseUrl` trong [environment.ts](file:///d:/git/isocalmarket/isocalmarket-web/src/environments/environment.ts) thành `https://isocalmarket.ddns.net/api`.
     - **Xác minh:** Chạy biên dịch frontend `npm run build` thành công 100% không phát sinh lỗi.
+  - **[SỬA LỖI BUILD NETLIFY - UPDATE NODE_VERSION]**:
+    - **Yêu cầu:** Sửa lỗi build thất bại trên Netlify do phiên bản Node.js cũ (`v20.20.2`) không tương thích với `@angular/cli@22` (yêu cầu Node.js >= `v22.22.3`).
+    - **Thực hiện:**
+      1. Cập nhật `NODE_VERSION` từ `"20"` lên `"22"` trong tệp [netlify.toml](file:///d:/git/isocalmarket/netlify.toml) ở thư mục gốc.
+      2. Cập nhật `NODE_VERSION` từ `"20"` lên `"22"` trong tệp [netlify.toml](file:///d:/git/isocalmarket/isocalmarket-web/netlify.toml) ở thư mục con `isocalmarket-web`.
+    - **Xác minh:** Chờ push code lên Github để Netlify tự động kích hoạt tiến trình build mới sử dụng Node.js 22.
+
 
 
 
