@@ -1680,4 +1680,11 @@
     - **Thực hiện:** Cập nhật tệp [storefront.component.ts](file:///d:/git/isocalmarket/isocalmarket-web/src/app/features/storefront/storefront.component.ts), gọi `this.state.authStore.checkMe(true).subscribe()` bên trong hàm `ngOnInit()` trước khi tải danh sách sản phẩm.
     - **Xác minh:** Chạy biên dịch frontend `npm run build` thành công hoàn toàn không có lỗi.
 
-
+  - **[BẢO MẬT & CẢI THIỆN UX TRANG ĐĂNG NHẬP / ĐĂNG KÝ]**:
+    - **Yêu cầu:** Tự động điều hướng người dùng đã đăng nhập thành công ra khỏi trang đăng nhập (`/login`) và đăng ký (`/register`) về trang chủ (`/storefront`) hoặc trang quản trị (`/admin/dashboard`), tránh hiện tượng form đăng nhập bị chớp nháy hiển thị trước khi điều hướng.
+    - **Giải pháp & Triển khai:**
+      1. Tạo `NoAuthGuard` tại [no-auth.guard.ts](file:///d:/git/isocalmarket/isocalmarket-web/src/app/core/guards/no-auth.guard.ts). Guard này kiểm tra xem người dùng đã đăng nhập chưa (thông qua `isAuthenticated` hoặc tự động gọi `checkMe` từ API khi phát hiện có cookie `auth_logged_in=true`).
+      2. Nếu đã xác thực thành công, Guard tự động chuyển hướng về `/admin/dashboard` (đối với Admin) hoặc `/storefront` (đối với Khách hàng) và trả về `false` để chặn render trang login/register.
+      3. Nếu chưa xác thực, cho phép truy cập tiếp bình thường (trả về `true`). Nếu không có cookie `auth_logged_in`, cho phép truy cập ngay mà không cần gọi API để tránh lãng phí request.
+      4. Đăng ký `NoAuthGuard` cho cả 2 route `login` và `register` trong [app.routes.ts](file:///d:/git/isocalmarket/isocalmarket-web/src/app/app.routes.ts).
+    - **Xác minh:** Biên dịch frontend Angular thành công 100% không có lỗi.

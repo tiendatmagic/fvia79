@@ -1,6 +1,7 @@
 import { Routes } from '@angular/router';
 import { AuthGuard } from './core/guards/auth.guard';
 import { AdminGuard } from './core/guards/admin.guard';
+import { NoAuthGuard } from './core/guards/no-auth.guard';
 
 export const routes: Routes = [
   { path: '', redirectTo: 'storefront', pathMatch: 'full' },
@@ -14,10 +15,12 @@ export const routes: Routes = [
   { path: 'auth/register', redirectTo: 'register', pathMatch: 'full' },
   {
     path: 'login',
+    canActivate: [NoAuthGuard],
     loadComponent: () => import('@features/auth/login.component').then(m => m.LoginComponent)
   },
   {
     path: 'register',
+    canActivate: [NoAuthGuard],
     loadComponent: () => import('@features/auth/register.component').then(m => m.RegisterComponent)
   },
 
