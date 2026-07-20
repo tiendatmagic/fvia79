@@ -1552,6 +1552,9 @@
       1. Chuyển Filter Bar sang Grid 3 cột đẹp mắt: `Trạng thái`, `Loại giảm giá`, `Tìm kiếm mã giảm giá`.
       2. Bật `sortable: true` trên các tiêu đề cột của bảng `app-table` (`code`, `type`, `value`, `min_spend`, `used_count`, `start_date`), cho phép nhấp trực tiếp vào tiêu đề cột để sắp xếp tăng/giảm dần theo chuẩn các bảng quản trị khác trong hệ thống.
     - **Xác minh:** Biên dịch `npm run build` thành công `25.758s` 100%.
+  - **[ĐỒNG BỘ UI NÚT LÀM MỚI TẠI TRANG DASHBOARD]**:
+    - **Thực hiện:** Đã cập nhật tệp [admin-dashboard.component.html](file:///d:/git/isocalmarket/isocalmarket-web/src/app/features/admin-dashboard/admin-dashboard.component.html).
+    - **Cải tiến:** Đồng bộ class CSS của nút **Làm mới** (`px-4 py-2.5 text-sm font-extrabold text-slate-600 dark:text-slate-400 hover:text-primary bg-white dark:bg-slate-950 border border-slate-200/60 dark:border-slate-800/80 rounded-xl hover:bg-slate-50 dark:hover:bg-slate-900 transition-all cursor-pointer flex items-center gap-1.5`) khớp 100% với kích thước, màu nền (`bg-white dark:bg-slate-950`), padding và gap của nút Tải lại/Làm mới tại các trang quản lý khác (`products`, `admin-categories`, `admin-coupons`, `inventory`, `admin-orders`).
 
 
 
