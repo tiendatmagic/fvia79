@@ -8,6 +8,7 @@ import { LogoComponent } from '@shared/components/logo/logo.component';
 import { CartStore } from '@features/storefront/cart.store';
 import { ModalService } from '@core/services/modal.service';
 import { CartModalComponent } from '@features/storefront/cart-modal/cart-modal.component';
+import { BadgeComponent } from '@shared/components/badge/badge.component';
 
 @Component({
   selector: 'app-header',
@@ -16,7 +17,8 @@ import { CartModalComponent } from '@features/storefront/cart-modal/cart-modal.c
     CommonModule,
     IconComponent,
     RouterModule,
-    LogoComponent
+    LogoComponent,
+    BadgeComponent
   ],
   templateUrl: './header.component.html',
   styles: [

@@ -1659,3 +1659,11 @@
     - **Yêu cầu**: Giải quyết độ trễ (delay) khi chuyển trang do sử dụng `loadComponent: () => import(...)` trong `app.routes.ts`.
     - **Giải pháp & Triển khai**: Cập nhật tệp [app.config.ts](file:///d:/git/isocalmarket/isocalmarket-web/src/app/app.config.ts), import `withPreloading` và `PreloadAllModules` từ `@angular/router`, sau đó bổ sung `withPreloading(PreloadAllModules)` vào trong cấu hình `provideRouter(routes)`.
     - **Kết quả**: Angular tự động tải trước các chunk file tĩnh của các route phụ ở chế độ nền (background) ngay sau khi ứng dụng chính đã tải xong, giúp việc chuyển trang sau đó diễn ra tức thì mà không bị delay do chờ tải file JS từ server.
+
+  - **[THÊM HIỂN THỊ VAI TRÒ TRONG USER DROPDOWN]**:
+    - **Yêu cầu:** Hiển thị thêm vai trò (admin hay khách hàng) theo role trong users ở góc trên bên phải (khu vực user menu / header).
+    - **Thực hiện:**
+      1. Import `BadgeComponent` vào [header.component.ts](file:///d:/git/isocalmarket/isocalmarket-web/src/app/shared/layout/header/header.component.ts) và thêm nó vào danh sách `imports`.
+      2. Cập nhật [header.component.html](file:///d:/git/isocalmarket/isocalmarket-web/src/app/shared/layout/header/header.component.html) để hiển thị một `app-badge` nhỏ phía dưới email của người dùng trong dropdown thông tin cá nhân.
+      3. Nếu role của người dùng là `'admin'`, badge có variant `'primary'` (màu xanh dương thương hiệu) và hiển thị chữ `'Quản trị viên'`. Ngược lại, badge có variant `'success'` (màu xanh lục) và hiển thị chữ `'Khách hàng'`.
+    - **Xác minh:** Chạy biên dịch frontend `npm run build` thành công hoàn toàn không có lỗi.
