@@ -126,18 +126,18 @@ export class AuthStore {
     );
   }
 
-  public checkMe() {
+  public checkMe(force = false) {
     const isLocalLoggedIn = typeof document !== 'undefined' && document.cookie.includes('auth_logged_in=true');
     if (!isLocalLoggedIn) {
       this.currentUser.set(null);
       return of(null);
     }
 
-    if (this.checkMeObservable$) {
+    if (this.checkMeObservable$ && !force) {
       return this.checkMeObservable$;
     }
 
-    this.checkMeObservable$ = this.api.get<any>('v1/auth/me').pipe(
+    const request$ = this.api.get<any>('v1/auth/me').pipe(
       map((res) => res?.user || null),
       tap((user) => {
         this.currentUser.set(user);
@@ -149,11 +149,17 @@ export class AuthStore {
       }),
       shareReplay(1),
       finalize(() => {
-        this.checkMeObservable$ = null;
+        if (this.checkMeObservable$ === request$) {
+          this.checkMeObservable$ = null;
+        }
       })
     );
 
-    return this.checkMeObservable$;
+    if (!force) {
+      this.checkMeObservable$ = request$;
+    }
+
+    return request$;
   }
 
   public logout() {

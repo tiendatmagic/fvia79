@@ -380,7 +380,7 @@ export class DepositInvoiceComponent implements OnInit, OnDestroy {
   private showSuccessModal() {
     this.stopCountdown();
     this.stopStatusPolling();
-    this.state.authStore.checkMe().subscribe();
+    this.state.authStore.checkMe(true).subscribe();
 
     this.modalService.confirm({
       title: 'Nạp tiền thành công!',

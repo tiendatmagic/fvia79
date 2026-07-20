@@ -66,6 +66,7 @@ export class StorefrontComponent implements OnInit {
       if (result === 'login') {
         this.router.navigate(['/login'], { queryParams: { returnUrl: '/storefront' } });
       } else if (result === 'success') {
+        this.state.authStore.checkMe(true).subscribe();
         this.router.navigate(['/orders']);
       }
     });
