@@ -88,19 +88,6 @@ class AuthController extends Controller
                 false,
                 $sameSite
             );
-
-            $loggedInCookie = cookie(
-                'auth_logged_in',
-                'true',
-                10080,
-                '/',
-                null,
-                $isProduction,
-                false, // Không HttpOnly để JS đọc được
-                false,
-                $sameSite
-            );
-
             return response()->json([
                 'message' => 'Login successful.',
                 'user' => [
@@ -115,8 +102,7 @@ class AuthController extends Controller
                     'api_key' => $user->getApiKey()
                 ]
             ])->withCookie($accessTokenCookie)
-                ->withCookie($refreshTokenCookie)
-                ->withCookie($loggedInCookie);
+                ->withCookie($refreshTokenCookie);
         } catch (\Exception $e) {
             $code = str_contains($e->getMessage(), 'banned') ? 403 : 500;
             return response()->json(['message' => $e->getMessage()], $code);
@@ -175,19 +161,6 @@ class AuthController extends Controller
                 false,
                 $sameSite
             );
-
-            $loggedInCookie = cookie(
-                'auth_logged_in',
-                'true',
-                10080,
-                '/',
-                null,
-                $isProduction,
-                false,
-                false,
-                $sameSite
-            );
-
             return response()->json([
                 'message' => 'Login successful.',
                 'user' => [
@@ -202,8 +175,7 @@ class AuthController extends Controller
                     'api_key' => $user->getApiKey()
                 ]
             ])->withCookie($accessTokenCookie)
-                ->withCookie($refreshTokenCookie)
-                ->withCookie($loggedInCookie);
+                ->withCookie($refreshTokenCookie);
         } catch (\Exception $e) {
             return response()->json(['message' => $e->getMessage()], 500);
         }
@@ -281,12 +253,10 @@ class AuthController extends Controller
         // Xóa cookie bằng cách thiết lập cookie hết hạn với cùng các thuộc tính SameSite và Secure
         $accessTokenCookie = cookie('access_token', '', -2628000, '/', null, $isProduction, true, false, $sameSite);
         $refreshTokenCookie = cookie('refresh_token', '', -2628000, '/api/v1/auth/refresh', null, $isProduction, true, false, $sameSite);
-        $loggedInCookie = cookie('auth_logged_in', '', -2628000, '/', null, $isProduction, false, false, $sameSite);
 
         return response()->json(['message' => 'Logout successful.'])
             ->withCookie($accessTokenCookie)
-            ->withCookie($refreshTokenCookie)
-            ->withCookie($loggedInCookie);
+            ->withCookie($refreshTokenCookie);
     }
 
     public function me(Request $request)

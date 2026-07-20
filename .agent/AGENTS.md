@@ -1608,6 +1608,13 @@
       2. Cập nhật thuộc tính `Secure` đi kèm là `$isProduction` (`true` khi ở production). Điều này cho phép cookie xác thực (`access_token`, `refresh_token`, `auth_logged_in`) được gửi chéo origin từ frontend Netlify sang API backend thành công.
       3. Cập nhật phương thức `logout()` để xóa cookie chéo origin chính xác bằng cách thiết lập thời gian hết hạn trong quá khứ với các thuộc tính `SameSite` và `Secure` tương ứng.
     - **Xác minh:** Triển khai/Đẩy cập nhật lên backend API và kiểm tra chức năng đăng nhập trên trang production.
+  - **[LOẠI BỎ COOKIE DƯ THỪA - XÓA COOKIE AUTH_LOGGED_IN PHÍA BACKEND]**:
+    - **Yêu cầu:** Loại bỏ sự trùng lặp cookie `auth_logged_in` giữa domain frontend (`netlify.app`) và backend (`ddns.net`).
+    - **Thực hiện:**
+      1. Xóa hoàn toàn việc khởi tạo và trả về cookie `auth_logged_in` từ phía Laravel API trong tệp [AuthController.php](file:///d:/git/isocalmarket/isocalmarket-api/app/Http/Controllers/AuthController.php) ở các phương thức `login()`, `login2Fa()`, và `logout()`.
+      2. Lúc này, chỉ còn duy nhất 1 cookie `auth_logged_in` do JS Frontend tự thiết lập và quản lý trên domain `isocalmarket.netlify.app`, giữ cho danh sách cookie lưu trữ trên trình duyệt của người dùng gọn gàng và tối ưu hơn.
+    - **Xác minh:** Kiểm tra danh sách cookie trong DevTools sau khi đăng nhập thành công.
+
 
 
 
