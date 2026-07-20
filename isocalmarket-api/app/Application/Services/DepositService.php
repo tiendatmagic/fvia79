@@ -409,7 +409,9 @@ class DepositService
 
                     $user = $this->userRepository->findById($userId);
                     if ($user) {
-                        $user->addBalance($deposit->getAmountVnd());
+                        // Account balances are denominated in USDT. VND is only a
+                        // display/reference value captured when the invoice is created.
+                        $user->addBalance($deposit->getAmountUsdt());
                         $this->userRepository->save($user);
                     }
 
@@ -503,7 +505,7 @@ class DepositService
 
                     $user = $this->userRepository->findById($userId);
                     if ($user) {
-                        $user->addBalance($deposit->getAmountVnd());
+                        $user->addBalance($deposit->getAmountUsdt());
                         $this->userRepository->save($user);
                     }
 
@@ -609,7 +611,7 @@ class DepositService
             if (!$user) {
                 throw new \RuntimeException("User not found for this deposit.");
             }
-            $user->addBalance($deposit->getAmountVnd());
+            $user->addBalance($deposit->getAmountUsdt());
             $this->userRepository->save($user);
 
             Log::info("Admin [{$adminId}] manually approved Deposit ID [{$id}]: Code={$deposit->getCode()}, Amount={$deposit->getAmountUsdt()} USDT ({$deposit->getAmountVnd()} VND), Payer ID/Wallet=" . ($deposit->getPayerBinanceId() ?: $deposit->getAdminWalletAddress()) . ", TxHash={$finalTxHash}");

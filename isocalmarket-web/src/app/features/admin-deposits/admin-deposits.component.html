@@ -129,11 +129,11 @@
         </div>
       </ng-template>
 
-            <ng-template appTableCell="amountVnd" let-row="row">
+      <ng-template appTableCell="amountVnd" let-row="row">
         <span
           class="font-mono font-bold text-emerald-600 dark:text-emerald-400 text-sm"
         >
-          +{{ row.amountVnd | appCurrency }}
+          +{{ row.amountUsdt | number: '1.2-4' }} USDT
         </span>
       </ng-template>
 

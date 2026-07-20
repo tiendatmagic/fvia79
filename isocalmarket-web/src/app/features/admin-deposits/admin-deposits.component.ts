@@ -15,7 +15,6 @@ import { PaginationComponent } from '@shared/components/pagination/pagination.co
 import { CustomSelectComponent } from '@shared/components/custom-select/custom-select.component';
 import { CustomDateTimeRangeComponent, DateTimeRangeValue } from '@shared/components/custom-date-time-range/custom-date-time-range.component';
 import { TableComponent, TableCellDirective, TableColumn } from '@shared/components/table/table.component';
-import { CurrencyPipe } from '@shared/pipes/currency.pipe';
 import { TranslatePipe } from '@shared/pipes/translate.pipe';
 import { AdminDepositStore } from './admin-deposit.store';
 import { ApproveDepositModalComponent } from './approve-deposit-modal/approve-deposit-modal.component';
@@ -38,8 +37,7 @@ import { ApproveDepositModalComponent } from './approve-deposit-modal/approve-de
     CustomDateTimeRangeComponent,
     TableComponent,
     TableCellDirective,
-    TranslatePipe,
-    CurrencyPipe
+    TranslatePipe
   ],
   templateUrl: './admin-deposits.component.html',
   styles: [`
@@ -60,7 +58,7 @@ export class AdminDepositsComponent implements OnInit {
       { key: 'code', label: this.lang.translate('deposit.code'), sortable: true },
       { key: 'userName', label: this.lang.translate('usr.name'), sortable: true },
       { key: 'amountUsdt', label: this.lang.translate('deposit.amount_usdt'), sortable: true, align: 'right' },
-      { key: 'amountVnd', label: this.lang.translate('deposit.amount'), sortable: true, align: 'right' },
+      { key: 'amountVnd', label: this.lang.translate('deposit.received_balance'), sortable: true, align: 'right' },
       { key: 'paymentMethod', label: this.lang.translate('deposit.method'), sortable: true, align: 'center' },
       { key: 'status', label: this.lang.translate('common.status'), sortable: true, align: 'center' },
       { key: 'createdAt', label: this.lang.translate('common.created_at'), sortable: true },

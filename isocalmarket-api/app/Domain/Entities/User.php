@@ -149,12 +149,12 @@ class User
 
     public function setBalance(float $balance): void
     {
-        $this->balance = round($balance);
+        $this->balance = round($balance, 4);
     }
 
     public function addBalance(float $amount): void
     {
-        $this->balance = round($this->balance + $amount);
+        $this->balance = round($this->balance + $amount, 4);
     }
 
     public function getApiKey(): ?string
