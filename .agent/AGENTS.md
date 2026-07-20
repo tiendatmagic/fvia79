@@ -1532,6 +1532,6 @@
       - Đăng ký route `/admin/coupons` và bổ sung menu "Quản lý mã giảm giá" trong Sidebar Desktop & Mobile.
       - Tích hợp ô nhập mã giảm giá trong `CartModalComponent` với hiệu ứng debounce 500ms, hiển thị số tiền tạm tính & giảm giá trước khi đặt hàng.
       - Cập nhật `OrderDetailComponent` hiển thị số tiền giảm giá cho khách hàng và mã coupon dành riêng cho Admin.
-      - Cập nhật trang tài liệu User API (`user-api.component.html` & `.ts`) bổ sung thông tin tham số `coupon_code`, `items` và ví dụ CURL.
+      - Cập nhật trang tài liệu User API (`user-api.component.html` & `.ts`) và Admin API (`admin-api.component.html`) bổ sung đầy đủ thông tin tham số `coupon_code`, `discount_amount`, `items` và ví dụ CURL.
       - Biên dịch `npm run build` thành công 100% không phát sinh bất kỳ lỗi nào.
 
