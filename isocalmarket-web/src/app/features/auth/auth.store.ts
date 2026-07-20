@@ -92,6 +92,7 @@ export class AuthStore {
         if (res && res.requires_2fa) {
           return;
         }
+        this.setFrontendLoggedInCookie();
         this.currentUser.set(res.user);
         this.toast.showToast('Đăng nhập thành công!', 'success');
         this.router.navigateByUrl(returnUrl);
@@ -143,6 +144,7 @@ export class AuthStore {
       }),
       catchError(() => {
         this.currentUser.set(null);
+        this.clearFrontendLoggedInCookie();
         return of(null);
       }),
       shareReplay(1),
@@ -164,11 +166,13 @@ export class AuthStore {
  
     return this.api.post<any>('v1/auth/logout', {}).pipe(
       tap(() => {
+        this.clearFrontendLoggedInCookie();
         this.currentUser.set(null);
         this.toast.showToast('Đã đăng xuất!', 'success');
         this.router.navigate(['/storefront']);
       }),
       catchError(() => {
+        this.clearFrontendLoggedInCookie();
         this.currentUser.set(null);
         this.router.navigate(['/storefront']);
         return of(null);
@@ -181,6 +185,7 @@ export class AuthStore {
     this.authLoading.set(true);
     return this.api.post<any>('v1/auth/login/2fa', { temp_token: tempToken, code }).pipe(
       tap((res) => {
+        this.setFrontendLoggedInCookie();
         this.currentUser.set(res.user);
         this.toast.showToast('Đăng nhập thành công!', 'success');
         this.router.navigateByUrl(returnUrl);
@@ -309,5 +314,17 @@ export class AuthStore {
         console.error('[AuthStore] Error opening welcome notice modal:', err);
       }
     }, 400);
+  }
+
+  private setFrontendLoggedInCookie() {
+    if (typeof document !== 'undefined') {
+      document.cookie = "auth_logged_in=true; path=/; max-age=604800; SameSite=Lax";
+    }
+  }
+
+  private clearFrontendLoggedInCookie() {
+    if (typeof document !== 'undefined') {
+      document.cookie = "auth_logged_in=; path=/; expires=Thu, 01 Jan 1970 00:00:00 GMT; SameSite=Lax";
+    }
   }
 }

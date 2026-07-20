@@ -91,7 +91,7 @@ function handle401Error(
         authStore.currentUser.set(null);
 
         if (typeof document !== 'undefined') {
-          document.cookie = 'auth_logged_in=; path=/; expires=Thu, 01 Jan 1970 00:00:00 GMT';
+          document.cookie = 'auth_logged_in=; path=/; expires=Thu, 01 Jan 1970 00:00:00 GMT; SameSite=Lax';
         }
 
         router.navigate(['/login']);
