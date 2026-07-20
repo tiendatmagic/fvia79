@@ -1,4 +1,4 @@
-import { Component, inject, OnInit } from '@angular/core';
+import { Component, inject, OnInit, effect } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { RouterOutlet, RouterModule } from '@angular/router';
 import { HeaderComponent } from '@shared/layout/header/header.component';
@@ -30,6 +30,22 @@ import { MaintenanceComponent } from '@features/maintenance/maintenance.componen
 })
 export class App implements OnInit {
   public stateService = inject(StateService);
+  public hasBeenOpened = false;
+  public activeMenuState = false;
+
+  constructor() {
+    effect(() => {
+      const open = this.stateService.showMobileMenu();
+      if (open) {
+        this.hasBeenOpened = true;
+        setTimeout(() => {
+          this.activeMenuState = true;
+        }, 50);
+      } else {
+        this.activeMenuState = false;
+      }
+    });
+  }
 
   ngOnInit() {
     this.stateService.authStore.checkMe().subscribe();

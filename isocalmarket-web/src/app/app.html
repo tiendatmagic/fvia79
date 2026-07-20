@@ -3,229 +3,231 @@
 } @else {
   <app-sidebar></app-sidebar>
 
-  <div
-    [ngClass]="
-      stateService.showMobileMenu() ? 'visible pointer-events-auto' : 'invisible pointer-events-none'
-    "
-    class="fixed inset-0 z-[60] flex lg:hidden transition-all duration-300"
-  >
-      <div
-      (click)="stateService.showMobileMenu.set(false)"
-      [ngClass]="stateService.showMobileMenu() ? 'opacity-100' : 'opacity-0'"
-      class="absolute inset-0 bg-black/40 transition-opacity duration-300"
-    ></div>
-
-      <aside
-      [ngClass]="stateService.showMobileMenu() ? 'translate-x-0' : '-translate-x-full'"
-      class="relative w-72 h-full bg-white dark:bg-slate-950 border-r border-slate-200/50 dark:border-slate-900/50 flex flex-col shadow-2xl transition-transform duration-300 ease-out"
+  @if (hasBeenOpened) {
+    <div
+      [ngClass]="
+        activeMenuState ? 'visible pointer-events-auto' : 'invisible pointer-events-none'
+      "
+      class="fixed inset-0 z-[60] flex lg:hidden transition-all duration-300"
     >
-          <div
-        class="flex items-center justify-between px-6 py-6 border-b border-slate-100 dark:border-slate-800/60"
+        <div
+        (click)="stateService.showMobileMenu.set(false)"
+        [ngClass]="activeMenuState ? 'opacity-100' : 'opacity-0'"
+        class="absolute inset-0 bg-black/40 transition-opacity duration-300"
+      ></div>
+
+        <aside
+        [ngClass]="activeMenuState ? 'translate-x-0' : '-translate-x-full'"
+        class="relative w-72 h-full bg-white dark:bg-slate-950 border-r border-slate-200/50 dark:border-slate-900/50 flex flex-col shadow-2xl transition-transform duration-300 ease-out"
       >
-        <a
-          routerLink="/"
-          (click)="stateService.showMobileMenu.set(false)"
-          class="flex items-center gap-3 cursor-pointer"
+            <div
+          class="flex items-center justify-between px-6 py-6 border-b border-slate-100 dark:border-slate-800/60"
         >
-          <app-logo class="w-9 h-9 shrink-0" />
-          <div class="flex flex-col">
-            <span
-              class="text-sm font-black tracking-tight leading-none text-slate-800 dark:text-white mb-1"
-            >
-              <span class="text-primary">Isocal</span><span class="text-secondary">market</span>
-            </span>
-            <span class="text-xs font-bold text-slate-400 uppercase tracking-widest"
-              >Digital Inventory</span
-            >
-          </div>
-        </a>
-
-        <button
-          (click)="stateService.showMobileMenu.set(false)"
-          class="text-slate-400 hover:text-slate-600 dark:hover:text-slate-200 transition-colors w-6 h-6"
-        >
-          <app-icon name="close" class="w-6 h-6" />
-        </button>
-      </div>
-
-          <nav class="flex-1 px-4 py-6 space-y-1.5 overflow-y-auto">
-        <a
-          routerLink="/storefront"
-          routerLinkActive="!bg-primary/10 !text-primary !font-extrabold"
-          (click)="stateService.showMobileMenu.set(false)"
-          class="flex items-center gap-3.5 px-4 py-3 rounded-xl hover:bg-slate-100 dark:hover:bg-slate-800/50 text-slate-600 dark:text-slate-400 font-semibold text-sm transition-colors duration-200 cursor-pointer"
-        >
-          <app-icon name="home" class="w-5 h-5 flex-shrink-0" />
-          <span>Cửa hàng</span>
-        </a>
-
-        <a
-          routerLink="/orders"
-          routerLinkActive="!bg-primary/10 !text-primary !font-extrabold"
-          (click)="stateService.showMobileMenu.set(false)"
-          class="flex items-center gap-3.5 px-4 py-3 rounded-xl hover:bg-slate-100 dark:hover:bg-slate-800/50 text-slate-600 dark:text-slate-400 font-semibold text-sm transition-colors duration-200 cursor-pointer"
-        >
-          <app-icon name="orders" class="w-5 h-5 flex-shrink-0" />
-          <span>Lịch sử đơn hàng</span>
-        </a>
-
-        <a
-          routerLink="/deposit"
-          routerLinkActive="!bg-primary/10 !text-primary !font-extrabold"
-          [routerLinkActiveOptions]="{ exact: true }"
-          (click)="stateService.showMobileMenu.set(false)"
-          class="flex items-center gap-3.5 px-4 py-3 rounded-xl hover:bg-slate-100 dark:hover:bg-slate-800/50 text-slate-600 dark:text-slate-400 font-semibold text-sm transition-colors duration-200 cursor-pointer"
-        >
-          <app-icon name="wallet" class="w-5 h-5 flex-shrink-0" />
-          <span>Nạp tiền USDT</span>
-        </a>
-
-        <a
-          routerLink="/deposit/history"
-          routerLinkActive="!bg-primary/10 !text-primary !font-extrabold"
-          (click)="stateService.showMobileMenu.set(false)"
-          class="flex items-center gap-3.5 px-4 py-3 rounded-xl hover:bg-slate-100 dark:hover:bg-slate-800/50 text-slate-600 dark:text-slate-400 font-semibold text-sm transition-colors duration-200 cursor-pointer"
-        >
-          <app-icon name="clock" class="w-5 h-5 flex-shrink-0" />
-          <span>Lịch sử nạp tiền</span>
-        </a>
-
-        <a
-          routerLink="/user-api"
-          routerLinkActive="!bg-primary/10 !text-primary !font-extrabold"
-          (click)="stateService.showMobileMenu.set(false)"
-          class="flex items-center gap-3.5 px-4 py-3 rounded-xl hover:bg-slate-100 dark:hover:bg-slate-800/50 text-slate-600 dark:text-slate-400 font-semibold text-sm transition-colors duration-200 cursor-pointer"
-        >
-          <app-icon name="code" class="w-5 h-5 flex-shrink-0" />
-          <span>User API</span>
-        </a>
-
-        <div *ngIf="stateService.isAdmin()" class="pt-4 pb-2">
-          <span
-            class="px-4 text-xs font-bold text-slate-400 uppercase tracking-wider"
+          <a
+            routerLink="/"
+            (click)="stateService.showMobileMenu.set(false)"
+            class="flex items-center gap-3 cursor-pointer"
           >
-            Quản trị hệ thống
-          </span>
+            <app-logo class="w-9 h-9 shrink-0" />
+            <div class="flex flex-col">
+              <span
+                class="text-sm font-black tracking-tight leading-none text-slate-800 dark:text-white mb-1"
+              >
+                <span class="text-primary">Isocal</span><span class="text-secondary">market</span>
+              </span>
+              <span class="text-xs font-bold text-slate-400 uppercase tracking-widest"
+                >Digital Inventory</span
+              >
+            </div>
+          </a>
+
+          <button
+            (click)="stateService.showMobileMenu.set(false)"
+            class="text-slate-400 hover:text-slate-600 dark:hover:text-slate-200 transition-colors w-6 h-6"
+          >
+            <app-icon name="close" class="w-6 h-6" />
+          </button>
         </div>
 
-        <a
-          *ngIf="stateService.isAdmin()"
-          routerLink="/admin/dashboard"
-          routerLinkActive="!bg-primary/10 !text-primary !font-extrabold"
-          (click)="stateService.showMobileMenu.set(false)"
-          class="flex items-center gap-3.5 px-4 py-3 rounded-xl hover:bg-slate-100 dark:hover:bg-slate-800/50 text-slate-600 dark:text-slate-400 font-semibold text-sm transition-colors duration-200 cursor-pointer"
-        >
-          <app-icon name="dashboard" class="w-5 h-5 flex-shrink-0" />
-          <span>Tổng quan Dashboard</span>
-        </a>
+            <nav class="flex-1 px-4 py-6 space-y-1.5 overflow-y-auto">
+          <a
+            routerLink="/storefront"
+            routerLinkActive="!bg-primary/10 !text-primary !font-extrabold"
+            (click)="stateService.showMobileMenu.set(false)"
+            class="flex items-center gap-3.5 px-4 py-3 rounded-xl hover:bg-slate-100 dark:hover:bg-slate-800/50 text-slate-600 dark:text-slate-400 font-semibold text-sm transition-colors duration-200 cursor-pointer"
+          >
+            <app-icon name="home" class="w-5 h-5 flex-shrink-0" />
+            <span>Cửa hàng</span>
+          </a>
 
-        <a
-          *ngIf="stateService.isAdmin()"
-          routerLink="/admin/products"
-          routerLinkActive="!bg-primary/10 !text-primary !font-extrabold"
-          (click)="stateService.showMobileMenu.set(false)"
-          class="flex items-center gap-3.5 px-4 py-3 rounded-xl hover:bg-slate-100 dark:hover:bg-slate-800/50 text-slate-600 dark:text-slate-400 font-semibold text-sm transition-colors duration-200 cursor-pointer"
-        >
-          <app-icon name="list-bullet" class="w-5 h-5 flex-shrink-0" />
-          <span>Quản lý sản phẩm</span>
-        </a>
+          <a
+            routerLink="/orders"
+            routerLinkActive="!bg-primary/10 !text-primary !font-extrabold"
+            (click)="stateService.showMobileMenu.set(false)"
+            class="flex items-center gap-3.5 px-4 py-3 rounded-xl hover:bg-slate-100 dark:hover:bg-slate-800/50 text-slate-600 dark:text-slate-400 font-semibold text-sm transition-colors duration-200 cursor-pointer"
+          >
+            <app-icon name="orders" class="w-5 h-5 flex-shrink-0" />
+            <span>Lịch sử đơn hàng</span>
+          </a>
 
-        <a
-          *ngIf="stateService.isAdmin()"
-          routerLink="/admin/categories"
-          routerLinkActive="!bg-primary/10 !text-primary !font-extrabold"
-          (click)="stateService.showMobileMenu.set(false)"
-          class="flex items-center gap-3.5 px-4 py-3 rounded-xl hover:bg-slate-100 dark:hover:bg-slate-800/50 text-slate-600 dark:text-slate-400 font-semibold text-sm transition-colors duration-200 cursor-pointer"
-        >
-          <app-icon name="tag" class="w-5 h-5 flex-shrink-0" />
-          <span>Quản lý danh mục</span>
-        </a>
+          <a
+            routerLink="/deposit"
+            routerLinkActive="!bg-primary/10 !text-primary !font-extrabold"
+            [routerLinkActiveOptions]="{ exact: true }"
+            (click)="stateService.showMobileMenu.set(false)"
+            class="flex items-center gap-3.5 px-4 py-3 rounded-xl hover:bg-slate-100 dark:hover:bg-slate-800/50 text-slate-600 dark:text-slate-400 font-semibold text-sm transition-colors duration-200 cursor-pointer"
+          >
+            <app-icon name="wallet" class="w-5 h-5 flex-shrink-0" />
+            <span>Nạp tiền USDT</span>
+          </a>
 
-        <a
-          *ngIf="stateService.isAdmin()"
-          routerLink="/admin/coupons"
-          routerLinkActive="!bg-primary/10 !text-primary !font-extrabold"
-          (click)="stateService.showMobileMenu.set(false)"
-          class="flex items-center gap-3.5 px-4 py-3 rounded-xl hover:bg-slate-100 dark:hover:bg-slate-800/50 text-slate-600 dark:text-slate-400 font-semibold text-sm transition-colors duration-200 cursor-pointer"
-        >
-          <app-icon name="gift" class="w-5 h-5 flex-shrink-0" />
-          <span>Quản lý mã giảm giá</span>
-        </a>
+          <a
+            routerLink="/deposit/history"
+            routerLinkActive="!bg-primary/10 !text-primary !font-extrabold"
+            (click)="stateService.showMobileMenu.set(false)"
+            class="flex items-center gap-3.5 px-4 py-3 rounded-xl hover:bg-slate-100 dark:hover:bg-slate-800/50 text-slate-600 dark:text-slate-400 font-semibold text-sm transition-colors duration-200 cursor-pointer"
+          >
+            <app-icon name="clock" class="w-5 h-5 flex-shrink-0" />
+            <span>Lịch sử nạp tiền</span>
+          </a>
 
-        <a
-          *ngIf="stateService.isAdmin()"
-          routerLink="/admin/inventory"
-          routerLinkActive="!bg-primary/10 !text-primary !font-extrabold"
-          (click)="stateService.showMobileMenu.set(false)"
-          class="flex items-center gap-3.5 px-4 py-3 rounded-xl hover:bg-slate-100 dark:hover:bg-slate-800/50 text-slate-600 dark:text-slate-400 font-semibold text-sm transition-colors duration-200 cursor-pointer"
-        >
-          <app-icon name="inventory" class="w-5 h-5 flex-shrink-0" />
-          <span>Quản lý kho hàng</span>
-        </a>
+          <a
+            routerLink="/user-api"
+            routerLinkActive="!bg-primary/10 !text-primary !font-extrabold"
+            (click)="stateService.showMobileMenu.set(false)"
+            class="flex items-center gap-3.5 px-4 py-3 rounded-xl hover:bg-slate-100 dark:hover:bg-slate-800/50 text-slate-600 dark:text-slate-400 font-semibold text-sm transition-colors duration-200 cursor-pointer"
+          >
+            <app-icon name="code" class="w-5 h-5 flex-shrink-0" />
+            <span>User API</span>
+          </a>
 
-        <a
-          *ngIf="stateService.isAdmin()"
-          routerLink="/admin/orders"
-          routerLinkActive="!bg-primary/10 !text-primary !font-extrabold"
-          (click)="stateService.showMobileMenu.set(false)"
-          class="flex items-center gap-3.5 px-4 py-3 rounded-xl hover:bg-slate-100 dark:hover:bg-slate-800/50 text-slate-600 dark:text-slate-400 font-semibold text-sm transition-colors duration-200 cursor-pointer"
-        >
-          <app-icon name="orders" class="w-5 h-5 flex-shrink-0" />
-          <span>Quản lý đơn hàng</span>
-        </a>
+          <div *ngIf="stateService.isAdmin()" class="pt-4 pb-2">
+            <span
+              class="px-4 text-xs font-bold text-slate-400 uppercase tracking-wider"
+            >
+              Quản trị hệ thống
+            </span>
+          </div>
 
-        <a
-          *ngIf="stateService.isAdmin()"
-          routerLink="/admin/users"
-          routerLinkActive="!bg-primary/10 !text-primary !font-extrabold"
-          (click)="stateService.showMobileMenu.set(false)"
-          class="flex items-center gap-3.5 px-4 py-3 rounded-xl hover:bg-slate-100 dark:hover:bg-slate-800/50 text-slate-600 dark:text-slate-400 font-semibold text-sm transition-colors duration-200 cursor-pointer"
-        >
-          <app-icon name="customers" class="w-5 h-5 flex-shrink-0" />
-          <span>Quản lý thành viên</span>
-        </a>
+          <a
+            *ngIf="stateService.isAdmin()"
+            routerLink="/admin/dashboard"
+            routerLinkActive="!bg-primary/10 !text-primary !font-extrabold"
+            (click)="stateService.showMobileMenu.set(false)"
+            class="flex items-center gap-3.5 px-4 py-3 rounded-xl hover:bg-slate-100 dark:hover:bg-slate-800/50 text-slate-600 dark:text-slate-400 font-semibold text-sm transition-colors duration-200 cursor-pointer"
+          >
+            <app-icon name="dashboard" class="w-5 h-5 flex-shrink-0" />
+            <span>Tổng quan Dashboard</span>
+          </a>
 
-        <a
-          *ngIf="stateService.isAdmin()"
-          routerLink="/admin/deposits"
-          routerLinkActive="!bg-primary/10 !text-primary !font-extrabold"
-          (click)="stateService.showMobileMenu.set(false)"
-          class="flex items-center gap-3.5 px-4 py-3 rounded-xl hover:bg-slate-100 dark:hover:bg-slate-800/50 text-slate-600 dark:text-slate-400 font-semibold text-sm transition-colors duration-200 cursor-pointer"
-        >
-          <app-icon name="wallet" class="w-5 h-5 flex-shrink-0" />
-          <span>Quản lý nạp tiền</span>
-        </a>
+          <a
+            *ngIf="stateService.isAdmin()"
+            routerLink="/admin/products"
+            routerLinkActive="!bg-primary/10 !text-primary !font-extrabold"
+            (click)="stateService.showMobileMenu.set(false)"
+            class="flex items-center gap-3.5 px-4 py-3 rounded-xl hover:bg-slate-100 dark:hover:bg-slate-800/50 text-slate-600 dark:text-slate-400 font-semibold text-sm transition-colors duration-200 cursor-pointer"
+          >
+            <app-icon name="list-bullet" class="w-5 h-5 flex-shrink-0" />
+            <span>Quản lý sản phẩm</span>
+          </a>
 
-        <a
-          *ngIf="stateService.isAdmin()"
-          routerLink="/admin/settings"
-          routerLinkActive="!bg-primary/10 !text-primary !font-extrabold"
-          (click)="stateService.showMobileMenu.set(false)"
-          class="flex items-center gap-3.5 px-4 py-3 rounded-xl hover:bg-slate-100 dark:hover:bg-slate-800/50 text-slate-600 dark:text-slate-400 font-semibold text-sm transition-colors duration-200 cursor-pointer"
-        >
-          <app-icon name="settings" class="w-5 h-5 flex-shrink-0" />
-          <span>Cấu hình hệ thống</span>
-        </a>
+          <a
+            *ngIf="stateService.isAdmin()"
+            routerLink="/admin/categories"
+            routerLinkActive="!bg-primary/10 !text-primary !font-extrabold"
+            (click)="stateService.showMobileMenu.set(false)"
+            class="flex items-center gap-3.5 px-4 py-3 rounded-xl hover:bg-slate-100 dark:hover:bg-slate-800/50 text-slate-600 dark:text-slate-400 font-semibold text-sm transition-colors duration-200 cursor-pointer"
+          >
+            <app-icon name="tag" class="w-5 h-5 flex-shrink-0" />
+            <span>Quản lý danh mục</span>
+          </a>
 
-        <a
-          *ngIf="stateService.isAdmin()"
-          routerLink="/admin/api"
-          routerLinkActive="!bg-primary/10 !text-primary !font-extrabold"
-          (click)="stateService.showMobileMenu.set(false)"
-          class="flex items-center gap-3.5 px-4 py-3 rounded-xl hover:bg-slate-100 dark:hover:bg-slate-800/50 text-slate-600 dark:text-slate-400 font-semibold text-sm transition-colors duration-200 cursor-pointer"
-        >
-          <app-icon name="code" class="w-5 h-5 flex-shrink-0" />
-          <span>Admin API</span>
-        </a>
-      </nav>
+          <a
+            *ngIf="stateService.isAdmin()"
+            routerLink="/admin/coupons"
+            routerLinkActive="!bg-primary/10 !text-primary !font-extrabold"
+            (click)="stateService.showMobileMenu.set(false)"
+            class="flex items-center gap-3.5 px-4 py-3 rounded-xl hover:bg-slate-100 dark:hover:bg-slate-800/50 text-slate-600 dark:text-slate-400 font-semibold text-sm transition-colors duration-200 cursor-pointer"
+          >
+            <app-icon name="gift" class="w-5 h-5 flex-shrink-0" />
+            <span>Quản lý mã giảm giá</span>
+          </a>
 
-          <div
-        class="px-5 py-4 border-t border-slate-100 dark:border-slate-800/60 bg-slate-50/30 dark:bg-slate-900/10"
-      >
-        <app-theme-switcher />
-      </div>
-    </aside>
-  </div>
+          <a
+            *ngIf="stateService.isAdmin()"
+            routerLink="/admin/inventory"
+            routerLinkActive="!bg-primary/10 !text-primary !font-extrabold"
+            (click)="stateService.showMobileMenu.set(false)"
+            class="flex items-center gap-3.5 px-4 py-3 rounded-xl hover:bg-slate-100 dark:hover:bg-slate-800/50 text-slate-600 dark:text-slate-400 font-semibold text-sm transition-colors duration-200 cursor-pointer"
+          >
+            <app-icon name="inventory" class="w-5 h-5 flex-shrink-0" />
+            <span>Quản lý kho hàng</span>
+          </a>
+
+          <a
+            *ngIf="stateService.isAdmin()"
+            routerLink="/admin/orders"
+            routerLinkActive="!bg-primary/10 !text-primary !font-extrabold"
+            (click)="stateService.showMobileMenu.set(false)"
+            class="flex items-center gap-3.5 px-4 py-3 rounded-xl hover:bg-slate-100 dark:hover:bg-slate-800/50 text-slate-600 dark:text-slate-400 font-semibold text-sm transition-colors duration-200 cursor-pointer"
+          >
+            <app-icon name="orders" class="w-5 h-5 flex-shrink-0" />
+            <span>Quản lý đơn hàng</span>
+          </a>
+
+          <a
+            *ngIf="stateService.isAdmin()"
+            routerLink="/admin/users"
+            routerLinkActive="!bg-primary/10 !text-primary !font-extrabold"
+            (click)="stateService.showMobileMenu.set(false)"
+            class="flex items-center gap-3.5 px-4 py-3 rounded-xl hover:bg-slate-100 dark:hover:bg-slate-800/50 text-slate-600 dark:text-slate-400 font-semibold text-sm transition-colors duration-200 cursor-pointer"
+          >
+            <app-icon name="customers" class="w-5 h-5 flex-shrink-0" />
+            <span>Quản lý thành viên</span>
+          </a>
+
+          <a
+            *ngIf="stateService.isAdmin()"
+            routerLink="/admin/deposits"
+            routerLinkActive="!bg-primary/10 !text-primary !font-extrabold"
+            (click)="stateService.showMobileMenu.set(false)"
+            class="flex items-center gap-3.5 px-4 py-3 rounded-xl hover:bg-slate-100 dark:hover:bg-slate-800/50 text-slate-600 dark:text-slate-400 font-semibold text-sm transition-colors duration-200 cursor-pointer"
+          >
+            <app-icon name="wallet" class="w-5 h-5 flex-shrink-0" />
+            <span>Quản lý nạp tiền</span>
+          </a>
+
+          <a
+            *ngIf="stateService.isAdmin()"
+            routerLink="/admin/settings"
+            routerLinkActive="!bg-primary/10 !text-primary !font-extrabold"
+            (click)="stateService.showMobileMenu.set(false)"
+            class="flex items-center gap-3.5 px-4 py-3 rounded-xl hover:bg-slate-100 dark:hover:bg-slate-800/50 text-slate-600 dark:text-slate-400 font-semibold text-sm transition-colors duration-200 cursor-pointer"
+          >
+            <app-icon name="settings" class="w-5 h-5 flex-shrink-0" />
+            <span>Cấu hình hệ thống</span>
+          </a>
+
+          <a
+            *ngIf="stateService.isAdmin()"
+            routerLink="/admin/api"
+            routerLinkActive="!bg-primary/10 !text-primary !font-extrabold"
+            (click)="stateService.showMobileMenu.set(false)"
+            class="flex items-center gap-3.5 px-4 py-3 rounded-xl hover:bg-slate-100 dark:hover:bg-slate-800/50 text-slate-600 dark:text-slate-400 font-semibold text-sm transition-colors duration-200 cursor-pointer"
+          >
+            <app-icon name="code" class="w-5 h-5 flex-shrink-0" />
+            <span>Admin API</span>
+          </a>
+        </nav>
+
+            <div
+          class="px-5 py-4 border-t border-slate-100 dark:border-slate-800/60 bg-slate-50/30 dark:bg-slate-900/10"
+        >
+          <app-theme-switcher />
+        </div>
+      </aside>
+    </div>
+  }
 
   <app-header></app-header>
 
