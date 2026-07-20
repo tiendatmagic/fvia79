@@ -1615,9 +1615,22 @@
       2. Lúc này, chỉ còn duy nhất 1 cookie `auth_logged_in` do JS Frontend tự thiết lập và quản lý trên domain `isocalmarket.netlify.app`, giữ cho danh sách cookie lưu trữ trên trình duyệt của người dùng gọn gàng và tối ưu hơn.
     - **Xác minh:** Kiểm tra danh sách cookie trong DevTools sau khi đăng nhập thành công.
 
+  - **[ĐỒNG BỘ CHIỀU CAO & PHÔNG CHỮ NÚT QUAY LẠI QUẢN LÝ NẠP TIỀN]**:
+    - **Yêu cầu:** Sửa lỗi nút "Quay lại Quản lý Nạp tiền" và "Xem Lịch Sử Nạp Tiền" ở trang hóa đơn nạp tiền hiển thị không đồng đều (cao hơn các nút thao tác khác như Hủy Lệnh Nạp và Tôi đã chuyển khoản).
+    - **Thực hiện:**
+      1. Điều chỉnh padding của thẻ `<a>` cho liên kết "Quay lại Quản lý Nạp tiền" và "Xem Lịch Sử Nạp Tiền" trong [deposit-invoice.component.html](file:///d:/git/isocalmarket/isocalmarket-web/src/app/features/deposit-invoice/deposit-invoice.component.html) từ `py-3.5` xuống `py-3` để đồng bộ hoàn hảo với các nút bên trên.
+      2. Đồng thời nâng cấp font weight cho nút "Hủy Lệnh Nạp" từ `font-bold` lên `font-extrabold` để đảm bảo kiểu chữ phông chữ đồng đều 100% trên toàn bộ các nút thao tác tại trang hóa đơn.
+    - **Xác minh:** Chạy biên dịch frontend `npm run build` thành công hoàn toàn không có lỗi.
 
-
-
-
+  - **[SỬA LỖI MENU SIDEBAR TRÊN MOBILE]**:
+    - **Vấn đề**: Người dùng phản hồi lỗi khó mở menu sidebar trên mobile, thường phải bấm 2 lần vào nút Hamburger menu mới hiển thị.
+    - **Nguyên nhân**:
+      1. Component root `App` dùng các thuộc tính thường (`hasBeenOpened` và `activeMenuState`) để quản lý DOM và transition đóng/mở menu di động, thay vì dùng Signals. Do đó, khi các thuộc tính này thay đổi trong `effect` của `showMobileMenu` (là Signal), Angular không phát hiện được sự thay đổi ngay lập tức để chạy Change Detection cho template, dẫn đến việc cập nhật trạng thái UI bị trễ hoặc không đồng bộ.
+      2. Biến `hasBeenOpened` chỉ chuyển thành `true` khi mở lần đầu và không bao giờ chuyển về `false`. Điều này khiến phần tử overlay che phủ màn hình (`fixed inset-0 z-[60]`) luôn luôn tồn tại trong DOM ngay cả khi menu đã đóng. Tuy overlay có class `invisible pointer-events-none`, nhưng do transition và trễ Change Detection hoặc các sự kiện touch/click trên di động, nó vẫn chặn/nuốt sự kiện click đầu tiên của người dùng lên nút Hamburger (nút Hamburger có `z-50` thấp hơn overlay `z-[60]`). Do đó, click đầu tiên bị nuốt bởi backdrop và đặt lại trạng thái đóng, phải bấm lần 2 mới chạm được vào nút Hamburger thật.
+    - **Giải pháp & Triển khai**:
+      1. Khai báo `hasBeenOpened` và `activeMenuState` dưới dạng **Signals** trong [app.ts](file:///d:/git/isocalmarket/isocalmarket-web/src/app/app.ts) để Angular tối ưu hóa và kích hoạt Change Detection tức thì.
+      2. Trong logic `effect` đóng menu, bổ sung `setTimeout(() => { if (!this.stateService.showMobileMenu()) this.hasBeenOpened.set(false); }, 300)` để tự động hủy/xóa hoàn toàn overlay ra khỏi DOM sau khi transition đóng 300ms hoàn tất. Điều này đảm bảo khi menu đóng thì màn hình hoàn toàn sạch bóng overlay.
+      3. Cập nhật template [app.html](file:///d:/git/isocalmarket/isocalmarket-web/src/app/app.html) gọi đúng định dạng Signal `hasBeenOpened()` và `activeMenuState()`.
+    - **Xác minh**: Biên dịch Angular thành công không lỗi.
 
 

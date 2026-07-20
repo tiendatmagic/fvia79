@@ -1,4 +1,4 @@
-import { Component, inject, OnInit, effect } from '@angular/core';
+import { Component, inject, OnInit, effect, signal } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { RouterOutlet, RouterModule } from '@angular/router';
 import { HeaderComponent } from '@shared/layout/header/header.component';
@@ -30,19 +30,24 @@ import { MaintenanceComponent } from '@features/maintenance/maintenance.componen
 })
 export class App implements OnInit {
   public stateService = inject(StateService);
-  public hasBeenOpened = false;
-  public activeMenuState = false;
+  public hasBeenOpened = signal<boolean>(false);
+  public activeMenuState = signal<boolean>(false);
 
   constructor() {
     effect(() => {
       const open = this.stateService.showMobileMenu();
       if (open) {
-        this.hasBeenOpened = true;
+        this.hasBeenOpened.set(true);
         setTimeout(() => {
-          this.activeMenuState = true;
+          this.activeMenuState.set(true);
         }, 50);
       } else {
-        this.activeMenuState = false;
+        this.activeMenuState.set(false);
+        setTimeout(() => {
+          if (!this.stateService.showMobileMenu()) {
+            this.hasBeenOpened.set(false);
+          }
+        }, 300);
       }
     });
   }
@@ -51,3 +56,4 @@ export class App implements OnInit {
     this.stateService.authStore.checkMe().subscribe();
   }
 }
+

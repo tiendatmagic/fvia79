@@ -3,21 +3,21 @@
 } @else {
   <app-sidebar></app-sidebar>
 
-  @if (hasBeenOpened) {
+  @if (hasBeenOpened()) {
     <div
       [ngClass]="
-        activeMenuState ? 'visible pointer-events-auto' : 'invisible pointer-events-none'
+        activeMenuState() ? 'visible pointer-events-auto' : 'invisible pointer-events-none'
       "
       class="fixed inset-0 z-[60] flex lg:hidden transition-all duration-300"
     >
         <div
         (click)="stateService.showMobileMenu.set(false)"
-        [ngClass]="activeMenuState ? 'opacity-100' : 'opacity-0'"
+        [ngClass]="activeMenuState() ? 'opacity-100' : 'opacity-0'"
         class="absolute inset-0 bg-black/40 transition-opacity duration-300"
       ></div>
 
         <aside
-        [ngClass]="activeMenuState ? 'translate-x-0' : '-translate-x-full'"
+        [ngClass]="activeMenuState() ? 'translate-x-0' : '-translate-x-full'"
         class="relative w-72 h-full bg-white dark:bg-slate-950 border-r border-slate-200/50 dark:border-slate-900/50 flex flex-col shadow-2xl transition-transform duration-300 ease-out"
       >
             <div
