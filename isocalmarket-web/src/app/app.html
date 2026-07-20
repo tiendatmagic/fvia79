@@ -10,17 +10,17 @@
       "
       class="fixed inset-0 z-[60] flex lg:hidden transition-all duration-300"
     >
-        <div
+      <div
         (click)="stateService.showMobileMenu.set(false)"
         [ngClass]="activeMenuState() ? 'opacity-100' : 'opacity-0'"
         class="absolute inset-0 bg-black/40 transition-opacity duration-300"
       ></div>
 
-        <aside
+      <aside
         [ngClass]="activeMenuState() ? 'translate-x-0' : '-translate-x-full'"
         class="relative w-72 h-full bg-white dark:bg-slate-950 border-r border-slate-200/50 dark:border-slate-900/50 flex flex-col shadow-2xl transition-transform duration-300 ease-out"
       >
-            <div
+        <div
           class="flex items-center justify-between px-6 py-6 border-b border-slate-100 dark:border-slate-800/60"
         >
           <a
@@ -35,9 +35,9 @@
               >
                 <span class="text-primary">Isocal</span><span class="text-secondary">market</span>
               </span>
-              <span class="text-xs font-bold text-slate-400 uppercase tracking-widest"
-                >{{ 'app.tagline' | translate }}</span
-              >
+              <span class="text-xs font-bold text-slate-400 uppercase tracking-widest">{{
+                'app.tagline' | translate
+              }}</span>
             </div>
           </a>
 
@@ -49,7 +49,7 @@
           </button>
         </div>
 
-            <nav class="flex-1 px-4 py-6 space-y-1.5 overflow-y-auto">
+        <nav class="flex-1 px-4 py-6 space-y-1.5 overflow-y-auto">
           <a
             routerLink="/storefront"
             routerLinkActive="!bg-primary/10 !text-primary !font-extrabold"
@@ -102,9 +102,7 @@
           </a>
 
           <div *ngIf="stateService.isAdmin()" class="pt-4 pb-2">
-            <span
-              class="px-4 text-xs font-bold text-slate-400 uppercase tracking-wider"
-            >
+            <span class="px-4 text-xs font-bold text-slate-400 uppercase tracking-wider">
               {{ 'nav.admin_section' | translate }}
             </span>
           </div>
@@ -220,7 +218,7 @@
           </a>
         </nav>
 
-            <div
+        <div
           class="px-5 py-4 border-t border-slate-100 dark:border-slate-800/60 bg-slate-50/30 dark:bg-slate-900/10"
         >
           <app-theme-switcher />
@@ -231,7 +229,7 @@
 
   <app-header></app-header>
 
-  <div class="lg:pl-72 min-h-screen pt-16 sm:pt-20 transition-all duration-300">
+  <div class="lg:pl-72 min-h-screen pt-4 transition-all duration-300">
     <router-outlet></router-outlet>
   </div>
 }
