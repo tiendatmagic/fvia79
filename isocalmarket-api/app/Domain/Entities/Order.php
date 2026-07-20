@@ -9,7 +9,6 @@ class Order
     private string $orderCode;
     private float $totalPrice;
     private string $status; // pending, paid, cancelled
-    /** @var OrderItem[] */
     private array $items;
     private ?\DateTime $createdAt;
     private ?string $userEmail;
@@ -59,9 +58,6 @@ class Order
         return $this->status;
     }
 
-    /**
-     * @return OrderItem[]
-     */
     public function getItems(): array
     {
         return $this->items;

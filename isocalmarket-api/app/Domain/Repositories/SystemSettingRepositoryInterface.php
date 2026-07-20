@@ -10,8 +10,5 @@ interface SystemSettingRepositoryInterface
     
     public function save(SystemSetting $setting): SystemSetting;
     
-    /**
-     * @return SystemSetting[]
-     */
     public function findAll(): array;
 }

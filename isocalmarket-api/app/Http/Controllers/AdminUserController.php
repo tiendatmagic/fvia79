@@ -355,4 +355,3 @@ class AdminUserController extends Controller
         }
     }
 }
-

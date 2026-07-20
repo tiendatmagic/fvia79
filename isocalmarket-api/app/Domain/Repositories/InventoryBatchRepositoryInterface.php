@@ -6,11 +6,6 @@ use App\Domain\Entities\InventoryBatch;
 
 interface InventoryBatchRepositoryInterface
 {
-    /**
-     * @param string $productId
-     * @param bool $lock
-     * @return InventoryBatch[]
-     */
     public function findActiveBatchesByProductId(string $productId, bool $lock = false): array;
 
     public function countAvailableByProductId(string $productId): int;

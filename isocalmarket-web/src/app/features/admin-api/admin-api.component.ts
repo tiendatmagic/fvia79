@@ -27,7 +27,6 @@ import { RouterModule } from '@angular/router';
 export class AdminApiComponent {
   public readonly state = inject(StateService);
   
-  // Tabs for endpoints containing body payloads (Import Inventory)
   public readonly importInventoryTab = signal<'bash' | 'cmd'>('bash');
   public readonly showApiKey = signal<boolean>(false);
 
@@ -85,7 +84,6 @@ export class AdminApiComponent {
     this.copyToClipboard(text, 'đường dẫn Get B2B Orders');
   }
 
-  // API 3: Import Inventory
   public copyImportInventoryCurl() {
     const key = this.apiKey() || 'API_KEY_CUA_BAN';
     const text = `curl -X POST "${this.siteUrl()}/api/v1/admin/b2b/products/PRODUCT_UUID/inventory" -H "Content-Type: application/json" -H "X-API-KEY: ${key}" -d '{"batch_name": "Lô hàng mới", "content": "tai_khoan_1\\ntai_khoan_2"}'`;

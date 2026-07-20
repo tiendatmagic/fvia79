@@ -1461,5 +1461,13 @@
       2. **isocalmarket-api (Backend Laravel):** Quét an toàn trong thư mục `app/` để xóa comment dòng đơn `//` hiển nhiên. Không xử lý inline comments ở đuôi dòng và không xóa các dòng bắt đầu bằng `#[` (PHP8 Attributes) để tránh lỗi cú pháp.
       3. **Xác minh:** Biên dịch frontend Angular thành công 100% và chạy test backend thành công `passed 18/18 tests` (56 assertions).
 
+  - **[HOÀN THÀNH] QUÉT VÀ DỌN DẸP COMMENT RÁC SÂU TOÀN DỰ ÁN**:
+    - **Yêu cầu:** Tiếp tục rà soát sâu và dọn dẹp các comment không cần thiết/rác còn sót lại trong toàn bộ mã nguồn của dự án (cả Frontend và Backend).
+    - **Thực hiện:**
+      1. Viết và chạy script PHP `clean_comments.php` quét đệ quy các thư mục `isocalmarket-web/src/app` và `isocalmarket-api/app`.
+      2. Loại bỏ các PHPDoc/JSDoc thừa, các comment dòng đơn hiển nhiên trong 10 tệp nguồn (như `Order.php`, các `Repository Interfaces`, `User.php`, `admin-api.component.ts`, `custom-date-time-range.component.ts`).
+      3. Rà soát an toàn qua `git diff` và chạy thử nghiệm.
+      4. **Xác minh:** Biên dịch frontend Angular thành công 100% (`npm run build`) và chạy test suite Laravel backend thành công 100% (`passed 18/18 tests`).
+
 
 

@@ -511,7 +511,6 @@ export class CustomDateTimeRangeComponent implements ControlValueAccessor, After
     this.apply();
   }
 
-  
   public isToday(date: Date): boolean {
     const today = new Date();
     return date.getDate() === today.getDate() &&
