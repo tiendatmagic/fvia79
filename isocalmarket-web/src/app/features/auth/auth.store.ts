@@ -34,6 +34,7 @@ export class AuthStore {
   public readonly isAdmin = computed(() => this.currentUser()?.role === 'admin');
 
   private checkMeObservable$: Observable<any> | null = null;
+  private lastCheckMeTime = 0;
 
   public readonly loginError = signal<string>('');
   public readonly registerError = signal<string>('');
@@ -133,6 +134,11 @@ export class AuthStore {
       return of(null);
     }
 
+    const now = Date.now();
+    if (force && (now - this.lastCheckMeTime < 5000)) {
+      return of(this.currentUser());
+    }
+
     if (this.checkMeObservable$ && !force) {
       return this.checkMeObservable$;
     }
@@ -141,6 +147,7 @@ export class AuthStore {
       map((res) => res?.user || null),
       tap((user) => {
         this.currentUser.set(user);
+        this.lastCheckMeTime = Date.now();
       }),
       catchError(() => {
         this.currentUser.set(null);

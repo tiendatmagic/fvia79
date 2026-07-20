@@ -90,6 +90,7 @@ export class DepositHistoryComponent implements OnInit {
   ];
 
   ngOnInit() {
+    this.state.authStore.checkMe(true).subscribe();
     this.fetchPage(1);
     this.state.depositStore.fetchRate().subscribe();
   }

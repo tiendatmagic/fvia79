@@ -45,6 +45,7 @@ export class DepositComponent implements OnInit {
   public readonly isSubmitting = signal(false);
 
   ngOnInit() {
+    this.state.authStore.checkMe(true).subscribe();
     this.state.depositStore.fetchRate().subscribe({
       next: () => this.onAmountChange(),
       error: () => this.state.showToast('Không thể kết nối lấy tỷ giá từ CoinGecko!', 'error')
