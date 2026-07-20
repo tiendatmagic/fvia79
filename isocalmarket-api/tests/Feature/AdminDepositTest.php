@@ -105,7 +105,7 @@ class AdminDepositTest extends TestCase
 
         $response = $this->withHeaders($this->getHeadersForUser($this->adminUser))
             ->postJson("/api/v1/admin/deposits/{$deposit->id}/approve", [
-                'tx_hash' => '0xmockedtxhash123'
+                'tx_hash' => '2172026'
             ]);
 
         $response->assertStatus(200);
@@ -113,7 +113,7 @@ class AdminDepositTest extends TestCase
         $this->assertDatabaseHas('deposits', [
             'id' => $deposit->id,
             'status' => 'completed',
-            'tx_hash' => '0xmockedtxhash123'
+            'tx_hash' => 'manual_approved_by_admin_2172026'
         ]);
 
         $this->assertDatabaseHas('users', [

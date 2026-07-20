@@ -609,9 +609,14 @@ class DepositService
                 throw new \RuntimeException("Only pending or expired deposit invoices can be approved.");
             }
 
-            $finalTxHash = trim($txHash);
-            if ($finalTxHash === '') {
+            $manualReference = trim($txHash);
+            if ($manualReference === '') {
                 throw new \RuntimeException("A transaction ID/hash is required for manual approval.");
+            }
+
+            $finalTxHash = 'manual_approved_by_admin_' . $manualReference;
+            if (mb_strlen($finalTxHash) > 255) {
+                throw new \RuntimeException("Transaction ID/hash is too long.");
             }
 
             if ($this->depositRepository->isTxHashUsed($finalTxHash)) {
