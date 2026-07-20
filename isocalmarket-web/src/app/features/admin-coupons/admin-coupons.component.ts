@@ -67,11 +67,11 @@ export class AdminCouponsComponent implements OnInit {
   public readonly limit = 10;
 
   public readonly statusOptions = [
+    { label: 'Tất cả trạng thái', value: 'all' },
     { label: 'Đang diễn ra', value: 'active' },
     { label: 'Sắp diễn ra', value: 'upcoming' },
     { label: 'Hết hạn / Hết lượt', value: 'expired' },
-    { label: 'Đã bị xóa', value: 'deleted' },
-    { label: 'Tất cả trạng thái', value: 'all' }
+    { label: 'Đã bị xóa', value: 'deleted' }
   ];
 
   public readonly typeOptions = [

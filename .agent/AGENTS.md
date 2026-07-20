@@ -1552,13 +1552,15 @@
       1. Chuyển Filter Bar sang Grid 3 cột đẹp mắt: `Trạng thái`, `Loại giảm giá`, `Tìm kiếm mã giảm giá`.
       2. Bật `sortable: true` trên các tiêu đề cột của bảng `app-table` (`code`, `type`, `value`, `min_spend`, `used_count`, `start_date`), cho phép nhấp trực tiếp vào tiêu đề cột để sắp xếp tăng/giảm dần theo chuẩn các bảng quản trị khác trong hệ thống.
     - **Xác minh:** Biên dịch `npm run build` thành công `25.758s` 100%.
-  - **[CHUẨN HÓA LAYOUT TRANG CHI TIẾT ĐƠN HÀNG]**:
-    - **Vấn đề**: Trang chi tiết đơn hàng ([order-detail.component.html](file:///d:/git/isocalmarket/isocalmarket-web/src/app/features/orders/order-detail/order-detail.component.html)) sử dụng `max-w-3xl` hẹp và padding không đồng bộ với các trang quản lý khác trong hệ thống (`max-w-[1530px]`). Nút Quay lại trùng màu trắng với Card nên bị cảm giác dính liền vào đáy Card.
+  - **[CHUẨN HÓA LAYOUT TRANG CHI TIẾT ĐƠN HÀNG VÀ BỘ LỌC TRẠNG THÁI]**:
+    - **Vấn đề**:
+      1. Trang chi tiết đơn hàng ([order-detail.component.html](file:///d:/git/isocalmarket/isocalmarket-web/src/app/features/orders/order-detail/order-detail.component.html)) sử dụng `max-w-3xl` hẹp và padding không đồng bộ với các trang quản lý khác (`max-w-[1530px]`).
+      2. Tùy chọn "Tất cả trạng thái" trong bộ lọc của trang Quản lý mã giảm giá ([admin-coupons.component.ts](file:///d:/git/isocalmarket/isocalmarket-web/src/app/features/admin-coupons/admin-coupons.component.ts)) bị nằm ở cuối danh sách thay vì đưa lên vị trí đầu tiên.
     - **Cải tiến**:
-      1. Đã nâng cấp container chính lên `max-w-[1530px] mx-auto w-full px-4 sm:px-6 py-6 space-y-6` khớp 100% với tài liệu [design.md](file:///d:/git/isocalmarket/.agent/design.md) và các trang quản trị (`products`, `orders`, `inventory`, `admin-coupons`).
+      1. Đã nâng cấp container chính trang chi tiết đơn hàng lên `max-w-[1530px] mx-auto w-full px-4 sm:px-6 py-6 space-y-6` khớp 100% với tài liệu [design.md](file:///d:/git/isocalmarket/.agent/design.md) và các trang quản trị.
       2. Tích hợp `app-page-header` với tiêu đề, mô tả và nút Quay lại tiêu chuẩn trên Header.
-      3. Tổ chức layout 2 cột linh hoạt (`grid grid-cols-1 lg:grid-cols-2 gap-6`) cho 2 khối "Thông tin đơn hàng" và "Sản phẩm đã mua", khối "Tài nguyên đã phân phối" hiển thị Full-width phía dưới cực kỳ cân đối.
-      4. Đổi nền nút Quay lại phía dưới sang `bg-slate-100 dark:bg-slate-800` tách biệt hoàn toàn về thị giác so với khối Card màu trắng phía trên.
+      3. Bố trí layout 2 cột linh hoạt (`grid grid-cols-1 lg:grid-cols-2 gap-6`) cho 2 khối "Thông tin đơn hàng" và "Sản phẩm đã mua", khối "Tài nguyên đã phân phối" hiển thị Full-width phía dưới.
+      4. Đã chuyển tùy chọn `{ label: 'Tất cả trạng thái', value: 'all' }` lên **vị trí đầu tiên (đầu mảng)** trong `statusOptions` tại `admin-coupons.component.ts` đồng bộ chuẩn 100% với các trang quản lý khác.
     - **Xác minh**: Biên dịch Angular `npm run build` thành công 100%.
 
 
