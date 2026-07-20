@@ -1468,6 +1468,14 @@
       2. Loại bỏ các PHPDoc/JSDoc thừa, các comment dòng đơn hiển nhiên trong 10 tệp nguồn (như `Order.php`, các `Repository Interfaces`, `User.php`, `admin-api.component.ts`, `custom-date-time-range.component.ts`).
       3. Rà soát an toàn qua `git diff` và chạy thử nghiệm.
       4. **Xác minh:** Biên dịch frontend Angular thành công 100% (`npm run build`) và chạy test suite Laravel backend thành công 100% (`passed 18/18 tests`).
-
-
-
+  - **[KHẮC PHỤC LỖI] Khôi phục dữ liệu Database trống**:
+    - **Nhận diện lỗi**: Người dùng phát hiện cơ sở dữ liệu bị trống hoàn toàn (0 bản ghi ở tất cả các bảng: users, products, orders, categories).
+    - **Nguyên nhân**: Do sau đợt cập nhật migrations cấu trúc UUIDv7 gần đây, database MySQL local bị reset (`migrate:fresh`) nhưng chưa chạy lại seeder dữ liệu mẫu hoặc do database bị khởi tạo lại ở local.
+    - **Khắc phục**: Đã chạy lại lệnh `php artisan db:seed` thành công ở backend Laravel để nạp lại toàn bộ dữ liệu mẫu (11 Users, 51 Products, 50 Orders, 12 Categories). Các tài khoản admin/khách hàng mẫu hiện đã sẵn sàng để đăng nhập và thử nghiệm bình thường.
+  - **[TỐI ƯU SEEDER] Tinh giản tài khoản mẫu trong DatabaseSeeder**:
+    - **Yêu cầu**: Sửa đổi `DatabaseSeeder.php` để chỉ tạo duy nhất 1 tài khoản Admin (`admin`) và 1 tài khoản Khách hàng (`customer1`), thay vì tạo 10 khách hàng như trước.
+    - **Giải pháp & Triển khai**:
+      1. Cập nhật [DatabaseSeeder.php](file:///d:/git/isocalmarket/isocalmarket-api/database/seeders/DatabaseSeeder.php) loại bỏ mảng lặp qua 10 khách hàng, chỉ khởi tạo duy nhất `customer1`.
+      2. Đồng bộ các logic tạo đơn hàng mẫu sau đó liên kết trực tiếp vào duy nhất `customer1` (do mảng `$customers` chỉ chứa 1 phần tử).
+      3. Thực hiện chạy lại `php artisan migrate:fresh --seed` để áp dụng dữ liệu mẫu sạch và tối giản.
+    - **Xác minh**: Cơ sở dữ liệu chỉ còn đúng 2 User là `admin` và `customer1`. Toàn bộ 50 đơn hàng giả lập hoạt động bình thường và được gán chính xác cho `customer1`.

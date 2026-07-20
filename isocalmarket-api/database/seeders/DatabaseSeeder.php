@@ -29,30 +29,15 @@ class DatabaseSeeder extends Seeder
         ]);
  
         $customers = [];
-        $customerNames = [
-            'Nguyễn Văn A',
-            'Trần Thị B',
-            'Lê Văn C',
-            'Phạm Thị D',
-            'Hoàng Văn E',
-            'Đỗ Minh F',
-            'Vũ Thị G',
-            'Phan Thanh H',
-            'Bùi Văn I',
-            'Ngô Thị K'
-        ];
- 
-        foreach ($customerNames as $index => $name) {
-            $email = 'customer' . ($index + 1) . '@isocalmarket.com';
-            $customers[] = UserModel::create([
-                'username' => 'customer' . ($index + 1),
-                'name'     => $name,
-                'email'    => $email,
-                'password' => Hash::make('password'),
-                'role'     => 'customer',
-                'phone'    => '098' . rand(1000000, 9999999),
-            ]);
-        }
+        $customers[] = UserModel::create([
+            'username' => 'customer1',
+            'name'     => 'Nguyễn Văn A',
+            'email'    => 'customer1@isocalmarket.com',
+            'password' => Hash::make('password'),
+            'role'     => 'customer',
+            'phone'    => '098' . rand(1000000, 9999999),
+        ]);
+
 
         // 2. Tạo 12 Danh mục MMO mẫu thực tế theo yêu cầu
         $categoriesData = [
