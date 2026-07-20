@@ -1633,4 +1633,11 @@
       3. Cập nhật template [app.html](file:///d:/git/isocalmarket/isocalmarket-web/src/app/app.html) gọi đúng định dạng Signal `hasBeenOpened()` và `activeMenuState()`.
     - **Xác minh**: Biên dịch Angular thành công không lỗi.
 
-
+  - **[SỬA LỖI GIẬT CON TRỎ VÀ MẤT DẤU CHẤM TRÊN Ô NHẬP SỐ]**:
+    - **Vấn đề**: Người dùng gặp hiện tượng rất khó chịu khi nhập số lượng USDT muốn nạp. Khi nhập số thập phân (ví dụ 3.9) rồi nhấn Backspace để xóa số 9, con trỏ (cursor) tự động nhảy về trước số 3 thay vì ở sau dấu chấm, dẫn đến dễ bị gõ sai số.
+    - **Nguyên nhân**: Khi người dùng xóa ký tự, giá trị chuỗi thô của input (ví dụ `"3."`) thay đổi. ControlValueAccessor gửi giá trị này cho Angular Forms qua `onChange`. Angular parse `"3."` thành số `3`. Do model thay đổi, Angular gọi `writeValue(3)` cập nhật ngược lại component. Việc gán lại `[value]="val()"` bằng `3` (do `val.set(3)`) khiến trình duyệt ghi đè giá trị `"3."` thành `"3"`, đồng thời reset vị trí con trỏ của input.
+    - **Giải pháp & Triển khai**: Cập nhật [custom-input.component.ts](file:///d:/git/isocalmarket/isocalmarket-web/src/app/shared/components/custom-input/custom-input.component.ts):
+      1. Tách biệt giữa giá trị lưu trữ hiển thị (chuỗi thô trong `val` signal) và giá trị gửi ra ngoài (đã parse sang số nếu `type === 'number'`).
+      2. Thêm phương thức hỗ trợ `areValuesEquivalent` để so sánh độ tương đương ngữ nghĩa (ví dụ `3` tương đương `"3."` và `"3.0"`).
+      3. Trong `writeValue`, nếu giá trị mới nhận tương đương với giá trị thô hiện tại trong input DOM, bỏ qua việc cập nhật signal `val` để tránh làm trình duyệt vẽ lại input và reset cursor.
+    - **Xác minh**: Chạy lệnh build `npm run build` thành công 100% không phát sinh lỗi biên dịch.

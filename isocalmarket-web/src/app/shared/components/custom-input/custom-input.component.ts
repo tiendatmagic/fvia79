@@ -1,4 +1,4 @@
-import { Component, Input, Output, EventEmitter, forwardRef, signal } from '@angular/core';
+import { Component, Input, Output, EventEmitter, forwardRef, ElementRef, inject, AfterViewInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule, ControlValueAccessor, NG_VALUE_ACCESSOR } from '@angular/forms';
 
@@ -16,8 +16,9 @@ import { FormsModule, ControlValueAccessor, NG_VALUE_ACCESSOR } from '@angular/f
     }
   ]
 })
-export class CustomInputComponent implements ControlValueAccessor {
-  public readonly val = signal<any>('');
+export class CustomInputComponent implements ControlValueAccessor, AfterViewInit {
+  private readonly elementRef = inject(ElementRef);
+  private innerValue: any = '';
 
   @Input() type: 'text' | 'number' | 'email' | 'password' | 'textarea' | 'date' = 'text';
   @Input() placeholder: string = '';
@@ -34,21 +35,69 @@ export class CustomInputComponent implements ControlValueAccessor {
   private onChange: (value: any) => void = () => {};
   private onTouched: () => void = () => {};
 
-  public onInput(event: Event): void {
-    if (this.disabled) return;
-    const value = (event.target as HTMLInputElement | HTMLTextAreaElement).value;
-    this.updateValue(value);
+  public ngAfterViewInit(): void {
+    const inputEl = this.elementRef.nativeElement.querySelector('input, textarea') as HTMLInputElement | HTMLTextAreaElement;
+    if (inputEl) {
+      inputEl.value = this.innerValue;
+    }
   }
 
-  private updateValue(value: any): void {
-    this.val.set(value);
-    this.onChange(value);
+  public onInput(event: Event): void {
+    if (this.disabled) return;
+    const rawValue = (event.target as HTMLInputElement | HTMLTextAreaElement).value;
+    
+    let modelValue: any = rawValue;
+    if (this.type === 'number') {
+      if (rawValue === '') {
+        modelValue = null;
+      } else {
+        const parsed = Number(rawValue);
+        modelValue = isNaN(parsed) ? rawValue : parsed;
+      }
+    }
+    
+    this.updateValue(rawValue, modelValue);
+  }
+
+  private updateValue(rawValue: any, modelValue: any): void {
+    this.innerValue = rawValue;
+    this.onChange(modelValue);
     this.onTouched();
-    this.valueChange.emit(value);
+    this.valueChange.emit(modelValue);
   }
 
   public writeValue(value: any): void {
-    this.val.set(value === null || value === undefined ? '' : value);
+    const normalizedValue = value === null || value === undefined ? '' : value;
+    
+    const inputEl = this.elementRef.nativeElement.querySelector('input, textarea') as HTMLInputElement | HTMLTextAreaElement;
+    if (inputEl) {
+      const currentValue = inputEl.value;
+      if (this.areValuesEquivalent(currentValue, normalizedValue)) {
+        this.innerValue = normalizedValue;
+        return;
+      }
+      inputEl.value = normalizedValue;
+    }
+    
+    this.innerValue = normalizedValue;
+  }
+
+  private areValuesEquivalent(val1: any, val2: any): boolean {
+    if (val1 === val2) return true;
+    
+    const isEmpty1 = val1 === '' || val1 === null || val1 === undefined;
+    const isEmpty2 = val2 === '' || val2 === null || val2 === undefined;
+    if (isEmpty1 && isEmpty2) return true;
+    
+    if (this.type === 'number') {
+      const n1 = val1 !== '' ? Number(val1) : NaN;
+      const n2 = val2 !== '' ? Number(val2) : NaN;
+      if (!isNaN(n1) && !isNaN(n2) && n1 === n2) {
+        return true;
+      }
+    }
+    
+    return false;
   }
 
   public registerOnChange(fn: any): void {
@@ -61,5 +110,9 @@ export class CustomInputComponent implements ControlValueAccessor {
 
   public setDisabledState(isDisabled: boolean): void {
     this.disabled = isDisabled;
+    const inputEl = this.elementRef.nativeElement.querySelector('input, textarea') as HTMLInputElement | HTMLTextAreaElement;
+    if (inputEl) {
+      inputEl.disabled = isDisabled;
+    }
   }
 }

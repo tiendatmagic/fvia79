@@ -5,7 +5,6 @@
       [placeholder]="placeholder"
       [disabled]="disabled"
       [rows]="rows"
-      [value]="val()"
       (input)="onInput($event)"
       class="form-textarea {{ customClass }}"
     ></textarea>
@@ -18,7 +17,6 @@
       [min]="min"
       [max]="max"
       [step]="step"
-      [value]="val()"
       (input)="onInput($event)"
       class="form-input {{ customClass }}"
     />
