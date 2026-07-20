@@ -53,12 +53,14 @@ export class EditInventoryModalComponent implements OnInit {
 
   ngOnInit() {
     if (this.modalData) {
-      this.itemId = this.modalData.id;
-      this.editProductId = this.modalData.product_id;
-      this.batchName = this.modalData.batch_name || '';
-      this.keysPool = this.modalData.keys_pool || '';
-      this.status = this.modalData.status || 'active';
-      this.lastUpdatedAt = this.modalData.last_updated_at || '';
+      const item = this.modalData.item ?? this.modalData;
+
+      this.itemId = String(item.id ?? '');
+      this.editProductId = String(item.product_id ?? '');
+      this.batchName = item.batch_name || '';
+      this.keysPool = item.keys_pool || '';
+      this.status = item.status || 'active';
+      this.lastUpdatedAt = item.updated_at || item.last_updated_at || '';
       this.productOptions = this.modalData.productOptions || [];
     }
   }
