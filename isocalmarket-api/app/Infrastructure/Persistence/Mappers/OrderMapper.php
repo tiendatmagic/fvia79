@@ -36,7 +36,10 @@ class OrderMapper
             $model->status,
             $items,
             new \DateTime($model->created_at->toDateTimeString()),
-            $userEmail
+            $userEmail,
+            $model->coupon_code,
+            (float) $model->discount_amount,
+            $model->coupon_id
         );
     }
 
@@ -51,6 +54,9 @@ class OrderMapper
         $model->order_code = $entity->getOrderCode();
         $model->total_price = $entity->getTotalPrice();
         $model->status = $entity->getStatus();
+        $model->coupon_code = $entity->getCouponCode();
+        $model->discount_amount = $entity->getDiscountAmount();
+        $model->coupon_id = $entity->getCouponId();
 
         return $model;
     }

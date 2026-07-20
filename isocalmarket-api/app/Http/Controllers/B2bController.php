@@ -89,27 +89,48 @@ class B2bController extends Controller
     public function buy(Request $request)
     {
         try {
-            $productId = $request->input('product_id');
-            $quantity = (int)$request->input('quantity', 1);
-
-            if (!$productId) {
-                return response()->json(['message' => 'The product_id field is required.'], 400);
-            }
-
-            if ($quantity <= 0) {
-                return response()->json(['message' => 'Quantity must be greater than 0.'], 400);
-            }
-
             $userId = Auth::id();
+            $couponCode = $request->input('coupon_code');
 
-            $itemsInput = [
-                [
+            $itemsInput = [];
+
+            if ($request->has('items') && is_array($request->input('items'))) {
+                $items = $request->input('items');
+                if (count($items) === 0) {
+                    return response()->json(['message' => 'The items array must contain at least one item.'], 400);
+                }
+                foreach ($items as $index => $item) {
+                    if (empty($item['product_id'])) {
+                        return response()->json(['message' => "The items.{$index}.product_id field is required."], 400);
+                    }
+                    $qty = isset($item['quantity']) ? (int)$item['quantity'] : 1;
+                    if ($qty <= 0) {
+                        return response()->json(['message' => "The items.{$index}.quantity must be greater than 0."], 400);
+                    }
+                    $itemsInput[] = [
+                        'product_id' => $item['product_id'],
+                        'quantity' => $qty
+                    ];
+                }
+            } else {
+                $productId = $request->input('product_id');
+                $quantity = (int)$request->input('quantity', 1);
+
+                if (!$productId) {
+                    return response()->json(['message' => 'The product_id field is required (or provide an items array).'], 400);
+                }
+
+                if ($quantity <= 0) {
+                    return response()->json(['message' => 'Quantity must be greater than 0.'], 400);
+                }
+
+                $itemsInput[] = [
                     'product_id' => $productId,
                     'quantity' => $quantity
-                ]
-            ];
+                ];
+            }
 
-            $order = $this->orderService->createOrder($userId, $itemsInput);
+            $order = $this->orderService->createOrder($userId, $itemsInput, $couponCode);
 
             $accounts = [];
             foreach ($order->getItems() as $item) {
@@ -123,6 +144,7 @@ class B2bController extends Controller
                 'success' => true,
                 'order_code' => $order->getOrderCode(),
                 'total_price' => (float)$order->getTotalPrice(),
+                'discount_amount' => (float)$order->getDiscountAmount(),
                 'accounts' => $accounts
             ]);
         } catch (\Exception $e) {
@@ -194,6 +216,7 @@ class B2bController extends Controller
                 'success' => true,
                 'order_code' => $orderModel->order_code,
                 'total_price' => (float)$orderModel->total_price,
+                'discount_amount' => (float)$orderModel->discount_amount,
                 'status' => $orderModel->status,
                 'created_at' => $orderModel->created_at->toIso8601String(),
                 'accounts' => $accounts

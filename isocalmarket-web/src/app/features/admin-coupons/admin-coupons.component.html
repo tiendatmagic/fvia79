@@ -1,0 +1,139 @@
+<div class="max-w-[1530px] mx-auto w-full p-4 sm:p-6 space-y-6">
+  <app-page-header
+    title="Quản Lý Mã Giảm Giá"
+    description="Quản lý danh sách các chương trình khuyến mãi, mã giảm giá áp dụng cho khách hàng mua tài nguyên MMO."
+  >
+    <ng-container actions>
+      <button
+        (click)="fetchCoupons()"
+        class="px-4 py-2.5 text-sm font-extrabold text-slate-600 dark:text-slate-400 hover:text-primary bg-white dark:bg-slate-950 border border-slate-200/60 dark:border-slate-800/80 rounded-xl hover:bg-slate-50 dark:hover:bg-slate-900 transition-all cursor-pointer flex items-center gap-1.5"
+      >
+        <app-icon name="sync" class="w-4 h-4" />
+        Tải lại
+      </button>
+      <button
+        app-button
+        (click)="openCreateModal()"
+        variant="primary"
+        class="flex items-center gap-2 py-2.5 px-4 rounded-xl bg-gradient-to-r from-[var(--color-primary)] to-[var(--color-secondary)] text-white font-extrabold shadow-md shadow-[var(--color-primary)]/15 active:scale-95 transition-all text-sm cursor-pointer"
+      >
+        <app-icon name="plus" class="w-5 h-5" />
+        Thêm Mã Giảm Giá
+      </button>
+    </ng-container>
+  </app-page-header>
+
+  <div
+    class="bg-slate-50 dark:bg-slate-900/40 border border-slate-200/30 dark:border-slate-800/30 rounded-2xl p-4 sm:p-5"
+  >
+    <div class="form-field max-w-md">
+      <label>Tìm kiếm</label>
+      <app-custom-search-input
+        [placeholder]="'Tìm kiếm mã giảm giá...'"
+        [(ngModel)]="searchQuery"
+        name="searchQuery"
+        (valueChange)="onSearch($event)"
+        [debounce]="500"
+        containerClass="w-full"
+      />
+    </div>
+  </div>
+
+  <div app-card class="overflow-hidden !p-0">
+    <app-table
+      [columns]="columns"
+      [data]="couponStore.coupons()"
+      [loading]="couponStore.loading()"
+      emptyText="Chưa có mã giảm giá nào. Nhấp vào nút 'Thêm Mã Giảm Giá' để bắt đầu!"
+    >
+      <ng-template appTableCell="code" let-row="row">
+        <span
+          class="font-mono font-black text-xs uppercase border border-dashed border-[var(--color-primary)]/40 px-2.5 py-1 rounded bg-[var(--color-primary)]/5 text-[var(--color-primary)] select-all tracking-wider"
+          [appTooltip]="'Nhấp đúp để sao chép: ' + row.code"
+        >
+          {{ row.code }}
+        </span>
+      </ng-template>
+
+      <ng-template appTableCell="type" let-row="row">
+        <app-badge
+          [variant]="row.type === 'percentage' ? 'success' : 'info'"
+          size="md"
+          rounded="md"
+        >
+          {{ row.type === 'percentage' ? 'Phần trăm' : 'Cố định' }}
+        </app-badge>
+      </ng-template>
+
+      <ng-template appTableCell="value" let-row="row">
+        <span class="font-extrabold text-slate-700 dark:text-slate-200 text-sm">
+          @if (row.type === 'percentage') {
+            {{ row.value }}%
+          } @else {
+            {{ row.value | number }} VND
+          }
+        </span>
+      </ng-template>
+
+      <ng-template appTableCell="min_spend" let-row="row">
+        <span class="text-slate-600 dark:text-slate-300 font-semibold text-xs">
+          {{ row.min_spend | number }} VND
+        </span>
+      </ng-template>
+
+      <ng-template appTableCell="usage" let-row="row">
+        <div class="flex flex-col items-center justify-center gap-0.5">
+          <span class="text-xs font-bold text-slate-700 dark:text-slate-300">
+            {{ row.used_count }} / {{ row.usage_limit === 0 ? '∞' : row.usage_limit }}
+          </span>
+          <span class="text-[10px] text-slate-400 dark:text-slate-500 font-semibold">
+            đã dùng
+          </span>
+        </div>
+      </ng-template>
+
+      <ng-template appTableCell="date_range" let-row="row">
+        <div class="flex flex-col gap-0.5 text-xs text-slate-600 dark:text-slate-400">
+          <div class="flex items-center gap-1">
+            <span class="text-[10px] bg-emerald-50 dark:bg-emerald-950/30 text-emerald-600 dark:text-emerald-400 px-1 py-0.5 rounded font-black">BĐ</span>
+            <span class="font-semibold">{{ row.start_date | date: 'dd/MM/yyyy' }}</span>
+          </div>
+          <div class="flex items-center gap-1">
+            <span class="text-[10px] bg-rose-50 dark:bg-rose-950/30 text-rose-600 dark:text-rose-400 px-1 py-0.5 rounded font-black">KT</span>
+            <span class="font-semibold">{{ row.end_date | date: 'dd/MM/yyyy' }}</span>
+          </div>
+        </div>
+      </ng-template>
+
+      <ng-template appTableCell="actions" let-row="row">
+        <div class="flex items-center justify-end gap-2 whitespace-nowrap">
+          <button
+            (click)="openEditModal(row)"
+            class="text-xs font-bold px-3 py-1.5 rounded-lg border border-[var(--color-primary)]/20 hover:bg-[var(--color-primary)]/10 text-[var(--color-primary)] bg-[var(--color-primary)]/5 dark:bg-[var(--color-primary)]/10 dark:border-[var(--color-primary)]/30 dark:hover:bg-[var(--color-primary)]/20 hover:scale-105 active:scale-95 transition-all cursor-pointer flex items-center gap-1 shrink-0"
+            [appTooltip]="'Chỉnh sửa'"
+          >
+            <app-icon name="edit" class="w-3.5 h-3.5" />
+            <span>Sửa</span>
+          </button>
+          <button
+            (click)="confirmDelete(row)"
+            class="text-xs font-bold px-3 py-1.5 rounded-lg border border-rose-500/20 dark:border-rose-500/30 hover:bg-rose-100 dark:hover:bg-rose-950/40 text-rose-600 dark:text-rose-400 bg-rose-50 dark:bg-rose-950/20 hover:scale-105 active:scale-95 transition-all cursor-pointer flex items-center gap-1 shrink-0"
+            [appTooltip]="'Xóa'"
+          >
+            <app-icon name="trash" class="w-3.5 h-3.5" />
+            <span>Xóa</span>
+          </button>
+        </div>
+      </ng-template>
+    </app-table>
+
+    <app-pagination
+      [currentPage]="couponStore.currentPage()"
+      [totalPages]="couponStore.lastPage()"
+      [totalItems]="couponStore.totalCoupons()"
+      [itemsPerPage]="limit"
+      [itemName]="'mã giảm giá'"
+      (pageChange)="fetchPage($event)"
+    />
+  </div>
+</div>

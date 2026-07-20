@@ -1,0 +1,101 @@
+<div class="space-y-5 pb-2">
+  <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+    <div class="form-field">
+      <label class="text-xs font-black text-slate-400 dark:text-slate-500 uppercase tracking-wider block mb-2">Mã giảm giá <span class="text-rose-500">*</span></label>
+      <app-custom-input
+        [(ngModel)]="code"
+        name="code"
+        type="text"
+        [disabled]="isEditMode"
+        customClass="uppercase font-mono tracking-wider font-extrabold text-sm"
+        required
+      />
+    </div>
+
+    <div class="form-field">
+      <label class="text-xs font-black text-slate-400 dark:text-slate-500 uppercase tracking-wider block mb-2">Loại giảm giá <span class="text-rose-500">*</span></label>
+      <app-custom-select
+        [options]="typeOptions"
+        [(ngModel)]="type"
+        name="type"
+      />
+    </div>
+  </div>
+
+  <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+    <div class="form-field">
+      <label class="text-xs font-black text-slate-400 dark:text-slate-500 uppercase tracking-wider block mb-2">Giá trị giảm <span class="text-rose-500">*</span></label>
+      <app-custom-input
+        [(ngModel)]="value"
+        name="value"
+        type="number"
+        required
+      />
+    </div>
+
+    <div class="form-field">
+      <label class="text-xs font-black text-slate-400 dark:text-slate-500 uppercase tracking-wider block mb-2">Đơn tối thiểu áp dụng (VND) <span class="text-rose-500">*</span></label>
+      <app-custom-input
+        [(ngModel)]="minSpend"
+        name="minSpend"
+        type="number"
+        required
+      />
+    </div>
+  </div>
+
+  <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+    <div class="form-field">
+      <label class="text-xs font-black text-slate-400 dark:text-slate-500 uppercase tracking-wider block mb-2">Ngày bắt đầu <span class="text-rose-500">*</span></label>
+      <app-custom-input
+        [(ngModel)]="startDate"
+        name="startDate"
+        type="date"
+        required
+      />
+    </div>
+
+    <div class="form-field">
+      <label class="text-xs font-black text-slate-400 dark:text-slate-500 uppercase tracking-wider block mb-2">Ngày kết thúc <span class="text-rose-500">*</span></label>
+      <app-custom-input
+        [(ngModel)]="endDate"
+        name="endDate"
+        type="date"
+        required
+      />
+    </div>
+  </div>
+
+  <div class="form-field">
+    <label class="text-xs font-black text-slate-400 dark:text-slate-500 uppercase tracking-wider block mb-2">Giới hạn sử dụng <span class="text-rose-500">*</span></label>
+    <app-custom-input
+      [(ngModel)]="usageLimit"
+      name="usageLimit"
+      type="number"
+      required
+    />
+    <p class="text-[10px] text-slate-400 dark:text-slate-500 font-semibold mt-1">
+      Nhập 0 nếu không giới hạn số lần sử dụng của mã giảm giá này.
+    </p>
+  </div>
+
+  <div class="pt-4 flex items-center justify-end gap-3 shrink-0 border-t border-slate-100 dark:border-slate-800">
+    <button
+      app-button
+      (click)="onClose()"
+      [variant]="'cancel'"
+      class="py-2.5 px-4 rounded-xl text-xs font-bold"
+    >
+      Hủy bỏ
+    </button>
+    <button
+      app-button
+      (click)="onSubmit()"
+      [loading]="isSubmitting()"
+      [variant]="'primary'"
+      class="py-2.5 px-4 rounded-xl bg-gradient-to-r from-[var(--color-primary)] to-[var(--color-secondary)] text-white text-xs font-extrabold active:scale-95 shadow-sm shadow-[var(--color-primary)]/10 cursor-pointer"
+    >
+      Lưu thông tin
+    </button>
+  </div>
+</div>

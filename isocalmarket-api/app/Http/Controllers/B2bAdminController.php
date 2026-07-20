@@ -135,6 +135,8 @@ class B2bAdminController extends Controller
                             'email' => $order->user->email,
                         ],
                         'total_price' => (float)$order->total_price,
+                        'discount_amount' => (float)$order->discount_amount,
+                        'coupon_code' => $order->coupon_code,
                         'status' => $order->status,
                         'created_at' => $order->created_at->toIso8601String(),
                         'accounts_count' => count($accounts)

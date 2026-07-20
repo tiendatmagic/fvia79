@@ -12,6 +12,9 @@ class Order
     private array $items;
     private ?\DateTime $createdAt;
     private ?string $userEmail;
+    private ?string $couponCode;
+    private float $discountAmount;
+    private ?string $couponId;
 
     public function __construct(
         ?string $id,
@@ -21,7 +24,10 @@ class Order
         string $status = 'pending',
         array $items = [],
         ?\DateTime $createdAt = null,
-        ?string $userEmail = null
+        ?string $userEmail = null,
+        ?string $couponCode = null,
+        float $discountAmount = 0.0,
+        ?string $couponId = null
     ) {
         $this->id = $id;
         $this->userId = $userId;
@@ -31,6 +37,9 @@ class Order
         $this->items = $items;
         $this->createdAt = $createdAt;
         $this->userEmail = $userEmail;
+        $this->couponCode = $couponCode;
+        $this->discountAmount = $discountAmount;
+        $this->couponId = $couponId;
     }
 
     public function getId(): ?string
@@ -71,6 +80,21 @@ class Order
     public function getUserEmail(): ?string
     {
         return $this->userEmail;
+    }
+
+    public function getCouponCode(): ?string
+    {
+        return $this->couponCode;
+    }
+
+    public function getDiscountAmount(): float
+    {
+        return $this->discountAmount;
+    }
+
+    public function getCouponId(): ?string
+    {
+        return $this->couponId;
     }
 
     public function isPaid(): bool

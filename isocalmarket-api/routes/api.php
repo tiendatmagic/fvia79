@@ -48,6 +48,7 @@ Route::prefix('v1')->group(function () {
         Route::post('/orders', ['App\Http\Controllers\OrderController', 'store']);
         Route::get('/orders', ['App\Http\Controllers\OrderController', 'index']);
         Route::get('/orders/{id}', ['App\Http\Controllers\OrderController', 'show']);
+        Route::post('/coupons/validate', ['App\Http\Controllers\CouponController', 'validateCoupon']);
 
         // Deposit routes
         Route::get('/deposit/rate', ['App\Http\Controllers\DepositController', 'getRate']);
@@ -70,6 +71,13 @@ Route::prefix('v1')->group(function () {
             Route::post('/admin/maintenance/clear-all', ['App\Http\Controllers\SystemSettingController', 'clearAllCaches']);
             Route::post('/admin/maintenance/clean-tokens', ['App\Http\Controllers\SystemSettingController', 'cleanTokens']);
             Route::post('/admin/maintenance/clean-all-tokens', ['App\Http\Controllers\SystemSettingController', 'cleanAllTokens']);
+
+            // Admin Coupon Management (CRUD)
+            Route::get('/admin/coupons', ['App\Http\Controllers\AdminCouponController', 'index']);
+            Route::post('/admin/coupons', ['App\Http\Controllers\AdminCouponController', 'store']);
+            Route::get('/admin/coupons/{id}', ['App\Http\Controllers\AdminCouponController', 'show']);
+            Route::put('/admin/coupons/{id}', ['App\Http\Controllers\AdminCouponController', 'update']);
+            Route::delete('/admin/coupons/{id}', ['App\Http\Controllers\AdminCouponController', 'destroy']);
 
             // Admin Member Management (CRUD & Balance Adjustment)
             Route::get('/admin/users', ['App\Http\Controllers\AdminUserController', 'index']);

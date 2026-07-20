@@ -89,13 +89,13 @@ export class UserApiComponent {
 
   public copyBuyCurl() {
     const key = this.apiKey() || 'API_KEY_CUA_BAN';
-    const text = `curl -X POST "${this.siteUrl()}/api/v1/b2b/buy" -H "Content-Type: application/json" -H "X-API-KEY: ${key}" -d '{"product_id": "PRODUCT_ID", "quantity": 1}'`;
+    const text = `curl -X POST "${this.siteUrl()}/api/v1/b2b/buy" -H "Content-Type: application/json" -H "X-API-KEY: ${key}" -d '{"product_id": "PRODUCT_ID", "quantity": 1, "coupon_code": "DISCOUNT10"}'`;
     this.copyToClipboard(text, 'mẫu CURL Buy');
   }
 
   public copyBuyWindowsCurl() {
     const key = this.apiKey() || 'API_KEY_CUA_BAN';
-    const text = `curl -X POST "${this.siteUrl()}/api/v1/b2b/buy" -H "Content-Type: application/json" -H "X-API-KEY: ${key}" -d "{\\"product_id\\": \\"PRODUCT_ID\\", \\"quantity\\": 1}"`;
+    const text = `curl -X POST "${this.siteUrl()}/api/v1/b2b/buy" -H "Content-Type: application/json" -H "X-API-KEY: ${key}" -d "{\\"product_id\\": \\"PRODUCT_ID\\", \\"quantity\\": 1, \\"coupon_code\\": \\"DISCOUNT10\\"}"`;
     this.copyToClipboard(text, 'mẫu CURL Buy (Windows CMD)');
   }
 

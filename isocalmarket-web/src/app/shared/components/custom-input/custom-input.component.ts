@@ -19,7 +19,7 @@ import { FormsModule, ControlValueAccessor, NG_VALUE_ACCESSOR } from '@angular/f
 export class CustomInputComponent implements ControlValueAccessor {
   public readonly val = signal<any>('');
 
-  @Input() type: 'text' | 'number' | 'email' | 'password' | 'textarea' = 'text';
+  @Input() type: 'text' | 'number' | 'email' | 'password' | 'textarea' | 'date' = 'text';
   @Input() placeholder: string = '';
   @Input() disabled: boolean = false;
   @Input() rows: number = 3;

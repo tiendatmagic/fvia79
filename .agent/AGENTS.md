@@ -1514,3 +1514,24 @@
       2. Cập nhật các template HTML tương ứng để sử dụng hàm gọi Signal `isSubmitting()`.
       3. Đối với các modal/trang gọi API thanh toán/đặt hàng, nâng cao tính an toàn khi phân tích thông điệp lỗi bằng cách ép kiểu chuỗi an toàn (`typeof msg === 'string'`) cho `err.error?.message` trước khi kiểm tra `.includes(...)` để tránh crash Javascript.
     - **Xác minh**: Biên dịch ứng dụng frontend Angular thành công (`npm run build`) mà không gặp bất kỳ lỗi template hay TypeScript nào. Trạng thái nút bấm được khôi phục ngay lập tức khi API hoàn thành hoặc lỗi.
+
+  - **[THÊM TÍNH NĂNG MÃ GIẢM GIÁ (COUPON CODE)]**:
+    - **Database Migration**:
+      - Tạo migration `2026_07_20_000000_create_coupons_table.php` lưu trữ thông tin coupon (code, type, value, min_spend, start_date, end_date, usage_limit, used_count, softDeletes).
+      - Tạo migration `2026_07_20_000001_add_coupon_fields_to_orders_table.php` bổ sung `coupon_code`, `discount_amount`, và `coupon_id` (onDelete set null) vào bảng `orders`.
+    - **Backend Architecture**:
+      - Thêm Entity `Coupon.php` với logic tính giảm giá `calculateDiscount()` và kiểm tra điều kiện `isValidForAmount()`.
+      - Thêm Interface `CouponRepositoryInterface.php`, Eloquent `CouponModel.php`, `CouponMapper.php` và `CouponRepository.php`.
+      - Đăng ký `CouponRepositoryInterface` trong `AppServiceProvider.php`.
+      - Cập nhật `Order.php`, `OrderModel.php`, `OrderMapper.php` và `OrderService.php` để tính toán số tiền thực trả, lưu vết giảm giá và trừ tiền ví chính xác.
+      - Tạo `CouponService.php`, `CreateCouponRequest.php`, `AdminCouponController.php` (Admin CRUD) và `CouponController.php` (Validate API).
+      - Cập nhật `OrderController.php`, `B2bController.php` (Buy API hỗ trợ mua nhiều sản phẩm & mã giảm giá) và `B2bAdminController.php`.
+    - **Frontend Angular**:
+      - Tạo Slice Store `CouponStore` (`coupon.store.ts`).
+      - Tạo trang quản lý Admin `AdminCouponsComponent` và Dynamic Modal `CouponFormModalComponent`.
+      - Đăng ký route `/admin/coupons` và bổ sung menu "Quản lý mã giảm giá" trong Sidebar Desktop & Mobile.
+      - Tích hợp ô nhập mã giảm giá trong `CartModalComponent` với hiệu ứng debounce 500ms, hiển thị số tiền tạm tính & giảm giá trước khi đặt hàng.
+      - Cập nhật `OrderDetailComponent` hiển thị số tiền giảm giá cho khách hàng và mã coupon dành riêng cho Admin.
+      - Cập nhật trang tài liệu User API (`user-api.component.html` & `.ts`) bổ sung thông tin tham số `coupon_code`, `items` và ví dụ CURL.
+      - Biên dịch `npm run build` thành công 100% không phát sinh bất kỳ lỗi nào.
+

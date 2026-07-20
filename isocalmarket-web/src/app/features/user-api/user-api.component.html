@@ -519,7 +519,7 @@ curl -X GET "{{ siteUrl() }}/api/v1/b2b/products/PRODUCT_ID?api_key={{
                   <pre class="whitespace-pre">
 curl -X POST "{{ siteUrl() }}/api/v1/b2b/buy" -H "Content-Type: application/json" -H "X-API-KEY: {{
                       apiKey() || 'API_KEY_CUA_BAN'
-                    }}" -d '{{ '{' }}"product_id": "PRODUCT_ID", "quantity": 1{{ '}' }}'</pre>
+                    }}" -d '{{ '{' }}"product_id": "PRODUCT_ID", "quantity": 1, "coupon_code": "DISCOUNT10"{{ '}' }}'</pre>
                 </div>
                 <button
                   (click)="copyBuyCurl()"
@@ -539,7 +539,7 @@ curl -X POST "{{ siteUrl() }}/api/v1/b2b/buy" -H "Content-Type: application/json
                   <pre class="whitespace-pre">
 curl -X POST "{{ siteUrl() }}/api/v1/b2b/buy" -H "Content-Type: application/json" -H "X-API-KEY: {{
                       apiKey() || 'API_KEY_CUA_BAN'
-                    }}" -d "{{ '{' }}\"product_id\": \"PRODUCT_ID\", \"quantity\": 1{{ '}' }}"</pre>
+                    }}" -d "{{ '{' }}\"product_id\": \"PRODUCT_ID\", \"quantity\": 1, \"coupon_code\": \"DISCOUNT10\"{{ '}' }}"</pre>
                 </div>
                 <button
                   (click)="copyBuyWindowsCurl()"
@@ -626,6 +626,52 @@ curl -X POST "{{ siteUrl() }}/api/v1/b2b/buy" -H "Content-Type: application/json
                   </p>
                 </div>
               </div>
+
+              <div class="h-px bg-slate-200/50 dark:bg-slate-800/40"></div>
+
+              <div class="flex items-start gap-4 text-xs">
+                <div class="min-w-[120px] font-mono text-[var(--color-primary)] font-bold">
+                  coupon_code
+                </div>
+                <div class="flex-1 space-y-1">
+                  <div class="flex items-center gap-1.5">
+                    <span
+                      class="text-xs font-black uppercase bg-slate-500/10 text-slate-500 px-1.5 py-0.5 rounded"
+                      >Tùy chọn</span
+                    >
+                    <span class="text-slate-400 dark:text-slate-500 font-mono text-xs"
+                      >String</span
+                    >
+                  </div>
+                  <p class="text-slate-500 dark:text-slate-400 font-semibold">
+                    Mã giảm giá muốn áp dụng cho đơn hàng (Ví dụ: <code>DISCOUNT10</code>).
+                  </p>
+                </div>
+              </div>
+
+              <div class="h-px bg-slate-200/50 dark:bg-slate-800/40"></div>
+
+              <div class="flex items-start gap-4 text-xs">
+                <div class="min-w-[120px] font-mono text-[var(--color-primary)] font-bold">
+                  items
+                </div>
+                <div class="flex-1 space-y-1">
+                  <div class="flex items-center gap-1.5">
+                    <span
+                      class="text-xs font-black uppercase bg-slate-500/10 text-slate-500 px-1.5 py-0.5 rounded"
+                      >Tùy chọn</span
+                    >
+                    <span class="text-slate-400 dark:text-slate-500 font-mono text-xs"
+                      >Array of Objects</span
+                    >
+                  </div>
+                  <p class="text-slate-500 dark:text-slate-400 font-semibold">
+                    Danh sách nhiều sản phẩm muốn mua cùng lúc (nếu truyền <code>items</code> thì hệ thống sẽ bỏ qua hai tham số <code>product_id</code> và <code>quantity</code> ở trên). Mỗi object con gồm:
+                    <br/>- <code>product_id</code>: UUID sản phẩm (Bắt buộc)
+                    <br/>- <code>quantity</code>: Số lượng >= 1 (Bắt buộc)
+                  </p>
+                </div>
+              </div>
             </div>
           </div>
 
@@ -641,7 +687,8 @@ curl -X POST "{{ siteUrl() }}/api/v1/b2b/buy" -H "Content-Type: application/json
                 >{{ '{' }}
   "success": true,
   "order_code": "ORD-20260718-A7F9D2",
-  "total_price": 80000,
+  "total_price": 70000,
+  "discount_amount": 10000,
   "accounts": [
     "10007203940192|pass123|2FA_CODE_KEY"
   ]
@@ -853,7 +900,8 @@ curl -X GET "{{ siteUrl() }}/api/v1/b2b/orders/ORDER_CODE" -H "X-API-KEY: {{
                 >{{ '{' }}
   "success": true,
   "order_code": "ORD-20260718-A7F9D2",
-  "total_price": 80000,
+  "total_price": 70000,
+  "discount_amount": 10000,
   "status": "paid",
   "created_at": "2026-07-18T17:21:04+07:00",
   "accounts": [

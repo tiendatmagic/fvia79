@@ -42,6 +42,10 @@ class AppServiceProvider extends ServiceProvider
             \App\Domain\Repositories\SystemSettingRepositoryInterface::class,
             \App\Infrastructure\Persistence\Repositories\SystemSettingRepository::class
         );
+        $this->app->bind(
+            \App\Domain\Repositories\CouponRepositoryInterface::class,
+            \App\Infrastructure\Persistence\Repositories\CouponRepository::class
+        );
     }
 
     /**

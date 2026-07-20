@@ -20,11 +20,10 @@ class OrderController extends Controller
     {
         try {
             $userId = Auth::id();
-            
-            // Format items input: items.*.product_id, items.*.quantity
             $itemsInput = $request->items;
+            $couponCode = $request->input('coupon_code');
 
-            $order = $this->orderService->createOrder($userId, $itemsInput);
+            $order = $this->orderService->createOrder($userId, $itemsInput, $couponCode);
 
             return response()->json([
                 'message' => 'Order created successfully.',
@@ -32,6 +31,7 @@ class OrderController extends Controller
                     'id' => $order->getId(),
                     'order_code' => $order->getOrderCode(),
                     'total_price' => $order->getTotalPrice(),
+                    'discount_amount' => $order->getDiscountAmount(),
                     'status' => $order->getStatus(),
                     'created_at' => $order->getCreatedAt()?->format('Y-m-d H:i:s')
                 ]
@@ -46,14 +46,16 @@ class OrderController extends Controller
         try {
             $user = Auth::user();
             $page = $request->query('page');
-            $limit = $request->query('limit', 10); // Mặc định 10 đơn hàng/trang
-            $status = $request->query('status'); // Lọc theo trạng thái đơn hàng
+            $limit = $request->query('limit', 10);
+            $status = $request->query('status');
             $search = $request->query('search');
             $startDate = $request->query('start_date');
             $endDate = $request->query('end_date');
 
+            $isAdmin = $user->role === 'admin';
+
             if ($page) {
-                if ($user->role === 'admin') {
+                if ($isAdmin) {
                     $result = $this->orderService->getAllOrdersPaginated((int)$page, (int)$limit, $status, $search, $startDate, $endDate);
                 } else {
                     $result = $this->orderService->getOrdersByUserPaginated($user->id, (int)$page, (int)$limit, $status, $search, $startDate, $endDate);
@@ -62,12 +64,14 @@ class OrderController extends Controller
                 $orders = $result['items'];
                 $total = $result['total'];
 
-                $data = array_map(function ($order) {
+                $data = array_map(function ($order) use ($isAdmin) {
                     return [
                         'id' => $order->getId(),
                         'order_code' => $order->getOrderCode(),
                         'customer_email' => $order->getUserEmail(),
                         'total_price' => $order->getTotalPrice(),
+                        'discount_amount' => $order->getDiscountAmount(),
+                        'coupon_code' => $isAdmin ? $order->getCouponCode() : null,
                         'status' => $order->getStatus(),
                         'created_at' => $order->getCreatedAt()?->format('Y-m-d H:i:s'),
                         'items_count' => count($order->getItems())
@@ -85,18 +89,20 @@ class OrderController extends Controller
                 ]);
             }
 
-            if ($user->role === 'admin') {
+            if ($isAdmin) {
                 $orders = $this->orderService->getAllOrders();
             } else {
                 $orders = $this->orderService->getOrdersByUser($user->id);
             }
 
-            $data = array_map(function ($order) {
+            $data = array_map(function ($order) use ($isAdmin) {
                 return [
                     'id' => $order->getId(),
                     'order_code' => $order->getOrderCode(),
                     'customer_email' => $order->getUserEmail(),
                     'total_price' => $order->getTotalPrice(),
+                    'discount_amount' => $order->getDiscountAmount(),
+                    'coupon_code' => $isAdmin ? $order->getCouponCode() : null,
                     'status' => $order->getStatus(),
                     'created_at' => $order->getCreatedAt()?->format('Y-m-d H:i:s'),
                     'items_count' => count($order->getItems())
@@ -125,6 +131,7 @@ class OrderController extends Controller
             }
 
             $order = $details['order'];
+            $isAdmin = $user->role === 'admin';
 
             $itemsData = array_map(function ($item) {
                 return [
@@ -152,6 +159,8 @@ class OrderController extends Controller
                 'id' => $order->getId(),
                 'order_code' => $order->getOrderCode(),
                 'total_price' => $order->getTotalPrice(),
+                'discount_amount' => $order->getDiscountAmount(),
+                'coupon_code' => $isAdmin ? $order->getCouponCode() : null,
                 'status' => $order->getStatus(),
                 'created_at' => $order->getCreatedAt()?->format('Y-m-d H:i:s'),
                 'items' => $itemsData,

@@ -52,12 +52,24 @@
             {{ detail.status === 'paid' ? 'Đã thanh toán' : detail.status === 'pending' ? 'Chờ thanh toán' : 'Đã hủy' }}
           </app-badge>
         </div>
-        <div class="flex justify-between items-center text-sm font-black pt-3.5">
+
+        <div *ngIf="detail.coupon_code" class="flex justify-between items-center text-xs font-bold">
+          <span class="text-slate-400">Mã giảm giá áp dụng:</span>
+          <span class="font-mono font-extrabold text-xs uppercase border border-dashed border-[var(--color-primary)]/40 px-2 py-0.5 rounded bg-[var(--color-primary)]/5 text-[var(--color-primary)]">
+            {{ detail.coupon_code }}
+          </span>
+        </div>
+
+        <div *ngIf="detail.discount_amount > 0" class="flex justify-between items-center text-xs font-extrabold text-emerald-600 dark:text-emerald-400">
+          <span>Số tiền giảm giá:</span>
+          <span>-{{ detail.discount_amount | number }} VND</span>
+        </div>
+
+        <div class="flex justify-between items-center text-sm font-black pt-3 border-t border-slate-100 dark:border-slate-800/60">
           <span class="text-slate-700 dark:text-slate-300">Tổng thanh toán:</span>
           <span class="text-[var(--color-primary)] text-base font-black">{{ detail.total_price | number }} VND</span>
         </div>
       </div>
-    </div>
 
     <div app-card class="overflow-hidden !p-0">
       <div class="px-6 py-4 border-b border-slate-200/40 dark:border-slate-800/40 bg-slate-50/50 dark:bg-slate-950/20">
