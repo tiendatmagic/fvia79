@@ -1636,8 +1636,8 @@
   - **[SỬA LỖI GIẬT CON TRỎ VÀ MẤT DẤU CHẤM TRÊN Ô NHẬP SỐ]**:
     - **Vấn đề**: Người dùng gặp hiện tượng rất khó chịu khi nhập số lượng USDT muốn nạp. Khi nhập số thập phân (ví dụ 3.9) rồi nhấn Backspace để xóa số 9, con trỏ (cursor) tự động nhảy về trước số 3 thay vì ở sau dấu chấm, dẫn đến dễ bị gõ sai số.
     - **Nguyên nhân**: Khi người dùng xóa ký tự, giá trị chuỗi thô của input (ví dụ `"3."`) thay đổi. ControlValueAccessor gửi giá trị này cho Angular Forms qua `onChange`. Angular parse `"3."` thành số `3`. Do model thay đổi, Angular gọi `writeValue(3)` cập nhật ngược lại component. Việc gán lại `[value]="val()"` bằng `3` (do `val.set(3)`) khiến trình duyệt ghi đè giá trị `"3."` thành `"3"`, đồng thời reset vị trí con trỏ của input.
-    - **Giải pháp & Triển khai**: Cập nhật [custom-input.component.ts](file:///d:/git/isocalmarket/isocalmarket-web/src/app/shared/components/custom-input/custom-input.component.ts):
-      1. Tách biệt giữa giá trị lưu trữ hiển thị (chuỗi thô trong `val` signal) và giá trị gửi ra ngoài (đã parse sang số nếu `type === 'number'`).
-      2. Thêm phương thức hỗ trợ `areValuesEquivalent` để so sánh độ tương đương ngữ nghĩa (ví dụ `3` tương đương `"3."` và `"3.0"`).
-      3. Trong `writeValue`, nếu giá trị mới nhận tương đương với giá trị thô hiện tại trong input DOM, bỏ qua việc cập nhật signal `val` để tránh làm trình duyệt vẽ lại input và reset cursor.
+    - **Giải pháp & Triển khai**: Cập nhật [custom-input.component.html](file:///d:/git/isocalmarket/isocalmarket-web/src/app/shared/components/custom-input/custom-input.component.html) và [custom-input.component.ts](file:///d:/git/isocalmarket/isocalmarket-web/src/app/shared/components/custom-input/custom-input.component.ts):
+      1. Loại bỏ hoàn toàn liên kết một chiều `[value]="val()"` trong template để trả quyền quản lý giá trị thô và cursor vị trí tự nhiên 100% cho trình duyệt khi người dùng đang trực tiếp nhập liệu.
+      2. Sử dụng `ElementRef` để cập nhật trực tiếp thuộc tính `value` của input/textarea DOM trong `writeValue` từ file logic code `.ts` (sau khi kiểm tra so sánh tương đương ngữ nghĩa qua hàm `areValuesEquivalent` để tránh ghi đè dư thừa gây giật con trỏ).
+      3. Triển khai lifecycle hook `AfterViewInit` để đồng bộ hóa giá trị khởi tạo ban đầu vào phần tử DOM ngay sau khi chúng được render.
     - **Xác minh**: Chạy lệnh build `npm run build` thành công 100% không phát sinh lỗi biên dịch.
