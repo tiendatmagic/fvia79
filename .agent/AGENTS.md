@@ -1581,5 +1581,13 @@
       3. Cập nhật [coupon.store.ts](file:///d:/git/isocalmarket/isocalmarket-web/src/app/features/admin-coupons/coupon.store.ts) và [admin-coupons.component.ts](file:///d:/git/isocalmarket/isocalmarket-web/src/app/features/admin-coupons/admin-coupons.component.ts): Loại bỏ logic lọc computed ở frontend, thay thế bằng việc gửi request API mỗi khi thay đổi bộ lọc (`onStatusChange` và `onTypeChange`) đồng thời reset trang hiện tại về 1.
     - **Xác minh**: Chạy biên dịch frontend thành công.
 
+  - **[HOÀN THÀNH] QUÉT VÀ DỌN DẸP COMMENT RÁC SÂU TOÀN DỰ ÁN (LẦN 2)**:
+    - **Yêu cầu:** Tiếp tục quét sâu và dọn dẹp các comment không cần thiết/rác còn sót lại trong toàn bộ mã nguồn của dự án (cả Frontend và Backend) sau các cập nhật về Coupons, Order Details và Table template.
+    - **Thực hiện:**
+      1. Viết và chạy script PHP `clean_comments.php` (Lần 2) quét đệ quy các thư mục `isocalmarket-web/src/app` và `isocalmarket-api/app`.
+      2. Loại bỏ các ghi chú HTML rác hiển nhiên trong [cart-modal.component.html](file:///d:/git/isocalmarket/isocalmarket-web/src/app/features/storefront/cart-modal/cart-modal.component.html) (`<!-- Khung nhập Mã giảm giá -->`, `<!-- Thông báo kết quả xác thực coupon -->`), dòng trống thừa ở [admin-coupons.component.html](file:///d:/git/isocalmarket/isocalmarket-web/src/app/features/admin-coupons/admin-coupons.component.html) và [UserModel.php](file:///d:/git/isocalmarket/isocalmarket-api/app/Infrastructure/Persistence/Eloquent/UserModel.php).
+      3. Rà soát an toàn qua `git diff` và chạy thử nghiệm.
+      4. **Xác minh:** Biên dịch frontend Angular thành công 100% (`npm run build` trong `22.137 seconds`) và chạy test suite Laravel backend thành công 100% (`passed 18/18 tests`).
+
 
 

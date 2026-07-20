@@ -52,5 +52,3 @@ class UserModel extends Authenticatable
         ];
     }
 }
-
-

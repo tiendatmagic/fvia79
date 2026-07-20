@@ -70,7 +70,6 @@
       </div>
     </div>
 
-    <!-- Khung nhập Mã giảm giá -->
     <div app-card class="space-y-3">
       <div class="form-field">
         <div class="flex items-center justify-between">
@@ -95,7 +94,6 @@
         </div>
       </div>
 
-      <!-- Thông báo kết quả xác thực coupon -->
       <div *ngIf="couponSuccess()" class="text-xs font-bold text-emerald-600 dark:text-emerald-400 flex items-center gap-1.5 pt-0.5">
         <app-icon name="check-circle" class="w-4 h-4 shrink-0" />
         <span>{{ couponSuccess() }}</span>
