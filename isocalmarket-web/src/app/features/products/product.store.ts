@@ -2,6 +2,7 @@ import { Injectable, inject, signal } from '@angular/core';
 import { HttpParams } from '@angular/common/http';
 import { ApiService } from '@core/services/api.service';
 import { ToastService } from '@core/services/toast.service';
+import { LanguageService } from '@core/services/language.service';
 import { tap, catchError, finalize } from 'rxjs/operators';
 import { of, Subscription, Subject } from 'rxjs';
 
@@ -11,6 +12,7 @@ import { of, Subscription, Subject } from 'rxjs';
 export class ProductStore {
   private readonly api = inject(ApiService);
   private readonly toast = inject(ToastService);
+  private readonly lang = inject(LanguageService);
  
   private activeFetchCategoriesPaginatedSub?: Subscription;
   private activeFetchProductsSub?: Subscription;
@@ -84,7 +86,7 @@ export class ProductStore {
         }
       }),
       catchError((err) => {
-        this.toast.showToast('Không thể tải danh sách danh mục phân trang!', 'error');
+        this.toast.showToast(this.lang.translate('toast.error_load_categories'), 'error');
         return of([]);
       }),
       finalize(() => this.loading.set(false))
@@ -124,7 +126,7 @@ export class ProductStore {
         }
       }),
       catchError((err) => {
-        this.toast.showToast('Không thể tải danh sách danh mục!', 'error');
+        this.toast.showToast(this.lang.translate('toast.error_load_categories'), 'error');
         return of([]);
       })
     );
@@ -249,7 +251,7 @@ export class ProductStore {
         }
       }),
       catchError((err) => {
-        this.toast.showToast('Không thể tải danh sách sản phẩm!', 'error');
+        this.toast.showToast(this.lang.translate('toast.error_load_products'), 'error');
         return of([]);
       }),
       finalize(() => this.loading.set(false))
@@ -273,10 +275,10 @@ export class ProductStore {
     return this.api.post<any>('v1/products', data).pipe(
       tap((res) => {
         this.clearCache();
-        this.toast.showToast('Tạo sản phẩm thành công!', 'success');
+        this.toast.showToast(this.lang.translate('toast.product_created'), 'success');
       }),
       catchError((err) => {
-        const msg = err.error?.message || 'Tạo sản phẩm thất bại!';
+        const msg = err.error?.message || this.lang.translate('toast.product_create_failed');
         this.toast.showToast(msg, 'error');
         return of(null);
       }),
@@ -289,10 +291,10 @@ export class ProductStore {
     return this.api.put<any>(`v1/products/${id}`, data).pipe(
       tap(() => {
         this.clearCache();
-        this.toast.showToast('Cập nhật sản phẩm thành công!', 'success');
+        this.toast.showToast(this.lang.translate('toast.product_updated'), 'success');
       }),
       catchError((err) => {
-        const msg = err.error?.message || 'Cập nhật thất bại!';
+        const msg = err.error?.message || this.lang.translate('toast.product_update_failed');
         this.toast.showToast(msg, 'error');
         return of(null);
       }),
@@ -305,10 +307,10 @@ export class ProductStore {
     return this.api.delete<any>(`v1/products/${id}`).pipe(
       tap(() => {
         this.clearCache();
-        this.toast.showToast('Xóa sản phẩm thành công!', 'success');
+        this.toast.showToast(this.lang.translate('toast.product_deleted'), 'success');
       }),
       catchError((err) => {
-        const msg = err.error?.message || 'Xóa sản phẩm thất bại!';
+        const msg = err.error?.message || this.lang.translate('toast.product_delete_failed');
         this.toast.showToast(msg, 'error');
         return of(null);
       }),
@@ -321,10 +323,10 @@ export class ProductStore {
     return this.api.post<any>(`v1/products/${id}/restore`, {}).pipe(
       tap(() => {
         this.clearCache();
-        this.toast.showToast('Khôi phục sản phẩm thành công!', 'success');
+        this.toast.showToast(this.lang.translate('toast.product_restored'), 'success');
       }),
       catchError((err) => {
-        const msg = err.error?.message || 'Khôi phục sản phẩm thất bại!';
+        const msg = err.error?.message || this.lang.translate('toast.product_restore_failed');
         this.toast.showToast(msg, 'error');
         return of(null);
       }),
@@ -337,10 +339,10 @@ export class ProductStore {
     return this.api.post<any>('v1/categories', data).pipe(
       tap(() => {
         this.clearCache();
-        this.toast.showToast('Tạo danh mục thành công!', 'success');
+        this.toast.showToast(this.lang.translate('toast.category_created'), 'success');
       }),
       catchError((err) => {
-        const msg = err.error?.message || 'Tạo danh mục thất bại!';
+        const msg = err.error?.message || this.lang.translate('toast.category_create_failed');
         this.toast.showToast(msg, 'error');
         return of(null);
       }),
@@ -353,10 +355,10 @@ export class ProductStore {
     return this.api.put<any>(`v1/categories/${id}`, data).pipe(
       tap(() => {
         this.clearCache();
-        this.toast.showToast('Cập nhật danh mục thành công!', 'success');
+        this.toast.showToast(this.lang.translate('toast.category_updated'), 'success');
       }),
       catchError((err) => {
-        const msg = err.error?.message || 'Cập nhật danh mục thất bại!';
+        const msg = err.error?.message || this.lang.translate('toast.category_update_failed');
         this.toast.showToast(msg, 'error');
         return of(null);
       }),
@@ -369,16 +371,16 @@ export class ProductStore {
     return this.api.delete<any>(`v1/categories/${id}`).pipe(
       tap(() => {
         this.clearCache();
-        this.toast.showToast('Xóa danh mục thành công!', 'success');
+        this.toast.showToast(this.lang.translate('toast.category_deleted'), 'success');
       }),
       catchError((err) => {
-        let msg = err.error?.message || 'Xóa danh mục thất bại!';
+        let msg = err.error?.message || this.lang.translate('toast.category_delete_failed');
         if (
           msg.includes('Cannot delete category containing active products') ||
           msg.includes('foreign key constraint fails') ||
           msg.includes('Integrity constraint violation')
         ) {
-          msg = 'Không thể xóa danh mục này vì hiện đang có sản phẩm thuộc danh mục!';
+          msg = this.lang.translate('toast.category_has_products');
         }
         this.toast.showToast(msg, 'error');
         return of(null);

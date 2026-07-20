@@ -1,7 +1,7 @@
 <div class="max-w-[1530px] mx-auto w-full px-4 sm:px-6 py-6 space-y-6">
   <app-page-header
-    title="Quản Lý Đơn Hàng"
-    description="Xem toàn bộ lịch sử mua hàng, chi tiết sản phẩm và tài nguyên đã cung cấp."
+    [title]="'ord.admin_title' | translate"
+    [description]="'ord.admin_description' | translate"
   >
     <ng-container actions>
       <button
@@ -9,7 +9,7 @@
         class="px-4 py-2.5 text-sm font-extrabold text-slate-600 dark:text-slate-400 hover:text-primary bg-white dark:bg-slate-950 border border-slate-200/60 dark:border-slate-800/80 rounded-xl hover:bg-slate-50 dark:hover:bg-slate-900 transition-all cursor-pointer flex items-center gap-1.5"
       >
         <app-icon name="sync" class="w-4 h-4" />
-        Tải lại
+        {{ 'common.reload' | translate }}
       </button>
     </ng-container>
   </app-page-header>
@@ -19,20 +19,20 @@
   >
     <div class="form-field">
       <label class="text-xs font-bold text-slate-400 dark:text-slate-500 uppercase tracking-wider block mb-1">
-        Khoảng thời gian
+        {{ 'common.filter_date' | translate }}
       </label>
       <app-custom-date-time-range
         [(ngModel)]="selectedDateRange"
         (ngModelChange)="fetchOrders(1)"
         [showPresets]="true"
         [showTime]="false"
-        placeholder="Lọc theo ngày tạo đơn..."
+        [placeholder]="'common.select_date' | translate"
       />
     </div>
 
     <div class="form-field">
       <label class="text-xs font-bold text-slate-400 dark:text-slate-500 uppercase tracking-wider block mb-1">
-        Trạng thái
+        {{ 'common.status' | translate }}
       </label>
       <app-custom-select
         [options]="statusOptions"
@@ -45,10 +45,10 @@
 
     <div class="form-field">
       <label class="text-xs font-bold text-slate-400 dark:text-slate-500 uppercase tracking-wider block mb-1">
-        Tìm kiếm đơn hàng
+        {{ 'common.search' | translate }}
       </label>
       <app-custom-search-input
-        [placeholder]="'Tìm kiếm đơn hàng...'"
+        [placeholder]="'common.search_placeholder' | translate"
         [(ngModel)]="searchQuery"
         name="searchQuery"
         (valueChange)="onSearch($event)"
@@ -60,10 +60,10 @@
 
   <div app-card class="overflow-hidden flex flex-col !p-0">
     <app-table
-      [columns]="columns"
+      [columns]="columns()"
       [data]="orders()"
       [loading]="loading()"
-      emptyText="Không tìm thấy đơn hàng nào."
+      [emptyText]="'ord.no_orders' | translate"
     >
       <ng-template appTableCell="order_code" let-row="row">
         <div class="flex items-center gap-1.5">
@@ -94,8 +94,8 @@
       </ng-template>
 
       <ng-template appTableCell="total_price" let-row="row">
-        <span class="font-mono font-bold text-emerald-600 dark:text-emerald-400 text-sm" [appTooltip]="(row.total_price | number: '1.0-0') + ' ₫'">
-          {{ row.total_price | number: '1.0-0' }} ₫
+        <span class="font-mono font-bold text-emerald-600 dark:text-emerald-400 text-sm">
+          {{ row.total_price | appCurrency }}
         </span>
       </ng-template>
 

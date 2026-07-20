@@ -6,6 +6,8 @@ import { StateService } from '@core/services/state.service';
 import { CustomSelectComponent } from '@shared/components/custom-select/custom-select.component';
 import { CustomInputComponent } from '@shared/components/custom-input/custom-input.component';
 import { ButtonComponent } from '@shared/components/button/button.component';
+import { TranslatePipe } from '@shared/pipes/translate.pipe';
+import { LanguageService } from '@core/services/language.service';
 import { finalize } from 'rxjs/operators';
 
 @Component({
@@ -16,7 +18,8 @@ import { finalize } from 'rxjs/operators';
     FormsModule,
     CustomSelectComponent,
     CustomInputComponent,
-    ButtonComponent
+    ButtonComponent,
+    TranslatePipe
   ],
   templateUrl: './import-inventory-modal.component.html',
   styles: [`
@@ -29,6 +32,7 @@ export class ImportInventoryModalComponent implements OnInit {
   private readonly modalRef = inject(ModalRef);
   private readonly modalData = inject(MODAL_DATA);
   public readonly state = inject(StateService);
+  public readonly lang = inject(LanguageService);
 
   public importProductId = '';
   public batchName = '';
@@ -36,13 +40,18 @@ export class ImportInventoryModalComponent implements OnInit {
   public productOptions: any[] = [];
   public readonly isSubmitting = signal(false);
 
-  ngOnInit() {
-    if (this.modalData) {
-      this.importProductId = this.modalData.selectedProductId || '';
-      this.productOptions = this.modalData.productOptions || [];
+  public ngOnInit() {
+    this.state.productStore.getProductsRaw(1, 1000).subscribe((res: any) => {
+      const list = (res?.data || res || []).map((p: any) => ({
+        label: p.name,
+        value: p.id
+      }));
+      this.productOptions = list;
+    });
+
+    if (this.modalData && this.modalData.productId) {
+      this.importProductId = this.modalData.productId;
     }
-    const now = new Date();
-    this.batchName = `Lô nhập ${now.toLocaleDateString('vi-VN')} ${now.toLocaleTimeString('vi-VN', { hour: '2-digit', minute: '2-digit' })}`;
   }
 
   public onClose() {
@@ -58,7 +67,7 @@ export class ImportInventoryModalComponent implements OnInit {
   public onSubmit() {
     if (this.isSubmitting()) return;
     if (!this.importProductId || !this.batchName.trim() || !this.rawData.trim()) {
-      this.state.showToast('Vui lòng điền đầy đủ tên lô hàng, chọn sản phẩm và nhập dữ liệu tài nguyên!', 'error');
+      this.state.showToast(this.lang.translate('toast.import_validation'), 'error');
       return;
     }
 

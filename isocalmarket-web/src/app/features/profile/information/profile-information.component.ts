@@ -4,12 +4,14 @@ import { FormsModule } from '@angular/forms';
 import { StateService } from '@core/services/state.service';
 import { CustomInputComponent } from '@shared/components/custom-input/custom-input.component';
 import { ButtonComponent } from '@shared/components/button/button.component';
+import { LanguageService } from '@core/services/language.service';
+import { TranslatePipe } from '@shared/pipes/translate.pipe';
 import { finalize } from 'rxjs/operators';
 
 @Component({
   selector: 'app-profile-information',
   standalone: true,
-  imports: [CommonModule, FormsModule, CustomInputComponent, ButtonComponent],
+  imports: [CommonModule, FormsModule, CustomInputComponent, ButtonComponent, TranslatePipe],
   templateUrl: './profile-information.component.html',
   styles: [`
     :host {
@@ -19,6 +21,7 @@ import { finalize } from 'rxjs/operators';
 })
 export class ProfileInformationComponent implements OnInit {
   public readonly state = inject(StateService);
+  public readonly lang = inject(LanguageService);
 
   public username = '';
   public name = '';
@@ -40,7 +43,7 @@ export class ProfileInformationComponent implements OnInit {
     if (this.isSubmitting()) return;
 
     if (!this.name) {
-      this.state.showToast('Vui lòng điền họ tên thành viên!', 'error');
+      this.state.showToast(this.lang.translate('toast.name_required'), 'error');
       return;
     }
 

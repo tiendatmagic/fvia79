@@ -7,11 +7,13 @@ import { CustomInputComponent } from '@shared/components/custom-input/custom-inp
 import { ButtonComponent } from '@shared/components/button/button.component';
 import { CardComponent } from '@shared/components/card/card.component';
 import { IconComponent } from '@shared/components/icon/icon.component';
+import { LanguageService } from '@core/services/language.service';
+import { TranslatePipe } from '@shared/pipes/translate.pipe';
 
 @Component({
   selector: 'app-login',
   standalone: true,
-  imports: [CommonModule, FormsModule, RouterModule, CustomInputComponent, ButtonComponent, CardComponent, IconComponent],
+  imports: [CommonModule, FormsModule, RouterModule, CustomInputComponent, ButtonComponent, CardComponent, IconComponent, TranslatePipe],
   templateUrl: './login.component.html',
   styles: [`
     :host {
@@ -23,6 +25,7 @@ export class LoginComponent {
   public readonly state = inject(StateService);
   private readonly route = inject(ActivatedRoute);
   private readonly router = inject(Router);
+  public readonly lang = inject(LanguageService);
 
   public email = '';
   public password = '';
@@ -48,7 +51,7 @@ export class LoginComponent {
 
     if (this.requires2Fa()) {
       if (!this.otpCode || this.otpCode.length !== 6) {
-        this.state.showToast('Vui lòng nhập mã xác thực OTP gồm 6 chữ số!', 'error');
+        this.state.showToast(this.lang.translate('toast.otp_digits_required'), 'error');
         return;
       }
       this.state.authStore.login2Fa(this.tempToken, this.otpCode, this.returnUrl).subscribe();
@@ -56,20 +59,20 @@ export class LoginComponent {
     }
 
     if (!this.email || !this.password) {
-      this.state.showToast('Vui lòng điền đầy đủ thông tin đăng nhập và mật khẩu!', 'error');
+      this.state.showToast(this.lang.translate('toast.login_info_required'), 'error');
       return;
     }
 
     if (this.email.includes('@')) {
       const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
       if (!emailRegex.test(this.email)) {
-        this.state.showToast('Địa chỉ email không đúng định dạng!', 'error');
+        this.state.showToast(this.lang.translate('toast.email_invalid_format'), 'error');
         return;
       }
     } else {
       const usernameRegex = /^[a-zA-Z0-9_]{3,50}$/;
       if (!usernameRegex.test(this.email)) {
-        this.state.showToast('Tên đăng nhập không đúng định dạng (3-50 ký tự, không dấu, không cách)!', 'error');
+        this.state.showToast(this.lang.translate('toast.username_invalid_format'), 'error');
         return;
       }
     }
@@ -78,7 +81,7 @@ export class LoginComponent {
       if (res && res.requires_2fa) {
         this.requires2Fa.set(true);
         this.tempToken = res.temp_token;
-        this.state.showToast('Tài khoản đã kích hoạt 2FA. Vui lòng nhập mã OTP để tiếp tục.', 'success');
+        this.state.showToast(this.lang.translate('toast.requires_2fa_notice'), 'success');
       }
     });
   }

@@ -5,9 +5,13 @@ import { ModalRef } from '@core/services/modal-ref';
 import { CartStore } from '../cart.store';
 import { StateService } from '@core/services/state.service';
 import { ApiService } from '@core/services/api.service';
+import { LanguageService } from '@core/services/language.service';
 import { CouponStore } from '../../admin-coupons/coupon.store';
 import { ButtonComponent } from '@shared/components/button/button.component';
 import { IconComponent } from '@shared/components/icon/icon.component';
+import { TranslatePipe } from '@shared/pipes/translate.pipe';
+import { CurrencyPipe } from '@shared/pipes/currency.pipe';
+import { TooltipDirective } from '@shared/components/tooltip/tooltip.directive';
 import { Subject, of } from 'rxjs';
 import { debounceTime, distinctUntilChanged, switchMap, catchError, finalize } from 'rxjs/operators';
 
@@ -18,7 +22,10 @@ import { debounceTime, distinctUntilChanged, switchMap, catchError, finalize } f
     CommonModule,
     FormsModule,
     ButtonComponent,
-    IconComponent
+    IconComponent,
+    TranslatePipe,
+    CurrencyPipe,
+    TooltipDirective
   ],
   templateUrl: './cart-modal.component.html',
   styles: [`
@@ -33,6 +40,7 @@ export class CartModalComponent implements OnInit {
   private readonly couponStore = inject(CouponStore);
   public readonly cart = inject(CartStore);
   public readonly state = inject(StateService);
+  public readonly lang = inject(LanguageService);
 
   public readonly isSubmitting = signal(false);
 
@@ -88,18 +96,14 @@ export class CartModalComponent implements OnInit {
         this.appliedCoupon.set(res);
         const formatDiscount = res.type === 'percentage'
           ? `${res.value}%`
-          : `${this.formatNumber(res.discount_amount)} VND`;
-        this.couponSuccess.set(`Đã áp dụng mã "${res.code}". Giảm ${formatDiscount}!`);
+          : `${res.discount_amount}`;
+        this.couponSuccess.set(`Đã áp dụng mã "${res.code}".`);
       }
     });
   }
 
   public onCouponInput(code: string) {
     this.couponSubject.next(code);
-  }
-
-  public formatNumber(val: number): string {
-    return new Intl.NumberFormat('vi-VN').format(val);
   }
 
   public getFinalTotal(): number {
@@ -119,7 +123,7 @@ export class CartModalComponent implements OnInit {
     if (cartItems.length === 0) return;
 
     if (!this.state.isAuthenticated()) {
-      this.state.showToast('Vui lòng đăng nhập để đặt hàng!', 'warning');
+      this.state.showToast(this.lang.translate('cart.please_login'), 'warning');
       this.modalRef.close('login');
       return;
     }
@@ -137,22 +141,22 @@ export class CartModalComponent implements OnInit {
 
     this.apiService.post<any>('v1/orders', payload).subscribe({
       next: (res) => {
+        if (res && res.user) {
+          this.state.authStore.currentUser.set(res.user);
+        }
+        this.state.authStore.checkMe(true).subscribe();
         this.cart.clearCart();
-        this.state.showToast('Đặt hàng thành công! Đơn hàng đang chờ thanh toán.', 'success');
+        this.state.showToast(this.lang.translate('cart.order_success'), 'success');
         this.isSubmitting.set(false);
         this.modalRef.close('success');
       },
       error: (err) => {
         const rawMsg = err.error?.message;
-        let msg = typeof rawMsg === 'string' ? rawMsg : 'Có lỗi xảy ra khi tạo đơn hàng!';
-        if (msg.includes('Product is not available or has been discontinued')) {
-          msg = 'Sản phẩm không khả dụng hoặc đã bị ngừng kinh doanh. Vui lòng kiểm tra lại giỏ hàng!';
-        } else if (msg.includes('does not have enough stock available')) {
-          msg = 'Một hoặc nhiều sản phẩm trong giỏ hàng không đủ số lượng tồn kho khả dụng!';
-        }
+        let msg = typeof rawMsg === 'string' ? rawMsg : 'Order creation failed!';
         this.state.showToast(msg, 'error');
         this.isSubmitting.set(false);
       }
     });
   }
 }
+

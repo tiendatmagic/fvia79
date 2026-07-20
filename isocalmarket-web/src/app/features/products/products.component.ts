@@ -2,6 +2,7 @@ import { Component, OnInit, inject, signal, computed, ChangeDetectionStrategy } 
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { StateService } from '@core/services/state.service';
+import { LanguageService } from '@core/services/language.service';
 import { ButtonComponent } from '@shared/components/button/button.component';
 import { BadgeComponent } from '@shared/components/badge/badge.component';
 import { CardComponent } from '@shared/components/card/card.component';
@@ -14,6 +15,8 @@ import { ProductFormModalComponent } from './product-form-modal/product-form-mod
 import { CustomSelectComponent } from '@shared/components/custom-select/custom-select.component';
 import { PaginationComponent } from '@shared/components/pagination/pagination.component';
 import { TableComponent, TableCellDirective, TableColumn } from '@shared/components/table/table.component';
+import { TranslatePipe } from '@shared/pipes/translate.pipe';
+import { CurrencyPipe } from '@shared/pipes/currency.pipe';
 
 @Component({
   selector: 'app-products',
@@ -33,6 +36,8 @@ import { TableComponent, TableCellDirective, TableColumn } from '@shared/compone
     PaginationComponent,
     TableComponent,
     TableCellDirective,
+    TranslatePipe,
+    CurrencyPipe
   ],
   templateUrl: './products.component.html',
   styles: [`
@@ -44,16 +49,20 @@ import { TableComponent, TableCellDirective, TableColumn } from '@shared/compone
 export class ProductsComponent implements OnInit {
   public readonly state = inject(StateService);
   private readonly modalService = inject(ModalService);
+  public readonly lang = inject(LanguageService);
 
-  public readonly columns: TableColumn[] = [
-    { key: 'id', label: 'ID', sortable: true },
-    { key: 'name', label: 'Tên sản phẩm', sortable: true },
-    { key: 'slug', label: 'Slug', sortable: true },
-    { key: 'price', label: 'Đơn giá (VND)', sortable: true },
-    { key: 'available_count', label: 'Tồn kho khả dụng', sortable: true, align: 'center' },
-    { key: 'status', label: 'Trạng thái', sortable: true, align: 'center' },
-    { key: 'actions', label: 'Thao tác', sortable: false, align: 'right' }
-  ];
+  public readonly columns = computed<TableColumn[]>(() => {
+    this.lang.currentLang();
+    return [
+      { key: 'id', label: 'ID', sortable: true },
+      { key: 'name', label: this.lang.translate('modal.product_name'), sortable: true },
+      { key: 'slug', label: this.lang.translate('cat.slug'), sortable: true },
+      { key: 'price', label: this.lang.translate('modal.product_price'), sortable: true },
+      { key: 'available_count', label: this.lang.translate('inv.in_stock'), sortable: true, align: 'center' },
+      { key: 'status', label: this.lang.translate('common.status'), sortable: true, align: 'center' },
+      { key: 'actions', label: this.lang.translate('common.actions'), sortable: false, align: 'right' }
+    ];
+  });
 
   public searchQuery = '';
   private readonly _searchQuery = signal('');
@@ -68,15 +77,17 @@ export class ProductsComponent implements OnInit {
       label: c.name,
       value: c.id,
     }));
-    return [{ label: 'Tất cả danh mục', value: '' }, ...list];
+    return [{ label: this.lang.translate('cat.all_categories'), value: '' }, ...list];
   }
 
-  public readonly statusOptions = [
-    { label: 'Tất cả trạng thái', value: '' },
-    { label: 'Đang hoạt động', value: 'active' },
-    { label: 'Ngừng hoạt động', value: 'inactive' },
-    { label: 'Đã xóa', value: 'deleted' },
-  ];
+  public get statusOptions() {
+    return [
+      { label: this.lang.translate('common.all_status'), value: '' },
+      { label: this.lang.translate('common.active'), value: 'active' },
+      { label: this.lang.translate('common.inactive'), value: 'inactive' },
+      { label: this.lang.translate('common.deleted'), value: 'deleted' },
+    ];
+  }
 
   public readonly filteredProducts = computed(() => {
     return this.state.productStore.products();
@@ -134,7 +145,7 @@ export class ProductsComponent implements OnInit {
 
   public openCreateDrawer() {
     this.modalService.open(ProductFormModalComponent, {
-      title: 'Thêm Sản Phẩm Mới',
+      title: this.lang.translate('modal.add_product_title'),
       size: 'lg',
       data: null
     }).afterClosed$.subscribe((success) => {
@@ -146,11 +157,11 @@ export class ProductsComponent implements OnInit {
 
   public openEditDrawer(product: any) {
     if (product.is_deleted) {
-      this.state.showToast('Không thể chỉnh sửa sản phẩm đã bị xóa mềm!', 'error');
+      this.state.showToast(this.lang.translate('toast.edit_deleted_product'), 'error');
       return;
     }
     this.modalService.open(ProductFormModalComponent, {
-      title: 'Cập Nhật Sản Phẩm',
+      title: this.lang.translate('modal.edit_product_title'),
       size: 'lg',
       data: product
     }).afterClosed$.subscribe((success) => {
@@ -162,10 +173,10 @@ export class ProductsComponent implements OnInit {
 
   public confirmDelete(product: any) {
     this.modalService.confirm({
-      title: 'Xác nhận xóa sản phẩm',
-      description: `Bạn có chắc chắn muốn xóa sản phẩm '${product.name}'? Sản phẩm bị xóa sẽ được chuyển vào mục lưu trữ đã xóa.`,
-      confirmText: 'Xóa sản phẩm',
-      cancelText: 'Hủy',
+      title: this.lang.translate('modal.delete_product_title'),
+      description: `${this.lang.translate('modal.delete_product_desc')} (${product.name})`,
+      confirmText: this.lang.translate('action.delete'),
+      cancelText: this.lang.translate('action.cancel'),
       confirmButtonClass: 'btn-danger'
     }).afterClosed$.subscribe((confirmed?: boolean) => {
       if (confirmed) {
@@ -180,10 +191,10 @@ export class ProductsComponent implements OnInit {
 
   public restoreProduct(product: any) {
     this.modalService.confirm({
-      title: 'Xác nhận khôi phục sản phẩm',
-      description: `Bạn có chắc chắn muốn khôi phục sản phẩm '${product.name}'?`,
-      confirmText: 'Khôi phục',
-      cancelText: 'Hủy',
+      title: this.lang.translate('modal.restore_product_title'),
+      description: `${this.lang.translate('modal.restore_product_desc')} (${product.name})`,
+      confirmText: this.lang.translate('action.restore'),
+      cancelText: this.lang.translate('action.cancel'),
       confirmButtonClass: 'btn-primary'
     }).afterClosed$.subscribe((confirmed?: boolean) => {
       if (confirmed) {
@@ -199,7 +210,7 @@ export class ProductsComponent implements OnInit {
   public copyToClipboard(text: string, message: string) {
     navigator.clipboard.writeText(text).then(
       () => this.state.showToast(message, 'success'),
-      () => this.state.showToast('Không thể sao chép!', 'error')
+      () => this.state.showToast(this.lang.translate('toast.copy_error'), 'error')
     );
   }
 }

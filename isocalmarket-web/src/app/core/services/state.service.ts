@@ -9,6 +9,7 @@ import { OrderStore } from '../../features/orders/order.store';
 import { DepositStore } from '../../features/deposit/deposit.store';
 import { UserStore } from '../../features/admin-users/user.store';
 import { Web3Service } from './web3.service';
+import { LanguageService } from './language.service';
 
 @Injectable({
   providedIn: 'root'
@@ -17,6 +18,7 @@ export class StateService {
   private readonly uiStateService = inject(UiStateService);
   private readonly themeService = inject(ThemeService);
   private readonly toastService = inject(ToastService);
+  private readonly lang = inject(LanguageService);
   
   public readonly authStore = inject(AuthStore);
   public readonly productStore = inject(ProductStore);
@@ -54,7 +56,7 @@ export class StateService {
   public readonly balance = computed(() => '0.0000');
   public readonly networkName = computed(() => 'Web2 Mode');
   public readonly isWrongChain = computed(() => false);
-  public readonly chainSymbol = computed(() => 'VND');
+  public readonly chainSymbol = computed(() => '$');
   public readonly txSpeed = this.web3Service.txSpeed;
   public readonly gasMultiplier = this.web3Service.gasMultiplier;
   public readonly showWrongChainModal = computed(() => false);
@@ -74,7 +76,7 @@ export class StateService {
   }
 
   public async connectWallet() {
-    this.showToast('Hệ thống hiện đang chạy chế độ Web2, vui lòng đăng nhập bằng tài khoản!', 'warning');
+    this.showToast(this.lang.translate('toast.web2_mode_warning'), 'warning');
   }
 
   public async openNetworkModal() {}

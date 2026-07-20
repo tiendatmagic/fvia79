@@ -1,6 +1,7 @@
 import { Injectable, inject, signal } from '@angular/core';
 import { ApiService } from '@core/services/api.service';
 import { ToastService } from '@core/services/toast.service';
+import { LanguageService } from '@core/services/language.service';
 import { HttpParams } from '@angular/common/http';
 import { tap, finalize, catchError } from 'rxjs/operators';
 import { Observable, of, Subscription, Subject } from 'rxjs';
@@ -11,6 +12,7 @@ import { Observable, of, Subscription, Subject } from 'rxjs';
 export class AdminDepositStore {
   private readonly api = inject(ApiService);
   private readonly toast = inject(ToastService);
+  public readonly lang = inject(LanguageService);
 
   private activeFetchDepositsSub?: Subscription;
   private readonly depositsCache = new Map<string, { data: any; timestamp: number }>();
@@ -30,11 +32,11 @@ export class AdminDepositStore {
     limit: number,
     search?: string,
     status?: string,
-    paymentMethod?: string,
+    gateway?: string,
     startDate?: string,
     endDate?: string
   ): Observable<any> {
-    const cacheKey = JSON.stringify({ page, limit, search, status, paymentMethod, startDate, endDate });
+    const cacheKey = JSON.stringify({ page, limit, search, status, gateway, startDate, endDate });
     const cached = this.depositsCache.get(cacheKey);
 
     if (cached && (Date.now() - cached.timestamp < 30000)) { // Cache 30s
@@ -64,8 +66,8 @@ export class AdminDepositStore {
     if (status) {
       params = params.set('status', status);
     }
-    if (paymentMethod) {
-      params = params.set('payment_method', paymentMethod);
+    if (gateway) {
+      params = params.set('gateway', gateway);
     }
     if (startDate) {
       params = params.set('start_date', startDate);
@@ -87,7 +89,7 @@ export class AdminDepositStore {
         }
       }),
       catchError((err) => {
-        this.toast.showToast('Không thể tải danh sách hóa đơn nạp tiền!', 'error');
+        this.toast.showToast(this.lang.translate('toast.error_load_deposits'), 'error');
         return of(null);
       }),
       finalize(() => this.loading.set(false))
@@ -110,11 +112,11 @@ export class AdminDepositStore {
     this.loading.set(true);
     return this.api.post<any>(`v1/admin/deposits/${id}/approve`, { tx_hash: txHash }).pipe(
       tap((res) => {
-        this.toast.showToast('Duyệt hóa đơn nạp tiền thành công!', 'success');
+        this.toast.showToast(this.lang.translate('toast.deposit_approved'), 'success');
         this.clearCache();
       }),
       catchError((err) => {
-        const errorMsg = err.error?.message || 'Không thể duyệt hóa đơn nạp tiền!';
+        const errorMsg = err.error?.message || this.lang.translate('toast.deposit_approve_failed');
         this.toast.showToast(errorMsg, 'error');
         return of(null);
       }),
@@ -126,11 +128,11 @@ export class AdminDepositStore {
     this.loading.set(true);
     return this.api.post<any>(`v1/admin/deposits/${id}/reject`, {}).pipe(
       tap((res) => {
-        this.toast.showToast('Đã từ chối hóa đơn nạp tiền thành công!', 'success');
+        this.toast.showToast(this.lang.translate('toast.deposit_rejected'), 'success');
         this.clearCache();
       }),
       catchError((err) => {
-        const errorMsg = err.error?.message || 'Không thể từ chối hóa đơn nạp tiền!';
+        const errorMsg = err.error?.message || this.lang.translate('toast.deposit_reject_failed');
         this.toast.showToast(errorMsg, 'error');
         return of(null);
       }),

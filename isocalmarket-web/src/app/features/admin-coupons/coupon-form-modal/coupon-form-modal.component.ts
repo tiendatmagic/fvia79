@@ -7,6 +7,7 @@ import { CustomInputComponent } from '@shared/components/custom-input/custom-inp
 import { CustomSelectComponent } from '@shared/components/custom-select/custom-select.component';
 import { ButtonComponent } from '@shared/components/button/button.component';
 import { ToastService } from '@core/services/toast.service';
+import { LanguageService } from '@core/services/language.service';
 import { finalize } from 'rxjs/operators';
 
 @Component({
@@ -31,6 +32,7 @@ export class CouponFormModalComponent implements OnInit {
   private readonly modalData = inject(MODAL_DATA);
   private readonly couponStore = inject(CouponStore);
   private readonly toast = inject(ToastService);
+  public readonly lang = inject(LanguageService);
 
   public isEditMode = false;
   public editingId: any = null;
@@ -47,35 +49,25 @@ export class CouponFormModalComponent implements OnInit {
 
   public readonly typeOptions = [
     { label: 'Phần trăm (%)', value: 'percentage' },
-    { label: 'Số tiền cố định (VND)', value: 'fixed' }
+    { label: 'Số tiền cố định ($ / USD)', value: 'fixed' }
   ];
 
-  ngOnInit() {
-    const today = new Date();
-    const nextWeek = new Date();
-    nextWeek.setDate(today.getDate() + 7);
-
-    this.startDate = this.formatDate(today);
-    this.endDate = this.formatDate(nextWeek);
-
+  public ngOnInit() {
     if (this.modalData) {
       this.isEditMode = true;
       this.editingId = this.modalData.id;
       this.code = this.modalData.code;
       this.type = this.modalData.type;
       this.value = this.modalData.value;
-      this.minSpend = this.modalData.min_spend;
-      this.startDate = this.modalData.start_date ? this.modalData.start_date.substring(0, 10) : this.formatDate(today);
-      this.endDate = this.modalData.end_date ? this.modalData.end_date.substring(0, 10) : this.formatDate(nextWeek);
-      this.usageLimit = this.modalData.usage_limit;
+      this.minSpend = this.modalData.minSpend || 0;
+      if (this.modalData.startDate) {
+        this.startDate = this.modalData.startDate.substring(0, 10);
+      }
+      if (this.modalData.endDate) {
+        this.endDate = this.modalData.endDate.substring(0, 10);
+      }
+      this.usageLimit = this.modalData.usageLimit || 1;
     }
-  }
-
-  private formatDate(date: Date): string {
-    const yyyy = date.getFullYear();
-    const mm = String(date.getMonth() + 1).padStart(2, '0');
-    const dd = String(date.getDate()).padStart(2, '0');
-    return `${yyyy}-${mm}-${dd}`;
   }
 
   public onClose() {
@@ -86,34 +78,34 @@ export class CouponFormModalComponent implements OnInit {
     if (this.isSubmitting()) return;
 
     if (!this.code) {
-      this.toast.showToast('Vui lòng nhập mã giảm giá!', 'error');
+      this.toast.showToast(this.lang.translate('toast.coupon_code_required'), 'error');
       return;
     }
 
     if (this.value <= 0) {
-      this.toast.showToast('Giá trị giảm giá phải lớn hơn 0!', 'error');
+      this.toast.showToast(this.lang.translate('toast.coupon_value_min'), 'error');
       return;
     }
 
     if (this.type === 'percentage' && this.value > 100) {
-      this.toast.showToast('Phần trăm giảm giá tối đa là 100%!', 'error');
+      this.toast.showToast(this.lang.translate('toast.coupon_percentage_limit'), 'error');
       return;
     }
 
     if (!this.startDate) {
-      this.toast.showToast('Vui lòng chọn ngày bắt đầu!', 'error');
+      this.toast.showToast(this.lang.translate('toast.start_date_required'), 'error');
       return;
     }
 
     if (!this.endDate) {
-      this.toast.showToast('Vui lòng chọn ngày kết thúc!', 'error');
+      this.toast.showToast(this.lang.translate('toast.end_date_required'), 'error');
       return;
     }
 
     const start = new Date(this.startDate);
     const end = new Date(this.endDate);
     if (end <= start) {
-      this.toast.showToast('Ngày kết thúc phải sau ngày bắt đầu!', 'error');
+      this.toast.showToast(this.lang.translate('toast.coupon_date_invalid'), 'error');
       return;
     }
 

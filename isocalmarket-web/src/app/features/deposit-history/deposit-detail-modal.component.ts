@@ -3,8 +3,8 @@ import { CommonModule } from '@angular/common';
 import { MODAL_DATA, ModalRef } from '@core/services/modal-ref';
 import { IconComponent } from '@shared/components/icon/icon.component';
 import { ButtonComponent } from '@shared/components/button/button.component';
-import { BadgeComponent } from '@shared/components/badge/badge.component';
 import { ToastService } from '@core/services/toast.service';
+import { LanguageService } from '@core/services/language.service';
 
 @Component({
   selector: 'app-deposit-detail-modal',
@@ -19,6 +19,7 @@ import { ToastService } from '@core/services/toast.service';
 })
 export class DepositDetailModalComponent implements OnInit {
   private readonly toast = inject(ToastService);
+  private readonly lang = inject(LanguageService);
   public invoice: any;
 
   constructor(
@@ -41,9 +42,9 @@ export class DepositDetailModalComponent implements OnInit {
   public copyText(text: string, label: string): void {
     if (!text) return;
     navigator.clipboard.writeText(text).then(() => {
-      this.toast.showToast(`Đã sao chép ${label}!`, 'success');
+      this.toast.showToast(this.lang.translate('toast.copied'), 'success');
     }).catch(() => {
-      this.toast.showToast(`Không thể sao chép ${label}!`, 'error');
+      this.toast.showToast(this.lang.translate('toast.copy_error'), 'error');
     });
   }
 }

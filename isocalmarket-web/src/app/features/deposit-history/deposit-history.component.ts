@@ -15,6 +15,10 @@ import { TableComponent, TableCellDirective, TableColumn } from '@shared/compone
 import { ModalService } from '@core/services/modal.service';
 import { DepositDetailModalComponent } from './deposit-detail-modal.component';
 import { TooltipDirective } from '@shared/components/tooltip/tooltip.directive';
+import { TranslatePipe } from '@shared/pipes/translate.pipe';
+import { CurrencyPipe } from '@shared/pipes/currency.pipe';
+import { LanguageService } from '@core/services/language.service';
+import { computed } from '@angular/core';
 
 export interface DepositHistoryItem {
   id: string;
@@ -38,7 +42,6 @@ export interface DepositHistoryItem {
   imports: [
     CommonModule,
     RouterModule,
-    FormsModule,
     BadgeComponent,
     IconComponent,
     PaginationComponent,
@@ -47,9 +50,12 @@ export interface DepositHistoryItem {
     CustomSearchInputComponent,
     CustomSelectComponent,
     CustomDateTimeRangeComponent,
+    FormsModule,
     TableComponent,
     TableCellDirective,
     TooltipDirective,
+    TranslatePipe,
+    CurrencyPipe
   ],
   templateUrl: './deposit-history.component.html',
   styles: [`
@@ -62,15 +68,19 @@ export class DepositHistoryComponent implements OnInit {
   public readonly state = inject(StateService);
   private readonly router = inject(Router);
   private readonly modalService = inject(ModalService);
+  public readonly lang = inject(LanguageService);
 
-  public readonly columns: TableColumn[] = [
-    { key: 'code', label: 'Mã lệnh', sortable: true },
-    { key: 'amountUsdt', label: 'Số lượng (USDT)', sortable: true, align: 'right' },
-    { key: 'amountVnd', label: 'Quy đổi VND', sortable: true, align: 'right' },
-    { key: 'status', label: 'Trạng thái', sortable: true, align: 'center' },
-    { key: 'createdAt', label: 'Thời gian tạo', sortable: true },
-    { key: 'actions', label: 'Thao tác', sortable: false, align: 'right' }
-  ];
+  public readonly columns = computed<TableColumn[]>(() => {
+    this.lang.currentLang();
+    return [
+      { key: 'code', label: this.lang.translate('deposit.code'), sortable: true },
+      { key: 'amountUsdt', label: this.lang.translate('deposit.amount_usdt'), sortable: true, align: 'right' },
+      { key: 'amountVnd', label: this.lang.translate('deposit.equivalent_vnd'), sortable: true, align: 'right' },
+      { key: 'status', label: this.lang.translate('common.status'), sortable: true, align: 'center' },
+      { key: 'createdAt', label: this.lang.translate('common.created_at'), sortable: true },
+      { key: 'actions', label: this.lang.translate('common.actions'), sortable: false, align: 'right' }
+    ];
+  });
 
   public readonly currentPage = signal<number>(1);
   public readonly itemsPerPage = 10;
@@ -106,7 +116,7 @@ export class DepositHistoryComponent implements OnInit {
       this.selectedDateRange.startDate || undefined,
       this.selectedDateRange.endDate || undefined
     ).subscribe({
-      error: () => this.state.showToast('Không thể tải lịch sử nạp tiền!', 'error')
+      error: () => this.state.showToast(this.lang.translate('toast.deposit_history_failed'), 'error')
     });
   }
 
@@ -123,7 +133,7 @@ export class DepositHistoryComponent implements OnInit {
 
   public viewDetails(item: DepositHistoryItem) {
     this.modalService.open(DepositDetailModalComponent, {
-      title: 'Chi tiết lệnh nạp tiền',
+      title: this.lang.translate('modal.deposit_detail_title'),
       size: 'md',
       data: { invoice: item }
     });

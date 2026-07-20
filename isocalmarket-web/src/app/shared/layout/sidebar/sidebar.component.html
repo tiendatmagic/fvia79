@@ -27,7 +27,7 @@
       class="flex items-center gap-3.5 px-4 py-3 rounded-xl hover:bg-slate-100 dark:hover:bg-slate-800/50 text-slate-600 dark:text-slate-400 font-semibold text-sm transition-colors duration-200 cursor-pointer"
     >
       <app-icon name="home" class="w-5 h-5 flex-shrink-0" />
-      <span>Cửa hàng</span>
+      <span>{{ 'nav.home' | translate }}</span>
     </a>
 
     <a
@@ -36,7 +36,7 @@
       class="flex items-center gap-3.5 px-4 py-3 rounded-xl hover:bg-slate-100 dark:hover:bg-slate-800/50 text-slate-600 dark:text-slate-400 font-semibold text-sm transition-colors duration-200 cursor-pointer"
     >
       <app-icon name="orders" class="w-5 h-5 flex-shrink-0" />
-      <span>Lịch sử đơn hàng</span>
+      <span>{{ 'nav.order_history' | translate }}</span>
     </a>
 
     <a
@@ -46,7 +46,7 @@
       class="flex items-center gap-3.5 px-4 py-3 rounded-xl hover:bg-slate-100 dark:hover:bg-slate-800/50 text-slate-600 dark:text-slate-400 font-semibold text-sm transition-colors duration-200 cursor-pointer"
     >
       <app-icon name="wallet" class="w-5 h-5 flex-shrink-0" />
-      <span>Nạp tiền USDT</span>
+      <span>{{ 'nav.deposit' | translate }}</span>
     </a>
 
     <a
@@ -55,7 +55,7 @@
       class="flex items-center gap-3.5 px-4 py-3 rounded-xl hover:bg-slate-100 dark:hover:bg-slate-800/50 text-slate-600 dark:text-slate-400 font-semibold text-sm transition-colors duration-200 cursor-pointer"
     >
       <app-icon name="clock" class="w-5 h-5 flex-shrink-0" />
-      <span>Lịch sử nạp tiền</span>
+      <span>{{ 'nav.deposit_history' | translate }}</span>
     </a>
 
     <a
@@ -64,12 +64,12 @@
       class="flex items-center gap-3.5 px-4 py-3 rounded-xl hover:bg-slate-100 dark:hover:bg-slate-800/50 text-slate-600 dark:text-slate-400 font-semibold text-sm transition-colors duration-200 cursor-pointer"
     >
       <app-icon name="code" class="w-5 h-5 flex-shrink-0" />
-      <span>User API</span>
+      <span>{{ 'nav.user_api' | translate }}</span>
     </a>
 
-        <div *ngIf="stateService.isAdmin()" class="pt-4 pb-2">
+    <div *ngIf="stateService.isAdmin()" class="pt-4 pb-2">
       <span class="px-4 text-xs font-bold text-slate-400 uppercase tracking-wider">
-        Quản trị hệ thống
+        {{ 'nav.admin_section' | translate }}
       </span>
     </div>
 
@@ -80,7 +80,7 @@
       class="flex items-center gap-3.5 px-4 py-3 rounded-xl hover:bg-slate-100 dark:hover:bg-slate-800/50 text-slate-600 dark:text-slate-400 font-semibold text-sm transition-colors duration-200 cursor-pointer"
     >
       <app-icon name="dashboard" class="w-5 h-5 flex-shrink-0" />
-      <span>Tổng quan Dashboard</span>
+      <span>{{ 'nav.dashboard' | translate }}</span>
     </a>
 
     <a
@@ -90,7 +90,7 @@
       class="flex items-center gap-3.5 px-4 py-3 rounded-xl hover:bg-slate-100 dark:hover:bg-slate-800/50 text-slate-600 dark:text-slate-400 font-semibold text-sm transition-colors duration-200 cursor-pointer"
     >
       <app-icon name="list-bullet" class="w-5 h-5 flex-shrink-0" />
-      <span>Quản lý sản phẩm</span>
+      <span>{{ 'admin.manage_products' | translate }}</span>
     </a>
 
     <a
@@ -100,7 +100,7 @@
       class="flex items-center gap-3.5 px-4 py-3 rounded-xl hover:bg-slate-100 dark:hover:bg-slate-800/50 text-slate-600 dark:text-slate-400 font-semibold text-sm transition-colors duration-200 cursor-pointer"
     >
       <app-icon name="tag" class="w-5 h-5 flex-shrink-0" />
-      <span>Quản lý danh mục</span>
+      <span>{{ 'admin.manage_categories' | translate }}</span>
     </a>
 
     <a
@@ -110,7 +110,7 @@
       class="flex items-center gap-3.5 px-4 py-3 rounded-xl hover:bg-slate-100 dark:hover:bg-slate-800/50 text-slate-600 dark:text-slate-400 font-semibold text-sm transition-colors duration-200 cursor-pointer"
     >
       <app-icon name="gift" class="w-5 h-5 flex-shrink-0" />
-      <span>Quản lý mã giảm giá</span>
+      <span>{{ 'nav.coupons' | translate }}</span>
     </a>
 
     <a
@@ -120,7 +120,7 @@
       class="flex items-center gap-3.5 px-4 py-3 rounded-xl hover:bg-slate-100 dark:hover:bg-slate-800/50 text-slate-600 dark:text-slate-400 font-semibold text-sm transition-colors duration-200 cursor-pointer"
     >
       <app-icon name="inventory" class="w-5 h-5 flex-shrink-0" />
-      <span>Quản lý kho hàng</span>
+      <span>{{ 'admin.manage_inventory' | translate }}</span>
     </a>
 
     <a
@@ -130,7 +130,7 @@
       class="flex items-center gap-3.5 px-4 py-3 rounded-xl hover:bg-slate-100 dark:hover:bg-slate-800/50 text-slate-600 dark:text-slate-400 font-semibold text-sm transition-colors duration-200 cursor-pointer"
     >
       <app-icon name="orders" class="w-5 h-5 flex-shrink-0" />
-      <span>Quản lý đơn hàng</span>
+      <span>{{ 'admin.manage_orders' | translate }}</span>
     </a>
 
     <a
@@ -140,7 +140,7 @@
       class="flex items-center gap-3.5 px-4 py-3 rounded-xl hover:bg-slate-100 dark:hover:bg-slate-800/50 text-slate-600 dark:text-slate-400 font-semibold text-sm transition-colors duration-200 cursor-pointer"
     >
       <app-icon name="customers" class="w-5 h-5 flex-shrink-0" />
-      <span>Quản lý thành viên</span>
+      <span>{{ 'admin.manage_users' | translate }}</span>
     </a>
 
     <a
@@ -150,7 +150,7 @@
       class="flex items-center gap-3.5 px-4 py-3 rounded-xl hover:bg-slate-100 dark:hover:bg-slate-800/50 text-slate-600 dark:text-slate-400 font-semibold text-sm transition-colors duration-200 cursor-pointer"
     >
       <app-icon name="wallet" class="w-5 h-5 flex-shrink-0" />
-      <span>Quản lý nạp tiền</span>
+      <span>{{ 'nav.deposits' | translate }}</span>
     </a>
 
     <a
@@ -160,7 +160,7 @@
       class="flex items-center gap-3.5 px-4 py-3 rounded-xl hover:bg-slate-100 dark:hover:bg-slate-800/50 text-slate-600 dark:text-slate-400 font-semibold text-sm transition-colors duration-200 cursor-pointer"
     >
       <app-icon name="settings" class="w-5 h-5 flex-shrink-0" />
-      <span>Cấu hình hệ thống</span>
+      <span>{{ 'nav.settings' | translate }}</span>
     </a>
 
     <a
@@ -170,11 +170,11 @@
       class="flex items-center gap-3.5 px-4 py-3 rounded-xl hover:bg-slate-100 dark:hover:bg-slate-800/50 text-slate-600 dark:text-slate-400 font-semibold text-sm transition-colors duration-200 cursor-pointer"
     >
       <app-icon name="code" class="w-5 h-5 flex-shrink-0" />
-      <span>Admin API</span>
+      <span>{{ 'nav.admin_api' | translate }}</span>
     </a>
   </nav>
 
-    <div
+  <div
     class="px-5 py-4 border-t border-slate-100 dark:border-slate-800/60 bg-slate-50/30 dark:bg-slate-900/10"
   >
     <app-theme-switcher />

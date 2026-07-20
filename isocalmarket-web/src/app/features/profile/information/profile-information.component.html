@@ -1,8 +1,8 @@
 <div class="space-y-6">
   <div class="pb-1">
-    <h3 class="text-lg font-black text-slate-800 dark:text-slate-200">Thông tin cá nhân</h3>
+    <h3 class="text-lg font-black text-slate-800 dark:text-slate-200">{{ 'profile.personal_info' | translate }}</h3>
     <p class="text-xs text-slate-400 dark:text-slate-500 font-bold mt-0.5">
-      Cập nhật thông tin liên hệ của bạn.
+      {{ 'profile.update_contact' | translate }}
     </p>
   </div>
 
@@ -11,16 +11,16 @@
   <form (ngSubmit)="onSave()" class="space-y-5">
     <div class="form-field">
       <label class="text-xs font-bold text-slate-400 dark:text-slate-500 uppercase tracking-wider block mb-1.5"
-        >Tên đăng nhập (Username)</label
+        >{{ 'usr.username' | translate }}</label
       >
       <app-custom-input [(ngModel)]="username" name="username" [disabled]="true" />
     </div>
 
     <div class="form-field">
       <label class="text-xs font-bold text-slate-400 dark:text-slate-500 uppercase tracking-wider block mb-1.5"
-        >Họ và Tên <span class="text-red-500">*</span></label
+        >{{ 'usr.name' | translate }} <span class="text-red-500">*</span></label
       >
-      <app-custom-input [(ngModel)]="name" name="name" placeholder="Nhập họ và tên của bạn" />
+      <app-custom-input [(ngModel)]="name" name="name" [placeholder]="'profile.name_placeholder' | translate" />
     </div>
 
     <div class="form-field">
@@ -32,12 +32,12 @@
 
     <div class="form-field">
       <label class="text-xs font-bold text-slate-400 dark:text-slate-500 uppercase tracking-wider block mb-1.5"
-        >Số điện thoại</label
+        >{{ 'usr.phone' | translate }}</label
       >
       <app-custom-input
         [(ngModel)]="phone"
         name="phone"
-        [placeholder]="'Nhập số điện thoại của bạn'"
+        [placeholder]="'profile.phone_placeholder' | translate"
       />
     </div>
 
@@ -49,7 +49,7 @@
         type="submit"
         class="px-6 py-2.5 rounded-xl font-bold bg-[var(--color-primary)] text-white shadow-md shadow-[var(--color-primary)]/10"
       >
-        Lưu thay đổi
+        {{ 'action.save' | translate }}
       </button>
     </div>
   </form>

@@ -2,6 +2,7 @@ import { Component, OnInit, inject, signal, computed, ChangeDetectionStrategy } 
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { StateService } from '@core/services/state.service';
+import { LanguageService } from '@core/services/language.service';
 import { CustomSelectComponent } from '@shared/components/custom-select/custom-select.component';
 import { ButtonComponent } from '@shared/components/button/button.component';
 import { BadgeComponent } from '@shared/components/badge/badge.component';
@@ -16,6 +17,7 @@ import { CustomSearchInputComponent } from '@shared/components/custom-search-inp
 import { TooltipDirective } from '@shared/components/tooltip/tooltip.directive';
 import { ActivatedRoute } from '@angular/router';
 import { TableComponent, TableCellDirective, TableColumn } from '@shared/components/table/table.component';
+import { TranslatePipe } from '@shared/pipes/translate.pipe';
 
 @Component({
   selector: 'app-inventory',
@@ -24,17 +26,18 @@ import { TableComponent, TableCellDirective, TableColumn } from '@shared/compone
   imports: [
     CommonModule,
     FormsModule,
-    CustomSelectComponent,
     ButtonComponent,
     BadgeComponent,
     CardComponent,
     PageHeaderComponent,
     IconComponent,
-    PaginationComponent,
     CustomSearchInputComponent,
     TooltipDirective,
+    CustomSelectComponent,
+    PaginationComponent,
     TableComponent,
     TableCellDirective,
+    TranslatePipe
   ],
   templateUrl: './inventory.component.html',
   styles: [`
@@ -47,15 +50,19 @@ export class InventoryComponent implements OnInit {
   public readonly state = inject(StateService);
   private readonly modalService = inject(ModalService);
   private readonly route = inject(ActivatedRoute);
+  public readonly lang = inject(LanguageService);
 
-  public readonly columns: TableColumn[] = [
-    { key: 'id', label: 'ID Lô', sortable: true },
-    { key: 'product_id', label: 'Tên sản phẩm', sortable: true },
-    { key: 'batch_name', label: 'Tên Lô Hàng', sortable: true },
-    { key: 'available_count', label: 'Số lượng (Khả dụng / Ban đầu)', sortable: true, align: 'center' },
-    { key: 'status', label: 'Trạng thái', sortable: true, align: 'center' },
-    { key: 'actions', label: 'Thao tác', sortable: false, align: 'right' }
-  ];
+  public readonly columns = computed<TableColumn[]>(() => {
+    this.lang.currentLang();
+    return [
+      { key: 'id', label: 'ID', sortable: true },
+      { key: 'product_id', label: this.lang.translate('modal.product_name'), sortable: true },
+      { key: 'batch_name', label: this.lang.translate('inv.batch_name'), sortable: true },
+      { key: 'available_count', label: this.lang.translate('inv.in_stock'), sortable: true, align: 'center' },
+      { key: 'status', label: this.lang.translate('common.status'), sortable: true, align: 'center' },
+      { key: 'actions', label: this.lang.translate('common.actions'), sortable: false, align: 'right' }
+    ];
+  });
 
   public selectedProductFilter = '';
   public selectedStatusFilter = '';
@@ -66,19 +73,21 @@ export class InventoryComponent implements OnInit {
   public readonly limit = 10;
   public readonly loadingItemId = signal<string | null>(null);
 
-  public statusFilterOptions = [
-    { label: 'Tất cả trạng thái', value: '' },
-    { label: 'Hoạt động', value: 'active' },
-    { label: 'Hoàn thành', value: 'completed' },
-    { label: 'Tạm khóa', value: 'inactive' }
-  ];
+  public get statusFilterOptions() {
+    return [
+      { label: this.lang.translate('common.all_status'), value: '' },
+      { label: this.lang.translate('common.active'), value: 'active' },
+      { label: this.lang.translate('common.completed'), value: 'completed' },
+      { label: this.lang.translate('common.inactive'), value: 'inactive' }
+    ];
+  }
 
   public get productOptions() {
     const options = this.state.productStore.products().map(p => ({
       label: p.name,
       value: String(p.id)
     }));
-    return [{ label: 'Chọn sản phẩm', value: '' }, ...options];
+    return [{ label: this.lang.translate('modal.product_category'), value: '' }, ...options];
   }
 
   public get productFilterOptions() {
@@ -86,7 +95,7 @@ export class InventoryComponent implements OnInit {
       label: p.name,
       value: String(p.id)
     }));
-    return [{ label: 'Tất cả sản phẩm', value: '' }, ...options];
+    return [{ label: this.lang.translate('common.all_products'), value: '' }, ...options];
   }
 
   ngOnInit() {
@@ -127,7 +136,7 @@ export class InventoryComponent implements OnInit {
 
   public openImportDrawer(defaultProductId?: string) {
     this.modalService.open(ImportInventoryModalComponent, {
-      title: 'Import Tài Nguyên Số',
+      title: this.lang.translate('modal.import_stock_title'),
       size: '2xl',
       data: {
         selectedProductId: defaultProductId || this.selectedProductFilter || '',
@@ -156,7 +165,7 @@ export class InventoryComponent implements OnInit {
         }));
 
         this.modalService.open(EditInventoryModalComponent, {
-          title: 'Chỉnh sửa tài nguyên',
+          title: this.lang.translate('modal.edit_stock_title'),
           size: '2xl',
           data: {
             item: freshItem,
@@ -177,10 +186,10 @@ export class InventoryComponent implements OnInit {
 
   public confirmDeleteItem(item: any) {
     this.modalService.confirm({
-      title: 'Xác nhận xóa tài nguyên',
-      description: `Bạn có chắc chắn muốn xóa tài nguyên này ra khỏi kho? Hành động này không thể hoàn tác.`,
-      confirmText: 'Xóa tài nguyên',
-      cancelText: 'Hủy',
+      title: this.lang.translate('modal.delete_inventory_title'),
+      description: this.lang.translate('modal.delete_inventory_desc'),
+      confirmText: this.lang.translate('action.delete'),
+      cancelText: this.lang.translate('action.cancel'),
       confirmButtonClass: 'btn-danger'
     }).afterClosed$.subscribe((confirmed?: boolean) => {
       if (confirmed) {
@@ -194,10 +203,11 @@ export class InventoryComponent implements OnInit {
     });
   }
 
-  public copyToClipboard(text: string, message: string = 'Đã sao chép!') {
+  public copyToClipboard(text: string, message?: string) {
+    const successMsg = message || this.lang.translate('toast.copied');
     navigator.clipboard.writeText(text).then(
-      () => this.state.showToast(message, 'success'),
-      () => this.state.showToast('Không thể sao chép!', 'error')
+      () => this.state.showToast(successMsg, 'success'),
+      () => this.state.showToast(this.lang.translate('toast.copy_error'), 'error')
     );
   }
 }

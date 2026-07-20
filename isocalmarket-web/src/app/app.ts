@@ -1,6 +1,7 @@
 import { Component, inject, OnInit, effect, signal } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { RouterOutlet, RouterModule } from '@angular/router';
+import { RouterOutlet, RouterModule, Router, NavigationEnd } from '@angular/router';
+import { filter } from 'rxjs/operators';
 import { HeaderComponent } from '@shared/layout/header/header.component';
 import { ToastComponent } from '@shared/components/toast/toast.component';
 import { IconComponent } from '@shared/components/icon/icon.component';
@@ -30,6 +31,7 @@ import { MaintenanceComponent } from '@features/maintenance/maintenance.componen
 })
 export class App implements OnInit {
   public stateService = inject(StateService);
+  private router = inject(Router);
   public hasBeenOpened = signal<boolean>(false);
   public activeMenuState = signal<boolean>(false);
 
@@ -54,6 +56,12 @@ export class App implements OnInit {
 
   ngOnInit() {
     this.stateService.authStore.checkMe().subscribe();
+
+    this.router.events.pipe(
+      filter(event => event instanceof NavigationEnd)
+    ).subscribe(() => {
+      this.stateService.authStore.checkMe().subscribe();
+    });
   }
 }
 

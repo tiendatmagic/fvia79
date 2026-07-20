@@ -1,7 +1,7 @@
 <div class="max-w-[1530px] mx-auto w-full p-4 sm:p-6 space-y-6">
   <app-page-header
-    title="Quản Lý Mã Giảm Giá"
-    description="Quản lý danh sách các chương trình khuyến mãi, mã giảm giá áp dụng cho khách hàng mua tài nguyên MMO."
+    [title]="'coup.title' | translate"
+    [description]="'coup.description' | translate"
   >
     <ng-container actions>
       <button
@@ -9,7 +9,7 @@
         class="px-4 py-2.5 text-sm font-extrabold text-slate-600 dark:text-slate-400 hover:text-primary bg-white dark:bg-slate-950 border border-slate-200/60 dark:border-slate-800/80 rounded-xl hover:bg-slate-50 dark:hover:bg-slate-900 transition-all cursor-pointer flex items-center gap-1.5"
       >
         <app-icon name="sync" class="w-4 h-4" />
-        Tải lại
+        {{ 'common.reload' | translate }}
       </button>
       <button
         app-button
@@ -18,7 +18,7 @@
         class="flex items-center gap-2 py-2.5 px-4 rounded-xl bg-gradient-to-r from-[var(--color-primary)] to-[var(--color-secondary)] text-white font-extrabold shadow-md shadow-[var(--color-primary)]/15 active:scale-95 transition-all text-sm cursor-pointer"
       >
         <app-icon name="plus" class="w-5 h-5" />
-        Thêm Mã Giảm Giá
+        Add Coupon
       </button>
     </ng-container>
   </app-page-header>
@@ -27,7 +27,7 @@
     class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 bg-slate-50/50 dark:bg-slate-950/20 border border-slate-200/30 dark:border-slate-800/30 rounded-2xl p-4 sm:p-5"
   >
     <div class="form-field">
-      <label class="text-xs font-bold text-slate-400 dark:text-slate-500 uppercase tracking-wider block mb-1">Trạng thái</label>
+      <label class="text-xs font-bold text-slate-400 dark:text-slate-500 uppercase tracking-wider block mb-1">{{ 'common.status' | translate }}</label>
       <app-custom-select
         [options]="statusOptions"
         valueKey="value"
@@ -38,7 +38,7 @@
     </div>
 
     <div class="form-field">
-      <label class="text-xs font-bold text-slate-400 dark:text-slate-500 uppercase tracking-wider block mb-1">Loại giảm giá</label>
+      <label class="text-xs font-bold text-slate-400 dark:text-slate-500 uppercase tracking-wider block mb-1">Discount Type</label>
       <app-custom-select
         [options]="typeOptions"
         valueKey="value"
@@ -49,9 +49,9 @@
     </div>
 
     <div class="form-field">
-      <label class="text-xs font-bold text-slate-400 dark:text-slate-500 uppercase tracking-wider block mb-1">Tìm kiếm mã giảm giá</label>
+      <label class="text-xs font-bold text-slate-400 dark:text-slate-500 uppercase tracking-wider block mb-1">{{ 'common.search' | translate }}</label>
       <app-custom-search-input
-        [placeholder]="'Tìm kiếm theo mã giảm giá...'"
+        [placeholder]="'common.search_placeholder' | translate"
         [(ngModel)]="searchQuery"
         name="searchQuery"
         (valueChange)="onSearch($event)"
@@ -63,10 +63,10 @@
 
   <div app-card class="overflow-hidden !p-0">
     <app-table
-      [columns]="columns"
+      [columns]="columns()"
       [data]="filteredCoupons()"
       [loading]="couponStore.loading()"
-      emptyText="Chưa có mã giảm giá nào phù hợp. Nhấp vào nút 'Thêm Mã Giảm Giá' để bắt đầu!"
+      [emptyText]="'No coupons found.'"
     >
       <ng-template appTableCell="code" let-row="row">
         <div class="flex items-center gap-1.5">
@@ -102,13 +102,12 @@
       <ng-template appTableCell="value" let-row="row">
         <span
           class="font-extrabold text-slate-800 dark:text-slate-100 text-sm whitespace-nowrap"
-          [appTooltip]="'Mức giảm: ' + (row.type === 'percentage' ? row.value + '%' : (row.value | number: '1.0-0') + ' VND')"
           [ngClass]="{ 'line-through opacity-40 text-slate-400 dark:text-slate-500': row.is_deleted }"
         >
           @if (row.type === 'percentage') {
             {{ row.value }}%
           } @else {
-            {{ row.value | number: '1.0-0' }} VND
+            {{ row.value | appCurrency }}
           }
         </span>
       </ng-template>
@@ -116,10 +115,9 @@
       <ng-template appTableCell="min_spend" let-row="row">
         <span
           class="text-slate-600 dark:text-slate-300 font-semibold text-xs whitespace-nowrap"
-          [appTooltip]="'Đơn hàng tối thiểu: ' + (row.min_spend | number: '1.0-0') + ' VND'"
           [ngClass]="{ 'line-through opacity-40 text-slate-400 dark:text-slate-500': row.is_deleted }"
         >
-          {{ row.min_spend | number: '1.0-0' }} VND
+          {{ row.min_spend | appCurrency }}
         </span>
       </ng-template>
 

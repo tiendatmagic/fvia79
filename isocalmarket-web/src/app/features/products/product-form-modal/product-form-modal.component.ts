@@ -7,6 +7,8 @@ import { CustomInputComponent } from '@shared/components/custom-input/custom-inp
 import { CustomSelectComponent } from '@shared/components/custom-select/custom-select.component';
 import { ButtonComponent } from '@shared/components/button/button.component';
 import { IconComponent } from '@shared/components/icon/icon.component';
+import { TranslatePipe } from '@shared/pipes/translate.pipe';
+import { LanguageService } from '@core/services/language.service';
 import { finalize } from 'rxjs/operators';
 
 @Component({
@@ -18,7 +20,8 @@ import { finalize } from 'rxjs/operators';
     CustomInputComponent,
     CustomSelectComponent,
     ButtonComponent,
-    IconComponent
+    IconComponent,
+    TranslatePipe
   ],
   templateUrl: './product-form-modal.component.html',
   styles: [`
@@ -31,6 +34,7 @@ export class ProductFormModalComponent implements OnInit {
   private readonly modalRef = inject(ModalRef);
   private readonly modalData = inject(MODAL_DATA);
   public readonly state = inject(StateService);
+  public readonly lang = inject(LanguageService);
 
   public isEditMode = false;
   public editingId: any = null;
@@ -43,15 +47,17 @@ export class ProductFormModalComponent implements OnInit {
   public readonly isSubmitting = signal(false);
   public attributes: { label: string, value: string }[] = [];
 
-  public statusOptions = [
-    { label: 'Hoạt động', value: 'active' },
-    { label: 'Ngưng hoạt động', value: 'inactive' }
-  ];
+  public get statusOptions() {
+    return [
+      { label: this.lang.translate('common.active'), value: 'active' },
+      { label: this.lang.translate('common.inactive'), value: 'inactive' }
+    ];
+  }
 
   public categoryOptions = computed(() => {
     const list = this.state.productStore.categories();
     return [
-      { label: '-- Không thuộc danh mục nào --', value: '' },
+      { label: `-- ${this.lang.translate('common.all_categories')} --`, value: '' },
       ...list.map(cat => ({ label: cat.name, value: cat.id }))
     ];
   });
@@ -60,7 +66,7 @@ export class ProductFormModalComponent implements OnInit {
     this.state.productStore.fetchCategories().subscribe();
     if (this.modalData) {
       if (this.modalData.is_deleted) {
-        this.state.showToast('Không thể chỉnh sửa sản phẩm đã bị xóa mềm!', 'error');
+        this.state.showToast(this.lang.translate('toast.copy_error'), 'error');
         this.modalRef.close(false);
         return;
       }
@@ -91,7 +97,7 @@ export class ProductFormModalComponent implements OnInit {
   public onSubmit() {
     if (this.isSubmitting()) return;
     if (!this.name || this.price < 0) {
-      this.state.showToast('Vui lòng điền thông tin hợp lệ!', 'error');
+      this.state.showToast(this.lang.translate('toast.invalid_info'), 'error');
       return;
     }
 

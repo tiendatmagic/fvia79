@@ -5,6 +5,8 @@ import { PageHeaderComponent } from '@shared/components/page-header/page-header.
 import { CardComponent } from '@shared/components/card/card.component';
 import { ButtonComponent } from '@shared/components/button/button.component';
 import { IconComponent } from '@shared/components/icon/icon.component';
+import { LanguageService } from '@core/services/language.service';
+import { TranslatePipe } from '@shared/pipes/translate.pipe';
 import { environment } from '@environments/environment';
 import { RouterModule } from '@angular/router';
 
@@ -17,7 +19,8 @@ import { RouterModule } from '@angular/router';
     CardComponent,
     ButtonComponent,
     IconComponent,
-    RouterModule
+    RouterModule,
+    TranslatePipe
   ],
   templateUrl: './user-api.component.html',
   styles: [`
@@ -51,15 +54,17 @@ export class UserApiComponent {
     return this.state.currentUser()?.api_key || null;
   });
 
+  public readonly lang = inject(LanguageService);
+
   public copyToClipboard(text: string, title: string) {
     if (typeof navigator !== 'undefined' && navigator.clipboard) {
       navigator.clipboard.writeText(text).then(() => {
-        this.state.showToast(`Đã sao chép ${title} vào bộ nhớ tạm!`, 'success');
+        this.state.showToast(this.lang.translate('toast.copied'), 'success');
       }).catch(() => {
-        this.state.showToast('Lỗi khi sao chép!', 'error');
+        this.state.showToast(this.lang.translate('toast.copy_error'), 'error');
       });
     } else {
-      this.state.showToast('Trình duyệt không hỗ trợ sao chép tự động!', 'warning');
+      this.state.showToast(this.lang.translate('toast.copy_not_supported'), 'warning');
     }
   }
 

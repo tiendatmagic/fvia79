@@ -1,7 +1,7 @@
 <div class="max-w-[1530px] mx-auto w-full px-4 sm:px-6 py-6 space-y-6">
   <app-page-header
-    title="Tổng Quan Dashboard"
-    description="Thống kê hiệu suất kinh doanh & Tình trạng kho hàng số."
+    [title]="'nav.dashboard' | translate"
+    [description]="'dash.description' | translate"
   >
     <ng-container actions>
       <button
@@ -9,7 +9,7 @@
         class="px-4 py-2.5 text-sm font-extrabold text-slate-600 dark:text-slate-400 hover:text-primary bg-white dark:bg-slate-950 border border-slate-200/60 dark:border-slate-800/80 rounded-xl hover:bg-slate-50 dark:hover:bg-slate-900 transition-all cursor-pointer flex items-center gap-1.5"
       >
         <app-icon name="sync" class="w-4 h-4" />
-        Làm mới
+        {{ 'common.reload' | translate }}
       </button>
     </ng-container>
   </app-page-header>
@@ -18,20 +18,20 @@
     class="grid grid-cols-1 md:grid-cols-3 gap-4 bg-slate-50 dark:bg-slate-900/40 border border-slate-200/30 dark:border-slate-800/30 rounded-2xl p-4 sm:p-5"
   >
     <div class="form-field">
-      <label>Bộ lọc Khoảng thời gian</label>
+      <label>{{ 'common.filter_date' | translate }}</label>
       <app-custom-date-time-range
         [(ngModel)]="selectedDateRange"
         (ngModelChange)="loadStats()"
         [showPresets]="true"
         [showTime]="false"
-        placeholder="Lọc theo thời gian thống kê..."
+        [placeholder]="'common.select_date' | translate"
       />
     </div>
 
     <div
       class="flex items-center md:col-span-2 text-xs text-slate-400 dark:text-slate-500 font-medium md:pt-6"
     >
-      <span>* Số liệu doanh thu và số đơn hàng sẽ được thống kê trong khoảng thời gian này.</span>
+      <span>* {{ 'dash.filter_note' | translate }}</span>
     </div>
   </div>
 
@@ -54,10 +54,11 @@
   </div>
 
   <div *ngIf="!loading() && stats()" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 2xl:grid-cols-5 gap-4">
-        <app-card class="flex flex-col justify-between min-h-[136px] h-auto p-4 md:p-5 overflow-hidden">
+    <!-- Total Revenue -->
+    <app-card class="flex flex-col justify-between min-h-[136px] h-auto p-4 md:p-5 overflow-hidden">
       <div class="flex items-center justify-between">
         <span class="text-xs font-bold text-slate-400 dark:text-slate-500 uppercase tracking-wider">
-          Tổng Doanh Thu
+          {{ 'dash.total_revenue' | translate }}
         </span>
         <div class="w-9 h-9 rounded-xl bg-blue-50 dark:bg-blue-950/30 flex items-center justify-center text-[var(--color-primary)]">
           <app-icon name="cash" class="w-4.5 h-4.5" />
@@ -65,17 +66,17 @@
       </div>
       <div class="space-y-1.5 mt-2">
         <h2 class="text-lg md:text-2xl font-black text-slate-800 dark:text-white tracking-tight leading-none whitespace-nowrap">
-          {{ stats().total_revenue | number }}
-          <span class="text-xs font-extrabold text-slate-500 ml-0.5">VND</span>
+          {{ stats().total_revenue | appCurrency }}
         </h2>
-        <app-badge variant="success" size="sm" rounded="md">Đã thanh toán</app-badge>
+        <app-badge variant="success" size="sm" rounded="md">{{ 'status.completed' | translate }}</app-badge>
       </div>
     </app-card>
 
-        <app-card class="flex flex-col justify-between min-h-[136px] h-auto p-4 md:p-5 overflow-hidden">
+    <!-- Total Orders -->
+    <app-card class="flex flex-col justify-between min-h-[136px] h-auto p-4 md:p-5 overflow-hidden">
       <div class="flex items-center justify-between">
         <span class="text-xs font-bold text-slate-400 dark:text-slate-500 uppercase tracking-wider">
-          Tổng Đơn Hàng
+          {{ 'dash.total_orders' | translate }}
         </span>
         <div class="w-9 h-9 rounded-xl bg-slate-100 dark:bg-slate-800/50 flex items-center justify-center text-slate-500">
           <app-icon name="orders" class="w-4.5 h-4.5" />
@@ -84,16 +85,17 @@
       <div class="space-y-1.5 mt-2">
         <h2 class="text-lg md:text-2xl font-black text-slate-800 dark:text-white tracking-tight leading-none whitespace-nowrap">
           {{ stats().total_orders | number }}
-          <span class="text-xs font-extrabold text-slate-500 ml-0.5">Đơn</span>
+          <span class="text-xs font-extrabold text-slate-500 ml-0.5">{{ 'dash.unit_orders' | translate }}</span>
         </h2>
-        <app-badge variant="neutral" size="sm" rounded="md">Toàn hệ thống</app-badge>
+        <app-badge variant="neutral" size="sm" rounded="md">{{ 'dash.all_system' | translate }}</app-badge>
       </div>
     </app-card>
 
-        <app-card class="flex flex-col justify-between min-h-[136px] h-auto p-4 md:p-5 overflow-hidden">
+    <!-- Product Categories -->
+    <app-card class="flex flex-col justify-between min-h-[136px] h-auto p-4 md:p-5 overflow-hidden">
       <div class="flex items-center justify-between">
         <span class="text-xs font-bold text-slate-400 dark:text-slate-500 uppercase tracking-wider">
-          Danh mục Sản phẩm
+          {{ 'dash.product_categories' | translate }}
         </span>
         <div class="w-9 h-9 rounded-xl bg-teal-50 dark:bg-teal-950/30 flex items-center justify-center text-[var(--color-secondary)]">
           <app-icon name="list-bullet" class="w-4.5 h-4.5" />
@@ -102,16 +104,17 @@
       <div class="space-y-1.5 mt-2">
         <h2 class="text-lg md:text-2xl font-black text-slate-800 dark:text-white tracking-tight leading-none whitespace-nowrap">
           {{ stats().total_products | number }}
-          <span class="text-xs font-extrabold text-slate-500 ml-0.5">Mục</span>
+          <span class="text-xs font-extrabold text-slate-500 ml-0.5">{{ 'dash.unit_items' | translate }}</span>
         </h2>
-        <app-badge variant="secondary" size="sm" rounded="md">Đang hoạt động</app-badge>
+        <app-badge variant="secondary" size="sm" rounded="md">{{ 'status.active' | translate }}</app-badge>
       </div>
     </app-card>
 
-        <app-card class="flex flex-col justify-between min-h-[136px] h-auto p-4 md:p-5 overflow-hidden">
+    <!-- Available Inventory -->
+    <app-card class="flex flex-col justify-between min-h-[136px] h-auto p-4 md:p-5 overflow-hidden">
       <div class="flex items-center justify-between">
         <span class="text-xs font-bold text-slate-400 dark:text-slate-500 uppercase tracking-wider">
-          Tồn Kho Khả Dụng
+          {{ 'dash.available_inventory' | translate }}
         </span>
         <div class="w-9 h-9 rounded-xl bg-amber-50 dark:bg-amber-950/30 flex items-center justify-center text-amber-500">
           <app-icon name="inventory" class="w-4.5 h-4.5" />
@@ -120,16 +123,17 @@
       <div class="space-y-1.5 mt-2">
         <h2 class="text-lg md:text-2xl font-black text-slate-800 dark:text-white tracking-tight leading-none whitespace-nowrap">
           {{ stats().total_available_inventory | number }}
-          <span class="text-xs font-extrabold text-slate-500 ml-0.5">Tài nguyên</span>
+          <span class="text-xs font-extrabold text-slate-500 ml-0.5">{{ 'dash.unit_resources' | translate }}</span>
         </h2>
-        <app-badge variant="warning" size="sm" rounded="md">Sẵn sàng bán</app-badge>
+        <app-badge variant="warning" size="sm" rounded="md">{{ 'dash.ready_to_sell' | translate }}</app-badge>
       </div>
     </app-card>
 
-        <app-card class="sm:col-span-2 lg:col-span-1 flex flex-col justify-between min-h-[136px] h-auto p-4 md:p-5 overflow-hidden">
+    <!-- Total Users -->
+    <app-card class="sm:col-span-2 lg:col-span-1 flex flex-col justify-between min-h-[136px] h-auto p-4 md:p-5 overflow-hidden">
       <div class="flex items-center justify-between">
         <span class="text-xs font-bold text-slate-400 dark:text-slate-500 uppercase tracking-wider">
-          Tổng Người Dùng
+          {{ 'dash.total_users' | translate }}
         </span>
         <div class="w-9 h-9 rounded-xl bg-purple-50 dark:bg-purple-950/30 flex items-center justify-center text-purple-500">
           <app-icon name="customers" class="w-4.5 h-4.5" />
@@ -138,9 +142,9 @@
       <div class="space-y-1.5 mt-2">
         <h2 class="text-lg md:text-2xl font-black text-slate-800 dark:text-white tracking-tight leading-none whitespace-nowrap">
           {{ stats().total_users | number }}
-          <span class="text-xs font-extrabold text-slate-500 ml-0.5">Thành viên</span>
+          <span class="text-xs font-extrabold text-slate-500 ml-0.5">{{ 'dash.unit_members' | translate }}</span>
         </h2>
-        <app-badge variant="info" size="sm" rounded="md">Đăng ký hệ thống</app-badge>
+        <app-badge variant="info" size="sm" rounded="md">{{ 'dash.registered_users' | translate }}</app-badge>
       </div>
     </app-card>
   </div>
@@ -156,7 +160,7 @@
           <div class="w-2.5 h-2.5 rounded-full bg-emerald-400"></div>
         }
         <h3 class="text-base font-black text-slate-800 dark:text-white tracking-tight">
-          Lọc Tồn Kho
+          {{ 'dash.inventory_filter' | translate }}
           @if (stats()?.low_stock_threshold_label) {
             <span class="text-slate-400 font-semibold text-sm ml-1">({{ stats().low_stock_threshold_label }})</span>
           } @else {
@@ -166,26 +170,28 @@
       </div>
       @if (!lowStockLoading() && stats()?.low_stock_products?.length > 0 && selectedThreshold() !== 'gte_100') {
         <app-badge variant="danger" size="sm" rounded="full" [pulse]="true"
-          >Cần nhập hàng gấp</app-badge
+          >{{ 'dash.restock_urgent' | translate }}</app-badge
         >
       } @else if (!lowStockLoading() && stats()?.low_stock_products?.length > 0 && selectedThreshold() === 'gte_100') {
         <app-badge variant="success" size="sm" rounded="full"
-          >Tồn kho tốt</app-badge
+          >{{ 'dash.good_stock' | translate }}</app-badge
         >
       } @else if (!lowStockLoading() && stats() && selectedThreshold() !== 'gte_100') {
         <app-badge variant="success" size="sm" rounded="full"
-          >Kho hàng đầy đủ</app-badge
+          >{{ 'dash.stock_full' | translate }}</app-badge
         >
       }
     </div>
 
-        <div
+    <!-- Filter Bar -->
+    <div
       class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 bg-slate-50/50 dark:bg-slate-950/20 border border-slate-200/30 dark:border-slate-800/30 rounded-2xl p-4 sm:p-5"
     >
-            <div class="form-field">
+      <!-- Stock Threshold -->
+      <div class="form-field">
         <label
           class="text-xs font-bold text-slate-400 dark:text-slate-500 uppercase tracking-wider block mb-1"
-          >Ngưỡng tồn kho</label
+          >{{ 'dash.stock_threshold' | translate }}</label
         >
         <app-custom-select
           [options]="thresholdOptions"
@@ -196,10 +202,11 @@
         />
       </div>
 
-            <div class="form-field">
+      <!-- Category -->
+      <div class="form-field">
         <label
           class="text-xs font-bold text-slate-400 dark:text-slate-500 uppercase tracking-wider block mb-1"
-          >Danh mục</label
+          >{{ 'prod.category' | translate }}</label
         >
         <app-custom-select
           [options]="categoryOptions"
@@ -210,13 +217,14 @@
         />
       </div>
 
-            <div class="form-field sm:col-span-2">
+      <!-- Search Product -->
+      <div class="form-field sm:col-span-2">
         <label
           class="text-xs font-bold text-slate-400 dark:text-slate-500 uppercase tracking-wider block mb-1"
-          >Tìm kiếm sản phẩm</label
+          >{{ 'prod.search' | translate }}</label
         >
         <app-custom-search-input
-          [placeholder]="'Tìm kiếm theo tên sản phẩm...'"
+          [placeholder]="'prod.search_placeholder' | translate"
           [(ngModel)]="rawSearchQuery"
           name="rawSearchQuery"
           (valueChange)="onSearchLowStock($event)"
@@ -226,7 +234,8 @@
       </div>
     </div>
 
-        <div *ngIf="lowStockLoading()" class="space-y-4">
+    <!-- Low Stock Loading -->
+    <div *ngIf="lowStockLoading()" class="space-y-4">
       <div
         *ngFor="let i of [1, 2, 3]"
         class="flex items-center justify-between py-2 border-b border-slate-100 dark:border-slate-800/40 last:border-0"
@@ -238,7 +247,8 @@
       </div>
     </div>
 
-        <ng-container *ngIf="!lowStockLoading() && stats()">
+    <!-- Low Stock Table -->
+    <ng-container *ngIf="!lowStockLoading() && stats()">
       <div
         *ngIf="stats().low_stock_products.length === 0"
         class="flex flex-col items-center justify-center py-8 text-center space-y-2"
@@ -249,19 +259,19 @@
           <app-icon name="check-circle" class="w-6 h-6" />
         </div>
         <p class="text-sm font-bold text-slate-700 dark:text-slate-300">
-          Tuyệt vời! Kho hàng đầy đủ.
+          {{ 'dash.stock_full_desc' | translate }}
         </p>
         <p class="text-xs text-slate-400">
-          Không có sản phẩm nào nằm dưới ngưỡng cảnh báo của bộ lọc.
+          {{ 'dash.no_low_stock_desc' | translate }}
         </p>
       </div>
 
       <div *ngIf="stats().low_stock_products.length > 0">
         <app-table
-          [columns]="lowStockColumns"
+          [columns]="lowStockColumns()"
           [data]="stats().low_stock_products"
           [loading]="lowStockLoading()"
-          emptyText="Tuyệt vời! Kho hàng đầy đủ."
+          [emptyText]="'dash.stock_full_desc' | translate"
         >
           <ng-template appTableCell="name" let-row="row">
             <span class="truncate max-w-[200px] block font-bold text-slate-800 dark:text-slate-100" [appTooltip]="row.name">
@@ -270,8 +280,8 @@
           </ng-template>
 
           <ng-template appTableCell="price" let-row="row">
-            <span [appTooltip]="(row.price | number) + ' VND'">
-              {{ row.price | number }} VND
+            <span>
+              {{ row.price | appCurrency }}
             </span>
           </ng-template>
 
@@ -280,9 +290,9 @@
               variant="danger"
               size="sm"
               rounded="full"
-              [appTooltip]="'Còn lại: ' + row.available_count"
+              [appTooltip]="('dash.remaining' | translate) + ': ' + row.available_count"
             >
-              Còn lại: {{ row.available_count }}
+              {{ 'dash.remaining' | translate }}: {{ row.available_count }}
             </app-badge>
           </ng-template>
 
@@ -293,7 +303,7 @@
               class="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-[var(--color-primary)] text-white text-xs font-extrabold hover:scale-105 active:scale-95 transition-all shadow-sm shadow-blue-500/10 cursor-pointer"
             >
               <app-icon name="upload" class="w-3.5 h-3.5" />
-              Nhập kho
+              {{ 'inv.import' | translate }}
             </a>
           </ng-template>
         </app-table>

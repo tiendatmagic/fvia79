@@ -1,7 +1,7 @@
 <div class="max-w-[1530px] mx-auto w-full px-4 sm:px-6 py-6 space-y-6">
   <app-page-header
-    title="Quản Lý Kho Hàng Số"
-    description="Import tài khoản hàng loạt và kiểm soát trạng thái của từng tài nguyên kỹ thuật số."
+    [title]="'inv.title' | translate"
+    [description]="'inv.description' | translate"
   >
     <ng-container actions>
       <button
@@ -9,7 +9,7 @@
         class="px-4 py-2.5 text-sm font-extrabold text-slate-600 dark:text-slate-400 hover:text-primary bg-white dark:bg-slate-950 border border-slate-200/60 dark:border-slate-800/80 rounded-xl hover:bg-slate-50 dark:hover:bg-slate-900 transition-all cursor-pointer flex items-center gap-1.5"
       >
         <app-icon name="sync" class="w-4 h-4" />
-        Tải lại
+        {{ 'common.reload' | translate }}
       </button>
       <button
         app-button
@@ -18,7 +18,7 @@
         class="flex items-center gap-2 py-2.5 px-4 rounded-xl bg-gradient-to-r from-[var(--color-primary)] to-[var(--color-secondary)] text-white font-extrabold shadow-md shadow-[var(--color-primary)]/15 active:scale-95 transition-all text-sm cursor-pointer"
       >
         <app-icon name="upload" class="w-5 h-5" />
-        Import Kho Hàng
+        {{ 'action.import_stock' | translate }}
       </button>
     </ng-container>
   </app-page-header>
@@ -27,7 +27,7 @@
     class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 bg-slate-50/50 dark:bg-slate-950/20 border border-slate-200/30 dark:border-slate-800/30 rounded-2xl p-4 sm:p-5"
   >
     <div class="form-field">
-      <label class="text-xs font-bold text-slate-400 dark:text-slate-500 uppercase tracking-wider block mb-1">Sản phẩm</label>
+      <label class="text-xs font-bold text-slate-400 dark:text-slate-500 uppercase tracking-wider block mb-1">{{ 'modal.product_category' | translate }}</label>
       <app-custom-select
         [options]="productFilterOptions"
         valueKey="value"
@@ -38,7 +38,7 @@
     </div>
 
     <div class="form-field">
-      <label class="text-xs font-bold text-slate-400 dark:text-slate-500 uppercase tracking-wider block mb-1">Trạng thái item</label>
+      <label class="text-xs font-bold text-slate-400 dark:text-slate-500 uppercase tracking-wider block mb-1">{{ 'common.status' | translate }}</label>
       <app-custom-select
         [options]="statusFilterOptions"
         valueKey="value"
@@ -49,9 +49,9 @@
     </div>
 
     <div class="form-field">
-      <label class="text-xs font-bold text-slate-400 dark:text-slate-500 uppercase tracking-wider block mb-1">Tìm kiếm kho hàng</label>
+      <label class="text-xs font-bold text-slate-400 dark:text-slate-500 uppercase tracking-wider block mb-1">{{ 'common.search' | translate }}</label>
       <app-custom-search-input
-        [placeholder]="'Tìm kiếm kho hàng...'"
+        [placeholder]="'common.search_placeholder' | translate"
         [(ngModel)]="searchQuery"
         name="searchQuery"
         (valueChange)="onSearch($event)"
@@ -63,10 +63,10 @@
 
   <div app-card class="overflow-hidden !p-0">
     <app-table
-      [columns]="columns"
+      [columns]="columns()"
       [data]="state.inventoryStore.items()"
       [loading]="state.inventoryStore.loading()"
-      emptyText="Không tìm thấy tài nguyên nào trong kho."
+      [emptyText]="'inv.no_items' | translate"
     >
       <ng-template appTableCell="id" let-row="row">
         <div class="flex items-center gap-1.5">
@@ -78,11 +78,11 @@
           </span>
           <button
             (click)="
-              copyToClipboard(row.id, 'Đã sao chép mã tài nguyên!');
+              copyToClipboard(row.id);
               $event.stopPropagation()
             "
             class="p-1 hover:bg-slate-100 dark:hover:bg-slate-800 rounded transition-colors text-slate-400 hover:text-slate-600 dark:hover:text-slate-200 cursor-pointer"
-            [appTooltip]="'Sao chép ID đầy đủ'"
+            [appTooltip]="'common.copy_id' | translate"
           >
             <app-icon name="copy" class="w-3.5 h-3.5" />
           </button>
@@ -119,7 +119,7 @@
           size="md"
           rounded="md"
           [appTooltip]="
-            'Khả dụng: ' + row.available_count + ' / Ban đầu: ' + row.initial_count
+            ('inv.available_label' | translate) + ': ' + row.available_count + ' / ' + ('inv.initial_label' | translate) + ': ' + row.initial_count
           "
         >
           {{ row.available_count }} / {{ row.initial_count }}
@@ -137,21 +137,9 @@
           "
           size="sm"
           rounded="md"
-          [appTooltip]="
-            row.status === 'active'
-              ? 'Hoạt động'
-              : row.status === 'completed'
-                ? 'Hoàn thành'
-                : 'Tạm khóa'
-          "
+          [appTooltip]="'status.' + row.status | translate"
         >
-          {{
-            row.status === 'active'
-              ? 'Hoạt động'
-              : row.status === 'completed'
-                ? 'Hoàn thành'
-                : 'Tạm khóa'
-          }}
+          {{ 'status.' + row.status | translate }}
         </app-badge>
       </ng-template>
 
@@ -163,7 +151,7 @@
             [class.opacity-50]="loadingItemId() !== null"
             [class.pointer-events-none]="loadingItemId() !== null"
             class="text-xs font-bold px-3 py-1.5 rounded-lg border border-[var(--color-primary)]/20 hover:bg-[var(--color-primary)]/10 text-[var(--color-primary)] bg-[var(--color-primary)]/5 dark:bg-[var(--color-primary)]/10 dark:border-[var(--color-primary)]/30 dark:hover:bg-[var(--color-primary)]/20 hover:scale-105 active:scale-95 transition-all cursor-pointer flex items-center gap-1 shrink-0"
-            [appTooltip]="'Chỉnh sửa'"
+            [appTooltip]="'action.edit' | translate"
           >
             @if (loadingItemId() === row.id) {
               <div
@@ -172,15 +160,15 @@
             } @else {
               <app-icon name="edit" class="w-3.5 h-3.5" />
             }
-            <span>Sửa</span>
+            <span>{{ 'action.edit' | translate }}</span>
           </button>
           <button
             (click)="confirmDeleteItem(row)"
             class="text-xs font-bold px-3 py-1.5 rounded-lg border border-rose-500/20 dark:border-rose-500/30 hover:bg-rose-100 dark:hover:bg-rose-950/40 text-rose-600 dark:text-rose-400 bg-rose-50 dark:bg-rose-950/20 hover:scale-105 active:scale-95 transition-all cursor-pointer flex items-center gap-1 shrink-0"
-            [appTooltip]="'Xóa'"
+            [appTooltip]="'action.delete' | translate"
           >
             <app-icon name="trash" class="w-3.5 h-3.5" />
-            <span>Xóa</span>
+            <span>{{ 'action.delete' | translate }}</span>
           </button>
         </div>
       </ng-template>

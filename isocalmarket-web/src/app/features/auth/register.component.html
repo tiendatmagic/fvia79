@@ -1,28 +1,28 @@
 <div class="min-h-[80vh] flex items-center justify-center px-4">
   <div app-card class="w-full max-w-md !bg-white/60 dark:!bg-slate-900/60 backdrop-blur-md p-6 sm:p-8 space-y-6">
     
-        <div class="text-center space-y-2">
+    <div class="text-center space-y-2">
       <h2 class="text-3xl font-black tracking-tight text-slate-900 dark:text-white">
-        Đăng Ký
+        {{ 'auth.register_title' | translate }}
       </h2>
       <p class="text-sm text-slate-500 font-semibold">
-        Tạo tài khoản khách hàng để mua sắm
+        {{ 'auth.register_subtitle' | translate }}
       </p>
     </div>
 
-        @if (state.authStore.registerError()) {
+    @if (state.authStore.registerError()) {
       <div class="flex items-start gap-3 p-3.5 rounded-xl bg-red-50 dark:bg-red-950/40 border border-red-200 dark:border-red-900/60">
         <app-icon name="exclamation-circle" [solid]="true" viewBox="0 0 20 20" class="w-4 h-4 text-red-500 shrink-0 mt-0.5" />
         <p class="text-xs font-bold text-red-600 dark:text-red-400 leading-relaxed">{{ state.authStore.registerError() }}</p>
       </div>
     }
 
-        <form (ngSubmit)="onSubmit()" class="space-y-5">
+    <form (ngSubmit)="onSubmit()" class="space-y-5">
 
       <div class="form-field">
-        <label>Tên đăng nhập (Username) <span class="text-red-500">*</span></label>
+        <label>{{ 'auth.username' | translate }} <span class="text-red-500">*</span></label>
         <app-custom-input
-          [placeholder]="'Nhập tên đăng nhập (viết liền không dấu)'"
+          [placeholder]="'auth.username_placeholder' | translate"
           [(ngModel)]="username"
           name="username"
           type="text"
@@ -31,9 +31,9 @@
       </div>
 
       <div class="form-field">
-        <label>Email <span class="text-red-500">*</span></label>
+        <label>{{ 'auth.email' | translate }} <span class="text-red-500">*</span></label>
         <app-custom-input
-          [placeholder]="'Nhập địa chỉ email'"
+          [placeholder]="'auth.email_placeholder' | translate"
           [(ngModel)]="email"
           name="email"
           type="email"
@@ -42,9 +42,9 @@
       </div>
 
       <div class="form-field">
-        <label>Mật khẩu <span class="text-red-500">*</span></label>
+        <label>{{ 'auth.password' | translate }} <span class="text-red-500">*</span></label>
         <app-custom-input
-          [placeholder]="'Nhập mật khẩu (tối thiểu 6 ký tự)'"
+          [placeholder]="'auth.password_placeholder' | translate"
           [(ngModel)]="password"
           name="password"
           type="password"
@@ -53,9 +53,9 @@
       </div>
 
       <div class="form-field">
-        <label>Xác nhận mật khẩu <span class="text-red-500">*</span></label>
+        <label>{{ 'auth.confirm_password' | translate }} <span class="text-red-500">*</span></label>
         <app-custom-input
-          [placeholder]="'Nhập lại mật khẩu'"
+          [placeholder]="'auth.confirm_password_placeholder' | translate"
           [(ngModel)]="passwordConfirmation"
           name="passwordConfirmation"
           type="password"
@@ -70,15 +70,15 @@
           class="w-full py-3 text-base rounded-xl bg-gradient-to-r from-[var(--color-primary)] to-[var(--color-secondary)] text-white font-extrabold shadow-md shadow-[var(--color-primary)]/20 active:scale-[0.98] transition-all"
           type="submit"
         >
-          Đăng Ký Tài Khoản
+          {{ 'auth.register_submit' | translate }}
         </button>
       </div>
     </form>
 
-        <div class="text-center text-xs font-semibold text-slate-500">
-      Đã có tài khoản? 
-      <a routerLink="/login" class="text-[var(--color-primary)] hover:underline ml-1 font-bold">
-        Đăng nhập
+    <div class="text-center text-xs font-semibold text-slate-500">
+      {{ 'auth.already_have_account' | translate }}
+      <a routerLink="/auth/login" class="text-[var(--color-primary)] hover:underline ml-1 font-bold">
+        {{ 'auth.login_now' | translate }}
       </a>
     </div>
 

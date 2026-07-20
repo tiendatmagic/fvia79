@@ -4,12 +4,14 @@ import { FormsModule } from '@angular/forms';
 import { ModalRef, MODAL_DATA } from '@core/services/modal-ref';
 import { StateService } from '@core/services/state.service';
 import { ApiService } from '@core/services/api.service';
+import { LanguageService } from '@core/services/language.service';
 import { CustomInputComponent } from '@shared/components/custom-input/custom-input.component';
 import { CustomSelectComponent } from '@shared/components/custom-select/custom-select.component';
 import { ButtonComponent } from '@shared/components/button/button.component';
 import { CustomSwitchComponent } from '@shared/components/custom-switch/custom-switch.component';
 import { TooltipDirective } from '@shared/components/tooltip/tooltip.directive';
 import { IconComponent } from '@shared/components/icon/icon.component';
+import { TranslatePipe } from '@shared/pipes/translate.pipe';
 import { finalize } from 'rxjs/operators';
 import { QrCodeModule } from 'ng-qrcode';
 
@@ -30,7 +32,8 @@ type TabId = 'info' | 'permissions' | 'security';
     CustomSwitchComponent,
     TooltipDirective,
     IconComponent,
-    QrCodeModule
+    QrCodeModule,
+    TranslatePipe
   ],
   templateUrl: './user-form-modal.component.html',
   styles: [`
@@ -44,13 +47,16 @@ export class UserFormModalComponent implements OnInit {
   private readonly modalData = inject(MODAL_DATA);
   public readonly state = inject(StateService);
   private readonly apiService = inject(ApiService);
-  private readonly modalService = inject(ModalService);
   private readonly cdr = inject(ChangeDetectorRef);
+  private readonly modalService = inject(ModalService);
+  public readonly lang = inject(LanguageService);
+
+  public readonly activeTabSignal = signal<TabId>('info');
+  public get activeTab() { return this.activeTabSignal(); }
+  public set activeTab(v: TabId) { this.activeTabSignal.set(v); }
 
   public isEditMode = false;
   public editingId: any = null;
-
-  public activeTab: TabId = 'info';
 
   public username = '';
   public name = '';
@@ -129,10 +135,10 @@ export class UserFormModalComponent implements OnInit {
 
     this.isConfirming = true;
     this.modalService.confirm({
-      title: 'Xác nhận tắt 2FA',
-      descriptionHtml: `Bạn có chắc muốn tắt xác thực 2 lớp (2FA) cho tài khoản <strong>${this.email}</strong>? User sẽ cần tự bật lại từ trang cài đặt bảo mật của họ.`,
-      confirmText: 'Tắt 2FA',
-      cancelText: 'Hủy',
+      title: this.lang.translate('modal.disable_2fa_confirm_title'),
+      descriptionHtml: `${this.lang.translate('modal.disable_2fa_confirm_desc_prefix')} <strong>${this.email}</strong>? ${this.lang.translate('modal.disable_2fa_confirm_desc_suffix')}`,
+      confirmText: this.lang.translate('modal.disable_2fa_confirm_btn'),
+      cancelText: this.lang.translate('common.cancel'),
       variant: 'danger'
     }).afterClosed$.subscribe((confirmed) => {
       this.isConfirming = false;
@@ -152,13 +158,13 @@ export class UserFormModalComponent implements OnInit {
           this.google2fa_enabled = false;
           this.google2fa_secret = '';
           this.google2fa_qr_url = '';
-          this.state.showToast('Đã tắt bảo mật 2FA thành công!', 'success');
+          this.state.showToast(this.lang.translate('toast.2fa_disabled'), 'success');
           this.cdr.detectChanges();
         },
         error: () => {
           this.isResetting2fa = false;
           this.google2fa_enabled = true;
-          this.state.showToast('Không thể tắt 2FA, vui lòng thử lại!', 'error');
+          this.state.showToast(this.lang.translate('toast.2fa_disable_failed'), 'error');
           this.cdr.detectChanges();
         }
       });
@@ -170,10 +176,10 @@ export class UserFormModalComponent implements OnInit {
 
     this.isConfirming = true;
     this.modalService.confirm({
-      title: 'Xác nhận bật 2FA',
-      descriptionHtml: `Bạn có chắc muốn kích hoạt 2FA (tạo secret key mới) cho tài khoản <strong>${this.email}</strong>? Điều này sẽ ghi đè thiết bị 2FA cũ của user.`,
-      confirmText: 'Tạo khóa 2FA',
-      cancelText: 'Hủy',
+      title: this.lang.translate('modal.enable_2fa_title'),
+      descriptionHtml: `${this.lang.translate('modal.enable_2fa_desc_prefix')} <strong>${this.email}</strong>? ${this.lang.translate('modal.enable_2fa_desc_suffix')}`,
+      confirmText: this.lang.translate('modal.enable_2fa_confirm'),
+      cancelText: this.lang.translate('common.cancel'),
       variant: 'info'
     }).afterClosed$.subscribe((confirmed) => {
       this.isConfirming = false;
@@ -193,13 +199,13 @@ export class UserFormModalComponent implements OnInit {
           this.google2fa_enabled = true;
           this.google2fa_secret = res.secret;
           this.google2fa_qr_url = res.qr_code_url;
-          this.state.showToast('Đã kích hoạt 2FA thành công!', 'success');
+          this.state.showToast(this.lang.translate('toast.2fa_enabled'), 'success');
           this.cdr.detectChanges();
         },
         error: () => {
           this.isEnabling2fa = false;
           this.google2fa_enabled = false;
-          this.state.showToast('Không thể kích hoạt 2FA, vui lòng thử lại!', 'error');
+          this.state.showToast(this.lang.translate('toast.2fa_enable_failed'), 'error');
           this.cdr.detectChanges();
         }
       });
@@ -225,7 +231,7 @@ export class UserFormModalComponent implements OnInit {
   public copyToClipboard(text: string) {
     if (typeof navigator !== 'undefined' && navigator.clipboard) {
       navigator.clipboard.writeText(text).then(() => {
-        this.state.showToast('Đã sao chép mã bảo mật!', 'success');
+        this.state.showToast(this.lang.translate('toast.copied_secret'), 'success');
       });
     }
   }
@@ -234,7 +240,7 @@ export class UserFormModalComponent implements OnInit {
     if (!this.isEditMode || !this.editingId) return;
 
     this.modalService.open(AdjustBalanceModalComponent, {
-      title: 'Điều chỉnh số dư thành viên',
+      title: this.lang.translate('modal.adjust_balance_title'),
       size: 'md',
       data: {
         user: {
@@ -266,35 +272,35 @@ export class UserFormModalComponent implements OnInit {
 
     const usernameRegex = /^[a-zA-Z0-9_]{3,50}$/;
     if (!this.username) {
-      this.state.showToast('Vui lòng điền Tên đăng nhập!', 'error');
+      this.state.showToast(this.lang.translate('toast.username_required'), 'error');
       this.activeTab = 'info';
       return;
     }
     if (!usernameRegex.test(this.username)) {
-      this.state.showToast('Tên đăng nhập không đúng định dạng (3-50 ký tự, không dấu, không cách)!', 'error');
+      this.state.showToast(this.lang.translate('toast.username_invalid_format'), 'error');
       this.activeTab = 'info';
       return;
     }
     if (!this.email) {
-      this.state.showToast('Vui lòng điền địa chỉ Email!', 'error');
+      this.state.showToast(this.lang.translate('toast.email_required'), 'error');
       this.activeTab = 'info';
       return;
     }
 
     if (!this.isEditMode) {
       if (!this.password) {
-        this.state.showToast('Vui lòng điền Mật khẩu cho tài khoản mới!', 'error');
+        this.state.showToast(this.lang.translate('toast.password_required'), 'error');
         this.activeTab = 'info';
         return;
       }
       if (this.password.length < 6) {
-        this.state.showToast('Mật khẩu phải có ít nhất 6 ký tự!', 'error');
+        this.state.showToast(this.lang.translate('toast.password_too_short'), 'error');
         this.activeTab = 'info';
         return;
       }
     } else {
       if (this.password && this.password.length < 6) {
-        this.state.showToast('Mật khẩu mới phải có ít nhất 6 ký tự!', 'error');
+        this.state.showToast(this.lang.translate('toast.password_too_short'), 'error');
         this.activeTab = 'info';
         return;
       }

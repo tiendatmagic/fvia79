@@ -1,6 +1,7 @@
 import { Injectable, inject, signal } from '@angular/core';
 import { ApiService } from '@core/services/api.service';
 import { ToastService } from '@core/services/toast.service';
+import { LanguageService } from '@core/services/language.service';
 import { HttpParams } from '@angular/common/http';
 import { tap, catchError, finalize } from 'rxjs/operators';
 import { of, Subscription, Subject } from 'rxjs';
@@ -11,6 +12,7 @@ import { of, Subscription, Subject } from 'rxjs';
 export class InventoryStore {
   private readonly api = inject(ApiService);
   private readonly toast = inject(ToastService);
+  private readonly lang = inject(LanguageService);
  
   private activeFetchItemsSub?: Subscription;
  
@@ -85,7 +87,7 @@ export class InventoryStore {
         }
       }),
       catchError(() => {
-        this.toast.showToast('Không thể tải dữ liệu kho!', 'error');
+        this.toast.showToast(this.lang.translate('toast.error_load_stock'), 'error');
         return of([]);
       }),
       finalize(() => this.loading.set(false))
@@ -113,7 +115,7 @@ export class InventoryStore {
     }).pipe(
       tap((res) => {
         this.clearCache();
-        this.toast.showToast(res.message || 'Import lô hàng thành công!', 'success');
+        this.toast.showToast(this.lang.translate('toast.stock_imported'), 'success');
       }),
       catchError((err) => {
         const msg = err.error?.message || 'Import lô hàng thất bại!';
@@ -133,7 +135,7 @@ export class InventoryStore {
     return this.api.put<any>(`v1/inventory/items/${id}`, payload).pipe(
       tap(() => {
         this.clearCache();
-        this.toast.showToast('Cập nhật lô hàng thành công!', 'success');
+        this.toast.showToast(this.lang.translate('toast.stock_updated'), 'success');
       }),
       catchError((err) => {
         const msg = err.error?.message || 'Cập nhật lô hàng thất bại!';
@@ -149,7 +151,7 @@ export class InventoryStore {
     return this.api.delete<any>(`v1/inventory/items/${id}`).pipe(
       tap(() => {
         this.clearCache();
-        this.toast.showToast('Xóa tài nguyên kho thành công!', 'success');
+        this.toast.showToast(this.lang.translate('toast.stock_deleted'), 'success');
       }),
       catchError((err) => {
         const msg = err.error?.message || 'Xóa thất bại!';

@@ -1,22 +1,24 @@
-import { Component, Input, Output, EventEmitter, Inject, Optional, OnInit } from '@angular/core';
+import { Component, Input, Output, EventEmitter, Inject, Optional, OnInit, inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { IconComponent } from '@shared/components/icon/icon.component';
 import { ButtonComponent } from '@shared/components/button/button.component';
 import { MODAL_DATA, ModalRef } from '@core/services/modal-ref';
+import { LanguageService } from '@core/services/language.service';
 
 @Component({
   selector: 'app-confirm-modal',
-  
+  standalone: true,
   imports: [CommonModule, IconComponent, ButtonComponent],
-  
   templateUrl: './confirm-modal.component.html'})
 export class ConfirmModalComponent implements OnInit {
+  public readonly lang = inject(LanguageService);
+
   @Input() isOpen = false;
-  @Input() title = 'Xác nhận hành động';
-  @Input() description = 'Bạn có chắc chắn muốn thực hiện hành động này không?';
+  @Input() title = '';
+  @Input() description = '';
   @Input() descriptionHtml = '';
-  @Input() confirmText = 'Xác nhận';
-  @Input() cancelText = 'Hủy bỏ';
+  @Input() confirmText = '';
+  @Input() cancelText = '';
   @Input() confirmButtonClass = 'btn-danger';
   @Input() isSubmitting = false;
   @Input() variant: 'success' | 'warning' | 'danger' | 'info' = 'danger';
@@ -36,6 +38,11 @@ export class ConfirmModalComponent implements OnInit {
   }
 
   ngOnInit(): void {
+    if (!this.title) this.title = this.lang.translate('modal.confirm_title');
+    if (!this.description) this.description = this.lang.translate('modal.confirm_desc');
+    if (!this.confirmText) this.confirmText = this.lang.translate('action.confirm');
+    if (!this.cancelText) this.cancelText = this.lang.translate('action.cancel');
+
     if (this.isDynamic && this.modalData) {
       this.title = this.modalData.title || this.title;
       this.description = this.modalData.description || this.description;

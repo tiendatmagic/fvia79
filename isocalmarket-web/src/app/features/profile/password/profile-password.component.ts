@@ -4,6 +4,7 @@ import { FormsModule } from '@angular/forms';
 import { StateService } from '@core/services/state.service';
 import { CustomInputComponent } from '@shared/components/custom-input/custom-input.component';
 import { ButtonComponent } from '@shared/components/button/button.component';
+import { LanguageService } from '@core/services/language.service';
 import { finalize } from 'rxjs/operators';
 
 @Component({
@@ -19,6 +20,7 @@ import { finalize } from 'rxjs/operators';
 })
 export class ProfilePasswordComponent {
   public readonly state = inject(StateService);
+  public readonly lang = inject(LanguageService);
 
   public currentPassword = '';
   public newPassword = '';
@@ -28,12 +30,12 @@ export class ProfilePasswordComponent {
   public onSubmit() {
     if (this.isSubmitting()) return;
     if (!this.currentPassword || !this.newPassword || !this.newPasswordConfirmation) {
-      this.state.showToast('Vui lòng điền đầy đủ thông tin mật khẩu!', 'error');
+      this.state.showToast(this.lang.translate('toast.password_info_required'), 'error');
       return;
     }
 
     if (this.newPassword !== this.newPasswordConfirmation) {
-      this.state.showToast('Xác nhận mật khẩu mới không trùng khớp!', 'error');
+      this.state.showToast(this.lang.translate('toast.password_confirm_mismatch'), 'error');
       return;
     }
 

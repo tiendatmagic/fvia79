@@ -1,8 +1,9 @@
-import { Component, OnInit, inject, signal } from '@angular/core';
+import { Component, OnInit, inject, signal, computed } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { RouterModule } from '@angular/router';
 import { StateService } from '@core/services/state.service';
+import { LanguageService } from '@core/services/language.service';
 import { ModalService } from '@core/services/modal.service';
 import { BadgeComponent } from '@shared/components/badge/badge.component';
 import { CardComponent } from '@shared/components/card/card.component';
@@ -14,6 +15,8 @@ import { PaginationComponent } from '@shared/components/pagination/pagination.co
 import { CustomSelectComponent } from '@shared/components/custom-select/custom-select.component';
 import { CustomDateTimeRangeComponent, DateTimeRangeValue } from '@shared/components/custom-date-time-range/custom-date-time-range.component';
 import { TableComponent, TableCellDirective, TableColumn } from '@shared/components/table/table.component';
+import { CurrencyPipe } from '@shared/pipes/currency.pipe';
+import { TranslatePipe } from '@shared/pipes/translate.pipe';
 import { AdminDepositStore } from './admin-deposit.store';
 import { ApproveDepositModalComponent } from './approve-deposit-modal/approve-deposit-modal.component';
 
@@ -34,7 +37,9 @@ import { ApproveDepositModalComponent } from './approve-deposit-modal/approve-de
     CustomSelectComponent,
     CustomDateTimeRangeComponent,
     TableComponent,
-    TableCellDirective
+    TableCellDirective,
+    TranslatePipe,
+    CurrencyPipe
   ],
   templateUrl: './admin-deposits.component.html',
   styles: [`
@@ -47,17 +52,21 @@ export class AdminDepositsComponent implements OnInit {
   public readonly state = inject(StateService);
   public readonly depositStore = inject(AdminDepositStore);
   private readonly modalService = inject(ModalService);
+  public readonly lang = inject(LanguageService);
 
-  public readonly columns: TableColumn[] = [
-    { key: 'code', label: 'Mã lệnh nạp', sortable: true },
-    { key: 'userName', label: 'Thành viên', sortable: true },
-    { key: 'amountUsdt', label: 'Số tiền USDT', sortable: true, align: 'right' },
-    { key: 'amountVnd', label: 'Quy đổi VND', sortable: true, align: 'right' },
-    { key: 'paymentMethod', label: 'Phương thức', sortable: true, align: 'center' },
-    { key: 'status', label: 'Trạng thái', sortable: true, align: 'center' },
-    { key: 'createdAt', label: 'Thời gian tạo', sortable: true },
-    { key: 'actions', label: 'Thao tác', sortable: false, align: 'right' }
-  ];
+  public readonly columns = computed<TableColumn[]>(() => {
+    this.lang.currentLang();
+    return [
+      { key: 'code', label: 'Code', sortable: true },
+      { key: 'userName', label: this.lang.translate('usr.name'), sortable: true },
+      { key: 'amountUsdt', label: 'USDT', sortable: true, align: 'right' },
+      { key: 'amountVnd', label: 'Amount', sortable: true, align: 'right' },
+      { key: 'paymentMethod', label: 'Method', sortable: true, align: 'center' },
+      { key: 'status', label: this.lang.translate('common.status'), sortable: true, align: 'center' },
+      { key: 'createdAt', label: 'Created At', sortable: true },
+      { key: 'actions', label: this.lang.translate('common.actions'), sortable: false, align: 'right' }
+    ];
+  });
 
   public searchQuery = '';
   private readonly _searchQuery = signal('');
@@ -66,13 +75,15 @@ export class AdminDepositsComponent implements OnInit {
   public readonly selectedMethodFilter = signal<string>('');
   public readonly selectedDateRange = signal<DateTimeRangeValue>({ startDate: '', endDate: '' });
 
-  public readonly statusOptions = [
-    { label: 'Tất cả trạng thái', value: '' },
-    { label: 'Chờ thanh toán', value: 'pending_payment' },
-    { label: 'Đã hoàn thành', value: 'completed' },
-    { label: 'Thất bại', value: 'failed' },
-    { label: 'Đã hết hạn', value: 'expired' }
-  ];
+  public get statusOptions() {
+    return [
+      { label: this.lang.translate('common.all_status'), value: '' },
+      { label: this.lang.translate('status.pending_payment'), value: 'pending_payment' },
+      { label: this.lang.translate('status.completed'), value: 'completed' },
+      { label: this.lang.translate('status.failed'), value: 'failed' },
+      { label: this.lang.translate('status.expired'), value: 'expired' }
+    ];
+  }
 
   public readonly methodOptions = [
     { label: 'Tất cả phương thức', value: '' },
@@ -165,8 +176,8 @@ export class AdminDepositsComponent implements OnInit {
 
   public rejectDeposit(deposit: any) {
     const ref = this.modalService.confirm({
-      title: 'Từ chối lệnh nạp tiền',
-      description: `Bạn có chắc chắn muốn từ chối lệnh nạp tiền #${deposit.code} của thành viên "${deposit.userName || deposit.userEmail}"?`
+      title: this.lang.translate('modal.reject_deposit_title'),
+      description: `${this.lang.translate('modal.reject_deposit_desc_prefix')} #${deposit.code} ${this.lang.translate('modal.reject_deposit_desc_middle')} "${deposit.userName || deposit.userEmail}"?`
     });
 
     ref.afterClosed$.subscribe((confirmed: any) => {

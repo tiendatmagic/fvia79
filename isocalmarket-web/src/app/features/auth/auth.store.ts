@@ -2,6 +2,7 @@ import { Injectable, inject, signal, computed } from '@angular/core';
 import { ApiService } from '@core/services/api.service';
 import { ToastService } from '@core/services/toast.service';
 import { ModalService } from '@core/services/modal.service';
+import { LanguageService } from '@core/services/language.service';
 import { Router } from '@angular/router';
 import { tap, catchError, finalize, map, shareReplay } from 'rxjs/operators';
 import { of, Observable } from 'rxjs';
@@ -20,6 +21,7 @@ export class AuthStore {
   private readonly toast = inject(ToastService);
   private readonly router = inject(Router);
   private readonly modalService = inject(ModalService);
+  public readonly lang = inject(LanguageService);
  
   private readonly productStore = inject(ProductStore);
   private readonly inventoryStore = inject(InventoryStore);
@@ -85,7 +87,7 @@ export class AuthStore {
     return raw || fallback;
   }
 
-  public login(credentials: { email: string; password: string }, returnUrl: string = '/') {
+  public login(credentials: any, returnUrl: string = '/') {
     this.authLoading.set(true);
     this.loginError.set('');
     return this.api.post<any>('v1/auth/login', credentials).pipe(
@@ -95,12 +97,12 @@ export class AuthStore {
         }
         this.setFrontendLoggedInCookie();
         this.currentUser.set(res.user);
-        this.toast.showToast('Đăng nhập thành công!', 'success');
+        this.toast.showToast(this.lang.translate('toast.login_success'), 'success');
         this.router.navigateByUrl(returnUrl);
         this.openWelcomeNoticeIfNeeded();
       }),
       catchError((err) => {
-        const msg = this.translateAuthError(err, 'Đăng nhập thất bại. Vui lòng thử lại!');
+        const msg = this.translateAuthError(err, this.lang.translate('toast.login_failed'));
         this.loginError.set(msg);
         this.toast.showToast(msg, 'error');
         return of(null);
@@ -114,11 +116,11 @@ export class AuthStore {
     this.registerError.set('');
     return this.api.post<any>('v1/auth/register', data).pipe(
       tap(() => {
-        this.toast.showToast('Đăng ký tài khoản thành công! Vui lòng đăng nhập.', 'success');
+        this.toast.showToast(this.lang.translate('toast.register_success'), 'success');
         this.router.navigate(['/login']);
       }),
       catchError((err) => {
-        const msg = this.translateAuthError(err, 'Đăng ký thất bại. Vui lòng thử lại!');
+        const msg = this.translateAuthError(err, this.lang.translate('toast.register_failed'));
         this.registerError.set(msg);
         this.toast.showToast(msg, 'error');
         return of(null);
@@ -128,45 +130,33 @@ export class AuthStore {
   }
 
   public checkMe(force = false) {
-    const isLocalLoggedIn = typeof document !== 'undefined' && document.cookie.includes('auth_logged_in=true');
-    if (!isLocalLoggedIn) {
-      this.currentUser.set(null);
-      return of(null);
-    }
-
-    const now = Date.now();
-    if (force && (now - this.lastCheckMeTime < 5000)) {
+    if (!force && this.currentUser()) {
       return of(this.currentUser());
     }
 
-    if (this.checkMeObservable$ && !force) {
+    const now = Date.now();
+    if (this.checkMeObservable$ && now - this.lastCheckMeTime < 2000) {
       return this.checkMeObservable$;
     }
 
-    const request$ = this.api.get<any>('v1/auth/me').pipe(
+    this.lastCheckMeTime = now;
+    this.checkMeObservable$ = this.api.get<any>('v1/auth/me').pipe(
       map((res) => res?.user || null),
       tap((user) => {
         this.currentUser.set(user);
-        this.lastCheckMeTime = Date.now();
       }),
       catchError(() => {
-        this.currentUser.set(null);
         this.clearFrontendLoggedInCookie();
+        this.currentUser.set(null);
         return of(null);
       }),
-      shareReplay(1),
       finalize(() => {
-        if (this.checkMeObservable$ === request$) {
-          this.checkMeObservable$ = null;
-        }
-      })
+        this.checkMeObservable$ = null;
+      }),
+      shareReplay(1)
     );
 
-    if (!force) {
-      this.checkMeObservable$ = request$;
-    }
-
-    return request$;
+    return this.checkMeObservable$;
   }
 
   public logout() {
@@ -181,7 +171,7 @@ export class AuthStore {
       tap(() => {
         this.clearFrontendLoggedInCookie();
         this.currentUser.set(null);
-        this.toast.showToast('Đã đăng xuất!', 'success');
+        this.toast.showToast(this.lang.translate('toast.logout_success'), 'success');
         this.router.navigate(['/storefront']);
       }),
       catchError(() => {
@@ -200,12 +190,12 @@ export class AuthStore {
       tap((res) => {
         this.setFrontendLoggedInCookie();
         this.currentUser.set(res.user);
-        this.toast.showToast('Đăng nhập thành công!', 'success');
+        this.toast.showToast(this.lang.translate('toast.login_success'), 'success');
         this.router.navigateByUrl(returnUrl);
         this.openWelcomeNoticeIfNeeded();
       }),
       catchError((err) => {
-        const msg = err.error?.message || 'Mã xác thực không đúng hoặc đã hết hạn!';
+        const msg = err.error?.message || this.lang.translate('toast.otp_invalid');
         this.toast.showToast(msg, 'error');
         return of(null);
       }),
@@ -218,10 +208,10 @@ export class AuthStore {
     return this.api.put<any>('v1/profile', { name, phone }).pipe(
       tap((res) => {
         this.currentUser.set(res.user);
-        this.toast.showToast('Cập nhật thông tin thành công!', 'success');
+        this.toast.showToast(this.lang.translate('toast.profile_updated'), 'success');
       }),
       catchError((err) => {
-        const msg = err.error?.message || 'Cập nhật thông tin thất bại!';
+        const msg = err.error?.message || this.lang.translate('toast.profile_failed');
         this.toast.showToast(msg, 'error');
         return of(null);
       }),
@@ -235,11 +225,11 @@ export class AuthStore {
       tap((res) => {
         if (res && res.user) {
           this.currentUser.set(res.user);
-          this.toast.showToast('Tạo API Key mới thành công!', 'success');
+          this.toast.showToast(this.lang.translate('toast.apikey_created'), 'success');
         }
       }),
       catchError((err) => {
-        const msg = err.error?.message || 'Không thể tạo API Key mới!';
+        const msg = err.error?.message || this.lang.translate('toast.apikey_failed');
         this.toast.showToast(msg, 'error');
         return of(null);
       }),
@@ -251,10 +241,10 @@ export class AuthStore {
     this.authLoading.set(true);
     return this.api.put<any>('v1/profile/password', data).pipe(
       tap(() => {
-        this.toast.showToast('Đổi mật khẩu thành công!', 'success');
+        this.toast.showToast(this.lang.translate('toast.password_changed'), 'success');
       }),
       catchError((err) => {
-        const msg = err.error?.message || 'Đổi mật khẩu thất bại!';
+        const msg = err.error?.message || this.lang.translate('toast.password_failed');
         this.toast.showToast(msg, 'error');
         return of(null);
       }),
@@ -266,7 +256,7 @@ export class AuthStore {
     this.authLoading.set(true);
     return this.api.post<any>('v1/profile/2fa/enable', {}).pipe(
       catchError((err) => {
-        const msg = err.error?.message || 'Không thể khởi tạo 2FA!';
+        const msg = err.error?.message || this.lang.translate('toast.2fa_enable_failed');
         this.toast.showToast(msg, 'error');
         return of(null);
       }),
@@ -279,10 +269,10 @@ export class AuthStore {
     return this.api.post<any>('v1/profile/2fa/confirm', { code }).pipe(
       tap((res) => {
         this.currentUser.set(res.user);
-        this.toast.showToast('Đã kích hoạt bảo mật 2FA thành công!', 'success');
+        this.toast.showToast(this.lang.translate('toast.2fa_enabled'), 'success');
       }),
       catchError((err) => {
-        const msg = err.error?.message || 'Mã xác thực OTP không chính xác!';
+        const msg = err.error?.message || this.lang.translate('toast.otp_invalid');
         this.toast.showToast(msg, 'error');
         return of(null);
       }),
@@ -295,13 +285,13 @@ export class AuthStore {
     return this.api.post<any>('v1/profile/2fa/disable', { code }).pipe(
       tap((res) => {
         this.currentUser.set(res.user);
-        this.toast.showToast('Đã hủy kích hoạt bảo mật 2FA!', 'success');
+        this.toast.showToast(this.lang.translate('toast.2fa_disabled'), 'success');
       }),
       catchError((err) => {
         const rawMsg = err.error?.message;
         const msg = rawMsg === 'Invalid 2FA verification code.'
-          ? 'Mã xác thực 2FA không chính xác!'
-          : (rawMsg || 'Hủy kích hoạt 2FA thất bại!');
+          ? this.lang.translate('toast.otp_invalid')
+          : (rawMsg || this.lang.translate('toast.2fa_disable_failed'));
         this.toast.showToast(msg, 'error');
         return of(null);
       }),
@@ -318,7 +308,7 @@ export class AuthStore {
       console.log('[AuthStore] Opening welcome notice modal now...');
       try {
         const ref = this.modalService.open(WelcomeNoticeModalComponent, {
-          title: 'Thông Báo Hệ Thống',
+          title: this.lang.translate('modal.system_notice'),
           size: 'sm',
           closeOnBackdropClick: true,
         });

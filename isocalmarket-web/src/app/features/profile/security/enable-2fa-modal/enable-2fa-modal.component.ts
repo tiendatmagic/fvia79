@@ -6,6 +6,7 @@ import { StateService } from '@core/services/state.service';
 import { CustomInputComponent } from '@shared/components/custom-input/custom-input.component';
 import { ButtonComponent } from '@shared/components/button/button.component';
 import { QrCodeModule } from 'ng-qrcode';
+import { LanguageService } from '@core/services/language.service';
 import { finalize } from 'rxjs/operators';
 
 @Component({
@@ -23,6 +24,7 @@ export class Enable2faModalComponent implements OnInit {
   private readonly modalRef = inject(ModalRef);
   private readonly modalData = inject(MODAL_DATA);
   public readonly state = inject(StateService);
+  public readonly lang = inject(LanguageService);
 
   public qrCodeUrl = '';
   public secretKey = '';
@@ -43,7 +45,7 @@ export class Enable2faModalComponent implements OnInit {
   public onConfirm() {
     if (this.isSubmitting()) return;
     if (!this.otpConfirmCode || this.otpConfirmCode.length !== 6) {
-      this.state.showToast('Vui lòng nhập mã xác thực OTP gồm 6 chữ số!', 'error');
+      this.state.showToast(this.lang.translate('toast.otp_digits_required'), 'error');
       return;
     }
 

@@ -1,4 +1,4 @@
-import { Component, OnInit, inject, signal, ChangeDetectionStrategy } from '@angular/core';
+import { Component, OnInit, inject, signal, computed, ChangeDetectionStrategy } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { ApiService } from '@core/services/api.service';
 import { StateService } from '@core/services/state.service';
@@ -14,6 +14,9 @@ import { HttpParams } from '@angular/common/http';
 import { CustomSelectComponent } from '@shared/components/custom-select/custom-select.component';
 import { CustomSearchInputComponent } from '@shared/components/custom-search-input/custom-search-input.component';
 import { TableComponent, TableCellDirective, TableColumn } from '@shared/components/table/table.component';
+import { LanguageService } from '@core/services/language.service';
+import { TranslatePipe } from '@shared/pipes/translate.pipe';
+import { CurrencyPipe } from '@shared/pipes/currency.pipe';
 
 @Component({
   selector: 'app-admin-dashboard',
@@ -33,6 +36,8 @@ import { TableComponent, TableCellDirective, TableColumn } from '@shared/compone
     CustomSearchInputComponent,
     TableComponent,
     TableCellDirective,
+    TranslatePipe,
+    CurrencyPipe
   ],
   templateUrl: './admin-dashboard.component.html',
   styles: [`
@@ -42,15 +47,16 @@ import { TableComponent, TableCellDirective, TableColumn } from '@shared/compone
   `]
 })
 export class AdminDashboardComponent implements OnInit {
-  private readonly apiService = inject(ApiService);
+  public readonly apiService = inject(ApiService);
   public readonly stateService = inject(StateService);
+  public readonly langService = inject(LanguageService);
 
-  public readonly lowStockColumns: TableColumn[] = [
-    { key: 'name', label: 'Tên sản phẩm', sortable: true },
-    { key: 'price', label: 'Đơn giá', sortable: true, align: 'right' },
-    { key: 'available_count', label: 'Tồn kho khả dụng', sortable: true, align: 'center' },
-    { key: 'actions', label: 'Thao tác', sortable: false, align: 'right' }
-  ];
+  public readonly lowStockColumns = computed<TableColumn[]>(() => [
+    { key: 'name', label: this.langService.translate('prod.name'), sortable: true },
+    { key: 'price', label: this.langService.translate('prod.unit_price'), sortable: true, align: 'right' },
+    { key: 'available_count', label: this.langService.translate('dash.available_inventory'), sortable: true, align: 'center' },
+    { key: 'actions', label: this.langService.translate('common.actions'), sortable: false, align: 'right' }
+  ]);
 
   public readonly stats = signal<any>(null);
   public readonly loading = signal<boolean>(true);
@@ -63,20 +69,22 @@ export class AdminDashboardComponent implements OnInit {
   public readonly selectedThreshold = signal<string>('5');
   public rawSearchQuery = '';
 
-  public readonly thresholdOptions = [
-    { label: '< 5 items', value: '5' },
-    { label: '< 10 items', value: '10' },
-    { label: '< 50 items', value: '50' },
-    { label: '< 100 items', value: '100' },
-    { label: '\u2265 100 items (tồn kho tốt)', value: 'gte_100' },
-  ];
+  public get thresholdOptions() {
+    return [
+      { label: '< 5 items', value: '5' },
+      { label: '< 10 items', value: '10' },
+      { label: '< 50 items', value: '50' },
+      { label: '< 100 items', value: '100' },
+      { label: `\u2265 100 items (${this.langService.translate('dash.good_stock')})`, value: 'gte_100' },
+    ];
+  }
 
   public get categoryOptions() {
     const list = this.stateService.productStore.categories().map((c) => ({
       label: c.name,
       value: c.id,
     }));
-    return [{ label: 'Tất cả danh mục', value: '' }, ...list];
+    return [{ label: this.langService.translate('cat.all'), value: '' }, ...list];
   }
 
   ngOnInit() {
@@ -114,7 +122,7 @@ export class AdminDashboardComponent implements OnInit {
         this.lowStockLoading.set(false);
       },
       error: (err) => {
-        this.stateService.showToast('Không thể tải số liệu thống kê!', 'error');
+        this.stateService.showToast(this.langService.translate('toast.error_load_stats'), 'error');
         this.loading.set(false);
         this.lowStockLoading.set(false);
       }

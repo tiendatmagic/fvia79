@@ -15,7 +15,7 @@
       [class.dark:hover:text-slate-200]="activeTab !== 'info'"
     >
       <app-icon name="user" class="w-4 h-4" />
-      Thông tin
+      {{ 'User Info' | translate }}
     </button>
 
     <button
@@ -31,7 +31,7 @@
       [class.dark:hover:text-slate-200]="activeTab !== 'permissions'"
     >
       <app-icon name="key" class="w-4 h-4" />
-      Phân quyền
+      {{ 'Permissions' | translate }}
     </button>
 
     @if (isEditMode) {
@@ -48,7 +48,7 @@
         [class.dark:hover:text-slate-200]="activeTab !== 'security'"
       >
         <app-icon name="shield-check" class="w-4 h-4" />
-        Bảo mật & API
+        {{ 'Security & API' | translate }}
       </button>
     }
   </div>

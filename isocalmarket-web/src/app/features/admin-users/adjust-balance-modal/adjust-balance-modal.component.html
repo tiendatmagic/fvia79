@@ -1,11 +1,11 @@
 <form (ngSubmit)="onSubmit()" class="space-y-5 p-1">
-    <div
+  <div
     class="p-4 bg-slate-50 dark:bg-slate-900/60 border border-slate-200/50 dark:border-slate-800/40 rounded-2xl flex items-center justify-between gap-4"
   >
     <div class="min-w-0">
       <span
         class="text-xs font-extrabold text-slate-400 dark:text-slate-500 uppercase tracking-wider block mb-0.5"
-        >Thành viên điều chỉnh</span
+        >Target Member</span
       >
       <h4 class="text-sm font-extrabold text-slate-800 dark:text-white truncate">
         {{ data.user.name }}
@@ -15,19 +15,19 @@
     <div class="text-right shrink-0">
       <span
         class="text-xs font-extrabold text-slate-400 dark:text-slate-500 uppercase tracking-wider block mb-0.5"
-        >Số dư hiện tại</span
+        >Current Balance</span
       >
       <span class="text-base font-extrabold text-[var(--color-primary)] font-mono block">
-        {{ currentBalance | number: '1.0-0' }} ₫
+        {{ currentBalance | appCurrency }}
       </span>
     </div>
   </div>
 
-    <div class="space-y-1.5">
+  <div class="space-y-1.5">
     <label
       class="text-xs font-bold text-slate-400 dark:text-slate-500 uppercase tracking-wider block"
     >
-      Loại thao tác điều chỉnh <span class="text-rose-500">*</span>
+      Adjustment Action <span class="text-rose-500">*</span>
     </label>
     <div class="grid grid-cols-2 gap-3">
       <button
@@ -49,7 +49,7 @@
             d="M12 6v6m0 0v6m0-6h6m-6 0H6"
           />
         </svg>
-        Cộng tiền
+        Add Balance
       </button>
 
       <button
@@ -66,29 +66,28 @@
         <svg class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
           <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M20 12H4" />
         </svg>
-        Trừ tiền
+        Deduct Balance
       </button>
     </div>
   </div>
 
-    <div class="space-y-1.5">
+  <div class="space-y-1.5">
     <label
       class="text-xs font-bold text-slate-400 dark:text-slate-500 uppercase tracking-wider block"
     >
-      Số tiền {{ type === 'add' ? 'cộng thêm' : 'khấu trừ' }} (VND)
-      <span class="text-rose-500">*</span>
+      Amount (USD $) <span class="text-rose-500">*</span>
     </label>
     <app-custom-input
       [(ngModel)]="amount"
       name="amount"
       type="number"
-      placeholder="Nhập số tiền VND (VD: 50000)"
-      [min]="1"
+      placeholder="Enter amount in USD (e.g. 10.5)"
+      [min]="0.01"
       required
     />
   </div>
 
-    <div
+  <div
     *ngIf="isSubtractExceeded"
     class="p-3 bg-rose-50 dark:bg-rose-950/30 border border-rose-200/60 dark:border-rose-800/40 rounded-xl flex gap-2.5 items-start"
   >
@@ -106,18 +105,17 @@
       />
     </svg>
     <p class="text-xs font-extrabold text-rose-700 dark:text-rose-400 leading-normal">
-      Số tiền khấu trừ ({{ amount | number: '1.0-0' }} ₫) không được lớn hơn số dư hiện có của thành
-      viên ({{ currentBalance | number: '1.0-0' }} ₫)!
+      Deduction amount cannot exceed user's current balance!
     </p>
   </div>
 
-    <div class="flex justify-end gap-3 pt-2 mt-4">
+  <div class="flex justify-end gap-3 pt-2 mt-4">
     <button
       type="button"
       (click)="onClose()"
       class="px-4.5 py-2.5 rounded-xl border border-slate-200/60 dark:border-slate-800/80 hover:bg-slate-50 dark:hover:bg-slate-900 text-slate-600 dark:text-slate-400 font-extrabold text-sm transition-all cursor-pointer"
     >
-      Hủy
+      {{ 'action.cancel' | translate }}
     </button>
     <button
       type="submit"
@@ -127,7 +125,7 @@
       [disabled]="!amount || amount <= 0 || isSubtractExceeded"
       class="px-6 py-2.5 rounded-xl font-extrabold text-sm active:scale-[0.98] transition-all cursor-pointer"
     >
-      Xác nhận {{ type === 'add' ? 'cộng tiền' : 'trừ tiền' }}
+      {{ 'action.confirm' | translate }}
     </button>
   </div>
 </form>

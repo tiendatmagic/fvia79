@@ -7,11 +7,13 @@ import { CustomInputComponent } from '@shared/components/custom-input/custom-inp
 import { ButtonComponent } from '@shared/components/button/button.component';
 import { CardComponent } from '@shared/components/card/card.component';
 import { IconComponent } from '@shared/components/icon/icon.component';
+import { LanguageService } from '@core/services/language.service';
+import { TranslatePipe } from '@shared/pipes/translate.pipe';
 
 @Component({
   selector: 'app-register',
   standalone: true,
-  imports: [CommonModule, FormsModule, RouterModule, CustomInputComponent, ButtonComponent, CardComponent, IconComponent],
+  imports: [CommonModule, FormsModule, RouterModule, CustomInputComponent, ButtonComponent, CardComponent, IconComponent, TranslatePipe],
   templateUrl: './register.component.html',
   styles: [`
     :host {
@@ -22,6 +24,7 @@ import { IconComponent } from '@shared/components/icon/icon.component';
 export class RegisterComponent {
   public readonly state = inject(StateService);
   private readonly router = inject(Router);
+  public readonly lang = inject(LanguageService);
 
   public username = '';
   public email = '';
@@ -41,29 +44,29 @@ export class RegisterComponent {
     if (this.state.authStore.authLoading()) return;
 
     if (!this.username || !this.email || !this.password || !this.passwordConfirmation) {
-      this.state.showToast('Vui lòng điền đầy đủ các thông tin bắt buộc!', 'error');
+      this.state.showToast(this.lang.translate('toast.register_info_required'), 'error');
       return;
     }
 
     const usernameRegex = /^[a-zA-Z0-9_]{3,50}$/;
     if (!usernameRegex.test(this.username)) {
-      this.state.showToast('Tên đăng nhập không đúng định dạng (3-50 ký tự, không chứa dấu hay khoảng trắng)!', 'error');
+      this.state.showToast(this.lang.translate('toast.username_invalid_format'), 'error');
       return;
     }
 
     const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
     if (!emailRegex.test(this.email)) {
-      this.state.showToast('Địa chỉ email không đúng định dạng!', 'error');
+      this.state.showToast(this.lang.translate('toast.email_invalid_format'), 'error');
       return;
     }
 
     if (this.password.length < 6) {
-      this.state.showToast('Mật khẩu phải có ít nhất 6 ký tự!', 'error');
+      this.state.showToast(this.lang.translate('toast.password_too_short'), 'error');
       return;
     }
 
     if (this.password !== this.passwordConfirmation) {
-      this.state.showToast('Mật khẩu xác nhận không khớp!', 'error');
+      this.state.showToast(this.lang.translate('toast.password_confirm_mismatch'), 'error');
       return;
     }
 

@@ -1,7 +1,7 @@
 <div class="max-w-[1530px] mx-auto w-full p-4 sm:p-6 space-y-6">
   <app-page-header
-    title="Quản Lý Thành Viên"
-    description="Quản lý thông tin tài khoản người dùng, phân quyền quản trị, cập nhật số dư ví và cấu hình B2B API Key."
+    [title]="'usr.title' | translate"
+    [description]="'usr.description' | translate"
   >
     <ng-container actions>
       <button
@@ -9,7 +9,7 @@
         class="px-4 py-2.5 text-sm font-extrabold text-slate-600 dark:text-slate-400 hover:text-primary bg-white dark:bg-slate-950 border border-slate-200/60 dark:border-slate-800/80 rounded-xl hover:bg-slate-50 dark:hover:bg-slate-900 transition-all cursor-pointer flex items-center gap-1.5"
       >
         <app-icon name="sync" class="w-4 h-4" />
-        Tải lại
+        {{ 'common.reload' | translate }}
       </button>
       <button
         app-button
@@ -18,7 +18,7 @@
         class="flex items-center gap-2 py-2.5 px-4 rounded-xl bg-gradient-to-r from-[var(--color-primary)] to-[var(--color-secondary)] text-white font-extrabold shadow-md shadow-[var(--color-primary)]/15 active:scale-95 transition-all text-sm cursor-pointer"
       >
         <app-icon name="plus" class="w-5 h-5" />
-        Thêm thành viên
+        {{ 'action.add_user' | translate }}
       </button>
     </ng-container>
   </app-page-header>
@@ -29,20 +29,20 @@
     <div class="form-field">
       <label
         class="text-xs font-bold text-slate-400 dark:text-slate-500 uppercase tracking-wider block mb-1"
-        >Bộ lọc Khoảng thời gian</label
+        >{{ 'common.filter_date' | translate }}</label
       >
       <app-custom-date-time-range
         [ngModel]="selectedDateRange()"
         (ngModelChange)="selectedDateRange.set($event); fetchUsers(1)"
         [showPresets]="true"
         [showTime]="false"
-        placeholder="Lọc theo ngày tạo..."
+        [placeholder]="'common.select_date' | translate"
       />
     </div>
     <div class="form-field">
       <label
         class="text-xs font-bold text-slate-400 dark:text-slate-500 uppercase tracking-wider block mb-1"
-        >Vai trò</label
+        >Role</label
       >
       <app-custom-select
         [options]="roleOptions"
@@ -55,10 +55,10 @@
     <div class="form-field">
       <label
         class="text-xs font-bold text-slate-400 dark:text-slate-500 uppercase tracking-wider block mb-1"
-        >Tìm kiếm thành viên</label
+        >{{ 'common.search' | translate }}</label
       >
       <app-custom-search-input
-        [placeholder]="'Tìm kiếm theo tên, email hoặc số điện thoại...'"
+        [placeholder]="'common.search_placeholder' | translate"
         [(ngModel)]="searchQuery"
         name="searchQuery"
         (valueChange)="onSearch($event)"
@@ -70,10 +70,10 @@
 
   <div app-card class="overflow-hidden !p-0">
     <app-table
-      [columns]="columns"
+      [columns]="columns()"
       [data]="state.userStore.users()"
       [loading]="state.userStore.loading()"
-      emptyText="Không tìm thấy thành viên nào. Nhấp vào nút 'Thêm thành viên' để tạo tài khoản mới!"
+      [emptyText]="'No users found.'"
     >
       <ng-template appTableCell="id" let-row="row">
         <div class="flex items-center gap-1.5">
@@ -130,9 +130,8 @@
       <ng-template appTableCell="balance" let-row="row">
         <span
           class="text-sm font-extrabold text-[var(--color-primary)]"
-          [appTooltip]="(row.balance | number: '1.0-0') + ' VND'"
         >
-          {{ row.balance | number: '1.0-0' }} VND
+          {{ row.balance | appCurrency }}
         </span>
       </ng-template>
 

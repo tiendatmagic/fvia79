@@ -1,7 +1,7 @@
 <div class="max-w-[1530px] mx-auto w-full px-4 sm:px-6 py-6 space-y-6">
   <app-page-header
-    title="Quản Lý Nạp Tiền"
-    description="Xem danh sách toàn bộ các yêu cầu nạp tiền hệ thống, duyệt thủ công khi xảy ra lỗi blockchain đối soát hoặc từ chối các hóa đơn nạp không hợp lệ."
+    [title]="'dep.title' | translate"
+    [description]="'dep.description' | translate"
   >
     <ng-container actions>
       <button
@@ -9,7 +9,7 @@
         class="px-4 py-2.5 text-sm font-extrabold text-slate-600 dark:text-slate-400 hover:text-primary bg-white dark:bg-slate-950 border border-slate-200/60 dark:border-slate-800/80 rounded-xl hover:bg-slate-50 dark:hover:bg-slate-900 transition-all cursor-pointer flex items-center gap-1.5"
       >
         <app-icon name="sync" class="w-4 h-4" />
-        Tải lại
+        {{ 'common.reload' | translate }}
       </button>
     </ng-container>
   </app-page-header>
@@ -21,14 +21,14 @@
       <label
         class="text-xs font-bold text-slate-400 dark:text-slate-500 uppercase tracking-wider block mb-1"
       >
-        Khoảng thời gian nạp
+        {{ 'common.filter_date' | translate }}
       </label>
       <app-custom-date-time-range
         [ngModel]="selectedDateRange()"
         (ngModelChange)="selectedDateRange.set($event); fetchDeposits(1)"
         [showPresets]="true"
         [showTime]="false"
-        placeholder="Lọc theo ngày nạp..."
+        [placeholder]="'common.select_date' | translate"
       />
     </div>
 
@@ -36,7 +36,7 @@
       <label
         class="text-xs font-bold text-slate-400 dark:text-slate-500 uppercase tracking-wider block mb-1"
       >
-        Trạng thái
+        {{ 'common.status' | translate }}
       </label>
       <app-custom-select
         [options]="statusOptions"
@@ -51,7 +51,7 @@
       <label
         class="text-xs font-bold text-slate-400 dark:text-slate-500 uppercase tracking-wider block mb-1"
       >
-        Phương thức nạp
+        Payment Method
       </label>
       <app-custom-select
         [options]="methodOptions"
@@ -66,10 +66,10 @@
       <label
         class="text-xs font-bold text-slate-400 dark:text-slate-500 uppercase tracking-wider block mb-1"
       >
-        Tìm kiếm lệnh nạp
+        {{ 'common.search' | translate }}
       </label>
       <app-custom-search-input
-        [placeholder]="'Tìm kiếm theo mã lệnh, email, tên hoặc TxHash...'"
+        [placeholder]="'common.search_placeholder' | translate"
         [(ngModel)]="searchQuery"
         name="searchQuery"
         (valueChange)="onSearch($event)"
@@ -81,10 +81,10 @@
 
     <div app-card class="overflow-hidden flex flex-col !p-0">
     <app-table
-      [columns]="columns"
+      [columns]="columns()"
       [data]="depositStore.deposits()"
       [loading]="depositStore.loading()"
-      emptyText="Không tìm thấy yêu cầu nạp tiền nào trong hệ thống!"
+      [emptyText]="'dep.no_deposits' | translate"
     >
             <ng-template appTableCell="code" let-row="row">
         <div class="flex items-center gap-1.5">
@@ -132,9 +132,8 @@
             <ng-template appTableCell="amountVnd" let-row="row">
         <span
           class="font-mono font-bold text-emerald-600 dark:text-emerald-400 text-sm"
-          [appTooltip]="'+' + (row.amountVnd | number: '1.0-0') + ' ₫'"
         >
-          +{{ row.amountVnd | number: '1.0-0' }} ₫
+          +{{ row.amountVnd | appCurrency }}
         </span>
       </ng-template>
 

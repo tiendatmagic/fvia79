@@ -24,9 +24,21 @@ class OrderController extends Controller
             $couponCode = $request->input('coupon_code');
 
             $order = $this->orderService->createOrder($userId, $itemsInput, $couponCode);
+            $freshUser = Auth::user()->fresh();
 
             return response()->json([
                 'message' => 'Order created successfully.',
+                'user' => [
+                    'id' => (string)$freshUser->id,
+                    'username' => $freshUser->username,
+                    'name' => $freshUser->name,
+                    'email' => $freshUser->email,
+                    'phone' => $freshUser->phone,
+                    'role' => $freshUser->role,
+                    'google2fa_enabled' => $freshUser->google2fa_enabled,
+                    'balance' => (float)$freshUser->balance,
+                    'api_key' => $freshUser->api_key
+                ],
                 'order' => [
                     'id' => $order->getId(),
                     'order_code' => $order->getOrderCode(),

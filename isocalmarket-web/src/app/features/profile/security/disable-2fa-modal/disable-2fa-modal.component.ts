@@ -5,6 +5,7 @@ import { ModalRef } from '@core/services/modal-ref';
 import { StateService } from '@core/services/state.service';
 import { CustomInputComponent } from '@shared/components/custom-input/custom-input.component';
 import { ButtonComponent } from '@shared/components/button/button.component';
+import { LanguageService } from '@core/services/language.service';
 import { finalize } from 'rxjs/operators';
 
 @Component({
@@ -21,6 +22,7 @@ import { finalize } from 'rxjs/operators';
 export class Disable2faModalComponent {
   private readonly modalRef = inject(ModalRef);
   public readonly state = inject(StateService);
+  public readonly lang = inject(LanguageService);
 
   public code = '';
   public readonly isSubmitting = signal(false);
@@ -32,12 +34,12 @@ export class Disable2faModalComponent {
   public onConfirm() {
     if (this.isSubmitting()) return;
     if (!this.code) {
-      this.state.showToast('Vui lòng nhập mã xác thực 2FA!', 'error');
+      this.state.showToast(this.lang.translate('toast.otp_required'), 'error');
       return;
     }
 
     if (this.code.length !== 6 || isNaN(Number(this.code))) {
-      this.state.showToast('Mã xác thực phải gồm 6 chữ số!', 'error');
+      this.state.showToast(this.lang.translate('toast.otp_digits_required'), 'error');
       return;
     }
 

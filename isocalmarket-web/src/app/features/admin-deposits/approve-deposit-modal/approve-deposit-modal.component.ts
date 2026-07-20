@@ -5,6 +5,7 @@ import { ModalRef, MODAL_DATA } from '@core/services/modal-ref';
 import { AdminDepositStore } from '../admin-deposit.store';
 import { CustomInputComponent } from '@shared/components/custom-input/custom-input.component';
 import { ButtonComponent } from '@shared/components/button/button.component';
+import { CurrencyPipe } from '@shared/pipes/currency.pipe';
 
 export interface ApproveDepositModalData {
   deposit: {
@@ -25,7 +26,8 @@ export interface ApproveDepositModalData {
     CommonModule,
     FormsModule,
     CustomInputComponent,
-    ButtonComponent
+    ButtonComponent,
+    CurrencyPipe
   ],
   templateUrl: './approve-deposit-modal.component.html',
   styles: [`

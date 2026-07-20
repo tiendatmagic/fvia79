@@ -10,6 +10,8 @@ import { PageHeaderComponent } from '@shared/components/page-header/page-header.
 import { CardComponent } from '@shared/components/card/card.component';
 import { IconComponent } from '@shared/components/icon/icon.component';
 import { SkeletonLoaderComponent } from '@shared/components/skeleton-loader/skeleton-loader.component';
+import { TranslatePipe } from '@shared/pipes/translate.pipe';
+import { LanguageService } from '@core/services/language.service';
 
 @Component({
   selector: 'app-deposit',
@@ -23,7 +25,8 @@ import { SkeletonLoaderComponent } from '@shared/components/skeleton-loader/skel
     PageHeaderComponent,
     CardComponent,
     IconComponent,
-    SkeletonLoaderComponent
+    SkeletonLoaderComponent,
+    TranslatePipe
   ],
   templateUrl: './deposit.component.html',
   styles: [`
@@ -36,6 +39,7 @@ export class DepositComponent implements OnInit {
   public readonly state = inject(StateService);
   private readonly router = inject(Router);
   private readonly modalService = inject(ModalService);
+  public readonly lang = inject(LanguageService);
 
   public amountUsdt: number | null = null;
   public vndEquivalent = 0;
@@ -48,7 +52,7 @@ export class DepositComponent implements OnInit {
     this.state.authStore.checkMe(true).subscribe();
     this.state.depositStore.fetchRate().subscribe({
       next: () => this.onAmountChange(),
-      error: () => this.state.showToast('Không thể kết nối lấy tỷ giá từ CoinGecko!', 'error')
+      error: () => this.state.showToast(this.lang.translate('toast.coingecko_error'), 'error')
     });
   }
 
@@ -68,9 +72,9 @@ export class DepositComponent implements OnInit {
 
     if (this.amountUsdt === null || this.amountUsdt === undefined || this.amountUsdt < 0.1 || this.amountUsdt > 100000) {
       if (this.amountUsdt !== null && this.amountUsdt !== undefined && this.amountUsdt > 100000) {
-        this.state.showToast('Số lượng USDT nạp tối đa là 100,000 USDT!', 'error');
+        this.state.showToast(this.lang.translate('toast.deposit_max_limit'), 'error');
       } else {
-        this.state.showToast('Số lượng USDT nạp tối thiểu là 0.1 USDT!', 'error');
+        this.state.showToast(this.lang.translate('toast.deposit_min_limit'), 'error');
       }
       return;
     }
@@ -82,7 +86,7 @@ export class DepositComponent implements OnInit {
       this.paymentMethod
     ).subscribe({
       next: (res) => {
-        this.state.showToast('Tạo lệnh nạp tiền thành công! Đang chuyển đến hóa đơn thanh toán.', 'success');
+        this.state.showToast(this.lang.translate('toast.deposit_created_success'), 'success');
         setTimeout(() => {
           this.isSubmitting.set(false);
           this.router.navigate(['/deposit/invoice', res.invoice.id]);
@@ -91,28 +95,28 @@ export class DepositComponent implements OnInit {
       error: (err) => {
         this.isSubmitting.set(false);
         const rawMsg = err?.error?.message;
-        let msg = typeof rawMsg === 'string' ? rawMsg : 'Có lỗi xảy ra khi tạo lệnh nạp tiền!';
+        let msg = typeof rawMsg === 'string' ? rawMsg : this.lang.translate('toast.deposit_create_failed');
 
         if (msg.toLowerCase().includes('at least 0.1')) {
-          msg = 'Số lượng USDT nạp tối thiểu là 0.1 USDT!';
+          msg = this.lang.translate('toast.deposit_min_limit');
           this.state.showToast(msg, 'error');
         } else if (msg.toLowerCase().includes('greater than 100000') || msg.includes('100000')) {
-          msg = 'Số lượng USDT nạp tối đa là 100,000 USDT!';
+          msg = this.lang.translate('toast.deposit_max_limit');
           this.state.showToast(msg, 'error');
         } else if (msg.includes('configured the receiving USDT wallet')) {
-          msg = 'Quản trị viên hệ thống chưa cấu hình địa chỉ ví nhận USDT nạp tiền! Vui lòng quay lại sau.';
+          msg = this.lang.translate('toast.admin_wallet_not_configured');
           this.state.showToast(msg, 'error');
         } else if (msg.includes('configured the scanner API key')) {
-          msg = 'Hệ thống đối soát tự động chưa được cấu hình Scanner API Key! Vui lòng quay lại sau.';
+          msg = this.lang.translate('toast.scanner_key_not_configured');
           this.state.showToast(msg, 'error');
         } else if (msg.includes('already have an active deposit order')) {
           const activeInvoiceId = err?.error?.active_invoice_id;
 
           this.modalService.confirm({
-            title: 'Lệnh nạp tiền chưa hoàn tất',
-            description: 'Bạn đang có một lệnh nạp tiền chưa thanh toán. Vui lòng kiểm tra hoặc hủy lệnh nạp cũ trước khi tạo lệnh mới',
-            confirmText: 'Xem lệnh nạp tiền',
-            cancelText: 'Đóng modal',
+            title: this.lang.translate('modal.pending_deposit_title'),
+            description: this.lang.translate('modal.pending_deposit_desc'),
+            confirmText: this.lang.translate('modal.pending_deposit_confirm'),
+            cancelText: this.lang.translate('modal.pending_deposit_cancel'),
             confirmButtonClass: 'btn-primary',
             size: 'md'
           }).afterClosed$.subscribe((confirmed) => {

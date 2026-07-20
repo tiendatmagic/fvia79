@@ -5,6 +5,7 @@ import { StateService } from '@core/services/state.service';
 import { IconComponent } from '@shared/components/icon/icon.component';
 import { LogoComponent } from '@shared/components/logo/logo.component';
 import { ThemeSwitcherComponent } from '@shared/components/theme-switcher/theme-switcher.component';
+import { TranslatePipe } from '@shared/pipes/translate.pipe';
 
 @Component({
   selector: 'app-sidebar',
@@ -14,6 +15,7 @@ import { ThemeSwitcherComponent } from '@shared/components/theme-switcher/theme-
     IconComponent,
     LogoComponent,
     ThemeSwitcherComponent,
+    TranslatePipe
   ],
   templateUrl: './sidebar.component.html',
   styles: [

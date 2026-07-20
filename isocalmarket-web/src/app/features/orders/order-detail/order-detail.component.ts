@@ -9,6 +9,10 @@ import { BadgeComponent } from '@shared/components/badge/badge.component';
 import { CardComponent } from '@shared/components/card/card.component';
 import { IconComponent } from '@shared/components/icon/icon.component';
 import { PageHeaderComponent } from '@shared/components/page-header/page-header.component';
+import { TranslatePipe } from '@shared/pipes/translate.pipe';
+import { CurrencyPipe } from '@shared/pipes/currency.pipe';
+import { LanguageService } from '@core/services/language.service';
+import { TooltipDirective } from '@shared/components/tooltip/tooltip.directive';
 
 @Component({
   selector: 'app-order-detail',
@@ -20,7 +24,10 @@ import { PageHeaderComponent } from '@shared/components/page-header/page-header.
     BadgeComponent,
     CardComponent,
     IconComponent,
-    PageHeaderComponent
+    PageHeaderComponent,
+    TranslatePipe,
+    CurrencyPipe,
+    TooltipDirective
   ],
   templateUrl: './order-detail.component.html',
   styles: [`
@@ -35,6 +42,7 @@ export class OrderDetailComponent implements OnInit {
   private readonly apiService = inject(ApiService);
   private readonly http = inject(HttpClient);
   public readonly state = inject(StateService);
+  public readonly lang = inject(LanguageService);
 
   public orderId = '';
   public orderDetails = signal<any | null>(null);
@@ -62,7 +70,7 @@ export class OrderDetailComponent implements OnInit {
         this.loadingDetails.set(false);
       },
       error: () => {
-        this.state.showToast('Không thể tải chi tiết đơn hàng!', 'error');
+        this.state.showToast(this.lang.translate('toast.error_load_order_detail'), 'error');
         this.loadingDetails.set(false);
         this.router.navigate(['/orders']);
       }
@@ -76,9 +84,9 @@ export class OrderDetailComponent implements OnInit {
   public copyToClipboard(text: string) {
     if (typeof window !== 'undefined' && navigator.clipboard) {
       navigator.clipboard.writeText(text).then(() => {
-        this.state.showToast('Đã copy thông tin tài khoản!', 'success');
+        this.state.showToast(this.lang.translate('toast.account_copied'), 'success');
       }).catch(() => {
-        this.state.showToast('Không thể copy tự động!', 'error');
+        this.state.showToast(this.lang.translate('toast.copy_error'), 'error');
       });
     }
   }
@@ -99,7 +107,7 @@ export class OrderDetailComponent implements OnInit {
 
     document.body.removeChild(a);
     URL.revokeObjectURL(url);
-    this.state.showToast('Đã tải xuống danh sách tài khoản dạng .txt!', 'success');
+    this.state.showToast(this.lang.translate('toast.accounts_downloaded'), 'success');
   }
 
   public parseAccountData(data: string): { label: string, value: string, is2FA?: boolean }[] {
@@ -153,19 +161,19 @@ export class OrderDetailComponent implements OnInit {
             this.currentOtpCode.set(code);
             if (typeof window !== 'undefined' && navigator.clipboard) {
               navigator.clipboard.writeText(code).then(() => {
-                this.state.showToast('Đã copy mã OTP: ' + code, 'success');
+                this.state.showToast(this.lang.translate('toast.otp_copied') + code, 'success');
               });
             }
           } else {
             this.currentOtpCode.set(token);
           }
         } else {
-          this.state.showToast('Không lấy được mã OTP, vui lòng kiểm tra lại Secret Key!', 'error');
+          this.state.showToast(this.lang.translate('toast.otp_failed'), 'error');
         }
       },
       error: () => {
         this.loadingOtp.set(false);
-        this.state.showToast('Lỗi kết nối API 2fa.live!', 'error');
+        this.state.showToast(this.lang.translate('toast.api_2fa_error'), 'error');
       }
     });
   }

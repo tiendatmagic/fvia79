@@ -6,6 +6,7 @@ import { CardComponent } from '@shared/components/card/card.component';
 import { IconComponent } from '@shared/components/icon/icon.component';
 import { environment } from '@environments/environment';
 import { RouterModule } from '@angular/router';
+import { LanguageService } from '@core/services/language.service';
 
 @Component({
   selector: 'app-admin-api',
@@ -26,6 +27,7 @@ import { RouterModule } from '@angular/router';
 })
 export class AdminApiComponent {
   public readonly state = inject(StateService);
+  public readonly lang = inject(LanguageService);
   
   public readonly importInventoryTab = signal<'bash' | 'cmd'>('bash');
   public readonly showApiKey = signal<boolean>(false);
@@ -49,12 +51,13 @@ export class AdminApiComponent {
   public copyToClipboard(text: string, title: string) {
     if (typeof navigator !== 'undefined' && navigator.clipboard) {
       navigator.clipboard.writeText(text).then(() => {
-        this.state.showToast(`Đã sao chép ${title} vào bộ nhớ tạm!`, 'success');
+        const successMsg = `${this.lang.translate('toast.copied')} (${title})`;
+        this.state.showToast(successMsg, 'success');
       }).catch(() => {
-        this.state.showToast('Lỗi khi sao chép!', 'error');
+        this.state.showToast(this.lang.translate('toast.copy_error'), 'error');
       });
     } else {
-      this.state.showToast('Trình duyệt không hỗ trợ sao chép tự động!', 'warning');
+      this.state.showToast(this.lang.translate('toast.copy_not_supported'), 'warning');
     }
   }
 

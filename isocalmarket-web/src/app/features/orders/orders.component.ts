@@ -2,6 +2,7 @@ import { Component, OnInit, inject, signal, ChangeDetectionStrategy } from '@ang
 import { CommonModule } from '@angular/common';
 import { Router } from '@angular/router';
 import { StateService } from '@core/services/state.service';
+import { LanguageService } from '@core/services/language.service';
 import { PaginationComponent } from '@shared/components/pagination/pagination.component';
 import { BadgeComponent } from '@shared/components/badge/badge.component';
 import { CardComponent } from '@shared/components/card/card.component';
@@ -13,6 +14,8 @@ import { CustomDateTimeRangeComponent, DateTimeRangeValue } from '@shared/compon
 import { TooltipDirective } from '@shared/components/tooltip/tooltip.directive';
 import { FormsModule } from '@angular/forms';
 import { TableComponent, TableCellDirective, TableColumn } from '@shared/components/table/table.component';
+import { TranslatePipe } from '@shared/pipes/translate.pipe';
+import { CurrencyPipe } from '@shared/pipes/currency.pipe';
 
 @Component({
   selector: 'app-orders',
@@ -32,6 +35,8 @@ import { TableComponent, TableCellDirective, TableColumn } from '@shared/compone
     CustomDateTimeRangeComponent,
     TableComponent,
     TableCellDirective,
+    TranslatePipe,
+    CurrencyPipe
   ],
   templateUrl: './orders.component.html',
   styles: [`
@@ -42,6 +47,7 @@ import { TableComponent, TableCellDirective, TableColumn } from '@shared/compone
 })
 export class OrdersComponent implements OnInit {
   public readonly state = inject(StateService);
+  public readonly lang = inject(LanguageService);
   private readonly router = inject(Router);
 
   public readonly columns: TableColumn[] = [
@@ -92,10 +98,14 @@ export class OrdersComponent implements OnInit {
     this.router.navigate(['/orders', order.id]);
   }
 
+  public copyOrderCode(code: string) {
+    this.copyToClipboard(code, this.lang.translate('orders.copied'));
+  }
+
   public copyToClipboard(text: string, message: string) {
     navigator.clipboard.writeText(text).then(
       () => this.state.showToast(message, 'success'),
-      () => this.state.showToast('Không thể sao chép!', 'error')
+      () => this.state.showToast(this.lang.translate('toast.copy_error'), 'error')
     );
   }
 }

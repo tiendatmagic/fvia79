@@ -1,7 +1,7 @@
 <div class="max-w-[1530px] mx-auto w-full px-4 sm:px-6 py-6 space-y-6">
   <app-page-header
-    title="Lịch Sử Nạp Tiền USDT"
-    description="Tra cứu và kiểm tra trạng thái tất cả các lệnh nạp tiền của bạn."
+    [title]="'Deposit History' | translate"
+    [description]="'View and track all your USDT deposit invoices.'"
   >
     <ng-container actions>
       <button
@@ -9,7 +9,7 @@
         class="px-4 py-2.5 text-sm font-extrabold text-slate-600 dark:text-slate-400 hover:text-primary bg-white dark:bg-slate-950 border border-slate-200/60 dark:border-slate-800/80 rounded-xl hover:bg-slate-50 dark:hover:bg-slate-900 transition-all cursor-pointer flex items-center gap-1.5"
       >
         <app-icon name="sync" class="w-4 h-4" />
-        Tải lại
+        {{ 'common.reload' | translate }}
       </button>
     </ng-container>
   </app-page-header>
@@ -21,14 +21,14 @@
       <label
         class="text-xs font-bold text-slate-400 dark:text-slate-500 uppercase tracking-wider block mb-1"
       >
-        Khoảng thời gian
+        {{ 'common.filter_date' | translate }}
       </label>
       <app-custom-date-time-range
         [(ngModel)]="selectedDateRange"
         (ngModelChange)="fetchPage(1)"
         [showPresets]="true"
         [showTime]="false"
-        placeholder="Lọc theo ngày tạo..."
+        [placeholder]="'common.select_date' | translate"
       />
     </div>
 
@@ -36,7 +36,7 @@
       <label
         class="text-xs font-bold text-slate-400 dark:text-slate-500 uppercase tracking-wider block mb-1"
       >
-        Trạng thái
+        {{ 'common.status' | translate }}
       </label>
       <app-custom-select
         [options]="statusOptions"
@@ -51,10 +51,10 @@
       <label
         class="text-xs font-bold text-slate-400 dark:text-slate-500 uppercase tracking-wider block mb-1"
       >
-        Tìm kiếm lệnh nạp
+        {{ 'common.search' | translate }}
       </label>
       <app-custom-search-input
-        [placeholder]="'Tìm theo mã lệnh, số tiền...'"
+        [placeholder]="'common.search_placeholder' | translate"
         [(ngModel)]="searchQuery"
         name="searchQuery"
         (valueChange)="onSearch($event)"
@@ -66,16 +66,16 @@
 
   <div app-card class="overflow-hidden !p-0">
     <app-table
-      [columns]="columns"
+      [columns]="columns()"
       [data]="state.depositStore.historyList()"
       [loading]="state.depositStore.loading()"
-      emptyText="Không tìm thấy lệnh nạp tiền nào!"
+      [emptyText]="'deposit.empty_history' | translate"
       emptyIcon="archive"
     >
       <ng-template appTableCell="code" let-row="row">
         <a
           [routerLink]="['/deposit/invoice', row.id]"
-          [appTooltip]="'Xem hóa đơn #' + row.code"
+          [appTooltip]="('deposit.view_invoice_prefix' | translate) + ' #' + row.code"
           class="font-mono font-bold text-[var(--color-primary)] hover:underline border-b border-dashed border-slate-300 dark:border-slate-700 pb-0.5 transition-colors cursor-pointer"
         >
           #{{ row.code }}
@@ -92,9 +92,9 @@
           </span>
           <span
             class="text-xs text-slate-400 dark:text-slate-500 leading-none mt-1"
-            [appTooltip]="'Số tiền lẻ cần thanh toán thực tế (Thực gửi)'"
+            [appTooltip]="'deposit.actual_send_tooltip' | translate"
           >
-            Thực gửi: {{ row.amountToPay | number: '1.4-4' }} USDT
+            {{ 'deposit.actual_send' | translate }}: {{ row.amountToPay | number: '1.4-4' }} USDT
           </span>
         </div>
       </ng-template>
@@ -102,9 +102,8 @@
       <ng-template appTableCell="amountVnd" let-row="row">
         <span
           class="font-mono font-bold text-emerald-600 dark:text-emerald-400 text-sm"
-          [appTooltip]="'+' + (row.amountVnd | number: '1.0-0') + ' ₫'"
         >
-          +{{ row.amountVnd | number: '1.0-0' }} ₫
+          +{{ row.amountVnd | appCurrency }}
         </span>
       </ng-template>
 
@@ -119,25 +118,9 @@
                   ? 'neutral'
                   : 'danger'
           "
-          [appTooltip]="
-            row.status === 'completed'
-              ? 'Thành công'
-              : row.status === 'pending_payment'
-                ? 'Chờ thanh toán'
-                : row.status === 'expired'
-                  ? 'Đã hết hạn'
-                  : 'Thất bại'
-          "
+          [appTooltip]="'status.' + row.status | translate"
         >
-          {{
-            row.status === 'completed'
-              ? 'Thành công'
-              : row.status === 'pending_payment'
-                ? 'Chờ thanh toán'
-                : row.status === 'expired'
-                  ? 'Đã hết hạn'
-                  : 'Thất bại'
-          }}
+          {{ 'status.' + row.status | translate }}
         </app-badge>
       </ng-template>
 
@@ -153,9 +136,9 @@
             type="button"
             (click)="viewInvoice(row)"
             class="text-xs font-bold px-3 py-1.5 rounded-lg border border-[var(--color-primary)]/20 dark:border-[var(--color-primary)]/30 hover:bg-[var(--color-primary)]/10 text-[var(--color-primary)] bg-[var(--color-primary)]/5 hover:scale-105 active:scale-95 transition-all cursor-pointer flex items-center gap-1 shrink-0"
-            [appTooltip]="'Tiếp tục thanh toán'"
+            [appTooltip]="'deposit.continue_payment' | translate"
           >
-            <span>Thanh toán</span>
+            <span>{{ 'deposit.pay' | translate }}</span>
             <app-icon name="chevron-right" class="w-3.5 h-3.5" />
           </button>
           <button
@@ -163,10 +146,10 @@
             type="button"
             (click)="viewDetails(row)"
             class="text-xs font-bold px-3 py-1.5 rounded-lg border border-teal-500/20 dark:border-teal-500/30 hover:bg-teal-100 dark:hover:bg-teal-950/40 text-teal-600 dark:text-teal-400 bg-teal-50 dark:bg-teal-950/20 hover:scale-105 active:scale-95 transition-all cursor-pointer flex items-center gap-1 shrink-0"
-            [appTooltip]="'Xem chi tiết'"
+            [appTooltip]="'common.view_details' | translate"
           >
             <app-icon name="eye" class="w-3.5 h-3.5" />
-            <span>Chi tiết</span>
+            <span>{{ 'common.details' | translate }}</span>
           </button>
         </div>
       </ng-template>
@@ -177,7 +160,7 @@
       [totalPages]="state.depositStore.lastPage()"
       [totalItems]="state.depositStore.totalItems()"
       [itemsPerPage]="itemsPerPage"
-      [itemName]="'lệnh nạp'"
+      [itemName]="'deposit.item_name' | translate"
       (pageChange)="fetchPage($event)"
     />
   </div>

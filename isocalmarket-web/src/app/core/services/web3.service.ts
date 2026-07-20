@@ -3,6 +3,7 @@ import type { AppKit } from '@reown/appkit';
 import { environment } from '@environments/environment';
 import { ThemeService } from './theme.service';
 import { ToastService } from './toast.service';
+import { LanguageService } from './language.service';
 import { POPULAR_CHAINS } from '../utils/blockchain.utils';
 
 @Injectable({
@@ -33,6 +34,7 @@ export class Web3Service {
 
   private readonly themeService = inject(ThemeService);
   private readonly toastService = inject(ToastService);
+  private readonly lang = inject(LanguageService);
 
   constructor() {
     if (environment.enableWeb3) {
@@ -134,7 +136,7 @@ export class Web3Service {
           this.isWrongChain.set(false);
           this.showWrongChainModal.set(false);
           if (prevConnected) {
-            this.toastService.showToast('Đã ngắt kết nối ví!', 'error');
+            this.toastService.showToast(this.lang.translate('toast.wallet_disconnected'), 'error');
           }
         }
       });
@@ -177,7 +179,8 @@ export class Web3Service {
         }
       }
       if (showToastAlert && prevChainId && prevChainId !== chainId) {
-        this.toastService.showToast(`Đã chuyển sang mạng ${supportedChain.name}!`, 'success');
+        const switchMsg = `${this.lang.translate('toast.network_switched')} ${supportedChain.name}!`;
+        this.toastService.showToast(switchMsg, 'success');
       }
 
       const isTestnet = !!supportedChain.testnet || supportedChain.name.toLowerCase().includes('sepolia') || supportedChain.name.toLowerCase().includes('testnet');
@@ -194,7 +197,7 @@ export class Web3Service {
       if (this.isConnected()) {
         this.showWrongChainModal.set(true);
         if (showToastAlert && (!prevWrongChain || prevChainId !== chainId)) {
-          this.toastService.showToast('Mạng hiện tại không được hỗ trợ!', 'error');
+          this.toastService.showToast(this.lang.translate('toast.network_not_supported'), 'error');
         }
       } else {
         this.showWrongChainModal.set(false);
@@ -236,7 +239,7 @@ export class Web3Service {
   public async connect() {
     try {
       if (!this.modal) {
-        this.toastService.showToast('Chức năng Web3 hiện đang bị tắt!', 'warning');
+        this.toastService.showToast(this.lang.translate('toast.web3_disabled'), 'warning');
         return;
       }
       await this.modal.open();

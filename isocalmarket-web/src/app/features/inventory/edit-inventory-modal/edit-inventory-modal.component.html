@@ -2,7 +2,7 @@
   <div class="grid grid-cols-1 sm:grid-cols-2 gap-6">
     <div class="form-field">
       <label class="text-xs font-black text-slate-400 uppercase tracking-wider block mb-2"
-        >Sản phẩm <span class="text-red-500">*</span></label
+        >{{ 'modal.product_category' | translate }} <span class="text-red-500">*</span></label
       >
       <app-custom-select
         [options]="productOptions"
@@ -14,7 +14,7 @@
 
     <div class="form-field">
       <label class="text-xs font-black text-slate-400 uppercase tracking-wider block mb-2"
-        >Trạng thái <span class="text-red-500">*</span></label
+        >{{ 'common.status' | translate }} <span class="text-red-500">*</span></label
       >
       <app-custom-select
         [options]="statusOptions"
@@ -27,10 +27,10 @@
 
   <div class="form-field">
     <label class="text-xs font-black text-slate-400 uppercase tracking-wider block mb-2"
-      >Tên Lô Hàng <span class="text-red-500">*</span></label
+      >{{ 'inv.batch_name' | translate }} <span class="text-red-500">*</span></label
     >
     <app-custom-input
-      [placeholder]="'Nhập tên lô hàng...'"
+      [placeholder]="'inv.batch_name' | translate"
       [(ngModel)]="batchName"
       name="batchName"
       type="text"
@@ -39,10 +39,10 @@
 
   <div class="form-field">
     <label class="text-xs font-black text-slate-400 uppercase tracking-wider block mb-2"
-      >Danh sách tài nguyên còn lại (mỗi dòng một key)</label
+      >{{ 'inv.resource_data' | translate }}</label
     >
     <app-custom-input
-      [placeholder]="'Nhập thông tin tài nguyên kỹ thuật số...'"
+      [placeholder]="'inv.resource_data' | translate"
       [(ngModel)]="keysPool"
       name="keysPool"
       type="textarea"
@@ -50,8 +50,8 @@
       customClass="font-mono min-h-[200px]"
     />
     <div class="flex justify-between items-center text-xs font-bold text-slate-400 mt-1">
-      <span>Định dạng: mỗi dòng một tài khoản</span>
-      <span class="text-[var(--color-primary)]">Tổng cộng: {{ keysCount }} tài khoản</span>
+      <span>1 account per line</span>
+      <span class="text-[var(--color-primary)]">Total: {{ keysCount }}</span>
     </div>
   </div>
 
@@ -62,8 +62,9 @@
       [variant]="'cancel'"
       class="py-2.5 px-4 rounded-xl text-xs font-bold"
     >
-      Hủy bỏ
+      {{ 'action.cancel' | translate }}
     </button>
+
     <button
       app-button
       (click)="onSubmit()"
@@ -71,7 +72,7 @@
       [variant]="'primary'"
       class="py-2.5 px-4 rounded-xl bg-gradient-to-r from-[var(--color-primary)] to-[var(--color-secondary)] text-white text-xs font-extrabold active:scale-95 shadow-sm shadow-[var(--color-primary)]/10 cursor-pointer"
     >
-      Lưu thay đổi
+      {{ 'action.save' | translate }}
     </button>
   </div>
 </div>

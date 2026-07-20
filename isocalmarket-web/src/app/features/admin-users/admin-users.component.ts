@@ -1,7 +1,8 @@
-import { Component, OnInit, inject, signal } from '@angular/core';
+import { Component, OnInit, inject, signal, computed } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { StateService } from '@core/services/state.service';
+import { LanguageService } from '@core/services/language.service';
 import { ButtonComponent } from '@shared/components/button/button.component';
 import { BadgeComponent } from '@shared/components/badge/badge.component';
 import { CardComponent } from '@shared/components/card/card.component';
@@ -16,6 +17,8 @@ import { AdjustBalanceModalComponent } from './adjust-balance-modal/adjust-balan
 import { CustomSelectComponent } from '@shared/components/custom-select/custom-select.component';
 import { CustomDateTimeRangeComponent, DateTimeRangeValue } from '@shared/components/custom-date-time-range/custom-date-time-range.component';
 import { TableComponent, TableCellDirective, TableColumn } from '@shared/components/table/table.component';
+import { TranslatePipe } from '@shared/pipes/translate.pipe';
+import { CurrencyPipe } from '@shared/pipes/currency.pipe';
 
 @Component({
   selector: 'app-admin-users',
@@ -35,6 +38,8 @@ import { TableComponent, TableCellDirective, TableColumn } from '@shared/compone
     CustomDateTimeRangeComponent,
     TableComponent,
     TableCellDirective,
+    TranslatePipe,
+    CurrencyPipe
   ],
   templateUrl: './admin-users.component.html',
   styles: [`
@@ -46,17 +51,21 @@ import { TableComponent, TableCellDirective, TableColumn } from '@shared/compone
 export class AdminUsersComponent implements OnInit {
   public readonly state = inject(StateService);
   private readonly modalService = inject(ModalService);
+  public readonly lang = inject(LanguageService);
 
-  public readonly columns: TableColumn[] = [
-    { key: 'id', label: 'ID', sortable: true },
-    { key: 'name', label: 'Tên thành viên', sortable: true },
-    { key: 'email', label: 'Liên hệ (Email/SĐT)', sortable: true },
-    { key: 'role', label: 'Vai trò', sortable: true, align: 'center' },
-    { key: 'balance', label: 'Số dư', sortable: true, align: 'right' },
-    { key: 'api_key', label: 'B2B API Key', sortable: true },
-    { key: 'status', label: 'Trạng thái', sortable: true, align: 'center' },
-    { key: 'actions', label: 'Thao tác', sortable: false, align: 'right' }
-  ];
+  public readonly columns = computed<TableColumn[]>(() => {
+    this.lang.currentLang();
+    return [
+      { key: 'id', label: 'ID', sortable: true },
+      { key: 'name', label: this.lang.translate('usr.name'), sortable: true },
+      { key: 'email', label: this.lang.translate('usr.contact'), sortable: true },
+      { key: 'role', label: this.lang.translate('usr.role'), sortable: true, align: 'center' },
+      { key: 'balance', label: this.lang.translate('nav.balance'), sortable: true, align: 'right' },
+      { key: 'api_key', label: 'B2B API Key', sortable: true },
+      { key: 'status', label: this.lang.translate('common.status'), sortable: true, align: 'center' },
+      { key: 'actions', label: this.lang.translate('common.actions'), sortable: false, align: 'right' }
+    ];
+  });
 
   public searchQuery = '';
   private readonly _searchQuery = signal('');
@@ -73,11 +82,13 @@ export class AdminUsersComponent implements OnInit {
 
   public readonly selectedRoleFilter = signal<string>('');
   public readonly selectedDateRange = signal<DateTimeRangeValue>({ startDate: '', endDate: '' });
-  public readonly roleOptions = [
-    { label: 'Tất cả vai trò', value: '' },
-    { label: 'Quản trị viên', value: 'admin' },
-    { label: 'Người dùng', value: 'user' }
-  ];
+  public get roleOptions() {
+    return [
+      { label: this.lang.translate('usr.all_roles'), value: '' },
+      { label: this.lang.translate('role.admin'), value: 'admin' },
+      { label: this.lang.translate('role.customer'), value: 'user' }
+    ];
+  }
 
   public readonly currentPage = signal<number>(1);
   public readonly limit = 10;
@@ -113,12 +124,12 @@ export class AdminUsersComponent implements OnInit {
     this.selectedRoleFilter.set('');
     this.selectedDateRange.set({ startDate: '', endDate: '' });
     this.fetchUsers(1);
-    this.state.showToast('Đã làm mới danh sách!', 'success');
+    this.state.showToast(this.lang.translate('toast.list_refreshed'), 'success');
   }
 
   public openAddModal() {
     const ref = this.modalService.open(UserFormModalComponent, {
-      title: 'Thêm thành viên mới',
+      title: this.lang.translate('modal.add_user_title'),
       size: '3xl',
       closeOnBackdropClick: true
     });
@@ -132,7 +143,7 @@ export class AdminUsersComponent implements OnInit {
 
   public openEditModal(user: any) {
     const ref = this.modalService.open(UserFormModalComponent, {
-      title: 'Sửa thông tin thành viên',
+      title: this.lang.translate('modal.edit_user_title'),
       size: '3xl',
       closeOnBackdropClick: true,
       data: user
@@ -147,7 +158,7 @@ export class AdminUsersComponent implements OnInit {
 
   public openAdjustBalanceModal(user: any) {
     const ref = this.modalService.open(AdjustBalanceModalComponent, {
-      title: 'Điều chỉnh số dư thành viên',
+      title: this.lang.translate('modal.adjust_balance_title'),
       size: 'md',
       closeOnBackdropClick: true,
       data: { user }
@@ -162,8 +173,8 @@ export class AdminUsersComponent implements OnInit {
 
   public deleteUser(user: any) {
     const ref = this.modalService.confirm({
-      title: 'Xác nhận xóa thành viên',
-      description: `Bạn có chắc chắn muốn xóa thành viên "${user.name}"? Hành động này không thể hoàn tác!`
+      title: this.lang.translate('modal.delete_user_title'),
+      description: `${this.lang.translate('modal.delete_user_desc')} "${user.name}"?`
     });
 
     ref.afterClosed$.subscribe((confirmed: any) => {
@@ -180,7 +191,7 @@ export class AdminUsersComponent implements OnInit {
   public copyApiKey(key: string) {
     if (typeof navigator !== 'undefined' && navigator.clipboard) {
       navigator.clipboard.writeText(key).then(() => {
-        this.state.showToast('Đã sao chép API Key!', 'success');
+        this.state.showToast(this.lang.translate('toast.apikey_copied'), 'success');
       });
     }
   }

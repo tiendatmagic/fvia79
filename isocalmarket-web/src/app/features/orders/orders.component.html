@@ -1,11 +1,7 @@
 <div class="max-w-[1530px] mx-auto w-full px-4 sm:px-6 py-6 space-y-6">
   <app-page-header
-    title="Lịch Sử Đơn Hàng"
-    [description]="
-      state.isAdmin()
-        ? 'Quản lý toàn bộ lịch sử đơn hàng trên hệ thống.'
-        : 'Xem danh sách các đơn hàng và lấy tài nguyên số đã đặt mua.'
-    "
+    [title]="'orders.title' | translate"
+    [description]="'nav.orders' | translate"
   >
     <ng-container actions>
       <button
@@ -13,7 +9,7 @@
         class="px-4 py-2.5 text-sm font-extrabold text-slate-600 dark:text-slate-400 hover:text-primary bg-white dark:bg-slate-950 border border-slate-200/60 dark:border-slate-800/80 rounded-xl hover:bg-slate-50 dark:hover:bg-slate-900 transition-all cursor-pointer flex items-center gap-1.5"
       >
         <app-icon name="sync" class="w-4 h-4" />
-        Tải lại
+        Refresh
       </button>
     </ng-container>
   </app-page-header>
@@ -23,20 +19,20 @@
   >
     <div class="form-field">
       <label class="text-xs font-bold text-slate-400 dark:text-slate-500 uppercase tracking-wider block mb-1">
-        Khoảng thời gian
+        Date Range
       </label>
       <app-custom-date-time-range
         [(ngModel)]="selectedDateRange"
         (ngModelChange)="fetchPage(1)"
         [showPresets]="true"
         [showTime]="false"
-        placeholder="Lọc theo ngày mua..."
+        placeholder="Filter by date..."
       />
     </div>
 
     <div class="form-field">
       <label class="text-xs font-bold text-slate-400 dark:text-slate-500 uppercase tracking-wider block mb-1">
-        Trạng thái
+        {{ 'orders.status' | translate }}
       </label>
       <app-custom-select
         [options]="statusOptions"
@@ -49,10 +45,10 @@
 
     <div class="form-field">
       <label class="text-xs font-bold text-slate-400 dark:text-slate-500 uppercase tracking-wider block mb-1">
-        Tìm kiếm đơn hàng
+        {{ 'action.search' | translate }}
       </label>
       <app-custom-search-input
-        [placeholder]="'Tìm kiếm đơn hàng...'"
+        [placeholder]="'Search orders...'"
         [(ngModel)]="searchQuery"
         name="searchQuery"
         (valueChange)="onSearch($event)"
@@ -67,7 +63,7 @@
       [columns]="columns"
       [data]="state.orderStore.orders()"
       [loading]="state.orderStore.loading()"
-      emptyText="Bạn chưa có đơn hàng nào! Quay lại cửa hàng để mua sắm ngay."
+      emptyText="No orders found."
     >
       <ng-template appTableCell="order_code" let-row="row">
         <div class="flex items-center gap-1.5">
@@ -80,11 +76,11 @@
           </button>
           <button
             (click)="
-              copyToClipboard(row.order_code, 'Đã sao chép mã đơn hàng!');
+              copyOrderCode(row.order_code);
               $event.stopPropagation()
             "
             class="p-1 hover:bg-slate-100 dark:hover:bg-slate-800 rounded transition-colors text-slate-400 hover:text-slate-600 dark:hover:text-slate-200 cursor-pointer"
-            [appTooltip]="'Sao chép mã đơn hàng'"
+            [appTooltip]="'orders.copy' | translate"
           >
             <app-icon name="copy" class="w-3.5 h-3.5" />
           </button>
@@ -98,8 +94,8 @@
       </ng-template>
 
       <ng-template appTableCell="total_price" let-row="row">
-        <span class="font-mono font-bold text-emerald-600 dark:text-emerald-400 text-sm" [appTooltip]="(row.total_price | number: '1.0-0') + ' ₫'">
-          {{ row.total_price | number: '1.0-0' }} ₫
+        <span class="font-mono font-bold text-emerald-600 dark:text-emerald-400 text-sm" [appTooltip]="row.total_price | appCurrency">
+          {{ row.total_price | appCurrency }}
         </span>
       </ng-template>
 
@@ -112,18 +108,18 @@
           rounded="full"
           [appTooltip]="
             row.status === 'paid'
-              ? 'Đã thanh toán'
+              ? ('orders.status_completed' | translate)
               : row.status === 'pending'
-                ? 'Chờ thanh toán'
-                : 'Đã hủy'
+                ? ('orders.status_pending' | translate)
+                : ('orders.status_cancelled' | translate)
           "
         >
           {{
             row.status === 'paid'
-              ? 'Đã thanh toán'
+              ? ('orders.status_completed' | translate)
               : row.status === 'pending'
-                ? 'Chờ thanh toán'
-                : 'Đã hủy'
+                ? ('orders.status_pending' | translate)
+                : ('orders.status_cancelled' | translate)
           }}
         </app-badge>
       </ng-template>
@@ -133,10 +129,10 @@
           <button
             (click)="viewDetail(row)"
             class="text-xs font-bold px-3 py-1.5 rounded-lg border border-teal-500/20 dark:border-teal-500/30 hover:bg-teal-100 dark:hover:bg-teal-950/40 text-teal-600 dark:text-teal-400 bg-teal-50 dark:bg-teal-950/20 hover:scale-105 active:scale-95 transition-all cursor-pointer flex items-center gap-1 shrink-0"
-            [appTooltip]="'Xem chi tiết'"
+            [appTooltip]="'action.details' | translate"
           >
             <app-icon name="eye" class="w-3.5 h-3.5" />
-            <span>Chi tiết</span>
+            <span>{{ 'action.details' | translate }}</span>
           </button>
         </div>
       </ng-template>
@@ -147,8 +143,9 @@
       [totalPages]="state.orderStore.lastPage()"
       [totalItems]="state.orderStore.totalOrders()"
       [itemsPerPage]="limit"
-      [itemName]="'đơn hàng'"
+      [itemName]="'nav.orders' | translate"
       (pageChange)="fetchPage($event)"
     />
   </div>
 </div>
+

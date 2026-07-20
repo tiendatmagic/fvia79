@@ -47,12 +47,12 @@
         <span
           class="text-xs font-extrabold text-slate-400 dark:text-slate-500 uppercase tracking-wider block mb-0.5"
         >
-          Số dư thực nhận (VND)
+          Số dư thực nhận
         </span>
         <span
           class="text-base font-extrabold text-emerald-600 dark:text-emerald-400 font-mono block"
         >
-          +{{ data.deposit.amountVnd | number: '1.0-0' }} ₫
+          +{{ data.deposit.amountVnd | appCurrency }}
         </span>
       </div>
     </div>

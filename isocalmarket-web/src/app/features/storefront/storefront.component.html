@@ -4,16 +4,15 @@
   >
     <div class="space-y-3 z-10">
       <h1 class="text-3xl sm:text-4xl font-black text-slate-900 dark:text-white leading-tight">
-        Khám Phá Chợ Tài Nguyên Số Lớn Nhất
+        {{ 'storefront.title' | translate }}
       </h1>
       <p class="text-sm sm:text-base text-slate-500 font-semibold max-w-xl">
-        Cung cấp tài khoản VIA Facebook, Gmail cổ, Netflix Premium, ChatGPT Plus, Proxy sạch 100%
-        tốc độ cao và các dịch vụ bản quyền số an toàn, bảo mật.
+        {{ 'storefront.subtitle' | translate }}
       </p>
 
       <div class="max-w-md pt-2">
         <app-custom-search-input
-          [placeholder]="'Tìm kiếm tài nguyên số...'"
+          [placeholder]="'storefront.search_placeholder' | translate"
           [(ngModel)]="searchQuery"
           name="searchQuery"
           (valueChange)="onSearch($event)"
@@ -51,7 +50,7 @@
           "
         >
           <app-icon name="grid" class="w-3.5 h-3.5" />
-          <span class="hidden xl:inline">Dạng Card</span>
+          <span class="hidden xl:inline">Card</span>
         </button>
         <button
           (click)="viewMode.set('list')"
@@ -63,7 +62,7 @@
           "
         >
           <app-icon name="list" class="w-3.5 h-3.5" />
-          <span class="hidden xl:inline">Dạng List</span>
+          <span class="hidden xl:inline">List</span>
         </button>
       </div>
     </div>
@@ -71,11 +70,11 @@
     <div class="flex items-center gap-3">
       <span
         class="text-xs text-slate-400 dark:text-slate-500 font-bold uppercase tracking-wider hidden xl:inline"
-        >Sắp xếp danh mục:</span
+        >{{ 'storefront.sort_by' | translate }}:</span
       >
       <div class="w-40 xl:w-56">
         <app-custom-select
-          [options]="sortOptions"
+          [options]="sortOptions()"
           valueKey="value"
           labelKey="label"
           [value]="categorySort()"
@@ -97,7 +96,7 @@
       app-card
       class="text-center py-12"
     >
-      <p class="text-sm font-semibold text-slate-400">Không tìm thấy sản phẩm nào phù hợp!</p>
+      <p class="text-sm font-semibold text-slate-400">No products found!</p>
     </div>
 
     @if (!state.productStore.loading() && groupedProducts().length > 0) {
@@ -130,7 +129,7 @@
             rounded="lg"
             class="shrink-0 whitespace-nowrap self-start"
           >
-            {{ group.total }} dòng sản phẩm
+            {{ group.total }} {{ 'nav.products' | translate | lowercase }}
           </app-badge>
         </div>
 
@@ -162,12 +161,12 @@
                       rounded="md"
                       class="shrink-0"
                     >
-                      {{ p.available_count > 0 ? 'Còn hàng' : 'Hết hàng' }}
+                      {{ p.available_count > 0 ? ('storefront.in_stock' | translate) : ('storefront.out_of_stock' | translate) }}
                     </app-badge>
                   </div>
 
                   <p class="text-xs text-slate-400 dark:text-slate-500 font-semibold line-clamp-3">
-                    {{ p.description || 'Chưa có mô tả chi tiết cho sản phẩm này.' }}
+                    {{ p.description || 'No description available for this product.' }}
                   </p>
 
                   @if (p.attributes && p.attributes.length > 0) {
@@ -185,12 +184,11 @@
                   <div class="text-xs font-extrabold text-slate-400 pt-1 flex items-center gap-1.5">
                     <app-icon name="check-circle" class="w-3.5 h-3.5 text-emerald-500" />
                     <span
-                      >Còn lại:
+                      >{{ 'storefront.available' | translate }}:
                       <strong class="text-slate-700 dark:text-slate-200">{{
                         p.available_count
                       }}</strong>
-                      sản phẩm</span
-                    >
+                    </span>
                   </div>
                 </div>
 
@@ -198,10 +196,10 @@
                   <div class="flex items-baseline justify-between w-full">
                     <span
                       class="text-xs text-slate-400 dark:text-slate-500 font-bold uppercase tracking-wider"
-                      >Đơn giá</span
+                      >{{ 'storefront.unit_price' | translate }}</span
                     >
                     <p class="text-lg font-black text-[var(--color-primary)]">
-                      {{ p.price | number: '1.0-0' }} <span class="text-xs font-bold">VND</span>
+                      {{ p.price | appCurrency }}
                     </p>
                   </div>
 
@@ -212,7 +210,7 @@
                     variant="primary"
                     class="w-full py-2.5 px-4 rounded-xl bg-gradient-to-r from-[var(--color-primary)] to-[var(--color-secondary)] text-white text-xs font-extrabold active:scale-95 transition-all shadow-sm shadow-[var(--color-primary)]/10 cursor-pointer disabled:opacity-50 disabled:pointer-events-none"
                   >
-                    Mua Ngay
+                    {{ 'action.add_to_cart' | translate }}
                   </button>
                 </div>
               </div>
@@ -223,7 +221,7 @@
                 [columns]="columns"
                 [data]="group.products"
                 [loading]="group.loading"
-                emptyText="Không có sản phẩm nào."
+                emptyText="No products available."
               >
                 <ng-template appTableCell="name" let-row="row">
                   <div class="space-y-1.5 py-1">
@@ -258,9 +256,8 @@
                 <ng-template appTableCell="price" let-row="row">
                   <span
                     class="font-black text-[var(--color-primary)] text-sm whitespace-nowrap"
-                    [appTooltip]="(row.price | number) + ' VND'"
                   >
-                    {{ row.price | number: '1.0-0' }} <span class="text-xs font-bold">VND</span>
+                    {{ row.price | appCurrency }}
                   </span>
                 </ng-template>
 
@@ -270,15 +267,13 @@
                       [variant]="row.available_count > 0 ? 'success' : 'danger'"
                       size="sm"
                       rounded="md"
-                      [appTooltip]="row.available_count > 0 ? 'Còn hàng' : 'Hết hàng'"
                     >
-                      {{ row.available_count > 0 ? 'Còn hàng' : 'Hết hàng' }}
+                      {{ row.available_count > 0 ? ('storefront.in_stock' | translate) : ('storefront.out_of_stock' | translate) }}
                     </app-badge>
                     <span
                       class="text-xs text-slate-400 dark:text-slate-500 font-bold whitespace-nowrap"
-                      [appTooltip]="'Tồn kho khả dụng: ' + row.available_count"
                     >
-                      Còn lại: {{ row.available_count }}
+                      {{ 'storefront.available' | translate }}: {{ row.available_count }}
                     </span>
                   </div>
                 </ng-template>
@@ -291,7 +286,7 @@
                     variant="primary"
                     class="py-1.5 px-3.5 rounded-lg bg-gradient-to-r from-[var(--color-primary)] to-[var(--color-secondary)] text-white text-xs font-extrabold active:scale-95 transition-all shadow-sm shadow-[var(--color-primary)]/10 cursor-pointer disabled:opacity-50 disabled:pointer-events-none whitespace-nowrap shrink-0"
                   >
-                    Mua Ngay
+                    {{ 'action.add_to_cart' | translate }}
                   </button>
                 </ng-template>
               </app-table>
@@ -319,7 +314,7 @@
                     rounded="md"
                     class="shrink-0"
                   >
-                    {{ p.available_count > 0 ? 'Còn hàng' : 'Hết hàng' }}
+                    {{ p.available_count > 0 ? ('storefront.in_stock' | translate) : ('storefront.out_of_stock' | translate) }}
                   </app-badge>
                 </div>
 
@@ -338,13 +333,13 @@
                     <div
                       class="text-xs text-slate-400 dark:text-slate-500 font-bold whitespace-nowrap"
                     >
-                      Còn lại:
+                      {{ 'storefront.available' | translate }}:
                       <span class="text-slate-700 dark:text-slate-200">{{
                         p.available_count
                       }}</span>
                     </div>
                     <div class="text-sm font-black text-[var(--color-primary)] whitespace-nowrap">
-                      {{ p.price | number: '1.0-0' }} <span class="text-xs font-bold">VND</span>
+                      {{ p.price | appCurrency }}
                     </div>
                   </div>
 
@@ -355,7 +350,7 @@
                     variant="primary"
                     class="py-1.5 px-4 rounded-lg bg-gradient-to-r from-[var(--color-primary)] to-[var(--color-secondary)] text-white text-xs font-extrabold active:scale-95 transition-all shadow-sm shadow-[var(--color-primary)]/10 cursor-pointer disabled:opacity-50 disabled:pointer-events-none whitespace-nowrap shrink-0"
                   >
-                    Mua Ngay
+                    {{ 'action.add_to_cart' | translate }}
                   </button>
                 </div>
               </div>
@@ -369,7 +364,7 @@
             [totalPages]="getTotalPages(group.total)"
             [totalItems]="group.total"
             [itemsPerPage]="limit"
-            [itemName]="'sản phẩm'"
+            [itemName]="'nav.products' | translate"
             (pageChange)="onCategoryPageChange(group.id, $event)"
           />
         </div>
@@ -377,3 +372,4 @@
     }
   </div>
 </div>
+

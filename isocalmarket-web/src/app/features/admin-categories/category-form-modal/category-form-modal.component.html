@@ -1,8 +1,8 @@
 <div class="space-y-6 pb-2">
   <div class="form-field">
-    <label class="text-xs font-black text-slate-400 uppercase tracking-wider block mb-2">Tên danh mục <span class="text-red-500">*</span></label>
+    <label class="text-xs font-black text-slate-400 uppercase tracking-wider block mb-2">{{ 'cat.name' | translate }} <span class="text-red-500">*</span></label>
     <app-custom-input
-      [placeholder]="'Ví dụ: VIA US Live Ads'"
+      [placeholder]="'cat.name' | translate"
       [(ngModel)]="name"
       name="name"
       type="text"
@@ -11,9 +11,9 @@
   </div>
 
   <div class="form-field">
-    <label class="text-xs font-black text-slate-400 uppercase tracking-wider block mb-2">Slug (Đường dẫn tĩnh)</label>
+    <label class="text-xs font-black text-slate-400 uppercase tracking-wider block mb-2">{{ 'cat.slug' | translate }}</label>
     <app-custom-input
-      [placeholder]="'Tự động tạo từ tên nếu để trống'"
+      [placeholder]="'cat.slug' | translate"
       [(ngModel)]="slug"
       name="slug"
       type="text"
@@ -21,9 +21,9 @@
   </div>
 
   <div class="form-field">
-    <label class="text-xs font-black text-slate-400 uppercase tracking-wider block mb-2">Mô tả chi tiết</label>
+    <label class="text-xs font-black text-slate-400 uppercase tracking-wider block mb-2">{{ 'modal.product_description' | translate }}</label>
     <app-custom-input
-      [placeholder]="'Nhập mô tả danh mục...'"
+      [placeholder]="'modal.product_description' | translate"
       [(ngModel)]="description"
       name="description"
       type="textarea"
@@ -38,7 +38,7 @@
       [variant]="'cancel'"
       class="py-2.5 px-4 rounded-xl text-xs font-bold"
     >
-      Hủy bỏ
+      {{ 'action.cancel' | translate }}
     </button>
     <button
       app-button
@@ -47,7 +47,7 @@
       [variant]="'primary'"
       class="py-2.5 px-4 rounded-xl bg-gradient-to-r from-[var(--color-primary)] to-[var(--color-secondary)] text-white text-xs font-extrabold active:scale-95 shadow-sm shadow-[var(--color-primary)]/10 cursor-pointer"
     >
-      Lưu thông tin
+      {{ 'action.save' | translate }}
     </button>
   </div>
 </div>

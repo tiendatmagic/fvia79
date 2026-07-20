@@ -5,11 +5,12 @@ import { StateService } from '@core/services/state.service';
 import { CardComponent } from '@shared/components/card/card.component';
 import { PageHeaderComponent } from '@shared/components/page-header/page-header.component';
 import { IconComponent } from '@shared/components/icon/icon.component';
+import { TranslatePipe } from '@shared/pipes/translate.pipe';
 
 @Component({
   selector: 'app-profile',
   standalone: true,
-  imports: [CommonModule, RouterModule, CardComponent, PageHeaderComponent, IconComponent],
+  imports: [CommonModule, RouterModule, CardComponent, PageHeaderComponent, IconComponent, TranslatePipe],
   templateUrl: './profile.component.html',
   styles: [`
     :host {

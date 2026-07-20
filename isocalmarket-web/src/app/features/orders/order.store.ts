@@ -2,6 +2,7 @@ import { Injectable, inject, signal } from '@angular/core';
 import { HttpParams } from '@angular/common/http';
 import { ApiService } from '@core/services/api.service';
 import { ToastService } from '@core/services/toast.service';
+import { LanguageService } from '@core/services/language.service';
 import { tap, catchError, finalize } from 'rxjs/operators';
 import { of, Subscription, Subject } from 'rxjs';
 
@@ -11,6 +12,7 @@ import { of, Subscription, Subject } from 'rxjs';
 export class OrderStore {
   private readonly api = inject(ApiService);
   private readonly toast = inject(ToastService);
+  public readonly lang = inject(LanguageService);
  
   private activeFetchOrdersSub?: Subscription;
  
@@ -37,7 +39,7 @@ export class OrderStore {
   ) {
     const cacheKey = JSON.stringify({ page, limit, search, status, startDate, endDate });
     const cached = this.ordersCache.get(cacheKey);
-    if (cached && (Date.now() - cached.timestamp < 60000)) {
+    if (cached && (Date.now() - cached.timestamp < 30000)) {
       const res = cached.data;
       if (res && res.data) {
         this.orders.set(res.data);
@@ -45,8 +47,8 @@ export class OrderStore {
         this.currentPage.set(res.meta.page);
         this.lastPage.set(res.meta.last_page);
       } else {
-        this.orders.set(res);
-        this.totalOrders.set(res.length);
+        this.orders.set(res || []);
+        this.totalOrders.set((res || []).length);
         this.currentPage.set(1);
         this.lastPage.set(1);
       }
@@ -96,7 +98,7 @@ export class OrderStore {
         }
       }),
       catchError(() => {
-        this.toast.showToast('Không thể tải danh sách đơn hàng!', 'error');
+        this.toast.showToast(this.lang.translate('toast.error_load_orders'), 'error');
         return of([]);
       }),
       finalize(() => this.loading.set(false))
@@ -123,7 +125,7 @@ export class OrderStore {
         this.currentOrderDetail.set(res);
       }),
       catchError((err) => {
-        const msg = err.error?.message || 'Không thể lấy thông tin chi tiết đơn hàng!';
+        const msg = err.error?.message || this.lang.translate('toast.error_load_order_detail');
         this.toast.showToast(msg, 'error');
         return of(null);
       }),
@@ -136,11 +138,11 @@ export class OrderStore {
     return this.api.post<any>('v1/orders', { items }).pipe(
       tap((res) => {
         this.clearCache();
-        this.toast.showToast('Đặt hàng thành công!', 'success');
+        this.toast.showToast(this.lang.translate('cart.order_success'), 'success');
         this.fetchOrders().subscribe();
       }),
       catchError((err) => {
-        const msg = err.error?.message || 'Đặt hàng thất bại!';
+        const msg = err.error?.message || this.lang.translate('toast.order_failed');
         this.toast.showToast(msg, 'error');
         return of(null);
       }),

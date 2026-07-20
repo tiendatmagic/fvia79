@@ -3,6 +3,7 @@ import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { RouterModule, Router } from '@angular/router';
 import { StateService } from '@core/services/state.service';
+import { LanguageService } from '@core/services/language.service';
 import { CartStore } from './cart.store';
 import { SkeletonLoaderComponent } from '@shared/components/skeleton-loader/skeleton-loader.component';
 import { CustomSearchInputComponent } from '@shared/components/custom-search-input/custom-search-input.component';
@@ -16,6 +17,8 @@ import { ModalService } from '@core/services/modal.service';
 import { CartModalComponent } from './cart-modal/cart-modal.component';
 import { TableComponent, TableCellDirective, TableColumn } from '@shared/components/table/table.component';
 import { TooltipDirective } from '@shared/components/tooltip/tooltip.directive';
+import { TranslatePipe } from '@shared/pipes/translate.pipe';
+import { CurrencyPipe } from '@shared/pipes/currency.pipe';
 
 @Component({
   selector: 'app-storefront',
@@ -36,6 +39,8 @@ import { TooltipDirective } from '@shared/components/tooltip/tooltip.directive';
     TableComponent,
     TableCellDirective,
     TooltipDirective,
+    TranslatePipe,
+    CurrencyPipe
   ],
   templateUrl: './storefront.component.html',
   styles: [`
@@ -46,6 +51,7 @@ import { TooltipDirective } from '@shared/components/tooltip/tooltip.directive';
 })
 export class StorefrontComponent implements OnInit {
   public readonly state = inject(StateService);
+  public readonly lang = inject(LanguageService);
   public readonly cart = inject(CartStore);
   private readonly router = inject(Router);
   private readonly modalService = inject(ModalService);
@@ -61,7 +67,7 @@ export class StorefrontComponent implements OnInit {
 
   public openCart() {
     this.modalService.open(CartModalComponent, {
-      title: 'Giỏ hàng của bạn',
+      title: this.lang.translate('cart.title'),
       size: 'lg'
     }).afterClosed$.subscribe((result) => {
       if (result === 'login') {
@@ -80,11 +86,11 @@ export class StorefrontComponent implements OnInit {
 
   public readonly groupedProductsState = signal<any[]>([]);
 
-  public readonly sortOptions = [
-    { label: 'Tên danh mục (A - Z)', value: 'az' },
-    { label: 'Tên danh mục (Z - A)', value: 'za' },
-    { label: 'Thứ tự mặc định', value: 'default' }
-  ];
+  public readonly sortOptions = computed(() => [
+    { label: this.lang.translate('storefront.sort_az'), value: 'az' },
+    { label: this.lang.translate('storefront.sort_za'), value: 'za' },
+    { label: this.lang.translate('storefront.sort_default'), value: 'default' }
+  ]);
 
   public readonly groupedProducts = computed(() => {
     const groups = this.groupedProductsState();
@@ -191,10 +197,11 @@ export class StorefrontComponent implements OnInit {
 
   public addToCart(product: any) {
     if (product.available_count <= 0) {
-      this.state.showToast('Sản phẩm hiện đang hết hàng!', 'warning');
+      this.state.showToast(this.lang.translate('storefront.out_of_stock'), 'warning');
       return;
     }
     this.cart.addToCart(product, 1);
-    this.state.showToast(`Đã thêm '${product.name}' vào giỏ hàng!`, 'success');
+    this.state.showToast(this.lang.translate('storefront.added_to_cart'), 'success');
   }
 }
+

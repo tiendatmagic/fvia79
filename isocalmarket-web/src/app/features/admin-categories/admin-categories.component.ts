@@ -9,12 +9,14 @@ import { IconComponent } from '@shared/components/icon/icon.component';
 import { CustomSearchInputComponent } from '@shared/components/custom-search-input/custom-search-input.component';
 import { TooltipDirective } from '@shared/components/tooltip/tooltip.directive';
 import { ModalService } from '@core/services/modal.service';
+import { LanguageService } from '@core/services/language.service';
 import { CategoryFormModalComponent } from './category-form-modal/category-form-modal.component';
 import { CustomSelectComponent } from '@shared/components/custom-select/custom-select.component';
 import { CustomDateTimeRangeComponent } from '@shared/components/custom-date-time-range/custom-date-time-range.component';
 import { PaginationComponent } from '@shared/components/pagination/pagination.component';
 import { BadgeComponent } from '@shared/components/badge/badge.component';
 import { TableComponent, TableCellDirective, TableColumn } from '@shared/components/table/table.component';
+import { TranslatePipe } from '@shared/pipes/translate.pipe';
 
 @Component({
   selector: 'app-admin-categories',
@@ -34,6 +36,7 @@ import { TableComponent, TableCellDirective, TableColumn } from '@shared/compone
     BadgeComponent,
     TableComponent,
     TableCellDirective,
+    TranslatePipe
   ],
   templateUrl: './admin-categories.component.html',
   styles: [`
@@ -133,9 +136,11 @@ export class AdminCategoriesComponent implements OnInit {
     this.fetchCategories();
   }
 
+  public readonly lang = inject(LanguageService);
+
   public openCreateModal() {
     this.modalService.open(CategoryFormModalComponent, {
-      title: 'Thêm Danh Mục Mới',
+      title: this.lang.translate('cat.add'),
       size: 'lg',
       data: null
     }).afterClosed$.subscribe((success) => {
@@ -147,7 +152,7 @@ export class AdminCategoriesComponent implements OnInit {
 
   public openEditModal(category: any) {
     this.modalService.open(CategoryFormModalComponent, {
-      title: 'Cập Nhật Danh Mục',
+      title: this.lang.translate('cat.edit'),
       size: 'lg',
       data: category
     }).afterClosed$.subscribe((success) => {
@@ -159,10 +164,10 @@ export class AdminCategoriesComponent implements OnInit {
 
   public confirmDelete(category: any) {
     this.modalService.confirm({
-      title: 'Xác nhận xóa danh mục',
-      description: `Bạn có chắc chắn muốn xóa danh mục '${category.name}'? Hành động này không thể hoàn tác và chỉ thực hiện được nếu danh mục không chứa sản phẩm.`,
-      confirmText: 'Xóa danh mục',
-      cancelText: 'Hủy',
+      title: this.lang.translate('modal.delete_category_title'),
+      description: `${this.lang.translate('modal.delete_category_desc')} (${category.name})`,
+      confirmText: this.lang.translate('action.delete'),
+      cancelText: this.lang.translate('action.cancel'),
       confirmButtonClass: 'btn-danger'
     }).afterClosed$.subscribe((confirmed?: boolean) => {
       if (confirmed) {

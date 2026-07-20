@@ -1,7 +1,7 @@
 <div class="max-w-[1530px] mx-auto w-full px-4 sm:px-6 py-6 space-y-6">
   <app-page-header
-    title="Danh Mục Sản Phẩm Số"
-    description="Quản lý danh sách các loại tài nguyên kỹ thuật số phân phối trên hệ thống."
+    [title]="'prod.title' | translate"
+    [description]="'prod.description' | translate"
   >
     <ng-container actions>
       <button
@@ -9,7 +9,7 @@
         class="px-4 py-2.5 text-sm font-extrabold text-slate-600 dark:text-slate-400 hover:text-primary bg-white dark:bg-slate-950 border border-slate-200/60 dark:border-slate-800/80 rounded-xl hover:bg-slate-50 dark:hover:bg-slate-900 transition-all cursor-pointer flex items-center gap-1.5"
       >
         <app-icon name="sync" class="w-4 h-4" />
-        Tải lại
+        {{ 'common.reload' | translate }}
       </button>
       <button
         app-button
@@ -18,7 +18,7 @@
         class="flex items-center gap-2 py-2.5 px-4 rounded-xl bg-gradient-to-r from-[var(--color-primary)] to-[var(--color-secondary)] text-white font-extrabold shadow-md shadow-[var(--color-primary)]/15 active:scale-95 transition-all text-sm cursor-pointer"
       >
         <app-icon name="plus" class="w-5 h-5" />
-        Thêm Sản Phẩm
+        {{ 'action.add_product' | translate }}
       </button>
     </ng-container>
   </app-page-header>
@@ -27,7 +27,7 @@
     class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 bg-slate-50/50 dark:bg-slate-950/20 border border-slate-200/30 dark:border-slate-800/30 rounded-2xl p-4 sm:p-5"
   >
     <div class="form-field">
-      <label class="text-xs font-bold text-slate-400 dark:text-slate-500 uppercase tracking-wider block mb-1">Danh mục</label>
+      <label class="text-xs font-bold text-slate-400 dark:text-slate-500 uppercase tracking-wider block mb-1">{{ 'modal.product_category' | translate }}</label>
       <app-custom-select
         [options]="categoryOptions"
         valueKey="value"
@@ -38,7 +38,7 @@
     </div>
 
     <div class="form-field">
-      <label class="text-xs font-bold text-slate-400 dark:text-slate-500 uppercase tracking-wider block mb-1">Trạng thái</label>
+      <label class="text-xs font-bold text-slate-400 dark:text-slate-500 uppercase tracking-wider block mb-1">{{ 'common.status' | translate }}</label>
       <app-custom-select
         [options]="statusOptions"
         valueKey="value"
@@ -49,9 +49,9 @@
     </div>
 
     <div class="form-field">
-      <label class="text-xs font-bold text-slate-400 dark:text-slate-500 uppercase tracking-wider block mb-1">Tìm kiếm sản phẩm</label>
+      <label class="text-xs font-bold text-slate-400 dark:text-slate-500 uppercase tracking-wider block mb-1">{{ 'common.search' | translate }}</label>
       <app-custom-search-input
-        [placeholder]="'Tìm kiếm sản phẩm...'"
+        [placeholder]="'storefront.search_placeholder' | translate"
         [(ngModel)]="searchQuery"
         name="searchQuery"
         (valueChange)="onSearch($event)"
@@ -63,10 +63,10 @@
 
   <div app-card class="overflow-hidden !p-0">
     <app-table
-      [columns]="columns"
+      [columns]="columns()"
       [data]="filteredProducts()"
       [loading]="state.productStore.loading()"
-      emptyText="Chưa có sản phẩm nào. Nhấp vào nút 'Thêm Sản Phẩm' để bắt đầu!"
+      [emptyText]="'prod.no_products' | translate"
     >
       <ng-template appTableCell="id" let-row="row">
         <div class="flex items-center gap-1.5">
@@ -135,9 +135,8 @@
 
       <ng-template appTableCell="price" let-row="row">
         <span
-          [appTooltip]="row.is_deleted ? '' : (row.price | number: '1.0-0') + ' VND'"
           [ngClass]="{ 'line-through opacity-40 text-slate-400 dark:text-slate-500': row.is_deleted }"
-          >{{ row.price | number: '1.0-0' }} VND</span
+          >{{ row.price | appCurrency }}</span
         >
       </ng-template>
 

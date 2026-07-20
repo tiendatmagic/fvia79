@@ -1688,3 +1688,38 @@
       3. Nếu chưa xác thực, cho phép truy cập tiếp bình thường (trả về `true`). Nếu không có cookie `auth_logged_in`, cho phép truy cập ngay mà không cần gọi API để tránh lãng phí request.
       4. Đăng ký `NoAuthGuard` cho cả 2 route `login` và `register` trong [app.routes.ts](file:///d:/git/isocalmarket/isocalmarket-web/src/app/app.routes.ts).
     - **Xác minh:** Biên dịch frontend Angular thành công 100% không có lỗi.
+
+  - **[KHẮC PHỤC TRIỆT ĐỂ VẤN ĐỀ ĐỒNG BỘ SỐ DƯ TÀI KHOẢN]**:
+    - **Yêu cầu:** Khắc phục triệt để vấn đề số dư không bị trừ sau khi đặt hàng/thanh toán thành công, số dư không tự cập nhật sau khi nạp tiền thành công, và số dư không được làm mới khi chuyển qua lại giữa các menu.
+    - **Nguyên nhân & Thực hiện khắc phục:**
+      1. Sửa lỗi logic ngược trong `AuthStore.checkMe(force)` tại [auth.store.ts](file:///d:/git/isocalmarket/isocalmarket-web/src/app/features/auth/auth.store.ts): Trước đó `if (force && (now - lastCheckMeTime < 5000))` bị ngược làm chặn hoàn toàn API call khi `force=true`. Đã sửa lại để khi `force=true` luôn bỏ qua cache và gọi trực tiếp `v1/auth/me` tới server. Khi `force=false` tự động dùng cache 15s.
+      2. Cập nhật Backend [OrderController.php](file:///d:/git/isocalmarket/isocalmarket-api/app/Http/Controllers/OrderController.php): Trả về thông tin `$freshUser` chứa số dư mới đã trừ trong phản hồi API tạo đơn thành công (mã 201).
+      3. Cập nhật Frontend [CartModalComponent.ts](file:///d:/git/isocalmarket/isocalmarket-web/src/app/features/storefront/cart-modal/cart-modal.component.ts): Sau khi đặt hàng thành công, tự động cập nhật ngay `currentUser` signal từ phản hồi `res.user` và gọi `checkMe(true).subscribe()`.
+      4. Cập nhật [app.ts](file:///d:/git/isocalmarket/isocalmarket-web/src/app/app.ts): Lắng nghe sự kiện `NavigationEnd` của Angular Router để tự động gọi `checkMe(false).subscribe()` ngầm mỗi khi người dùng chuyển hướng menu, giúp số dư luôn ở trạng thái mới nhất mà không gây đơ/giật UI.
+    - **Xác minh:** Đã biên dịch ứng dụng Angular (`npm run build`) thành công 100% không phát sinh bất kỳ lỗi nào.
+
+  - **[THÊM CHỨC NĂNG ĐA NGÔN NGỮ I18N & ĐƠN VỊ TIỀN TỆ VỚI TỰ ĐỘNG ĐỒNG BỘ]**:
+    - **Yêu cầu:** Thêm chức năng đa ngôn ngữ (mặc định Tiếng Anh EN), đơn vị tiền tệ (mặc định USD $, 1 USD = 25,000 VND), tự động đồng bộ tiền tệ khi chọn ngôn ngữ (EN -> USD, VI -> VND), hiển thị chọn Đơn vị Tiền tệ trong User Dropdown Menu.
+    - **Kết quả:** Đã tạo `LanguageService`, `CurrencyService`, `TranslatePipe`, `CurrencyPipe`, cập nhật `HeaderComponent` và 100% các views. Biên dịch `npm run build` thành công 100%.
+
+  - **[HOÀN THÀNH I18N HÓA 100% TOAST MESSAGES FRONTEND & KHẮC PHỤC LỖI BIÊN DỊCH]**:
+    - **Yêu cầu:** Chuyển đổi toàn bộ các thông báo Toast (`showToast(...)`) chứa văn bản Tiếng Việt thô cứng trong các Stores, Components, Modals và Guards sang đa ngôn ngữ qua `LanguageService.translate()`.
+    - **Thực hiện & Kết quả:**
+      1. Đã i18n hóa hoàn toàn các file Stores: `auth.store.ts`, `coupon.store.ts`, `user.store.ts`, `product.store.ts`, `order.store.ts` và `admin-deposit.store.ts`.
+      2. Đã i18n hóa hoàn toàn các Components & Modals quản trị/cá nhân: `admin-settings.component.ts`, `products.component.ts`, `product-form-modal.component.ts`, `orders.component.ts`, `order-detail.component.ts`, `import-inventory-modal.component.ts`, `edit-inventory-modal.component.ts`, `deposit.component.ts`, `deposit-invoice.component.ts`, `deposit-history.component.ts`, `profile-information.component.ts`, `profile-password.component.ts`, `enable-2fa-modal.component.ts`, `disable-2fa-modal.component.ts`, `login.component.ts`, `register.component.ts`, `admin-orders.component.ts`, `admin-users.component.ts`, `user-form-modal.component.ts`, `coupon-form-modal.component.ts`, `category-form-modal.component.ts`, `admin-api.component.ts`.
+      3. Đã i18n hóa các Guards & Services cốt lõi: `admin.guard.ts`, `state.service.ts`, `web3.service.ts`.
+      4. Bổ sung hơn 80 cặp từ khóa dịch thuật (EN & VI) tương ứng vào [language.service.ts](file:///d:/git/isocalmarket/isocalmarket-web/src/app/core/services/language.service.ts).
+      5. Đã giải quyết các lỗi biên dịch: Thiếu import `TranslatePipe`/`CurrencyPipe`/`LanguageService` ở header, gọi sai hàm `fetchProductsRaw` thay bằng `getProductsRaw`, và lỗi ép kiểu dữ liệu `[columns]` của Table trong `deposit-history.component.html` sang dùng Signal getter `columns()`.
+    - **Xác minh:** Biên dịch frontend Angular thành công 100% không có lỗi (`npm run build`).
+
+  - **[I18N HÓA TOÀN BỘ MODAL CONFIRMATIONS & CÁC NHÃN GIAO DIỆN CHÍNH]**:
+    - **Yêu cầu:** Tiếp tục rà soát hệ thống, loại bỏ triệt để các tiêu đề (title), mô tả (description), nút xác nhận (confirmText/cancelText) viết bằng Tiếng Việt cứng trong file `.ts` của các Modal confirm và các nút/nhãn giao diện (cart delete, profile menu, order details).
+    - **Thực hiện & Kết quả:**
+      1. Đã i18n hóa Modal Confirmations của: bật/tắt 2FA (`profile-security.component.ts`, `user-form-modal.component.ts`), nạp tiền thành công (`deposit-invoice.component.ts`), kiểm tra lệnh nạp cũ (`deposit.component.ts`), từ chối nạp tiền (`admin-deposits.component.ts`), điều chỉnh số dư (`admin-users.component.ts`, `user-form-modal.component.ts`), và mở import/edit tài nguyên (`inventory.component.ts`).
+      2. Đã i18n hóa các file HTML giao diện chính: [profile.component.html](file:///d:/git/isocalmarket/isocalmarket-web/src/app/features/profile/profile.component.html), [profile-information.component.html](file:///d:/git/isocalmarket/isocalmarket-web/src/app/features/profile/information/profile-information.component.html), [order-detail.component.html](file:///d:/git/isocalmarket/isocalmarket-web/src/app/features/orders/order-detail/order-detail.component.html), [cart-modal.component.html](file:///d:/git/isocalmarket/isocalmarket-web/src/app/features/storefront/cart-modal/cart-modal.component.html).
+      3. Bổ sung đầy đủ import `TranslatePipe` và `TooltipDirective` vào các file `.ts` tương ứng để tránh lỗi template compiler.
+      4. Sửa lỗi cú pháp click action expression (sử dụng pipe trực tiếp trong click handler) ở nút Sao chép trong [inventory.component.html](file:///d:/git/isocalmarket/isocalmarket-web/src/app/features/inventory/inventory.component.html).
+      5. I18n hóa các nút bấm, tooltip và trạng thái cứng trong trang Quản lý kho hàng [inventory.component.html](file:///d:/git/isocalmarket/isocalmarket-web/src/app/features/inventory/inventory.component.html) và [inventory.component.ts](file:///d:/git/isocalmarket/isocalmarket-web/src/app/features/inventory/inventory.component.ts).
+    - **Xác minh:** Biên dịch frontend Angular thành công 100% không có lỗi (`npm run build`).
+
+

@@ -5,6 +5,8 @@ import { ModalRef, MODAL_DATA } from '@core/services/modal-ref';
 import { StateService } from '@core/services/state.service';
 import { CustomInputComponent } from '@shared/components/custom-input/custom-input.component';
 import { ButtonComponent } from '@shared/components/button/button.component';
+import { TranslatePipe } from '@shared/pipes/translate.pipe';
+import { LanguageService } from '@core/services/language.service';
 import { finalize } from 'rxjs/operators';
 
 @Component({
@@ -14,7 +16,8 @@ import { finalize } from 'rxjs/operators';
     CommonModule,
     FormsModule,
     CustomInputComponent,
-    ButtonComponent
+    ButtonComponent,
+    TranslatePipe
   ],
   templateUrl: './category-form-modal.component.html',
   styles: [`
@@ -27,6 +30,7 @@ export class CategoryFormModalComponent implements OnInit {
   private readonly modalRef = inject(ModalRef);
   private readonly modalData = inject(MODAL_DATA);
   public readonly state = inject(StateService);
+  public readonly lang = inject(LanguageService);
 
   public isEditMode = false;
   public editingId: any = null;
@@ -52,7 +56,7 @@ export class CategoryFormModalComponent implements OnInit {
   public onSubmit() {
     if (this.isSubmitting()) return;
     if (!this.name) {
-      this.state.showToast('Vui lòng nhập tên danh mục!', 'error');
+      this.state.showToast(this.lang.translate('toast.category_name_required'), 'error');
       return;
     }
 

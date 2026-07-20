@@ -8,6 +8,8 @@ import { CardComponent } from '@shared/components/card/card.component';
 import { IconComponent } from '@shared/components/icon/icon.component';
 import { QrCodeModule } from 'ng-qrcode';
 import { DepositHistoryItem } from '../deposit-history/deposit-history.component';
+import { TranslatePipe } from '@shared/pipes/translate.pipe';
+import { LanguageService } from '@core/services/language.service';
 import { Subscription, interval } from 'rxjs';
 import { finalize } from 'rxjs/operators';
 
@@ -20,7 +22,8 @@ import { finalize } from 'rxjs/operators';
     ButtonComponent,
     CardComponent,
     IconComponent,
-    QrCodeModule
+    QrCodeModule,
+    TranslatePipe
   ],
   templateUrl: './deposit-invoice.component.html',
   styles: [`
@@ -34,6 +37,7 @@ export class DepositInvoiceComponent implements OnInit, OnDestroy {
   private readonly router = inject(Router);
   public readonly state = inject(StateService);
   private readonly modalService = inject(ModalService);
+  public readonly lang = inject(LanguageService);
 
   public readonly adminWalletAddress = signal('');
 
@@ -213,7 +217,7 @@ export class DepositInvoiceComponent implements OnInit, OnDestroy {
             } else if (res.invoice.status === 'failed' || res.invoice.status === 'expired') {
               this.stopCountdown();
               this.stopStatusPolling();
-              this.state.showToast('Lệnh nạp tiền đã bị hủy hoặc hết hạn.', 'error');
+              this.state.showToast(this.lang.translate('toast.deposit_invalid_expired'), 'error');
               this.router.navigate(['/deposit/history']);
             }
           }
@@ -238,7 +242,7 @@ export class DepositInvoiceComponent implements OnInit, OnDestroy {
         finalize(() => this.isCancelling = false)
       ).subscribe({
         next: () => {
-          this.state.showToast('Lệnh nạp tiền đã hết thời gian thanh toán và tự động hủy!', 'error');
+          this.state.showToast(this.lang.translate('toast.deposit_auto_cancelled'), 'error');
           setTimeout(() => {
             this.router.navigate(['/deposit/history']);
           }, 50);
@@ -255,9 +259,9 @@ export class DepositInvoiceComponent implements OnInit, OnDestroy {
   // Sao chép văn bản (ví hoặc số tiền)
   public copyText(text: string, label: string) {
     navigator.clipboard.writeText(text).then(() => {
-      this.state.showToast(`Đã sao chép ${label}!`, 'success');
+      this.state.showToast(this.lang.translate('toast.copied_text') + ' ' + label, 'success');
     }).catch(() => {
-      this.state.showToast(`Lỗi khi sao chép ${label}!`, 'error');
+      this.state.showToast(this.lang.translate('toast.copy_error_text') + ' ' + label, 'error');
     });
   }
 
@@ -266,22 +270,22 @@ export class DepositInvoiceComponent implements OnInit, OnDestroy {
     if (!this.invoice || this.isCancelling) return;
 
     this.modalService.confirm({
-      title: 'Xác nhận hủy lệnh nạp tiền',
+      title: this.lang.translate('modal.cancel_deposit_title'),
       descriptionHtml: `
         <div class="space-y-3">
-          <p class="text-sm text-slate-600 dark:text-slate-400">Bạn có chắc chắn muốn hủy lệnh nạp tiền này không? Hành động này không thể hoàn tác.</p>
+          <p class="text-sm text-slate-600 dark:text-slate-400">${this.lang.translate('modal.cancel_deposit_desc')}</p>
           <div class="p-3 bg-amber-50 dark:bg-amber-950/20 border border-amber-200/50 dark:border-amber-800/40 rounded-xl flex gap-2">
             <svg class="w-5 h-5 text-amber-500 shrink-0 mt-0.5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
               <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"/>
             </svg>
             <p class="text-xs text-amber-700 dark:text-amber-400 font-bold leading-normal">
-              Lưu ý quan trọng: Nếu bạn đã thực hiện chuyển khoản rồi, vui lòng KHÔNG hủy lệnh nạp này! BOT sẽ không thể tự động đối soát cộng tiền khi lệnh đã bị hủy.
+              ${this.lang.translate('modal.cancel_deposit_warning')}
             </p>
           </div>
         </div>
       `,
-      confirmText: 'Xác nhận hủy',
-      cancelText: 'Quay lại',
+      confirmText: this.lang.translate('modal.cancel_deposit_confirm'),
+      cancelText: this.lang.translate('action.back'),
       confirmButtonClass: 'btn-danger'
     }).afterClosed$.subscribe((confirmed?: boolean) => {
       if (confirmed) {
@@ -292,11 +296,11 @@ export class DepositInvoiceComponent implements OnInit, OnDestroy {
           next: () => {
             this.stopCountdown();
             this.stopStatusPolling();
-            this.state.showToast('Đã hủy lệnh nạp tiền thành công!', 'success');
+            this.state.showToast(this.lang.translate('toast.deposit_cancelled_success'), 'success');
             this.router.navigate(['/deposit/history']);
           },
           error: (err) => {
-            const msg = err?.error?.message || 'Không thể hủy lệnh nạp tiền!';
+            const msg = err?.error?.message || this.lang.translate('toast.deposit_cancel_failed');
             this.state.showToast(msg, 'error');
           }
         });
@@ -310,9 +314,9 @@ export class DepositInvoiceComponent implements OnInit, OnDestroy {
     this.isChecking = true;
 
     if (this.invoice.paymentMethod === 'binance') {
-      this.state.showToast('Hệ thống BOT đang quét giao dịch tự động trên cổng Binance Pay...', 'warning');
+      this.state.showToast(this.lang.translate('toast.bot_scanning_binance'), 'warning');
     } else {
-      this.state.showToast('Hệ thống BOT đang quét giao dịch tự động trên chuỗi BNB Smart Chain...', 'warning');
+      this.state.showToast(this.lang.translate('toast.bot_scanning_bsc'), 'warning');
     }
 
     this.state.depositStore.checkTransaction(this.invoice.id).pipe(
@@ -383,11 +387,11 @@ export class DepositInvoiceComponent implements OnInit, OnDestroy {
     this.state.authStore.checkMe(true).subscribe();
 
     this.modalService.confirm({
-      title: 'Nạp tiền thành công!',
+      title: this.lang.translate('modal.deposit_success_title'),
       variant: 'success',
-      description: 'Hệ thống đã ghi nhận giao dịch nạp tiền thành công! Số dư tài khoản của bạn đã được cập nhật đầy đủ.',
-      confirmText: 'Xem lịch sử nạp',
-      cancelText: 'Đóng',
+      description: this.lang.translate('modal.deposit_success_desc'),
+      confirmText: this.lang.translate('modal.deposit_success_confirm'),
+      cancelText: this.lang.translate('common.close'),
       confirmButtonClass: 'btn-primary'
     }).afterClosed$.subscribe((viewHistory?: boolean) => {
       if (viewHistory) {

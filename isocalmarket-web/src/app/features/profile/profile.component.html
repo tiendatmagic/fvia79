@@ -1,7 +1,7 @@
 <div class="max-w-[1530px] mx-auto w-full p-4 sm:p-6 space-y-6">
     <app-page-header
-    title="Tài Khoản Cá Nhân"
-    description="Quản lý thông tin cá nhân, cập nhật mật khẩu và thiết lập bảo mật hai lớp."
+    [title]="'profile.title' | translate"
+    [description]="'profile.description' | translate"
   />
 
   <div class="grid grid-cols-1 md:grid-cols-12 gap-6">
@@ -19,7 +19,7 @@
           class="flex items-center gap-3 px-4 py-3 text-sm font-semibold text-slate-600 dark:text-slate-400 hover:bg-slate-50 dark:hover:bg-slate-800/10 border-l-4 border-transparent rounded-xl transition-all cursor-pointer whitespace-nowrap"
         >
           <app-icon name="user" class="w-[18px] h-[18px] shrink-0" />
-          <span class="whitespace-nowrap">Thông tin cơ bản</span>
+          <span class="whitespace-nowrap">{{ 'profile.basic_info' | translate }}</span>
         </a>
 
                 <a
@@ -28,7 +28,7 @@
           class="flex items-center gap-3 px-4 py-3 text-sm font-semibold text-slate-600 dark:text-slate-400 hover:bg-slate-50 dark:hover:bg-slate-800/10 border-l-4 border-transparent rounded-xl transition-all cursor-pointer whitespace-nowrap"
         >
           <app-icon name="key" class="w-[18px] h-[18px]" />
-          <span class="whitespace-nowrap">Đổi mật khẩu</span>
+          <span class="whitespace-nowrap">{{ 'profile.change_password' | translate }}</span>
         </a>
 
                 <a
@@ -37,7 +37,7 @@
           class="flex items-center gap-3 px-4 py-3 text-sm font-semibold text-slate-600 dark:text-slate-400 hover:bg-slate-50 dark:hover:bg-slate-800/10 border-l-4 border-transparent rounded-xl transition-all cursor-pointer whitespace-nowrap"
         >
           <app-icon name="shield-check" class="w-[18px] h-[18px]" />
-          <span class="whitespace-nowrap">Bảo mật 2FA</span>
+          <span class="whitespace-nowrap">{{ 'profile.security_2fa' | translate }}</span>
         </a>
       </div>
     </div>

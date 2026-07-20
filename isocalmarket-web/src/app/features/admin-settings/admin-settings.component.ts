@@ -11,6 +11,7 @@ import { SkeletonLoaderComponent } from '@shared/components/skeleton-loader/skel
 import { IconComponent } from '@shared/components/icon/icon.component';
 import { ToastService } from '@core/services/toast.service';
 import { ModalService } from '@core/services/modal.service';
+import { LanguageService } from '@core/services/language.service';
 
 @Component({
   selector: 'app-admin-settings',
@@ -39,6 +40,7 @@ export class AdminSettingsComponent implements OnInit, OnDestroy {
   public readonly store = inject(SystemSettingStore);
   private readonly toast = inject(ToastService);
   private readonly modalService = inject(ModalService);
+  public readonly lang = inject(LanguageService);
   private readonly route = inject(ActivatedRoute);
   private readonly router = inject(Router);
   private routeSub?: Subscription;
@@ -85,7 +87,7 @@ export class AdminSettingsComponent implements OnInit, OnDestroy {
         }
       },
       error: () => {
-        this.toast.showToast('Không thể tải cấu hình hệ thống!', 'error');
+        this.toast.showToast(this.lang.translate('toast.settings_load_failed'), 'error');
       }
     });
   }
@@ -119,19 +121,19 @@ export class AdminSettingsComponent implements OnInit, OnDestroy {
 
     const walletAddress = this.form.admin_wallet_address.trim();
     if (!walletAddress) {
-      this.toast.showToast('Địa chỉ ví Admin không được để trống!', 'warning');
+      this.toast.showToast(this.lang.translate('toast.wallet_required'), 'warning');
       return;
     }
 
     // Kiểm tra định dạng ví BEP20/EVM (0x + 40 ký tự hex)
     const walletRegex = /^0x[a-fA-F0-9]{40}$/;
     if (!walletRegex.test(walletAddress)) {
-      this.toast.showToast('Địa chỉ ví nhận USDT BEP20 không hợp lệ! Ví phải bắt đầu bằng "0x" và có đúng 42 ký tự (a-f, 0-9).', 'error');
+      this.toast.showToast(this.lang.translate('toast.wallet_invalid'), 'error');
       return;
     }
 
     if (!this.form.scanner_api_key.trim()) {
-      this.toast.showToast('API Key Scanner không được để trống!', 'warning');
+      this.toast.showToast(this.lang.translate('toast.scanner_key_required'), 'warning');
       return;
     }
 
@@ -141,26 +143,26 @@ export class AdminSettingsComponent implements OnInit, OnDestroy {
 
     if (binanceId || binanceKey || binanceSecret) {
       if (!binanceId) {
-        this.toast.showToast('Binance ID nhận tiền không được để trống!', 'warning');
+        this.toast.showToast(this.lang.translate('toast.binance_id_required'), 'warning');
         return;
       }
       if (!binanceKey) {
-        this.toast.showToast('Binance API Key không được để trống!', 'warning');
+        this.toast.showToast(this.lang.translate('toast.binance_key_required'), 'warning');
         return;
       }
       if (!binanceSecret) {
-        this.toast.showToast('Binance API Secret không được để trống!', 'warning');
+        this.toast.showToast(this.lang.translate('toast.binance_secret_required'), 'warning');
         return;
       }
     }
 
     this.store.updateSettings(this.form).subscribe({
       next: () => {
-        this.toast.showToast('Cập nhật cấu hình hệ thống thành công!', 'success');
+        this.toast.showToast(this.lang.translate('toast.settings_updated'), 'success');
         this.isLocked.set(true);
       },
       error: (err) => {
-        const errorMsg = err?.error?.errors?.admin_wallet_address?.[0] || err?.error?.message || 'Có lỗi xảy ra khi cập nhật cấu hình!';
+        const errorMsg = err?.error?.errors?.admin_wallet_address?.[0] || err?.error?.message || this.lang.translate('toast.settings_update_failed');
         this.toast.showToast(errorMsg, 'error');
       }
     });
@@ -183,10 +185,10 @@ export class AdminSettingsComponent implements OnInit, OnDestroy {
 
     if (action === 'clear-all') {
       this.modalService.confirm({
-        title: 'Dọn dẹp nhanh hệ thống',
-        description: 'Bạn có chắc chắn muốn xóa toàn bộ các tệp cache và tối ưu hóa lại hệ thống? Quá trình này có thể làm giảm tốc độ phản hồi ban đầu của server trong vài giây.',
-        confirmText: 'Xóa tất cả cache',
-        cancelText: 'Hủy',
+        title: this.lang.translate('modal.clear_cache_title'),
+        description: this.lang.translate('modal.clear_cache_desc'),
+        confirmText: this.lang.translate('action.confirm'),
+        cancelText: this.lang.translate('action.cancel'),
         confirmButtonClass: '!bg-rose-600 hover:!bg-rose-700'
       }).afterClosed$.subscribe((confirmed?: boolean) => {
         if (confirmed) run();
@@ -199,16 +201,16 @@ export class AdminSettingsComponent implements OnInit, OnDestroy {
   public saveTokenSettings(): void {
     const days = this.tokenCleanupDays();
     if (days < 1 || days > 365) {
-      this.toast.showToast('Số ngày giữ lại token phải từ 1 đến 365 ngày!', 'warning');
+      this.toast.showToast('Token days must be between 1 and 365!', 'warning');
       return;
     }
 
     this.store.updateTokenSettings(days).subscribe({
       next: () => {
-        this.toast.showToast('Cập nhật cấu hình Sanctum Token thành công!', 'success');
+        this.toast.showToast('Updated Sanctum Token settings!', 'success');
       },
       error: () => {
-        this.toast.showToast('Không thể cập nhật cấu hình Token!', 'error');
+        this.toast.showToast('Failed to update Token settings!', 'error');
       }
     });
   }
@@ -219,10 +221,10 @@ export class AdminSettingsComponent implements OnInit, OnDestroy {
 
     this.store.cleanTokens().subscribe({
       next: (res) => {
-        this.toast.showToast(res.message || 'Đã dọn dẹp các token hết hạn thành công!', 'success');
+        this.toast.showToast(res.message || 'Cleaned expired tokens!', 'success');
       },
       error: () => {
-        this.toast.showToast('Có lỗi xảy ra khi dọn dẹp token!', 'error');
+        this.toast.showToast('Error cleaning tokens!', 'error');
       }
     });
   }
@@ -232,23 +234,23 @@ export class AdminSettingsComponent implements OnInit, OnDestroy {
     if (this.store.isCleaningTokens()) return;
 
     this.modalService.confirm({
-      title: 'Xóa tất cả Login Tokens',
-      description: 'Chú ý! Hành động này sẽ lập tức xóa sạch toàn bộ token đăng nhập của mọi thành viên hệ thống (bao gồm cả bạn). Tất cả tài khoản sẽ bị logout ngay lập tức. Bạn có muốn tiếp tục?',
-      confirmText: 'Xóa tất cả Token',
-      cancelText: 'Hủy',
+      title: this.lang.translate('modal.clean_all_tokens_title'),
+      description: this.lang.translate('modal.clean_all_tokens_desc'),
+      confirmText: this.lang.translate('action.confirm'),
+      cancelText: this.lang.translate('action.cancel'),
       confirmButtonClass: '!bg-rose-600 hover:!bg-rose-700'
     }).afterClosed$.subscribe((confirmed?: boolean) => {
       if (confirmed) {
         this.store.cleanAllTokens().subscribe({
           next: (res) => {
-            this.toast.showToast(res.message || 'Đã xóa tất cả token thành công!', 'success');
+            this.toast.showToast(res.message || this.lang.translate('toast.tokens_cleaned'), 'success');
             // Reload trang để ép đăng xuất (guard sẽ bắt chuyển về trang login)
             setTimeout(() => {
               window.location.reload();
             }, 1500);
           },
           error: () => {
-            this.toast.showToast('Có lỗi xảy ra khi xóa token!', 'error');
+            this.toast.showToast(this.lang.translate('toast.tokens_clean_failed'), 'error');
           }
         });
       }

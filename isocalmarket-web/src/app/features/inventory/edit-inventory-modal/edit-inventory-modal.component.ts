@@ -6,6 +6,8 @@ import { StateService } from '@core/services/state.service';
 import { CustomSelectComponent } from '@shared/components/custom-select/custom-select.component';
 import { CustomInputComponent } from '@shared/components/custom-input/custom-input.component';
 import { ButtonComponent } from '@shared/components/button/button.component';
+import { TranslatePipe } from '@shared/pipes/translate.pipe';
+import { LanguageService } from '@core/services/language.service';
 import { finalize } from 'rxjs/operators';
 
 @Component({
@@ -16,7 +18,8 @@ import { finalize } from 'rxjs/operators';
     FormsModule,
     CustomSelectComponent,
     CustomInputComponent,
-    ButtonComponent
+    ButtonComponent,
+    TranslatePipe
   ],
   templateUrl: './edit-inventory-modal.component.html',
   styles: [`
@@ -29,6 +32,7 @@ export class EditInventoryModalComponent implements OnInit {
   private readonly modalRef = inject(ModalRef);
   private readonly modalData = inject(MODAL_DATA);
   public readonly state = inject(StateService);
+  public readonly lang = inject(LanguageService);
 
   public itemId = '';
   public editProductId = '';
@@ -70,7 +74,7 @@ export class EditInventoryModalComponent implements OnInit {
   public onSubmit() {
     if (this.isSubmitting()) return;
     if (!this.editProductId || !this.batchName.trim()) {
-      this.state.showToast('Vui lòng chọn sản phẩm và nhập tên lô hàng!', 'error');
+      this.state.showToast(this.lang.translate('toast.edit_inventory_validation'), 'error');
       return;
     }
 

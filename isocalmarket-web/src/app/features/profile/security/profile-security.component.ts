@@ -5,6 +5,7 @@ import { ButtonComponent } from '@shared/components/button/button.component';
 import { BadgeComponent } from '@shared/components/badge/badge.component';
 import { IconComponent } from '@shared/components/icon/icon.component';
 import { ModalService } from '@core/services/modal.service';
+import { LanguageService } from '@core/services/language.service';
 import { Enable2faModalComponent } from './enable-2fa-modal/enable-2fa-modal.component';
 import { Disable2faModalComponent } from './disable-2fa-modal/disable-2fa-modal.component';
 import { finalize } from 'rxjs/operators';
@@ -23,6 +24,7 @@ import { finalize } from 'rxjs/operators';
 export class ProfileSecurityComponent {
   public readonly state = inject(StateService);
   private readonly modalService = inject(ModalService);
+  public readonly lang = inject(LanguageService);
 
   public readonly isSubmitting = signal(false);
 
@@ -34,7 +36,7 @@ export class ProfileSecurityComponent {
       .subscribe((res) => {
         if (res) {
           this.modalService.open(Enable2faModalComponent, {
-            title: 'Kích hoạt bảo mật 2FA',
+            title: this.lang.translate('modal.enable_2fa_title'),
             size: 'lg',
             data: { secret: res.secret, qr_code_url: res.qr_code_url }
           });
@@ -44,7 +46,7 @@ export class ProfileSecurityComponent {
 
   public startDisable2Fa() {
     this.modalService.open(Disable2faModalComponent, {
-      title: 'Hủy kích hoạt 2FA',
+      title: this.lang.translate('modal.disable_2fa_title'),
       size: 'md'
     });
   }
