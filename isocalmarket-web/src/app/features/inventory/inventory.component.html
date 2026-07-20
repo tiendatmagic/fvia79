@@ -179,7 +179,7 @@
       [totalPages]="state.inventoryStore.lastPage()"
       [totalItems]="state.inventoryStore.totalItems()"
       [itemsPerPage]="limit"
-      [itemName]="'tài nguyên'"
+      [itemName]="'admin.resource_item' | translate"
       (pageChange)="fetchPage($event)"
     />
   </div>

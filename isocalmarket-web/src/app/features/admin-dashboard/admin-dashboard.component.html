@@ -164,7 +164,7 @@
           @if (stats()?.low_stock_threshold_label) {
             <span class="text-slate-400 font-semibold text-sm ml-1">({{ stats().low_stock_threshold_label }})</span>
           } @else {
-            <span class="text-slate-400 font-semibold text-sm ml-1">(&lt; 5 items)</span>
+            <span class="text-slate-400 font-semibold text-sm ml-1">({{ 'dash.less_than_items' | translate: { count: 5 } }})</span>
           }
         </h3>
       </div>

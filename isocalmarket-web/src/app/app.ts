@@ -10,6 +10,7 @@ import { LogoComponent } from '@shared/components/logo/logo.component';
 import { ThemeSwitcherComponent } from '@shared/components/theme-switcher/theme-switcher.component';
 import { StateService } from '@core/services/state.service';
 import { MaintenanceComponent } from '@features/maintenance/maintenance.component';
+import { TranslatePipe } from '@shared/pipes/translate.pipe';
 
 @Component({
   selector: 'app-root',
@@ -24,7 +25,8 @@ import { MaintenanceComponent } from '@features/maintenance/maintenance.componen
     IconComponent,
     LogoComponent,
     ThemeSwitcherComponent,
-    MaintenanceComponent
+    MaintenanceComponent,
+    TranslatePipe
   ],
   templateUrl: './app.html',
   styleUrl: './app.scss'

@@ -83,15 +83,23 @@ export class UserFormModalComponent implements OnInit {
   public adminGeneratedSecret = '';
   public adminGeneratedQrUrl = '';
 
-  public roleOptions = [
-    { label: 'Khách hàng', value: 'customer' },
-    { label: 'Quản trị viên', value: 'admin' }
-  ];
+  public get roleOptions() {
+    return [
+      { label: this.lang.translate('role.customer'), value: 'customer' },
+      { label: this.lang.translate('role.admin'), value: 'admin' }
+    ];
+  }
 
-  public statusOptions = [
-    { label: 'Đang hoạt động', value: 'active' },
-    { label: 'Bị khóa', value: 'banned' }
-  ];
+  public get statusOptions() {
+    return [
+      { label: this.lang.translate('status.active'), value: 'active' },
+      { label: this.lang.translate('status.blocked'), value: 'banned' }
+    ];
+  }
+
+  public get autoApiKeyPlaceholder(): string {
+    return this.lang.translate('user.auto_api_key');
+  }
 
   ngOnInit() {
     if (this.modalData) {
@@ -121,7 +129,7 @@ export class UserFormModalComponent implements OnInit {
   public onGenerateKey() {
     this.generate_api_key = true;
     this.revoke_api_key = false;
-    this.api_key = 'Sẽ sinh tự động sau khi lưu...';
+    this.api_key = this.autoApiKeyPlaceholder;
   }
 
   public onRevokeKey() {

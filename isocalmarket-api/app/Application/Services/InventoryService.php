@@ -67,7 +67,7 @@ class InventoryService
         if ($lastUpdatedAt) {
             $dbUpdatedAt = $batch->getUpdatedAt()?->format('Y-m-d H:i:s');
             if ($dbUpdatedAt && $dbUpdatedAt !== $lastUpdatedAt) {
-                throw new \Exception('Dữ liệu lô hàng đã được cập nhật bởi một giao dịch khác. Vui lòng đóng modal và tải lại trang.');
+                throw new \Exception(__('messages.inventory_conflict'));
             }
         }
 

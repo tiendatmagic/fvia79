@@ -47,11 +47,11 @@
             </div>
           </div>
           <div class="flex justify-between items-center text-xs font-bold">
-            <span class="text-slate-400">Ngày đặt hàng:</span>
+            <span class="text-slate-400">{{ 'orders.ordered_at' | translate }}</span>
             <span class="text-slate-700 dark:text-slate-300">{{ detail.created_at | date: 'dd/MM/yyyy HH:mm' }}</span>
           </div>
           <div class="flex justify-between items-center text-xs font-bold">
-            <span class="text-slate-400">Trạng thái:</span>
+            <span class="text-slate-400">{{ 'orders.status' | translate }}:</span>
             <app-badge
               [variant]="
                 detail.status === 'paid'
@@ -65,10 +65,10 @@
             >
               {{
                 detail.status === 'paid'
-                  ? 'Đã thanh toán'
+                  ? ('orders.status_completed' | translate)
                   : detail.status === 'pending'
-                    ? 'Chờ thanh toán'
-                    : 'Đã hủy'
+                    ? ('orders.status_pending' | translate)
+                    : ('orders.status_cancelled' | translate)
               }}
             </app-badge>
           </div>
@@ -77,7 +77,7 @@
             *ngIf="detail.coupon_code"
             class="flex justify-between items-center text-xs font-bold"
           >
-            <span class="text-slate-400">Mã giảm giá áp dụng:</span>
+            <span class="text-slate-400">{{ 'orders.applied_coupon' | translate }}</span>
             <span
               class="font-mono font-extrabold text-xs uppercase border border-dashed border-[var(--color-primary)]/40 px-2 py-0.5 rounded bg-[var(--color-primary)]/5 text-[var(--color-primary)]"
             >
@@ -89,14 +89,14 @@
             *ngIf="detail.discount_amount > 0"
             class="flex justify-between items-center text-xs font-extrabold text-emerald-600 dark:text-emerald-400"
           >
-            <span>Discount:</span>
+            <span>{{ 'orders.discount' | translate }}:</span>
             <span>-{{ detail.discount_amount | appCurrency }}</span>
           </div>
 
           <div
             class="flex justify-between items-center text-sm font-black pt-3 border-t border-slate-100 dark:border-slate-800/60"
           >
-            <span class="text-slate-700 dark:text-slate-300">Total:</span>
+            <span class="text-slate-700 dark:text-slate-300">{{ 'orders.total' | translate }}:</span>
             <span class="text-[var(--color-primary)] text-base font-black"
               >{{ detail.total_price | appCurrency }}</span
             >
@@ -111,7 +111,7 @@
           <h4
             class="text-xs font-black text-slate-400 uppercase tracking-wider pl-2 border-l-4 border-[var(--color-primary)]"
           >
-            Purchased Products
+            {{ 'orders.purchased_products' | translate }}
           </h4>
         </div>
         <div class="divide-y divide-slate-200/40 dark:divide-slate-800/40">
@@ -121,14 +121,14 @@
           >
             <div>
               <p class="font-bold text-slate-800 dark:text-slate-200">{{ item.product_name }}</p>
-              <p class="text-xs text-slate-400 mt-0.5">Quantity: {{ item.quantity }}</p>
+              <p class="text-xs text-slate-400 mt-0.5">{{ 'orders.quantity' | translate }}: {{ item.quantity }}</p>
             </div>
             <div class="text-right">
               <p class="font-bold text-slate-700 dark:text-slate-300">
                 {{ item.price | appCurrency }}
               </p>
               <p class="text-xs text-slate-400 mt-0.5">
-                Subtotal: {{ item.price * item.quantity | appCurrency }}
+                {{ 'orders.subtotal' | translate }}: {{ item.price * item.quantity | appCurrency }}
               </p>
             </div>
           </div>
@@ -147,7 +147,7 @@
         <h4
           class="text-xs font-black text-slate-400 uppercase tracking-wider pl-2 border-l-4 border-[var(--color-primary)]"
         >
-          Tài nguyên đã phân phối
+          {{ 'orders.distributed_resources' | translate }}
         </h4>
 
         <div class="flex items-center gap-3 self-end sm:self-auto">
@@ -162,7 +162,7 @@
               [class.shadow-sm]="viewMode() === 'parsed'"
               class="px-3 py-1 text-xs font-extrabold rounded-lg cursor-pointer text-slate-500 hover:text-slate-700 dark:text-slate-400 dark:hover:text-white transition-all"
             >
-              Đã bóc tách
+              {{ 'orders.parsed' | translate }}
             </button>
             <button
               (click)="viewMode.set('raw')"
@@ -172,7 +172,7 @@
               [class.shadow-sm]="viewMode() === 'raw'"
               class="px-3 py-1 text-xs font-extrabold rounded-lg cursor-pointer text-slate-500 hover:text-slate-700 dark:text-slate-400 dark:hover:text-white transition-all"
             >
-              Dữ liệu thô (Raw)
+              {{ 'orders.raw_data' | translate }}
             </button>
           </div>
 
@@ -181,7 +181,7 @@
             class="px-3 py-1.5 text-xs font-bold text-[var(--color-primary)] hover:text-white border border-[var(--color-primary)]/30 hover:bg-[var(--color-primary)] rounded-xl transition-all flex items-center gap-1 cursor-pointer"
           >
             <app-icon name="download" class="w-3.5 h-3.5" />
-            Tải file (.txt)
+            {{ 'orders.download_txt' | translate }}
           </button>
         </div>
       </div>
@@ -195,7 +195,7 @@
             <p
               class="text-xs font-black text-slate-400 uppercase tracking-wider pl-1.5 border-l-2 border-[var(--color-primary)]"
             >
-              Tài nguyên #{{ i + 1 }}
+              {{ 'orders.resource_number' | translate: { number: i + 1 } }}
             </p>
 
             <div class="space-y-2.5">

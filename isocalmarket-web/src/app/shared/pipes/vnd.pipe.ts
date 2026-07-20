@@ -7,12 +7,12 @@ import { Pipe, PipeTransform } from '@angular/core';
 export class VNDCurrencyPipe implements PipeTransform {
   transform(value: any): string {
     if (value === null || value === undefined || value === '') {
-      return '0đ';
+      return '0₫';
     }
     const num = Number(value);
     if (isNaN(num)) {
-      return '0đ';
+      return '0₫';
     }
-    return new Intl.NumberFormat('en-US').format(num) + 'đ';
+    return new Intl.NumberFormat('en-US').format(num) + '₫';
   }
 }

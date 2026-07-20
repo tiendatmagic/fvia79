@@ -1,4 +1,4 @@
-import { Component, OnInit, inject, signal, ChangeDetectionStrategy } from '@angular/core';
+import { Component, OnInit, inject, signal, computed, ChangeDetectionStrategy } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { Router } from '@angular/router';
 import { StateService } from '@core/services/state.service';
@@ -50,13 +50,16 @@ export class OrdersComponent implements OnInit {
   public readonly lang = inject(LanguageService);
   private readonly router = inject(Router);
 
-  public readonly columns: TableColumn[] = [
-    { key: 'order_code', label: 'Mã đơn hàng', sortable: true },
-    { key: 'created_at', label: 'Ngày mua', sortable: true },
-    { key: 'total_price', label: 'Tổng tiền', sortable: true },
-    { key: 'status', label: 'Trạng thái', sortable: true, align: 'center' },
-    { key: 'actions', label: 'Thao tác', sortable: false, align: 'right' }
-  ];
+  public readonly columns = computed<TableColumn[]>(() => {
+    this.lang.currentLang();
+    return [
+      { key: 'order_code', label: this.lang.translate('orders.order_code'), sortable: true },
+      { key: 'created_at', label: this.lang.translate('orders.created_at'), sortable: true },
+      { key: 'total_price', label: this.lang.translate('orders.total_price'), sortable: true },
+      { key: 'status', label: this.lang.translate('orders.status'), sortable: true, align: 'center' },
+      { key: 'actions', label: this.lang.translate('common.actions'), sortable: false, align: 'right' }
+    ];
+  });
 
   public readonly currentPage = signal<number>(1);
   public readonly limit = 10;
@@ -66,12 +69,14 @@ export class OrdersComponent implements OnInit {
   public selectedStatusFilter = '';
   public selectedDateRange: DateTimeRangeValue = { startDate: '', endDate: '' };
 
-  public readonly statusOptions = [
-    { label: 'Tất cả trạng thái', value: '' },
-    { label: 'Đã thanh toán', value: 'paid' },
-    { label: 'Chờ thanh toán', value: 'pending' },
-    { label: 'Đã hủy', value: 'cancelled' }
-  ];
+  public get statusOptions() {
+    return [
+      { label: this.lang.translate('common.all_status'), value: '' },
+      { label: this.lang.translate('orders.status_completed'), value: 'paid' },
+      { label: this.lang.translate('orders.status_pending'), value: 'pending' },
+      { label: this.lang.translate('orders.status_cancelled'), value: 'cancelled' }
+    ];
+  }
 
   ngOnInit() {
     this.fetchPage(1);

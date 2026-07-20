@@ -18,6 +18,8 @@ import {
 import { CommonModule } from '@angular/common';
 import { FormsModule, NG_VALUE_ACCESSOR, ControlValueAccessor } from '@angular/forms';
 import { IconComponent } from '../icon/icon.component';
+import { TranslatePipe } from '@shared/pipes/translate.pipe';
+import { LanguageService } from '@core/services/language.service';
 
 export interface DateTimeRangeValue {
   startDate: string;
@@ -29,7 +31,7 @@ export interface DateTimeRangeValue {
   host: {
     '(document:click)': 'onClickOutside($event)'
   },
-  imports: [CommonModule, FormsModule, IconComponent],
+  imports: [CommonModule, FormsModule, IconComponent, TranslatePipe],
   templateUrl: './custom-date-time-range.component.html',
   styleUrl: './custom-date-time-range.component.css',
   providers: [
@@ -43,6 +45,7 @@ export interface DateTimeRangeValue {
 export class CustomDateTimeRangeComponent implements ControlValueAccessor, AfterViewChecked, OnInit, OnDestroy {
   private readonly elementRef = inject(ElementRef);
   private readonly cdr = inject(ChangeDetectorRef);
+  public readonly lang = inject(LanguageService);
   private scrollListener: any;
 
   ngOnInit(): void {
@@ -61,7 +64,7 @@ export class CustomDateTimeRangeComponent implements ControlValueAccessor, After
     }
   }
 
-  @Input() placeholder: string = 'Chọn khoảng thời gian...';
+  @Input() placeholder: string = '';
   @Input() disabled: boolean = false;
   @Input() showTime: boolean = false;
   @Input() showPresets: boolean = false;
@@ -96,15 +99,21 @@ export class CustomDateTimeRangeComponent implements ControlValueAccessor, After
   public readonly showEndHourDropdown = signal<boolean>(false);
   public readonly showEndMinuteDropdown = signal<boolean>(false);
 
-  public readonly weekdays = ['T2', 'T3', 'T4', 'T5', 'T6', 'T7', 'CN'];
+  public get weekdays(): string[] {
+    return this.lang.currentLang() === 'vi'
+      ? ['T2', 'T3', 'T4', 'T5', 'T6', 'T7', 'CN']
+      : ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'];
+  }
   public popoverStyle: { [key: string]: string } = {};
-  public readonly presets = [
-    { label: 'Hôm nay', id: 'today' },
-    { label: 'Hôm qua', id: 'yesterday' },
-    { label: '7 ngày qua', id: 'last_7_days' },
-    { label: '30 ngày qua', id: 'last_30_days' },
-    { label: 'Tháng này', id: 'this_month' }
-  ];
+  public get presets() {
+    return [
+      { label: this.lang.translate('date.today'), id: 'today' },
+      { label: this.lang.translate('date.yesterday'), id: 'yesterday' },
+      { label: this.lang.translate('date.last_7_days'), id: 'last_7_days' },
+      { label: this.lang.translate('date.last_30_days'), id: 'last_30_days' },
+      { label: this.lang.translate('date.this_month'), id: 'this_month' }
+    ];
+  }
 
   public readonly displayValue = computed(() => {
     const val = this.value();
@@ -149,11 +158,9 @@ export class CustomDateTimeRangeComponent implements ControlValueAccessor, After
   });
 
   public readonly currentMonthName = computed(() => {
-    const monthNames = [
-      'Tháng 01', 'Tháng 02', 'Tháng 03', 'Tháng 04', 'Tháng 05', 'Tháng 06',
-      'Tháng 07', 'Tháng 08', 'Tháng 09', 'Tháng 10', 'Tháng 11', 'Tháng 12'
-    ];
-    return monthNames[this.currentMonth()];
+    this.lang.currentLang();
+    return new Intl.DateTimeFormat(this.lang.currentLang(), { month: 'long' })
+      .format(new Date(this.currentYear(), this.currentMonth(), 1));
   });
 
   public onClickOutside(event: MouseEvent): void {

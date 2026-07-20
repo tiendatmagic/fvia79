@@ -83,7 +83,7 @@ export class CartModalComponent implements OnInit {
 
         return this.couponStore.validateCoupon(code.trim(), total).pipe(
           catchError((err) => {
-            const msg = err.message || 'Mã giảm giá không hợp lệ!';
+            const msg = err.message || this.lang.translate('cart.coupon_invalid');
             this.couponError.set(msg);
             this.appliedCoupon.set(null);
             return of(null);
@@ -97,7 +97,7 @@ export class CartModalComponent implements OnInit {
         const formatDiscount = res.type === 'percentage'
           ? `${res.value}%`
           : `${res.discount_amount}`;
-        this.couponSuccess.set(`Đã áp dụng mã "${res.code}".`);
+        this.couponSuccess.set(this.lang.translate('cart.coupon_applied', { code: res.code }));
       }
     });
   }

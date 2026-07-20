@@ -56,12 +56,12 @@ export class AdminUsersComponent implements OnInit {
   public readonly columns = computed<TableColumn[]>(() => {
     this.lang.currentLang();
     return [
-      { key: 'id', label: 'ID', sortable: true },
+      { key: 'id', label: this.lang.translate('common.id'), sortable: true },
       { key: 'name', label: this.lang.translate('usr.name'), sortable: true },
       { key: 'email', label: this.lang.translate('usr.contact'), sortable: true },
       { key: 'role', label: this.lang.translate('usr.role'), sortable: true, align: 'center' },
       { key: 'balance', label: this.lang.translate('nav.balance'), sortable: true, align: 'right' },
-      { key: 'api_key', label: 'B2B API Key', sortable: true },
+      { key: 'api_key', label: this.lang.translate('api.b2b_api_key'), sortable: true },
       { key: 'status', label: this.lang.translate('common.status'), sortable: true, align: 'center' },
       { key: 'actions', label: this.lang.translate('common.actions'), sortable: false, align: 'right' }
     ];

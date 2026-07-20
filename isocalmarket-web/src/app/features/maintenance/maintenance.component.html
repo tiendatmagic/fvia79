@@ -20,7 +20,7 @@
         <span
           class="text-xs font-bold text-slate-400 dark:text-slate-500 uppercase tracking-widest"
         >
-          Digital Inventory
+          {{ 'app.tagline' | translate }}
         </span>
       </div>
     </div>
@@ -88,11 +88,10 @@
           <h2
             class="text-2xl md:text-3xl font-extrabold tracking-tight text-slate-800 dark:text-white"
           >
-            Hệ thống đang bảo trì
+      {{ 'maintenance.title' | translate }}
           </h2>
           <p class="text-slate-500 dark:text-slate-400 text-sm md:text-base leading-relaxed px-4">
-            Chúng tôi đang nâng cấp hệ thống để mang đến trải nghiệm tốt hơn cho bạn. Vui lòng quay
-            lại sau ít phút.
+      {{ 'maintenance.description' | translate }}
           </p>
         </div>
       </div>
@@ -106,7 +105,7 @@
           ></span>
           <span class="relative inline-flex rounded-full h-2.5 w-2.5 bg-secondary"></span>
         </span>
-        <span>Đang xử lý...</span>
+        <span>{{ 'maintenance.processing' | translate }}</span>
       </div>
 
       <div class="pt-4 flex justify-center">
@@ -126,13 +125,13 @@
             <path d="M23 4v6h-6"></path>
             <path d="M20.49 15a9 9 0 1 1-2.12-9.36L23 10"></path>
           </svg>
-          <span>Thử lại</span>
+        <span>{{ 'maintenance.retry' | translate }}</span>
         </button>
       </div>
     </div>
   </main>
 
   <footer class="w-full py-6 text-center text-xs text-slate-400 dark:text-slate-500 z-10">
-    &copy; 2026 Isocalmarket. All rights reserved.
+    &copy; 2026 Isocalmarket. {{ 'app.all_rights_reserved' | translate }}
   </footer>
 </div>

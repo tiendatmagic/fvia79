@@ -57,13 +57,13 @@ export class AdminDepositsComponent implements OnInit {
   public readonly columns = computed<TableColumn[]>(() => {
     this.lang.currentLang();
     return [
-      { key: 'code', label: 'Code', sortable: true },
+      { key: 'code', label: this.lang.translate('deposit.code'), sortable: true },
       { key: 'userName', label: this.lang.translate('usr.name'), sortable: true },
-      { key: 'amountUsdt', label: 'USDT', sortable: true, align: 'right' },
-      { key: 'amountVnd', label: 'Amount', sortable: true, align: 'right' },
-      { key: 'paymentMethod', label: 'Method', sortable: true, align: 'center' },
+      { key: 'amountUsdt', label: this.lang.translate('deposit.amount_usdt'), sortable: true, align: 'right' },
+      { key: 'amountVnd', label: this.lang.translate('deposit.amount'), sortable: true, align: 'right' },
+      { key: 'paymentMethod', label: this.lang.translate('deposit.method'), sortable: true, align: 'center' },
       { key: 'status', label: this.lang.translate('common.status'), sortable: true, align: 'center' },
-      { key: 'createdAt', label: 'Created At', sortable: true },
+      { key: 'createdAt', label: this.lang.translate('common.created_at'), sortable: true },
       { key: 'actions', label: this.lang.translate('common.actions'), sortable: false, align: 'right' }
     ];
   });
@@ -85,11 +85,13 @@ export class AdminDepositsComponent implements OnInit {
     ];
   }
 
-  public readonly methodOptions = [
-    { label: 'Tất cả phương thức', value: '' },
-    { label: 'USDT BEP20', value: 'bep20' },
-    { label: 'Binance Pay', value: 'binance' }
-  ];
+  public get methodOptions() {
+    return [
+      { label: this.lang.translate('deposit.all_methods'), value: '' },
+      { label: 'USDT BEP20', value: 'bep20' },
+      { label: 'Binance Pay', value: 'binance' }
+    ];
+  }
 
   public readonly currentPage = signal<number>(1);
   public readonly limit = 10;
@@ -133,10 +135,10 @@ export class AdminDepositsComponent implements OnInit {
 
   public getStatusText(status: string): string {
     switch (status) {
-      case 'completed': return 'Đã hoàn thành';
-      case 'pending_payment': return 'Chờ thanh toán';
-      case 'failed': return 'Thất bại';
-      case 'expired': return 'Đã hết hạn';
+      case 'completed': return this.lang.translate('status.completed');
+      case 'pending_payment': return this.lang.translate('status.pending_payment');
+      case 'failed': return this.lang.translate('status.failed');
+      case 'expired': return this.lang.translate('status.expired');
       default: return status;
     }
   }
@@ -151,7 +153,7 @@ export class AdminDepositsComponent implements OnInit {
 
   public openApproveModal(deposit: any) {
     const ref = this.modalService.open(ApproveDepositModalComponent, {
-      title: `Duyệt lệnh nạp tiền #${deposit.code}`,
+      title: this.lang.translate('deposit.approve_title', { code: deposit.code }),
       size: 'md',
       closeOnBackdropClick: true,
       data: {

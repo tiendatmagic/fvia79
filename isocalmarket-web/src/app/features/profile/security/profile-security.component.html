@@ -1,7 +1,7 @@
 <div class="space-y-6">
   <div class="pb-1">
-    <h3 class="text-lg font-black text-slate-800 dark:text-slate-200">Bảo mật hai lớp (2FA)</h3>
-    <p class="text-xs text-slate-400 dark:text-slate-500 font-bold mt-0.5">Tăng cường an toàn cho tài khoản bằng cách quét mã Google Authenticator.</p>
+  <h3 class="text-lg font-black text-slate-800 dark:text-slate-200">{{ 'security.title' | translate }}</h3>
+  <p class="text-xs text-slate-400 dark:text-slate-500 font-bold mt-0.5">{{ 'security.description' | translate }}</p>
   </div>
 
   <hr class="border-slate-200/40 dark:border-slate-800/40" />
@@ -16,9 +16,9 @@
         <app-icon name="shield-check" class="w-5 h-5 shrink-0" />
       </div>
       <div class="min-w-0 flex-1">
-        <h4 class="font-bold text-slate-800 dark:text-slate-200 text-sm">Trạng thái bảo mật</h4>
+      <h4 class="font-bold text-slate-800 dark:text-slate-200 text-sm">{{ 'security.status' | translate }}</h4>
         <p class="text-xs text-slate-500 font-semibold mt-0.5 truncate md:whitespace-normal">
-          {{ state.currentUser()?.google2fa_enabled ? 'Đang hoạt động. Tài khoản của bạn được bảo vệ 2 lớp.' : 'Tài khoản chưa được kích hoạt bảo vệ 2 lớp.' }}
+      {{ state.currentUser()?.google2fa_enabled ? ('security.active_desc' | translate) : ('security.inactive_desc' | translate) }}
         </p>
       </div>
     </div>
@@ -28,13 +28,13 @@
       rounded="full"
       class="shrink-0 whitespace-nowrap"
     >
-      {{ state.currentUser()?.google2fa_enabled ? 'Đã bật' : 'Chưa bật' }}
+    {{ state.currentUser()?.google2fa_enabled ? ('security.enabled' | translate) : ('security.disabled' | translate) }}
     </app-badge>
   </div>
 
     <div *ngIf="!state.currentUser()?.google2fa_enabled" class="text-center py-6 space-y-4">
     <p class="text-sm text-slate-500 font-semibold max-w-sm mx-auto">
-      Kích hoạt bảo mật 2 lớp qua Google Authenticator giúp phòng tránh truy cập trái phép ngay cả khi mật khẩu đăng nhập bị lộ.
+      {{ 'security.enable_desc' | translate }}
     </p>
     <button
       app-button
@@ -43,13 +43,13 @@
       (click)="startEnable2Fa()"
       class="px-6 py-2.5 rounded-xl font-bold bg-[var(--color-primary)] text-white shadow-md shadow-[var(--color-primary)]/10"
     >
-      Kích hoạt bảo mật 2FA
+      {{ 'security.enable' | translate }}
     </button>
   </div>
 
     <div *ngIf="state.currentUser()?.google2fa_enabled" class="text-center py-6 space-y-4">
     <p class="text-sm text-slate-500 font-semibold max-w-sm mx-auto">
-      Tài khoản đang được bảo vệ bằng chế độ 2 lớp cực kỳ an toàn. Vui lòng không tắt chức năng này để bảo vệ tài sản của bạn.
+      {{ 'security.enabled_desc' | translate }}
     </p>
     <button
       app-button
@@ -57,7 +57,7 @@
       (click)="startDisable2Fa()"
       class="px-6 py-2.5 rounded-xl font-bold border-rose-500/20 text-rose-600 bg-rose-50 dark:bg-rose-950/20"
     >
-      Hủy kích hoạt 2FA
+      {{ 'security.disable' | translate }}
     </button>
   </div>
 </div>

@@ -7,6 +7,7 @@ import { CustomInputComponent } from '@shared/components/custom-input/custom-inp
 import { ButtonComponent } from '@shared/components/button/button.component';
 import { TranslatePipe } from '@shared/pipes/translate.pipe';
 import { CurrencyPipe } from '@shared/pipes/currency.pipe';
+import { LanguageService } from '@core/services/language.service';
 
 export interface AdjustBalanceModalData {
   user: {
@@ -39,6 +40,7 @@ export class AdjustBalanceModalComponent implements OnInit {
   public readonly modalRef = inject(ModalRef);
   public readonly data = inject<AdjustBalanceModalData>(MODAL_DATA);
   private readonly userStore = inject(UserStore);
+  private readonly lang = inject(LanguageService);
 
   public type: 'add' | 'subtract' = 'add';
   public amount: number | null = null;
@@ -84,7 +86,8 @@ export class AdjustBalanceModalComponent implements OnInit {
 
     this.isSubmitting.set(true);
 
-    const reasonText = this.reason.trim() || (this.type === 'add' ? 'Admin cộng tiền' : 'Admin trừ tiền');
+    const reasonText = this.reason.trim()
+      || this.lang.translate(this.type === 'add' ? 'balance.admin_add_reason' : 'balance.admin_subtract_reason');
 
     this.userStore.adjustBalance(this.data.user.id, this.type, this.amount, reasonText).subscribe({
       next: (res) => {

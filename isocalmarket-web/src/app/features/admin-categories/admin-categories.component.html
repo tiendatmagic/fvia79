@@ -63,7 +63,7 @@
 
   <div app-card class="overflow-hidden !p-0">
     <app-table
-      [columns]="columns"
+      [columns]="columns()"
       [data]="filteredCategories()"
       [loading]="state.productStore.loading()"
       [emptyText]="'No categories found.'"
@@ -100,7 +100,7 @@
       <ng-template appTableCell="description" let-row="row">
         <span
           class="text-sm text-slate-500 dark:text-slate-400 min-w-[200px] max-w-[400px] truncate block"
-          [appTooltip]="row.description || 'Không có mô tả.'"
+        [appTooltip]="row.description || ('common.no_description' | translate)"
         >
           {{ row.description || '-' }}
         </span>
@@ -111,7 +111,7 @@
           [variant]="row.products_count > 0 ? 'success' : 'danger'"
           size="lg"
           rounded="md"
-          [appTooltip]="'Số sản phẩm: ' + (row.products_count ?? 0)"
+        [appTooltip]="'admin.product_count' | translate: { count: row.products_count ?? 0 }"
         >
           {{ row.products_count ?? 0 }}
         </app-badge>
@@ -132,18 +132,18 @@
           <button
             (click)="openEditModal(row)"
             class="text-xs font-bold px-3 py-1.5 rounded-lg border border-[var(--color-primary)]/20 hover:bg-[var(--color-primary)]/10 text-[var(--color-primary)] bg-[var(--color-primary)]/5 dark:bg-[var(--color-primary)]/10 dark:border-[var(--color-primary)]/30 dark:hover:bg-[var(--color-primary)]/20 hover:scale-105 active:scale-95 transition-all cursor-pointer flex items-center gap-1 shrink-0"
-            [appTooltip]="'Chỉnh sửa'"
+          [appTooltip]="'action.edit' | translate"
           >
             <app-icon name="edit" class="w-3.5 h-3.5" />
-            <span>Sửa</span>
+          <span>{{ 'action.edit' | translate }}</span>
           </button>
           <button
             (click)="confirmDelete(row)"
             class="text-xs font-bold px-3 py-1.5 rounded-lg border border-rose-500/20 dark:border-rose-500/30 hover:bg-rose-100 dark:hover:bg-rose-950/40 text-rose-600 dark:text-rose-400 bg-rose-50 dark:bg-rose-950/20 hover:scale-105 active:scale-95 transition-all cursor-pointer flex items-center gap-1 shrink-0"
-            [appTooltip]="'Xóa'"
+          [appTooltip]="'action.delete' | translate"
           >
             <app-icon name="trash" class="w-3.5 h-3.5" />
-            <span>Xóa</span>
+          <span>{{ 'action.delete' | translate }}</span>
           </button>
         </div>
       </ng-template>
@@ -154,7 +154,7 @@
       [totalPages]="state.productStore.lastCategoryPage()"
       [totalItems]="state.productStore.totalCategories()"
       [itemsPerPage]="limit"
-      [itemName]="'danh mục'"
+      [itemName]="'admin.category_item' | translate"
       (pageChange)="fetchPage($event)"
     />
   </div>

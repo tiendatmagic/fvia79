@@ -112,21 +112,21 @@ export class OrderDetailComponent implements OnInit {
 
   public parseAccountData(data: string): { label: string, value: string, is2FA?: boolean }[] {
     if (!data || !data.includes('|')) {
-      return [{ label: 'Dữ liệu thô', value: data }];
+      return [{ label: this.lang.translate('orders.raw_label'), value: data }];
     }
     const parts = data.split('|').map(p => p.trim());
     const result: { label: string, value: string, is2FA?: boolean }[] = [];
     
-    if (parts[0]) result.push({ label: 'Tài khoản (UID)', value: parts[0] });
-    if (parts[1]) result.push({ label: 'Mật khẩu', value: parts[1] });
+    if (parts[0]) result.push({ label: this.lang.translate('orders.account_uid'), value: parts[0] });
+    if (parts[1]) result.push({ label: this.lang.translate('orders.password'), value: parts[1] });
     if (parts[2]) {
-      result.push({ label: 'Mã 2FA (Secret)', value: parts[2], is2FA: true });
+      result.push({ label: this.lang.translate('orders.secret_2fa'), value: parts[2], is2FA: true });
     }
-    if (parts[3]) result.push({ label: 'Email khôi phục', value: parts[3] });
-    if (parts[4]) result.push({ label: 'Mật khẩu email', value: parts[4] });
+    if (parts[3]) result.push({ label: this.lang.translate('orders.recovery_email'), value: parts[3] });
+    if (parts[4]) result.push({ label: this.lang.translate('orders.email_password'), value: parts[4] });
     
     for (let i = 5; i < parts.length; i++) {
-      result.push({ label: `Thông tin khác ${i - 4}`, value: parts[i] });
+      result.push({ label: this.lang.translate('orders.other_info', { number: i - 4 }), value: parts[i] });
     }
     
     return result;

@@ -138,10 +138,10 @@ class SystemSettingController extends Controller
                 $this->recursiveCleanDirectory($cacheDataPath);
             }
         } catch (\Throwable $e) {
-            Log::error('Lỗi khi xóa cứng thư mục cache data: ' . $e->getMessage());
+            Log::error(__('messages.cache_cleanup_log_error', ['error' => $e->getMessage()]));
         }
 
-        return response()->json(['success' => true, 'message' => 'Toàn bộ cache hệ thống đã được dọn dẹp và tối ưu hóa thành công.']);
+        return response()->json(['success' => true, 'message' => __('messages.cache_cleanup_success')]);
     }
 
     /**

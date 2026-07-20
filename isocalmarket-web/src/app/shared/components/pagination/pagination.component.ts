@@ -7,10 +7,11 @@ import {
   SimpleChanges} from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { IconComponent } from '@shared/components/icon/icon.component';
+import { TranslatePipe } from '@shared/pipes/translate.pipe';
 
 @Component({
   selector: 'app-pagination',
-  imports: [CommonModule, IconComponent],
+  imports: [CommonModule, IconComponent, TranslatePipe],
   templateUrl: './pagination.component.html',
   styles: [`
     :host {
@@ -24,7 +25,7 @@ export class PaginationComponent implements OnChanges {
   @Input() totalPages: number = 1;
   @Input() totalItems: number = 0;
   @Input() itemsPerPage: number = 10;
-  @Input() itemName: string = 'bản ghi';
+  @Input() itemName: string = '';
 
   @Output() pageChange = new EventEmitter<number>();
 

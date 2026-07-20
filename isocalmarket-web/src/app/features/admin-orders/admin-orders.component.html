@@ -76,11 +76,11 @@
           </button>
           <button
             (click)="
-              copyToClipboard(row.order_code, 'Đã sao chép mã đơn hàng!');
+          copyToClipboard(row.order_code, lang.translate('admin.copy_order_code_success'));
               $event.stopPropagation()
             "
             class="p-1 hover:bg-slate-100 dark:hover:bg-slate-800 rounded transition-colors text-slate-400 hover:text-slate-600 dark:hover:text-slate-200 cursor-pointer"
-            [appTooltip]="'Sao chép mã đơn hàng'"
+        [appTooltip]="'orders.copy_code_tooltip' | translate"
           >
             <app-icon name="copy" class="w-3.5 h-3.5" />
           </button>
@@ -104,7 +104,7 @@
           variant="neutral"
           size="lg"
           rounded="md"
-          [appTooltip]="'Số lượng mua: ' + row.items_count"
+        [appTooltip]="'orders.purchase_quantity' | translate: { count: row.items_count }"
         >
           {{ row.items_count }}
         </app-badge>
@@ -123,18 +123,18 @@
           rounded="full"
           [appTooltip]="
             row.status === 'paid'
-              ? 'Đã thanh toán'
+            ? ('orders.status_completed' | translate)
               : row.status === 'pending'
-                ? 'Chờ thanh toán'
-                : 'Đã hủy'
+              ? ('orders.status_pending' | translate)
+              : ('orders.status_cancelled' | translate)
           "
         >
           {{
             row.status === 'paid'
-              ? 'Đã thanh toán'
+            ? ('orders.status_completed' | translate)
               : row.status === 'pending'
-                ? 'Chờ thanh toán'
-                : 'Đã hủy'
+              ? ('orders.status_pending' | translate)
+              : ('orders.status_cancelled' | translate)
           }}
         </app-badge>
       </ng-template>
@@ -150,10 +150,10 @@
           <button
             (click)="viewDetail(row.id)"
             class="text-xs font-bold px-3 py-1.5 rounded-lg border border-teal-500/20 dark:border-teal-500/30 hover:bg-teal-100 dark:hover:bg-teal-950/40 text-teal-600 dark:text-teal-400 bg-teal-50 dark:bg-teal-950/20 hover:scale-105 active:scale-95 transition-all cursor-pointer flex items-center gap-1 shrink-0"
-            [appTooltip]="'Xem chi tiết'"
+          [appTooltip]="'action.details' | translate"
           >
             <app-icon name="eye" class="w-3.5 h-3.5" />
-            <span>Chi tiết</span>
+          <span>{{ 'action.details' | translate }}</span>
           </button>
         </div>
       </ng-template>
@@ -164,7 +164,7 @@
       [totalPages]="totalPages()"
       [totalItems]="total()"
       [itemsPerPage]="limit"
-      [itemName]="'đơn hàng'"
+      [itemName]="'admin.order_item' | translate"
       (pageChange)="fetchOrders($event)"
     />
   </div>

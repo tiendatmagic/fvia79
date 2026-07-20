@@ -43,11 +43,13 @@ export class EditInventoryModalComponent implements OnInit {
   public productOptions: any[] = [];
   public readonly isSubmitting = signal(false);
 
-  public statusOptions = [
-    { label: 'Hoạt động', value: 'active' },
-    { label: 'Hoàn thành (Hết hàng)', value: 'completed' },
-    { label: 'Tạm khóa', value: 'inactive' }
-  ];
+  public get statusOptions() {
+    return [
+      { label: this.lang.translate('status.active'), value: 'active' },
+      { label: this.lang.translate('inventory.status_completed'), value: 'completed' },
+      { label: this.lang.translate('inventory.status_inactive'), value: 'inactive' }
+    ];
+  }
 
   ngOnInit() {
     if (this.modalData) {

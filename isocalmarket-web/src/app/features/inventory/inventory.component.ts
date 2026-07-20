@@ -55,7 +55,7 @@ export class InventoryComponent implements OnInit {
   public readonly columns = computed<TableColumn[]>(() => {
     this.lang.currentLang();
     return [
-      { key: 'id', label: 'ID', sortable: true },
+      { key: 'id', label: this.lang.translate('common.id'), sortable: true },
       { key: 'product_id', label: this.lang.translate('modal.product_name'), sortable: true },
       { key: 'batch_name', label: this.lang.translate('inv.batch_name'), sortable: true },
       { key: 'available_count', label: this.lang.translate('inv.in_stock'), sortable: true, align: 'center' },
@@ -131,7 +131,7 @@ export class InventoryComponent implements OnInit {
 
   public getProductName(productId: string): string {
     const product = this.state.productStore.products().find(p => p.id === productId);
-    return product ? product.name : `Sản phẩm #${productId}`;
+    return product ? product.name : this.lang.translate('inventory.product_number', { number: productId });
   }
 
   public openImportDrawer(defaultProductId?: string) {

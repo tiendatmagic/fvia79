@@ -18,6 +18,7 @@ import {
 import { CommonModule } from '@angular/common';
 import { FormsModule, NG_VALUE_ACCESSOR, ControlValueAccessor } from '@angular/forms';
 import { IconComponent } from '../icon/icon.component';
+import { LanguageService } from '@core/services/language.service';
 
 @Component({
   selector: 'app-custom-date-picker',
@@ -44,6 +45,7 @@ import { IconComponent } from '../icon/icon.component';
 export class CustomDatePickerComponent implements ControlValueAccessor, AfterViewChecked, OnInit, OnDestroy {
   private readonly elementRef = inject(ElementRef);
   private readonly cdr = inject(ChangeDetectorRef);
+  public readonly lang = inject(LanguageService);
   private scrollListener: any;
 
   ngOnInit(): void {
@@ -62,7 +64,7 @@ export class CustomDatePickerComponent implements ControlValueAccessor, AfterVie
     }
   }
 
-  @Input() placeholder: string = 'Chọn ngày...';
+  @Input() placeholder: string = '';
   @Input() disabled: boolean = false;
   @Input() minDate: string = '';
   @Input() maxDate: string = '';
@@ -78,17 +80,23 @@ export class CustomDatePickerComponent implements ControlValueAccessor, AfterVie
   public readonly currentYear = signal<number>(new Date().getFullYear());
   public readonly currentMonth = signal<number>(new Date().getMonth());
 
-  public readonly weekdays = ['T2', 'T3', 'T4', 'T5', 'T6', 'T7', 'CN'];
+  public get weekdays(): string[] {
+    return this.lang.currentLang() === 'vi'
+      ? ['T2', 'T3', 'T4', 'T5', 'T6', 'T7', 'CN']
+      : ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'];
+  }
 
   public popoverStyle: { [key: string]: string } = {};
 
-  public readonly presets = [
-    { label: '7 ngày', days: 7 },
-    { label: '1 tháng', days: 30 },
-    { label: '3 tháng', days: 90 },
-    { label: '6 tháng', days: 180 },
-    { label: '1 năm', days: 365 },
-  ];
+  public get presets() {
+    return [
+      { label: this.lang.translate('date.days_7'), days: 7 },
+      { label: this.lang.translate('date.month_1'), days: 30 },
+      { label: this.lang.translate('date.months_3'), days: 90 },
+      { label: this.lang.translate('date.months_6'), days: 180 },
+      { label: this.lang.translate('date.year_1'), days: 365 },
+    ];
+  }
 
   public readonly displayValue = computed(() => {
     const val = this.value();
@@ -116,11 +124,9 @@ export class CustomDatePickerComponent implements ControlValueAccessor, AfterVie
   });
 
   public readonly currentMonthName = computed(() => {
-    const monthNames = [
-      'Tháng 01', 'Tháng 02', 'Tháng 03', 'Tháng 04', 'Tháng 05', 'Tháng 06',
-      'Tháng 07', 'Tháng 08', 'Tháng 09', 'Tháng 10', 'Tháng 11', 'Tháng 12'
-    ];
-    return monthNames[this.currentMonth()];
+    this.lang.currentLang();
+    return new Intl.DateTimeFormat(this.lang.currentLang(), { month: 'long' })
+      .format(new Date(this.currentYear(), this.currentMonth(), 1));
   });
 
   public onClickOutside(event: MouseEvent): void {

@@ -42,7 +42,7 @@
     <div class="form-field">
       <label
         class="text-xs font-bold text-slate-400 dark:text-slate-500 uppercase tracking-wider block mb-1"
-        >Role</label
+        >{{ 'usr.role' | translate }}</label
       >
       <app-custom-select
         [options]="roleOptions"
@@ -86,7 +86,7 @@
           <button
             (click)="copyApiKey(row.id)"
             class="p-1 hover:bg-slate-100 dark:hover:bg-slate-800 rounded transition-colors text-slate-400 hover:text-slate-600 dark:hover:text-slate-200 cursor-pointer"
-            [appTooltip]="'Sao chép ID đầy đủ'"
+            [appTooltip]="'admin.full_id_copy' | translate"
           >
             <app-icon name="copy" class="w-3.5 h-3.5" />
           </button>
@@ -107,13 +107,13 @@
       <ng-template appTableCell="email" let-row="row">
         <div
           class="flex flex-col"
-          [appTooltip]="row.email + (row.phone ? ' - SĐT: ' + row.phone : '')"
+          [appTooltip]="row.email + (row.phone ? ' - ' + ('admin.phone_short' | translate) + ': ' + row.phone : '')"
         >
           <span class="text-xs font-semibold text-slate-700 dark:text-slate-200">
             {{ row.email }}
           </span>
           <span class="text-xs font-bold text-slate-400 dark:text-slate-500">
-            {{ row.phone || 'Chưa cập nhật SĐT' }}
+            {{ row.phone || ('admin.phone_missing' | translate) }}
           </span>
         </div>
       </ng-template>
@@ -121,9 +121,9 @@
       <ng-template appTableCell="role" let-row="row">
         <app-badge
           [variant]="row.role === 'admin' ? 'warning' : 'primary'"
-          [appTooltip]="row.role === 'admin' ? 'Quản trị viên hệ thống' : 'Khách hàng tiêu dùng'"
+          [appTooltip]="row.role === 'admin' ? ('admin.role_admin_tooltip' | translate) : ('admin.role_customer_tooltip' | translate)"
         >
-          {{ row.role === 'admin' ? 'Quản trị viên' : 'Khách hàng' }}
+          {{ row.role === 'admin' ? ('role.admin' | translate) : ('role.customer' | translate) }}
         </app-badge>
       </ng-template>
 
@@ -139,7 +139,7 @@
         <div class="flex items-center gap-1.5" *ngIf="row.api_key; else noApiKey">
           @if (!visibleApiKeys.has(row.id)) {
             <span
-              [appTooltip]="'Bấm nút con mắt để hiển thị API Key'"
+              [appTooltip]="'admin.show_api_key_hint' | translate"
               class="text-xs font-bold font-mono text-slate-400 dark:text-slate-500 bg-slate-100 dark:bg-slate-900/60 px-2 py-1 rounded tracking-widest"
             >
               ••••••••••••
@@ -156,7 +156,7 @@
           <button
             (click)="toggleApiKeyVisibility(row.id)"
             class="p-1 text-slate-400 hover:text-[var(--color-primary)] hover:bg-slate-100 dark:hover:bg-slate-800 rounded transition-colors cursor-pointer"
-            [appTooltip]="visibleApiKeys.has(row.id) ? 'Ẩn API Key' : 'Hiện API Key'"
+            [appTooltip]="visibleApiKeys.has(row.id) ? ('admin.hide_api_key' | translate) : ('admin.show_api_key' | translate)"
           >
             @if (visibleApiKeys.has(row.id)) {
               <svg
@@ -201,7 +201,7 @@
             <button
               (click)="copyApiKey(row.api_key)"
               class="p-1 hover:bg-slate-100 dark:hover:bg-slate-800 rounded transition-colors text-slate-400 hover:text-slate-600 dark:hover:text-slate-200 cursor-pointer"
-              [appTooltip]="'Sao chép API Key'"
+              [appTooltip]="'admin.copy_api_key' | translate"
             >
               <app-icon name="copy" class="w-3.5 h-3.5" />
             </button>
@@ -209,10 +209,10 @@
         </div>
         <ng-template #noApiKey>
           <span
-            [appTooltip]="'Thành viên chưa khởi tạo B2B API Key'"
+            [appTooltip]="'admin.api_key_missing_hint' | translate"
             class="text-xs font-semibold text-slate-400 dark:text-slate-500 italic"
           >
-            Chưa tạo API Key
+            {{ 'admin.api_key_missing' | translate }}
           </span>
         </ng-template>
       </ng-template>
@@ -222,9 +222,9 @@
           [variant]="row.status === 'active' ? 'success' : 'danger'"
           size="sm"
           rounded="md"
-          [appTooltip]="row.status === 'active' ? 'Hoạt động' : 'Đã khóa'"
+          [appTooltip]="row.status === 'active' ? ('status.active' | translate) : ('status.blocked' | translate)"
         >
-          {{ row.status === 'active' ? 'Hoạt động' : 'Đã khóa' }}
+          {{ row.status === 'active' ? ('status.active' | translate) : ('status.blocked' | translate) }}
         </app-badge>
       </ng-template>
 
@@ -233,7 +233,7 @@
           <button
             (click)="openAdjustBalanceModal(row)"
             class="text-xs font-bold px-3 py-1.5 rounded-lg border border-teal-500/20 dark:border-teal-500/30 hover:bg-teal-100 dark:hover:bg-teal-950/40 text-teal-700 dark:text-teal-400 bg-teal-50 dark:bg-teal-950/20 hover:scale-105 active:scale-95 transition-all cursor-pointer flex items-center gap-1 shrink-0"
-            [appTooltip]="'Cộng / Trừ số dư'"
+            [appTooltip]="'admin.balance_action' | translate"
           >
             <svg class="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
               <path
@@ -243,23 +243,23 @@
                 d="M12 6v6m0 0v6m0-6h6m-6 0H6"
               />
             </svg>
-            <span>Cộng/Trừ tiền</span>
+            <span>{{ 'admin.balance_action_short' | translate }}</span>
           </button>
           <button
             (click)="openEditModal(row)"
             class="text-xs font-bold px-3 py-1.5 rounded-lg border border-[var(--color-primary)]/20 hover:bg-[var(--color-primary)]/10 text-[var(--color-primary)] bg-[var(--color-primary)]/5 dark:bg-[var(--color-primary)]/10 dark:border-[var(--color-primary)]/30 dark:hover:bg-[var(--color-primary)]/20 hover:scale-105 active:scale-95 transition-all cursor-pointer flex items-center gap-1 shrink-0"
-            [appTooltip]="'Chỉnh sửa'"
+            [appTooltip]="'action.edit' | translate"
           >
             <app-icon name="edit" class="w-3.5 h-3.5" />
-            <span>Sửa</span>
+            <span>{{ 'action.edit' | translate }}</span>
           </button>
           <button
             (click)="deleteUser(row)"
             class="text-xs font-bold px-3 py-1.5 rounded-lg border border-rose-500/20 dark:border-rose-500/30 hover:bg-rose-100 dark:hover:bg-rose-950/40 text-rose-600 dark:text-rose-400 bg-rose-50 dark:bg-rose-950/20 hover:scale-105 active:scale-95 transition-all cursor-pointer flex items-center gap-1 shrink-0"
-            [appTooltip]="'Xóa'"
+            [appTooltip]="'action.delete' | translate"
           >
             <app-icon name="trash" class="w-3.5 h-3.5" />
-            <span>Xóa</span>
+            <span>{{ 'action.delete' | translate }}</span>
           </button>
         </div>
       </ng-template>
@@ -270,7 +270,7 @@
       [totalPages]="state.userStore.lastPage()"
       [totalItems]="state.userStore.totalItems()"
       [itemsPerPage]="limit"
-      [itemName]="'thành viên'"
+      [itemName]="'admin.user_item' | translate"
       (pageChange)="fetchPage($event)"
     />
   </div>

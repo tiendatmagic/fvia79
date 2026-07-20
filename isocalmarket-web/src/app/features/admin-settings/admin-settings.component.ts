@@ -177,10 +177,10 @@ export class AdminSettingsComponent implements OnInit, OnDestroy {
     const run = () => {
       this.store.runMaintenance(action).subscribe({
         next: (res) => {
-          this.toast.showToast(res.message || 'Thực hiện tác vụ bảo trì thành công!', 'success');
+          this.toast.showToast(res.message || this.lang.translate('maintenance.task_success'), 'success');
         },
         error: (err) => {
-          this.toast.showToast(err.error?.message || 'Có lỗi xảy ra khi thực hiện bảo trì!', 'error');
+          this.toast.showToast(err.error?.message || this.lang.translate('maintenance.task_failed'), 'error');
         }
       });
     };
@@ -203,16 +203,16 @@ export class AdminSettingsComponent implements OnInit, OnDestroy {
   public saveTokenSettings(): void {
     const days = this.tokenCleanupDays();
     if (days < 1 || days > 365) {
-      this.toast.showToast('Token days must be between 1 and 365!', 'warning');
+      this.toast.showToast('toast.token_days_invalid', 'warning');
       return;
     }
 
     this.store.updateTokenSettings(days).subscribe({
       next: () => {
-        this.toast.showToast('Updated Sanctum Token settings!', 'success');
+        this.toast.showToast('toast.token_settings_updated', 'success');
       },
       error: () => {
-        this.toast.showToast('Failed to update Token settings!', 'error');
+        this.toast.showToast('toast.token_settings_update_failed', 'error');
       }
     });
   }
@@ -223,10 +223,13 @@ export class AdminSettingsComponent implements OnInit, OnDestroy {
 
     this.store.cleanTokens().subscribe({
       next: (res) => {
-        this.toast.showToast(res.message || 'Cleaned expired tokens!', 'success');
+        this.toast.showToast(
+          this.toast.resolveApiMessage(res.message, 0, 'toast.expired_tokens_cleaned'),
+          'success'
+        );
       },
       error: () => {
-        this.toast.showToast('Error cleaning tokens!', 'error');
+        this.toast.showToast('toast.expired_tokens_clean_failed', 'error');
       }
     });
   }

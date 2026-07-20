@@ -64,7 +64,7 @@
         <span
           class="text-xs font-bold text-slate-400 dark:text-slate-500 uppercase tracking-wider mr-2 shrink-0"
         >
-          Admin API Key:
+          {{ 'api.admin_key_label' | translate }}:
         </span>
         <span
           class="text-sm font-extrabold font-mono text-slate-700 dark:text-slate-300 truncate flex-1"
@@ -165,7 +165,7 @@ curl -X GET "{{ siteUrl() }}/api/v1/admin/b2b/users?api_key={{
               <button
                 (click)="copyGetUsersCurl()"
                 class="absolute right-3.5 top-3.5 text-slate-400 dark:text-slate-500 hover:text-[var(--color-primary)] dark:hover:text-white transition-colors cursor-pointer"
-                title="Copy CURL"
+                [title]="'api.copy_curl' | translate"
               >
                 <app-icon name="copy" class="w-4 h-4" />
               </button>
@@ -192,7 +192,7 @@ curl -X GET "{{ siteUrl() }}/api/v1/admin/b2b/users?api_key={{
               <button
                 (click)="copyGetUsersUrl()"
                 class="absolute right-3.5 top-3.5 text-slate-400 dark:text-slate-500 hover:text-[var(--color-primary)] dark:hover:text-white transition-colors cursor-pointer"
-                title="Copy URL"
+                [title]="'api.copy_url' | translate"
               >
                 <app-icon name="copy" class="w-4 h-4" />
               </button>
@@ -219,7 +219,7 @@ curl -X GET "{{ siteUrl() }}/api/v1/admin/b2b/users?api_key={{
                       class="text-xs font-black uppercase bg-rose-500/10 text-rose-500 px-1.5 py-0.5 rounded"
                       >{{ 'api.required' | translate }}</span
                     >
-                    <span class="text-slate-400 dark:text-slate-500 font-mono text-xs">String</span>
+                    <span class="text-slate-400 dark:text-slate-500 font-mono text-xs">{{ 'api.type_string' | translate }}</span>
                   </div>
                   <p class="text-slate-500 dark:text-slate-400 font-semibold leading-relaxed">
                     {{ 'api.admin_api_key_desc' | translate }}
@@ -240,7 +240,7 @@ curl -X GET "{{ siteUrl() }}/api/v1/admin/b2b/users?api_key={{
                       >{{ 'api.optional' | translate }}</span
                     >
                     <span class="text-slate-400 dark:text-slate-500 font-mono text-xs"
-                      >Numeric</span
+                      >{{ 'api.type_numeric' | translate }}</span
                     >
                   </div>
                   <p class="text-slate-500 dark:text-slate-400 font-semibold leading-relaxed">
@@ -263,7 +263,7 @@ curl -X GET "{{ siteUrl() }}/api/v1/admin/b2b/users?api_key={{
                       >{{ 'api.optional' | translate }}</span
                     >
                     <span class="text-slate-400 dark:text-slate-500 font-mono text-xs"
-                      >Numeric</span
+                      >{{ 'api.type_numeric' | translate }}</span
                     >
                   </div>
                   <p class="text-slate-500 dark:text-slate-400 font-semibold leading-relaxed">
@@ -285,7 +285,7 @@ curl -X GET "{{ siteUrl() }}/api/v1/admin/b2b/users?api_key={{
                       class="text-xs font-black uppercase bg-slate-100 dark:bg-slate-800 text-slate-500 px-1.5 py-0.5 rounded"
                       >{{ 'api.optional' | translate }}</span
                     >
-                    <span class="text-slate-400 dark:text-slate-500 font-mono text-xs">String</span>
+                    <span class="text-slate-400 dark:text-slate-500 font-mono text-xs">{{ 'api.type_string' | translate }}</span>
                   </div>
                   <p class="text-slate-500 dark:text-slate-400 font-semibold leading-relaxed">
                     {{ 'api.admin_users_search_desc' | translate }}
@@ -305,7 +305,7 @@ curl -X GET "{{ siteUrl() }}/api/v1/admin/b2b/users?api_key={{
                       class="text-xs font-black uppercase bg-slate-100 dark:bg-slate-800 text-slate-500 px-1.5 py-0.5 rounded"
                       >{{ 'api.optional' | translate }}</span
                     >
-                    <span class="text-slate-400 dark:text-slate-500 font-mono text-xs">String</span>
+                    <span class="text-slate-400 dark:text-slate-500 font-mono text-xs">{{ 'api.type_string' | translate }}</span>
                   </div>
                   <p class="text-slate-500 dark:text-slate-400 font-semibold leading-relaxed">
                     {{ 'api.admin_users_role_desc' | translate }}
@@ -328,7 +328,7 @@ curl -X GET "{{ siteUrl() }}/api/v1/admin/b2b/users?api_key={{
                       >{{ 'api.optional' | translate }}</span
                     >
                     <span class="text-slate-400 dark:text-slate-500 font-mono text-xs"
-                      >String / Boolean</span
+                      >{{ 'api.type_string_boolean' | translate }}</span
                     >
                   </div>
                   <p class="text-slate-500 dark:text-slate-400 font-semibold leading-relaxed">
@@ -423,7 +423,7 @@ curl -X GET "{{ siteUrl() }}/api/v1/admin/b2b/orders?api_key={{
               <button
                 (click)="copyGetOrdersCurl()"
                 class="absolute right-3.5 top-3.5 text-slate-400 dark:text-slate-500 hover:text-[var(--color-primary)] dark:hover:text-white transition-colors cursor-pointer"
-                title="Copy CURL"
+                [title]="'api.copy_curl' | translate"
               >
                 <app-icon name="copy" class="w-4 h-4" />
               </button>
@@ -450,7 +450,7 @@ curl -X GET "{{ siteUrl() }}/api/v1/admin/b2b/orders?api_key={{
               <button
                 (click)="copyGetOrdersUrl()"
                 class="absolute right-3.5 top-3.5 text-slate-400 dark:text-slate-500 hover:text-[var(--color-primary)] dark:hover:text-white transition-colors cursor-pointer"
-                title="Copy URL"
+                [title]="'api.copy_url' | translate"
               >
                 <app-icon name="copy" class="w-4 h-4" />
               </button>
@@ -478,7 +478,7 @@ curl -X GET "{{ siteUrl() }}/api/v1/admin/b2b/orders?api_key={{
                       >{{ 'api.optional' | translate }}</span
                     >
                     <span class="text-slate-400 dark:text-slate-500 font-mono text-xs"
-                      >Numeric</span
+                      >{{ 'api.type_numeric' | translate }}</span
                     >
                   </div>
                   <p class="text-slate-500 dark:text-slate-400 font-semibold leading-relaxed">
@@ -501,7 +501,7 @@ curl -X GET "{{ siteUrl() }}/api/v1/admin/b2b/orders?api_key={{
                       >{{ 'api.optional' | translate }}</span
                     >
                     <span class="text-slate-400 dark:text-slate-500 font-mono text-xs"
-                      >Numeric</span
+                      >{{ 'api.type_numeric' | translate }}</span
                     >
                   </div>
                   <p class="text-slate-500 dark:text-slate-400 font-semibold leading-relaxed">
@@ -524,7 +524,7 @@ curl -X GET "{{ siteUrl() }}/api/v1/admin/b2b/orders?api_key={{
                       class="text-xs font-black uppercase bg-slate-100 dark:bg-slate-800 text-slate-500 px-1.5 py-0.5 rounded"
                       >{{ 'api.optional' | translate }}</span
                     >
-                    <span class="text-slate-400 dark:text-slate-500 font-mono text-xs">String</span>
+                    <span class="text-slate-400 dark:text-slate-500 font-mono text-xs">{{ 'api.type_string' | translate }}</span>
                   </div>
                   <p class="text-slate-500 dark:text-slate-400 font-semibold leading-relaxed">
                     {{ 'api.admin_orders_status_desc' | translate }}
@@ -548,7 +548,7 @@ curl -X GET "{{ siteUrl() }}/api/v1/admin/b2b/orders?api_key={{
                       >{{ 'api.optional' | translate }}</span
                     >
                     <span class="text-slate-400 dark:text-slate-500 font-mono text-xs"
-                      >String (UUID)</span
+                      >{{ 'api.type_string_uuid' | translate }}</span
                     >
                   </div>
                   <p class="text-slate-500 dark:text-slate-400 font-semibold leading-relaxed">
@@ -569,7 +569,7 @@ curl -X GET "{{ siteUrl() }}/api/v1/admin/b2b/orders?api_key={{
                       class="text-xs font-black uppercase bg-slate-100 dark:bg-slate-800 text-slate-500 px-1.5 py-0.5 rounded"
                       >{{ 'api.optional' | translate }}</span
                     >
-                    <span class="text-slate-400 dark:text-slate-500 font-mono text-xs">String</span>
+                    <span class="text-slate-400 dark:text-slate-500 font-mono text-xs">{{ 'api.type_string' | translate }}</span>
                   </div>
                   <p class="text-slate-500 dark:text-slate-400 font-semibold leading-relaxed">
                     {{ 'api.admin_orders_search_desc' | translate }}
@@ -669,7 +669,7 @@ curl -X GET "{{ siteUrl() }}/api/v1/admin/b2b/orders?api_key={{
                       >{{ 'api.required' | translate }}</span
                     >
                     <span class="text-slate-400 dark:text-slate-500 font-mono text-xs"
-                      >String (URL)</span
+                      >{{ 'api.type_string_url' | translate }}</span
                     >
                   </div>
                   <p class="text-slate-500 dark:text-slate-400 font-semibold leading-relaxed">
@@ -691,7 +691,7 @@ curl -X GET "{{ siteUrl() }}/api/v1/admin/b2b/orders?api_key={{
                       >{{ 'api.optional' | translate }}</span
                     >
                     <span class="text-slate-400 dark:text-slate-500 font-mono text-xs"
-                      >String (Body)</span
+                      >{{ 'api.type_string_body' | translate }}</span
                     >
                   </div>
                   <p class="text-slate-500 dark:text-slate-400 font-semibold leading-relaxed">
@@ -713,7 +713,7 @@ curl -X GET "{{ siteUrl() }}/api/v1/admin/b2b/orders?api_key={{
                       >{{ 'api.required_cond' | translate }}</span
                     >
                     <span class="text-slate-400 dark:text-slate-500 font-mono text-xs"
-                      >String (Body)</span
+                      >{{ 'api.type_string_body' | translate }}</span
                     >
                   </div>
                   <p class="text-slate-500 dark:text-slate-400 font-semibold leading-relaxed">
@@ -736,7 +736,7 @@ curl -X GET "{{ siteUrl() }}/api/v1/admin/b2b/orders?api_key={{
                       >{{ 'api.required_cond' | translate }}</span
                     >
                     <span class="text-slate-400 dark:text-slate-500 font-mono text-xs"
-                      >File (TXT)</span
+                      >{{ 'api.type_file_txt' | translate }}</span
                     >
                   </div>
                   <p class="text-slate-500 dark:text-slate-400 font-semibold leading-relaxed">
@@ -811,7 +811,7 @@ curl -X POST "{{ siteUrl() }}/api/v1/admin/b2b/products/PRODUCT_UUID/inventory" 
                       : copyImportInventoryWindowsCurl()
                   "
                   class="absolute right-3.5 top-3.5 text-slate-400 dark:text-slate-500 hover:text-[var(--color-primary)] dark:hover:text-white transition-colors cursor-pointer"
-                  title="Copy JSON CURL"
+                  [title]="'api.copy_json_curl' | translate"
                 >
                   <app-icon name="copy" class="w-4 h-4" />
                 </button>
@@ -838,7 +838,7 @@ curl -X POST "{{ siteUrl() }}/api/v1/admin/b2b/products/PRODUCT_UUID/inventory" 
                 <button
                   (click)="copyImportInventoryFileCurl()"
                   class="absolute right-3.5 top-3.5 text-slate-400 dark:text-slate-500 hover:text-[var(--color-primary)] dark:hover:text-white transition-colors cursor-pointer"
-                  title="Copy File CURL"
+                  [title]="'api.copy_file_curl' | translate"
                 >
                   <app-icon name="copy" class="w-4 h-4" />
                 </button>
@@ -923,7 +923,7 @@ curl -X GET "{{ siteUrl() }}/api/v1/admin/b2b/stats?api_key={{
               <button
                 (click)="copyGetStatsCurl()"
                 class="absolute right-3.5 top-3.5 text-slate-400 dark:text-slate-500 hover:text-[var(--color-primary)] dark:hover:text-white transition-colors cursor-pointer"
-                title="Copy CURL"
+                [title]="'api.copy_curl' | translate"
               >
                 <app-icon name="copy" class="w-4 h-4" />
               </button>
@@ -950,7 +950,7 @@ curl -X GET "{{ siteUrl() }}/api/v1/admin/b2b/stats?api_key={{
               <button
                 (click)="copyGetStatsUrl()"
                 class="absolute right-3.5 top-3.5 text-slate-400 dark:text-slate-500 hover:text-[var(--color-primary)] dark:hover:text-white transition-colors cursor-pointer"
-                title="Copy URL"
+                [title]="'api.copy_url' | translate"
               >
                 <app-icon name="copy" class="w-4 h-4" />
               </button>
@@ -977,7 +977,7 @@ curl -X GET "{{ siteUrl() }}/api/v1/admin/b2b/stats?api_key={{
                       class="text-xs font-black uppercase bg-rose-500/10 text-rose-500 px-1.5 py-0.5 rounded"
                       >{{ 'api.required' | translate }}</span
                     >
-                    <span class="text-slate-400 dark:text-slate-500 font-mono text-xs">String</span>
+                    <span class="text-slate-400 dark:text-slate-500 font-mono text-xs">{{ 'api.type_string' | translate }}</span>
                   </div>
                   <p class="text-slate-500 dark:text-slate-400 font-semibold leading-relaxed">
                     {{ 'api.admin_stats_api_key_desc' | translate }}
@@ -998,7 +998,7 @@ curl -X GET "{{ siteUrl() }}/api/v1/admin/b2b/stats?api_key={{
                       >{{ 'api.optional' | translate }}</span
                     >
                     <span class="text-slate-400 dark:text-slate-500 font-mono text-xs"
-                      >String (YYYY-MM-DD)</span
+                      >{{ 'api.type_string_date' | translate }}</span
                     >
                   </div>
                   <p class="text-slate-500 dark:text-slate-400 font-semibold leading-relaxed">
@@ -1020,7 +1020,7 @@ curl -X GET "{{ siteUrl() }}/api/v1/admin/b2b/stats?api_key={{
                       >{{ 'api.optional' | translate }}</span
                     >
                     <span class="text-slate-400 dark:text-slate-500 font-mono text-xs"
-                      >String (YYYY-MM-DD)</span
+                      >{{ 'api.type_string_date' | translate }}</span
                     >
                   </div>
                   <p class="text-slate-500 dark:text-slate-400 font-semibold leading-relaxed">

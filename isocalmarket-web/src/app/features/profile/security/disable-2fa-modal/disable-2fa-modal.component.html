@@ -1,17 +1,17 @@
 <div class="space-y-5">
   <div class="text-center space-y-2">
     <p class="text-xs text-slate-500 font-semibold max-w-xs mx-auto">
-      Để bảo vệ tài khoản, vui lòng nhập mã xác thực 6 số từ ứng dụng Google Authenticator để tắt bảo mật hai lớp.
+  {{ 'security.disable_instruction' | translate }}
     </p>
   </div>
 
     <div class="form-field space-y-1.5">
-    <label class="text-xs font-bold text-slate-500 uppercase tracking-wider block">Mã xác thực 2FA <span class="text-red-500">*</span></label>
+  <label class="text-xs font-bold text-slate-500 uppercase tracking-wider block">{{ 'security.otp_label' | translate }} <span class="text-red-500">*</span></label>
     <app-custom-input
       [(ngModel)]="code"
       name="code"
       type="text"
-      [placeholder]="'Nhập mã OTP 6 số'"
+    [placeholder]="'auth.otp_placeholder' | translate"
     />
   </div>
 
@@ -22,7 +22,7 @@
       (click)="onClose()"
       class="flex-1 py-2.5 rounded-xl font-bold"
     >
-      Hủy bỏ
+    {{ 'action.cancel' | translate }}
     </button>
     <button
       app-button
@@ -31,7 +31,7 @@
       (click)="onConfirm()"
       class="flex-[2] py-2.5 rounded-xl font-bold bg-rose-600 text-white shadow-md shadow-rose-600/10"
     >
-      Xác nhận tắt 2FA
+    {{ 'security.disable_confirm' | translate }}
     </button>
   </div>
 </div>

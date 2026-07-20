@@ -14,7 +14,7 @@
       class="font-semibold truncate"
       [class.text-slate-400]="value === null || value === undefined || value === '' || value === 0"
     >
-      {{ selectedLabel || placeholder }}
+      {{ selectedLabel || placeholder || ('common.select' | translate) }}
     </span>
     <app-icon
       name="chevron-down"
@@ -38,7 +38,7 @@
             type="text"
             [ngModel]="searchQuery()"
             (ngModelChange)="searchQuery.set($event)"
-            placeholder="Tìm kiếm..."
+        [placeholder]="'common.search_options' | translate"
             class="w-full bg-transparent text-xs border-0 p-1 outline-none text-slate-800 dark:text-white"
           />
         </div>
@@ -47,7 +47,7 @@
       <div class="overflow-y-auto flex-1 py-1">
         @if (filteredOptions().length === 0) {
           <div class="px-4 py-3 text-center text-xs text-slate-400 italic">
-            Không tìm thấy tùy chọn nào
+        {{ 'common.no_options' | translate }}
           </div>
         }
         @for (opt of displayedOptions(); track getOptionValue(opt)) {
@@ -71,7 +71,7 @@
 
       @if (filteredOptions().length > displayedOptions().length) {
         <div class="px-4 py-2 border-t border-slate-100 dark:border-slate-800 text-center text-xs text-slate-400 font-semibold bg-slate-50/30 dark:bg-slate-950/20 shrink-0">
-          Hiển thị {{ maxDisplay }} trên {{ filteredOptions().length }} kết quả. Hãy gõ từ khóa để tìm thêm...
+        {{ 'common.results_summary' | translate: { visible: maxDisplay, total: filteredOptions().length } }}
         </div>
       }
     </div>

@@ -117,7 +117,7 @@ export class HeaderComponent {
     this.showUserDropdown.set(false);
     this.modalService.confirm({
       title: this.langService.translate('nav.logout'),
-      description: this.langService.currentLang() === 'vi' ? 'Bạn có chắc chắn muốn đăng xuất?' : 'Are you sure you want to sign out?',
+      description: this.langService.translate('header.logout_confirm'),
       confirmText: this.langService.translate('nav.logout'),
       cancelText: this.langService.translate('action.cancel'),
       confirmButtonClass: 'btn-danger'

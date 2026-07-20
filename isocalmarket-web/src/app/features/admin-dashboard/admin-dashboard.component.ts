@@ -71,11 +71,11 @@ export class AdminDashboardComponent implements OnInit {
 
   public get thresholdOptions() {
     return [
-      { label: '< 5 items', value: '5' },
-      { label: '< 10 items', value: '10' },
-      { label: '< 50 items', value: '50' },
-      { label: '< 100 items', value: '100' },
-      { label: `\u2265 100 items (${this.langService.translate('dash.good_stock')})`, value: 'gte_100' },
+      { label: this.langService.translate('dash.less_than_items', { count: 5 }), value: '5' },
+      { label: this.langService.translate('dash.less_than_items', { count: 10 }), value: '10' },
+      { label: this.langService.translate('dash.less_than_items', { count: 50 }), value: '50' },
+      { label: this.langService.translate('dash.less_than_items', { count: 100 }), value: '100' },
+      { label: this.langService.translate('dash.at_least_items', { count: 100, status: this.langService.translate('dash.good_stock') }), value: 'gte_100' },
     ];
   }
 

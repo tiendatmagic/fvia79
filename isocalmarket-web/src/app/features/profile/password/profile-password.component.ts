@@ -5,12 +5,13 @@ import { StateService } from '@core/services/state.service';
 import { CustomInputComponent } from '@shared/components/custom-input/custom-input.component';
 import { ButtonComponent } from '@shared/components/button/button.component';
 import { LanguageService } from '@core/services/language.service';
+import { TranslatePipe } from '@shared/pipes/translate.pipe';
 import { finalize } from 'rxjs/operators';
 
 @Component({
   selector: 'app-profile-password',
   standalone: true,
-  imports: [CommonModule, FormsModule, CustomInputComponent, ButtonComponent],
+  imports: [CommonModule, FormsModule, CustomInputComponent, ButtonComponent, TranslatePipe],
   templateUrl: './profile-password.component.html',
   styles: [`
     :host {

@@ -91,13 +91,15 @@ export class DepositHistoryComponent implements OnInit {
   public selectedStatusFilter = '';
   public selectedDateRange: DateTimeRangeValue = { startDate: '', endDate: '' };
 
-  public readonly statusOptions = [
-    { label: 'Tất cả trạng thái', value: '' },
-    { label: 'Chờ thanh toán', value: 'pending_payment' },
-    { label: 'Thành công', value: 'completed' },
-    { label: 'Đã hết hạn', value: 'expired' },
-    { label: 'Thất bại', value: 'failed' }
-  ];
+  public get statusOptions() {
+    return [
+      { label: this.lang.translate('common.all_status'), value: '' },
+      { label: this.lang.translate('status.pending_payment'), value: 'pending_payment' },
+      { label: this.lang.translate('status.completed'), value: 'completed' },
+      { label: this.lang.translate('status.expired'), value: 'expired' },
+      { label: this.lang.translate('status.failed'), value: 'failed' }
+    ];
+  }
 
   ngOnInit() {
     this.state.authStore.checkMe(true).subscribe();

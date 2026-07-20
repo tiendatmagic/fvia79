@@ -3,6 +3,7 @@ import { CommonModule } from '@angular/common';
 import { LogoComponent } from '@shared/components/logo/logo.component';
 import { ThemeSwitcherComponent } from '@shared/components/theme-switcher/theme-switcher.component';
 import { StateService } from '@core/services/state.service';
+import { TranslatePipe } from '@shared/pipes/translate.pipe';
 
 @Component({
   selector: 'app-maintenance',
@@ -10,7 +11,8 @@ import { StateService } from '@core/services/state.service';
   imports: [
     CommonModule,
     LogoComponent,
-    ThemeSwitcherComponent
+    ThemeSwitcherComponent,
+    TranslatePipe
   ],
   templateUrl: './maintenance.component.html',
   styleUrl: './maintenance.component.scss'

@@ -56,7 +56,7 @@ export class UserApiComponent {
 
   public readonly lang = inject(LanguageService);
 
-  public copyToClipboard(text: string, title: string) {
+  public copyToClipboard(text: string) {
     if (typeof navigator !== 'undefined' && navigator.clipboard) {
       navigator.clipboard.writeText(text).then(() => {
         this.state.showToast(this.lang.translate('toast.copied'), 'success');
@@ -71,78 +71,78 @@ export class UserApiComponent {
   public copyGetProductsCurl() {
     const key = this.apiKey() || 'API_KEY_CUA_BAN';
     const text = `curl -X GET "${this.siteUrl()}/api/v1/b2b/products?api_key=${key}"`;
-    this.copyToClipboard(text, 'mẫu CURL Get Products');
+    this.copyToClipboard(text);
   }
 
   public copyGetProductsUrl() {
     const key = this.apiKey() || 'API_KEY_CUA_BAN';
     const text = `${this.siteUrl()}/api/v1/b2b/products?api_key=${key}`;
-    this.copyToClipboard(text, 'đường dẫn Get Products');
+    this.copyToClipboard(text);
   }
 
   public copyGetProductDetailCurl() {
     const key = this.apiKey() || 'API_KEY_CUA_BAN';
     const text = `curl -X GET "${this.siteUrl()}/api/v1/b2b/products/PRODUCT_ID?api_key=${key}"`;
-    this.copyToClipboard(text, 'mẫu CURL Get Product Detail');
+    this.copyToClipboard(text);
   }
 
   public copyGetProductDetailUrl() {
     const key = this.apiKey() || 'API_KEY_CUA_BAN';
     const text = `${this.siteUrl()}/api/v1/b2b/products/PRODUCT_ID?api_key=${key}`;
-    this.copyToClipboard(text, 'đường dẫn Get Product Detail');
+    this.copyToClipboard(text);
   }
 
   public copyBuyCurl() {
     const key = this.apiKey() || 'API_KEY_CUA_BAN';
     const text = `curl -X POST "${this.siteUrl()}/api/v1/b2b/buy" -H "Content-Type: application/json" -H "X-API-KEY: ${key}" -d '{"product_id": "PRODUCT_ID", "quantity": 1, "coupon_code": "DISCOUNT10"}'`;
-    this.copyToClipboard(text, 'mẫu CURL Buy 1 sản phẩm');
+    this.copyToClipboard(text);
   }
 
   public copyBuyWindowsCurl() {
     const key = this.apiKey() || 'API_KEY_CUA_BAN';
     const text = `curl -X POST "${this.siteUrl()}/api/v1/b2b/buy" -H "Content-Type: application/json" -H "X-API-KEY: ${key}" -d "{\\"product_id\\": \\"PRODUCT_ID\\", \\"quantity\\": 1, \\"coupon_code\\": \\"DISCOUNT10\\"}"`;
-    this.copyToClipboard(text, 'mẫu CURL Buy 1 sản phẩm (Windows CMD)');
+    this.copyToClipboard(text);
   }
 
   public copyBuyMultiCurl() {
     const key = this.apiKey() || 'API_KEY_CUA_BAN';
     const text = `curl -X POST "${this.siteUrl()}/api/v1/b2b/buy" -H "Content-Type: application/json" -H "X-API-KEY: ${key}" -d '{"items": [{"product_id": "PRODUCT_ID_1", "quantity": 2}, {"product_id": "PRODUCT_ID_2", "quantity": 1}], "coupon_code": "DISCOUNT10"}'`;
-    this.copyToClipboard(text, 'mẫu CURL Buy nhiều sản phẩm');
+    this.copyToClipboard(text);
   }
 
   public copyBuyMultiWindowsCurl() {
     const key = this.apiKey() || 'API_KEY_CUA_BAN';
     const text = `curl -X POST "${this.siteUrl()}/api/v1/b2b/buy" -H "Content-Type: application/json" -H "X-API-KEY: ${key}" -d "{\\"items\\": [{\\"product_id\\": \\"PRODUCT_ID_1\\", \\"quantity\\": 2}, {\\"product_id\\": \\"PRODUCT_ID_2\\", \\"quantity\\": 1}], \\"coupon_code\\": \\"DISCOUNT10\\"}"`;
-    this.copyToClipboard(text, 'mẫu CURL Buy nhiều sản phẩm (Windows CMD)');
+    this.copyToClipboard(text);
   }
 
   public copyBuyUrl() {
     const text = `${this.siteUrl()}/api/v1/b2b/buy`;
-    this.copyToClipboard(text, 'đường dẫn Buy Product');
+    this.copyToClipboard(text);
   }
 
   public copyGetMeCurl() {
     const key = this.apiKey() || 'API_KEY_CUA_BAN';
     const text = `curl -X GET "${this.siteUrl()}/api/v1/b2b/me" -H "X-API-KEY: ${key}"`;
-    this.copyToClipboard(text, 'mẫu CURL Get Me');
+    this.copyToClipboard(text);
   }
 
   public copyGetMeUrl() {
     const key = this.apiKey() || 'API_KEY_CUA_BAN';
     const text = `${this.siteUrl()}/api/v1/b2b/me?api_key=${key}`;
-    this.copyToClipboard(text, 'đường dẫn Get Me');
+    this.copyToClipboard(text);
   }
 
   public copyGetOrderCurl() {
     const key = this.apiKey() || 'API_KEY_CUA_BAN';
     const text = `curl -X GET "${this.siteUrl()}/api/v1/b2b/orders/ORDER_CODE" -H "X-API-KEY: ${key}"`;
-    this.copyToClipboard(text, 'mẫu CURL Get Order Detail');
+    this.copyToClipboard(text);
   }
 
   public copyGetOrderUrl() {
     const key = this.apiKey() || 'API_KEY_CUA_BAN';
     const text = `${this.siteUrl()}/api/v1/b2b/orders/ORDER_CODE?api_key=${key}`;
-    this.copyToClipboard(text, 'đường dẫn Get Order Detail');
+    this.copyToClipboard(text);
   }
 
   public regenerateKey() {

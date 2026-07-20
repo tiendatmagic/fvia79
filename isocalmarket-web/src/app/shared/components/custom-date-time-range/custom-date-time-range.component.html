@@ -13,7 +13,7 @@
       [class.text-slate-400]="!value().startDate"
       class="truncate text-sm font-semibold text-slate-700 dark:text-slate-200"
     >
-      {{ value().startDate ? displayValue() : placeholder }}
+  {{ value().startDate ? displayValue() : (placeholder || lang.translate('date.select_range')) }}
     </span>
 
     <div class="flex items-center gap-2 flex-shrink-0 ml-2">
@@ -22,7 +22,7 @@
           type="button"
           (click)="clear($event)"
           class="p-0.5 hover:bg-slate-100 dark:hover:bg-slate-800 rounded text-slate-400 hover:text-slate-600 dark:hover:text-slate-200 transition-colors cursor-pointer"
-          title="Xóa khoảng thời gian"
+      [title]="'common.clear_date_range' | translate"
         >
           <div class="w-3.5 h-3.5">
             <app-icon name="close" />
@@ -182,12 +182,12 @@
           <span
             class="text-xs font-black text-slate-400 dark:text-slate-500 uppercase tracking-wider"
           >
-            Cấu hình giờ phút
+      {{ 'date.time_config' | translate }}
           </span>
           <div class="grid grid-cols-2 gap-4">
             <div class="flex flex-col gap-1.5">
               <label class="text-xs font-bold text-slate-400 dark:text-slate-500 uppercase"
-                >Giờ bắt đầu</label
+      >{{ 'date.start_time' | translate }}</label
               >
               <div class="flex items-center gap-1.5 relative">
                 <div class="relative flex-1">
@@ -246,7 +246,7 @@
 
             <div class="flex flex-col gap-1.5">
               <label class="text-xs font-bold text-slate-400 dark:text-slate-500 uppercase"
-                >Giờ kết thúc</label
+      >{{ 'date.end_time' | translate }}</label
               >
               <div class="flex items-center gap-1.5 relative">
                 <div class="relative flex-1">
@@ -318,7 +318,7 @@
           (click)="cancel($event)"
           class="px-3 py-1.5 rounded-lg border border-slate-200/60 dark:border-slate-800 text-slate-500 dark:text-slate-400 hover:bg-slate-50 dark:hover:bg-slate-900 text-xs font-bold cursor-pointer transition-colors active:scale-95"
         >
-          Hủy
+      {{ 'action.cancel' | translate }}
         </button>
         <button
           type="button"
@@ -326,7 +326,7 @@
           [disabled]="!tempStartDate()"
           class="px-3 py-1.5 rounded-lg bg-gradient-to-r from-[var(--color-primary)] to-[var(--color-secondary)] text-white text-xs font-extrabold cursor-pointer transition-all shadow-sm shadow-[var(--color-primary)]/20 active:scale-95 disabled:opacity-50 disabled:pointer-events-none disabled:cursor-not-allowed"
         >
-          Áp dụng
+      {{ 'common.apply' | translate }}
         </button>
       </div>
     </div>

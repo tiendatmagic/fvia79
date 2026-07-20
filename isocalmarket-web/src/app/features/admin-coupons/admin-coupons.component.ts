@@ -55,12 +55,12 @@ export class AdminCouponsComponent implements OnInit {
   public readonly columns = computed<TableColumn[]>(() => {
     this.lang.currentLang();
     return [
-      { key: 'code', label: 'Coupon Code', sortable: true },
-      { key: 'type', label: 'Discount Type', sortable: true },
-      { key: 'value', label: 'Discount Value', sortable: true, align: 'right' },
-      { key: 'min_spend', label: 'Min Spend', sortable: true, align: 'right' },
-      { key: 'used_count', label: 'Usage', sortable: true, align: 'center' },
-      { key: 'start_date', label: 'Valid Period', sortable: true },
+      { key: 'code', label: this.lang.translate('coupon.code'), sortable: true },
+      { key: 'type', label: this.lang.translate('coupon.type'), sortable: true },
+      { key: 'value', label: this.lang.translate('coupon.value'), sortable: true, align: 'right' },
+      { key: 'min_spend', label: this.lang.translate('coupon.min_order'), sortable: true, align: 'right' },
+      { key: 'used_count', label: this.lang.translate('coupon.usage'), sortable: true, align: 'center' },
+      { key: 'start_date', label: this.lang.translate('coupon.valid_period'), sortable: true },
       { key: 'status', label: this.lang.translate('common.status'), sortable: false, align: 'center' },
       { key: 'actions', label: this.lang.translate('common.actions'), sortable: false, align: 'right' }
     ];
@@ -79,7 +79,7 @@ export class AdminCouponsComponent implements OnInit {
     return [
       { label: this.lang.translate('common.all_status'), value: 'all' },
       { label: this.lang.translate('common.active'), value: 'active' },
-      { label: 'Upcoming', value: 'upcoming' },
+      { label: this.lang.translate('coupon.upcoming'), value: 'upcoming' },
       { label: this.lang.translate('status.expired'), value: 'expired' },
       { label: this.lang.translate('common.deleted'), value: 'deleted' }
     ];
@@ -87,9 +87,9 @@ export class AdminCouponsComponent implements OnInit {
 
   public get typeOptions() {
     return [
-      { label: 'All Types', value: 'all' },
-      { label: 'Percentage (%)', value: 'percentage' },
-      { label: 'Fixed ($ USD)', value: 'fixed' }
+      { label: this.lang.translate('coupon.all_types'), value: 'all' },
+      { label: this.lang.translate('admin.coupon_percentage'), value: 'percentage' },
+      { label: this.lang.translate('admin.coupon_fixed'), value: 'fixed' }
     ];
   }
 
@@ -136,7 +136,7 @@ export class AdminCouponsComponent implements OnInit {
 
   public getCouponStatus(coupon: any): { label: string; variant: 'success' | 'info' | 'danger' | 'warning' } {
     if (coupon.is_deleted) {
-      return { label: 'Đã xóa', variant: 'danger' };
+      return { label: this.lang.translate('common.deleted'), variant: 'danger' };
     }
 
     const now = new Date();
@@ -147,15 +147,15 @@ export class AdminCouponsComponent implements OnInit {
     const isUsedUp = coupon.usage_limit > 0 && coupon.used_count >= coupon.usage_limit;
 
     if (isUsedUp) {
-      return { label: 'Hết lượt dùng', variant: 'danger' };
+      return { label: this.lang.translate('coupon.used_up'), variant: 'danger' };
     }
     if (now > end) {
-      return { label: 'Đã hết hạn', variant: 'danger' };
+      return { label: this.lang.translate('status.expired'), variant: 'danger' };
     }
     if (now < start) {
-      return { label: 'Sắp diễn ra', variant: 'info' };
+      return { label: this.lang.translate('coupon.upcoming'), variant: 'info' };
     }
-    return { label: 'Đang diễn ra', variant: 'success' };
+    return { label: this.lang.translate('coupon.ongoing'), variant: 'success' };
   }
 
   public copyToClipboard(text: string, message: string = 'toast.coupon_copied') {

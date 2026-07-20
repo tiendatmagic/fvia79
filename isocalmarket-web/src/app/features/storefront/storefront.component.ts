@@ -56,12 +56,15 @@ export class StorefrontComponent implements OnInit {
   private readonly router = inject(Router);
   private readonly modalService = inject(ModalService);
 
-  public readonly columns: TableColumn[] = [
-    { key: 'name', label: 'Tên sản phẩm', sortable: true },
-    { key: 'price', label: 'Đơn giá', sortable: true, align: 'right' },
-    { key: 'available_count', label: 'Tồn kho khả dụng', sortable: true, align: 'center' },
-    { key: 'actions', label: 'Thao tác', sortable: false, align: 'right' }
-  ];
+  public readonly columns = computed<TableColumn[]>(() => {
+    this.lang.currentLang();
+    return [
+      { key: 'name', label: this.lang.translate('product.name'), sortable: true },
+      { key: 'price', label: this.lang.translate('storefront.unit_price'), sortable: true, align: 'right' },
+      { key: 'available_count', label: this.lang.translate('product.available_stock'), sortable: true, align: 'center' },
+      { key: 'actions', label: this.lang.translate('common.actions'), sortable: false, align: 'right' }
+    ];
+  });
 
   public searchQuery = '';
 

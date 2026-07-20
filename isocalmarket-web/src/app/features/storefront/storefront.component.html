@@ -35,7 +35,7 @@
     <div class="flex items-center gap-2">
       <span
         class="text-xs text-slate-400 dark:text-slate-500 font-bold uppercase tracking-wider mr-1.5 hidden xl:inline"
-        >Chế độ xem:</span
+        >{{ 'storefront.view_mode' | translate }}</span
       >
       <div
         class="flex bg-slate-100 dark:bg-slate-950/60 p-1 rounded-xl border border-slate-200/40 dark:border-slate-800/40"
@@ -50,7 +50,7 @@
           "
         >
           <app-icon name="grid" class="w-3.5 h-3.5" />
-          <span class="hidden xl:inline">Card</span>
+          <span class="hidden xl:inline">{{ 'storefront.card_view' | translate }}</span>
         </button>
         <button
           (click)="viewMode.set('list')"
@@ -62,7 +62,7 @@
           "
         >
           <app-icon name="list" class="w-3.5 h-3.5" />
-          <span class="hidden xl:inline">List</span>
+          <span class="hidden xl:inline">{{ 'storefront.list_view' | translate }}</span>
         </button>
       </div>
     </div>
@@ -96,7 +96,7 @@
       app-card
       class="text-center py-12"
     >
-      <p class="text-sm font-semibold text-slate-400">No products found!</p>
+      <p class="text-sm font-semibold text-slate-400">{{ 'storefront.no_products' | translate }}</p>
     </div>
 
     @if (!state.productStore.loading() && groupedProducts().length > 0) {
@@ -218,7 +218,7 @@
           } @else if (viewMode() === 'list') {
             <div class="hidden lg:block overflow-hidden">
               <app-table
-                [columns]="columns"
+                [columns]="columns()"
                 [data]="group.products"
                 [loading]="group.loading"
                 emptyText="No products available."

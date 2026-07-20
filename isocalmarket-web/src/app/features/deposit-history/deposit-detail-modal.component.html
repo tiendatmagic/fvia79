@@ -26,12 +26,12 @@
       <span class="text-sm font-bold">
         {{
           invoice.status === 'completed'
-            ? 'Nạp tiền thành công'
+          ? ('deposit.status_success' | translate)
             : invoice.status === 'pending_payment'
-              ? 'Đang chờ thanh toán'
+            ? ('deposit.status_waiting' | translate)
               : invoice.status === 'expired'
-                ? 'Lệnh đã hết hạn'
-                : 'Lệnh đã bị hủy'
+              ? ('deposit.status_expired' | translate)
+              : ('deposit.status_cancelled' | translate)
         }}
       </span>
     </div>
@@ -42,7 +42,7 @@
     class="bg-slate-50 dark:bg-slate-950 border border-slate-100 dark:border-slate-800/60 rounded-xl p-4 space-y-3 text-xs leading-relaxed"
   >
     <div class="flex justify-between items-center py-0.5">
-      <span class="text-slate-400 font-semibold">Mã lệnh nạp:</span>
+      <span class="text-slate-400 font-semibold">{{ 'deposit.code' | translate }}:</span>
       <span class="font-mono font-black text-slate-700 dark:text-slate-300"
         >#{{ invoice.code }}</span
       >
@@ -51,14 +51,14 @@
     <div
       class="flex justify-between items-center py-0.5 border-t border-slate-100 dark:border-slate-800/40 pt-2"
     >
-      <span class="text-slate-400 font-semibold">Số lượng USDT gốc:</span>
+      <span class="text-slate-400 font-semibold">{{ 'deposit.original_amount' | translate }}</span>
       <span class="font-bold text-slate-800 dark:text-white">{{ invoice.amountUsdt }} USDT</span>
     </div>
 
     <div
       class="flex justify-between items-center py-0.5 border-t border-slate-100 dark:border-slate-800/40 pt-2"
     >
-      <span class="text-slate-400 font-semibold">Số lẻ thực chuyển:</span>
+      <span class="text-slate-400 font-semibold">{{ 'deposit.transfer_amount' | translate }}</span>
       <span class="font-extrabold text-[var(--color-primary)] dark:text-[var(--color-secondary)]"
         >{{ invoice.amountToPay | number: '1.4-4' }} USDT</span
       >
@@ -67,30 +67,30 @@
     <div
       class="flex justify-between items-center py-0.5 border-t border-slate-100 dark:border-slate-800/40 pt-2"
     >
-      <span class="text-slate-400 font-semibold">Số tiền quy đổi VNĐ:</span>
+      <span class="text-slate-400 font-semibold">{{ 'deposit.converted_amount' | translate }}</span>
       <span class="font-black text-slate-700 dark:text-slate-300"
-        >{{ invoice.amountVnd | number }} VNĐ</span
+        >{{ invoice.amountVnd | number }} {{ 'currency.vnd_symbol' | translate }}</span
       >
     </div>
 
     <div
       class="flex justify-between items-center py-0.5 border-t border-slate-100 dark:border-slate-800/40 pt-2"
     >
-      <span class="text-slate-400 font-semibold">Thời gian tạo:</span>
+      <span class="text-slate-400 font-semibold">{{ 'deposit.created_time' | translate }}</span>
       <span class="font-bold text-slate-600 dark:text-slate-400">{{ invoice.createdAt | date: 'dd/MM/yyyy HH:mm' }}</span>
     </div>
 
         <div class="border-t border-slate-100 dark:border-slate-800/40 pt-2 space-y-1">
-      <span class="text-slate-400 font-semibold">Ví nhận của Sàn (USDT BEP20):</span>
+      <span class="text-slate-400 font-semibold">{{ 'deposit.platform_wallet' | translate }}</span>
       <div
         class="flex items-center gap-1 bg-white dark:bg-slate-900 border border-slate-100 dark:border-slate-800/60 rounded-lg p-1.5 mt-1 font-mono text-xs text-slate-700 dark:text-slate-300 select-all justify-between"
       >
         <span class="truncate block max-w-[85%]">{{ invoice.adminWalletAddress }}</span>
         <button
           type="button"
-          (click)="copyText(invoice.adminWalletAddress, 'Địa chỉ ví sàn')"
+          (click)="copyText(invoice.adminWalletAddress, lang.translate('deposit.wallet_label'))"
           class="text-[var(--color-primary)] hover:text-primary-dark transition-colors p-1"
-          title="Sao chép ví"
+          [title]="'deposit.copy_platform_wallet' | translate"
         >
           <app-icon name="copy" class="w-3.5 h-3.5" />
         </button>
@@ -98,7 +98,7 @@
     </div>
 
         <div class="border-t border-slate-100 dark:border-slate-800/40 pt-2 space-y-1">
-      <span class="text-slate-400 font-semibold">Blockchain TxHash (Mã giao dịch):</span>
+      <span class="text-slate-400 font-semibold">{{ 'deposit.tx_hash' | translate }}</span>
       <div *ngIf="invoice.txHash; else noHash">
         <div
           class="flex items-center gap-1 bg-emerald-500/5 dark:bg-emerald-500/10 border border-emerald-500/15 rounded-lg p-1.5 mt-1 font-mono text-xs text-slate-700 dark:text-slate-300 select-all justify-between"
@@ -107,9 +107,9 @@
           <div class="flex gap-1.5">
             <button
               type="button"
-              (click)="copyText(invoice.txHash, 'Mã băm giao dịch')"
+          (click)="copyText(invoice.txHash, lang.translate('deposit.tx_hash_label'))"
               class="text-emerald-600 dark:text-emerald-400 p-1 hover:scale-105"
-              title="Sao chép TxHash"
+          [title]="'deposit.copy_tx_hash' | translate"
             >
               <app-icon name="copy" class="w-3.5 h-3.5" />
             </button>
@@ -117,7 +117,7 @@
               [href]="'https://bscscan.com/tx/' + invoice.txHash"
               target="_blank"
               class="text-emerald-600 dark:text-emerald-400 p-1 hover:scale-105 inline-flex items-center justify-center"
-              title="Xem trên BscScan"
+          [title]="'deposit.view_bscscan' | translate"
             >
               <app-icon name="external-link" class="w-3.5 h-3.5" />
             </a>
@@ -126,7 +126,7 @@
       </div>
       <ng-template #noHash>
         <div class="text-[11px] font-bold text-slate-400 dark:text-slate-500 italic mt-1">
-          Không khả dụng (Lệnh chưa thanh toán hoặc đã hủy/hết hạn)
+      {{ 'deposit.unavailable_detail' | translate }}
         </div>
       </ng-template>
     </div>
@@ -139,7 +139,7 @@
       (click)="close()"
       class="flex-1 w-full py-2.5 font-bold"
     >
-      Đóng
+    {{ 'action.close' | translate }}
     </button>
   </div>
 </div>

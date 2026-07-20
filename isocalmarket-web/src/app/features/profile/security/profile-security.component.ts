@@ -6,6 +6,7 @@ import { BadgeComponent } from '@shared/components/badge/badge.component';
 import { IconComponent } from '@shared/components/icon/icon.component';
 import { ModalService } from '@core/services/modal.service';
 import { LanguageService } from '@core/services/language.service';
+import { TranslatePipe } from '@shared/pipes/translate.pipe';
 import { Enable2faModalComponent } from './enable-2fa-modal/enable-2fa-modal.component';
 import { Disable2faModalComponent } from './disable-2fa-modal/disable-2fa-modal.component';
 import { finalize } from 'rxjs/operators';
@@ -13,7 +14,7 @@ import { finalize } from 'rxjs/operators';
 @Component({
   selector: 'app-profile-security',
   standalone: true,
-  imports: [CommonModule, ButtonComponent, BadgeComponent, IconComponent],
+  imports: [CommonModule, ButtonComponent, BadgeComponent, IconComponent, TranslatePipe],
   templateUrl: './profile-security.component.html',
   styles: [`
     :host {

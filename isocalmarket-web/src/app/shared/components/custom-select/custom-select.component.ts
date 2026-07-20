@@ -17,6 +17,7 @@ import {
 import { CommonModule } from '@angular/common';
 import { FormsModule, NG_VALUE_ACCESSOR, ControlValueAccessor } from '@angular/forms';
 import { IconComponent } from '../icon/icon.component';
+import { TranslatePipe } from '@shared/pipes/translate.pipe';
 
 export interface SelectOption {
   [key: string]: any;
@@ -29,7 +30,7 @@ export interface SelectOption {
     '(document:click)': 'onClickOutside($event)'
   },
 
-  imports: [CommonModule, FormsModule, IconComponent],
+  imports: [CommonModule, FormsModule, IconComponent, TranslatePipe],
   templateUrl: './custom-select.component.html',
 
   providers: [
@@ -72,7 +73,7 @@ export class CustomSelectComponent implements ControlValueAccessor, AfterViewChe
   @Input() options: any[] = [];
   @Input() valueKey: string = 'value';
   @Input() labelKey: string = 'label';
-  @Input() placeholder: string = 'Chọn...';
+  @Input() placeholder: string = '';
   @Input() disabled: boolean = false;
   @Input() placement: 'bottom' | 'top' | 'auto' = 'auto';
   @Input() showSearch: boolean = false;

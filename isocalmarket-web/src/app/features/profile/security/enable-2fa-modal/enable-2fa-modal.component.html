@@ -1,7 +1,7 @@
 <div class="space-y-5">
   <div class="text-center space-y-2">
     <p class="text-xs text-slate-500 font-semibold max-w-sm mx-auto">
-      Mở ứng dụng Google Authenticator (hoặc Authy) trên điện thoại và thực hiện quét mã QR dưới đây.
+  {{ 'security.enable_instruction' | translate }}
     </p>
   </div>
 
@@ -14,16 +14,16 @@
   </div>
 
     <div class="bg-slate-50 dark:bg-slate-950 border border-slate-200/50 dark:border-slate-800/60 rounded-xl p-3 text-center space-y-1">
-    <span class="text-xs uppercase font-black text-slate-400 block tracking-wider">Hoặc nhập mã khóa thủ công</span>
+  <span class="text-xs uppercase font-black text-slate-400 block tracking-wider">{{ 'security.manual_key' | translate }}</span>
     <code class="text-sm font-black text-[var(--color-primary)] font-mono tracking-widest block select-all">{{ secretKey }}</code>
   </div>
 
     <div class="form-field space-y-1.5">
-    <label class="text-xs font-bold text-slate-500 uppercase tracking-wider block">Mã OTP 6 số hiển thị trên app <span class="text-red-500">*</span></label>
+  <label class="text-xs font-bold text-slate-500 uppercase tracking-wider block">{{ 'security.app_otp' | translate }} <span class="text-red-500">*</span></label>
     <app-custom-input
       [(ngModel)]="otpConfirmCode"
       name="otpConfirmCode"
-      [placeholder]="'Nhập 6 số OTP'"
+    [placeholder]="'auth.otp_placeholder' | translate"
       maxlength="6"
     />
   </div>
@@ -35,7 +35,7 @@
       (click)="onClose()"
       class="flex-1 py-2.5 rounded-xl font-bold"
     >
-      Hủy bỏ
+    {{ 'action.cancel' | translate }}
     </button>
     <button
       app-button
@@ -44,7 +44,7 @@
       (click)="onConfirm()"
       class="flex-[2] py-2.5 rounded-xl font-bold bg-[var(--color-primary)] text-white shadow-md shadow-[var(--color-primary)]/10"
     >
-      Xác nhận kích hoạt
+    {{ 'security.enable_confirm' | translate }}
     </button>
   </div>
 </div>

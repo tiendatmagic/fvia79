@@ -5,11 +5,12 @@ import { IconComponent } from '@shared/components/icon/icon.component';
 import { ButtonComponent } from '@shared/components/button/button.component';
 import { ToastService } from '@core/services/toast.service';
 import { LanguageService } from '@core/services/language.service';
+import { TranslatePipe } from '@shared/pipes/translate.pipe';
 
 @Component({
   selector: 'app-deposit-detail-modal',
   standalone: true,
-  imports: [CommonModule, IconComponent, ButtonComponent],
+  imports: [CommonModule, IconComponent, ButtonComponent, TranslatePipe],
   templateUrl: './deposit-detail-modal.component.html',
   styles: [`
     :host {
@@ -19,7 +20,7 @@ import { LanguageService } from '@core/services/language.service';
 })
 export class DepositDetailModalComponent implements OnInit {
   private readonly toast = inject(ToastService);
-  private readonly lang = inject(LanguageService);
+  public readonly lang = inject(LanguageService);
   public invoice: any;
 
   constructor(

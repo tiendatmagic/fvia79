@@ -13,6 +13,7 @@ import {
 import { CommonModule } from '@angular/common';
 import { IconComponent } from '@shared/components/icon/icon.component';
 import { SkeletonLoaderComponent } from '@shared/components/skeleton-loader/skeleton-loader.component';
+import { TranslatePipe } from '@shared/pipes/translate.pipe';
 
 export interface TableColumn {
   key: string;
@@ -36,7 +37,7 @@ export class TableCellDirective {
 @Component({
   selector: 'app-table',
   standalone: true,
-  imports: [CommonModule, IconComponent, SkeletonLoaderComponent],
+  imports: [CommonModule, IconComponent, SkeletonLoaderComponent, TranslatePipe],
   templateUrl: './table.component.html',
   styles: [
     `
@@ -50,7 +51,7 @@ export class TableCellDirective {
 export class TableComponent {
   @Input() columns: TableColumn[] = [];
   @Input() loading: boolean = false;
-  @Input() emptyText: string = 'Không có dữ liệu hiển thị';
+  @Input() emptyText: string = '';
   @Input() emptyIcon: string = 'search';
   @Input() hoverable: boolean = true;
   @Input() localSort: boolean = true;

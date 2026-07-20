@@ -1,4 +1,5 @@
-import { Injectable, signal } from '@angular/core';
+import { Injectable, inject, signal } from '@angular/core';
+import { LanguageService } from './language.service';
 
 export interface ToastItem {
   id: string;
@@ -7,124 +8,119 @@ export interface ToastItem {
   duration: number;
 }
 
-@Injectable({
-  providedIn: 'root'
-})
+const API_MESSAGE_KEYS: Record<string, string> = {
+  'Invalid email/username or password.': 'error.invalid_credentials',
+  'Unauthorized.': 'error.unauthorized',
+  'Too Many Attempts.': 'error.too_many_attempts',
+  'Email already registered.': 'error.email_taken',
+  'Username already taken.': 'error.username_taken',
+  'The email has already been taken.': 'error.email_taken',
+  'The name has already been taken.': 'error.username_taken',
+  'The username has already been taken.': 'error.username_taken',
+  'Username must only contain letters, numbers, and underscores.': 'error.username_format',
+  'Username must be at least 3 characters.': 'error.username_length',
+  'Email must be a valid email address.': 'toast.email_invalid_format',
+  'The email field must be a valid email address.': 'toast.email_invalid_format',
+  'Password must be at least 6 characters.': 'toast.password_too_short',
+  'The password field must be at least 6 characters.': 'toast.password_too_short',
+  'Password confirmation does not match.': 'error.password_mismatch',
+  'Invalid or expired verification token.': 'error.verification_expired',
+  'Invalid OTP code. Please try again.': 'toast.otp_invalid',
+  'Invalid 2FA verification code.': 'toast.otp_invalid',
+  'User not found.': 'error.user_not_found',
+  'Change password successfully.': 'toast.password_changed',
+  'Password changed successfully.': 'toast.password_changed',
+  'Password updated successfully.': 'toast.password_changed',
+  'Profile updated successfully.': 'toast.profile_updated',
+  '2FA enabled successfully.': 'toast.2fa_enabled',
+  '2FA confirmed successfully.': 'toast.2fa_enabled',
+  '2FA disabled successfully.': 'toast.2fa_disabled',
+  'Successfully enabled 2FA.': 'toast.2fa_enabled',
+  'Successfully confirmed 2FA.': 'toast.2fa_enabled',
+  'Successfully disabled 2FA.': 'toast.2fa_disabled',
+  'Product created successfully.': 'toast.product_created',
+  'Product updated successfully.': 'toast.product_updated',
+  'Product deleted successfully.': 'toast.product_deleted',
+  'Product restored successfully.': 'toast.product_restored',
+  'Product not found.': 'error.product_not_found',
+  'Category not found.': 'error.category_not_found',
+  'Cannot update a soft-deleted product.': 'toast.edit_deleted_product',
+  'Product not found or delete failed.': 'toast.product_delete_failed',
+  'Product not found or restore failed.': 'toast.product_restore_failed',
+  'Inventory batch created successfully.': 'toast.stock_imported',
+  'Inventory batch updated successfully.': 'toast.stock_updated',
+  'Inventory batch deleted successfully.': 'toast.stock_deleted',
+  'Inventory batch not found.': 'error.inventory_not_found',
+  'No resource keys found in raw data.': 'error.inventory_empty',
+  'Order created successfully.': 'cart.order_success',
+  'Order not found.': 'error.order_not_found',
+  'Insufficient stock for product.': 'error.insufficient_stock',
+  'Compiled views cleared successfully.': 'maintenance.views_cleared',
+  'Config cache cleared successfully.': 'maintenance.config_cleared',
+  'Route cache cleared successfully.': 'maintenance.routes_cleared',
+  'System optimization completed successfully.': 'maintenance.optimized',
+  'Optimization cache cleared successfully.': 'maintenance.optimization_cleared',
+  'System settings updated successfully.': 'toast.settings_updated',
+  'Successfully cleared all active tokens and regenerated application key. All users logged out.': 'maintenance.tokens_cleared',
+  'The admin wallet address must be a valid BEP20/EVM address starting with 0x followed by 40 hex characters.': 'toast.wallet_invalid',
+  'Current password is incorrect.': 'error.current_password',
+  '2FA is already enabled.': 'error.2fa_already_enabled',
+  '2FA has not been initialized. Please enable first.': 'error.2fa_not_initialized',
+  'API Key generated successfully.': 'toast.apikey_created',
+  'Created deposit invoice successfully.': 'toast.deposit_created_success',
+  'Deposit invoice not found.': 'error.deposit_not_found',
+  'Failed to cancel invoice. Invalid invoice state or unauthorized.': 'toast.deposit_cancel_failed',
+  'Cancelled deposit invoice successfully.': 'toast.deposit_cancelled_success'
+};
+
+@Injectable({ providedIn: 'root' })
 export class ToastService {
+  private readonly languageService = inject(LanguageService);
   public readonly toasts = signal<ToastItem[]>([]);
 
-  private translateMessage(msg: string): string {
-    if (!msg) return '';
+  public resolveApiMessage(message: string, status = 0, fallback = ''): string {
+    const normalized = message?.trim() || '';
+    if (/^[a-z0-9_.]+$/i.test(normalized)) {
+      return this.languageService.translate(normalized);
+    }
+    const key = API_MESSAGE_KEYS[normalized];
+    if (key) return this.languageService.translate(key);
 
-    // Từ điển dịch thông điệp từ tiếng Anh sang tiếng Việt
-    const dictionary: Record<string, string> = {
-      'Invalid email/username or password.': 'Tài khoản hoặc mật khẩu không chính xác!',
-      'Unauthorized.': 'Phiên đăng nhập không hợp lệ hoặc đã hết hạn!',
-      'Too Many Attempts.': 'Bạn đã thử quá nhiều lần. Vui lòng chờ vài phút rồi thử lại!',
-      'The email has already been taken.': 'Email này đã được sử dụng. Vui lòng chọn email khác!',
-      'The name has already been taken.': 'Tên tài khoản này đã tồn tại. Vui lòng chọn tên khác!',
-      'The email field must be a valid email address.': 'Địa chỉ email không đúng định dạng!',
-      'The password field must be at least 6 characters.': 'Mật khẩu phải có ít nhất 6 ký tự!',
-      'Invalid or expired verification token.': 'Mã xác thực đã hết hạn. Vui lòng đăng nhập lại!',
-      'Invalid OTP code. Please try again.': 'Mã OTP không chính xác. Vui lòng thử lại!',
-      'Invalid 2FA verification code.': 'Mã xác thực 2FA không chính xác!',
-      'User not found.': 'Tài khoản không tồn tại trong hệ thống!',
-      'Change password successfully.': 'Đổi mật khẩu thành công!',
-      'Password changed successfully.': 'Đổi mật khẩu thành công!',
-      'Profile updated successfully.': 'Cập nhật thông tin thành công!',
-      '2FA enabled successfully.': 'Khởi tạo 2FA thành công!',
-      '2FA confirmed successfully.': 'Đã kích hoạt bảo mật 2FA thành công!',
-      '2FA disabled successfully.': 'Đã hủy kích hoạt bảo mật 2FA!',
-      'Successfully enabled 2FA.': 'Khởi tạo 2FA thành công!',
-      'Successfully confirmed 2FA.': 'Đã kích hoạt bảo mật 2FA thành công!',
-      'Successfully disabled 2FA.': 'Đã hủy kích hoạt bảo mật 2FA!',
-
-      'Product created successfully.': 'Tạo sản phẩm thành công!',
-      'Product updated successfully.': 'Cập nhật sản phẩm thành công!',
-      'Product deleted successfully.': 'Xóa sản phẩm thành công!',
-      'Product restored successfully.': 'Khôi phục sản phẩm thành công!',
-      'Product not found.': 'Không tìm thấy sản phẩm trong hệ thống!',
-      'Category not found.': 'Không tìm thấy danh mục!',
-      'Cannot update a soft-deleted product.': 'Không thể cập nhật sản phẩm đã bị xóa tạm thời!',
-      'Product not found or delete failed.': 'Không tìm thấy sản phẩm hoặc xóa thất bại!',
-      'Product not found or restore failed.': 'Không tìm thấy sản phẩm hoặc khôi phục thất bại!',
-
-      'Inventory batch created successfully.': 'Tạo lô hàng thành công!',
-      'Inventory batch updated successfully.': 'Cập nhật lô hàng thành công!',
-      'Inventory batch deleted successfully.': 'Xóa lô hàng thành công!',
-      'Inventory batch not found.': 'Không tìm thấy lô hàng trong kho!',
-      'No resource keys found in raw data.': 'Không tìm thấy tài nguyên nào trong dữ liệu nhập vào!',
-
-      'Order created successfully.': 'Đặt hàng thành công!',
-      'Order not found.': 'Không tìm thấy đơn hàng!',
-      'Insufficient stock for product.': 'Không đủ hàng trong kho cho sản phẩm này!',
-
-      // Cấu hình hệ thống & Bảo trì
-      'Compiled views cleared successfully.': 'Xóa views đã biên dịch thành công!',
-      'Config cache cleared successfully.': 'Xóa bộ nhớ đệm cấu hình thành công!',
-      'Route cache cleared successfully.': 'Xóa bộ nhớ đệm định tuyến thành công!',
-      'System optimization completed successfully.': 'Tối ưu hóa hiệu năng hệ thống thành công!',
-      'Optimization cache cleared successfully.': 'Xóa bộ nhớ đệm tối ưu hóa thành công!',
-      'System settings updated successfully.': 'Cập nhật cấu hình hệ thống thành công!',
-      'Successfully cleared all active tokens and regenerated application key. All users logged out.': 'Đã xóa toàn bộ token đang hoạt động và làm mới khóa ứng dụng. Tất cả người dùng đã bị đăng xuất!',
-      'The admin wallet address must be a valid BEP20/EVM address starting with 0x followed by 40 hex characters.': 'Địa chỉ ví Admin phải là địa chỉ ví BEP20/EVM hợp lệ (bắt đầu bằng 0x và có đúng 40 ký tự hex theo sau).',
-
-      // Profile & Bảo mật
-      'Password updated successfully.': 'Cập nhật mật khẩu thành công!',
-      'Current password is incorrect.': 'Mật khẩu hiện tại không chính xác!',
-      '2FA is already enabled.': 'Bảo mật 2FA đã được kích hoạt từ trước!',
-      '2FA has not been initialized. Please enable first.': 'Bảo mật 2FA chưa được khởi tạo. Vui lòng kích hoạt trước!',
-      'API Key generated successfully.': 'Tạo API Key thành công!',
-
-      // Hóa đơn nạp tiền
-      'Created deposit invoice successfully.': 'Tạo hóa đơn nạp tiền thành công!',
-      'Deposit invoice not found.': 'Không tìm thấy hóa đơn nạp tiền!',
-      'Failed to cancel invoice. Invalid invoice state or unauthorized.': 'Không thể hủy hóa đơn. Trạng thái hóa đơn không hợp lệ hoặc không có quyền!',
-      'Cancelled deposit invoice successfully.': 'Hủy hóa đơn nạp tiền thành công!',
-    };
-
-    const trimmed = msg.trim();
-    if (dictionary[trimmed]) {
-      return dictionary[trimmed];
+    const imported = normalized.match(/^Successfully imported batch.*with (\d+) resources/i);
+    if (imported) {
+      return this.languageService.translate('toast.stock_imported_count', { count: imported[1] });
     }
 
-    // Dịch động với pattern chứa tham số
-    if (trimmed.startsWith("Successfully imported batch")) {
-      const match = trimmed.match(/with (\d+) resources/i);
-      const count = match ? match[1] : '';
-      return `Import lô hàng thành công${count ? ' với ' + count + ' tài nguyên' : ''}!`;
+    const cleaned = normalized.match(/^Successfully cleaned up (\d+) expired refresh tokens from database\.$/i);
+    if (cleaned) {
+      return this.languageService.translate('maintenance.expired_tokens_cleaned', { count: cleaned[1] });
     }
 
-    if (trimmed.startsWith("Successfully cleaned up") && trimmed.endsWith("expired refresh tokens from database.")) {
-      const match = trimmed.match(/cleaned up (\d+) expired/i);
-      const count = match ? match[1] : '0';
-      return `Đã dọn dẹp thành công ${count} token hết hạn từ cơ sở dữ liệu!`;
-    }
+    if (status === 401) return this.languageService.translate('error.invalid_credentials');
+    if (status === 422) return this.languageService.translate('error.invalid_input');
+    if (status === 429) return this.languageService.translate('error.too_many_attempts');
+    if (status >= 500) return this.languageService.translate('error.server');
+    if (status === 0 && !normalized) return this.languageService.translate('error.network');
 
-    return msg;
+    return normalized || fallback;
   }
 
-  public showToast(message: string, type: 'success' | 'error' | 'warning' = 'success', duration?: number) {
-    const finalMessage = this.translateMessage(message);
+  public showToast(message: string, type: 'success' | 'error' | 'warning' = 'success', duration?: number): void {
+    const finalMessage = this.resolveApiMessage(message);
     const defaultDuration = type === 'success' ? 3000 : type === 'warning' ? 3500 : 4000;
-    const finalDuration = duration || defaultDuration;
-    const id = Date.now().toString() + Math.random().toString(36).substr(2, 9);
+    const id = Date.now().toString() + Math.random().toString(36).substring(2, 11);
 
-    const newToast: ToastItem = {
+    this.toasts.update(current => [...current, {
       id,
       message: finalMessage,
       type,
-      duration: finalDuration
-    };
+      duration: duration || defaultDuration
+    }]);
 
-    this.toasts.update(current => [...current, newToast]);
-
-    setTimeout(() => {
-      this.removeToast(id);
-    }, finalDuration);
+    setTimeout(() => this.removeToast(id), duration || defaultDuration);
   }
 
-  public removeToast(id: string) {
-    this.toasts.update(current => current.filter(t => t.id !== id));
+  public removeToast(id: string): void {
+    this.toasts.update(current => current.filter(toast => toast.id !== id));
   }
 }

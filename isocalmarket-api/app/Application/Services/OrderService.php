@@ -106,7 +106,7 @@ class OrderService
             if ($couponCode) {
                 $coupon = $this->couponRepository->findByCode(strtoupper(trim($couponCode)));
                 if (!$coupon) {
-                    throw new \Exception("Mã giảm giá '{$couponCode}' không hợp lệ.");
+                    throw new \Exception(__('messages.coupon_invalid_code', ['code' => $couponCode]));
                 }
 
                 $now = new \DateTime();
@@ -114,17 +114,17 @@ class OrderService
                 $end = (clone $coupon->getEndDate())->setTime(23, 59, 59);
 
                 if ($now < $start) {
-                    throw new \Exception("Mã giảm giá này chưa đến thời gian áp dụng.");
+                    throw new \Exception(__('messages.coupon_not_started'));
                 }
                 if ($now > $end) {
-                    throw new \Exception("Mã giảm giá này đã hết hạn sử dụng.");
+                    throw new \Exception(__('messages.coupon_expired'));
                 }
 
                 if ($coupon->getUsageLimit() > 0 && $coupon->getUsedCount() >= $coupon->getUsageLimit()) {
-                    throw new \Exception("Mã giảm giá này đã hết lượt sử dụng.");
+                    throw new \Exception(__('messages.coupon_usage_exhausted'));
                 }
                 if ($totalPrice < $coupon->getMinSpend()) {
-                    throw new \Exception("Tổng tiền giỏ hàng chưa đạt mức tối thiểu " . number_format($coupon->getMinSpend()) . " VND.");
+                    throw new \Exception(__('messages.minimum_cart', ['amount' => number_format($coupon->getMinSpend())]));
                 }
 
                 $discountAmount = $coupon->calculateDiscount($totalPrice);

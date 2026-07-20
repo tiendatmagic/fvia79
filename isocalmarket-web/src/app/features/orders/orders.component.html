@@ -9,7 +9,7 @@
         class="px-4 py-2.5 text-sm font-extrabold text-slate-600 dark:text-slate-400 hover:text-primary bg-white dark:bg-slate-950 border border-slate-200/60 dark:border-slate-800/80 rounded-xl hover:bg-slate-50 dark:hover:bg-slate-900 transition-all cursor-pointer flex items-center gap-1.5"
       >
         <app-icon name="sync" class="w-4 h-4" />
-        Refresh
+      {{ 'common.refresh' | translate }}
       </button>
     </ng-container>
   </app-page-header>
@@ -19,14 +19,14 @@
   >
     <div class="form-field">
       <label class="text-xs font-bold text-slate-400 dark:text-slate-500 uppercase tracking-wider block mb-1">
-        Date Range
+        {{ 'orders.date_range' | translate }}
       </label>
       <app-custom-date-time-range
         [(ngModel)]="selectedDateRange"
         (ngModelChange)="fetchPage(1)"
         [showPresets]="true"
         [showTime]="false"
-        placeholder="Filter by date..."
+        [placeholder]="'orders.filter_by_date' | translate"
       />
     </div>
 
@@ -60,7 +60,7 @@
 
   <div app-card class="overflow-hidden !p-0">
     <app-table
-      [columns]="columns"
+      [columns]="columns()"
       [data]="state.orderStore.orders()"
       [loading]="state.orderStore.loading()"
       emptyText="No orders found."

@@ -1,7 +1,7 @@
 @if (totalItems > 0) {
   <div class="px-5 py-4 border-t border-slate-100 dark:border-slate-800 flex items-center justify-between gap-4 flex-wrap">
     <span class="text-xs font-semibold text-slate-400">
-      Hiển thị {{ getStartIndex() }}-{{ getEndIndex() }} trên tổng số {{ totalItems }} {{ itemName }}
+    {{ 'pagination.summary' | translate: { start: getStartIndex(), end: getEndIndex(), total: totalItems, item: itemName || ('common.records' | translate) } }}
     </span>
 
     @if (totalPages > 1) {

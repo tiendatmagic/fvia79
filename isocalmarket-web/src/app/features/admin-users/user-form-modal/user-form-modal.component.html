@@ -61,19 +61,19 @@
             <label
               class="text-xs font-bold text-slate-400 dark:text-slate-500 uppercase tracking-wider block"
             >
-              Tên đăng nhập (Username) <span class="text-rose-500">*</span>
+              {{ 'auth.username' | translate }} <span class="text-rose-500">*</span>
             </label>
             <app-custom-input
               [(ngModel)]="username"
               name="username"
               type="text"
-              placeholder="VD: admin, customer1"
+              [placeholder]="'user.username_placeholder' | translate"
               [disabled]="isEditMode"
               required
             />
             @if (isEditMode) {
               <p class="text-xs text-slate-400 dark:text-slate-500 italic">
-                * Không thể thay đổi tên đăng nhập
+                * {{ 'user.username_locked' | translate }}
               </p>
             }
           </div>
@@ -82,13 +82,13 @@
             <label
               class="text-xs font-bold text-slate-400 dark:text-slate-500 uppercase tracking-wider block"
             >
-              Tên thành viên
+              {{ 'user.name' | translate }}
             </label>
             <app-custom-input
               [(ngModel)]="name"
               name="name"
               type="text"
-              placeholder="VD: Nguyễn Văn A"
+              [placeholder]="'user.name_example' | translate"
             />
           </div>
         </div>
@@ -98,13 +98,13 @@
             <label
               class="text-xs font-bold text-slate-400 dark:text-slate-500 uppercase tracking-wider block"
             >
-              Địa chỉ Email <span class="text-rose-500">*</span>
+              {{ 'user.email' | translate }} <span class="text-rose-500">*</span>
             </label>
             <app-custom-input
               [(ngModel)]="email"
               name="email"
               type="email"
-              placeholder="Nhập địa chỉ email"
+              [placeholder]="'auth.email_placeholder' | translate"
               required
             />
           </div>
@@ -113,13 +113,13 @@
             <label
               class="text-xs font-bold text-slate-400 dark:text-slate-500 uppercase tracking-wider block"
             >
-              Số điện thoại
+              {{ 'user.phone' | translate }}
             </label>
             <app-custom-input
               [(ngModel)]="phone"
               name="phone"
               type="text"
-              placeholder="VD: 0981xxx"
+              [placeholder]="'user.phone_placeholder' | translate"
             />
           </div>
         </div>
@@ -128,20 +128,20 @@
           <label
             class="text-xs font-bold text-slate-400 dark:text-slate-500 uppercase tracking-wider block"
           >
-            Mật khẩu <span *ngIf="!isEditMode" class="text-rose-500">*</span>
+            {{ 'auth.password' | translate }} <span *ngIf="!isEditMode" class="text-rose-500">*</span>
           </label>
           <app-custom-input
             [(ngModel)]="password"
             name="password"
             type="password"
             [placeholder]="
-              isEditMode ? 'Nhập mật khẩu mới (để trống nếu giữ nguyên)' : 'Tối thiểu 6 ký tự'
+              isEditMode ? ('user.new_password_placeholder' | translate) : ('profile.min_password' | translate)
             "
             [required]="!isEditMode"
           />
           @if (isEditMode) {
             <p class="text-xs text-slate-400 dark:text-slate-500 italic">
-              * Để trống nếu giữ nguyên mật khẩu
+              * {{ 'user.keep_password_hint' | translate }}
             </p>
           }
         </div>
@@ -155,7 +155,7 @@
             <label
               class="text-xs font-bold text-slate-400 dark:text-slate-500 uppercase tracking-wider block"
             >
-              Vai trò tài khoản
+              {{ 'user.role' | translate }}
             </label>
             <app-custom-select
               [options]="roleOptions"
@@ -170,7 +170,7 @@
               <label
                 class="text-xs font-bold text-slate-400 dark:text-slate-500 uppercase tracking-wider block"
               >
-                Trạng thái tài khoản
+                {{ 'user.status' | translate }}
               </label>
               <app-custom-select
                 [options]="statusOptions"
@@ -190,7 +190,7 @@
               <span
                 class="text-xs font-extrabold text-slate-400 dark:text-slate-500 uppercase tracking-wider block mb-0.5"
               >
-                Số dư khả dụng hiện tại
+                {{ 'user.current_balance' | translate }}
               </span>
               <span class="text-lg font-extrabold font-mono text-[var(--color-primary)] block">
                 {{ balance | number: '1.0-0' }} ₫
@@ -209,7 +209,7 @@
                   d="M12 6v6m0 0v6m0-6h6m-6 0H6"
                 />
               </svg>
-              Cộng / Trừ Số Dư
+              {{ 'user.balance_adjustment' | translate }}
             </button>
           </div>
         }
@@ -219,9 +219,7 @@
             class="p-4 bg-slate-50 dark:bg-slate-900/40 border border-slate-200/40 dark:border-slate-800/30 rounded-2xl"
           >
             <p class="text-xs text-slate-400 dark:text-slate-500 italic text-center">
-              Số dư ban đầu mặc định là
-              <strong class="text-slate-600 dark:text-slate-300">0 ₫</strong>. Có thể điều chỉnh sau
-              khi tạo tài khoản.
+              {{ 'user.initial_balance_hint' | translate }}
             </p>
           </div>
         }
@@ -242,7 +240,7 @@
                 d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z"
               />
             </svg>
-            Xác thực 2 lớp (2FA)
+            {{ 'user.two_factor' | translate }}
           </h4>
 
           <div
@@ -259,12 +257,12 @@
               [checked]="google2fa_enabled"
               [disabled]="isEnabling2fa || isResetting2fa || isConfirming"
               [label]="
-                google2fa_enabled ? 'Đã kích hoạt bảo mật 2FA' : 'Chưa kích hoạt bảo mật 2FA'
+                google2fa_enabled ? ('user.2fa_active' | translate) : ('user.2fa_inactive' | translate)
               "
               [description]="
                 google2fa_enabled
-                  ? 'Tài khoản đang được bảo vệ bởi mã xác thực Google Authenticator.'
-                  : 'Bật 2FA giúp bảo vệ tài khoản khỏi các rủi ro mất mát dữ liệu và tấn công mật khẩu.'
+                  ? ('user.2fa_active_desc' | translate)
+                  : ('user.2fa_inactive_desc' | translate)
               "
               type="full"
             />
@@ -285,7 +283,7 @@
                     d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"
                   />
                 </svg>
-                Thông tin cấu hình Google Authenticator của thành viên:
+                {{ 'user.authenticator_config' | translate }}
               </p>
 
               <div
@@ -300,7 +298,7 @@
                 <div class="text-center sm:text-left space-y-2 min-w-0 flex-1">
                   <div class="space-y-0.5">
                     <span class="text-xs uppercase font-black text-slate-400 block tracking-wider"
-                      >Khóa bí mật (Secret Key)</span
+                      >{{ 'user.secret_key' | translate }}</span
                     >
                     <div class="flex items-center gap-2">
                       <code
@@ -312,7 +310,7 @@
                         type="button"
                         (click)="toggleSecretVisibility(); $event.stopPropagation()"
                         class="p-1 text-slate-400 hover:text-[var(--color-primary)] hover:bg-slate-100 dark:hover:bg-slate-800 rounded transition-colors cursor-pointer shrink-0"
-                        [appTooltip]="isSecretVisible ? 'Ẩn khóa bí mật' : 'Hiển thị khóa bí mật'"
+                        [appTooltip]="isSecretVisible ? ('user.hide_secret' | translate) : ('user.show_secret' | translate)"
                       >
                         @if (isSecretVisible) {
                           <svg
@@ -356,7 +354,7 @@
                         type="button"
                         (click)="copyToClipboard(google2fa_secret); $event.stopPropagation()"
                         class="p-1 hover:bg-slate-100 dark:hover:bg-slate-800 rounded transition-colors text-slate-400 hover:text-slate-600 dark:hover:text-slate-200 cursor-pointer shrink-0"
-                        [appTooltip]="'Sao chép khóa bí mật'"
+                        [appTooltip]="'user.copy_secret' | translate"
                       >
                         <app-icon name="copy" class="w-3.5 h-3.5" />
                       </button>
@@ -365,8 +363,7 @@
                   <p
                     class="text-xs text-slate-400 dark:text-slate-500 leading-normal max-w-[240px]"
                   >
-                    Thành viên có thể quét QR Code này hoặc tự nhập mã khóa bí mật thủ công trên ứng
-                    dụng Authenticator của họ.
+                    {{ 'user.qr_hint' | translate }}
                   </p>
                 </div>
               </div>
@@ -386,7 +383,7 @@
                 d="M15 7a2 2 0 012 2m4 0a6 6 0 01-7.743 5.743L11 17H9v2H7v2H4a1 1 0 01-1-1v-2.586a1 1 0 01.293-.707l5.964-5.964A6 6 0 0121 9z"
               />
             </svg>
-            B2B API Key
+            {{ 'api.b2b_api_key' | translate }}
           </h4>
 
           <div
@@ -395,12 +392,12 @@
             <div class="flex-1 min-w-0">
               <span
                 class="text-xs font-extrabold text-slate-400 dark:text-slate-500 uppercase tracking-wider block mb-0.5"
-                >Mã API Key</span
+                >{{ 'user.api_key' | translate }}</span
               >
               <span
                 class="text-sm font-extrabold font-mono text-slate-800 dark:text-white truncate block"
               >
-                {{ api_key || 'Chưa tạo API Key' }}
+                {{ api_key || ('admin.api_key_missing' | translate) }}
               </span>
             </div>
 
@@ -410,15 +407,15 @@
                 (click)="onGenerateKey()"
                 class="px-3.5 py-1.5 text-xs font-extrabold text-[var(--color-primary)] border border-[var(--color-primary)]/20 bg-[var(--color-primary)]/5 dark:bg-[var(--color-primary)]/10 hover:bg-[var(--color-primary)]/15 rounded-xl transition-all cursor-pointer"
               >
-                Sinh Key Mới
+                {{ 'user.generate_key' | translate }}
               </button>
               <button
                 type="button"
-                *ngIf="api_key && api_key !== 'Sẽ sinh tự động sau khi lưu...'"
+                *ngIf="api_key && api_key !== autoApiKeyPlaceholder"
                 (click)="onRevokeKey()"
                 class="px-3.5 py-1.5 text-xs font-extrabold text-rose-600 border border-rose-500/20 bg-rose-50 dark:bg-rose-950/20 hover:bg-rose-100 dark:hover:bg-rose-950/40 rounded-xl transition-all cursor-pointer"
               >
-                Thu hồi Key
+                {{ 'user.revoke_key' | translate }}
               </button>
             </div>
           </div>
@@ -439,7 +436,7 @@
               ? 'bg-[var(--color-primary)]'
               : 'bg-slate-300 dark:bg-slate-700 hover:bg-slate-400'
           "
-          title="Thông tin cơ bản"
+          [title]="'user.tab_basic' | translate"
         ></button>
         <button
           type="button"
@@ -450,7 +447,7 @@
               ? 'bg-[var(--color-primary)]'
               : 'bg-slate-300 dark:bg-slate-700 hover:bg-slate-400'
           "
-          title="Phân quyền"
+          [title]="'user.tab_permissions' | translate"
         ></button>
         @if (isEditMode) {
           <button
@@ -462,7 +459,7 @@
                 ? 'bg-[var(--color-primary)]'
                 : 'bg-slate-300 dark:bg-slate-700 hover:bg-slate-400'
             "
-            title="Bảo mật & API"
+            [title]="'user.tab_security' | translate"
           ></button>
         }
       </div>
@@ -473,7 +470,7 @@
           (click)="onClose()"
           class="px-5 py-2.5 rounded-xl border border-slate-200/60 dark:border-slate-800/80 hover:bg-slate-50 dark:hover:bg-slate-900 text-slate-600 dark:text-slate-400 font-extrabold text-sm transition-all cursor-pointer"
         >
-          Hủy
+          {{ 'action.cancel' | translate }}
         </button>
         <button
           type="submit"
@@ -482,7 +479,7 @@
           [loading]="isSubmitting()"
           class="px-6 py-2.5 rounded-xl font-extrabold text-sm active:scale-[0.98] transition-all cursor-pointer"
         >
-          {{ isEditMode ? 'Cập nhật' : 'Tạo mới' }}
+          {{ isEditMode ? ('user.update' | translate) : ('user.create' | translate) }}
         </button>
       </div>
     </div>

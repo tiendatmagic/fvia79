@@ -50,7 +50,7 @@ export class Web3Service {
         try {
           this.modal.setThemeMode(isDark ? 'dark' : 'light');
         } catch (e) {
-          console.warn('[Web3] Lỗi đồng bộ theme sang AppKit:', e);
+          console.warn('[Web3] Failed to sync theme to AppKit:', e);
         }
       }
     });
@@ -152,7 +152,7 @@ export class Web3Service {
         }
       });
     } catch (e) {
-      console.error('[Web3] Lỗi khởi tạo AppKit bất đồng bộ:', e);
+      console.error('[Web3] Failed to initialize AppKit asynchronously:', e);
     }
   }
 
@@ -191,7 +191,7 @@ export class Web3Service {
       }
     } else {
       const popular = POPULAR_CHAINS.find(c => Number(c.chainId) === chainId);
-      this.networkName.set(popular ? popular.name : 'Mạng không hỗ trợ');
+      this.networkName.set(popular ? popular.name : this.lang.translate('web3.unsupported_network'));
       this.chainSymbol.set('ETH');
       
       if (this.isConnected()) {
@@ -232,7 +232,7 @@ export class Web3Service {
         this.checkAndUpdateNetworkState(id, false);
       }
     } catch (error) {
-      console.error('Lỗi khi cập nhật số dư/mạng:', error);
+      console.error('Failed to update balance/network:', error);
     }
   }
 
@@ -244,7 +244,7 @@ export class Web3Service {
       }
       await this.modal.open();
     } catch (error) {
-      console.error('Lỗi kết nối ví:', error);
+      console.error('Failed to connect wallet:', error);
     }
   }
 
@@ -253,7 +253,7 @@ export class Web3Service {
       if (!this.modal) return;
       await this.modal.open({ view: 'Networks' });
     } catch (error) {
-      console.error('Lỗi mở popup chuyển mạng:', error);
+      console.error('Failed to open network modal:', error);
     }
   }
 
@@ -262,7 +262,7 @@ export class Web3Service {
       if (!this.modal) return;
       await this.modal.open({ view: 'Account' });
     } catch (error) {
-      console.error('Lỗi mở popup chi tiết ví:', error);
+      console.error('Failed to open account modal:', error);
     }
   }
 
@@ -271,7 +271,7 @@ export class Web3Service {
       if (!this.modal) return;
       await this.modal.disconnect();
     } catch (error) {
-      console.error('Lỗi ngắt kết nối ví:', error);
+      console.error('Failed to disconnect wallet:', error);
     }
   }
 
@@ -282,20 +282,20 @@ export class Web3Service {
       if (network) {
         await this.modal.switchNetwork(network as any);
       } else {
-        console.warn(`[Web3] Mạng với chainId ${chainId} không được hỗ trợ để chuyển.`);
+        console.warn(`[Web3] Network with chainId ${chainId} cannot be selected.`);
       }
     } catch (error) {
-      console.error(`Lỗi chuyển mạng ${chainId}:`, error);
+      console.error(`Failed to switch to network ${chainId}:`, error);
     }
   }
 
   public async getSigner() {
     if (!this.modal) {
-      throw new Error('Chức năng Web3 hiện đang bị tắt');
+      throw new Error(this.lang.translate('toast.web3_disabled'));
     }
     const walletProvider = this.modal.getWalletProvider();
     if (!walletProvider) {
-      throw new Error('Ví chưa được kết nối');
+      throw new Error(this.lang.translate('web3.wallet_not_connected'));
     }
     const { BrowserProvider } = await import('ethers');
     const ethersProvider = new BrowserProvider(walletProvider as any);
@@ -316,11 +316,11 @@ export class Web3Service {
 
   public async getProvider() {
     if (!this.modal) {
-      throw new Error('Chức năng Web3 hiện đang bị tắt');
+      throw new Error(this.lang.translate('toast.web3_disabled'));
     }
     const walletProvider = this.modal.getWalletProvider();
     if (!walletProvider) {
-      throw new Error('Ví chưa được kết nối');
+      throw new Error(this.lang.translate('web3.wallet_not_connected'));
     }
     const { BrowserProvider } = await import('ethers');
     return new BrowserProvider(walletProvider as any);
@@ -348,7 +348,7 @@ export class Web3Service {
         }
       }
     } catch (err) {
-      console.warn('[Web3] Không thể lấy fee data để tính gas overrides:', err);
+      console.warn('[Web3] Failed to retrieve fee data for gas overrides:', err);
     }
     return overrides;
   }

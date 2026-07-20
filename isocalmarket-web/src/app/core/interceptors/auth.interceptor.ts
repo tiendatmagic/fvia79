@@ -43,10 +43,7 @@ export const authInterceptor: HttpInterceptorFn = (
         const now = Date.now();
         if (now - lastOverloadToastTime > TOAST_DEBOUNCE_MS) {
           lastOverloadToastTime = now;
-          toastService.showToast(
-            'Hệ thống đang quá tải do nhận được quá nhiều yêu cầu. Vui lòng thử lại sau vài giây!',
-            'error'
-          );
+          toastService.showToast('error.too_many_attempts', 'error');
         }
       }
 

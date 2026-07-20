@@ -6,6 +6,7 @@ import { ButtonComponent } from '@shared/components/button/button.component';
 import { CustomCheckboxComponent } from '@shared/components/custom-checkbox/custom-checkbox.component';
 
 import { IconComponent } from '@shared/components/icon/icon.component';
+import { TranslatePipe } from '@shared/pipes/translate.pipe';
 
 export const WELCOME_NOTICE_STORAGE_KEY = 'welcome_notice_suppressed_until';
 
@@ -28,7 +29,7 @@ export function shouldShowWelcomeNotice(): boolean {
 @Component({
   selector: 'app-welcome-notice-modal',
   standalone: true,
-  imports: [CommonModule, FormsModule, ButtonComponent, CustomCheckboxComponent, IconComponent],
+  imports: [CommonModule, FormsModule, ButtonComponent, CustomCheckboxComponent, IconComponent, TranslatePipe],
   styles: [':host { display: block; }'],
   templateUrl: './welcome-notice-modal.component.html',
 })

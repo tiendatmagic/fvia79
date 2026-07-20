@@ -8,6 +8,7 @@ import { CustomSelectComponent } from '@shared/components/custom-select/custom-s
 import { ButtonComponent } from '@shared/components/button/button.component';
 import { ToastService } from '@core/services/toast.service';
 import { LanguageService } from '@core/services/language.service';
+import { TranslatePipe } from '@shared/pipes/translate.pipe';
 import { finalize } from 'rxjs/operators';
 
 @Component({
@@ -18,7 +19,8 @@ import { finalize } from 'rxjs/operators';
     FormsModule,
     CustomInputComponent,
     CustomSelectComponent,
-    ButtonComponent
+    ButtonComponent,
+    TranslatePipe
   ],
   templateUrl: './coupon-form-modal.component.html',
   styles: [`
@@ -47,10 +49,12 @@ export class CouponFormModalComponent implements OnInit {
   
   public readonly isSubmitting = signal(false);
 
-  public readonly typeOptions = [
-    { label: 'Phần trăm (%)', value: 'percentage' },
-    { label: 'Số tiền cố định ($ / USD)', value: 'fixed' }
-  ];
+  public get typeOptions() {
+    return [
+      { label: this.lang.translate('admin.coupon_percentage'), value: 'percentage' },
+      { label: `${this.lang.translate('admin.coupon_fixed')} ($ / USD)`, value: 'fixed' }
+    ];
+  }
 
   public ngOnInit() {
     if (this.modalData) {

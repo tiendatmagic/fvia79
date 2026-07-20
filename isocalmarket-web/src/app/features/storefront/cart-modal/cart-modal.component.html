@@ -74,10 +74,10 @@
       <div class="form-field">
         <div class="flex items-center justify-between">
           <label class="text-xs font-black !text-slate-800 dark:!text-slate-100 uppercase tracking-wider">
-            Coupon Code
+            {{ 'coupon.code' | translate }}
           </label>
           <span *ngIf="appliedCoupon()" class="text-[10px] font-extrabold uppercase bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 px-2 py-0.5 rounded-md border border-emerald-500/20">
-            Applied
+            {{ 'coupon.applied' | translate }}
           </span>
         </div>
         <div class="relative w-full">
@@ -85,7 +85,7 @@
             type="text"
             [(ngModel)]="couponCode"
             (ngModelChange)="onCouponInput($event)"
-            placeholder="ENTER PROMO CODE..."
+            [placeholder]="'cart.promo_placeholder' | translate"
             class="form-input !pr-10 font-mono font-extrabold uppercase tracking-wider"
           />
           <div *ngIf="isValidatingCoupon()" class="absolute right-3.5 top-1/2 -translate-y-1/2 flex items-center justify-center pointer-events-none">
@@ -125,7 +125,7 @@
         *ngIf="appliedCoupon()"
         class="flex justify-between text-xs font-extrabold text-emerald-600 dark:text-emerald-400"
       >
-        <span>Discount ({{ appliedCoupon().code }}):</span>
+        <span>{{ 'orders.discount' | translate }} ({{ appliedCoupon().code }}):</span>
         <span>-{{ appliedCoupon().discount_amount | appCurrency }}</span>
       </div>
 

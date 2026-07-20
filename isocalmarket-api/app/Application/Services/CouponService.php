@@ -42,14 +42,14 @@ class CouponService
     public function createCoupon(array $data): Coupon
     {
         if ($this->couponRepository->findByCode($data['code'])) {
-            throw new \Exception("Mã giảm giá '{$data['code']}' đã tồn tại.");
+            throw new \Exception(__('messages.coupon_exists', ['code' => $data['code']]));
         }
 
         $startDate = !empty($data['start_date']) ? new \DateTime($data['start_date']) : new \DateTime();
         $endDate = !empty($data['end_date']) ? new \DateTime($data['end_date']) : (new \DateTime())->modify('+7 days');
 
         if ($endDate <= $startDate) {
-            throw new \Exception("Ngày kết thúc phải sau ngày bắt đầu.");
+            throw new \Exception(__('messages.end_after_start'));
         }
 
         $coupon = new Coupon(
@@ -71,19 +71,19 @@ class CouponService
     {
         $coupon = $this->couponRepository->findById($id);
         if (!$coupon) {
-            throw new \Exception("Mã giảm giá không tồn tại.");
+            throw new \Exception(__('messages.coupon_not_found'));
         }
 
         $existing = $this->couponRepository->findByCode($data['code']);
         if ($existing && $existing->getId() !== $id) {
-            throw new \Exception("Mã giảm giá '{$data['code']}' đã được sử dụng bởi một coupon khác.");
+            throw new \Exception(__('messages.coupon_used_by_another', ['code' => $data['code']]));
         }
 
         $startDate = !empty($data['start_date']) ? new \DateTime($data['start_date']) : $coupon->getStartDate();
         $endDate = !empty($data['end_date']) ? new \DateTime($data['end_date']) : $coupon->getEndDate();
 
         if ($endDate <= $startDate) {
-            throw new \Exception("Ngày kết thúc phải sau ngày bắt đầu.");
+            throw new \Exception(__('messages.end_after_start'));
         }
 
         $updatedCoupon = new Coupon(
@@ -116,7 +116,7 @@ class CouponService
     {
         $coupon = $this->couponRepository->findByCode(strtoupper(trim($code)));
         if (!$coupon) {
-            throw new \Exception("Mã giảm giá không hợp lệ hoặc không tồn tại.");
+            throw new \Exception(__('messages.coupon_invalid'));
         }
 
         $now = new \DateTime();
@@ -124,18 +124,18 @@ class CouponService
         $end = (clone $coupon->getEndDate())->setTime(23, 59, 59);
 
         if ($now < $start) {
-            throw new \Exception("Mã giảm giá này chưa đến thời gian áp dụng.");
+            throw new \Exception(__('messages.coupon_not_started'));
         }
         if ($now > $end) {
-            throw new \Exception("Mã giảm giá này đã hết hạn sử dụng.");
+            throw new \Exception(__('messages.coupon_expired'));
         }
 
         if ($coupon->getUsageLimit() > 0 && $coupon->getUsedCount() >= $coupon->getUsageLimit()) {
-            throw new \Exception("Mã giảm giá này đã hết lượt sử dụng.");
+            throw new \Exception(__('messages.coupon_usage_exhausted'));
         }
 
         if ($cartTotal < $coupon->getMinSpend()) {
-            throw new \Exception("Giá trị giỏ hàng chưa đạt mức tối thiểu " . number_format($coupon->getMinSpend()) . " VND.");
+            throw new \Exception(__('messages.minimum_cart', ['amount' => number_format($coupon->getMinSpend())]));
         }
 
         $discount = $coupon->calculateDiscount($cartTotal);

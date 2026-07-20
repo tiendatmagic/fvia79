@@ -10,13 +10,14 @@ import {
 import { CommonModule } from '@angular/common';
 import { FormsModule, ControlValueAccessor, NG_VALUE_ACCESSOR } from '@angular/forms';
 import { IconComponent } from '../icon/icon.component';
+import { TranslatePipe } from '@shared/pipes/translate.pipe';
 import { Subject, Subscription } from 'rxjs';
 import { debounceTime } from 'rxjs/operators';
 
 @Component({
   selector: 'app-custom-search-input',
   
-  imports: [CommonModule, FormsModule, IconComponent],
+  imports: [CommonModule, FormsModule, IconComponent, TranslatePipe],
   templateUrl: './custom-search-input.component.html',
   providers: [
     {
@@ -35,7 +36,7 @@ import { debounceTime } from 'rxjs/operators';
 export class CustomSearchInputComponent implements ControlValueAccessor, OnInit, OnDestroy {
   public readonly val = signal<string>('');
 
-  @Input() placeholder: string = 'Tìm kiếm...';
+  @Input() placeholder: string = '';
   @Input() disabled: boolean = false;
   @Input() clearable: boolean = true;
   @Input() containerClass: string = 'w-full';

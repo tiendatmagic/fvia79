@@ -14,7 +14,7 @@ class OrderMapper
         $items = [];
         if ($model->relationLoaded('items')) {
             foreach ($model->items as $itemModel) {
-                $productName = $itemModel->product_name ?: ($itemModel->product ? $itemModel->product->name : 'Sản phẩm đã bị xóa');
+                $productName = $itemModel->product_name ?: ($itemModel->product ? $itemModel->product->name : __('messages.deleted_product'));
                 $items[] = new OrderItem(
                     $itemModel->id,
                     $itemModel->order_id,

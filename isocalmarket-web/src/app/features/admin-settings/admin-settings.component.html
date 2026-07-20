@@ -88,7 +88,7 @@
             </div>
 
             <div class="form-field md:col-span-2">
-              <label>Moralis API Key <span class="text-red-500">*</span></label>
+              <label>{{ 'settings.moralis_api_key' | translate }} <span class="text-red-500">*</span></label>
               <div class="relative mt-1">
                 <textarea
                   name="scanner_api_key"
@@ -110,7 +110,7 @@
               </div>
               <p class="mt-1.5 text-xs text-slate-400 dark:text-slate-500">
                 {{ 'settings.moralis_hint' | translate }}
-                <span class="font-bold text-slate-600 dark:text-slate-300">Moralis API Key</span>
+                <span class="font-bold text-slate-600 dark:text-slate-300">{{ 'settings.moralis_api_key' | translate }}</span>
                 {{ 'settings.moralis_hint2' | translate }}
                 <a
                   href="https://admin.moralis.io/"
@@ -173,7 +173,7 @@
             </div>
 
             <div class="form-field md:col-span-2">
-              <label>Binance API Key <span class="text-red-500">*</span></label>
+              <label>{{ 'settings.binance_api_key' | translate }} <span class="text-red-500">*</span></label>
               <div class="relative mt-1">
                 <input
                   type="text"
@@ -198,7 +198,7 @@
             </div>
 
             <div class="form-field md:col-span-2">
-              <label>Binance API Secret <span class="text-red-500">*</span></label>
+              <label>{{ 'settings.binance_api_secret' | translate }} <span class="text-red-500">*</span></label>
               <div class="relative mt-1">
                 <input
                   type="text"
@@ -233,10 +233,10 @@
                   <strong>{{ 'settings.binance_guide_title' | translate }}</strong>
                   <ol class="list-decimal pl-4 mt-1 space-y-1">
                     <li>
-                      <strong>Binance ID:</strong> {{ 'settings.binance_guide_1' | translate }}
+                      <strong>{{ 'settings.binance_id' | translate }}:</strong> {{ 'settings.binance_guide_1' | translate }}
                     </li>
                     <li>
-                      <strong>Binance API Key &amp; Secret:</strong> {{ 'settings.binance_guide_2_prefix' | translate }}
+                      <strong>{{ 'settings.binance_key_secret' | translate }}:</strong> {{ 'settings.binance_guide_2_prefix' | translate }}
                       <a
                         href="https://www.binance.com/en/my/settings/api-management"
                         target="_blank"

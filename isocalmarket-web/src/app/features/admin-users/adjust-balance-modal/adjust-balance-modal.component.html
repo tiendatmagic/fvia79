@@ -5,7 +5,7 @@
     <div class="min-w-0">
       <span
         class="text-xs font-extrabold text-slate-400 dark:text-slate-500 uppercase tracking-wider block mb-0.5"
-        >Target Member</span
+        >{{ 'admin.target_member' | translate }}</span
       >
       <h4 class="text-sm font-extrabold text-slate-800 dark:text-white truncate">
         {{ data.user.name }}
@@ -15,7 +15,7 @@
     <div class="text-right shrink-0">
       <span
         class="text-xs font-extrabold text-slate-400 dark:text-slate-500 uppercase tracking-wider block mb-0.5"
-        >Current Balance</span
+        >{{ 'admin.current_balance' | translate }}</span
       >
       <span class="text-base font-extrabold text-[var(--color-primary)] font-mono block">
         {{ currentBalance | appCurrency }}
@@ -27,7 +27,7 @@
     <label
       class="text-xs font-bold text-slate-400 dark:text-slate-500 uppercase tracking-wider block"
     >
-      Adjustment Action <span class="text-rose-500">*</span>
+      {{ 'admin.adjustment_action' | translate }} <span class="text-rose-500">*</span>
     </label>
     <div class="grid grid-cols-2 gap-3">
       <button
@@ -49,7 +49,7 @@
             d="M12 6v6m0 0v6m0-6h6m-6 0H6"
           />
         </svg>
-        Add Balance
+        {{ 'admin.add_balance' | translate }}
       </button>
 
       <button
@@ -66,7 +66,7 @@
         <svg class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
           <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M20 12H4" />
         </svg>
-        Deduct Balance
+        {{ 'admin.deduct_balance' | translate }}
       </button>
     </div>
   </div>
@@ -75,13 +75,13 @@
     <label
       class="text-xs font-bold text-slate-400 dark:text-slate-500 uppercase tracking-wider block"
     >
-      Amount (USD $) <span class="text-rose-500">*</span>
+      {{ 'admin.amount_usd' | translate }} <span class="text-rose-500">*</span>
     </label>
     <app-custom-input
       [(ngModel)]="amount"
       name="amount"
       type="number"
-      placeholder="Enter amount in USD (e.g. 10.5)"
+      [placeholder]="'admin.amount_usd_placeholder' | translate"
       [min]="0.01"
       required
     />
@@ -105,7 +105,7 @@
       />
     </svg>
     <p class="text-xs font-extrabold text-rose-700 dark:text-rose-400 leading-normal">
-      Deduction amount cannot exceed user's current balance!
+      {{ 'admin.deduction_exceeds_balance' | translate }}
     </p>
   </div>
 

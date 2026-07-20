@@ -11,7 +11,7 @@
     type="text"
     [value]="val()"
     (input)="onInput($event)"
-    [placeholder]="placeholder"
+    [placeholder]="placeholder || ('common.search_placeholder' | translate)"
     [disabled]="disabled"
     [class]="inputClass"
     [style]="loading || (clearable && val()) ? 'padding-right: 2.5rem !important;' : null"
@@ -26,7 +26,7 @@
       type="button"
       (click)="onClear()"
       class="absolute right-2.5 top-1/2 -translate-y-1/2 p-1 text-slate-400 hover:text-slate-600 dark:hover:text-slate-300 transition-colors cursor-pointer rounded-lg hover:bg-slate-100/80 dark:hover:bg-slate-800/80 flex items-center justify-center"
-      title="Xóa tìm kiếm"
+      [title]="'common.clear_search' | translate"
     >
       <app-icon name="close" class="h-3.5 w-3.5" strokeWidth="2.5"></app-icon>
     </button>

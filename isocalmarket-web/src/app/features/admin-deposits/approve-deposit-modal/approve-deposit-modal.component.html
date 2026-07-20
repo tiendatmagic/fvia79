@@ -9,10 +9,10 @@
         <span
           class="text-xs font-extrabold text-slate-400 dark:text-slate-500 uppercase tracking-wider block mb-0.5"
         >
-          Thành viên nạp tiền
+          {{ 'deposit.member' | translate }}
         </span>
         <h4 class="text-sm font-extrabold text-slate-800 dark:text-white truncate">
-          {{ data.deposit.userName || 'Không tên' }}
+          {{ data.deposit.userName || ('common.unnamed' | translate) }}
         </h4>
         <p class="text-xs text-slate-500 dark:text-slate-400 truncate">
           {{ data.deposit.userEmail }}
@@ -22,7 +22,7 @@
         <span
           class="text-xs font-extrabold text-slate-400 dark:text-slate-500 uppercase tracking-wider block mb-0.5"
         >
-          Mã lệnh nạp
+          {{ 'deposit.code' | translate }}
         </span>
         <span
           class="text-sm font-mono font-bold text-[var(--color-primary)] bg-[var(--color-primary)]/10 px-2 py-0.5 rounded-lg"
@@ -37,7 +37,7 @@
         <span
           class="text-xs font-extrabold text-slate-400 dark:text-slate-500 uppercase tracking-wider block mb-0.5"
         >
-          Số tiền thực tế (USDT)
+          {{ 'deposit.actual_amount' | translate }}
         </span>
         <span class="text-base font-extrabold text-slate-700 dark:text-slate-200 font-mono block">
           {{ data.deposit.amountUsdt | number: '1.2-4' }} USDT
@@ -47,7 +47,7 @@
         <span
           class="text-xs font-extrabold text-slate-400 dark:text-slate-500 uppercase tracking-wider block mb-0.5"
         >
-          Số dư thực nhận
+          {{ 'deposit.received_balance' | translate }}
         </span>
         <span
           class="text-base font-extrabold text-emerald-600 dark:text-emerald-400 font-mono block"
@@ -64,8 +64,8 @@
     >
       {{
         data.deposit.paymentMethod === 'binance'
-          ? 'Binance Order ID (Tùy chọn)'
-          : 'Mã băm giao dịch TxHash (Tùy chọn)'
+          ? ('deposit.binance_order_optional' | translate)
+          : ('deposit.tx_hash_optional' | translate)
       }}
     </label>
     <app-custom-input
@@ -74,12 +74,12 @@
       type="text"
       [placeholder]="
         data.deposit.paymentMethod === 'binance'
-          ? 'Nhập Binance Order ID để đối soát...'
-          : 'Nhập mã băm TxHash giao dịch trên blockchain...'
+          ? ('deposit.binance_order_placeholder' | translate)
+          : ('deposit.tx_hash_placeholder' | translate)
       "
     />
     <p class="text-[11px] text-slate-400 dark:text-slate-500">
-      * Để trống nếu muốn hệ thống tự động sinh mã đối soát Admin duyệt thủ công.
+      * {{ 'deposit.reconciliation_hint' | translate }}
     </p>
   </div>
 
@@ -91,7 +91,7 @@
       (click)="onClose()"
       class="flex-1"
     >
-      Hủy bỏ
+      {{ 'action.cancel' | translate }}
     </button>
     <button
       type="submit"
@@ -100,7 +100,7 @@
       [loading]="isSubmitting()"
       class="flex-1"
     >
-      Xác nhận duyệt
+      {{ 'deposit.approve_confirm' | translate }}
     </button>
   </div>
 </form>

@@ -7,7 +7,7 @@
         class="w-12 h-12 rounded-full border-4 border-[var(--color-primary)]/20 border-t-[var(--color-primary)] animate-spin"
       ></div>
       <p class="text-sm font-semibold text-slate-500 dark:text-slate-400">
-        Đang tải thông tin hóa đơn...
+        {{ 'invoice.loading' | translate }}
       </p>
     </div>
   </div>
@@ -22,7 +22,7 @@
         <app-icon name="close" class="w-8 h-8 text-rose-500" />
       </div>
       <div class="space-y-1">
-        <h3 class="text-lg font-extrabold text-slate-800 dark:text-white">Không thể tải hóa đơn</h3>
+        <h3 class="text-lg font-extrabold text-slate-800 dark:text-white">{{ 'invoice.load_failed' | translate }}</h3>
         <p class="text-sm text-slate-500 dark:text-slate-400">{{ invoiceError() }}</p>
       </div>
       <div class="flex gap-3 flex-wrap justify-center">
@@ -30,13 +30,13 @@
           routerLink="/deposit/history"
           class="px-5 py-2.5 rounded-xl text-sm font-bold border border-slate-200/50 dark:border-slate-700/50 text-slate-600 dark:text-slate-400 hover:bg-slate-100 dark:hover:bg-slate-800 transition-colors"
         >
-          Lịch sử nạp tiền
+          {{ 'nav.deposit_history' | translate }}
         </a>
         <a
           routerLink="/deposit"
           class="px-5 py-2.5 rounded-xl text-sm font-bold bg-[var(--color-primary)] text-white hover:opacity-90 transition-opacity"
         >
-          Nạp tiền mới
+          {{ 'invoice.new_deposit' | translate }}
         </a>
       </div>
     </div>
@@ -51,12 +51,12 @@
     class="bg-white dark:bg-slate-950 border border-slate-200/40 dark:border-slate-800/40 rounded-xl p-4 sm:p-5 text-center shadow-sm"
   >
     <h3 class="text-lg sm:text-xl font-extrabold text-slate-800 dark:text-white">
-      Nạp Tiền Tự Động (USDT - {{ invoice.paymentMethod === 'binance' ? 'Binance Pay' : 'BEP-20' }})
+      {{ 'invoice.title' | translate: { method: invoice.paymentMethod === 'binance' ? 'Binance Pay' : 'BEP-20' } }}
     </h3>
     <div
       class="mt-2 inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-emerald-500/10 dark:bg-emerald-500/20 text-emerald-600 dark:text-emerald-400 text-xs font-extrabold"
     >
-      Tỷ giá: 1 USDT = {{ state.depositStore.rate() | number }} VNĐ
+      {{ 'invoice.rate' | translate: { rate: (state.depositStore.rate() | number) } }}
     </div>
   </div>
 
@@ -65,9 +65,9 @@
       class="flex items-center justify-between gap-3 pb-4 border-b border-slate-200/60 dark:border-slate-700/40"
     >
       <div>
-        <h4 class="text-base font-extrabold text-slate-800 dark:text-white">Thanh Toán</h4>
+        <h4 class="text-base font-extrabold text-slate-800 dark:text-white">{{ 'invoice.payment' | translate }}</h4>
         <span class="text-xs font-bold text-slate-400 dark:text-slate-500"
-          >Mã lệnh: #{{ invoice.code }}</span
+          >{{ 'invoice.code' | translate: { code: invoice.code } }}</span
         >
       </div>
 
@@ -78,7 +78,7 @@
           <div class="text-left">
             <span
               class="text-[9px] font-black text-rose-500 uppercase tracking-widest block leading-none"
-              >Thời gian còn lại</span
+              >{{ 'invoice.time_remaining' | translate }}</span
             >
             <span
               class="text-sm font-black text-rose-600 dark:text-rose-400 font-mono tracking-wider block mt-0.5 animate-pulse"
@@ -92,7 +92,7 @@
         <div
           class="flex items-center gap-2 bg-emerald-500/10 px-3 sm:px-4 py-2.5 rounded-xl border border-emerald-500/20 shrink-0 text-emerald-600 dark:text-emerald-400"
         >
-          <span class="text-xs sm:text-sm font-black uppercase tracking-wider">Đã Thanh Toán</span>
+          <span class="text-xs sm:text-sm font-black uppercase tracking-wider">{{ 'invoice.paid' | translate }}</span>
           <app-icon name="check" class="w-4 h-4 sm:w-5 sm:h-5 shrink-0" />
         </div>
       } @else {
@@ -100,7 +100,7 @@
           class="flex items-center gap-2 bg-slate-500/10 px-3 sm:px-4 py-2.5 rounded-xl border border-slate-500/20 shrink-0 text-slate-500 dark:text-slate-400"
         >
           <span class="text-xs sm:text-sm font-black uppercase tracking-wider"
-            >Đã Hủy / Hết Hạn</span
+            >{{ 'invoice.cancelled' | translate }}</span
           >
           <app-icon name="close" class="w-4 h-4 sm:w-5 sm:h-5 shrink-0" />
         </div>
@@ -116,14 +116,14 @@
             class="inline-flex items-center gap-1.5 px-4 py-2 rounded-full bg-amber-500 text-white text-xs font-black tracking-wider uppercase shadow-md shadow-amber-500/20 whitespace-nowrap"
           >
             <app-icon name="globe" class="w-4 h-4 shrink-0" />
-            Cổng nạp: Binance Pay
+            {{ 'invoice.binance_gateway' | translate }}
           </div>
         } @else {
           <div
             class="inline-flex items-center gap-1.5 px-4 py-2 rounded-full bg-blue-600 text-white text-xs font-black tracking-wider uppercase shadow-md shadow-blue-500/20 whitespace-nowrap"
           >
             <app-icon name="globe" class="w-4 h-4 shrink-0" />
-            Mạng lưới: BSC (BEP-20)
+            {{ 'invoice.bsc_network' | translate }}
           </div>
         }
 
@@ -142,22 +142,22 @@
         >
           <span
             class="text-xs font-black text-slate-400 dark:text-slate-500 uppercase tracking-wider block mb-2"
-            >Số tiền cần chuyển</span
+            >{{ 'invoice.amount_to_send' | translate }}</span
           >
           <div class="flex items-center justify-center gap-2 flex-wrap">
             <span
-              (click)="copyText(invoice.amountToPay.toString(), 'Số tiền cần chuyển')"
+              (click)="copyText(invoice.amountToPay.toString(), lang.translate('invoice.amount_to_send'))"
               class="text-xl sm:text-2xl font-black text-rose-600 dark:text-rose-400 font-mono cursor-pointer hover:opacity-80 active:scale-95 transition-all"
-              title="Click để copy số tiền"
+              [title]="'invoice.copy_amount' | translate"
             >
               {{ invoice.amountToPay | number: '1.4-4' }}
             </span>
             <span class="text-sm font-extrabold text-slate-500 dark:text-slate-400">USDT</span>
             <button
               type="button"
-              (click)="copyText(invoice.amountToPay.toString(), 'Số tiền cần chuyển')"
+              (click)="copyText(invoice.amountToPay.toString(), lang.translate('invoice.amount_to_send'))"
               class="p-1.5 rounded-lg hover:bg-slate-200/50 dark:hover:bg-slate-800 text-slate-400 hover:text-[var(--color-primary)] active:scale-95 transition-all shrink-0 cursor-pointer"
-              title="Copy số tiền"
+              [title]="'invoice.copy_amount' | translate"
             >
               <app-icon name="copy" class="w-4 h-4" />
             </button>
@@ -170,7 +170,7 @@
           <div class="space-y-2">
             <span
               class="text-xs font-bold text-slate-400 dark:text-slate-500 uppercase tracking-wider block"
-              >Binance ID nhận tiền</span
+              >{{ 'invoice.binance_id' | translate }}</span
             >
             <div
               class="border border-slate-200/40 dark:border-slate-700/30 bg-slate-50/50 dark:bg-slate-900/20 rounded-2xl p-4 sm:p-5 space-y-4 shadow-sm"
@@ -186,7 +186,7 @@
                 class="w-full py-3 rounded-xl font-extrabold text-sm bg-emerald-500/10 dark:bg-emerald-500/20 text-emerald-600 dark:text-emerald-400 border border-emerald-500/20 hover:bg-emerald-500/15 active:scale-[0.98] transition-all flex items-center justify-center gap-2 cursor-pointer"
               >
                 <app-icon name="copy" class="w-4 h-4 shrink-0" />
-                Copy Binance ID
+                {{ 'deposit.copy_binance_id' | translate }}
               </button>
             </div>
           </div>
@@ -197,19 +197,12 @@
             <app-icon name="warning" class="w-5 h-5 text-amber-500 shrink-0 mt-0.5" />
             <div class="space-y-1 min-w-0">
               <h5 class="text-sm font-bold text-amber-700 dark:text-amber-400">
-                HƯỚNG DẪN NẠP BINANCE PAY:
+                {{ 'invoice.binance_guide_title' | translate }}
               </h5>
               <p
                 class="text-xs text-amber-700/90 dark:text-amber-400/80 leading-relaxed font-semibold"
               >
-                Vui lòng mở App Binance thực hiện chuyển đúng số tiền
-                <span class="text-rose-600 font-extrabold"
-                  >{{ invoice.amountToPay | number: '1.4-4' }} USDT</span
-                >
-                qua cổng Binance Pay/Binance ID đến tài khoản Admin:
-                <span class="text-rose-600 font-extrabold">{{ invoice.adminBinanceId }}</span
-                >. BOT sẽ tự động quét và cộng tiền trong vòng 1–3 phút. Nếu chuyển sai số lẻ, BOT
-                sẽ không thể nhận diện!
+                {{ 'invoice.binance_guide' | translate: { amount: (invoice.amountToPay | number: '1.4-4') + ' USDT', id: invoice.adminBinanceId } }}
               </p>
             </div>
           </div>
@@ -217,7 +210,7 @@
           <div class="space-y-2">
             <span
               class="text-xs font-bold text-slate-400 dark:text-slate-500 uppercase tracking-wider block"
-              >Địa chỉ ví nhận tiền</span
+              >{{ 'invoice.wallet_address' | translate }}</span
             >
             <div
               class="border border-slate-200/40 dark:border-slate-700/30 bg-slate-50/50 dark:bg-slate-900/20 rounded-2xl p-4 sm:p-5 space-y-4 shadow-sm"
@@ -229,11 +222,11 @@
               </div>
               <button
                 type="button"
-                (click)="copyText(adminWalletAddress(), 'Địa chỉ ví nạp')"
+                (click)="copyText(adminWalletAddress(), lang.translate('invoice.wallet_label'))"
                 class="w-full py-3 rounded-xl font-extrabold text-sm bg-emerald-500/10 dark:bg-emerald-500/20 text-emerald-600 dark:text-emerald-400 border border-emerald-500/20 hover:bg-emerald-500/15 active:scale-[0.98] transition-all flex items-center justify-center gap-2 cursor-pointer"
               >
                 <app-icon name="copy" class="w-4 h-4 shrink-0" />
-                Copy địa chỉ ví
+                {{ 'invoice.copy_wallet' | translate }}
               </button>
             </div>
           </div>
@@ -244,17 +237,12 @@
             <app-icon name="warning" class="w-5 h-5 text-amber-500 shrink-0 mt-0.5" />
             <div class="space-y-1 min-w-0">
               <h5 class="text-sm font-bold text-amber-700 dark:text-amber-400">
-                LƯU Ý ĐẶC BIỆT QUAN TRỌNG:
+                {{ 'invoice.warning_title' | translate }}
               </h5>
               <p
                 class="text-xs text-amber-700/90 dark:text-amber-400/80 leading-relaxed font-semibold"
               >
-                Vui lòng chuyển đúng từng số thập phân của số tiền
-                <span class="text-rose-600 font-extrabold"
-                  >{{ invoice.amountToPay | number: '1.4-4' }} USDT</span
-                >
-                (đã bao gồm phí mạng lưới). BOT sẽ tự động quét và cộng tiền trong vòng 1–3 phút.
-                Nếu chuyển sai số lẻ, BOT sẽ không thể nhận diện!
+                {{ 'invoice.wallet_warning' | translate: { amount: (invoice.amountToPay | number: '1.4-4') + ' USDT' } }}
               </p>
             </div>
           </div>
@@ -270,7 +258,7 @@
               class="w-full py-3 rounded-xl text-sm font-extrabold bg-rose-500/10 text-rose-600 border border-rose-500/20 hover:bg-rose-500/15 active:scale-[0.98] transition-all flex items-center justify-center gap-2 cursor-pointer"
             >
               <app-icon name="close" class="w-4 h-4 shrink-0" />
-              Hủy Lệnh Nạp
+              {{ 'invoice.cancel' | translate }}
             </button>
 
             <button
@@ -280,7 +268,7 @@
               (click)="checkTransaction()"
               class="w-full py-3 rounded-xl text-sm font-extrabold bg-gradient-to-r from-[var(--color-primary)] to-[var(--color-secondary)] text-white shadow-md shadow-[var(--color-primary)]/15 active:scale-[0.98] transition-all flex items-center justify-center gap-2 cursor-pointer"
             >
-              Tôi đã chuyển khoản
+              {{ 'invoice.transferred' | translate }}
             </button>
           }
 
@@ -290,7 +278,7 @@
               class="w-full py-3 rounded-xl text-sm font-extrabold border border-slate-200/50 dark:border-slate-700/50 text-slate-600 dark:text-slate-400 hover:bg-slate-100 dark:hover:bg-slate-800 transition-all flex items-center justify-center gap-2 cursor-pointer"
             >
               <app-icon name="chevron-left" class="w-4 h-4 shrink-0" />
-              Quay lại Quản lý Nạp tiền
+              {{ 'invoice.back' | translate }}
             </a>
           } @else {
             <a
@@ -298,7 +286,7 @@
               class="w-full py-3 rounded-xl text-sm font-extrabold bg-gradient-to-r from-[var(--color-primary)] to-[var(--color-secondary)] text-white shadow-md shadow-[var(--color-primary)]/15 hover:scale-[1.01] active:scale-[0.98] transition-all flex items-center justify-center gap-2 cursor-pointer"
             >
               <app-icon name="chevron-left" class="w-4 h-4 shrink-0" />
-              Xem Lịch Sử Nạp Tiền
+              {{ 'invoice.history' | translate }}
             </a>
           }
         </div>

@@ -6,13 +6,14 @@ import { StateService } from '@core/services/state.service';
 import { CustomInputComponent } from '@shared/components/custom-input/custom-input.component';
 import { ButtonComponent } from '@shared/components/button/button.component';
 import { QrCodeModule } from 'ng-qrcode';
+import { TranslatePipe } from '@shared/pipes/translate.pipe';
 import { LanguageService } from '@core/services/language.service';
 import { finalize } from 'rxjs/operators';
 
 @Component({
   selector: 'app-enable-2fa-modal',
   standalone: true,
-  imports: [CommonModule, FormsModule, CustomInputComponent, ButtonComponent, QrCodeModule],
+  imports: [CommonModule, FormsModule, CustomInputComponent, ButtonComponent, QrCodeModule, TranslatePipe],
   templateUrl: './enable-2fa-modal.component.html',
   styles: [`
     :host {

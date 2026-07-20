@@ -89,7 +89,7 @@ export class DepositInvoiceComponent implements OnInit, OnDestroy {
   private loadInvoice() {
     const invoiceId = this.route.snapshot.paramMap.get('id');
     if (!invoiceId) {
-      this.invoiceError.set('Không tìm thấy mã hóa đơn trong URL!');
+      this.invoiceError.set(this.lang.translate('invoice.missing_id'));
       this.isLoadingInvoice.set(false);
       return;
     }
@@ -106,14 +106,14 @@ export class DepositInvoiceComponent implements OnInit, OnDestroy {
         if (method === 'bep20') {
           const wallet = res.invoice?.adminWalletAddress || '';
           if (!wallet.trim()) {
-            this.invoiceError.set('Quản trị viên hệ thống chưa cấu hình địa chỉ ví nhận USDT. Vui lòng liên hệ hỗ trợ!');
+            this.invoiceError.set(this.lang.translate('invoice.wallet_support'));
             return;
           }
           this.adminWalletAddress.set(wallet);
         } else if (method === 'binance') {
           const binanceId = res.invoice?.adminBinanceId || '';
           if (!binanceId.trim()) {
-            this.invoiceError.set('Quản trị viên hệ thống chưa cấu hình Binance ID nhận tiền. Vui lòng liên hệ hỗ trợ!');
+            this.invoiceError.set(this.lang.translate('invoice.binance_support'));
             return;
           }
         }
@@ -158,15 +158,15 @@ export class DepositInvoiceComponent implements OnInit, OnDestroy {
         const errMsg = err?.error?.message || '';
         
         if (errMsg.includes('configured the receiving USDT wallet')) {
-          this.invoiceError.set('Quản trị viên hệ thống chưa cấu hình địa chỉ ví nhận USDT nạp tiền. Vui lòng liên hệ Admin!');
+          this.invoiceError.set(this.lang.translate('invoice.wallet_admin'));
         } else if (errMsg.includes('configured the scanner API key')) {
-          this.invoiceError.set('Hệ thống đối soát tự động chưa được cấu hình Scanner API Key. Vui lòng liên hệ Admin!');
+          this.invoiceError.set(this.lang.translate('invoice.scanner_admin'));
         } else if (status === 404) {
-          this.invoiceError.set('Lệnh nạp tiền không tồn tại hoặc bạn không có quyền xem!');
+          this.invoiceError.set(this.lang.translate('invoice.not_found_or_forbidden'));
         } else if (status === 401 || status === 403) {
-          this.invoiceError.set('Bạn cần đăng nhập để xem hóa đơn nạp tiền!');
+          this.invoiceError.set(this.lang.translate('invoice.login_required'));
         } else {
-          this.invoiceError.set('Không thể tải chi tiết hóa đơn. Vui lòng thử lại!');
+          this.invoiceError.set(this.lang.translate('invoice.detail_failed'));
         }
       }
     });
@@ -339,42 +339,42 @@ export class DepositInvoiceComponent implements OnInit, OnDestroy {
 
   private translateCheckMessage(msg: string): string {
     if (!msg) {
-      return 'BOT chưa phát hiện giao dịch USDT hợp lệ của bạn!';
+      return this.lang.translate('invoice.transaction_not_found');
     }
 
     const lowerMsg = msg.toLowerCase();
 
     // Lỗi chưa cấu hình địa chỉ ví nhận USDT nạp tiền
     if (lowerMsg.includes('receiving usdt wallet') || lowerMsg.includes('receiving wallet')) {
-      return 'Hệ thống đối soát bị lỗi do Quản trị viên chưa cấu hình địa chỉ ví nhận tiền!';
+      return this.lang.translate('invoice.reconcile_wallet_error');
     }
 
     // Lỗi chưa cấu hình Scanner API Key
     if (lowerMsg.includes('scanner api key')) {
-      return 'Hệ thống đối soát bị lỗi do Quản trị viên chưa cấu hình Scanner API Key!';
+      return this.lang.translate('invoice.reconcile_scanner_error');
     }
 
     // Lỗi chưa cấu hình Binance API Key/Secret
     if (lowerMsg.includes('binance api key/secret') || lowerMsg.includes('binance api key') || lowerMsg.includes('binance_api_key')) {
-      return 'Hệ thống đối soát bị lỗi do Quản trị viên chưa cấu hình Binance API Key/Secret!';
+      return this.lang.translate('invoice.reconcile_binance_error');
     }
 
     // Lỗi không thể kết nối tới blockchain scanner API
     if (lowerMsg.includes('blockchain scanner api') || lowerMsg.includes('deep-index.moralis.io')) {
-      return 'Không thể kết nối với API quét blockchain. Vui lòng thử lại sau!';
+      return this.lang.translate('invoice.blockchain_api_error');
     }
 
     // Lỗi không thể kết nối tới Binance Pay API
     if (lowerMsg.includes('binance pay api') || lowerMsg.includes('api.binance.com')) {
-      return 'Không thể kết nối với API Binance Pay. Vui lòng thử lại sau!';
+      return this.lang.translate('invoice.binance_api_error');
     }
 
     // Lỗi chưa phát hiện giao dịch nạp tiền
     if (lowerMsg.includes('could not detect') || lowerMsg.includes('not detect your usdt payment')) {
       if (this.invoice?.paymentMethod === 'binance') {
-        return 'Hệ thống chưa phát hiện giao dịch USDT của bạn qua cổng Binance Pay. Vui lòng đảm bảo bạn đã chuyển chính xác số tiền (bao gồm cả phần số lẻ thập phân) vào đúng Binance ID nhận trong vòng 15 phút.';
+        return this.lang.translate('invoice.binance_transaction_missing');
       } else {
-        return 'Hệ thống chưa phát hiện giao dịch USDT của bạn trên mạng lưới BSC (BEP-20). Vui lòng đảm bảo bạn đã chuyển chính xác số tiền (bao gồm cả phần số lẻ thập phân) vào đúng địa chỉ ví nhận trong vòng 15 phút.';
+        return this.lang.translate('invoice.bsc_transaction_missing');
       }
     }
 

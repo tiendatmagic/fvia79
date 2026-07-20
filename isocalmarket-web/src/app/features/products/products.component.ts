@@ -54,7 +54,7 @@ export class ProductsComponent implements OnInit {
   public readonly columns = computed<TableColumn[]>(() => {
     this.lang.currentLang();
     return [
-      { key: 'id', label: 'ID', sortable: true },
+      { key: 'id', label: this.lang.translate('common.id'), sortable: true },
       { key: 'name', label: this.lang.translate('modal.product_name'), sortable: true },
       { key: 'slug', label: this.lang.translate('cat.slug'), sortable: true },
       { key: 'price', label: this.lang.translate('modal.product_price'), sortable: true },

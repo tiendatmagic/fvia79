@@ -41,35 +41,9 @@ export class AuthStore {
   public readonly loginError = signal<string>('');
   public readonly registerError = signal<string>('');
 
-    private translateAuthError(err: any, fallback: string): string {
+  private translateAuthError(err: any, fallback: string): string {
     const raw: string = err?.error?.message || err?.message || '';
     const status: number = err?.status || 0;
-
-    const messageMap: Record<string, string> = {
-      'Invalid email/username or password.': 'Tài khoản hoặc mật khẩu không chính xác!',
-      'Unauthorized.': 'Phiên đăng nhập không hợp lệ. Vui lòng đăng nhập lại!',
-      'Too Many Attempts.': 'Bạn đã thử quá nhiều lần. Vui lòng chờ vài phút rồi thử lại!',
-      'Email already registered.': 'Email này đã được sử dụng. Vui lòng chọn email khác!',
-      'Username already taken.': 'Tên đăng nhập này đã được sử dụng. Vui lòng chọn tên khác!',
-      'The email has already been taken.': 'Email này đã được sử dụng. Vui lòng chọn email khác!',
-      'The name has already been taken.': 'Tên tài khoản này đã tồn tại. Vui lòng chọn tên khác!',
-      'The username has already been taken.': 'Tên đăng nhập này đã được sử dụng. Vui lòng chọn tên khác!',
-      'Username must only contain letters, numbers, and underscores.': 'Tên đăng nhập chỉ được chứa chữ cái, chữ số và dấu gạch dưới!',
-      'Username must be at least 3 characters.': 'Tên đăng nhập phải có ít nhất 3 ký tự!',
-      'Email must be a valid email address.': 'Địa chỉ email không đúng định dạng!',
-      'Password must be at least 6 characters.': 'Mật khẩu phải có ít nhất 6 ký tự!',
-      'Password confirmation does not match.': 'Mật khẩu xác nhận không khớp!',
-      'The email field must be a valid email address.': 'Địa chỉ email không đúng định dạng!',
-      'The password field must be at least 6 characters.': 'Mật khẩu phải có ít nhất 6 ký tự!',
-      'Invalid or expired verification token.': 'Mã xác thực đã hết hạn. Vui lòng đăng nhập lại từ đầu!',
-      'Invalid OTP code. Please try again.': 'Mã OTP không chính xác. Vui lòng thử lại!',
-      'Invalid 2FA verification code.': 'Mã xác thực 2FA không chính xác!',
-      'User not found.': 'Tài khoản không tồn tại trong hệ thống!',
-    };
-
-    if (messageMap[raw]) return messageMap[raw];
-
-    if (status === 401) return 'Tài khoản hoặc mật khẩu không chính xác!';
     if (status === 422) {
       const firstField = err?.error?.errors;
       if (firstField) {
@@ -78,13 +52,8 @@ export class AuthStore {
           return this.translateAuthError({ message: firstField[firstKey][0] }, fallback);
         }
       }
-      return 'Thông tin nhập vào không hợp lệ. Vui lòng kiểm tra lại!';
     }
-    if (status === 429) return 'Bạn đã thử quá nhiều lần. Vui lòng chờ vài phút rồi thử lại!';
-    if (status === 500) return 'Lỗi máy chủ. Vui lòng thử lại sau!';
-    if (status === 0) return 'Không thể kết nối máy chủ. Vui lòng kiểm tra mạng!';
-
-    return raw || fallback;
+    return this.toast.resolveApiMessage(raw, status, fallback);
   }
 
   public login(credentials: any, returnUrl: string = '/') {

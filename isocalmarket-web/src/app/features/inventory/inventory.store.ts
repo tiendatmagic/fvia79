@@ -118,7 +118,7 @@ export class InventoryStore {
         this.toast.showToast(this.lang.translate('toast.stock_imported'), 'success');
       }),
       catchError((err) => {
-        const msg = err.error?.message || 'Import lô hàng thất bại!';
+        const msg = err.error?.message || this.lang.translate('toast.stock_import_failed');
         this.toast.showToast(msg, 'error');
         return of(null);
       }),
@@ -138,7 +138,7 @@ export class InventoryStore {
         this.toast.showToast(this.lang.translate('toast.stock_updated'), 'success');
       }),
       catchError((err) => {
-        const msg = err.error?.message || 'Cập nhật lô hàng thất bại!';
+        const msg = err.error?.message || this.lang.translate('toast.stock_update_failed');
         this.toast.showToast(msg, 'error');
         return of(null);
       }),
@@ -154,7 +154,7 @@ export class InventoryStore {
         this.toast.showToast(this.lang.translate('toast.stock_deleted'), 'success');
       }),
       catchError((err) => {
-        const msg = err.error?.message || 'Xóa thất bại!';
+        const msg = err.error?.message || this.lang.translate('toast.stock_delete_failed');
         this.toast.showToast(msg, 'error');
         return of(null);
       }),

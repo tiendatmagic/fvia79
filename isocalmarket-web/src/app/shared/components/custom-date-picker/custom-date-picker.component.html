@@ -10,7 +10,7 @@
     [class.ring-[var(--color-primary)]/20]="isOpen()"
   >
     <span [class.text-slate-400]="!value()" class="truncate">
-      {{ value() ? displayValue() : placeholder }}
+    {{ value() ? displayValue() : (placeholder || lang.translate('date.select')) }}
     </span>
     <div class="w-4 h-4 text-slate-400 dark:text-slate-500 flex-shrink-0 ml-2">
       <app-icon name="calendar" />

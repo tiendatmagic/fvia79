@@ -3,7 +3,7 @@
     <div class="form-field">
       <label
         class="text-xs font-bold text-slate-400 dark:text-slate-500 uppercase tracking-wider block mb-1"
-        >Mã giảm giá <span class="text-rose-500">*</span></label
+        >{{ 'coupon.code' | translate }} <span class="text-rose-500">*</span></label
       >
       <app-custom-input
         [(ngModel)]="code"
@@ -18,7 +18,7 @@
     <div class="form-field">
       <label
         class="text-xs font-bold text-slate-400 dark:text-slate-500 uppercase tracking-wider block mb-1"
-        >Loại giảm giá <span class="text-rose-500">*</span></label
+        >{{ 'coupon.type' | translate }} <span class="text-rose-500">*</span></label
       >
       <app-custom-select [options]="typeOptions" [(ngModel)]="type" name="type" />
     </div>
@@ -28,7 +28,7 @@
     <div class="form-field">
       <label
         class="text-xs font-bold text-slate-400 dark:text-slate-500 uppercase tracking-wider block mb-1"
-        >Giá trị giảm <span class="text-rose-500">*</span></label
+        >{{ 'coupon.value' | translate }} <span class="text-rose-500">*</span></label
       >
       <app-custom-input [(ngModel)]="value" name="value" type="number" required />
     </div>
@@ -36,7 +36,7 @@
     <div class="form-field">
       <label
         class="text-xs font-bold text-slate-400 dark:text-slate-500 uppercase tracking-wider block mb-1"
-        >Đơn tối thiểu áp dụng <span class="text-rose-500">*</span></label
+        >{{ 'coupon.min_order' | translate }} <span class="text-rose-500">*</span></label
       >
       <app-custom-input [(ngModel)]="minSpend" name="minSpend" type="number" required />
     </div>
@@ -46,7 +46,7 @@
     <div class="form-field">
       <label
         class="text-xs font-bold text-slate-400 dark:text-slate-500 uppercase tracking-wider block mb-1"
-        >Ngày bắt đầu <span class="text-rose-500">*</span></label
+        >{{ 'coupon.start_date' | translate }} <span class="text-rose-500">*</span></label
       >
       <app-custom-input [(ngModel)]="startDate" name="startDate" type="date" required />
     </div>
@@ -54,7 +54,7 @@
     <div class="form-field">
       <label
         class="text-xs font-bold text-slate-400 dark:text-slate-500 uppercase tracking-wider block mb-1"
-        >Ngày kết thúc <span class="text-rose-500">*</span></label
+        >{{ 'coupon.end_date' | translate }} <span class="text-rose-500">*</span></label
       >
       <app-custom-input [(ngModel)]="endDate" name="endDate" type="date" required />
     </div>
@@ -63,11 +63,11 @@
   <div class="form-field">
     <label
       class="text-xs font-black text-slate-400 dark:text-slate-500 uppercase tracking-wider block mb-2"
-      >Giới hạn sử dụng <span class="text-rose-500">*</span></label
+        >{{ 'coupon.usage_limit' | translate }} <span class="text-rose-500">*</span></label
     >
     <app-custom-input [(ngModel)]="usageLimit" name="usageLimit" type="number" required />
     <p class="text-[10px] text-slate-400 dark:text-slate-500 font-semibold mt-1">
-      Nhập 0 nếu không giới hạn số lần sử dụng của mã giảm giá này.
+        {{ 'coupon.unlimited_hint' | translate }}
     </p>
   </div>
 
@@ -80,7 +80,7 @@
       [variant]="'cancel'"
       class="py-2.5 px-4 rounded-xl text-xs font-bold"
     >
-      Hủy bỏ
+      {{ 'action.cancel' | translate }}
     </button>
     <button
       app-button
@@ -89,7 +89,7 @@
       [variant]="'primary'"
       class="py-2.5 px-4 rounded-xl bg-gradient-to-r from-[var(--color-primary)] to-[var(--color-secondary)] text-white text-xs font-extrabold active:scale-95 shadow-sm shadow-[var(--color-primary)]/10 cursor-pointer"
     >
-      Lưu thông tin
+      {{ 'coupon.save' | translate }}
     </button>
   </div>
 </div>

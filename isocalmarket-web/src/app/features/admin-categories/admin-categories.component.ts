@@ -47,17 +47,21 @@ import { TranslatePipe } from '@shared/pipes/translate.pipe';
 })
 export class AdminCategoriesComponent implements OnInit {
   public readonly state = inject(StateService);
+  public readonly lang = inject(LanguageService);
   private readonly modalService = inject(ModalService);
 
-  public readonly columns: TableColumn[] = [
-    { key: 'id', label: 'ID', sortable: true },
-    { key: 'name', label: 'Tên danh mục', sortable: true },
-    { key: 'slug', label: 'Slug', sortable: true },
-    { key: 'description', label: 'Mô tả chi tiết', sortable: true },
-    { key: 'products_count', label: 'Số sản phẩm', sortable: true, align: 'center' },
-    { key: 'created_at', label: 'Ngày tạo', sortable: true },
-    { key: 'actions', label: 'Thao tác', sortable: false, align: 'right' }
-  ];
+  public readonly columns = computed<TableColumn[]>(() => {
+    this.lang.currentLang();
+    return [
+      { key: 'id', label: this.lang.translate('common.id'), sortable: true },
+      { key: 'name', label: this.lang.translate('category.name'), sortable: true },
+      { key: 'slug', label: this.lang.translate('cat.slug'), sortable: true },
+      { key: 'description', label: this.lang.translate('common.description'), sortable: true },
+      { key: 'products_count', label: this.lang.translate('category.product_count'), sortable: true, align: 'center' },
+      { key: 'created_at', label: this.lang.translate('common.created_at'), sortable: true },
+      { key: 'actions', label: this.lang.translate('common.actions'), sortable: false, align: 'right' }
+    ];
+  });
 
   public searchQuery = '';
   private readonly _searchQuery = signal('');
@@ -67,12 +71,14 @@ export class AdminCategoriesComponent implements OnInit {
   public readonly currentPage = signal<number>(1);
   public readonly limit = 10;
 
-  public readonly sortOptions = [
-    { label: 'Tên danh mục (A-Z)', value: 'name-asc' },
-    { label: 'Tên danh mục (Z-A)', value: 'name-desc' },
-    { label: 'Mới nhất', value: 'date-desc' },
-    { label: 'Cũ nhất', value: 'date-asc' }
-  ];
+  public get sortOptions() {
+    return [
+      { label: this.lang.translate('category.name_az'), value: 'name-asc' },
+      { label: this.lang.translate('category.name_za'), value: 'name-desc' },
+      { label: this.lang.translate('common.newest'), value: 'date-desc' },
+      { label: this.lang.translate('common.oldest'), value: 'date-asc' }
+    ];
+  }
 
   public readonly filteredCategories = computed(() => {
     const dateRange = this.selectedDateRange();
@@ -135,8 +141,6 @@ export class AdminCategoriesComponent implements OnInit {
     this.currentPage.set(1);
     this.fetchCategories();
   }
-
-  public readonly lang = inject(LanguageService);
 
   public openCreateModal() {
     this.modalService.open(CategoryFormModalComponent, {

@@ -39,7 +39,7 @@
         <span
           class="text-xs font-bold text-slate-400 dark:text-slate-500 uppercase tracking-wider mr-2 shrink-0"
         >
-          API Key:
+          {{ 'api.key_label' | translate }}:
         </span>
         <span
           class="text-sm font-extrabold font-mono text-slate-700 dark:text-slate-300 truncate flex-1"
@@ -62,7 +62,7 @@
               <app-icon [name]="showApiKey() ? 'eye-slash' : 'eye'" class="w-4 h-4" />
             </button>
             <button
-              (click)="copyToClipboard(apiKey()!, 'API Key')"
+              (click)="copyToClipboard(apiKey()!)"
               class="text-slate-400 dark:text-slate-500 hover:text-[var(--color-primary)] dark:hover:text-white active:scale-95 transition-all p-1 cursor-pointer"
               [title]="'orders.copy' | translate"
             >
@@ -149,7 +149,7 @@ curl -X GET "{{ siteUrl() }}/api/v1/b2b/products?api_key={{ apiKey() || 'API_KEY
               <button
                 (click)="copyGetProductsCurl()"
                 class="absolute right-3.5 top-3.5 text-slate-400 dark:text-slate-500 hover:text-[var(--color-primary)] dark:hover:text-white transition-colors cursor-pointer"
-                title="Copy CURL"
+                [title]="'api.copy_curl' | translate"
               >
                 <app-icon name="copy" class="w-4 h-4" />
               </button>
@@ -176,7 +176,7 @@ curl -X GET "{{ siteUrl() }}/api/v1/b2b/products?api_key={{ apiKey() || 'API_KEY
               <button
                 (click)="copyGetProductsUrl()"
                 class="absolute right-3.5 top-3.5 text-slate-400 dark:text-slate-500 hover:text-[var(--color-primary)] dark:hover:text-white transition-colors cursor-pointer"
-                title="Copy URL"
+                [title]="'api.copy_url' | translate"
               >
                 <app-icon name="copy" class="w-4 h-4" />
               </button>
@@ -203,7 +203,7 @@ curl -X GET "{{ siteUrl() }}/api/v1/b2b/products?api_key={{ apiKey() || 'API_KEY
                       class="text-xs font-black uppercase bg-rose-500/10 text-rose-500 px-1.5 py-0.5 rounded"
                       >{{ 'api.required' | translate }}</span
                     >
-                    <span class="text-slate-400 dark:text-slate-500 font-mono text-xs">String</span>
+                    <span class="text-slate-400 dark:text-slate-500 font-mono text-xs">{{ 'api.type_string' | translate }}</span>
                   </div>
                   <p class="text-slate-500 dark:text-slate-400 font-semibold leading-relaxed">
                     {{ 'api.api_key_desc' | translate }} <code class="font-mono text-xs">X-API-KEY</code>.
@@ -224,7 +224,7 @@ curl -X GET "{{ siteUrl() }}/api/v1/b2b/products?api_key={{ apiKey() || 'API_KEY
                       >{{ 'api.optional' | translate }}</span
                     >
                     <span class="text-slate-400 dark:text-slate-500 font-mono text-xs"
-                      >Integer</span
+                      >{{ 'api.type_integer' | translate }}</span
                     >
                   </div>
                   <p class="text-slate-500 dark:text-slate-400 font-semibold leading-relaxed">
@@ -244,10 +244,10 @@ curl -X GET "{{ siteUrl() }}/api/v1/b2b/products?api_key={{ apiKey() || 'API_KEY
                   <div class="flex items-center gap-1.5">
                     <span
                       class="text-xs font-black uppercase bg-slate-100 dark:bg-slate-800 text-slate-500 px-1.5 py-0.5 rounded"
-                      >Tùy chọn</span
+                    >{{ 'api.optional' | translate }}</span
                     >
                     <span class="text-slate-400 dark:text-slate-500 font-mono text-xs"
-                      >Integer</span
+                      >{{ 'api.type_integer' | translate }}</span
                     >
                   </div>
                   <p class="text-slate-500 dark:text-slate-400 font-semibold leading-relaxed">
@@ -267,10 +267,10 @@ curl -X GET "{{ siteUrl() }}/api/v1/b2b/products?api_key={{ apiKey() || 'API_KEY
                   <div class="flex items-center gap-1.5">
                     <span
                       class="text-xs font-black uppercase bg-slate-100 dark:bg-slate-800 text-slate-500 px-1.5 py-0.5 rounded"
-                      >Tùy chọn</span
+                    >{{ 'api.optional' | translate }}</span
                     >
                     <span class="text-slate-400 dark:text-slate-500 font-mono text-xs"
-                      >String (UUID)</span
+                      >{{ 'api.type_string_uuid' | translate }}</span
                     >
                   </div>
                   <p class="text-slate-500 dark:text-slate-400 font-semibold leading-relaxed">
@@ -287,9 +287,9 @@ curl -X GET "{{ siteUrl() }}/api/v1/b2b/products?api_key={{ apiKey() || 'API_KEY
                   <div class="flex items-center gap-1.5">
                     <span
                       class="text-xs font-black uppercase bg-slate-100 dark:bg-slate-800 text-slate-500 px-1.5 py-0.5 rounded"
-                      >Tùy chọn</span
+                    >{{ 'api.optional' | translate }}</span
                     >
-                    <span class="text-slate-400 dark:text-slate-500 font-mono text-xs">String</span>
+                    <span class="text-slate-400 dark:text-slate-500 font-mono text-xs">{{ 'api.type_string' | translate }}</span>
                   </div>
                   <p class="text-slate-500 dark:text-slate-400 font-semibold leading-relaxed">
                     {{ 'api.search_product_desc' | translate }}
@@ -313,8 +313,8 @@ curl -X GET "{{ siteUrl() }}/api/v1/b2b/products?api_key={{ apiKey() || 'API_KEY
   "products": [
     {{ '{' }}
       "id": "019f6699-e6d2-70f2-89bd-d3b93946a77d",
-      "title": "BM3 Ngâm Full 3 Tài Khoản",
-      "category": "BẢNG GIÁ BM",
+  "title": "Premium Digital Account",
+  "category": "DIGITAL ACCOUNTS",
       "price": 80000,
       "stock": 42
     {{ '}' }}
@@ -381,7 +381,7 @@ curl -X GET "{{ siteUrl() }}/api/v1/b2b/products/PRODUCT_ID?api_key={{
               <button
                 (click)="copyGetProductDetailCurl()"
                 class="absolute right-3.5 top-3.5 text-slate-400 dark:text-slate-500 hover:text-[var(--color-primary)] dark:hover:text-white transition-colors cursor-pointer"
-                title="Copy CURL"
+                [title]="'api.copy_curl' | translate"
               >
                 <app-icon name="copy" class="w-4 h-4" />
               </button>
@@ -408,7 +408,7 @@ curl -X GET "{{ siteUrl() }}/api/v1/b2b/products/PRODUCT_ID?api_key={{
               <button
                 (click)="copyGetProductDetailUrl()"
                 class="absolute right-3.5 top-3.5 text-slate-400 dark:text-slate-500 hover:text-[var(--color-primary)] dark:hover:text-white transition-colors cursor-pointer"
-                title="Copy URL"
+                [title]="'api.copy_url' | translate"
               >
                 <app-icon name="copy" class="w-4 h-4" />
               </button>
@@ -426,11 +426,11 @@ curl -X GET "{{ siteUrl() }}/api/v1/b2b/products/PRODUCT_ID?api_key={{
               <pre class="whitespace-pre"
                 >{{ '{' }}
   "id": "019f6699-e6d2-70f2-89bd-d3b93946a77d",
-  "title": "BM3 Ngâm Full 3 Tài Khoản",
-  "description": "BM3 Ngâm Full 3 Tài Khoản chất lượng cao.",
+  "title": "Premium Digital Account",
+  "description": "High-quality premium digital account.",
   "price": 80000,
   "stock": 42,
-  "category": "BẢNG GIÁ BM"
+  "category": "DIGITAL ACCOUNTS"
 {{ '}' }}</pre>
             </div>
           </div>
@@ -511,7 +511,7 @@ curl -X POST "{{ siteUrl() }}/api/v1/b2b/buy" -H "Content-Type: application/json
                   <button
                     (click)="copyBuyCurl()"
                     class="absolute right-3.5 top-3.5 text-slate-400 dark:text-slate-500 hover:text-[var(--color-primary)] dark:hover:text-white transition-colors cursor-pointer"
-                    title="Copy Linux CURL Mua 1 SP"
+                    [title]="'api.copy_single_linux' | translate"
                   >
                     <app-icon name="copy" class="w-4 h-4" />
                   </button>
@@ -532,7 +532,7 @@ curl -X POST "{{ siteUrl() }}/api/v1/b2b/buy" -H "Content-Type: application/json
                   <button
                     (click)="copyBuyMultiCurl()"
                     class="absolute right-3.5 top-3.5 text-slate-400 dark:text-slate-500 hover:text-[var(--color-primary)] dark:hover:text-white transition-colors cursor-pointer"
-                    title="Copy Linux CURL Mua nhiều SP"
+                [title]="'api.copy_multi_linux' | translate"
                   >
                     <app-icon name="copy" class="w-4 h-4" />
                   </button>
@@ -555,7 +555,7 @@ curl -X POST "{{ siteUrl() }}/api/v1/b2b/buy" -H "Content-Type: application/json
                   <button
                     (click)="copyBuyWindowsCurl()"
                     class="absolute right-3.5 top-3.5 text-slate-400 dark:text-slate-500 hover:text-[var(--color-primary)] dark:hover:text-white transition-colors cursor-pointer"
-                    title="Copy Windows CMD CURL Mua 1 SP"
+                    [title]="'api.copy_single_windows' | translate"
                   >
                     <app-icon name="copy" class="w-4 h-4" />
                   </button>
@@ -576,7 +576,7 @@ curl -X POST "{{ siteUrl() }}/api/v1/b2b/buy" -H "Content-Type: application/json
                   <button
                     (click)="copyBuyMultiWindowsCurl()"
                     class="absolute right-3.5 top-3.5 text-slate-400 dark:text-slate-500 hover:text-[var(--color-primary)] dark:hover:text-white transition-colors cursor-pointer"
-                    title="Copy Windows CMD CURL Mua nhiều SP"
+                [title]="'api.copy_multi_windows' | translate"
                   >
                     <app-icon name="copy" class="w-4 h-4" />
                   </button>
@@ -603,7 +603,7 @@ curl -X POST "{{ siteUrl() }}/api/v1/b2b/buy" -H "Content-Type: application/json
               <button
                 (click)="copyBuyUrl()"
                 class="absolute right-3.5 top-3.5 text-slate-400 dark:text-slate-500 hover:text-[var(--color-primary)] dark:hover:text-white transition-colors cursor-pointer"
-                title="Copy URL"
+                [title]="'api.copy_url' | translate"
               >
                 <app-icon name="copy" class="w-4 h-4" />
               </button>
@@ -629,7 +629,7 @@ curl -X POST "{{ siteUrl() }}/api/v1/b2b/buy" -H "Content-Type: application/json
                       >{{ 'api.required' | translate }}</span
                     >
                     <span class="text-slate-400 dark:text-slate-500 font-mono text-xs"
-                      >String (UUID)</span
+                      >{{ 'api.type_string_uuid' | translate }}</span
                     >
                   </div>
                   <p class="text-slate-500 dark:text-slate-400 font-semibold">
@@ -648,10 +648,10 @@ curl -X POST "{{ siteUrl() }}/api/v1/b2b/buy" -H "Content-Type: application/json
                   <div class="flex items-center gap-1.5">
                     <span
                       class="text-xs font-black uppercase bg-rose-500/10 text-rose-500 px-1.5 py-0.5 rounded"
-                      >Bắt buộc</span
+                      >{{ 'api.required' | translate }}</span
                     >
                     <span class="text-slate-400 dark:text-slate-500 font-mono text-xs"
-                      >Integer (>= 1)</span
+                      >{{ 'api.type_integer_min_one' | translate }}</span
                     >
                   </div>
                   <p class="text-slate-500 dark:text-slate-400 font-semibold">
@@ -673,7 +673,7 @@ curl -X POST "{{ siteUrl() }}/api/v1/b2b/buy" -H "Content-Type: application/json
                       >{{ 'api.optional' | translate }}</span
                     >
                     <span class="text-slate-400 dark:text-slate-500 font-mono text-xs"
-                      >String</span
+                      >{{ 'api.type_string' | translate }}</span
                     >
                   </div>
                   <p class="text-slate-500 dark:text-slate-400 font-semibold">
@@ -692,10 +692,10 @@ curl -X POST "{{ siteUrl() }}/api/v1/b2b/buy" -H "Content-Type: application/json
                   <div class="flex items-center gap-1.5">
                     <span
                       class="text-xs font-black uppercase bg-slate-500/10 text-slate-500 px-1.5 py-0.5 rounded"
-                      >Tùy chọn</span
+                      >{{ 'api.optional' | translate }}</span
                     >
                     <span class="text-slate-400 dark:text-slate-500 font-mono text-xs"
-                      >Array of Objects</span
+                      >{{ 'api.type_object_array' | translate }}</span
                     >
                   </div>
                   <p class="text-slate-500 dark:text-slate-400 font-semibold">
@@ -781,7 +781,7 @@ curl -X GET "{{ siteUrl() }}/api/v1/b2b/me" -H "X-API-KEY: {{
               <button
                 (click)="copyGetMeCurl()"
                 class="absolute right-3.5 top-3.5 text-slate-400 dark:text-slate-500 hover:text-[var(--color-primary)] dark:hover:text-white transition-colors cursor-pointer"
-                title="Copy CURL"
+                [title]="'api.copy_curl' | translate"
               >
                 <app-icon name="copy" class="w-4 h-4" />
               </button>
@@ -806,7 +806,7 @@ curl -X GET "{{ siteUrl() }}/api/v1/b2b/me" -H "X-API-KEY: {{
               <button
                 (click)="copyGetMeUrl()"
                 class="absolute right-3.5 top-3.5 text-slate-400 dark:text-slate-500 hover:text-[var(--color-primary)] dark:hover:text-white transition-colors cursor-pointer"
-                title="Copy URL"
+                [title]="'api.copy_url' | translate"
               >
                 <app-icon name="copy" class="w-4 h-4" />
               </button>
@@ -885,7 +885,7 @@ curl -X GET "{{ siteUrl() }}/api/v1/b2b/orders/ORDER_CODE" -H "X-API-KEY: {{
               <button
                 (click)="copyGetOrderCurl()"
                 class="absolute right-3.5 top-3.5 text-slate-400 dark:text-slate-500 hover:text-[var(--color-primary)] dark:hover:text-white transition-colors cursor-pointer"
-                title="Copy CURL"
+                [title]="'api.copy_curl' | translate"
               >
                 <app-icon name="copy" class="w-4 h-4" />
               </button>
@@ -912,7 +912,7 @@ curl -X GET "{{ siteUrl() }}/api/v1/b2b/orders/ORDER_CODE" -H "X-API-KEY: {{
               <button
                 (click)="copyGetOrderUrl()"
                 class="absolute right-3.5 top-3.5 text-slate-400 dark:text-slate-500 hover:text-[var(--color-primary)] dark:hover:text-white transition-colors cursor-pointer"
-                title="Copy URL"
+                [title]="'api.copy_url' | translate"
               >
                 <app-icon name="copy" class="w-4 h-4" />
               </button>
