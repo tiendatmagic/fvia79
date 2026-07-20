@@ -1589,5 +1589,13 @@
       3. Rà soát an toàn qua `git diff` và chạy thử nghiệm.
       4. **Xác minh:** Biên dịch frontend Angular thành công 100% (`npm run build` trong `22.137 seconds`) và chạy test suite Laravel backend thành công 100% (`passed 18/18 tests`).
 
+  - **[CẤU HÌNH TÊN MIỀN PRODUCTION VÀ CORS]**:
+    - **Yêu cầu:** Cấu hình tên miền production cho frontend `https://isocalmarket.netlify.app` và backend API `https://isocalmarket.ddns.net`.
+    - **Thực hiện:**
+      1. Cập nhật `allowed_origins` trong [cors.php](file:///d:/git/isocalmarket/isocalmarket-api/config/cors.php) để thêm `https://isocalmarket.netlify.app` (không có dấu gạch chéo cuối trang theo tiêu chuẩn CORS).
+      2. Cập nhật `apiBaseUrl` trong [environment.ts](file:///d:/git/isocalmarket/isocalmarket-web/src/environments/environment.ts) thành `https://isocalmarket.ddns.net/api`.
+    - **Xác minh:** Chạy biên dịch frontend `npm run build` thành công 100% không phát sinh lỗi.
+
+
 
 

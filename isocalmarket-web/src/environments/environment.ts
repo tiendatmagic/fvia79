@@ -5,5 +5,5 @@ export const environment = {
   defaultRpcUrl: 'https://arb1.arbitrum.io/rpc',
   defaultExplorerUrl: 'https://arbiscan.io',
   defaultChainId: '42161',
-  apiBaseUrl: 'https://cafeweb3.ddns.net/api'
+  apiBaseUrl: 'https://isocalmarket.ddns.net/api'
 };
