@@ -1655,3 +1655,7 @@
       5. Cập nhật [deposit.component.ts](file:///d:/git/isocalmarket/isocalmarket-web/src/app/features/deposit/deposit.component.ts) và [deposit-history.component.ts](file:///d:/git/isocalmarket/isocalmarket-web/src/app/features/deposit-history/deposit-history.component.ts) gọi `checkMe(true).subscribe()` trong `ngOnInit()` để tự động cập nhật số dư mới nhất của người dùng khi truy cập các trang này.
     - **Xác minh**: Chạy lệnh build `npm run build` để kiểm tra biên dịch không có lỗi cú pháp hoặc kiểu dữ liệu.
 
+  - **[TỐI ƯU HÓA DELAY LAZY-LOAD ROUTING]**:
+    - **Yêu cầu**: Giải quyết độ trễ (delay) khi chuyển trang do sử dụng `loadComponent: () => import(...)` trong `app.routes.ts`.
+    - **Giải pháp & Triển khai**: Cập nhật tệp [app.config.ts](file:///d:/git/isocalmarket/isocalmarket-web/src/app/app.config.ts), import `withPreloading` và `PreloadAllModules` từ `@angular/router`, sau đó bổ sung `withPreloading(PreloadAllModules)` vào trong cấu hình `provideRouter(routes)`.
+    - **Kết quả**: Angular tự động tải trước các chunk file tĩnh của các route phụ ở chế độ nền (background) ngay sau khi ứng dụng chính đã tải xong, giúp việc chuyển trang sau đó diễn ra tức thì mà không bị delay do chờ tải file JS từ server.
