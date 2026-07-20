@@ -61,6 +61,7 @@ class AuthController extends Controller
             $refreshToken = $this->authService->generateRefreshToken($user);
 
             $isProduction = config('app.env') === 'production';
+            $sameSite = $isProduction ? 'None' : 'Lax';
 
             // Access token cookie: 30 phút
             $accessTokenCookie = cookie(
@@ -72,7 +73,7 @@ class AuthController extends Controller
                 $isProduction,
                 true,  // HttpOnly
                 false,
-                'Lax'
+                $sameSite
             );
 
             // Refresh token cookie: 7 ngày (10080 phút)
@@ -85,7 +86,7 @@ class AuthController extends Controller
                 $isProduction,
                 true,  // HttpOnly
                 false,
-                'Lax'
+                $sameSite
             );
 
             $loggedInCookie = cookie(
@@ -97,7 +98,7 @@ class AuthController extends Controller
                 $isProduction,
                 false, // Không HttpOnly để JS đọc được
                 false,
-                'Lax'
+                $sameSite
             );
 
             return response()->json([
@@ -149,6 +150,7 @@ class AuthController extends Controller
             $refreshToken = $this->authService->generateRefreshToken($user);
 
             $isProduction = config('app.env') === 'production';
+            $sameSite = $isProduction ? 'None' : 'Lax';
 
             $accessTokenCookie = cookie(
                 'access_token',
@@ -159,7 +161,7 @@ class AuthController extends Controller
                 $isProduction,
                 true,
                 false,
-                'Lax'
+                $sameSite
             );
 
             $refreshTokenCookie = cookie(
@@ -171,7 +173,7 @@ class AuthController extends Controller
                 $isProduction,
                 true,
                 false,
-                'Lax'
+                $sameSite
             );
 
             $loggedInCookie = cookie(
@@ -183,7 +185,7 @@ class AuthController extends Controller
                 $isProduction,
                 false,
                 false,
-                'Lax'
+                $sameSite
             );
 
             return response()->json([
@@ -222,6 +224,7 @@ class AuthController extends Controller
         }
 
         $isProduction = config('app.env') === 'production';
+        $sameSite = $isProduction ? 'None' : 'Lax';
 
         $accessTokenCookie = cookie(
             'access_token',
@@ -232,7 +235,7 @@ class AuthController extends Controller
             $isProduction,
             true,
             false,
-            'Lax'
+            $sameSite
         );
 
         $refreshTokenCookie = cookie(
@@ -244,7 +247,7 @@ class AuthController extends Controller
             $isProduction,
             true,
             false,
-            'Lax'
+            $sameSite
         );
 
         $user = $result['user'];
@@ -272,10 +275,13 @@ class AuthController extends Controller
             $this->authService->logout($user->id);
         }
 
-        // Xóa cookie bằng cách thiết lập cookie hết hạn
-        $accessTokenCookie = cookie()->forget('access_token');
-        $refreshTokenCookie = cookie()->forget('refresh_token');
-        $loggedInCookie = cookie()->forget('auth_logged_in');
+        $isProduction = config('app.env') === 'production';
+        $sameSite = $isProduction ? 'None' : 'Lax';
+
+        // Xóa cookie bằng cách thiết lập cookie hết hạn với cùng các thuộc tính SameSite và Secure
+        $accessTokenCookie = cookie('access_token', '', -2628000, '/', null, $isProduction, true, false, $sameSite);
+        $refreshTokenCookie = cookie('refresh_token', '', -2628000, '/api/v1/auth/refresh', null, $isProduction, true, false, $sameSite);
+        $loggedInCookie = cookie('auth_logged_in', '', -2628000, '/', null, $isProduction, false, false, $sameSite);
 
         return response()->json(['message' => 'Logout successful.'])
             ->withCookie($accessTokenCookie)

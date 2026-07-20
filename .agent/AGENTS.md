@@ -1601,6 +1601,14 @@
       1. Cập nhật `NODE_VERSION` từ `"20"` lên `"22"` trong tệp [netlify.toml](file:///d:/git/isocalmarket/netlify.toml) ở thư mục gốc.
       2. Cập nhật `NODE_VERSION` từ `"20"` lên `"22"` trong tệp [netlify.toml](file:///d:/git/isocalmarket/isocalmarket-web/netlify.toml) ở thư mục con `isocalmarket-web`.
     - **Xác minh:** Chờ push code lên Github để Netlify tự động kích hoạt tiến trình build mới sử dụng Node.js 22.
+  - **[SỬA LỖI CORS PRODUCTION - SAMESITE NONE COOKIES]**:
+    - **Yêu cầu:** Khắc phục lỗi API phản hồi `401 Unauthorized. Token missing.` trên môi trường production khi gọi các API cần xác thực (ví dụ `/dashboard-stats`).
+    - **Thực hiện:**
+      1. Cấu hình giá trị `SameSite` động trong tệp [AuthController.php](file:///d:/git/isocalmarket/isocalmarket-api/app/Http/Controllers/AuthController.php): sử dụng `'None'` cho môi trường production và `'Lax'` cho phát triển ở local.
+      2. Cập nhật thuộc tính `Secure` đi kèm là `$isProduction` (`true` khi ở production). Điều này cho phép cookie xác thực (`access_token`, `refresh_token`, `auth_logged_in`) được gửi chéo origin từ frontend Netlify sang API backend thành công.
+      3. Cập nhật phương thức `logout()` để xóa cookie chéo origin chính xác bằng cách thiết lập thời gian hết hạn trong quá khứ với các thuộc tính `SameSite` và `Secure` tương ứng.
+    - **Xác minh:** Triển khai/Đẩy cập nhật lên backend API và kiểm tra chức năng đăng nhập trên trang production.
+
 
 
 
