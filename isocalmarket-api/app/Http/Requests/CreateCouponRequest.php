@@ -15,7 +15,7 @@ class CreateCouponRequest extends FormRequest
     {
         $id = $this->route('id');
         return [
-            'code' => 'required|string|max:50|unique:coupons,code,' . $id . ',id,deleted_at,NULL',
+            'code' => 'required|string|max:50|unique:coupons,code,' . $id . ',id',
             'type' => 'required|in:percentage,fixed',
             'value' => 'required|numeric|min:0',
             'min_spend' => 'required|numeric|min:0',

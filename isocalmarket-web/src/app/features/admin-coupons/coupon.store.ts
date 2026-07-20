@@ -70,6 +70,46 @@ export class CouponStore {
     return subject.asObservable();
   }
 
+  private parseErrorMessage(err: any, fallbackMessage: string): string {
+    let rawMsg = '';
+
+    if (err?.error?.errors && typeof err.error.errors === 'object') {
+      const firstKey = Object.keys(err.error.errors)[0];
+      if (firstKey && Array.isArray(err.error.errors[firstKey]) && err.error.errors[firstKey].length > 0) {
+        rawMsg = err.error.errors[firstKey][0];
+      }
+    }
+
+    if (!rawMsg) {
+      rawMsg = err?.error?.message || err?.message || '';
+    }
+
+    if (!rawMsg) {
+      return fallbackMessage;
+    }
+
+    const lower = rawMsg.toLowerCase();
+
+    if (
+      lower.includes('already taken') ||
+      lower.includes('already exists') ||
+      lower.includes('duplicate entry') ||
+      lower.includes('already been taken')
+    ) {
+      return 'Mã giảm giá này đã tồn tại trên hệ thống!';
+    }
+
+    if (lower.includes('start_date') || lower.includes('end_date') || lower.includes('after_or_equal')) {
+      return 'Ngày kết thúc phải sau ngày bắt đầu!';
+    }
+
+    if (lower.includes('required')) {
+      return 'Vui lòng điền đầy đủ các thông tin bắt buộc!';
+    }
+
+    return rawMsg || fallbackMessage;
+  }
+
   public createCoupon(data: any) {
     this.loading.set(true);
     return this.api.post<any>('v1/admin/coupons', data).pipe(
@@ -77,7 +117,7 @@ export class CouponStore {
         this.toast.showToast('Tạo mã giảm giá thành công!', 'success');
       }),
       catchError((err) => {
-        const msg = err.error?.message || 'Tạo mã giảm giá thất bại!';
+        const msg = this.parseErrorMessage(err, 'Tạo mã giảm giá thất bại!');
         this.toast.showToast(msg, 'error');
         return of(null);
       }),
@@ -92,7 +132,7 @@ export class CouponStore {
         this.toast.showToast('Cập nhật mã giảm giá thành công!', 'success');
       }),
       catchError((err) => {
-        const msg = err.error?.message || 'Cập nhật mã giảm giá thất bại!';
+        const msg = this.parseErrorMessage(err, 'Cập nhật mã giảm giá thất bại!');
         this.toast.showToast(msg, 'error');
         return of(null);
       }),
@@ -107,7 +147,7 @@ export class CouponStore {
         this.toast.showToast('Xóa mã giảm giá thành công!', 'success');
       }),
       catchError((err) => {
-        const msg = err.error?.message || 'Xóa mã giảm giá thất bại!';
+        const msg = this.parseErrorMessage(err, 'Xóa mã giảm giá thất bại!');
         this.toast.showToast(msg, 'error');
         return of(null);
       }),
@@ -118,7 +158,7 @@ export class CouponStore {
   public validateCoupon(code: string, cartTotal: number) {
     return this.api.post<any>('v1/coupons/validate', { code, cart_total: cartTotal }).pipe(
       catchError((err) => {
-        const msg = err.error?.message || 'Mã giảm giá không hợp lệ!';
+        const msg = this.parseErrorMessage(err, 'Mã giảm giá không hợp lệ!');
         throw new Error(msg);
       })
     );

@@ -27,7 +27,7 @@ class CouponRepository implements CouponRepositoryInterface
 
     public function findByCode(string $code): ?Coupon
     {
-        $model = CouponModel::where('code', $code)->first();
+        $model = CouponModel::withTrashed()->where('code', $code)->first();
         if (!$model) return null;
         return CouponMapper::toDomain($model);
     }

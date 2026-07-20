@@ -81,6 +81,11 @@ class AdminCouponController extends Controller
                     'code' => $coupon->getCode()
                 ]
             ], 201);
+        } catch (\Illuminate\Database\QueryException $e) {
+            if ($e->getCode() == 23000) {
+                return response()->json(['message' => 'The coupon code already exists.'], 400);
+            }
+            return response()->json(['message' => $e->getMessage()], 400);
         } catch (\Exception $e) {
             return response()->json(['message' => $e->getMessage()], 400);
         }
@@ -121,6 +126,11 @@ class AdminCouponController extends Controller
                     'code' => $coupon->getCode()
                 ]
             ]);
+        } catch (\Illuminate\Database\QueryException $e) {
+            if ($e->getCode() == 23000) {
+                return response()->json(['message' => 'The coupon code already exists.'], 400);
+            }
+            return response()->json(['message' => $e->getMessage()], 400);
         } catch (\Exception $e) {
             return response()->json(['message' => $e->getMessage()], 400);
         }
