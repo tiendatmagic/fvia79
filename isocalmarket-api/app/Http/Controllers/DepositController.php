@@ -182,6 +182,7 @@ class DepositController extends Controller
     {
         return [
             'id' => $deposit->getId(),
+            'userId' => $deposit->getUserId(),
             'code' => $deposit->getCode(),
             'amountUsdt' => $deposit->getAmountUsdt(),
             'amountToPay' => $deposit->getAmountToPay(),

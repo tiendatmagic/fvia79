@@ -1563,5 +1563,13 @@
       4. Đã chuyển tùy chọn `{ label: 'Tất cả trạng thái', value: 'all' }` lên **vị trí đầu tiên (đầu mảng)** trong `statusOptions` tại `admin-coupons.component.ts` đồng bộ chuẩn 100% với các trang quản lý khác.
     - **Xác minh**: Biên dịch Angular `npm run build` thành công 100%.
 
+  - **[SỬA LỖI ẨN NÚT THAO TÁC TRÊN HÓA ĐƠN NẠP TIỀN BINANCE PAY & USDT BEP-20]**:
+    - **Nguyên nhân**: Trong [deposit-invoice.component.html](file:///d:/git/isocalmarket/isocalmarket-web/src/app/features/deposit-invoice/deposit-invoice.component.html), thẻ chứa 2 nút thao tác "Hủy Lệnh Nạp" và "Tôi đã chuyển khoản" bị bọc bởi điều kiện `@if (!isAdmin && invoice.status === 'pending_payment')`. Do tài khoản thử nghiệm có vai trò `admin`, thuộc tính `isAdmin` trả về `true` làm điều kiện `!isAdmin` bị `false`, khiến cả 2 nút bị ẩn hoàn toàn đối với đơn nạp tiền của Admin (chỉ còn hiển thị duy nhất nút "Quay lại Quản lý Nạp tiền").
+    - **Giải pháp & Triển khai**:
+      1. Bỏ ràng buộc `!isAdmin` trong [deposit-invoice.component.html](file:///d:/git/isocalmarket/isocalmarket-web/src/app/features/deposit-invoice/deposit-invoice.component.html), đổi thành `@if (invoice.status === 'pending_payment')` để đảm bảo bất kỳ đơn nạp tiền nào ở trạng thái chờ thanh toán (`pending_payment`) — cho cả cổng Binance Pay và USDT BEP-20 — đều hiển thị đầy đủ 2 nút "Hủy Lệnh Nạp" và "Tôi đã chuyển khoản".
+      2. Cập nhật Backend [DepositService.php](file:///d:/git/isocalmarket/isocalmarket-api/app/Application/Services/DepositService.php) cho phép Admin hoặc chủ sở hữu đơn nạp có thể gọi API hủy hóa đơn (`cancelInvoice`).
+      3. Bổ sung `userId` vào hàm `formatDeposit` trong [DepositController.php](file:///d:/git/isocalmarket/isocalmarket-api/app/Http/Controllers/DepositController.php) và giao diện `DepositHistoryItem` tại Frontend.
+    - **Xác minh**: Biên dịch ứng dụng Angular thành công không lỗi.
+
 
 

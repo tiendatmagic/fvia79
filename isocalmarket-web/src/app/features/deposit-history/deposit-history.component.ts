@@ -18,6 +18,7 @@ import { TooltipDirective } from '@shared/components/tooltip/tooltip.directive';
 
 export interface DepositHistoryItem {
   id: string;
+  userId?: string;
   code: string;
   amountUsdt: number;
   amountToPay: number;

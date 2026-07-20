@@ -261,7 +261,7 @@
         }
 
         <div class="flex flex-col gap-3 pt-2">
-          @if (!isAdmin && invoice.status === 'pending_payment') {
+          @if (invoice.status === 'pending_payment') {
             <button
               app-button
               [variant]="'secondary'"
@@ -282,7 +282,9 @@
             >
               Tôi đã chuyển khoản
             </button>
-          } @else if (isAdmin) {
+          }
+
+          @if (isAdmin) {
             <a
               routerLink="/admin/deposits"
               class="w-full py-3.5 rounded-xl text-sm font-extrabold border border-slate-200/50 dark:border-slate-700/50 text-slate-600 dark:text-slate-400 hover:bg-slate-100 dark:hover:bg-slate-800 transition-all flex items-center justify-center gap-2 cursor-pointer"

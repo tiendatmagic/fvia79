@@ -227,7 +227,14 @@ class DepositService
     public function cancelInvoice(string $id, string $userId): bool
     {
         $deposit = $this->depositRepository->find($id);
-        if (!$deposit || $deposit->getUserId() !== $userId || $deposit->getStatus() !== 'pending_payment') {
+        if (!$deposit || $deposit->getStatus() !== 'pending_payment') {
+            return false;
+        }
+
+        $user = \App\Infrastructure\Persistence\Eloquent\UserModel::find($userId);
+        $isAdmin = $user && $user->role === 'admin';
+
+        if ($deposit->getUserId() !== $userId && !$isAdmin) {
             return false;
         }
 
