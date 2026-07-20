@@ -2,7 +2,7 @@
   <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
     <div class="form-field">
       <label
-        class="text-xs font-black text-slate-400 dark:text-slate-500 uppercase tracking-wider block mb-2"
+        class="text-xs font-bold text-slate-400 dark:text-slate-500 uppercase tracking-wider block mb-1"
         >Mã giảm giá <span class="text-rose-500">*</span></label
       >
       <app-custom-input
@@ -17,7 +17,7 @@
 
     <div class="form-field">
       <label
-        class="text-xs font-black text-slate-400 dark:text-slate-500 uppercase tracking-wider block mb-2"
+        class="text-xs font-bold text-slate-400 dark:text-slate-500 uppercase tracking-wider block mb-1"
         >Loại giảm giá <span class="text-rose-500">*</span></label
       >
       <app-custom-select [options]="typeOptions" [(ngModel)]="type" name="type" />
@@ -27,7 +27,7 @@
   <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
     <div class="form-field">
       <label
-        class="text-xs font-black text-slate-400 dark:text-slate-500 uppercase tracking-wider block mb-2"
+        class="text-xs font-bold text-slate-400 dark:text-slate-500 uppercase tracking-wider block mb-1"
         >Giá trị giảm <span class="text-rose-500">*</span></label
       >
       <app-custom-input [(ngModel)]="value" name="value" type="number" required />
@@ -35,7 +35,7 @@
 
     <div class="form-field">
       <label
-        class="text-xs font-black text-slate-400 dark:text-slate-500 uppercase tracking-wider block mb-2"
+        class="text-xs font-bold text-slate-400 dark:text-slate-500 uppercase tracking-wider block mb-1"
         >Đơn tối thiểu áp dụng <span class="text-rose-500">*</span></label
       >
       <app-custom-input [(ngModel)]="minSpend" name="minSpend" type="number" required />
@@ -45,7 +45,7 @@
   <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
     <div class="form-field">
       <label
-        class="text-xs font-black text-slate-400 dark:text-slate-500 uppercase tracking-wider block mb-2"
+        class="text-xs font-bold text-slate-400 dark:text-slate-500 uppercase tracking-wider block mb-1"
         >Ngày bắt đầu <span class="text-rose-500">*</span></label
       >
       <app-custom-input [(ngModel)]="startDate" name="startDate" type="date" required />
@@ -53,7 +53,7 @@
 
     <div class="form-field">
       <label
-        class="text-xs font-black text-slate-400 dark:text-slate-500 uppercase tracking-wider block mb-2"
+        class="text-xs font-bold text-slate-400 dark:text-slate-500 uppercase tracking-wider block mb-1"
         >Ngày kết thúc <span class="text-rose-500">*</span></label
       >
       <app-custom-input [(ngModel)]="endDate" name="endDate" type="date" required />

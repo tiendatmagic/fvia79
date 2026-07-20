@@ -1,7 +1,14 @@
 [build]
   base = "isocalmarket-web"
-  publish = "dist/isocalmarket-web/browser"
+  publish = "dist/angular-web3-wallet/browser"
   command = "npm run build"
 
 [build.environment]
+  NODE_VERSION = "20"
   NPM_FLAGS = "--legacy-peer-deps"
+
+[[redirects]]
+  from = "/*"
+  to = "/index.html"
+  status = 200
+

@@ -19,6 +19,11 @@
 - Tận dụng triệt để components tại `isocalmarket-web/src/app/shared/components`.
 
 ## Phân tích & Thực hiện
+- **[CẤU HÌNH NETLIFY DEPLOY]**:
+  - Đã kiểm tra và cập nhật file [netlify.toml](file:///d:/git/isocalmarket/netlify.toml) ở thư mục gốc và `isocalmarket-web/netlify.toml`.
+  - Sửa đường dẫn `publish` từ `dist/isocalmarket-web/browser` sang `dist/angular-web3-wallet/browser` để khớp với tên ứng dụng cấu hình trong `angular.json`.
+  - Bổ sung quy tắc redirect SPA (`[[redirects]] from = "/*" to = "/index.html" status = 200`) tránh lỗi 404 khi tải lại trang ở các đường dẫn phụ trên Netlify.
+  - Bổ sung `NODE_VERSION = "20"` trong `[build.environment]` để đảm bảo tương thích phiên bản Node.js khi Netlify tiến hành build.
 - Đã đọc hiểu kiến trúc Frontend: Angular v18, Flat Features, quản lý State qua Slice Stores (Signals).
 - Đã đọc hiểu kiến trúc Backend: Laravel với Domain-Driven Design (DDD), CQRS, Repository & Services Pattern.
 - Nhận diện Technical Debt tiềm năng: Phải lưu từng `Inventory Item` thành một thực thể riêng biệt thay vì lưu trữ dạng biến số lượng (`quantity`) để phục vụ mở rộng trong tương lai.
@@ -1541,7 +1546,13 @@
     - Chuẩn hóa ô nhập Mã giảm giá tại [cart-modal.component.html](file:///d:/git/isocalmarket/isocalmarket-web/src/app/features/storefront/cart-modal/cart-modal.component.html) dùng `app-card`, `.form-field` và `.form-input`.
     - **Mốc thời gian mượt mà**: Cập nhật `Coupon.php`, `CouponService.php` và `OrderService.php` quy định mốc thời gian áp dụng từ **00:00:00 của ngày bắt đầu** đến **23:59:59 của ngày kết thúc**, tránh việc mã bị hết hạn sớm vô lý.
     - **Chống số tiền âm / giảm quá 100%**: Thêm `min($discount, $amount)` trong `Coupon.php` bảo vệ số tiền thanh toán không bị âm.
-    - **Chống Race Condition & Spam**: Toàn bộ luồng checkout mua hàng (kiểm tra mã, trừ kho, tính lại giá trị và trừ số dư) được bảo vệ bằng `DB::transaction` nguyên tử.
-    - Biên dịch `npm run build` thành công 100% không có bất kỳ lỗi nào.
+  - **[ĐỒNG BỘ GIAO DIỆN TRANG QUẢN LÝ MÃ GIẢM GIÁ (ADMIN COUPONS)]**:
+    - **Yêu cầu:** Trang `http://localhost:4200/admin/coupons` chưa đồng bộ UI, Layout với các trang quản trị khác (Quản lý sản phẩm, Quản lý danh mục, Quản lý kho hàng, Quản lý đơn hàng, Quản lý thành viên, Quản lý nạp tiền).
+    - **Giải pháp & Triển khai:**
+      1. [admin-coupons.component.ts](file:///d:/git/isocalmarket/isocalmarket-web/src/app/features/admin-coupons/admin-coupons.component.ts): Thêm bộ lọc signals (`statusFilter`, `typeFilter`, `sortFilter`), các mảng options (`statusOptions`, `typeOptions`, `sortOptions`), computed signal `filteredCoupons`, phương thức `getCouponStatus` và `copyToClipboard` + Toast.
+      2. [admin-coupons.component.html](file:///d:/git/isocalmarket/isocalmarket-web/src/app/features/admin-coupons/admin-coupons.component.html): Nâng cấp Filter Bar sang Grid 4 cột responsive đồng bộ 100% với `admin-users` và `products`. Cập nhật các custom cell templates cho `app-table` (`code` nét đứt + nút Sao chép, `type`, `value` / `min_spend`, `usage` + progress bar mini, `date_range` BĐ/KT, `status` badge, `actions` nút Sửa/Xóa viền mờ + tooltip).
+      3. [coupon-form-modal.component.html](file:///d:/git/isocalmarket/isocalmarket-web/src/app/features/admin-coupons/coupon-form-modal/coupon-form-modal.component.html): Đồng bộ style label uppercase xám mờ `text-xs font-bold text-slate-400 dark:text-slate-500 uppercase tracking-wider block mb-1`.
+    - **Xác minh:** Biên dịch `npm run build` thành công `26.040s` 100% không có lỗi.
+
 
 

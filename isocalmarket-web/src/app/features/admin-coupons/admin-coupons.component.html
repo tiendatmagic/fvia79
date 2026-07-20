@@ -24,12 +24,45 @@
   </app-page-header>
 
   <div
-    class="bg-slate-50 dark:bg-slate-900/40 border border-slate-200/30 dark:border-slate-800/30 rounded-2xl p-4 sm:p-5"
+    class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 bg-slate-50/50 dark:bg-slate-950/20 border border-slate-200/30 dark:border-slate-800/30 rounded-2xl p-4 sm:p-5"
   >
-    <div class="form-field max-w-md">
-      <label>Tìm kiếm</label>
+    <div class="form-field">
+      <label class="text-xs font-bold text-slate-400 dark:text-slate-500 uppercase tracking-wider block mb-1">Trạng thái</label>
+      <app-custom-select
+        [options]="statusOptions"
+        valueKey="value"
+        labelKey="label"
+        [value]="statusFilter()"
+        (valueChange)="statusFilter.set($event)"
+      />
+    </div>
+
+    <div class="form-field">
+      <label class="text-xs font-bold text-slate-400 dark:text-slate-500 uppercase tracking-wider block mb-1">Loại giảm giá</label>
+      <app-custom-select
+        [options]="typeOptions"
+        valueKey="value"
+        labelKey="label"
+        [value]="typeFilter()"
+        (valueChange)="typeFilter.set($event)"
+      />
+    </div>
+
+    <div class="form-field">
+      <label class="text-xs font-bold text-slate-400 dark:text-slate-500 uppercase tracking-wider block mb-1">Sắp xếp theo</label>
+      <app-custom-select
+        [options]="sortOptions"
+        valueKey="value"
+        labelKey="label"
+        [value]="sortFilter()"
+        (valueChange)="sortFilter.set($event)"
+      />
+    </div>
+
+    <div class="form-field">
+      <label class="text-xs font-bold text-slate-400 dark:text-slate-500 uppercase tracking-wider block mb-1">Tìm kiếm mã giảm giá</label>
       <app-custom-search-input
-        [placeholder]="'Tìm kiếm mã giảm giá...'"
+        [placeholder]="'Tìm kiếm theo mã giảm giá...'"
         [(ngModel)]="searchQuery"
         name="searchQuery"
         (valueChange)="onSearch($event)"
@@ -42,67 +75,106 @@
   <div app-card class="overflow-hidden !p-0">
     <app-table
       [columns]="columns"
-      [data]="couponStore.coupons()"
+      [data]="filteredCoupons()"
       [loading]="couponStore.loading()"
-      emptyText="Chưa có mã giảm giá nào. Nhấp vào nút 'Thêm Mã Giảm Giá' để bắt đầu!"
+      emptyText="Chưa có mã giảm giá nào phù hợp. Nhấp vào nút 'Thêm Mã Giảm Giá' để bắt đầu!"
     >
       <ng-template appTableCell="code" let-row="row">
-        <span
-          class="font-mono font-black text-xs uppercase border border-dashed border-[var(--color-primary)]/40 px-2.5 py-1 rounded bg-[var(--color-primary)]/5 text-[var(--color-primary)] select-all tracking-wider"
-          [appTooltip]="'Nhấp đúp để sao chép: ' + row.code"
-        >
-          {{ row.code }}
-        </span>
+        <div class="flex items-center gap-1.5">
+          <span
+            class="font-mono font-black text-xs uppercase border border-dashed border-[var(--color-primary)]/40 px-2.5 py-1 rounded bg-[var(--color-primary)]/5 text-[var(--color-primary)] select-all tracking-wider"
+            [appTooltip]="'Mã giảm giá: ' + row.code"
+          >
+            {{ row.code }}
+          </span>
+          <button
+            (click)="copyToClipboard(row.code, 'Đã sao chép mã giảm giá!')"
+            class="p-1 hover:bg-slate-100 dark:hover:bg-slate-800 rounded transition-colors text-slate-400 hover:text-slate-600 dark:hover:text-slate-200 cursor-pointer"
+            [appTooltip]="'Sao chép mã giảm giá'"
+          >
+            <app-icon name="copy" class="w-3.5 h-3.5" />
+          </button>
+        </div>
       </ng-template>
 
       <ng-template appTableCell="type" let-row="row">
         <app-badge
-          [variant]="row.type === 'percentage' ? 'success' : 'info'"
+          [variant]="row.type === 'percentage' ? 'info' : 'primary'"
           size="md"
           rounded="md"
+          [appTooltip]="row.type === 'percentage' ? 'Giảm theo phần trăm tổng đơn' : 'Giảm số tiền cố định trên đơn'"
         >
-          {{ row.type === 'percentage' ? 'Phần trăm' : 'Cố định' }}
+          {{ row.type === 'percentage' ? 'Phần trăm (%)' : 'Số tiền cố định' }}
         </app-badge>
       </ng-template>
 
       <ng-template appTableCell="value" let-row="row">
-        <span class="font-extrabold text-slate-700 dark:text-slate-200 text-sm">
+        <span
+          class="font-extrabold text-slate-800 dark:text-slate-100 text-sm whitespace-nowrap"
+          [appTooltip]="'Mức giảm: ' + (row.type === 'percentage' ? row.value + '%' : (row.value | number: '1.0-0') + ' VND')"
+        >
           @if (row.type === 'percentage') {
             {{ row.value }}%
           } @else {
-            {{ row.value | number }} VND
+            {{ row.value | number: '1.0-0' }} VND
           }
         </span>
       </ng-template>
 
       <ng-template appTableCell="min_spend" let-row="row">
-        <span class="text-slate-600 dark:text-slate-300 font-semibold text-xs">
-          {{ row.min_spend | number }} VND
+        <span
+          class="text-slate-600 dark:text-slate-300 font-semibold text-xs whitespace-nowrap"
+          [appTooltip]="'Đơn hàng tối thiểu: ' + (row.min_spend | number: '1.0-0') + ' VND'"
+        >
+          {{ row.min_spend | number: '1.0-0' }} VND
         </span>
       </ng-template>
 
       <ng-template appTableCell="usage" let-row="row">
-        <div class="flex flex-col items-center justify-center gap-0.5">
-          <span class="text-xs font-bold text-slate-700 dark:text-slate-300">
+        <div
+          class="flex flex-col items-center justify-center gap-0.5"
+          [appTooltip]="'Đã dùng ' + row.used_count + ' / ' + (row.usage_limit === 0 ? 'Không giới hạn' : row.usage_limit + ' lượt')"
+        >
+          <span class="text-xs font-black text-slate-700 dark:text-slate-200">
             {{ row.used_count }} / {{ row.usage_limit === 0 ? '∞' : row.usage_limit }}
           </span>
-          <span class="text-[10px] text-slate-400 dark:text-slate-500 font-semibold">
-            đã dùng
-          </span>
+          @if (row.usage_limit > 0) {
+            <div class="w-16 h-1.5 bg-slate-200 dark:bg-slate-800 rounded-full overflow-hidden mt-0.5">
+              <div
+                class="h-full bg-gradient-to-r from-[var(--color-primary)] to-[var(--color-secondary)] transition-all duration-300"
+                [style.width.%]="(row.used_count / row.usage_limit) * 100"
+              ></div>
+            </div>
+          }
         </div>
       </ng-template>
 
       <ng-template appTableCell="date_range" let-row="row">
-        <div class="flex flex-col gap-0.5 text-xs text-slate-600 dark:text-slate-400">
-          <div class="flex items-center gap-1">
-            <span class="text-[10px] bg-emerald-50 dark:bg-emerald-950/30 text-emerald-600 dark:text-emerald-400 px-1 py-0.5 rounded font-black">BĐ</span>
-            <span class="font-semibold">{{ row.start_date | date: 'dd/MM/yyyy' }}</span>
+        <div
+          class="flex flex-col gap-1 text-xs text-slate-600 dark:text-slate-400 whitespace-nowrap"
+          [appTooltip]="'Thời gian: ' + (row.start_date | date: 'dd/MM/yyyy HH:mm') + ' - ' + (row.end_date | date: 'dd/MM/yyyy HH:mm')"
+        >
+          <div class="flex items-center gap-1.5">
+            <span class="text-[10px] bg-emerald-50 dark:bg-emerald-950/40 text-emerald-600 dark:text-emerald-400 border border-emerald-500/20 px-1.5 py-0.5 rounded font-black shrink-0">BĐ</span>
+            <span class="font-semibold text-slate-700 dark:text-slate-300">{{ row.start_date | date: 'dd/MM/yyyy HH:mm' }}</span>
           </div>
-          <div class="flex items-center gap-1">
-            <span class="text-[10px] bg-rose-50 dark:bg-rose-950/30 text-rose-600 dark:text-rose-400 px-1 py-0.5 rounded font-black">KT</span>
-            <span class="font-semibold">{{ row.end_date | date: 'dd/MM/yyyy' }}</span>
+          <div class="flex items-center gap-1.5">
+            <span class="text-[10px] bg-rose-50 dark:bg-rose-950/40 text-rose-600 dark:text-rose-400 border border-rose-500/20 px-1.5 py-0.5 rounded font-black shrink-0">KT</span>
+            <span class="font-semibold text-slate-700 dark:text-slate-300">{{ row.end_date | date: 'dd/MM/yyyy HH:mm' }}</span>
           </div>
         </div>
+      </ng-template>
+
+      <ng-template appTableCell="status" let-row="row">
+        @let statusInfo = getCouponStatus(row);
+        <app-badge
+          [variant]="statusInfo.variant"
+          size="sm"
+          rounded="md"
+          [appTooltip]="'Trạng thái mã: ' + statusInfo.label"
+        >
+          {{ statusInfo.label }}
+        </app-badge>
       </ng-template>
 
       <ng-template appTableCell="actions" let-row="row">
@@ -110,7 +182,7 @@
           <button
             (click)="openEditModal(row)"
             class="text-xs font-bold px-3 py-1.5 rounded-lg border border-[var(--color-primary)]/20 hover:bg-[var(--color-primary)]/10 text-[var(--color-primary)] bg-[var(--color-primary)]/5 dark:bg-[var(--color-primary)]/10 dark:border-[var(--color-primary)]/30 dark:hover:bg-[var(--color-primary)]/20 hover:scale-105 active:scale-95 transition-all cursor-pointer flex items-center gap-1 shrink-0"
-            [appTooltip]="'Chỉnh sửa'"
+            [appTooltip]="'Chỉnh sửa mã giảm giá'"
           >
             <app-icon name="edit" class="w-3.5 h-3.5" />
             <span>Sửa</span>
@@ -118,7 +190,7 @@
           <button
             (click)="confirmDelete(row)"
             class="text-xs font-bold px-3 py-1.5 rounded-lg border border-rose-500/20 dark:border-rose-500/30 hover:bg-rose-100 dark:hover:bg-rose-950/40 text-rose-600 dark:text-rose-400 bg-rose-50 dark:bg-rose-950/20 hover:scale-105 active:scale-95 transition-all cursor-pointer flex items-center gap-1 shrink-0"
-            [appTooltip]="'Xóa'"
+            [appTooltip]="'Xóa mã giảm giá'"
           >
             <app-icon name="trash" class="w-3.5 h-3.5" />
             <span>Xóa</span>
@@ -137,3 +209,4 @@
     />
   </div>
 </div>
+
