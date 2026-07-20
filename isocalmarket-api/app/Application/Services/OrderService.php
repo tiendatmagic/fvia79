@@ -156,7 +156,7 @@ class OrderService
             }
 
             if ($user->getBalance() < $finalPrice) {
-                throw new \Exception("Insufficient balance to pay for the order (Required: " . number_format($finalPrice) . " VND, Current: " . number_format($user->getBalance()) . " VND).");
+                throw new \Exception("Insufficient balance to pay for the order (Required: " . number_format($finalPrice, 4) . " USD, Current: " . number_format($user->getBalance(), 4) . " USD).");
             }
 
             $user->setBalance($user->getBalance() - $finalPrice);

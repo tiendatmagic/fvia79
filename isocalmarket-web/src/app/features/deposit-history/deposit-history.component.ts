@@ -16,7 +16,6 @@ import { ModalService } from '@core/services/modal.service';
 import { DepositDetailModalComponent } from './deposit-detail-modal.component';
 import { TooltipDirective } from '@shared/components/tooltip/tooltip.directive';
 import { TranslatePipe } from '@shared/pipes/translate.pipe';
-import { CurrencyPipe } from '@shared/pipes/currency.pipe';
 import { LanguageService } from '@core/services/language.service';
 import { computed } from '@angular/core';
 
@@ -54,8 +53,7 @@ export interface DepositHistoryItem {
     TableComponent,
     TableCellDirective,
     TooltipDirective,
-    TranslatePipe,
-    CurrencyPipe
+    TranslatePipe
   ],
   templateUrl: './deposit-history.component.html',
   styles: [`
@@ -71,15 +69,25 @@ export class DepositHistoryComponent implements OnInit {
   public readonly lang = inject(LanguageService);
 
   public readonly columns = computed<TableColumn[]>(() => {
-    this.lang.currentLang();
-    return [
+    const language = this.lang.currentLang();
+    const columns: TableColumn[] = [
       { key: 'code', label: this.lang.translate('deposit.code'), sortable: true },
       { key: 'amountUsdt', label: this.lang.translate('deposit.amount_usdt'), sortable: true, align: 'right' },
-      { key: 'amountVnd', label: this.lang.translate('deposit.equivalent_vnd'), sortable: true, align: 'right' },
       { key: 'status', label: this.lang.translate('common.status'), sortable: true, align: 'center' },
       { key: 'createdAt', label: this.lang.translate('common.created_at'), sortable: true },
       { key: 'actions', label: this.lang.translate('common.actions'), sortable: false, align: 'right' }
     ];
+
+    if (language === 'vi') {
+      columns.splice(2, 0, {
+        key: 'amountVnd',
+        label: this.lang.translate('deposit.equivalent_vnd'),
+        sortable: true,
+        align: 'right'
+      });
+    }
+
+    return columns;
   });
 
   public readonly currentPage = signal<number>(1);
@@ -104,7 +112,6 @@ export class DepositHistoryComponent implements OnInit {
   ngOnInit() {
     this.state.authStore.checkMe(true).subscribe();
     this.fetchPage(1);
-    this.state.depositStore.fetchRate().subscribe();
   }
 
   // Tải danh sách giao dịch từ API thật

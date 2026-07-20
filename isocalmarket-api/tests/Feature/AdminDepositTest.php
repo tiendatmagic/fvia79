@@ -97,7 +97,7 @@ class AdminDepositTest extends TestCase
             'user_id' => $this->normalUser->id,
             'code' => 'DEP001',
             'amount_usdt' => 10.25,
-            'amount_to_pay' => 100.0123,
+            'amount_to_pay' => 10.2501,
             'amount_vnd' => 2500000.0,
             'status' => 'pending_payment',
             'payment_method' => 'bep20'
@@ -125,17 +125,17 @@ class AdminDepositTest extends TestCase
     public function test_automatic_bep20_reconciliation_credits_usdt_not_vnd(): void
     {
         $wallet = '0x1111111111111111111111111111111111111111';
-        SystemSettingModel::create(['key' => 'admin_wallet_address', 'value' => $wallet]);
-        SystemSettingModel::create(['key' => 'scanner_api_key', 'value' => 'test-scanner-key']);
+        SystemSettingModel::updateOrCreate(['key' => 'admin_wallet_address'], ['value' => $wallet]);
+        SystemSettingModel::updateOrCreate(['key' => 'scanner_api_key'], ['value' => 'test-scanner-key']);
         Cache::flush();
 
         $deposit = DepositModel::create([
             'id' => '019f6699-e6d2-70f2-89bd-d3b93946a77d',
             'user_id' => $this->normalUser->id,
             'code' => 'AUTO01',
-            'amount_usdt' => 10.5,
-            'amount_to_pay' => 10.5,
-            'amount_vnd' => 275898.0,
+            'amount_usdt' => 10.0,
+            'amount_to_pay' => 10.0001,
+            'amount_vnd' => 262762.0,
             'status' => 'pending_payment',
             'payment_method' => 'bep20',
             'admin_wallet_address' => $wallet,
@@ -146,7 +146,7 @@ class AdminDepositTest extends TestCase
                 'result' => [[
                     'address' => '0x55d398326f99059ff775485246999027b3197955',
                     'to_address' => $wallet,
-                    'value' => '10500000000000000000',
+                    'value' => '10000100000000000000',
                     'transaction_hash' => '0xautomaticdeposit',
                     'block_timestamp' => now()->toIso8601String(),
                 ]],
@@ -164,7 +164,49 @@ class AdminDepositTest extends TestCase
             'status' => 'completed',
             'tx_hash' => '0xautomaticdeposit',
         ]);
-        $this->assertEquals(10.5, (float) $this->normalUser->fresh()->balance);
+        $this->assertEquals(10.0, (float) $this->normalUser->fresh()->balance);
+    }
+
+    public function test_automatic_binance_reconciliation_credits_usdt_not_vnd(): void
+    {
+        SystemSettingModel::updateOrCreate(['key' => 'binance_api_key'], ['value' => 'test-binance-key']);
+        SystemSettingModel::updateOrCreate(['key' => 'binance_api_secret'], ['value' => 'test-binance-secret']);
+        Cache::flush();
+
+        $deposit = DepositModel::create([
+            'id' => '019f6699-e6d2-70f2-89bd-d3b93946a77e',
+            'user_id' => $this->normalUser->id,
+            'code' => 'BINA01',
+            'amount_usdt' => 7.5,
+            'amount_to_pay' => 7.5001,
+            'amount_vnd' => 197070.0,
+            'status' => 'pending_payment',
+            'payment_method' => 'binance',
+        ]);
+
+        Http::fake([
+            'api.binance.com/*' => Http::response([
+                'data' => [[
+                    'currency' => 'USDT',
+                    'amount' => '7.5001',
+                    'orderId' => 'binance-order-001',
+                    'transactionTime' => now()->getTimestampMs(),
+                ]],
+            ], 200),
+        ]);
+
+        $matched = resolve(DepositService::class)->checkTransaction(
+            $deposit->id,
+            $this->normalUser->id
+        );
+
+        $this->assertTrue($matched);
+        $this->assertDatabaseHas('deposits', [
+            'id' => $deposit->id,
+            'status' => 'completed',
+            'tx_hash' => 'binance-order-001',
+        ]);
+        $this->assertEquals(7.5, (float) $this->normalUser->fresh()->balance);
     }
 
     public function test_admin_can_reject_deposit_manually(): void
