@@ -1,4 +1,4 @@
-import { Component, inject } from '@angular/core';
+import { Component, inject, signal } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { ModalRef } from '@core/services/modal-ref';
@@ -23,14 +23,14 @@ export class Disable2faModalComponent {
   public readonly state = inject(StateService);
 
   public code = '';
-  public isSubmitting = false;
+  public readonly isSubmitting = signal(false);
 
   public onClose() {
     this.modalRef.close(false);
   }
 
   public onConfirm() {
-    if (this.isSubmitting) return;
+    if (this.isSubmitting()) return;
     if (!this.code) {
       this.state.showToast('Vui lòng nhập mã xác thực 2FA!', 'error');
       return;
@@ -41,9 +41,9 @@ export class Disable2faModalComponent {
       return;
     }
 
-    this.isSubmitting = true;
+    this.isSubmitting.set(true);
     this.state.authStore.disable2Fa(this.code)
-      .pipe(finalize(() => this.isSubmitting = false))
+      .pipe(finalize(() => this.isSubmitting.set(false)))
       .subscribe((res) => {
         if (res) {
           this.modalRef.close(true);

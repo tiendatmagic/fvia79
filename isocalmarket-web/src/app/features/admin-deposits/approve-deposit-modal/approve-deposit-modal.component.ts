@@ -1,4 +1,4 @@
-import { Component, inject, OnInit } from '@angular/core';
+import { Component, inject, OnInit, signal } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { ModalRef, MODAL_DATA } from '@core/services/modal-ref';
@@ -40,7 +40,7 @@ export class ApproveDepositModalComponent implements OnInit {
   private readonly depositStore = inject(AdminDepositStore);
 
   public txHash = '';
-  public isSubmitting = false;
+  public readonly isSubmitting = signal(false);
 
   ngOnInit() {}
 
@@ -49,19 +49,19 @@ export class ApproveDepositModalComponent implements OnInit {
   }
 
   public onSubmit() {
-    if (this.isSubmitting) return;
+    if (this.isSubmitting()) return;
 
-    this.isSubmitting = true;
+    this.isSubmitting.set(true);
 
     this.depositStore.approveDeposit(this.data.deposit.id, this.txHash.trim() || undefined).subscribe({
       next: (res) => {
-        this.isSubmitting = false;
+        this.isSubmitting.set(false);
         if (res) {
           this.modalRef.close(true);
         }
       },
       error: () => {
-        this.isSubmitting = false;
+        this.isSubmitting.set(false);
       }
     });
   }

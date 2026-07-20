@@ -1,4 +1,4 @@
-import { Component, inject } from '@angular/core';
+import { Component, inject, signal } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { StateService } from '@core/services/state.service';
@@ -23,10 +23,10 @@ export class ProfilePasswordComponent {
   public currentPassword = '';
   public newPassword = '';
   public newPasswordConfirmation = '';
-  public isSubmitting = false;
+  public readonly isSubmitting = signal(false);
 
   public onSubmit() {
-    if (this.isSubmitting) return;
+    if (this.isSubmitting()) return;
     if (!this.currentPassword || !this.newPassword || !this.newPasswordConfirmation) {
       this.state.showToast('Vui lòng điền đầy đủ thông tin mật khẩu!', 'error');
       return;
@@ -37,7 +37,7 @@ export class ProfilePasswordComponent {
       return;
     }
 
-    this.isSubmitting = true;
+    this.isSubmitting.set(true);
     const payload = {
       current_password: this.currentPassword,
       new_password: this.newPassword,
@@ -45,7 +45,7 @@ export class ProfilePasswordComponent {
     };
 
     this.state.authStore.changePassword(payload)
-      .pipe(finalize(() => this.isSubmitting = false))
+      .pipe(finalize(() => this.isSubmitting.set(false)))
       .subscribe((res) => {
         if (res) {
           this.currentPassword = '';

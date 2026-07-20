@@ -1,4 +1,4 @@
-import { Component, inject, OnInit } from '@angular/core';
+import { Component, inject, OnInit, signal } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { ModalRef, MODAL_DATA } from '@core/services/modal-ref';
@@ -34,7 +34,7 @@ export class ImportInventoryModalComponent implements OnInit {
   public batchName = '';
   public rawData = '';
   public productOptions: any[] = [];
-  public isSubmitting = false;
+  public readonly isSubmitting = signal(false);
 
   ngOnInit() {
     if (this.modalData) {
@@ -56,19 +56,19 @@ export class ImportInventoryModalComponent implements OnInit {
   }
 
   public onSubmit() {
-    if (this.isSubmitting) return;
+    if (this.isSubmitting()) return;
     if (!this.importProductId || !this.batchName.trim() || !this.rawData.trim()) {
       this.state.showToast('Vui lòng điền đầy đủ tên lô hàng, chọn sản phẩm và nhập dữ liệu tài nguyên!', 'error');
       return;
     }
 
-    this.isSubmitting = true;
+    this.isSubmitting.set(true);
     this.state.inventoryStore.importItems(
       this.importProductId as any,
       this.batchName,
       this.rawData
     ).pipe(
-      finalize(() => this.isSubmitting = false)
+      finalize(() => this.isSubmitting.set(false))
     ).subscribe((res) => {
       if (res) {
         this.modalRef.close(true);

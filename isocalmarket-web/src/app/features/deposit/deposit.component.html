@@ -159,7 +159,7 @@
         <button
           app-button
           [variant]="'primary'"
-          [loading]="isSubmitting"
+          [loading]="isSubmitting()"
           (click)="onCreateInvoice()"
           class="w-full py-3.5 rounded-xl font-extrabold bg-gradient-to-r from-[var(--color-primary)] to-[var(--color-secondary)] text-white shadow-md shadow-[var(--color-primary)]/10 active:scale-[0.98] transition-all flex items-center justify-center gap-2"
         >

@@ -479,7 +479,7 @@
           type="submit"
           app-button
           [variant]="'primary'"
-          [loading]="isSubmitting"
+          [loading]="isSubmitting()"
           class="px-6 py-2.5 rounded-xl font-extrabold text-sm active:scale-[0.98] transition-all cursor-pointer"
         >
           {{ isEditMode ? 'Cập nhật' : 'Tạo mới' }}

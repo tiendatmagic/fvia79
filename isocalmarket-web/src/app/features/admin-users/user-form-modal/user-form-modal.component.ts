@@ -1,4 +1,4 @@
-import { Component, inject, OnInit, ChangeDetectorRef } from '@angular/core';
+import { Component, inject, OnInit, ChangeDetectorRef, signal } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { ModalRef, MODAL_DATA } from '@core/services/modal-ref';
@@ -69,7 +69,7 @@ export class UserFormModalComponent implements OnInit {
   public generate_api_key = false;
   public revoke_api_key = false;
 
-  public isSubmitting = false;
+  public readonly isSubmitting = signal(false);
   public isResetting2fa = false;
   public isEnabling2fa = false;
   public isConfirming = false;
@@ -138,26 +138,25 @@ export class UserFormModalComponent implements OnInit {
       this.isConfirming = false;
       if (!confirmed) {
         this.google2fa_enabled = true;
+        this.cdr.detectChanges();
         return;
       }
 
       this.isResetting2fa = true;
-      this.apiService.post(`v1/admin/users/${this.editingId}/reset-2fa`, {}).pipe(
-        finalize(() => {
+      this.cdr.detectChanges();
+
+      const url = `v1/admin/users/${this.editingId}/reset-2fa`;
+      this.apiService.post<any>(url, {}).subscribe({
+        next: (res) => {
           this.isResetting2fa = false;
-          this.cdr.detectChanges();
-        })
-      ).subscribe({
-        next: () => {
           this.google2fa_enabled = false;
           this.google2fa_secret = '';
           this.google2fa_qr_url = '';
-          this.adminGeneratedSecret = '';
-          this.adminGeneratedQrUrl = '';
-          this.state.showToast('Đã tắt 2FA cho tài khoản này!', 'success');
+          this.state.showToast('Đã tắt bảo mật 2FA thành công!', 'success');
           this.cdr.detectChanges();
         },
         error: () => {
+          this.isResetting2fa = false;
           this.google2fa_enabled = true;
           this.state.showToast('Không thể tắt 2FA, vui lòng thử lại!', 'error');
           this.cdr.detectChanges();
@@ -171,35 +170,34 @@ export class UserFormModalComponent implements OnInit {
 
     this.isConfirming = true;
     this.modalService.confirm({
-      title: 'Kích hoạt 2FA cho thành viên',
-      descriptionHtml: `Hệ thống sẽ tự động kích hoạt 2FA và sinh khóa bí mật cho tài khoản <strong>${this.email}</strong>. Bạn cần cung cấp khóa bí mật này hoặc gửi ảnh mã QR cho thành viên cấu hình trên ứng dụng Google Authenticator của họ.`,
-      confirmText: 'Kích hoạt 2FA',
+      title: 'Xác nhận bật 2FA',
+      descriptionHtml: `Bạn có chắc muốn kích hoạt 2FA (tạo secret key mới) cho tài khoản <strong>${this.email}</strong>? Điều này sẽ ghi đè thiết bị 2FA cũ của user.`,
+      confirmText: 'Tạo khóa 2FA',
       cancelText: 'Hủy',
       variant: 'info'
     }).afterClosed$.subscribe((confirmed) => {
       this.isConfirming = false;
       if (!confirmed) {
         this.google2fa_enabled = false;
+        this.cdr.detectChanges();
         return;
       }
 
       this.isEnabling2fa = true;
-      this.apiService.post<any>(`v1/admin/users/${this.editingId}/enable-2fa`, {}).pipe(
-        finalize(() => {
-          this.isEnabling2fa = false;
-          this.cdr.detectChanges();
-        })
-      ).subscribe({
+      this.cdr.detectChanges();
+
+      const url = `v1/admin/users/${this.editingId}/enable-2fa`;
+      this.apiService.post<any>(url, {}).subscribe({
         next: (res) => {
+          this.isEnabling2fa = false;
           this.google2fa_enabled = true;
           this.google2fa_secret = res.secret;
           this.google2fa_qr_url = res.qr_code_url;
-          this.adminGeneratedSecret = res.secret;
-          this.adminGeneratedQrUrl = res.qr_code_url;
           this.state.showToast('Đã kích hoạt 2FA thành công!', 'success');
           this.cdr.detectChanges();
         },
         error: () => {
+          this.isEnabling2fa = false;
           this.google2fa_enabled = false;
           this.state.showToast('Không thể kích hoạt 2FA, vui lòng thử lại!', 'error');
           this.cdr.detectChanges();
@@ -264,7 +262,7 @@ export class UserFormModalComponent implements OnInit {
   }
 
   public onSubmit() {
-    if (this.isSubmitting) return;
+    if (this.isSubmitting()) return;
 
     const usernameRegex = /^[a-zA-Z0-9_]{3,50}$/;
     if (!this.username) {
@@ -315,7 +313,7 @@ export class UserFormModalComponent implements OnInit {
       data.password = this.password;
     }
 
-    this.isSubmitting = true;
+    this.isSubmitting.set(true);
 
     if (this.isEditMode) {
       data.status = this.status;
@@ -326,7 +324,7 @@ export class UserFormModalComponent implements OnInit {
       }
 
       this.state.userStore.updateUser(this.editingId, data).pipe(
-        finalize(() => this.isSubmitting = false)
+        finalize(() => this.isSubmitting.set(false))
       ).subscribe((res) => {
         if (res !== null) {
           this.modalRef.close(true);
@@ -334,7 +332,7 @@ export class UserFormModalComponent implements OnInit {
       });
     } else {
       this.state.userStore.createUser(data).pipe(
-        finalize(() => this.isSubmitting = false)
+        finalize(() => this.isSubmitting.set(false))
       ).subscribe((res) => {
         if (res !== null) {
           this.modalRef.close(true);

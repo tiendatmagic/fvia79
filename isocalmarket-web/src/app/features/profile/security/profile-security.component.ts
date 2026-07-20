@@ -1,4 +1,4 @@
-import { Component, inject } from '@angular/core';
+import { Component, inject, signal } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { StateService } from '@core/services/state.service';
 import { ButtonComponent } from '@shared/components/button/button.component';
@@ -24,13 +24,13 @@ export class ProfileSecurityComponent {
   public readonly state = inject(StateService);
   private readonly modalService = inject(ModalService);
 
-  public isSubmitting = false;
+  public readonly isSubmitting = signal(false);
 
   public startEnable2Fa() {
-    if (this.isSubmitting) return;
-    this.isSubmitting = true;
+    if (this.isSubmitting()) return;
+    this.isSubmitting.set(true);
     this.state.authStore.enable2Fa()
-      .pipe(finalize(() => this.isSubmitting = false))
+      .pipe(finalize(() => this.isSubmitting.set(false)))
       .subscribe((res) => {
         if (res) {
           this.modalService.open(Enable2faModalComponent, {

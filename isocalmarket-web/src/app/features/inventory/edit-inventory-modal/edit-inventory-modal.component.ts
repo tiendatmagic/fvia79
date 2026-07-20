@@ -1,4 +1,4 @@
-import { Component, inject, OnInit } from '@angular/core';
+import { Component, inject, OnInit, signal } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { ModalRef, MODAL_DATA } from '@core/services/modal-ref';
@@ -37,7 +37,7 @@ export class EditInventoryModalComponent implements OnInit {
   public status = 'active';
   public lastUpdatedAt = '';
   public productOptions: any[] = [];
-  public isSubmitting = false;
+  public readonly isSubmitting = signal(false);
 
   public statusOptions = [
     { label: 'Hoạt động', value: 'active' },
@@ -46,14 +46,13 @@ export class EditInventoryModalComponent implements OnInit {
   ];
 
   ngOnInit() {
-    if (this.modalData && this.modalData.item) {
-      const item = this.modalData.item;
-      this.itemId = item.id;
-      this.editProductId = String(item.product_id);
-      this.batchName = item.batch_name || '';
-      this.keysPool = item.keys_pool || '';
-      this.status = item.status || 'active';
-      this.lastUpdatedAt = item.updated_at || '';
+    if (this.modalData) {
+      this.itemId = this.modalData.id;
+      this.editProductId = this.modalData.product_id;
+      this.batchName = this.modalData.batch_name || '';
+      this.keysPool = this.modalData.keys_pool || '';
+      this.status = this.modalData.status || 'active';
+      this.lastUpdatedAt = this.modalData.last_updated_at || '';
       this.productOptions = this.modalData.productOptions || [];
     }
   }
@@ -69,13 +68,13 @@ export class EditInventoryModalComponent implements OnInit {
   }
 
   public onSubmit() {
-    if (this.isSubmitting) return;
+    if (this.isSubmitting()) return;
     if (!this.editProductId || !this.batchName.trim()) {
       this.state.showToast('Vui lòng chọn sản phẩm và nhập tên lô hàng!', 'error');
       return;
     }
 
-    this.isSubmitting = true;
+    this.isSubmitting.set(true);
     this.state.inventoryStore.updateItem(this.itemId, {
       product_id: this.editProductId,
       batch_name: this.batchName,
@@ -83,7 +82,7 @@ export class EditInventoryModalComponent implements OnInit {
       status: this.status,
       last_updated_at: this.lastUpdatedAt
     }).pipe(
-      finalize(() => this.isSubmitting = false)
+      finalize(() => this.isSubmitting.set(false))
     ).subscribe((res) => {
       if (res) {
         this.modalRef.close(true);

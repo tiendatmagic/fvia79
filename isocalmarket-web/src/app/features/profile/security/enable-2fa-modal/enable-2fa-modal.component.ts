@@ -1,4 +1,4 @@
-import { Component, inject, OnInit } from '@angular/core';
+import { Component, inject, OnInit, signal } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { ModalRef, MODAL_DATA } from '@core/services/modal-ref';
@@ -27,7 +27,7 @@ export class Enable2faModalComponent implements OnInit {
   public qrCodeUrl = '';
   public secretKey = '';
   public otpConfirmCode = '';
-  public isSubmitting = false;
+  public readonly isSubmitting = signal(false);
 
   ngOnInit() {
     if (this.modalData) {
@@ -41,15 +41,15 @@ export class Enable2faModalComponent implements OnInit {
   }
 
   public onConfirm() {
-    if (this.isSubmitting) return;
+    if (this.isSubmitting()) return;
     if (!this.otpConfirmCode || this.otpConfirmCode.length !== 6) {
       this.state.showToast('Vui lòng nhập mã xác thực OTP gồm 6 chữ số!', 'error');
       return;
     }
 
-    this.isSubmitting = true;
+    this.isSubmitting.set(true);
     this.state.authStore.confirm2Fa(this.otpConfirmCode)
-      .pipe(finalize(() => this.isSubmitting = false))
+      .pipe(finalize(() => this.isSubmitting.set(false)))
       .subscribe((res) => {
         if (res) {
           this.modalRef.close(true);

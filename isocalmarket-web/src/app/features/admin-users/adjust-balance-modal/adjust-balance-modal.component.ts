@@ -1,4 +1,4 @@
-import { Component, inject, OnInit } from '@angular/core';
+import { Component, inject, OnInit, signal } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { ModalRef, MODAL_DATA } from '@core/services/modal-ref';
@@ -39,7 +39,7 @@ export class AdjustBalanceModalComponent implements OnInit {
   public type: 'add' | 'subtract' = 'add';
   public amount: number | null = null;
   public reason = '';
-  public isSubmitting = false;
+  public readonly isSubmitting = signal(false);
 
   public get currentBalance(): number {
     return this.data?.user?.balance || 0;
@@ -55,7 +55,10 @@ export class AdjustBalanceModalComponent implements OnInit {
   }
 
   public get isSubtractExceeded(): boolean {
-    return this.type === 'subtract' && (this.amount || 0) > this.currentBalance;
+    if (this.type === 'subtract' && this.amount) {
+      return this.amount > this.currentBalance;
+    }
+    return false;
   }
 
   ngOnInit() {}
@@ -65,7 +68,7 @@ export class AdjustBalanceModalComponent implements OnInit {
   }
 
   public onSubmit() {
-    if (this.isSubmitting) return;
+    if (this.isSubmitting()) return;
 
     if (!this.amount || this.amount <= 0) {
       return;
@@ -75,19 +78,19 @@ export class AdjustBalanceModalComponent implements OnInit {
       return;
     }
 
-    this.isSubmitting = true;
+    this.isSubmitting.set(true);
 
     const reasonText = this.reason.trim() || (this.type === 'add' ? 'Admin cộng tiền' : 'Admin trừ tiền');
 
     this.userStore.adjustBalance(this.data.user.id, this.type, this.amount, reasonText).subscribe({
       next: (res) => {
-        this.isSubmitting = false;
+        this.isSubmitting.set(false);
         if (res) {
           this.modalRef.close(true);
         }
       },
       error: () => {
-        this.isSubmitting = false;
+        this.isSubmitting.set(false);
       }
     });
   }

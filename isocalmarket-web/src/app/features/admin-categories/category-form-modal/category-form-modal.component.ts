@@ -1,4 +1,4 @@
-import { Component, inject, OnInit } from '@angular/core';
+import { Component, inject, OnInit, signal } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { ModalRef, MODAL_DATA } from '@core/services/modal-ref';
@@ -33,7 +33,7 @@ export class CategoryFormModalComponent implements OnInit {
   public name = '';
   public slug = '';
   public description = '';
-  public isSubmitting = false;
+  public readonly isSubmitting = signal(false);
 
   ngOnInit() {
     if (this.modalData) {
@@ -50,7 +50,7 @@ export class CategoryFormModalComponent implements OnInit {
   }
 
   public onSubmit() {
-    if (this.isSubmitting) return;
+    if (this.isSubmitting()) return;
     if (!this.name) {
       this.state.showToast('Vui lòng nhập tên danh mục!', 'error');
       return;
@@ -62,10 +62,10 @@ export class CategoryFormModalComponent implements OnInit {
       description: this.description || null
     };
 
-    this.isSubmitting = true;
+    this.isSubmitting.set(true);
     if (this.isEditMode && this.editingId) {
       this.state.productStore.updateCategory(this.editingId, data).pipe(
-        finalize(() => this.isSubmitting = false)
+        finalize(() => this.isSubmitting.set(false))
       ).subscribe((res) => {
         if (res !== null) {
           this.modalRef.close(true);
@@ -73,7 +73,7 @@ export class CategoryFormModalComponent implements OnInit {
       });
     } else {
       this.state.productStore.createCategory(data).pipe(
-        finalize(() => this.isSubmitting = false)
+        finalize(() => this.isSubmitting.set(false))
       ).subscribe((res) => {
         if (res !== null) {
           this.modalRef.close(true);

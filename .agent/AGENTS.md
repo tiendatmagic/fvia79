@@ -1507,3 +1507,10 @@
       4. Đồng bộ tab tại [user-api.component.html](file:///d:/git/isocalmarket/isocalmarket-web/src/app/features/user-api/user-api.component.html): Chuyển đổi sang `pb-2` kết hợp `-mb-px` và loại bỏ padding đáy container cũ để thống nhất layout tab line.
     - **Xác minh:** Chạy biên dịch frontend thành công.
 
+  - **[KHẮC PHỤC LỖI & TỐI ƯU HÓA CHANGE DETECTION] Chuyển đổi isSubmitting sang Angular Signals**:
+    - **Yêu cầu**: Sửa lỗi kẹt nút submit ở trạng thái loading/disabled khi API phản hồi lỗi ở tất cả các modal và các form submit.
+    - **Giải pháp & Triển khai**:
+      1. Chuyển đổi biến `isSubmitting` từ thuộc tính thông thường (plain property) sang **Angular Signal** (`public readonly isSubmitting = signal(false)`) tại 14 tệp tin component (bao gồm 10 modal động như `CartModalComponent`, `ProductFormModalComponent`, `UserFormModalComponent`, `AdjustBalanceModalComponent`,... và các trang như `ProfileSecurityComponent`, `ProfilePasswordComponent`, `ProfileInformationComponent`, `DepositComponent`).
+      2. Cập nhật các template HTML tương ứng để sử dụng hàm gọi Signal `isSubmitting()`.
+      3. Đối với các modal/trang gọi API thanh toán/đặt hàng, nâng cao tính an toàn khi phân tích thông điệp lỗi bằng cách ép kiểu chuỗi an toàn (`typeof msg === 'string'`) cho `err.error?.message` trước khi kiểm tra `.includes(...)` để tránh crash Javascript.
+    - **Xác minh**: Biên dịch ứng dụng frontend Angular thành công (`npm run build`) mà không gặp bất kỳ lỗi template hay TypeScript nào. Trạng thái nút bấm được khôi phục ngay lập tức khi API hoàn thành hoặc lỗi.

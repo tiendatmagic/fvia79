@@ -1,4 +1,4 @@
-import { Component, inject, OnInit, computed } from '@angular/core';
+import { Component, inject, OnInit, computed, signal } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { ModalRef, MODAL_DATA } from '@core/services/modal-ref';
@@ -40,7 +40,7 @@ export class ProductFormModalComponent implements OnInit {
   public description = '';
   public price = 0;
   public status = 'active';
-  public isSubmitting = false;
+  public readonly isSubmitting = signal(false);
   public attributes: { label: string, value: string }[] = [];
 
   public statusOptions = [
@@ -67,12 +67,12 @@ export class ProductFormModalComponent implements OnInit {
       this.isEditMode = true;
       this.editingId = this.modalData.id;
       this.categoryId = this.modalData.category_id || '';
-      this.name = this.modalData.name;
-      this.slug = this.modalData.slug;
+      this.name = this.modalData.name || '';
+      this.slug = this.modalData.slug || '';
       this.description = this.modalData.description || '';
-      this.price = this.modalData.price;
-      this.status = this.modalData.status;
-      this.attributes = this.modalData.attributes ? JSON.parse(JSON.stringify(this.modalData.attributes)) : [];
+      this.price = this.modalData.price || 0;
+      this.status = this.modalData.status || 'active';
+      this.attributes = this.modalData.attributes ? [...this.modalData.attributes] : [];
     }
   }
 
@@ -89,7 +89,7 @@ export class ProductFormModalComponent implements OnInit {
   }
 
   public onSubmit() {
-    if (this.isSubmitting) return;
+    if (this.isSubmitting()) return;
     if (!this.name || this.price < 0) {
       this.state.showToast('Vui lòng điền thông tin hợp lệ!', 'error');
       return;
@@ -105,10 +105,10 @@ export class ProductFormModalComponent implements OnInit {
       attributes: this.attributes.filter(attr => attr.label.trim() !== '' && attr.value.trim() !== '')
     };
 
-    this.isSubmitting = true;
+    this.isSubmitting.set(true);
     if (this.isEditMode && this.editingId) {
       this.state.productStore.updateProduct(this.editingId, data).pipe(
-        finalize(() => this.isSubmitting = false)
+        finalize(() => this.isSubmitting.set(false))
       ).subscribe((res) => {
         if (res !== null) {
           this.modalRef.close(true);
@@ -116,7 +116,7 @@ export class ProductFormModalComponent implements OnInit {
       });
     } else {
       this.state.productStore.createProduct(data).pipe(
-        finalize(() => this.isSubmitting = false)
+        finalize(() => this.isSubmitting.set(false))
       ).subscribe((res) => {
         if (res !== null) {
           this.modalRef.close(true);

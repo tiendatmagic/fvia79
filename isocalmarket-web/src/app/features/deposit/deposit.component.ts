@@ -1,4 +1,4 @@
-import { Component, inject, OnInit } from '@angular/core';
+import { Component, inject, OnInit, signal } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { Router, RouterModule } from '@angular/router';
@@ -42,7 +42,7 @@ export class DepositComponent implements OnInit {
   public selectedNetwork = 'BEP20';
   public paymentMethod = 'bep20';
   public payerBinanceId = '';
-  public isSubmitting = false;
+  public readonly isSubmitting = signal(false);
 
   ngOnInit() {
     this.state.depositStore.fetchRate().subscribe({
@@ -63,7 +63,7 @@ export class DepositComponent implements OnInit {
 
   // Xác nhận tạo lệnh nạp tiền
   public onCreateInvoice() {
-    if (this.isSubmitting) return;
+    if (this.isSubmitting()) return;
 
     if (this.amountUsdt === null || this.amountUsdt === undefined || this.amountUsdt < 0.1 || this.amountUsdt > 100000) {
       if (this.amountUsdt !== null && this.amountUsdt !== undefined && this.amountUsdt > 100000) {
@@ -74,7 +74,7 @@ export class DepositComponent implements OnInit {
       return;
     }
 
-    this.isSubmitting = true;
+    this.isSubmitting.set(true);
 
     this.state.depositStore.createDeposit(
       this.amountUsdt, 
@@ -83,13 +83,14 @@ export class DepositComponent implements OnInit {
       next: (res) => {
         this.state.showToast('Tạo lệnh nạp tiền thành công! Đang chuyển đến hóa đơn thanh toán.', 'success');
         setTimeout(() => {
-          this.isSubmitting = false;
+          this.isSubmitting.set(false);
           this.router.navigate(['/deposit/invoice', res.invoice.id]);
         }, 800);
       },
       error: (err) => {
-        this.isSubmitting = false;
-        let msg = err?.error?.message || 'Có lỗi xảy ra khi tạo lệnh nạp tiền!';
+        this.isSubmitting.set(false);
+        const rawMsg = err?.error?.message;
+        let msg = typeof rawMsg === 'string' ? rawMsg : 'Có lỗi xảy ra khi tạo lệnh nạp tiền!';
 
         if (msg.toLowerCase().includes('at least 0.1')) {
           msg = 'Số lượng USDT nạp tối thiểu là 0.1 USDT!';

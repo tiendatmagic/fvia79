@@ -1,4 +1,4 @@
-import { Component, inject } from '@angular/core';
+import { Component, inject, signal } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { ModalRef } from '@core/services/modal-ref';
 import { CartStore } from '../cart.store';
@@ -28,14 +28,14 @@ export class CartModalComponent {
   public readonly cart = inject(CartStore);
   public readonly state = inject(StateService);
 
-  public isSubmitting = false;
+  public readonly isSubmitting = signal(false);
 
   public onClose() {
     this.modalRef.close(false);
   }
 
   public checkout() {
-    if (this.isSubmitting) return;
+    if (this.isSubmitting()) return;
     const cartItems = this.cart.items();
     if (cartItems.length === 0) return;
 
@@ -45,7 +45,7 @@ export class CartModalComponent {
       return;
     }
 
-    this.isSubmitting = true;
+    this.isSubmitting.set(true);
     const itemsInput = cartItems.map(item => ({
       product_id: item.id,
       quantity: item.quantity
@@ -55,18 +55,19 @@ export class CartModalComponent {
       next: (res) => {
         this.cart.clearCart();
         this.state.showToast('Đặt hàng thành công! Đơn hàng đang chờ thanh toán.', 'success');
-        this.isSubmitting = false;
+        this.isSubmitting.set(false);
         this.modalRef.close('success');
       },
       error: (err) => {
-        let msg = err.error?.message || 'Có lỗi xảy ra khi tạo đơn hàng!';
+        const rawMsg = err.error?.message;
+        let msg = typeof rawMsg === 'string' ? rawMsg : 'Có lỗi xảy ra khi tạo đơn hàng!';
         if (msg.includes('Product is not available or has been discontinued')) {
           msg = 'Sản phẩm không khả dụng hoặc đã bị ngừng kinh doanh. Vui lòng kiểm tra lại giỏ hàng!';
         } else if (msg.includes('does not have enough stock available')) {
           msg = 'Một hoặc nhiều sản phẩm trong giỏ hàng không đủ số lượng tồn kho khả dụng!';
         }
         this.state.showToast(msg, 'error');
-        this.isSubmitting = false;
+        this.isSubmitting.set(false);
       }
     });
   }

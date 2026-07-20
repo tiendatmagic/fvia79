@@ -1,4 +1,4 @@
-import { Component, inject, OnInit } from '@angular/core';
+import { Component, inject, OnInit, signal } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { StateService } from '@core/services/state.service';
@@ -24,7 +24,7 @@ export class ProfileInformationComponent implements OnInit {
   public name = '';
   public email = '';
   public phone = '';
-  public isSubmitting = false;
+  public readonly isSubmitting = signal(false);
 
   ngOnInit() {
     const user = this.state.authStore.currentUser();
@@ -37,16 +37,16 @@ export class ProfileInformationComponent implements OnInit {
   }
 
   public onSave() {
-    if (this.isSubmitting) return;
+    if (this.isSubmitting()) return;
 
     if (!this.name) {
       this.state.showToast('Vui lòng điền họ tên thành viên!', 'error');
       return;
     }
 
-    this.isSubmitting = true;
+    this.isSubmitting.set(true);
     this.state.authStore.updateProfile(this.name, this.phone)
-      .pipe(finalize(() => this.isSubmitting = false))
+      .pipe(finalize(() => this.isSubmitting.set(false)))
       .subscribe();
   }
 }
