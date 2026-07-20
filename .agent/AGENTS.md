@@ -1667,3 +1667,11 @@
       2. Cập nhật [header.component.html](file:///d:/git/isocalmarket/isocalmarket-web/src/app/shared/layout/header/header.component.html) để hiển thị một `app-badge` nhỏ phía dưới email của người dùng trong dropdown thông tin cá nhân.
       3. Nếu role của người dùng là `'admin'`, badge có variant `'primary'` (màu xanh dương thương hiệu) và hiển thị chữ `'Quản trị viên'`. Ngược lại, badge có variant `'success'` (màu xanh lục) và hiển thị chữ `'Khách hàng'`.
     - **Xác minh:** Chạy biên dịch frontend `npm run build` thành công hoàn toàn không có lỗi.
+
+  - **[SỬA LỖI RESPONSIVE TABS CẤU HÌNH HỆ THỐNG]**:
+    - **Yêu cầu:** Sửa lỗi rớt dòng chữ của các tab "Cấu hình thông tin hệ thống" và "Bảo trì & Tối ưu" trên màn hình thiết bị nhỏ (di động).
+    - **Thực hiện:**
+      1. Cập nhật [admin-settings.component.html](file:///d:/git/isocalmarket/isocalmarket-web/src/app/features/admin-settings/admin-settings.component.html) để bổ sung các class `overflow-x-auto`, `scrollbar-none`, `whitespace-nowrap`, và `flex-nowrap` trên div container bọc các nút tab.
+      2. Thêm class `whitespace-nowrap` vào các nút `<button>` tab để ngăn chặn hoàn toàn việc trình duyệt tự động ngắt/rớt chữ xuống dòng.
+    - **Xác minh:** Chạy biên dịch frontend `npm run build` thành công hoàn toàn không có lỗi.
+
