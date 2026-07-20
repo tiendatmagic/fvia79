@@ -1479,3 +1479,22 @@
       2. Đồng bộ các logic tạo đơn hàng mẫu sau đó liên kết trực tiếp vào duy nhất `customer1` (do mảng `$customers` chỉ chứa 1 phần tử).
       3. Thực hiện chạy lại `php artisan migrate:fresh --seed` để áp dụng dữ liệu mẫu sạch và tối giản.
     - **Xác minh**: Cơ sở dữ liệu chỉ còn đúng 2 User là `admin` và `customer1`. Toàn bộ 50 đơn hàng giả lập hoạt động bình thường và được gán chính xác cho `customer1`.
+
+  - **[DỊCH THÔNG BÁO TOASTFY SANG TIẾNG VIỆT]**:
+    - **Yêu cầu:** Người dùng phản hồi các thông báo Toast (Toastfy) ở trang cấu hình bảo trì hệ thống `/admin/settings/maintenance` hiển thị bằng tiếng Anh, yêu cầu Việt hóa toàn bộ.
+    - **Giải pháp & Triển khai:**
+      1. Nhận diện cơ chế: Các thông báo tiếng Anh trả về trực tiếp từ API Backend (các controller, validator) đều được dịch tập trung tại phương thức `translateMessage()` của [toast.service.ts](file:///d:/git/isocalmarket/isocalmarket-web/src/app/core/services/toast.service.ts) trước khi hiển thị lên giao diện Toast.
+      2. Bổ sung các bản dịch cho tác vụ bảo trì, cache và cấu hình hệ thống:
+         - `'Compiled views cleared successfully.'` -> `'Xóa views đã biên dịch thành công!'`
+         - `'Config cache cleared successfully.'` -> `'Xóa bộ nhớ đệm cấu hình thành công!'`
+         - `'Route cache cleared successfully.'` -> `'Xóa bộ nhớ đệm định tuyến thành công!'`
+         - `'System optimization completed successfully.'` -> `'Tối ưu hóa hiệu năng hệ thống thành công!'`
+         - `'Optimization cache cleared successfully.'` -> `'Xóa bộ nhớ đệm tối ưu hóa thành công!'`
+         - `'System settings updated successfully.'` -> `'Cập nhật cấu hình hệ thống thành công!'`
+         - `'Successfully cleared all active tokens and regenerated application key. All users logged out.'` -> `'Đã xóa toàn bộ token đang hoạt động và làm mới khóa ứng dụng. Tất cả người dùng đã bị đăng xuất!'`
+         - `'The admin wallet address must be a valid BEP20/EVM address starting with 0x followed by 40 hex characters.'` -> `'Địa chỉ ví Admin phải là địa chỉ ví BEP20/EVM hợp lệ (bắt đầu bằng 0x và có đúng 40 ký tự hex theo sau).'`
+      3. Bổ sung regex match động dịch các thông báo chứa số lượng bản ghi:
+         - Pattern `"Successfully cleaned up {count} expired refresh tokens from database."` tự động dịch thành: `"Đã dọn dẹp thành công {count} token hết hạn từ cơ sở dữ liệu!"`
+      4. Bổ sung thêm các bản dịch từ Profile, Product và Deposit Controller khác để tối ưu trải nghiệm người dùng toàn diện (đổi mật khẩu, 2FA, CRUD sản phẩm, tạo/hủy hóa đơn nạp tiền).
+    - **Xác minh:** Biên dịch frontend Angular thành công 100% không lỗi.
+

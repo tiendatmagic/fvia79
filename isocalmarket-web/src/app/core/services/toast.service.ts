@@ -42,8 +42,12 @@ export class ToastService {
       'Product created successfully.': 'Tạo sản phẩm thành công!',
       'Product updated successfully.': 'Cập nhật sản phẩm thành công!',
       'Product deleted successfully.': 'Xóa sản phẩm thành công!',
+      'Product restored successfully.': 'Khôi phục sản phẩm thành công!',
       'Product not found.': 'Không tìm thấy sản phẩm trong hệ thống!',
       'Category not found.': 'Không tìm thấy danh mục!',
+      'Cannot update a soft-deleted product.': 'Không thể cập nhật sản phẩm đã bị xóa tạm thời!',
+      'Product not found or delete failed.': 'Không tìm thấy sản phẩm hoặc xóa thất bại!',
+      'Product not found or restore failed.': 'Không tìm thấy sản phẩm hoặc khôi phục thất bại!',
 
       'Inventory batch created successfully.': 'Tạo lô hàng thành công!',
       'Inventory batch updated successfully.': 'Cập nhật lô hàng thành công!',
@@ -54,6 +58,29 @@ export class ToastService {
       'Order created successfully.': 'Đặt hàng thành công!',
       'Order not found.': 'Không tìm thấy đơn hàng!',
       'Insufficient stock for product.': 'Không đủ hàng trong kho cho sản phẩm này!',
+
+      // Cấu hình hệ thống & Bảo trì
+      'Compiled views cleared successfully.': 'Xóa views đã biên dịch thành công!',
+      'Config cache cleared successfully.': 'Xóa bộ nhớ đệm cấu hình thành công!',
+      'Route cache cleared successfully.': 'Xóa bộ nhớ đệm định tuyến thành công!',
+      'System optimization completed successfully.': 'Tối ưu hóa hiệu năng hệ thống thành công!',
+      'Optimization cache cleared successfully.': 'Xóa bộ nhớ đệm tối ưu hóa thành công!',
+      'System settings updated successfully.': 'Cập nhật cấu hình hệ thống thành công!',
+      'Successfully cleared all active tokens and regenerated application key. All users logged out.': 'Đã xóa toàn bộ token đang hoạt động và làm mới khóa ứng dụng. Tất cả người dùng đã bị đăng xuất!',
+      'The admin wallet address must be a valid BEP20/EVM address starting with 0x followed by 40 hex characters.': 'Địa chỉ ví Admin phải là địa chỉ ví BEP20/EVM hợp lệ (bắt đầu bằng 0x và có đúng 40 ký tự hex theo sau).',
+
+      // Profile & Bảo mật
+      'Password updated successfully.': 'Cập nhật mật khẩu thành công!',
+      'Current password is incorrect.': 'Mật khẩu hiện tại không chính xác!',
+      '2FA is already enabled.': 'Bảo mật 2FA đã được kích hoạt từ trước!',
+      '2FA has not been initialized. Please enable first.': 'Bảo mật 2FA chưa được khởi tạo. Vui lòng kích hoạt trước!',
+      'API Key generated successfully.': 'Tạo API Key thành công!',
+
+      // Hóa đơn nạp tiền
+      'Created deposit invoice successfully.': 'Tạo hóa đơn nạp tiền thành công!',
+      'Deposit invoice not found.': 'Không tìm thấy hóa đơn nạp tiền!',
+      'Failed to cancel invoice. Invalid invoice state or unauthorized.': 'Không thể hủy hóa đơn. Trạng thái hóa đơn không hợp lệ hoặc không có quyền!',
+      'Cancelled deposit invoice successfully.': 'Hủy hóa đơn nạp tiền thành công!',
     };
 
     const trimmed = msg.trim();
@@ -66,6 +93,12 @@ export class ToastService {
       const match = trimmed.match(/with (\d+) resources/i);
       const count = match ? match[1] : '';
       return `Import lô hàng thành công${count ? ' với ' + count + ' tài nguyên' : ''}!`;
+    }
+
+    if (trimmed.startsWith("Successfully cleaned up") && trimmed.endsWith("expired refresh tokens from database.")) {
+      const match = trimmed.match(/cleaned up (\d+) expired/i);
+      const count = match ? match[1] : '0';
+      return `Đã dọn dẹp thành công ${count} token hết hạn từ cơ sở dữ liệu!`;
     }
 
     return msg;
