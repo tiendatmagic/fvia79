@@ -141,7 +141,7 @@
           @if (!visibleApiKeys.has(row.id)) {
             <span
               [appTooltip]="'Bấm nút con mắt để hiển thị API Key'"
-              class="text-xs font-bold font-mono text-slate-400 dark:text-slate-500 bg-slate-100 dark:bg-slate-900/60 px-2 py-1 rounded tracking-widest select-none"
+              class="text-xs font-bold font-mono text-slate-400 dark:text-slate-500 bg-slate-100 dark:bg-slate-900/60 px-2 py-1 rounded tracking-widest"
             >
               ••••••••••••
             </span>
@@ -211,7 +211,7 @@
         <ng-template #noApiKey>
           <span
             [appTooltip]="'Thành viên chưa khởi tạo B2B API Key'"
-            class="text-xs font-semibold text-slate-400 dark:text-slate-500 italic select-none"
+            class="text-xs font-semibold text-slate-400 dark:text-slate-500 italic"
           >
             Chưa tạo API Key
           </span>

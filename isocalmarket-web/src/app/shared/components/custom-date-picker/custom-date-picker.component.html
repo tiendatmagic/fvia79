@@ -2,7 +2,7 @@
   <div
     #triggerDiv
     (click)="toggleOpen()"
-    class="form-input flex items-center justify-between !py-0 cursor-pointer select-none"
+    class="form-input flex items-center justify-between !py-0 cursor-pointer"
     [class.opacity-50]="disabled"
     [class.pointer-events-none]="disabled"
     [class.border-[var(--color-primary)]]="isOpen()"
@@ -17,7 +17,7 @@
     </div>
   </div>
 
-    @if (showPresets) {
+  @if (showPresets) {
     <div class="flex flex-wrap gap-2 mt-2">
       @for (p of presets; track p.days) {
         <button
@@ -37,7 +37,7 @@
       class="date-picker-popover bg-white dark:bg-slate-950 border border-slate-200/50 dark:border-slate-800/50 shadow-lg rounded-xl p-4"
       (click)="$event.stopPropagation()"
     >
-      <div class="flex items-center justify-between mb-4 select-none">
+      <div class="flex items-center justify-between mb-4">
         <button
           type="button"
           (click)="prevMonth($event)"
@@ -61,7 +61,7 @@
         </button>
       </div>
 
-      <div class="grid grid-cols-7 gap-0.5 text-center mb-2 select-none">
+      <div class="grid grid-cols-7 gap-0.5 text-center mb-2">
         @for (day of weekdays; track day) {
           <span class="text-xs font-bold text-[var(--color-primary)]/70 py-1">
             {{ day }}

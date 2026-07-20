@@ -1,5 +1,5 @@
 <label
-  class="group flex items-center gap-3 cursor-pointer select-none"
+  class="group flex items-center gap-3 cursor-pointer"
   [class.opacity-50]="disabled"
   [class.pointer-events-none]="disabled"
 >
@@ -11,7 +11,7 @@
         : 'bg-white dark:bg-slate-900 border-slate-300 dark:border-slate-700 group-hover:border-slate-400 dark:group-hover:border-slate-500'
     "
   >
-        @if (checked()) {
+    @if (checked()) {
       <div class="h-2.5 w-2.5 rounded-full bg-[var(--color-primary)] animate-scale-up"></div>
     }
   </div>

@@ -49,17 +49,13 @@
       [rows]="8"
       customClass="font-mono min-h-[200px]"
     />
-    <div
-      class="flex justify-between items-center text-xs font-bold text-slate-400 mt-1 select-none"
-    >
+    <div class="flex justify-between items-center text-xs font-bold text-slate-400 mt-1">
       <span>Định dạng: mỗi dòng một tài khoản</span>
       <span class="text-[var(--color-primary)]">Tổng cộng: {{ keysCount }} tài khoản</span>
     </div>
   </div>
 
-  <div
-    class="pt-4 flex items-center justify-end gap-3 shrink-0"
-  >
+  <div class="pt-4 flex items-center justify-end gap-3 shrink-0">
     <button
       app-button
       (click)="onClose()"

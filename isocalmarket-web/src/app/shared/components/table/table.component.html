@@ -1,20 +1,28 @@
-<div class="w-full overflow-x-auto rounded-[15px] border border-slate-200/50 dark:border-slate-800/50 bg-white/60 dark:bg-slate-900/60 backdrop-blur-sm shadow-sm transition-all duration-300">
+<div
+  class="w-full overflow-x-auto rounded-[15px] border border-slate-200/50 dark:border-slate-800/50 bg-white/60 dark:bg-slate-900/60 backdrop-blur-sm shadow-sm transition-all duration-300"
+>
   @if (loading) {
     <div class="p-6">
       <app-skeleton-loader type="table" [rows]="5" [cols]="columns.length" />
     </div>
   } @else if (processedData().length === 0) {
     <div class="flex flex-col items-center justify-center py-12 px-4 text-center">
-      <div class="w-12 h-12 rounded-full bg-slate-100 dark:bg-slate-800/60 flex items-center justify-center text-slate-400 dark:text-slate-500 mb-3">
+      <div
+        class="w-12 h-12 rounded-full bg-slate-100 dark:bg-slate-800/60 flex items-center justify-center text-slate-400 dark:text-slate-500 mb-3"
+      >
         <app-icon [name]="emptyIcon" class="w-6 h-6" />
       </div>
       <h3 class="text-sm font-bold text-slate-700 dark:text-slate-350">{{ emptyText }}</h3>
-      <p class="text-xs text-slate-400 dark:text-slate-550 mt-1">Vui lòng kiểm tra lại bộ lọc hoặc điều kiện tìm kiếm.</p>
+      <p class="text-xs text-slate-400 dark:text-slate-550 mt-1">
+        Vui lòng kiểm tra lại bộ lọc hoặc điều kiện tìm kiếm.
+      </p>
     </div>
   } @else {
     <table class="w-full min-w-max border-collapse text-left">
       <thead>
-        <tr class="bg-slate-50/40 dark:bg-slate-950/20 border-b border-slate-200/50 dark:border-slate-800/50 select-none">
+        <tr
+          class="bg-slate-50/40 dark:bg-slate-950/20 border-b border-slate-200/50 dark:border-slate-800/50"
+        >
           @for (col of columns; track col.key) {
             <th
               (click)="onHeaderClick(col)"
@@ -30,21 +38,31 @@
                 [ngClass]="{
                   'justify-start': !col.align || col.align === 'left',
                   'justify-center': col.align === 'center',
-                  'justify-end': col.align === 'right'
+                  'justify-end': col.align === 'right',
                 }"
               >
                 <span>{{ col.label }}</span>
                 @if (col.sortable) {
-                  <span class="inline-flex items-center text-slate-400 dark:text-slate-500 w-3.5 h-3.5 transition-all">
+                  <span
+                    class="inline-flex items-center text-slate-400 dark:text-slate-500 w-3.5 h-3.5 transition-all"
+                  >
                     @if (sortKeySignal() === col.key) {
                       @if (sortDirectionSignal() === 'asc') {
                         <app-icon name="arrow-up" class="w-3.5 h-3.5 text-[var(--color-primary)]" />
                       } @else if (sortDirectionSignal() === 'desc') {
-                        <app-icon name="arrow-down" class="w-3.5 h-3.5 text-[var(--color-primary)]" />
+                        <app-icon
+                          name="arrow-down"
+                          class="w-3.5 h-3.5 text-[var(--color-primary)]"
+                        />
                       }
                     } @else {
-                      <span class="opacity-0 group-hover:opacity-100 transition-opacity w-3.5 h-3.5">
-                        <app-icon name="chevron-down" class="w-3.5 h-3.5 text-slate-300 dark:text-slate-600" />
+                      <span
+                        class="opacity-0 group-hover:opacity-100 transition-opacity w-3.5 h-3.5"
+                      >
+                        <app-icon
+                          name="chevron-down"
+                          class="w-3.5 h-3.5 text-slate-300 dark:text-slate-600"
+                        />
                       </span>
                     }
                   </span>
@@ -69,7 +87,10 @@
               >
                 @if (getTemplate(col.key); as template) {
                   <ng-container
-                    *ngTemplateOutlet="template; context: { $implicit: row[col.key], row: row, index: rowIndex }"
+                    *ngTemplateOutlet="
+                      template;
+                      context: { $implicit: row[col.key], row: row, index: rowIndex }
+                    "
                   ></ng-container>
                 } @else {
                   {{ row[col.key] }}
