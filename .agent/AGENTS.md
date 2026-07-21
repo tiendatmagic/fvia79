@@ -1904,3 +1904,10 @@
       1. **Giao diện (LoginComponent)**: Cập nhật [login.component.html](file:///d:/git/isocalmarket/isocalmarket-web/src/app/features/auth/login.component.html) bổ sung khối text và link routerLink="/register" ngay dưới nút submit "Đăng nhập".
       2. **Giao diện (RegisterComponent)**: Cập nhật [register.component.html](file:///d:/git/isocalmarket/isocalmarket-web/src/app/features/auth/register.component.html) bổ sung khối text và link routerLink="/login" ngay dưới nút submit "Đăng ký".
       3. **Xác minh**: Chạy build `npm run build` thành công 100% không phát sinh lỗi. Các liên kết hoạt động tốt, hỗ trợ đa ngôn ngữ đầy đủ.
+
+  - **[SỬA LỖI CRASH UI TẠI TRANG ADMIN DASHBOARD]**:
+    - **Yêu cầu**: Sửa lỗi crash UI trên production khi truy cập trang /admin/dashboard do lỗi TypeError: Cannot read properties of undefined (reading 'length').
+    - **Thực hiện & Kết quả**:
+      1. **Phân tích**: Xác định lỗi xảy ra do việc truy cập trực tiếp .length và .data của stats().low_stock_products.data trong template admin-dashboard.component.html mà không dùng safe navigation operator ?.. Khi API trả về lỗi hoặc thiếu dữ liệu, hoặc trong lúc loading, các thuộc tính này bị undefined làm crash giao diện.
+      2. **Khắc phục**: Thay thế các truy cập trực tiếp thành dạng an toàn có safe navigation stats()?.low_stock_products?.data và sử dụng mảng rỗng làm fallback: (stats()?.low_stock_products?.data || []).length. Áp dụng safe navigation cho toàn bộ các thuộc tính hiển thị khác của stats().
+      3. **Xác minh**: Chạy kiểm tra biên dịch npm run build thành công 100%.
