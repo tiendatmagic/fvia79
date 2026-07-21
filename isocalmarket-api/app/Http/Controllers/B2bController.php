@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Application\Services\ProductService;
 use App\Application\Services\OrderService;
+use App\Domain\Exceptions\OrderException;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 
@@ -51,8 +52,8 @@ class B2bController extends Controller
                     'last_page' => (int)ceil($total / $limit)
                 ]
             ]);
-        } catch (\Exception $e) {
-            return response()->json(['message' => 'Failed to fetch products: ' . $e->getMessage()], 500);
+        } catch (\Throwable $e) {
+            return $this->serverError($e, 'Failed to fetch B2B products.');
         }
     }
 
@@ -77,8 +78,8 @@ class B2bController extends Controller
                 'stock' => $product->getAvailableCount(),
                 'category' => $category ? $category->name : 'Uncategorized'
             ]);
-        } catch (\Exception $e) {
-            return response()->json(['message' => 'Failed to fetch product: ' . $e->getMessage()], 500);
+        } catch (\Throwable $e) {
+            return $this->serverError($e, 'Failed to fetch B2B product.');
         }
     }
 
@@ -147,8 +148,10 @@ class B2bController extends Controller
                 'discount_amount' => (float)$order->getDiscountAmount(),
                 'accounts' => $accounts
             ]);
-        } catch (\Exception $e) {
+        } catch (OrderException $e) {
             return response()->json(['success' => false, 'message' => $e->getMessage()], 400);
+        } catch (\Throwable $e) {
+            return $this->serverError($e, 'Failed to create B2B order.');
         }
     }
 
@@ -173,8 +176,8 @@ class B2bController extends Controller
                 'role' => $userModel->role,
                 'balance' => (float)$userModel->balance
             ]);
-        } catch (\Exception $e) {
-            return response()->json(['message' => 'Failed to fetch profile: ' . $e->getMessage()], 500);
+        } catch (\Throwable $e) {
+            return $this->serverError($e, 'Failed to fetch B2B profile.');
         }
     }
 
@@ -221,8 +224,8 @@ class B2bController extends Controller
                 'created_at' => $orderModel->created_at->toIso8601String(),
                 'accounts' => $accounts
             ]);
-        } catch (\Exception $e) {
-            return response()->json(['message' => 'Failed to fetch order: ' . $e->getMessage()], 500);
+        } catch (\Throwable $e) {
+            return $this->serverError($e, 'Failed to fetch B2B order.');
         }
     }
 }

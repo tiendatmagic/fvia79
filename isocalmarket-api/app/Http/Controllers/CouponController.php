@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Application\Services\CouponService;
+use App\Domain\Exceptions\CouponException;
 use Illuminate\Http\Request;
 
 class CouponController extends Controller
@@ -30,8 +31,10 @@ class CouponController extends Controller
             return response()->json($result);
         } catch (\Illuminate\Validation\ValidationException $ve) {
             return response()->json(['message' => $ve->getMessage()], 422);
-        } catch (\Exception $e) {
+        } catch (CouponException $e) {
             return response()->json(['message' => $e->getMessage()], 400);
+        } catch (\Throwable $e) {
+            return $this->serverError($e, 'Failed to validate coupon.');
         }
     }
 }

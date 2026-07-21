@@ -62,8 +62,8 @@ class AdminDepositController extends Controller
                     'last_page' => $result['last_page']
                 ]
             ]);
-        } catch (\Exception $e) {
-            return response()->json(['message' => 'Cannot fetch deposits list: ' . $e->getMessage()], 500);
+        } catch (\Throwable $e) {
+            return $this->serverError($e, 'Failed to fetch admin deposits.');
         }
     }
 
@@ -97,10 +97,8 @@ class AdminDepositController extends Controller
             return response()->json([
                 'message' => $e->getMessage()
             ], 400);
-        } catch (\Exception $e) {
-            return response()->json([
-                'message' => 'An error occurred while approving: ' . $e->getMessage()
-            ], 500);
+        } catch (\Throwable $e) {
+            return $this->serverError($e, 'Failed to approve deposit.');
         }
     }
 
@@ -127,10 +125,8 @@ class AdminDepositController extends Controller
             return response()->json([
                 'message' => $e->getMessage()
             ], 400);
-        } catch (\Exception $e) {
-            return response()->json([
-                'message' => 'An error occurred while rejecting: ' . $e->getMessage()
-            ], 500);
+        } catch (\Throwable $e) {
+            return $this->serverError($e, 'Failed to reject deposit.');
         }
     }
 

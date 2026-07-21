@@ -62,8 +62,8 @@ class AdminUserController extends Controller
                     'last_page' => (int)ceil($total / $limit)
                 ]
             ]);
-        } catch (\Exception $e) {
-            return response()->json(['message' => 'Cannot fetch users: ' . $e->getMessage()], 500);
+        } catch (\Throwable $e) {
+            return $this->serverError($e, 'Failed to fetch admin users.');
         }
     }
 
@@ -122,8 +122,8 @@ class AdminUserController extends Controller
                     'api_key' => $savedUser->getApiKey()
                 ]
             ], 201);
-        } catch (\Exception $e) {
-            return response()->json(['message' => 'Failed to create user: ' . $e->getMessage()], 500);
+        } catch (\Throwable $e) {
+            return $this->serverError($e, 'Failed to create admin-managed user.');
         }
     }
 
@@ -200,8 +200,8 @@ class AdminUserController extends Controller
                     ]
                 ]);
             });
-        } catch (\Exception $e) {
-            return response()->json(['message' => 'Failed to update user: ' . $e->getMessage()], 500);
+        } catch (\Throwable $e) {
+            return $this->serverError($e, 'Failed to update admin-managed user.');
         }
     }
 
@@ -255,8 +255,8 @@ class AdminUserController extends Controller
                     ]
                 ]);
             });
-        } catch (\Exception $e) {
-            return response()->json(['message' => 'Failed to adjust balance: ' . $e->getMessage()], 500);
+        } catch (\Throwable $e) {
+            return $this->serverError($e, 'Failed to adjust user balance.');
         }
     }
 
@@ -278,8 +278,8 @@ class AdminUserController extends Controller
             }
 
             return response()->json(['message' => 'User deleted successfully.']);
-        } catch (\Exception $e) {
-            return response()->json(['message' => 'Failed to delete user: ' . $e->getMessage()], 500);
+        } catch (\Throwable $e) {
+            return $this->serverError($e, 'Failed to delete admin-managed user.');
         }
     }
 
@@ -315,8 +315,8 @@ class AdminUserController extends Controller
             $this->userRepository->save($updatedUser);
 
             return response()->json(['message' => '2FA has been disabled for this user.']);
-        } catch (\Exception $e) {
-            return response()->json(['message' => 'Failed to reset 2FA: ' . $e->getMessage()], 500);
+        } catch (\Throwable $e) {
+            return $this->serverError($e, 'Failed to reset user 2FA.');
         }
     }
 
@@ -360,8 +360,8 @@ class AdminUserController extends Controller
                 'secret' => $secret,
                 'qr_code_url' => $qrCodeUrl
             ]);
-        } catch (\Exception $e) {
-            return response()->json(['message' => 'Failed to enable 2FA: ' . $e->getMessage()], 500);
+        } catch (\Throwable $e) {
+            return $this->serverError($e, 'Failed to enable user 2FA.');
         }
     }
 }

@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Máy chủ: localhost:3306
--- Thời gian đã tạo: Th7 21, 2026 lúc 07:36 AM
+-- Thời gian đã tạo: Th7 21, 2026 lúc 12:02 PM
 -- Phiên bản máy phục vụ: 8.0.30
 -- Phiên bản PHP: 8.3.8
 
@@ -32,10 +32,6 @@ CREATE TABLE `cache` (
   `value` mediumtext COLLATE utf8mb4_unicode_ci NOT NULL,
   `expiration` bigint NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
-
---
--- Đang đổ dữ liệu cho bảng `cache`
---
 
 -- --------------------------------------------------------
 
@@ -83,7 +79,10 @@ INSERT INTO `categories` (`id`, `supplier_id`, `external_id`, `name`, `slug`, `d
 ('019f82af-5e0e-729a-a8e2-59ef4d9e2997', '019f829a-f708-7093-890d-4950e6ce2e66', '7', 'Clone Global', 'ads7979-7-clone-global', NULL, '2026-07-20 20:19:18', '2026-07-20 20:19:18', 'clone global'),
 ('019f82af-5e4d-730c-994f-86a322e0e883', '019f829a-f708-7093-890d-4950e6ce2e66', '8', 'Clone Việt Nam', 'ads7979-8-clone-viet-nam', NULL, '2026-07-20 20:19:18', '2026-07-20 20:19:18', 'clone viet nam'),
 ('019f82af-5e56-7144-8a42-34ec76467805', '019f829a-f708-7093-890d-4950e6ce2e66', '10', 'Hotmail Live V.V', 'ads7979-10-hotmail-live-vv', NULL, '2026-07-20 20:19:18', '2026-07-20 20:19:18', 'hotmail live v.v'),
-('019f82af-5e67-7153-9ee1-9c332fc1fd73', '019f829a-f708-7093-890d-4950e6ce2e66', '11', 'Clone Instagram', 'ads7979-11-clone-instagram', NULL, '2026-07-20 20:19:18', '2026-07-20 20:19:18', 'clone instagram');
+('019f82af-5e67-7153-9ee1-9c332fc1fd73', '019f829a-f708-7093-890d-4950e6ce2e66', '11', 'Clone Instagram', 'ads7979-11-clone-instagram', NULL, '2026-07-20 20:19:18', '2026-07-20 20:19:18', 'clone instagram'),
+('019f846e-67ec-730a-a840-1921ffd184ea', '019f846e-66a7-7247-bb63-b9ebcf11be46', '1', 'BM50$', 'vlclone-1-bm50', NULL, '2026-07-21 04:27:35', '2026-07-21 04:27:35', 'bm50$'),
+('019f846e-6950-7188-871e-a42e435bdd7a', '019f846e-66a7-7247-bb63-b9ebcf11be46', '2', 'BM3 Limit 50$', 'vlclone-2-bm3-limit-50', NULL, '2026-07-21 04:27:36', '2026-07-21 04:27:36', 'bm3 limit 50$'),
+('019f846e-6961-718a-8064-38133070094e', '019f846e-66a7-7247-bb63-b9ebcf11be46', '3', 'BM Limit 250$', 'vlclone-3-bm-limit-250', NULL, '2026-07-21 04:27:36', '2026-07-21 04:27:36', 'bm limit 250$');
 
 -- --------------------------------------------------------
 
@@ -267,7 +266,8 @@ INSERT INTO `migrations` (`id`, `migration`, `batch`) VALUES
 (28, '2026_07_21_200000_add_token_version_to_users_table', 5),
 (29, '2026_07_21_200001_encrypt_sensitive_system_settings', 5),
 (30, '2026_07_21_200002_add_api_key_hash_to_users_table', 6),
-(31, '2026_07_21_062251_encrypt_existing_api_keys', 7);
+(31, '2026_07_21_062251_encrypt_existing_api_keys', 7),
+(32, '2026_07_21_210000_add_catalog_driver_to_suppliers_table', 8);
 
 -- --------------------------------------------------------
 
@@ -463,7 +463,16 @@ INSERT INTO `products` (`id`, `supplier_id`, `external_id`, `category_id`, `name
 ('019f82af-5e5f-713e-b6b1-4ab72a40a0a1', '019f829a-f708-7093-890d-4950e6ce2e66', '95', '019f82af-5e56-7144-8a42-34ec76467805', 'Outlook Trusted [GRAPH API]', 'ads7979-95-outlook-trusted-graph-api', 'Live for 6-12 months | Không cần very SĐT | Recommend to use Graph API for access', 0.01, 300.00, 5899, '2026-07-20 20:51:15', 'active', '[]', '2026-07-20 20:19:18', '2026-07-20 20:51:15', 'outlook trusted [graph api]', NULL),
 ('019f82af-5e64-70cd-a368-e0d623110e87', '019f829a-f708-7093-890d-4950e6ce2e66', '8326', '019f82af-5e56-7144-8a42-34ec76467805', 'Hotmail Live Vĩnh Viễn', 'ads7979-8326-hotmail-live-vinh-vien', 'Live vĩnh viễn | Đã thêm mail khôi phục Fviainboxes | Recommend to use Graph API for access', 0.04, 1000.00, 5681, '2026-07-20 20:51:15', 'active', '[]', '2026-07-20 20:19:18', '2026-07-20 20:51:15', 'hotmail live vinh vien', NULL),
 ('019f82af-5e6c-7202-932e-f9f1747f0cfa', '019f829a-f708-7093-890d-4950e6ce2e66', '96', '019f82af-5e67-7153-9ee1-9c332fc1fd73', 'Clone Instagram US', 'ads7979-96-clone-instagram-us', 'Reg Android | Verify Phone | Đã Bật 2FA | Name US | Created: > 15 day', 0.06, 1500.00, 0, '2026-07-20 20:51:15', 'active', '[]', '2026-07-20 20:19:18', '2026-07-20 20:51:15', 'clone instagram us', NULL),
-('019f82af-5e71-7287-94df-018124a1d274', '019f829a-f708-7093-890d-4950e6ce2e66', '97', '019f82af-5e67-7153-9ee1-9c332fc1fd73', 'Clone Instagram US đã qua reg BM', 'ads7979-97-clone-instagram-us-da-qua-reg-bm', 'Reg Android | Verify Phone | Đã Bật 2FA | Name US | Created: > 2 month | Phù hợp spam, fishing...', 0.03, 800.00, 0, '2026-07-20 20:51:15', 'active', '[]', '2026-07-20 20:19:18', '2026-07-20 20:51:15', 'clone instagram us da qua reg bm', NULL);
+('019f82af-5e71-7287-94df-018124a1d274', '019f829a-f708-7093-890d-4950e6ce2e66', '97', '019f82af-5e67-7153-9ee1-9c332fc1fd73', 'Clone Instagram US đã qua reg BM', 'ads7979-97-clone-instagram-us-da-qua-reg-bm', 'Reg Android | Verify Phone | Đã Bật 2FA | Name US | Created: > 2 month | Phù hợp spam, fishing...', 0.03, 800.00, 0, '2026-07-20 20:51:15', 'active', '[]', '2026-07-20 20:19:18', '2026-07-21 02:03:35', 'clone instagram us da qua reg bm', NULL),
+('019f846e-694e-72b3-843a-b5bf840b3e1a', '019f846e-66a7-7247-bb63-b9ebcf11be46', '28009', '019f846e-67ec-730a-a840-1921ffd184ea', 'BM50$ Ngâm', 'vlclone-28009-bm50-ngam', 'Chưa tạo TKQC | Phù hợp cầm TKCN | Phù hợp kích tut BM3 - BM10 | Created: 06/2026', 0.57, 15000.00, 0, '2026-07-21 04:31:49', 'active', '[]', '2026-07-21 04:27:36', '2026-07-21 04:31:49', 'bm50$ ngam', NULL),
+('019f846e-6954-700f-a6be-2f47c365b178', '019f846e-66a7-7247-bb63-b9ebcf11be46', '251365', '019f846e-6950-7188-871e-a42e435bdd7a', 'BM3 Không Tạo Được Tài Khoản (Cầm Đối Tác, Dòng 2, Page)', 'vlclone-251365-bm3-khong-tao-duoc-tai-khoan-cam-doi-tac-dong-2-page', 'Phù hợp dùng cầm TKCN dòng 2, đối tác, cầm Page | Created:  Jun/2026', 0.27, 7000.00, 0, '2026-07-21 04:31:49', 'active', '[]', '2026-07-21 04:27:36', '2026-07-21 04:31:49', 'bm3 khong tao duoc tai khoan (cam doi tac, dong 2, page)', NULL),
+('019f846e-6956-7325-8850-3c50fa1c6c3d', '019f846e-66a7-7247-bb63-b9ebcf11be46', '251366', '019f846e-6950-7188-871e-a42e435bdd7a', 'BM3 Trống 3 Slot', 'vlclone-251366-bm3-trong-3-slot', 'Chưa tạo TKQC | Trống 3 slot | Bao add thẻ nhảy limit cao | Bao nhét và chi tiêu phá limit siêu nhanh | Created:  Jun/2026', 0.76, 20000.00, 0, '2026-07-21 04:31:49', 'active', '[]', '2026-07-21 04:27:36', '2026-07-21 04:31:49', 'bm3 trong 3 slot', NULL),
+('019f846e-6957-701e-af7f-ff44c339f6a0', '019f846e-66a7-7247-bb63-b9ebcf11be46', '251367', '019f846e-6950-7188-871e-a42e435bdd7a', 'BM3 Trống 2 Slot', 'vlclone-251367-bm3-trong-2-slot', 'Đã tạo 1 TKQC | Trống 2 slot | Bao add thẻ nhảy limit cao | Bao nhét và chi tiêu phá limit siêu nhanh | Created:  Jun/2026', 0.76, 20000.00, 0, '2026-07-21 04:31:49', 'active', '[]', '2026-07-21 04:27:36', '2026-07-21 04:31:49', 'bm3 trong 2 slot', NULL),
+('019f846e-6959-735b-97b3-597fd7db0d6f', '019f846e-66a7-7247-bb63-b9ebcf11be46', '251368', '019f846e-6950-7188-871e-a42e435bdd7a', 'BM3 Ngâm Full 3', 'vlclone-251368-bm3-ngam-full-3', 'Đã tạo 3 TKQC | Bao add thẻ nhảy limit cao | Limit 50$ | Created:  Jul/2026', 1.52, 40000.00, 712, '2026-07-21 04:31:49', 'active', '[]', '2026-07-21 04:27:36', '2026-07-21 04:31:49', 'bm3 ngam full 3', NULL);
+INSERT INTO `products` (`id`, `supplier_id`, `external_id`, `category_id`, `name`, `slug`, `description`, `price`, `supplier_price_vnd`, `supplier_stock`, `supplier_synced_at`, `status`, `attributes`, `created_at`, `updated_at`, `normalized_name`, `deleted_at`) VALUES
+('019f846e-695c-7176-94e9-11cef5b7fc22', '019f846e-66a7-7247-bb63-b9ebcf11be46', '251369', '019f846e-6950-7188-871e-a42e435bdd7a', 'BM3 Ngâm Full 4', 'vlclone-251369-bm3-ngam-full-4', 'Đã tạo 4 TKQC | Bao add thẻ nhảy limit cao | Limit 50$ | Created:  Jul/2026', 1.90, 50000.00, 0, '2026-07-21 04:31:49', 'active', '[]', '2026-07-21 04:27:36', '2026-07-21 04:31:49', 'bm3 ngam full 4', NULL),
+('019f846e-695e-7036-ad2f-c301d49e258e', '019f846e-66a7-7247-bb63-b9ebcf11be46', '251371', '019f846e-6950-7188-871e-a42e435bdd7a', 'BM3 XÁC MINH DOANH NGHIỆP FULL 3', 'vlclone-251371-bm3-xac-minh-doanh-nghiep-full-3', 'Đã tạo 3 TKQC | Bao add thẻ nhảy limit cao | Limit 50$ | BM Verify Business | Created:  Jul/2026', 8.37, 220000.00, 243, '2026-07-21 04:31:49', 'active', '[]', '2026-07-21 04:27:36', '2026-07-21 04:31:49', 'bm3 xac minh doanh nghiep full 3', NULL),
+('019f846e-695f-7364-a083-3d574429ce14', '019f846e-66a7-7247-bb63-b9ebcf11be46', '251523', '019f846e-6950-7188-871e-a42e435bdd7a', 'BM3 XÁC MINH DOANH NGHIỆP FULL 4', 'vlclone-251523-bm3-xac-minh-doanh-nghiep-full-4', 'Đã tạo 4 TKQC | Bao add thẻ nhảy limit cao | Limit 50$ | BM Verify Business | Created:  Jul/2026', 9.51, 250000.00, 56, '2026-07-21 04:31:49', 'active', '[]', '2026-07-21 04:27:36', '2026-07-21 04:31:49', 'bm3 xac minh doanh nghiep full 4', NULL);
 
 -- --------------------------------------------------------
 
@@ -498,6 +507,7 @@ CREATE TABLE `suppliers` (
   `code` varchar(255) COLLATE utf8mb4_unicode_ci NOT NULL,
   `name` varchar(255) COLLATE utf8mb4_unicode_ci NOT NULL,
   `base_url` varchar(255) COLLATE utf8mb4_unicode_ci NOT NULL,
+  `catalog_driver` varchar(50) COLLATE utf8mb4_unicode_ci NOT NULL DEFAULT 'clone_store_v2',
   `api_key` text COLLATE utf8mb4_unicode_ci,
   `enabled` tinyint(1) NOT NULL DEFAULT '1',
   `auto_sync` tinyint(1) NOT NULL DEFAULT '0',
@@ -515,8 +525,9 @@ CREATE TABLE `suppliers` (
 -- Đang đổ dữ liệu cho bảng `suppliers`
 --
 
-INSERT INTO `suppliers` (`id`, `code`, `name`, `base_url`, `api_key`, `enabled`, `auto_sync`, `sync_interval_minutes`, `price_adjustment_type`, `price_adjustment_value`, `last_synced_at`, `last_sync_status`, `last_sync_error`, `created_at`, `updated_at`) VALUES
-('019f829a-f708-7093-890d-4950e6ce2e66', 'ads7979', 'ADS7979', 'https://ads7979.com', 'eyJpdiI6IlhMVGUxVXRocXM4SnRiTGxWa2JqOUE9PSIsInZhbHVlIjoiUXh0STh4dHZpTkFwenNPb0FCTU43bjl0STFxOVZoRzVTNVQrYWdVdEIzNGVTRHh4bDlqaXdXWjJuZmpNOXhXdiIsIm1hYyI6ImQxNmRlMDg3ODE5OTViMDA0MmIyMzc0MzAyM2I3MzZhZmQyODNlZjlmODVlN2M2NTJlMmJkMzYyMjk2YTUxNGQiLCJ0YWciOiIifQ==', 1, 1, 30, 'fixed', 0.00, '2026-07-20 20:51:15', 'success', NULL, '2026-07-20 19:57:01', '2026-07-20 20:51:15');
+INSERT INTO `suppliers` (`id`, `code`, `name`, `base_url`, `catalog_driver`, `api_key`, `enabled`, `auto_sync`, `sync_interval_minutes`, `price_adjustment_type`, `price_adjustment_value`, `last_synced_at`, `last_sync_status`, `last_sync_error`, `created_at`, `updated_at`) VALUES
+('019f829a-f708-7093-890d-4950e6ce2e66', 'ads7979', 'ADS7979', 'https://ads7979.com', 'clone_store_v2', 'eyJpdiI6IlhMVGUxVXRocXM4SnRiTGxWa2JqOUE9PSIsInZhbHVlIjoiUXh0STh4dHZpTkFwenNPb0FCTU43bjl0STFxOVZoRzVTNVQrYWdVdEIzNGVTRHh4bDlqaXdXWjJuZmpNOXhXdiIsIm1hYyI6ImQxNmRlMDg3ODE5OTViMDA0MmIyMzc0MzAyM2I3MzZhZmQyODNlZjlmODVlN2M2NTJlMmJkMzYyMjk2YTUxNGQiLCJ0YWciOiIifQ==', 1, 1, 30, 'fixed', 0.00, '2026-07-20 20:51:15', 'success', NULL, '2026-07-20 19:57:01', '2026-07-20 20:51:15'),
+('019f846e-66a7-7247-bb63-b9ebcf11be46', 'vlclone', 'VLClone', 'https://vlclone.com', 'clone_store_v2', 'eyJpdiI6Ik5HZzZ6cVBKaFZIbjFKaEtiY3JialE9PSIsInZhbHVlIjoiZGJmb3l5aDBKY0Z3QnJHcjVGUFFiNU5XM3JaU3RVMjZYTTlqeXVHTFZ5dWVaL2Z4ckh3TWtrTkl0QU9sWXI1NSIsIm1hYyI6ImE5NmI3MmJkYWEyYmZmYTNmODY2YzE1NmQ2YWRiZjYwYjM4ZGNiZDgyYzg4MWFhYWIyNzg2YTQzOTZiNmJhOWQiLCJ0YWciOiIifQ==', 1, 0, 30, 'fixed', 0.00, '2026-07-21 04:31:49', 'success', NULL, '2026-07-21 04:27:35', '2026-07-21 04:31:49');
 
 -- --------------------------------------------------------
 
@@ -580,8 +591,10 @@ CREATE TABLE `users` (
 --
 
 INSERT INTO `users` (`id`, `username`, `name`, `email`, `phone`, `email_verified_at`, `password`, `role`, `balance`, `refresh_token_hash`, `refresh_token_expired_at`, `token_version`, `remember_token`, `api_key`, `api_key_hash`, `google2fa_secret`, `google2fa_enabled`, `created_at`, `updated_at`, `normalized_name`, `status`) VALUES
-('019f7d2f-cf44-723f-8c30-13b7ea78dadb', 'admin', 'admin', 'admin@isocalmarket.com', NULL, NULL, '$2y$10$Yvj0V0FiS12COpg8OsohsOrYG79yTmmh33oL9UoXC2RAt4WFZE72m', 'admin', 2367.0000, '292a7228fed064f3083659224f30950b5241258c8d813aed4ab7f8c9005740a5', '2026-07-27 23:25:31', 0, NULL, 'eyJpdiI6ImwrdmV4NzF0Z2JZWTZmbWRZdWZxVmc9PSIsInZhbHVlIjoiR3lqZElXN1VkU1ZDcmd0U2JaM2F3c2dsaGEvUnVDSUhzcUtvRlVBazczQT0iLCJtYWMiOiIyNzU5OGFlMmJmNjEyZWM4ODY4NDQwZGIzNDJiYmQyNjRhOGFlZGRlYWYyNzg4NzFhNWY1ZDFhM2I3N2UwNTRiIiwidGFnIjoiIn0=', '8a8024e2d2f76c602807b036b49b36593148c48041301a11ec975a622d95ef31', 'J24CQ7Z2LYV52XWV', 0, '2026-07-19 18:41:53', '2026-07-20 23:25:31', 'admin', 'active'),
-('019f7d2f-d010-7399-a970-38f57e67c89e', 'customer1', 'Nguyễn Văn A', 'customer1@isocalmarket.com', '0989515047', NULL, '$2y$12$gA.ROgFGrxrxW.ieuYhosevxZnqzonie2qcC8o1AkCWJHp5OZb1ai', 'customer', 0.0000, NULL, NULL, 0, NULL, NULL, NULL, NULL, 0, '2026-07-19 18:41:53', '2026-07-19 18:41:53', 'nguyen van a', 'active');
+('019f7d2f-cf44-723f-8c30-13b7ea78dadb', 'admin', 'admin', 'admin@isocalmarket.com', NULL, NULL, '$2y$10$Yvj0V0FiS12COpg8OsohsOrYG79yTmmh33oL9UoXC2RAt4WFZE72m', 'admin', 2367.0000, NULL, NULL, 0, NULL, 'eyJpdiI6ImwrdmV4NzF0Z2JZWTZmbWRZdWZxVmc9PSIsInZhbHVlIjoiR3lqZElXN1VkU1ZDcmd0U2JaM2F3c2dsaGEvUnVDSUhzcUtvRlVBazczQT0iLCJtYWMiOiIyNzU5OGFlMmJmNjEyZWM4ODY4NDQwZGIzNDJiYmQyNjRhOGFlZGRlYWYyNzg4NzFhNWY1ZDFhM2I3N2UwNTRiIiwidGFnIjoiIn0=', '8a8024e2d2f76c602807b036b49b36593148c48041301a11ec975a622d95ef31', 'ADDMPJIXJV26U3X6', 0, '2026-07-19 18:41:53', '2026-07-21 04:57:04', 'admin', 'active'),
+('019f7d2f-d010-7399-a970-38f57e67c89e', 'customer1', 'Nguyễn Văn A', 'customer1@isocalmarket.com', '0989515047', NULL, '$2y$12$gA.ROgFGrxrxW.ieuYhosevxZnqzonie2qcC8o1AkCWJHp5OZb1ai', 'customer', 0.0000, NULL, NULL, 0, NULL, NULL, NULL, NULL, 0, '2026-07-19 18:41:53', '2026-07-19 18:41:53', 'nguyen van a', 'active'),
+('019f8478-5cb6-71c0-88a4-19a78f002dfc', 'tiendatmagic', 'Đạt Tiến', 'tiendatmagic8@gmail.com', NULL, NULL, '$2y$12$qDZ2uH8iSuTcFWiRBRbS/upeiWEtTX4h2gWHrI1OiwDTBjTExGCrC', 'customer', 0.0000, NULL, NULL, 0, NULL, 'eyJpdiI6IlFDRlZxYXJyUEFqK0t6QjNKR3hUNFE9PSIsInZhbHVlIjoiVVU2cmRtd1A3ekQzeTBZN3FhMTN1UHMwMy80bDZnaWtGQjJ4SUxaTG5aU3VmZ1dSa1lEUzhHK0dPRy9taDVpayIsIm1hYyI6IjdhZThiZWQxYzQ2NzA3ODdiNmRhNmVhYmIzMjFhNmM3OWI5YzRjNmJhODZjZTU4MmQzNmIxZTg1ZDFiY2E1NjMiLCJ0YWciOiIifQ==', 'ef62d397f0b1e729fc2f02012bb8889295447e5325bb128f596aa427b694ff8d', NULL, 0, '2026-07-21 04:38:28', '2026-07-21 04:38:28', 'dat tien', 'active'),
+('019f8489-b459-702d-956a-a183467607c4', 'tiendatmagic8', 'tiendatmagic8', 'tiendatmagic88@gmail.com', NULL, NULL, '$2y$12$tIY9uQoea6I8Dkw2Kemt1O3uKmsV/b0wjt1qZWp7LeDpVjAEgFhH6', 'customer', 0.0000, 'dfbd0f697382a7b80b4b85aebc177356d04fffa62dbe476a53a5a7339779bee2', '2026-07-28 05:00:49', 1, NULL, NULL, NULL, 'RCG4I2JFXEHUXP2B', 1, '2026-07-21 04:57:24', '2026-07-21 05:00:49', 'tiendatmagic8', 'active');
 
 --
 -- Chỉ mục cho các bảng đã đổ
@@ -767,7 +780,7 @@ ALTER TABLE `jobs`
 -- AUTO_INCREMENT cho bảng `migrations`
 --
 ALTER TABLE `migrations`
-  MODIFY `id` int UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=32;
+  MODIFY `id` int UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=33;
 
 --
 -- Ràng buộc đối với các bảng kết xuất

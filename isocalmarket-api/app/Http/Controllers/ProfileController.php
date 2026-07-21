@@ -2,6 +2,9 @@
 
 namespace App\Http\Controllers;
 
+use App\Application\Services\AuthService;
+use App\Infrastructure\Persistence\Eloquent\UserModel;
+use App\Infrastructure\Persistence\Mappers\UserMapper;
 use App\Infrastructure\Security\Google2FA;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
@@ -9,6 +12,13 @@ use Illuminate\Support\Facades\Hash;
 
 class ProfileController extends Controller
 {
+    private AuthService $authService;
+
+    public function __construct(AuthService $authService)
+    {
+        $this->authService = $authService;
+    }
+
     /**
      * Cập nhật thông tin cơ bản (cho phép Họ tên và số điện thoại, KHÔNG cho phép đổi username/email)
      */
@@ -30,15 +40,7 @@ class ProfileController extends Controller
 
         return response()->json([
             'message' => 'Profile updated successfully.',
-            'user' => [
-                'id' => $userModel->id,
-                'username' => $userModel->username,
-                'name' => $userModel->name,
-                'email' => $userModel->email,
-                'phone' => $userModel->phone,
-                'role' => $userModel->role,
-                'google2fa_enabled' => $userModel->google2fa_enabled,
-            ]
+            'user' => $this->serializeUser($userModel),
         ]);
     }
 
@@ -62,18 +64,44 @@ class ProfileController extends Controller
         }
 
         $userModel->password = Hash::make($request->new_password);
-        $userModel->refresh_token_hash = null;
-        $userModel->refresh_token_expired_at = null;
         $userModel->token_version = ((int) $userModel->token_version) + 1;
         $userModel->save();
 
+        // Tạo access_token và refresh_token mới cho phiên hiện tại
+        $user = UserMapper::toDomain($userModel);
+        $accessToken = $this->authService->generateAccessToken($user);
+        $refreshToken = $this->authService->generateRefreshToken($user);
+
         $isProduction = config('app.env') === 'production';
         $sameSite = $isProduction ? 'None' : 'Lax';
-        $accessTokenCookie = cookie('access_token', '', -2628000, '/', null, $isProduction, true, false, $sameSite);
-        $refreshTokenCookie = cookie('refresh_token', '', -2628000, '/api/v1/auth/refresh', null, $isProduction, true, false, $sameSite);
+
+        $accessTokenCookie = cookie(
+            'access_token',
+            $accessToken,
+            30,
+            '/',
+            null,
+            $isProduction,
+            true,  // HttpOnly
+            false,
+            $sameSite
+        );
+
+        $refreshTokenCookie = cookie(
+            'refresh_token',
+            $refreshToken,
+            10080,
+            '/api/v1/auth/refresh',
+            null,
+            $isProduction,
+            true,  // HttpOnly
+            false,
+            $sameSite
+        );
 
         return response()->json([
-            'message' => 'Password updated successfully.'
+            'message' => 'Password updated successfully.',
+            'user' => $this->serializeUser($userModel),
         ])->withCookie($accessTokenCookie)->withCookie($refreshTokenCookie);
     }
 
@@ -132,14 +160,7 @@ class ProfileController extends Controller
 
         return response()->json([
             'message' => '2FA enabled successfully.',
-            'user' => [
-                'id' => $userModel->id,
-                'name' => $userModel->name,
-                'email' => $userModel->email,
-                'phone' => $userModel->phone,
-                'role' => $userModel->role,
-                'google2fa_enabled' => $userModel->google2fa_enabled,
-            ]
+            'user' => $this->serializeUser($userModel),
         ]);
     }
 
@@ -169,14 +190,7 @@ class ProfileController extends Controller
 
         return response()->json([
             'message' => '2FA disabled successfully.',
-            'user' => [
-                'id' => $userModel->id,
-                'name' => $userModel->name,
-                'email' => $userModel->email,
-                'phone' => $userModel->phone,
-                'role' => $userModel->role,
-                'google2fa_enabled' => $userModel->google2fa_enabled,
-            ]
+            'user' => $this->serializeUser($userModel),
         ]);
     }
 
@@ -196,16 +210,22 @@ class ProfileController extends Controller
 
         return response()->json([
             'message' => 'API Key generated successfully.',
-            'user' => [
-                'id' => $userModel->id,
-                'name' => $userModel->name,
-                'email' => $userModel->email,
-                'phone' => $userModel->phone,
-                'role' => $userModel->role,
-                'google2fa_enabled' => $userModel->google2fa_enabled,
-                'api_key' => $userModel->api_key,
-                'balance' => $userModel->balance
-            ]
+            'user' => $this->serializeUser($userModel),
         ]);
+    }
+
+    private function serializeUser(UserModel $userModel): array
+    {
+        return [
+            'id' => $userModel->id,
+            'username' => $userModel->username,
+            'name' => $userModel->name,
+            'email' => $userModel->email,
+            'phone' => $userModel->phone,
+            'role' => $userModel->role,
+            'google2fa_enabled' => (bool) $userModel->google2fa_enabled,
+            'balance' => (float) $userModel->balance,
+            'api_key' => $userModel->api_key,
+        ];
     }
 }

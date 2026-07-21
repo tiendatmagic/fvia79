@@ -20,6 +20,7 @@ return new class extends Migration
         });
 
         // 2. Duyệt qua tất cả các user để kiểm tra và mã hóa api_key nếu là plaintext, đồng thời cập nhật api_key_hash
+        $hasApiKeyHash = Schema::hasColumn('users', 'api_key_hash');
         $users = DB::table('users')->whereNotNull('api_key')->where('api_key', '!=', '')->get();
 
         foreach ($users as $user) {
@@ -39,7 +40,7 @@ return new class extends Migration
                 $plainKey = $decrypted;
                 $hash = hash('sha256', $plainKey);
 
-                if (empty($user->api_key_hash)) {
+                if ($hasApiKeyHash && empty($user->api_key_hash)) {
                     DB::table('users')
                         ->where('id', $user->id)
                         ->update(['api_key_hash' => $hash]);
@@ -50,12 +51,14 @@ return new class extends Migration
                 $encryptedKey = Crypt::encryptString($plainKey);
                 $hash = hash('sha256', $plainKey);
 
+                $updates = ['api_key' => $encryptedKey];
+                if ($hasApiKeyHash) {
+                    $updates['api_key_hash'] = $hash;
+                }
+
                 DB::table('users')
                     ->where('id', $user->id)
-                    ->update([
-                        'api_key' => $encryptedKey,
-                        'api_key_hash' => $hash
-                    ]);
+                    ->update($updates);
             }
         }
     }

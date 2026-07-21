@@ -85,8 +85,8 @@ class CategoryController extends Controller
             }, $categories);
 
             return response()->json($data);
-        } catch (\Exception $e) {
-            return response()->json(['message' => 'Cannot fetch categories: ' . $e->getMessage()], 500);
+        } catch (\Throwable $e) {
+            return $this->serverError($e, 'Failed to fetch categories.');
         }
     }
 
@@ -110,8 +110,8 @@ class CategoryController extends Controller
                     'created_at' => $category->getCreatedAt() ? $category->getCreatedAt()->format('Y-m-d H:i:s') : null
                 ]
             ], 201);
-        } catch (\Exception $e) {
-            return response()->json(['message' => $e->getMessage()], 500);
+        } catch (\Throwable $e) {
+            return $this->serverError($e, 'Failed to create category.');
         }
     }
 
@@ -136,8 +136,8 @@ class CategoryController extends Controller
                     'created_at' => $category->getCreatedAt() ? $category->getCreatedAt()->format('Y-m-d H:i:s') : null
                 ]
             ]);
-        } catch (\Exception $e) {
-            return response()->json(['message' => $e->getMessage()], 500);
+        } catch (\Throwable $e) {
+            return $this->serverError($e, 'Failed to update category.');
         }
     }
 
@@ -148,7 +148,14 @@ class CategoryController extends Controller
             Cache::forget('categories_active_storefront');
             return response()->json(['message' => 'Category deleted successfully.']);
         } catch (\Exception $e) {
-            return response()->json(['message' => $e->getMessage()], 400);
+            if (in_array($e->getMessage(), [
+                'Category not found.',
+                'Cannot delete category containing products.',
+            ], true)) {
+                return response()->json(['message' => $e->getMessage()], 400);
+            }
+
+            return $this->serverError($e, 'Failed to delete category.');
         }
     }
 }

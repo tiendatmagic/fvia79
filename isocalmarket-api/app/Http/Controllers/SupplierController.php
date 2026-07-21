@@ -6,6 +6,9 @@ use App\Application\Services\SupplierCatalogSyncService;
 use App\Infrastructure\Persistence\Eloquent\SupplierModel;
 use App\Integrations\Suppliers\CloneStoreConnector;
 use App\Integrations\Suppliers\SupplierUrlGuard;
+use Illuminate\Database\Eloquent\ModelNotFoundException;
+use Illuminate\Http\Client\ConnectionException;
+use Illuminate\Http\Client\RequestException;
 use Illuminate\Http\Request;
 use Illuminate\Support\Str;
 use Illuminate\Validation\Rule;
@@ -103,14 +106,36 @@ class SupplierController extends Controller
 
     public function sync(string $code, SupplierCatalogSyncService $syncService)
     {
-        $result = $syncService->syncByCode($code);
-        $supplier = SupplierModel::where('code', $code)->firstOrFail();
+        try {
+            $result = $syncService->syncByCode($code);
+            $supplier = SupplierModel::where('code', $code)->firstOrFail();
 
-        return response()->json([
-            'message' => "{$supplier->name} catalog synchronized successfully.",
-            'result' => $result,
-            'supplier' => $this->serialize($supplier),
-        ]);
+            return response()->json([
+                'message' => "{$supplier->name} catalog synchronized successfully.",
+                'result' => $result,
+                'supplier' => $this->serialize($supplier),
+            ]);
+        } catch (ModelNotFoundException) {
+            return response()->json(['message' => 'Supplier not found.'], 404);
+        } catch (ConnectionException|RequestException $exception) {
+            return $this->upstreamError(
+                $exception,
+                "Supplier catalog request failed for [{$code}].",
+                'Supplier service is temporarily unavailable.',
+            );
+        } catch (RuntimeException $exception) {
+            if (str_ends_with($exception->getMessage(), ' is disabled.')) {
+                return response()->json(['message' => 'Supplier is disabled.'], 422);
+            }
+
+            return $this->upstreamError(
+                $exception,
+                "Supplier catalog synchronization failed for [{$code}].",
+                'Supplier synchronization failed.',
+            );
+        } catch (\Throwable $exception) {
+            return $this->serverError($exception, "Unexpected supplier sync failure for [{$code}].");
+        }
     }
 
     private function serialize(SupplierModel $supplier): array

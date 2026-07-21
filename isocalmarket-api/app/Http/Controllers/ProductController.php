@@ -62,8 +62,8 @@ class ProductController extends Controller
             $data = array_map(fn (Product $product) => $this->serializeProduct($product), $products);
 
             return response()->json($data);
-        } catch (\Exception $e) {
-            return response()->json(['message' => 'Cannot fetch products: '.$e->getMessage()], 500);
+        } catch (\Throwable $e) {
+            return $this->serverError($e, 'Failed to fetch products.');
         }
     }
 
@@ -88,8 +88,8 @@ class ProductController extends Controller
             }, $groupedData);
 
             return response()->json($result);
-        } catch (\Exception $e) {
-            return response()->json(['message' => 'Cannot fetch grouped products: '.$e->getMessage()], 500);
+        } catch (\Throwable $e) {
+            return $this->serverError($e, 'Failed to fetch grouped products.');
         }
     }
 
@@ -108,8 +108,8 @@ class ProductController extends Controller
             }
 
             return response()->json($this->serializeProduct($product));
-        } catch (\Exception $e) {
-            return response()->json(['message' => $e->getMessage()], 500);
+        } catch (\Throwable $e) {
+            return $this->serverError($e, 'Failed to fetch product.');
         }
     }
 
@@ -139,8 +139,8 @@ class ProductController extends Controller
                     'attributes' => $product->getAttributes(),
                 ],
             ], 201);
-        } catch (\Exception $e) {
-            return response()->json(['message' => $e->getMessage()], 500);
+        } catch (\Throwable $e) {
+            return $this->serverError($e, 'Failed to create product.');
         }
     }
 
@@ -179,8 +179,8 @@ class ProductController extends Controller
                     'attributes' => $product->getAttributes(),
                 ],
             ]);
-        } catch (\Exception $e) {
-            return response()->json(['message' => $e->getMessage()], 500);
+        } catch (\Throwable $e) {
+            return $this->serverError($e, 'Failed to update product.');
         }
     }
 
@@ -193,8 +193,8 @@ class ProductController extends Controller
             }
 
             return response()->json(['message' => 'Product deleted successfully.']);
-        } catch (\Exception $e) {
-            return response()->json(['message' => $e->getMessage()], 500);
+        } catch (\Throwable $e) {
+            return $this->serverError($e, 'Failed to delete product.');
         }
     }
 
@@ -207,8 +207,8 @@ class ProductController extends Controller
             }
 
             return response()->json(['message' => 'Product restored successfully.']);
-        } catch (\Exception $e) {
-            return response()->json(['message' => $e->getMessage()], 500);
+        } catch (\Throwable $e) {
+            return $this->serverError($e, 'Failed to restore product.');
         }
     }
 

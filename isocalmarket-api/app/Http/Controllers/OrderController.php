@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Domain\Exceptions\OrderException;
 use App\Http\Requests\CreateOrderRequest;
 use App\Application\Services\OrderService;
 use Illuminate\Http\Request;
@@ -48,8 +49,10 @@ class OrderController extends Controller
                     'created_at' => $order->getCreatedAt()?->format('Y-m-d H:i:s')
                 ]
             ], 201);
-        } catch (\Exception $e) {
+        } catch (OrderException $e) {
             return response()->json(['message' => $e->getMessage()], 400);
+        } catch (\Throwable $e) {
+            return $this->serverError($e, 'Failed to create order.');
         }
     }
 
@@ -122,8 +125,8 @@ class OrderController extends Controller
             }, $orders);
 
             return response()->json($data);
-        } catch (\Exception $e) {
-            return response()->json(['message' => $e->getMessage()], 500);
+        } catch (\Throwable $e) {
+            return $this->serverError($e, 'Failed to fetch orders.');
         }
     }
 
@@ -178,8 +181,10 @@ class OrderController extends Controller
                 'items' => $itemsData,
                 'accounts' => $accountsData
             ]);
-        } catch (\Exception $e) {
+        } catch (OrderException $e) {
             return response()->json(['message' => $e->getMessage()], 403);
+        } catch (\Throwable $e) {
+            return $this->serverError($e, 'Failed to fetch order details.');
         }
     }
 }

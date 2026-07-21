@@ -115,7 +115,7 @@ class SecurityHardeningTest extends TestCase
             ->assertJsonPath('has_binance_api_secret', false);
     }
 
-    public function test_password_change_revokes_existing_access_and_refresh_tokens(): void
+    public function test_password_change_revokes_old_token_and_rotates_current_session_tokens(): void
     {
         $user = UserModel::create([
             'username' => 'password_change_user',
@@ -131,16 +131,21 @@ class SecurityHardeningTest extends TestCase
         ]);
         $token = app(AuthService::class)->generateAccessToken(UserMapper::toDomain($user));
 
-        $this->withToken($token)->putJson('/api/v1/profile/password', [
+        $response = $this->withToken($token)->putJson('/api/v1/profile/password', [
             'current_password' => 'old-password-123',
             'new_password' => 'new-password-456',
             'new_password_confirmation' => 'new-password-456',
-        ])->assertOk();
+        ]);
+
+        $response->assertOk()
+            ->assertCookie('access_token')
+            ->assertCookie('refresh_token');
 
         $user->refresh();
         $this->assertSame(1, $user->token_version);
-        $this->assertNull($user->refresh_token_hash);
-        $this->assertNull($user->refresh_token_expired_at);
+        $this->assertNotNull($user->refresh_token_hash);
+        $this->assertNotSame(hash('sha256', 'existing-refresh-token'), $user->refresh_token_hash);
+        $this->assertNotNull($user->refresh_token_expired_at);
         $this->withToken($token)->getJson('/api/v1/auth/me')->assertUnauthorized();
     }
 
@@ -168,6 +173,35 @@ class SecurityHardeningTest extends TestCase
         // 2. Eloquent phải tự động giải mã ra bản rõ khi truy xuất
         $userFresh = UserModel::find($user->id);
         $this->assertSame('MY-SECRET-B2B-KEY-32-CHARS-12345', $userFresh->api_key);
+    }
+
+    public function test_api_key_backfill_migration_repairs_legacy_plaintext_rows_idempotently(): void
+    {
+        $user = UserModel::create([
+            'username' => 'legacy_api_key_user',
+            'name' => 'Legacy API Key User',
+            'email' => 'legacy-api-key@example.com',
+            'password' => 'password123',
+            'role' => 'customer',
+            'balance' => 0,
+            'status' => 'active',
+        ]);
+        $plainApiKey = 'LEGACY-PLAINTEXT-API-KEY';
+
+        DB::table('users')->where('id', $user->id)->update([
+            'api_key' => $plainApiKey,
+            'api_key_hash' => null,
+        ]);
+
+        $migration = require database_path('migrations/2026_07_21_220000_backfill_user_api_key_hashes.php');
+        $migration->up();
+        $migration->up();
+
+        $storedUser = DB::table('users')->where('id', $user->id)->first();
+        $this->assertNotSame($plainApiKey, $storedUser->api_key);
+        $this->assertSame($plainApiKey, Crypt::decryptString($storedUser->api_key));
+        $this->assertSame(hash('sha256', $plainApiKey), $storedUser->api_key_hash);
+        $this->assertSame($plainApiKey, UserModel::findOrFail($user->id)->api_key);
     }
 
     public function test_jwt_routes_reject_api_keys_in_every_supported_b2b_transport(): void

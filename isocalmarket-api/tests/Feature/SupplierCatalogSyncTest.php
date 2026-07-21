@@ -161,6 +161,40 @@ class SupplierCatalogSyncTest extends TestCase
         $this->assertSame(7, $catalog[0]['children'][0]['quantity']);
     }
 
+    public function test_supplier_sync_returns_safe_bad_gateway_response_for_upstream_failure(): void
+    {
+        config()->set('services.ads7979.api_key', 'test-api-key');
+        Http::fake([
+            'https://ads7979.com/api/v2/categories' => Http::response([
+                'internal_debug' => 'supplier database connection failed',
+            ], 503),
+        ]);
+        $admin = UserModel::create([
+            'username' => 'supplier_error_admin',
+            'name' => 'Supplier Error Admin',
+            'email' => 'supplier-error-admin@example.com',
+            'password' => 'password123',
+            'role' => 'admin',
+            'balance' => 0,
+            'status' => 'active',
+        ]);
+        $token = app(JwtService::class)->generateToken([
+            'sub' => $admin->id,
+            'email' => $admin->email,
+            'role' => 'admin',
+            'ver' => 0,
+        ], 1800);
+
+        $response = $this->withToken($token)
+            ->postJson('/api/v1/admin/suppliers/ads7979/sync');
+
+        $response->assertStatus(502)
+            ->assertJsonPath('message', 'Supplier service is temporarily unavailable.')
+            ->assertJsonStructure(['error_id'])
+            ->assertJsonMissing(['internal_debug' => 'supplier database connection failed']);
+        $this->assertSame('failed', SupplierModel::where('code', 'ads7979')->value('last_sync_status'));
+    }
+
     private function fakeSupplierAndRateApis(): void
     {
         Cache::forget('usdt_to_vnd_rate');

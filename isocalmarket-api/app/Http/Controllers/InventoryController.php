@@ -38,7 +38,11 @@ class InventoryController extends Controller
                 ]
             ], 201);
         } catch (\Exception $e) {
-            return response()->json(['message' => $e->getMessage()], 400);
+            if (in_array($e->getMessage(), ['Product not found.', 'No resource keys found in raw data.'], true)) {
+                return response()->json(['message' => $e->getMessage()], 400);
+            }
+
+            return $this->serverError($e, 'Failed to import inventory batch.');
         }
     }
 
@@ -61,8 +65,8 @@ class InventoryController extends Controller
                 'created_at' => $item->getCreatedAt()?->format('Y-m-d H:i:s'),
                 'updated_at' => $item->getUpdatedAt()?->format('Y-m-d H:i:s')
             ]);
-        } catch (\Exception $e) {
-            return response()->json(['message' => $e->getMessage()], 500);
+        } catch (\Throwable $e) {
+            return $this->serverError($e, 'Failed to fetch inventory batch.');
         }
     }
 
@@ -125,8 +129,8 @@ class InventoryController extends Controller
             }, $items);
 
             return response()->json($data);
-        } catch (\Exception $e) {
-            return response()->json(['message' => $e->getMessage()], 500);
+        } catch (\Throwable $e) {
+            return $this->serverError($e, 'Failed to fetch inventory batches.');
         }
     }
 
@@ -152,7 +156,11 @@ class InventoryController extends Controller
                 ]
             ]);
         } catch (\Exception $e) {
-            return response()->json(['message' => $e->getMessage()], 400);
+            if ($e->getMessage() === __('messages.inventory_conflict')) {
+                return response()->json(['message' => $e->getMessage()], 400);
+            }
+
+            return $this->serverError($e, 'Failed to update inventory batch.');
         }
     }
 
@@ -165,8 +173,8 @@ class InventoryController extends Controller
             }
 
             return response()->json(['message' => 'Inventory batch deleted successfully.']);
-        } catch (\Exception $e) {
-            return response()->json(['message' => $e->getMessage()], 500);
+        } catch (\Throwable $e) {
+            return $this->serverError($e, 'Failed to delete inventory batch.');
         }
     }
 }

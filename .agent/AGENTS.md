@@ -1948,3 +1948,21 @@
   2. Xác nhận 100% các thành phần HTML và Toast/Alert/Modal messages đều đã được gắn key i18n đầy đủ.
   3. Rà soát file `language.service.ts` với 1080 key dịch ở cả hai ngôn ngữ (`en` và `vi`), kiểm tra tính đồng nhất của các tham số biến (`{{count}}`, `{{code}}`, ...).
   4. Cập nhật bổ sung key `auth.marketing_title_normal_2` trong cấu hình tiếng Anh để chuẩn hóa kết thúc câu giao diện Login.
+
+## [2026-07-21] Sửa lỗi đổi mật khẩu bị out về trang Login
+- **Yêu cầu:** Sửa lỗi khi người dùng đổi mật khẩu thành công tại trang Profile thì hệ thống tự động đăng xuất và đẩy người dùng về trang Login.
+- **Phân tích:**
+  1. Ở Backend (`ProfileController.php`): Trước đây khi đổi mật khẩu thành công, controller đã xóa cookie `access_token` và `refresh_token` dẫn đến phiên làm việc bị hủy.
+  2. Ở Frontend (`auth.store.ts`): Trong toán tử `tap` của `changePassword`, store tự động gọi `clearFrontendLoggedInCookie()`, đặt `currentUser(null)` và chuyển hướng người dùng sang `/login`.
+- **Thực hiện:**
+  1. **Backend (`ProfileController.php`)**: Inject `AuthService`, sau khi đổi mật khẩu thành công thì tăng `token_version` (vô hiệu hóa token cũ ở thiết bị khác) và cấp lại ngay cặp cookie `access_token` (30 phút) và `refresh_token` (7 ngày) mới cho phiên làm việc hiện tại của người dùng.
+  2. **Frontend (`auth.store.ts`)**: Loại bỏ việc xóa cookie, hủy user state và chuyển hướng trang `/login` trong method `changePassword`. Giữ lại Toast thông báo thành công.
+  3. **Xác minh**: Chạy `npm run build` biên dịch thành công 100%. Người dùng giữ nguyên đăng nhập mượt mà sau khi đổi mật khẩu.
+
+## [2026-07-21] Đồng bộ Icon mắt ẩn/hiện mật khẩu & Ô nhập 2FA OTP Code
+- **Yêu cầu:** Tích hợp icon mắt ẩn/hiện mật khẩu cho tất cả các ô nhập mật khẩu (Profile, Admin Users, Login, Register...) và đồng bộ giao diện ô nhập 2FA OTP code về chuẩn `app-custom-input`.
+- **Thực hiện:**
+  1. **CustomInputComponent (`custom-input.component.ts` & `.html`)**: Tích hợp sẵn nút toggle icon con mắt cho tất cả các trường `type="password"`. Tự động gán style padding-right và icon ẩn/hiện mật khẩu trực tiếp trong component dùng chung.
+  2. **Giao diện 2FA OTP Code (`auth-layout.component.html` & `login.component.html`)**: Chuyển đổi ô nhập mã OTP dạng đường gạch dưới (`border-b-2`) cũ sang component `<app-custom-input>` với góc bo tròn `rounded-xl` chuẩn thiết kế hệ thống.
+  3. **Rút gọn code HTML**: Loại bỏ các nút toggle thủ công ở các trang Auth, tận dụng tính năng tự động của `CustomInputComponent`.
+  4. **Xác minh**: Chạy `npm run build` biên dịch thành công 100%. All password & OTP input fields đồng bộ hoàn hảo.

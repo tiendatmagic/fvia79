@@ -210,10 +210,7 @@ export class AuthStore {
     this.authLoading.set(true);
     return this.api.put<any>('v1/profile/password', data).pipe(
       tap(() => {
-        this.clearFrontendLoggedInCookie();
-        this.currentUser.set(null);
         this.toast.showToast(this.lang.translate('toast.password_changed'), 'success');
-        this.router.navigate(['/login']);
       }),
       catchError((err) => {
         const msg = err.error?.message || this.lang.translate('toast.password_failed');

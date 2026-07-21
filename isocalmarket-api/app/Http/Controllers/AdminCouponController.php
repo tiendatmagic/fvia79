@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Domain\Exceptions\CouponException;
 use App\Http\Requests\CreateCouponRequest;
 use App\Application\Services\CouponService;
 use Illuminate\Http\Request;
@@ -74,8 +75,8 @@ class AdminCouponController extends Controller
             ], $coupons);
 
             return response()->json($data);
-        } catch (\Exception $e) {
-            return response()->json(['message' => $e->getMessage()], 500);
+        } catch (\Throwable $e) {
+            return $this->serverError($e, 'Failed to fetch admin coupons.');
         }
     }
 
@@ -94,9 +95,12 @@ class AdminCouponController extends Controller
             if ($e->getCode() == 23000) {
                 return response()->json(['message' => 'The coupon code already exists.'], 400);
             }
+
+            return $this->serverError($e, 'Failed to create coupon.');
+        } catch (CouponException $e) {
             return response()->json(['message' => $e->getMessage()], 400);
-        } catch (\Exception $e) {
-            return response()->json(['message' => $e->getMessage()], 400);
+        } catch (\Throwable $e) {
+            return $this->serverError($e, 'Failed to create coupon.');
         }
     }
 
@@ -119,8 +123,8 @@ class AdminCouponController extends Controller
                 'usage_limit' => $coupon->getUsageLimit(),
                 'used_count' => $coupon->getUsedCount()
             ]);
-        } catch (\Exception $e) {
-            return response()->json(['message' => $e->getMessage()], 500);
+        } catch (\Throwable $e) {
+            return $this->serverError($e, 'Failed to fetch coupon.');
         }
     }
 
@@ -139,9 +143,12 @@ class AdminCouponController extends Controller
             if ($e->getCode() == 23000) {
                 return response()->json(['message' => 'The coupon code already exists.'], 400);
             }
+
+            return $this->serverError($e, 'Failed to update coupon.');
+        } catch (CouponException $e) {
             return response()->json(['message' => $e->getMessage()], 400);
-        } catch (\Exception $e) {
-            return response()->json(['message' => $e->getMessage()], 400);
+        } catch (\Throwable $e) {
+            return $this->serverError($e, 'Failed to update coupon.');
         }
     }
 
@@ -153,8 +160,8 @@ class AdminCouponController extends Controller
                 return response()->json(['message' => 'Coupon deleted successfully.']);
             }
             return response()->json(['message' => 'Coupon not found.'], 404);
-        } catch (\Exception $e) {
-            return response()->json(['message' => $e->getMessage()], 400);
+        } catch (\Throwable $e) {
+            return $this->serverError($e, 'Failed to delete coupon.');
         }
     }
 
@@ -166,8 +173,8 @@ class AdminCouponController extends Controller
                 return response()->json(['message' => 'Coupon restored successfully.']);
             }
             return response()->json(['message' => 'Coupon not found.'], 404);
-        } catch (\Exception $e) {
-            return response()->json(['message' => $e->getMessage()], 400);
+        } catch (\Throwable $e) {
+            return $this->serverError($e, 'Failed to restore coupon.');
         }
     }
 }

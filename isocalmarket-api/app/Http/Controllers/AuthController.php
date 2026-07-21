@@ -38,7 +38,11 @@ class AuthController extends Controller
                 ]
             ], 201);
         } catch (\Exception $e) {
-            return response()->json(['message' => $e->getMessage()], 400);
+            if (in_array($e->getMessage(), ['Email already registered.', 'Username already taken.'], true)) {
+                return response()->json(['message' => $e->getMessage()], 400);
+            }
+
+            return $this->serverError($e, 'Failed to register user.');
         }
     }
 
@@ -104,8 +108,13 @@ class AuthController extends Controller
             ])->withCookie($accessTokenCookie)
                 ->withCookie($refreshTokenCookie);
         } catch (\Exception $e) {
-            $code = str_contains($e->getMessage(), 'banned') ? 403 : 500;
-            return response()->json(['message' => $e->getMessage()], $code);
+            if ($e->getMessage() === 'Your account has been banned. Please contact administrator.') {
+                return response()->json(['message' => $e->getMessage()], 403);
+            }
+
+            return $this->serverError($e, 'Failed to authenticate user.');
+        } catch (\Throwable $e) {
+            return $this->serverError($e, 'Failed to authenticate user.');
         }
     }
 
@@ -176,8 +185,8 @@ class AuthController extends Controller
                 ]
             ])->withCookie($accessTokenCookie)
                 ->withCookie($refreshTokenCookie);
-        } catch (\Exception $e) {
-            return response()->json(['message' => $e->getMessage()], 500);
+        } catch (\Throwable $e) {
+            return $this->serverError($e, 'Failed to complete 2FA login.');
         }
     }
 

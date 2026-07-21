@@ -30,6 +30,12 @@ export class CustomInputComponent implements ControlValueAccessor, AfterViewInit
   @Input() name: string = '';
   @Input() customClass: string = '';
 
+  public showPasswordToggle: boolean = false;
+
+  public togglePassword(): void {
+    this.showPasswordToggle = !this.showPasswordToggle;
+  }
+
   @Output() valueChange = new EventEmitter<any>();
 
   private onChange: (value: any) => void = () => {};

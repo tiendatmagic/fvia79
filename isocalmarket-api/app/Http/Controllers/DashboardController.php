@@ -120,8 +120,8 @@ class DashboardController extends Controller
             });
 
             return response()->json($data);
-        } catch (\Exception $e) {
-            return response()->json(['message' => $e->getMessage()], 500);
+        } catch (\Throwable $e) {
+            return $this->serverError($e, 'Failed to fetch admin dashboard stats.');
         }
     }
 }

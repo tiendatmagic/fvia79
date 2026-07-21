@@ -4,6 +4,7 @@ namespace App\Application\Services;
 
 use App\Domain\Entities\Order;
 use App\Domain\Entities\OrderItem;
+use App\Domain\Exceptions\OrderException;
 use App\Domain\Repositories\OrderRepositoryInterface;
 use App\Domain\Repositories\ProductRepositoryInterface;
 use App\Domain\Repositories\InventoryBatchRepositoryInterface;
@@ -46,16 +47,16 @@ class OrderService
                 $quantity = $input['quantity'];
 
                 if ($quantity <= 0) {
-                    throw new \Exception('Quantity must be greater than 0.');
+                    throw new OrderException('Quantity must be greater than 0.');
                 }
                 $product = $this->productRepository->findById($productId);
                 if (!$product || $product->isDeleted()) {
-                    throw new \Exception("Product is not available or has been discontinued.");
+                    throw new OrderException('Product is not available or has been discontinued.');
                 }
 
                 $availableCount = $this->inventoryRepository->countAvailableByProductId($productId);
                 if ($availableCount < $quantity) {
-                    throw new \Exception("Product '{$product->getName()}' does not have enough stock available (Requested: {$quantity}, Available: {$availableCount}).");
+                    throw new OrderException("Product '{$product->getName()}' does not have enough stock available (Requested: {$quantity}, Available: {$availableCount}).");
                 }
 
                 $activeBatches = $this->inventoryRepository->findActiveBatchesByProductId($productId, true);
@@ -81,7 +82,7 @@ class OrderService
                 }
 
                 if (count($deliveredKeys) < $quantity) {
-                    throw new \Exception("An error occurred: Could not retrieve enough digital resources for product '{$product->getName()}'.");
+                    throw new OrderException("An error occurred: Could not retrieve enough digital resources for product '{$product->getName()}'.");
                 }
 
                 $itemPrice = $product->getPrice();
@@ -106,7 +107,7 @@ class OrderService
             if ($couponCode) {
                 $coupon = $this->couponRepository->findByCode(strtoupper(trim($couponCode)));
                 if (!$coupon) {
-                    throw new \Exception(__('messages.coupon_invalid_code', ['code' => $couponCode]));
+                    throw new OrderException(__('messages.coupon_invalid_code', ['code' => $couponCode]));
                 }
 
                 $now = new \DateTime();
@@ -114,17 +115,17 @@ class OrderService
                 $end = (clone $coupon->getEndDate())->setTime(23, 59, 59);
 
                 if ($now < $start) {
-                    throw new \Exception(__('messages.coupon_not_started'));
+                    throw new OrderException(__('messages.coupon_not_started'));
                 }
                 if ($now > $end) {
-                    throw new \Exception(__('messages.coupon_expired'));
+                    throw new OrderException(__('messages.coupon_expired'));
                 }
 
                 if ($coupon->getUsageLimit() > 0 && $coupon->getUsedCount() >= $coupon->getUsageLimit()) {
-                    throw new \Exception(__('messages.coupon_usage_exhausted'));
+                    throw new OrderException(__('messages.coupon_usage_exhausted'));
                 }
                 if ($totalPrice < $coupon->getMinSpend()) {
-                    throw new \Exception(__('messages.minimum_cart', ['amount' => number_format($coupon->getMinSpend())]));
+                    throw new OrderException(__('messages.minimum_cart', ['amount' => number_format($coupon->getMinSpend())]));
                 }
 
                 $discountAmount = $coupon->calculateDiscount($totalPrice);
@@ -152,11 +153,11 @@ class OrderService
             // Kiểm tra và trừ tiền từ số dư của người dùng
             $user = $this->userRepository->findByIdForUpdate($userId);
             if (!$user) {
-                throw new \Exception('User account not found.');
+                throw new OrderException('User account not found.');
             }
 
             if ($user->getBalance() < $finalPrice) {
-                throw new \Exception("Insufficient balance to pay for the order (Required: " . number_format($finalPrice, 4) . " USD, Current: " . number_format($user->getBalance(), 4) . " USD).");
+                throw new OrderException('Insufficient balance to pay for the order (Required: '.number_format($finalPrice, 4).' USD, Current: '.number_format($user->getBalance(), 4).' USD).');
             }
 
             $user->setBalance($user->getBalance() - $finalPrice);
@@ -196,7 +197,7 @@ class OrderService
 
         // Kiểm tra quyền: chỉ Admin hoặc chính User mua hàng mới xem được
         if ($role !== 'admin' && $order->getUserId() !== $requestingUserId) {
-            throw new \Exception('Forbidden. Access denied.');
+            throw new OrderException('Forbidden. Access denied.');
         }
 
         return [

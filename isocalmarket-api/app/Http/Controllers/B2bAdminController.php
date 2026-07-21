@@ -75,8 +75,8 @@ class B2bAdminController extends Controller
                     'last_page' => (int)ceil($total / $limit)
                 ]
             ]);
-        } catch (\Exception $e) {
-            return response()->json(['message' => 'Failed to fetch B2B users: ' . $e->getMessage()], 500);
+        } catch (\Throwable $e) {
+            return $this->serverError($e, 'Failed to fetch B2B users.');
         }
     }
 
@@ -153,8 +153,8 @@ class B2bAdminController extends Controller
                     'last_page' => (int)ceil($total / $limit)
                 ]
             ]);
-        } catch (\Exception $e) {
-            return response()->json(['message' => 'Failed to fetch B2B orders: ' . $e->getMessage()], 500);
+        } catch (\Throwable $e) {
+            return $this->serverError($e, 'Failed to fetch B2B orders.');
         }
     }
 
@@ -211,7 +211,11 @@ class B2bAdminController extends Controller
                 ]
             ], 201);
         } catch (\Exception $e) {
-            return response()->json(['message' => 'Failed to import inventory: ' . $e->getMessage()], 400);
+            if (in_array($e->getMessage(), ['Product not found.', 'No resource keys found in raw data.'], true)) {
+                return response()->json(['message' => $e->getMessage()], 400);
+            }
+
+            return $this->serverError($e, 'Failed to import B2B inventory.');
         }
     }
 
@@ -259,8 +263,8 @@ class B2bAdminController extends Controller
                     'total_users' => $totalUsers
                 ]
             ]);
-        } catch (\Exception $e) {
-            return response()->json(['message' => 'Failed to fetch dashboard stats: ' . $e->getMessage()], 500);
+        } catch (\Throwable $e) {
+            return $this->serverError($e, 'Failed to fetch B2B dashboard stats.');
         }
     }
 }
