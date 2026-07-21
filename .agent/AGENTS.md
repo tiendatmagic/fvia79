@@ -1763,15 +1763,20 @@
       * Chạy thành công toàn bộ suite test gồm 35 bài test (`php artisan test`) với kết quả 100% Passed.
 
   - **[THAY ĐỔI LOGO, FAVICON & THIẾT LẬP META SEO]**:
-    - **Yêu cầu**: Sử dụng 2 file logo ở thư mục `logoweb` để thay đổi logo website, favicon (favicon lấy logo trắng) và meta SEO đầy đủ, hợp lý. Yêu cầu giữ nguyên logo gốc (không crop, không tách nền trắng/đen) và loại bỏ hoàn toàn hiệu ứng xoay logo.
+    - **Yêu cầu**: Sử dụng 2 file logo ở thư mục `logoweb` để thay đổi logo website, favicon (favicon lấy logo trắng) và meta SEO đầy đủ, hợp lý. Yêu cầu giữ nguyên logo gốc (không crop, không tách nền trắng/đen) và loại bỏ hoàn toàn hiệu ứng xoay logo, đồng thời loại bỏ phần background xanh ngọc, viền tròn và hiệu ứng glow xung quanh logo trên giao diện và splash screen.
     - **Thực hiện & Kết quả**:
-      1. Đã tạo script PHP chuyển đổi 2 file JPG gốc sang định dạng PNG/ICO trực tiếp:
+      1. Đã tạo script PHP chuyển đổi 2 file JPG gốc sang định dạng PNG/ICO trực tiếp (giữ nguyên gốc không crop, không tách nền):
          - `logo-dark.png` (bản logo đen nền trắng từ `photo_2026-07-21_15-05-36.jpg`).
          - `logo-light.png` (bản logo trắng nền đen từ `photo_2026-07-21_15-05-43.jpg`).
          - `favicon.ico` (đa độ phân giải 16x16, 32x32) và các kích thước favicon khác từ logo trắng nền đen.
          - `og-image.png` (1200x630) có logo light đặt ở trung tâm.
-      2. Cập nhật [logo.component.ts](file:///d:/git/isocalmarket/isocalmarket-web/src/app/shared/components/logo/logo.component.ts) hiển thị ảnh logo responsive tĩnh theo chế độ sáng/tối (Light/Dark Mode) và loại bỏ hoàn toàn hiệu ứng xoay logo (`animate-[spin_...]`).
-      3. Cập nhật [index.html](file:///d:/git/isocalmarket/isocalmarket-web/src/index.html) để liên kết favicon mới, tắt hiệu ứng xoay ở splash screen và thêm đầy đủ các thẻ Meta SEO (description, keywords, og:*, twitter:*).
+      2. Cập nhật [logo.component.ts](file:///d:/git/isocalmarket/isocalmarket-web/src/app/shared/components/logo/logo.component.ts):
+         - Hiển thị ảnh logo responsive tĩnh theo chế độ sáng/tối (Light/Dark Mode) và loại bỏ hiệu ứng xoay logo (`animate-[spin_...]`).
+         - Loại bỏ toàn bộ phần background màu xanh ngọc nhạt (`bg-secondary/10`), viền (`border-secondary/20`), padding và nền glow tròn xung quanh logo.
+      3. Cập nhật [index.html](file:///d:/git/isocalmarket/isocalmarket-web/src/index.html):
+         - Liên kết favicon mới, tắt hiệu ứng xoay ở splash screen và thêm đầy đủ các thẻ Meta SEO (description, keywords, og:*, twitter:*).
+         - Loại bỏ container viền tròn màu xanh, padding và thẻ glow gradient (`app-splash-logo-glow`) trên màn hình splash screen khởi chạy.
       4. Cập nhật [web3.service.ts](file:///d:/git/isocalmarket/isocalmarket-web/src/app/core/services/web3.service.ts) trỏ icon AppKit sang `assets/logo-light.png` và dọn dẹp file `logo.svg` cũ.
     - **Xác minh**: Chạy biên dịch frontend Angular (`npm run build`) thành công 100% không phát sinh lỗi.
+
 
