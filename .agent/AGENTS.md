@@ -1729,3 +1729,13 @@
       2. Đã viết và chạy script Node.js tự động dọn dẹp chuẩn xác trên 13 tệp HTML còn lại trong các thư mục quản lý (users, orders, settings, coupons, categories, deposits, api).
       3. Đã chạy tìm kiếm tĩnh `grep_search` kiểm tra đảm bảo **0 kết quả** `font-mono` còn sót lại.
     - **Xác minh:** Biên dịch frontend Angular thành công 100% không có lỗi (`npm run build`).
+
+  - **[KIỂM TRA LỖI API B2B]**:
+    - **Yêu cầu**: Kiểm tra lỗi API tra cứu chi tiết đơn hàng B2B (`GET /api/v1/b2b/orders/{orderCode}`) với API Key `7urYI76SIhPlmn7Y` của người dùng.
+    - **Thực hiện & Kết quả**:
+      1. Đã kiểm tra database: API Key `7urYI76SIhPlmn7Y` là hợp lệ, thuộc về tài khoản `admin` (trạng thái `active`).
+      2. Đã giả lập gửi HTTP GET request với API Key trên để tra cứu đơn hàng `ORD-20260720-JQGB5P` thuộc về tài khoản `admin`.
+      3. Kết quả phản hồi thành công (`200 OK`) trả về đầy đủ chi tiết đơn hàng và tài nguyên đã mua mà không gặp bất kỳ lỗi runtime nào.
+      4. Chỉ ra các lỗi phản hồi dự kiến:
+         - `401 Unauthorized` nếu API Key sai hoặc thiếu.
+         - `404 Order not found` nếu mã đơn hàng không tồn tại hoặc đơn hàng đó thuộc sở hữu của tài khoản đại lý khác (cơ chế bảo mật dữ liệu của B2B API).

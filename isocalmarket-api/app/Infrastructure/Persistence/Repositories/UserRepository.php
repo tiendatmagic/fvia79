@@ -62,10 +62,10 @@ class UserRepository implements UserRepositoryInterface
             $query->where('role', $role);
         }
         if ($startDate) {
-            $query->where('created_at', '>=', $startDate);
+            $query->whereDate('created_at', '>=', $startDate);
         }
         if ($endDate) {
-            $query->where('created_at', '<=', $endDate);
+            $query->whereDate('created_at', '<=', $endDate);
         }
 
         $total = $query->count();

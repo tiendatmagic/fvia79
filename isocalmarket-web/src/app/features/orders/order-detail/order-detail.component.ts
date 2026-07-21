@@ -1,9 +1,9 @@
 import { Component, inject, OnInit, signal } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { ActivatedRoute, Router, RouterModule } from '@angular/router';
-import { HttpClient } from '@angular/common/http';
 import { StateService } from '@core/services/state.service';
 import { ApiService } from '@core/services/api.service';
+import { generateTotp } from '@core/utils/totp.utils';
 import { SkeletonLoaderComponent } from '@shared/components/skeleton-loader/skeleton-loader.component';
 import { BadgeComponent } from '@shared/components/badge/badge.component';
 import { CardComponent } from '@shared/components/card/card.component';
@@ -40,7 +40,6 @@ export class OrderDetailComponent implements OnInit {
   private readonly route = inject(ActivatedRoute);
   private readonly router = inject(Router);
   private readonly apiService = inject(ApiService);
-  private readonly http = inject(HttpClient);
   public readonly state = inject(StateService);
   public readonly lang = inject(LanguageService);
 
@@ -132,49 +131,26 @@ export class OrderDetailComponent implements OnInit {
     return result;
   }
 
-  public get2FAOtp(secret: string, index: number) {
+  public async get2FAOtp(secret: string, index: number) {
     if (this.loadingOtp()) return;
     this.activeOtpIndex.set(index);
     this.currentOtpCode.set('');
     this.loadingOtp.set(true);
-    const cleanSecret = secret.replace(/\s+/g, '');
+    try {
+      const code = await generateTotp(secret);
+      this.currentOtpCode.set(code);
 
-    this.http.get<any>(`https://2fa.live/tok/${cleanSecret}`).subscribe({
-      next: (res) => {
-        this.loadingOtp.set(false);
-        if (res) {
-          let token = '';
-          if (typeof res === 'object') {
-            token = res.token || res.code || '';
-          } else {
-            try {
-              const parsed = JSON.parse(res);
-              token = parsed.token || parsed.code || res;
-            } catch (e) {
-              token = res;
-            }
-          }
-          
-          const match = token.match(/\d{6}/);
-          if (match) {
-            const code = match[0];
-            this.currentOtpCode.set(code);
-            if (typeof window !== 'undefined' && navigator.clipboard) {
-              navigator.clipboard.writeText(code).then(() => {
-                this.state.showToast(this.lang.translate('toast.otp_copied') + code, 'success');
-              });
-            }
-          } else {
-            this.currentOtpCode.set(token);
-          }
-        } else {
-          this.state.showToast(this.lang.translate('toast.otp_failed'), 'error');
-        }
-      },
-      error: () => {
-        this.loadingOtp.set(false);
-        this.state.showToast(this.lang.translate('toast.api_2fa_error'), 'error');
+      if (typeof window !== 'undefined' && navigator.clipboard) {
+        navigator.clipboard.writeText(code).then(() => {
+          this.state.showToast(this.lang.translate('toast.otp_copied') + code, 'success');
+        }).catch(() => {
+          this.state.showToast(this.lang.translate('toast.copy_error'), 'error');
+        });
       }
-    });
+    } catch {
+      this.state.showToast(this.lang.translate('toast.otp_failed'), 'error');
+    } finally {
+      this.loadingOtp.set(false);
+    }
   }
 }

@@ -18,6 +18,11 @@ export class ThemeService {
     if (typeof window === 'undefined') return;
     
     const savedTheme = localStorage.getItem('theme_mode') as 'light' | 'dark' | 'auto' | null;
+    if (typeof window.matchMedia !== 'function') {
+      this.setThemeMode(savedTheme ?? 'auto');
+      return;
+    }
+
     this.mediaQueryList = window.matchMedia('(prefers-color-scheme: dark)');
     
     this.mediaQueryList.addEventListener('change', this.handleSystemThemeChange);

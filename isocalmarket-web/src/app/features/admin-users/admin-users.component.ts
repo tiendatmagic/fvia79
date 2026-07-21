@@ -86,7 +86,7 @@ export class AdminUsersComponent implements OnInit {
     return [
       { label: this.lang.translate('usr.all_roles'), value: '' },
       { label: this.lang.translate('role.admin'), value: 'admin' },
-      { label: this.lang.translate('role.customer'), value: 'user' }
+      { label: this.lang.translate('role.customer'), value: 'customer' }
     ];
   }
 

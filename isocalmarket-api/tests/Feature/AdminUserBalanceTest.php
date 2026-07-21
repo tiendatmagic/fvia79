@@ -66,6 +66,20 @@ class AdminUserBalanceTest extends TestCase
         $this->assertEquals(20.0, (float) $this->normalUser->fresh()->balance);
     }
 
+    public function test_admin_can_filter_customers_by_inclusive_date_range(): void
+    {
+        $this->adminUser->forceFill(['created_at' => '2026-07-09 12:00:00'])->save();
+        $this->normalUser->forceFill(['created_at' => '2026-07-10 18:30:00'])->save();
+
+        $response = $this->withHeaders($this->adminHeaders())
+            ->getJson('/api/v1/admin/users?role=customer&start_date=2026-07-10&end_date=2026-07-10');
+
+        $response->assertOk()
+            ->assertJsonCount(1, 'data')
+            ->assertJsonPath('data.0.id', $this->normalUser->id)
+            ->assertJsonPath('data.0.role', 'customer');
+    }
+
     private function adminHeaders(): array
     {
         $token = resolve(JwtService::class)->generateToken([

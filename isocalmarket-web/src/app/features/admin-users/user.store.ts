@@ -45,6 +45,14 @@ export class UserStore {
       params = params.set('role', role);
     }
 
+    if (startDate) {
+      params = params.set('start_date', startDate);
+    }
+
+    if (endDate) {
+      params = params.set('end_date', endDate);
+    }
+
     const subject = new Subject<any>();
 
     const req$ = this.api.get<any>('v1/admin/users', params).pipe(

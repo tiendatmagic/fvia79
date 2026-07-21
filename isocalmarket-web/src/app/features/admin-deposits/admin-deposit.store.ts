@@ -32,11 +32,11 @@ export class AdminDepositStore {
     limit: number,
     search?: string,
     status?: string,
-    gateway?: string,
+    paymentMethod?: string,
     startDate?: string,
     endDate?: string
   ): Observable<any> {
-    const cacheKey = JSON.stringify({ page, limit, search, status, gateway, startDate, endDate });
+    const cacheKey = JSON.stringify({ page, limit, search, status, paymentMethod, startDate, endDate });
     const cached = this.depositsCache.get(cacheKey);
 
     if (cached && (Date.now() - cached.timestamp < 30000)) { // Cache 30s
@@ -66,8 +66,8 @@ export class AdminDepositStore {
     if (status) {
       params = params.set('status', status);
     }
-    if (gateway) {
-      params = params.set('gateway', gateway);
+    if (paymentMethod) {
+      params = params.set('payment_method', paymentMethod);
     }
     if (startDate) {
       params = params.set('start_date', startDate);

@@ -13,10 +13,11 @@ describe('App', () => {
     expect(app).toBeTruthy();
   });
 
-  it('should render title', async () => {
+  it('should initialize the mobile menu as closed', () => {
     const fixture = TestBed.createComponent(App);
-    await fixture.whenStable();
-    const compiled = fixture.nativeElement as HTMLElement;
-    expect(compiled.querySelector('h1')?.textContent).toContain('Hello, angular-web3-wallet');
+    const app = fixture.componentInstance;
+
+    expect(app.hasBeenOpened()).toBe(false);
+    expect(app.activeMenuState()).toBe(false);
   });
 });

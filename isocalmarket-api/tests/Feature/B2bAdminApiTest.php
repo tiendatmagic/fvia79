@@ -105,6 +105,16 @@ class B2bAdminApiTest extends TestCase
         ]);
     }
 
+    public function test_reseller_can_request_own_b2b_order_detail(): void
+    {
+        $response = $this->withHeaders([
+            'X-API-KEY' => 'RESELLER-KEY-TEST-12345'
+        ])->getJson('/api/v1/b2b/orders/ORDER-DOES-NOT-EXIST');
+
+        $response->assertNotFound()
+            ->assertJson(['message' => 'Order not found.']);
+    }
+
     public function test_admin_can_import_inventory(): void
     {
         $category = CategoryModel::create([

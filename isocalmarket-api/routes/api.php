@@ -23,6 +23,7 @@ Route::prefix('v1')->group(function () {
         Route::get('/b2b/products/{id}', ['App\Http\Controllers\B2bController', 'show']);
         Route::post('/b2b/buy', ['App\Http\Controllers\B2bController', 'buy']);
         Route::get('/b2b/me', ['App\Http\Controllers\B2bController', 'me']);
+        Route::get('/b2b/orders/{orderCode}', ['App\Http\Controllers\B2bController', 'showOrder']);
     });
 
     // B2B Admin API Routes - protected by B2B API Key auth AND Admin middleware
