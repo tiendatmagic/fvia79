@@ -86,7 +86,7 @@
             [(ngModel)]="couponCode"
             (ngModelChange)="onCouponInput($event)"
             [placeholder]="'cart.promo_placeholder' | translate"
-            class="form-input !pr-10 font-mono font-extrabold uppercase tracking-wider"
+            class="form-input !pr-10 font-extrabold uppercase tracking-wider"
           />
           <div *ngIf="isValidatingCoupon()" class="absolute right-3.5 top-1/2 -translate-y-1/2 flex items-center justify-center pointer-events-none">
             <span class="w-4 h-4 rounded-full border-2 border-slate-200 border-t-[var(--color-primary)] dark:border-slate-700 dark:border-t-[var(--color-primary)] animate-spin"></span>

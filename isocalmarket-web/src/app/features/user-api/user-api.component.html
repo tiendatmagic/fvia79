@@ -42,7 +42,7 @@
           {{ 'api.key_label' | translate }}:
         </span>
         <span
-          class="text-sm font-extrabold font-mono text-slate-700 dark:text-slate-300 truncate flex-1"
+          class="text-sm font-extrabold text-slate-700 dark:text-slate-300 truncate flex-1"
         >
           {{
             apiKey()
@@ -125,7 +125,7 @@
             GET
           </span>
           <span
-            class="font-mono text-xs font-extrabold text-slate-600 dark:text-slate-300 bg-slate-100 dark:bg-slate-900 px-2 py-1 rounded"
+            class="text-xs font-extrabold text-slate-600 dark:text-slate-300 bg-slate-100 dark:bg-slate-900 px-2 py-1 rounded"
           >
             /api/v1/b2b/products
           </span>
@@ -141,7 +141,7 @@
               class="relative bg-slate-50 dark:bg-slate-950 rounded-xl border border-slate-200/60 dark:border-slate-900 overflow-hidden"
             >
               <div
-                class="overflow-x-auto p-3.5 pr-12 font-mono text-xs text-slate-700 dark:text-slate-300 leading-relaxed"
+                class="overflow-x-auto p-3.5 pr-12 text-xs text-slate-700 dark:text-slate-300 leading-relaxed"
               >
                 <pre class="whitespace-pre">
 curl -X GET "{{ siteUrl() }}/api/v1/b2b/products?api_key={{ apiKey() || 'API_KEY_CUA_BAN' }}"</pre>
@@ -165,7 +165,7 @@ curl -X GET "{{ siteUrl() }}/api/v1/b2b/products?api_key={{ apiKey() || 'API_KEY
               class="relative bg-slate-50 dark:bg-slate-950 rounded-xl border border-slate-200/60 dark:border-slate-900 overflow-hidden"
             >
               <div
-                class="overflow-x-auto p-3.5 pr-12 font-mono text-xs text-slate-700 dark:text-slate-300 leading-relaxed"
+                class="overflow-x-auto p-3.5 pr-12 text-xs text-slate-700 dark:text-slate-300 leading-relaxed"
               >
                 <span class="text-[var(--color-primary)] font-semibold"
                   >{{ siteUrl() }}/api/v1/b2b/products?api_key={{
@@ -194,7 +194,7 @@ curl -X GET "{{ siteUrl() }}/api/v1/b2b/products?api_key={{ apiKey() || 'API_KEY
               <div
                 class="flex items-start gap-4 text-xs font-semibold border-b border-slate-100 dark:border-slate-800/60 pb-3"
               >
-                <div class="min-w-[120px] font-mono text-[var(--color-primary)] font-bold">
+                <div class="min-w-[120px] text-[var(--color-primary)] font-bold">
                   api_key
                 </div>
                 <div class="flex-1 space-y-1">
@@ -203,10 +203,10 @@ curl -X GET "{{ siteUrl() }}/api/v1/b2b/products?api_key={{ apiKey() || 'API_KEY
                       class="text-xs font-black uppercase bg-rose-500/10 text-rose-500 px-1.5 py-0.5 rounded"
                       >{{ 'api.required' | translate }}</span
                     >
-                    <span class="text-slate-400 dark:text-slate-500 font-mono text-xs">{{ 'api.type_string' | translate }}</span>
+                    <span class="text-slate-400 dark:text-slate-500 text-xs">{{ 'api.type_string' | translate }}</span>
                   </div>
                   <p class="text-slate-500 dark:text-slate-400 font-semibold leading-relaxed">
-                    {{ 'api.api_key_desc' | translate }} <code class="font-mono text-xs">X-API-KEY</code>.
+                    {{ 'api.api_key_desc' | translate }} <code class="text-xs">X-API-KEY</code>.
                   </p>
                 </div>
               </div>
@@ -214,7 +214,7 @@ curl -X GET "{{ siteUrl() }}/api/v1/b2b/products?api_key={{ apiKey() || 'API_KEY
               <div
                 class="flex items-start gap-4 text-xs font-semibold border-b border-slate-100 dark:border-slate-800/60 pb-3"
               >
-                <div class="min-w-[120px] font-mono text-[var(--color-primary)] font-bold">
+                <div class="min-w-[120px] text-[var(--color-primary)] font-bold">
                   page
                 </div>
                 <div class="flex-1 space-y-1">
@@ -223,13 +223,13 @@ curl -X GET "{{ siteUrl() }}/api/v1/b2b/products?api_key={{ apiKey() || 'API_KEY
                       class="text-xs font-black uppercase bg-slate-100 dark:bg-slate-800 text-slate-500 px-1.5 py-0.5 rounded"
                       >{{ 'api.optional' | translate }}</span
                     >
-                    <span class="text-slate-400 dark:text-slate-500 font-mono text-xs"
+                    <span class="text-slate-400 dark:text-slate-500 text-xs"
                       >{{ 'api.type_integer' | translate }}</span
                     >
                   </div>
                   <p class="text-slate-500 dark:text-slate-400 font-semibold leading-relaxed">
                     {{ 'api.page_desc' | translate }}
-                    <code class="font-mono text-xs">1</code>.
+                    <code class="text-xs">1</code>.
                   </p>
                 </div>
               </div>
@@ -237,7 +237,7 @@ curl -X GET "{{ siteUrl() }}/api/v1/b2b/products?api_key={{ apiKey() || 'API_KEY
               <div
                 class="flex items-start gap-4 text-xs font-semibold border-b border-slate-100 dark:border-slate-800/60 pb-3"
               >
-                <div class="min-w-[120px] font-mono text-[var(--color-primary)] font-bold">
+                <div class="min-w-[120px] text-[var(--color-primary)] font-bold">
                   limit
                 </div>
                 <div class="flex-1 space-y-1">
@@ -246,13 +246,13 @@ curl -X GET "{{ siteUrl() }}/api/v1/b2b/products?api_key={{ apiKey() || 'API_KEY
                       class="text-xs font-black uppercase bg-slate-100 dark:bg-slate-800 text-slate-500 px-1.5 py-0.5 rounded"
                     >{{ 'api.optional' | translate }}</span
                     >
-                    <span class="text-slate-400 dark:text-slate-500 font-mono text-xs"
+                    <span class="text-slate-400 dark:text-slate-500 text-xs"
                       >{{ 'api.type_integer' | translate }}</span
                     >
                   </div>
                   <p class="text-slate-500 dark:text-slate-400 font-semibold leading-relaxed">
                     {{ 'api.limit_desc' | translate }}
-                    <code class="font-mono text-xs">10</code>.
+                    <code class="text-xs">10</code>.
                   </p>
                 </div>
               </div>
@@ -260,7 +260,7 @@ curl -X GET "{{ siteUrl() }}/api/v1/b2b/products?api_key={{ apiKey() || 'API_KEY
               <div
                 class="flex items-start gap-4 text-xs font-semibold border-b border-slate-100 dark:border-slate-800/60 pb-3"
               >
-                <div class="min-w-[120px] font-mono text-[var(--color-primary)] font-bold">
+                <div class="min-w-[120px] text-[var(--color-primary)] font-bold">
                   category_id
                 </div>
                 <div class="flex-1 space-y-1">
@@ -269,7 +269,7 @@ curl -X GET "{{ siteUrl() }}/api/v1/b2b/products?api_key={{ apiKey() || 'API_KEY
                       class="text-xs font-black uppercase bg-slate-100 dark:bg-slate-800 text-slate-500 px-1.5 py-0.5 rounded"
                     >{{ 'api.optional' | translate }}</span
                     >
-                    <span class="text-slate-400 dark:text-slate-500 font-mono text-xs"
+                    <span class="text-slate-400 dark:text-slate-500 text-xs"
                       >{{ 'api.type_string_uuid' | translate }}</span
                     >
                   </div>
@@ -280,7 +280,7 @@ curl -X GET "{{ siteUrl() }}/api/v1/b2b/products?api_key={{ apiKey() || 'API_KEY
               </div>
 
               <div class="flex items-start gap-4 text-xs font-semibold">
-                <div class="min-w-[120px] font-mono text-[var(--color-primary)] font-bold">
+                <div class="min-w-[120px] text-[var(--color-primary)] font-bold">
                   search
                 </div>
                 <div class="flex-1 space-y-1">
@@ -289,7 +289,7 @@ curl -X GET "{{ siteUrl() }}/api/v1/b2b/products?api_key={{ apiKey() || 'API_KEY
                       class="text-xs font-black uppercase bg-slate-100 dark:bg-slate-800 text-slate-500 px-1.5 py-0.5 rounded"
                     >{{ 'api.optional' | translate }}</span
                     >
-                    <span class="text-slate-400 dark:text-slate-500 font-mono text-xs">{{ 'api.type_string' | translate }}</span>
+                    <span class="text-slate-400 dark:text-slate-500 text-xs">{{ 'api.type_string' | translate }}</span>
                   </div>
                   <p class="text-slate-500 dark:text-slate-400 font-semibold leading-relaxed">
                     {{ 'api.search_product_desc' | translate }}
@@ -305,7 +305,7 @@ curl -X GET "{{ siteUrl() }}/api/v1/b2b/products?api_key={{ apiKey() || 'API_KEY
               >{{ 'api.response_sample' | translate }}</span
             >
             <div
-              class="bg-slate-50 dark:bg-slate-950 rounded-xl p-4 font-mono text-xs text-slate-700 dark:text-slate-300 overflow-x-auto leading-relaxed border border-slate-200/60 dark:border-slate-900"
+              class="bg-slate-50 dark:bg-slate-950 rounded-xl p-4 text-xs text-slate-700 dark:text-slate-300 overflow-x-auto leading-relaxed border border-slate-200/60 dark:border-slate-900"
             >
               <pre class="whitespace-pre"
                 >{{ '{' }}
@@ -355,7 +355,7 @@ curl -X GET "{{ siteUrl() }}/api/v1/b2b/products?api_key={{ apiKey() || 'API_KEY
             GET
           </span>
           <span
-            class="font-mono text-xs font-extrabold text-slate-600 dark:text-slate-300 bg-slate-100 dark:bg-slate-900 px-2 py-1 rounded"
+            class="text-xs font-extrabold text-slate-600 dark:text-slate-300 bg-slate-100 dark:bg-slate-900 px-2 py-1 rounded"
           >
             /api/v1/b2b/products/{{ '{' }}product_id{{ '}' }}
           </span>
@@ -371,7 +371,7 @@ curl -X GET "{{ siteUrl() }}/api/v1/b2b/products?api_key={{ apiKey() || 'API_KEY
               class="relative bg-slate-50 dark:bg-slate-950 rounded-xl border border-slate-200/60 dark:border-slate-900 overflow-hidden"
             >
               <div
-                class="overflow-x-auto p-3.5 pr-12 font-mono text-xs text-slate-700 dark:text-slate-300 leading-relaxed"
+                class="overflow-x-auto p-3.5 pr-12 text-xs text-slate-700 dark:text-slate-300 leading-relaxed"
               >
                 <pre class="whitespace-pre">
 curl -X GET "{{ siteUrl() }}/api/v1/b2b/products/PRODUCT_ID?api_key={{
@@ -397,7 +397,7 @@ curl -X GET "{{ siteUrl() }}/api/v1/b2b/products/PRODUCT_ID?api_key={{
               class="relative bg-slate-50 dark:bg-slate-950 rounded-xl border border-slate-200/60 dark:border-slate-900 overflow-hidden"
             >
               <div
-                class="overflow-x-auto p-3.5 pr-12 font-mono text-xs text-slate-700 dark:text-slate-300 leading-relaxed"
+                class="overflow-x-auto p-3.5 pr-12 text-xs text-slate-700 dark:text-slate-300 leading-relaxed"
               >
                 <span class="text-[var(--color-primary)] font-semibold"
                   >{{ siteUrl() }}/api/v1/b2b/products/PRODUCT_ID?api_key={{
@@ -421,7 +421,7 @@ curl -X GET "{{ siteUrl() }}/api/v1/b2b/products/PRODUCT_ID?api_key={{
               >{{ 'api.response_sample' | translate }}</span
             >
             <div
-              class="bg-slate-50 dark:bg-slate-950 rounded-xl p-4 font-mono text-xs text-slate-700 dark:text-slate-300 overflow-x-auto leading-relaxed border border-slate-200/60 dark:border-slate-900"
+              class="bg-slate-50 dark:bg-slate-950 rounded-xl p-4 text-xs text-slate-700 dark:text-slate-300 overflow-x-auto leading-relaxed border border-slate-200/60 dark:border-slate-900"
             >
               <pre class="whitespace-pre"
                 >{{ '{' }}
@@ -461,7 +461,7 @@ curl -X GET "{{ siteUrl() }}/api/v1/b2b/products/PRODUCT_ID?api_key={{
             POST
           </span>
           <span
-            class="font-mono text-xs font-extrabold text-slate-600 dark:text-slate-300 bg-slate-100 dark:bg-slate-900 px-2 py-1 rounded"
+            class="text-xs font-extrabold text-slate-600 dark:text-slate-300 bg-slate-100 dark:bg-slate-900 px-2 py-1 rounded"
           >
             /api/v1/b2b/buy
           </span>
@@ -501,7 +501,7 @@ curl -X GET "{{ siteUrl() }}/api/v1/b2b/products/PRODUCT_ID?api_key={{
                   class="relative bg-slate-50 dark:bg-slate-950 rounded-xl border border-slate-200/60 dark:border-slate-900 overflow-hidden"
                 >
                   <div
-                    class="overflow-x-auto p-3.5 pr-12 font-mono text-xs text-slate-700 dark:text-slate-300 leading-relaxed"
+                    class="overflow-x-auto p-3.5 pr-12 text-xs text-slate-700 dark:text-slate-300 leading-relaxed"
                   >
                     <pre class="whitespace-pre">
 curl -X POST "{{ siteUrl() }}/api/v1/b2b/buy" -H "Content-Type: application/json" -H "X-API-KEY: {{
@@ -522,7 +522,7 @@ curl -X POST "{{ siteUrl() }}/api/v1/b2b/buy" -H "Content-Type: application/json
                   class="relative bg-slate-50 dark:bg-slate-950 rounded-xl border border-slate-200/60 dark:border-slate-900 overflow-hidden"
                 >
                   <div
-                    class="overflow-x-auto p-3.5 pr-12 font-mono text-xs text-slate-700 dark:text-slate-300 leading-relaxed"
+                    class="overflow-x-auto p-3.5 pr-12 text-xs text-slate-700 dark:text-slate-300 leading-relaxed"
                   >
                     <pre class="whitespace-pre">
 curl -X POST "{{ siteUrl() }}/api/v1/b2b/buy" -H "Content-Type: application/json" -H "X-API-KEY: {{
@@ -545,7 +545,7 @@ curl -X POST "{{ siteUrl() }}/api/v1/b2b/buy" -H "Content-Type: application/json
                   class="relative bg-slate-50 dark:bg-slate-950 rounded-xl border border-slate-200/60 dark:border-slate-900 overflow-hidden"
                 >
                   <div
-                    class="overflow-x-auto p-3.5 pr-12 font-mono text-xs text-slate-700 dark:text-slate-300 leading-relaxed"
+                    class="overflow-x-auto p-3.5 pr-12 text-xs text-slate-700 dark:text-slate-300 leading-relaxed"
                   >
                     <pre class="whitespace-pre">
 curl -X POST "{{ siteUrl() }}/api/v1/b2b/buy" -H "Content-Type: application/json" -H "X-API-KEY: {{
@@ -566,7 +566,7 @@ curl -X POST "{{ siteUrl() }}/api/v1/b2b/buy" -H "Content-Type: application/json
                   class="relative bg-slate-50 dark:bg-slate-950 rounded-xl border border-slate-200/60 dark:border-slate-900 overflow-hidden"
                 >
                   <div
-                    class="overflow-x-auto p-3.5 pr-12 font-mono text-xs text-slate-700 dark:text-slate-300 leading-relaxed"
+                    class="overflow-x-auto p-3.5 pr-12 text-xs text-slate-700 dark:text-slate-300 leading-relaxed"
                   >
                     <pre class="whitespace-pre">
 curl -X POST "{{ siteUrl() }}/api/v1/b2b/buy" -H "Content-Type: application/json" -H "X-API-KEY: {{
@@ -594,7 +594,7 @@ curl -X POST "{{ siteUrl() }}/api/v1/b2b/buy" -H "Content-Type: application/json
               class="relative bg-slate-50 dark:bg-slate-950 rounded-xl border border-slate-200/60 dark:border-slate-900 overflow-hidden"
             >
               <div
-                class="overflow-x-auto p-3.5 pr-12 font-mono text-xs text-slate-700 dark:text-slate-300 leading-relaxed"
+                class="overflow-x-auto p-3.5 pr-12 text-xs text-slate-700 dark:text-slate-300 leading-relaxed"
               >
                 <span class="text-[var(--color-primary)] font-semibold"
                   >{{ siteUrl() }}/api/v1/b2b/buy</span
@@ -619,7 +619,7 @@ curl -X POST "{{ siteUrl() }}/api/v1/b2b/buy" -H "Content-Type: application/json
               class="bg-slate-50 dark:bg-slate-950 border border-slate-200/60 dark:border-slate-900 rounded-xl p-4 space-y-3"
             >
               <div class="flex items-start gap-4 text-xs">
-                <div class="min-w-[120px] font-mono text-[var(--color-primary)] font-bold">
+                <div class="min-w-[120px] text-[var(--color-primary)] font-bold">
                   product_id
                 </div>
                 <div class="flex-1 space-y-1">
@@ -628,7 +628,7 @@ curl -X POST "{{ siteUrl() }}/api/v1/b2b/buy" -H "Content-Type: application/json
                       class="text-xs font-black uppercase bg-rose-500/10 text-rose-500 px-1.5 py-0.5 rounded"
                       >{{ 'api.required' | translate }}</span
                     >
-                    <span class="text-slate-400 dark:text-slate-500 font-mono text-xs"
+                    <span class="text-slate-400 dark:text-slate-500 text-xs"
                       >{{ 'api.type_string_uuid' | translate }}</span
                     >
                   </div>
@@ -641,7 +641,7 @@ curl -X POST "{{ siteUrl() }}/api/v1/b2b/buy" -H "Content-Type: application/json
               <div class="h-px bg-slate-200/50 dark:bg-slate-800/40"></div>
 
               <div class="flex items-start gap-4 text-xs">
-                <div class="min-w-[120px] font-mono text-[var(--color-primary)] font-bold">
+                <div class="min-w-[120px] text-[var(--color-primary)] font-bold">
                   quantity
                 </div>
                 <div class="flex-1 space-y-1">
@@ -650,7 +650,7 @@ curl -X POST "{{ siteUrl() }}/api/v1/b2b/buy" -H "Content-Type: application/json
                       class="text-xs font-black uppercase bg-rose-500/10 text-rose-500 px-1.5 py-0.5 rounded"
                       >{{ 'api.required' | translate }}</span
                     >
-                    <span class="text-slate-400 dark:text-slate-500 font-mono text-xs"
+                    <span class="text-slate-400 dark:text-slate-500 text-xs"
                       >{{ 'api.type_integer_min_one' | translate }}</span
                     >
                   </div>
@@ -663,7 +663,7 @@ curl -X POST "{{ siteUrl() }}/api/v1/b2b/buy" -H "Content-Type: application/json
               <div class="h-px bg-slate-200/50 dark:bg-slate-800/40"></div>
 
               <div class="flex items-start gap-4 text-xs">
-                <div class="min-w-[120px] font-mono text-[var(--color-primary)] font-bold">
+                <div class="min-w-[120px] text-[var(--color-primary)] font-bold">
                   coupon_code
                 </div>
                 <div class="flex-1 space-y-1">
@@ -672,7 +672,7 @@ curl -X POST "{{ siteUrl() }}/api/v1/b2b/buy" -H "Content-Type: application/json
                       class="text-xs font-black uppercase bg-slate-500/10 text-slate-500 px-1.5 py-0.5 rounded"
                       >{{ 'api.optional' | translate }}</span
                     >
-                    <span class="text-slate-400 dark:text-slate-500 font-mono text-xs"
+                    <span class="text-slate-400 dark:text-slate-500 text-xs"
                       >{{ 'api.type_string' | translate }}</span
                     >
                   </div>
@@ -685,7 +685,7 @@ curl -X POST "{{ siteUrl() }}/api/v1/b2b/buy" -H "Content-Type: application/json
               <div class="h-px bg-slate-200/50 dark:bg-slate-800/40"></div>
 
               <div class="flex items-start gap-4 text-xs">
-                <div class="min-w-[120px] font-mono text-[var(--color-primary)] font-bold">
+                <div class="min-w-[120px] text-[var(--color-primary)] font-bold">
                   items
                 </div>
                 <div class="flex-1 space-y-1">
@@ -694,7 +694,7 @@ curl -X POST "{{ siteUrl() }}/api/v1/b2b/buy" -H "Content-Type: application/json
                       class="text-xs font-black uppercase bg-slate-500/10 text-slate-500 px-1.5 py-0.5 rounded"
                       >{{ 'api.optional' | translate }}</span
                     >
-                    <span class="text-slate-400 dark:text-slate-500 font-mono text-xs"
+                    <span class="text-slate-400 dark:text-slate-500 text-xs"
                       >{{ 'api.type_object_array' | translate }}</span
                     >
                   </div>
@@ -714,7 +714,7 @@ curl -X POST "{{ siteUrl() }}/api/v1/b2b/buy" -H "Content-Type: application/json
               >{{ 'api.response_sample' | translate }}</span
             >
             <div
-              class="bg-slate-50 dark:bg-slate-950 rounded-xl p-4 font-mono text-xs text-slate-700 dark:text-slate-300 overflow-x-auto leading-relaxed border border-slate-200/60 dark:border-slate-900"
+              class="bg-slate-50 dark:bg-slate-950 rounded-xl p-4 text-xs text-slate-700 dark:text-slate-300 overflow-x-auto leading-relaxed border border-slate-200/60 dark:border-slate-900"
             >
               <pre class="whitespace-pre"
                 >{{ '{' }}
@@ -755,7 +755,7 @@ curl -X POST "{{ siteUrl() }}/api/v1/b2b/buy" -H "Content-Type: application/json
             GET
           </span>
           <span
-            class="font-mono text-xs font-extrabold text-slate-600 dark:text-slate-300 bg-slate-100 dark:bg-slate-900 px-2 py-1 rounded"
+            class="text-xs font-extrabold text-slate-600 dark:text-slate-300 bg-slate-100 dark:bg-slate-900 px-2 py-1 rounded"
           >
             /api/v1/b2b/me
           </span>
@@ -771,7 +771,7 @@ curl -X POST "{{ siteUrl() }}/api/v1/b2b/buy" -H "Content-Type: application/json
               class="relative bg-slate-50 dark:bg-slate-950 rounded-xl border border-slate-200/60 dark:border-slate-900 overflow-hidden"
             >
               <div
-                class="overflow-x-auto p-3.5 pr-12 font-mono text-xs text-slate-700 dark:text-slate-300 leading-relaxed"
+                class="overflow-x-auto p-3.5 pr-12 text-xs text-slate-700 dark:text-slate-300 leading-relaxed"
               >
                 <pre class="whitespace-pre">
 curl -X GET "{{ siteUrl() }}/api/v1/b2b/me" -H "X-API-KEY: {{
@@ -797,7 +797,7 @@ curl -X GET "{{ siteUrl() }}/api/v1/b2b/me" -H "X-API-KEY: {{
               class="relative bg-slate-50 dark:bg-slate-950 rounded-xl border border-slate-200/60 dark:border-slate-900 overflow-hidden"
             >
               <div
-                class="overflow-x-auto p-3.5 pr-12 font-mono text-xs text-slate-700 dark:text-slate-300 leading-relaxed"
+                class="overflow-x-auto p-3.5 pr-12 text-xs text-slate-700 dark:text-slate-300 leading-relaxed"
               >
                 <span class="text-[var(--color-primary)] font-semibold"
                   >{{ siteUrl() }}/api/v1/b2b/me?api_key={{ apiKey() || 'API_KEY_CUA_BAN' }}</span
@@ -819,7 +819,7 @@ curl -X GET "{{ siteUrl() }}/api/v1/b2b/me" -H "X-API-KEY: {{
               >{{ 'api.response_sample' | translate }}</span
             >
             <div
-              class="bg-slate-50 dark:bg-slate-950 rounded-xl p-4 font-mono text-xs text-slate-700 dark:text-slate-300 overflow-x-auto leading-relaxed border border-slate-200/60 dark:border-slate-900"
+              class="bg-slate-50 dark:bg-slate-950 rounded-xl p-4 text-xs text-slate-700 dark:text-slate-300 overflow-x-auto leading-relaxed border border-slate-200/60 dark:border-slate-900"
             >
               <pre class="whitespace-pre"
                 >{{ '{' }}
@@ -859,7 +859,7 @@ curl -X GET "{{ siteUrl() }}/api/v1/b2b/me" -H "X-API-KEY: {{
             GET
           </span>
           <span
-            class="font-mono text-xs font-extrabold text-slate-600 dark:text-slate-300 bg-slate-100 dark:bg-slate-900 px-2 py-1 rounded"
+            class="text-xs font-extrabold text-slate-600 dark:text-slate-300 bg-slate-100 dark:bg-slate-900 px-2 py-1 rounded"
           >
             /api/v1/b2b/orders/ORDER_CODE
           </span>
@@ -875,7 +875,7 @@ curl -X GET "{{ siteUrl() }}/api/v1/b2b/me" -H "X-API-KEY: {{
               class="relative bg-slate-50 dark:bg-slate-950 rounded-xl border border-slate-200/60 dark:border-slate-900 overflow-hidden"
             >
               <div
-                class="overflow-x-auto p-3.5 pr-12 font-mono text-xs text-slate-700 dark:text-slate-300 leading-relaxed"
+                class="overflow-x-auto p-3.5 pr-12 text-xs text-slate-700 dark:text-slate-300 leading-relaxed"
               >
                 <pre class="whitespace-pre">
 curl -X GET "{{ siteUrl() }}/api/v1/b2b/orders/ORDER_CODE" -H "X-API-KEY: {{
@@ -901,7 +901,7 @@ curl -X GET "{{ siteUrl() }}/api/v1/b2b/orders/ORDER_CODE" -H "X-API-KEY: {{
               class="relative bg-slate-50 dark:bg-slate-950 rounded-xl border border-slate-200/60 dark:border-slate-900 overflow-hidden"
             >
               <div
-                class="overflow-x-auto p-3.5 pr-12 font-mono text-xs text-slate-700 dark:text-slate-300 leading-relaxed"
+                class="overflow-x-auto p-3.5 pr-12 text-xs text-slate-700 dark:text-slate-300 leading-relaxed"
               >
                 <span class="text-[var(--color-primary)] font-semibold"
                   >{{ siteUrl() }}/api/v1/b2b/orders/ORDER_CODE?api_key={{
@@ -925,7 +925,7 @@ curl -X GET "{{ siteUrl() }}/api/v1/b2b/orders/ORDER_CODE" -H "X-API-KEY: {{
               >{{ 'api.response_sample' | translate }}</span
             >
             <div
-              class="bg-slate-50 dark:bg-slate-950 rounded-xl p-4 font-mono text-xs text-slate-700 dark:text-slate-300 overflow-x-auto leading-relaxed border border-slate-200/60 dark:border-slate-900"
+              class="bg-slate-50 dark:bg-slate-950 rounded-xl p-4 text-xs text-slate-700 dark:text-slate-300 overflow-x-auto leading-relaxed border border-slate-200/60 dark:border-slate-900"
             >
               <pre class="whitespace-pre"
                 >{{ '{' }}

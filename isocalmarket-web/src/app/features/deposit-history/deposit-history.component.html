@@ -76,14 +76,14 @@
         <a
           [routerLink]="['/deposit/invoice', row.id]"
           [appTooltip]="('deposit.view_invoice_prefix' | translate) + ' #' + row.code"
-          class="font-mono font-bold text-[var(--color-primary)] hover:underline border-b border-dashed border-slate-300 dark:border-slate-700 pb-0.5 transition-colors cursor-pointer"
+          class="font-bold text-[var(--color-primary)] hover:underline border-b border-dashed border-slate-300 dark:border-slate-700 pb-0.5 transition-colors cursor-pointer"
         >
           #{{ row.code }}
         </a>
       </ng-template>
 
       <ng-template appTableCell="amountUsdt" let-row="row">
-        <div class="flex flex-col text-right font-mono">
+        <div class="flex flex-col text-right">
           <span
             class="text-sm font-extrabold text-slate-700 dark:text-slate-200"
             [appTooltip]="row.amountUsdt + ' USDT'"
@@ -101,7 +101,7 @@
 
       <ng-template appTableCell="amountVnd" let-row="row">
         <span
-          class="font-mono font-bold text-emerald-600 dark:text-emerald-400 text-sm"
+          class="font-bold text-emerald-600 dark:text-emerald-400 text-sm"
         >
           {{ row.amountVnd | number }} {{ 'currency.vnd_symbol' | translate }}
         </span>

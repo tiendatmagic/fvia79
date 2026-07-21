@@ -81,7 +81,7 @@
               >{{ 'invoice.time_remaining' | translate }}</span
             >
             <span
-              class="text-sm font-black text-rose-600 dark:text-rose-400 font-mono tracking-wider block mt-0.5 animate-pulse"
+              class="text-sm font-black text-rose-600 dark:text-rose-400 tracking-wider block mt-0.5 animate-pulse"
             >
               {{ countdownText() }}
             </span>
@@ -147,7 +147,7 @@
           <div class="flex items-center justify-center gap-2 flex-wrap">
             <span
               (click)="copyText(invoice.amountToPay.toString(), lang.translate('invoice.amount_to_send'))"
-              class="text-xl sm:text-2xl font-black text-rose-600 dark:text-rose-400 font-mono cursor-pointer hover:opacity-80 active:scale-95 transition-all"
+              class="text-xl sm:text-2xl font-black text-rose-600 dark:text-rose-400 cursor-pointer hover:opacity-80 active:scale-95 transition-all"
               [title]="'invoice.copy_amount' | translate"
             >
               {{ invoice.amountToPay | number: '1.4-4' }}
@@ -176,7 +176,7 @@
               class="border border-slate-200/40 dark:border-slate-700/30 bg-slate-50/50 dark:bg-slate-900/20 rounded-2xl p-4 sm:p-5 space-y-4 shadow-sm"
             >
               <div
-                class="text-lg sm:text-2xl font-mono font-black text-slate-800 dark:text-slate-100 text-center tracking-wider bg-white dark:bg-slate-950 p-4 rounded-xl border border-slate-200/20 dark:border-slate-700/30 shadow-inner select-all"
+                class="text-lg sm:text-2xl font-black text-slate-800 dark:text-slate-100 text-center tracking-wider bg-white dark:bg-slate-950 p-4 rounded-xl border border-slate-200/20 dark:border-slate-700/30 shadow-inner select-all"
               >
                 {{ invoice.adminBinanceId }}
               </div>
@@ -216,7 +216,7 @@
               class="border border-slate-200/40 dark:border-slate-700/30 bg-slate-50/50 dark:bg-slate-900/20 rounded-2xl p-4 sm:p-5 space-y-4 shadow-sm"
             >
               <div
-                class="text-sm sm:text-base font-mono font-black text-slate-800 dark:text-slate-200 break-all bg-white dark:bg-slate-950 p-4 rounded-xl border border-slate-200/20 dark:border-slate-700/30 shadow-inner select-all leading-relaxed"
+                class="text-sm sm:text-base font-black text-slate-800 dark:text-slate-200 break-all bg-white dark:bg-slate-950 p-4 rounded-xl border border-slate-200/20 dark:border-slate-700/30 shadow-inner select-all leading-relaxed"
               >
                 {{ adminWalletAddress() }}
               </div>

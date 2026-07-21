@@ -70,7 +70,7 @@
           <button
             (click)="viewDetail(row.id)"
             [appTooltip]="row.order_code"
-            class="font-mono font-bold text-[var(--color-primary)] hover:underline underline-offset-2 transition-opacity hover:opacity-80 pb-0.5 border-b border-dashed border-slate-300 dark:border-slate-700"
+            class="font-bold text-[var(--color-primary)] hover:underline underline-offset-2 transition-opacity hover:opacity-80 pb-0.5 border-b border-dashed border-slate-300 dark:border-slate-700"
           >
             #{{ row.order_code | slice: 0 : 8 }}...{{ row.order_code | slice: -4 }}
           </button>
@@ -94,7 +94,7 @@
       </ng-template>
 
       <ng-template appTableCell="total_price" let-row="row">
-        <span class="font-mono font-bold text-emerald-600 dark:text-emerald-400 text-sm">
+        <span class="font-bold text-emerald-600 dark:text-emerald-400 text-sm">
           {{ row.total_price | appCurrency }}
         </span>
       </ng-template>

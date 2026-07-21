@@ -72,7 +72,7 @@
         <div class="flex items-center gap-1.5">
           <span
             [appTooltip]="row.is_deleted ? '' : row.id"
-            class="font-mono font-bold text-[var(--color-primary)] border-b border-dashed border-slate-300 dark:border-slate-700 pb-0.5"
+            class="font-bold text-[var(--color-primary)] border-b border-dashed border-slate-300 dark:border-slate-700 pb-0.5"
             [ngClass]="{ 'line-through opacity-40 text-slate-400 dark:text-slate-500': row.is_deleted }"
           >
             #{{ row.id | slice: 0 : 8 }}...{{ row.id | slice: -4 }}

@@ -192,7 +192,7 @@
               >
                 {{ 'user.current_balance' | translate }}
               </span>
-              <span class="text-lg font-extrabold font-mono text-[var(--color-primary)] block">
+              <span class="text-lg font-extrabold text-[var(--color-primary)] block">
                 {{ balance | appCurrency }}
               </span>
             </div>
@@ -302,7 +302,7 @@
                     >
                     <div class="flex items-center gap-2">
                       <code
-                        class="text-sm font-black text-[var(--color-primary)] font-mono tracking-widest block truncate select-all"
+                        class="text-sm font-black text-[var(--color-primary)] tracking-widest block truncate select-all"
                       >
                         {{ isSecretVisible ? google2fa_secret : '••••••••••••••••' }}
                       </code>
@@ -395,7 +395,7 @@
                 >{{ 'user.api_key' | translate }}</span
               >
               <span
-                class="text-sm font-extrabold font-mono text-slate-800 dark:text-white truncate block"
+                class="text-sm font-extrabold text-slate-800 dark:text-white truncate block"
               >
                 {{ api_key || ('admin.api_key_missing' | translate) }}
               </span>

@@ -71,7 +71,7 @@
       <ng-template appTableCell="code" let-row="row">
         <div class="flex items-center gap-1.5">
           <span
-            class="font-mono font-black text-xs uppercase border border-dashed border-[var(--color-primary)]/40 px-2.5 py-1 rounded bg-[var(--color-primary)]/5 text-[var(--color-primary)] select-all tracking-wider"
+            class="font-black text-xs uppercase border border-dashed border-[var(--color-primary)]/40 px-2.5 py-1 rounded bg-[var(--color-primary)]/5 text-[var(--color-primary)] select-all tracking-wider"
         [appTooltip]="'admin.coupon_code' | translate: { code: row.code }"
             [ngClass]="{ 'line-through opacity-40 text-slate-400 dark:text-slate-500': row.is_deleted }"
           >

@@ -1722,4 +1722,10 @@
       5. I18n hóa các nút bấm, tooltip và trạng thái cứng trong trang Quản lý kho hàng [inventory.component.html](file:///d:/git/isocalmarket/isocalmarket-web/src/app/features/inventory/inventory.component.html) và [inventory.component.ts](file:///d:/git/isocalmarket/isocalmarket-web/src/app/features/inventory/inventory.component.ts).
     - **Xác minh:** Biên dịch frontend Angular thành công 100% không có lỗi (`npm run build`).
 
-
+  - **[LOẠI BỎ TOÀN BỘ CLASS FONT-MONO KHỎI FRONTEND]**:
+    - **Yêu cầu:** Loại bỏ 100% lớp `font-mono` khỏi toàn bộ mã nguồn Frontend để giao diện sử dụng font mặc định đồng nhất (`Outfit`/`Inter`).
+    - **Thực hiện & Kết quả:**
+      1. Đã dọn dẹp thủ công tại các component lõi như `kbd.component.ts`, các modal (`enable-2fa-modal`, `cart-modal`), các view danh sách/chi tiết (`orders`, `products`, `order-detail`, `deposit-detail-modal`, `deposit-history`, `inventory`, `deposit-invoice`, `import-inventory-modal`).
+      2. Đã viết và chạy script Node.js tự động dọn dẹp chuẩn xác trên 13 tệp HTML còn lại trong các thư mục quản lý (users, orders, settings, coupons, categories, deposits, api).
+      3. Đã chạy tìm kiếm tĩnh `grep_search` kiểm tra đảm bảo **0 kết quả** `font-mono` còn sót lại.
+    - **Xác minh:** Biên dịch frontend Angular thành công 100% không có lỗi (`npm run build`).
