@@ -41,16 +41,31 @@ export class ImportInventoryModalComponent implements OnInit {
   public readonly isSubmitting = signal(false);
 
   public ngOnInit() {
-    this.state.productStore.getProductsRaw(1, 1000).subscribe((res: any) => {
-      const list = (res?.data || res || []).map((p: any) => ({
-        label: p.name,
-        value: p.id
-      }));
-      this.productOptions = list;
-    });
+    const targetProductId = this.modalData?.productId || this.modalData?.selectedProductId || '';
+    if (targetProductId) {
+      this.importProductId = String(targetProductId);
+    }
 
-    if (this.modalData && this.modalData.productId) {
-      this.importProductId = this.modalData.productId;
+    if (this.modalData?.productOptions && this.modalData.productOptions.length > 0) {
+      this.productOptions = this.modalData.productOptions;
+    } else {
+      const options = this.state.productStore.products().map((p: any) => ({
+        label: p.name,
+        value: String(p.id)
+      }));
+      this.productOptions = [{ label: this.lang.translate('modal.product_category'), value: '' }, ...options];
+    }
+
+    if (this.productOptions.length <= 1) {
+      this.state.productStore.fetchProducts().subscribe({
+        next: (products: any[]) => {
+          const list = (products || []).map((p: any) => ({
+            label: p.name,
+            value: String(p.id)
+          }));
+          this.productOptions = [{ label: this.lang.translate('modal.product_category'), value: '' }, ...list];
+        }
+      });
     }
   }
 

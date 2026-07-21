@@ -99,7 +99,10 @@ export class InventoryComponent implements OnInit {
   }
 
   ngOnInit() {
-    const productId = this.route.snapshot.queryParams['product_id'];
+    const productId = this.route.snapshot.queryParams['product_id'] || this.route.snapshot.queryParams['productId'];
+    if (productId) {
+      this.selectedProductFilter = productId;
+    }
     this.fetchFilteredItems(1);
 
     this.state.productStore.fetchProducts().subscribe({
@@ -135,11 +138,13 @@ export class InventoryComponent implements OnInit {
   }
 
   public openImportDrawer(defaultProductId?: string) {
+    const targetId = defaultProductId || this.selectedProductFilter || '';
     this.modalService.open(ImportInventoryModalComponent, {
       title: this.lang.translate('modal.import_stock_title'),
       size: '2xl',
       data: {
-        selectedProductId: defaultProductId || this.selectedProductFilter || '',
+        selectedProductId: targetId,
+        productId: targetId,
         productOptions: this.productOptions
       }
     }).afterClosed$.subscribe((success) => {

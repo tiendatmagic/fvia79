@@ -1981,3 +1981,15 @@
   2. **Frontend (`deposit-invoice.component.ts`)**: Rút ngắn thời gian polling từ 30s xuống 10s, tự động kích hoạt `checkTransaction(invoiceId)` ngầm khi polling. Nếu tiền về -> Tự động bật Modal thông báo thành công.
   3. **Giao diện (`deposit-invoice.component.html`)**: Thêm banner Live Status *"🤖 BOT đang tự động quét và đối soát giao dịch mỗi 10 giây..."* với radar nhấp nháy xanh lá.
   4. **Xác minh**: Chạy `npm run build` biên dịch thành công 100%, `php artisan test` vượt qua 47/47 unit & feature tests.
+
+## [2026-07-22] Sửa lỗi bấm "Nhập kho" tại Lọc Tồn Kho Dashboard không pre-fill danh mục sản phẩm
+- **Yêu cầu:** Tại Dashboard (`/admin/dashboard`), trong danh sách "Lọc Tồn Kho (< 5 items)", bấm nút "Nhập kho" ở một sản phẩm thì redirect sang `/admin/inventory?product_id=xxx` nhưng Modal Import mở ra không load/pre-select danh mục sản phẩm đó.
+- **Phân tích nguyên nhân:**
+  1. Ở `inventory.component.ts`: Khi mở modal `ImportInventoryModalComponent`, dữ liệu truyền vào là `data: { selectedProductId: defaultProductId, ... }`.
+  2. Ở `import-inventory-modal.component.ts`: Trong `ngOnInit()`, code lại đọc `this.modalData.productId` dẫn tới bị `undefined`, khiến `this.importProductId` không được cập nhật giá trị ID sản phẩm.
+  3. `ImportInventoryModalComponent` gọi API `getProductsRaw` riêng đè lên danh sách `productOptions` đã truyền qua `modalData`, và không gắn option mặc định `{ label: 'Chọn...', value: '' }` làm vỡ tính nhất quán.
+- **Thực hiện khắc phục:**
+  1. **`import-inventory-modal.component.ts`**: Đọc linh hoạt cả `modalData.productId` lẫn `modalData.selectedProductId`. Sử dụng trực tiếp `productOptions` được truyền từ component cha hoặc state store, loại bỏ API call `getProductsRaw` dư thừa.
+  2. **`inventory.component.ts`**: Đọc param `product_id` / `productId` từ URL, tự động set `selectedProductFilter = productId` để lọc sẵn sản phẩm trên bảng kho hàng, và truyền đồng thời `productId` & `selectedProductId` vào `modalData`.
+  3. **Xác minh**: Chạy `npm run build` thành công 100% không có lỗi.
+
