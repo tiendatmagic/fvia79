@@ -18,7 +18,6 @@ import { CustomSelectComponent } from '@shared/components/custom-select/custom-s
 import { CustomDateTimeRangeComponent, DateTimeRangeValue } from '@shared/components/custom-date-time-range/custom-date-time-range.component';
 import { TableComponent, TableCellDirective, TableColumn } from '@shared/components/table/table.component';
 import { TranslatePipe } from '@shared/pipes/translate.pipe';
-import { CurrencyPipe } from '@shared/pipes/currency.pipe';
 
 @Component({
   selector: 'app-admin-users',
@@ -38,8 +37,7 @@ import { CurrencyPipe } from '@shared/pipes/currency.pipe';
     CustomDateTimeRangeComponent,
     TableComponent,
     TableCellDirective,
-    TranslatePipe,
-    CurrencyPipe
+    TranslatePipe
   ],
   templateUrl: './admin-users.component.html',
   styles: [`

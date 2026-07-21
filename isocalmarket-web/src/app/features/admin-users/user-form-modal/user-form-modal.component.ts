@@ -12,7 +12,6 @@ import { CustomSwitchComponent } from '@shared/components/custom-switch/custom-s
 import { TooltipDirective } from '@shared/components/tooltip/tooltip.directive';
 import { IconComponent } from '@shared/components/icon/icon.component';
 import { TranslatePipe } from '@shared/pipes/translate.pipe';
-import { CurrencyPipe } from '@shared/pipes/currency.pipe';
 import { finalize } from 'rxjs/operators';
 import { QrCodeModule } from 'ng-qrcode';
 
@@ -34,8 +33,7 @@ type TabId = 'info' | 'permissions' | 'security';
     TooltipDirective,
     IconComponent,
     QrCodeModule,
-    TranslatePipe,
-    CurrencyPipe
+    TranslatePipe
   ],
   templateUrl: './user-form-modal.component.html',
   styles: [`

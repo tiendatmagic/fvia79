@@ -6,7 +6,6 @@ import { UserStore } from '../user.store';
 import { CustomInputComponent } from '@shared/components/custom-input/custom-input.component';
 import { ButtonComponent } from '@shared/components/button/button.component';
 import { TranslatePipe } from '@shared/pipes/translate.pipe';
-import { CurrencyPipe } from '@shared/pipes/currency.pipe';
 import { LanguageService } from '@core/services/language.service';
 
 export interface AdjustBalanceModalData {
@@ -26,8 +25,7 @@ export interface AdjustBalanceModalData {
     FormsModule,
     CustomInputComponent,
     ButtonComponent,
-    TranslatePipe,
-    CurrencyPipe
+    TranslatePipe
   ],
   templateUrl: './adjust-balance-modal.component.html',
   styles: [`

@@ -131,7 +131,7 @@
         <span
           class="text-sm font-extrabold text-[var(--color-primary)]"
         >
-          {{ row.balance | appCurrency }}
+          {{ row.balance | number: '1.2-4' }} USD
         </span>
       </ng-template>
 

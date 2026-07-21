@@ -54,6 +54,35 @@ class AdminUserBalanceTest extends TestCase
         $this->assertEquals(12.75, (float) $this->normalUser->fresh()->balance);
     }
 
+    public function test_admin_adds_the_exact_usd_amount_to_user_balance(): void
+    {
+        $response = $this->withHeaders($this->adminHeaders())
+            ->postJson("/api/v1/admin/users/{$this->normalUser->id}/adjust-balance", [
+                'type' => 'add',
+                'amount' => 10.50,
+                'reason' => 'Manual USD credit',
+            ]);
+
+        $response->assertOk()
+            ->assertJsonPath('user.balance', 30.5);
+
+        $this->assertEquals(30.5, (float) $this->normalUser->fresh()->balance);
+    }
+
+    public function test_admin_can_add_the_minimum_usd_amount(): void
+    {
+        $response = $this->withHeaders($this->adminHeaders())
+            ->postJson("/api/v1/admin/users/{$this->normalUser->id}/adjust-balance", [
+                'type' => 'add',
+                'amount' => 0.01,
+            ]);
+
+        $response->assertOk()
+            ->assertJsonPath('user.balance', 20.01);
+
+        $this->assertEquals(20.01, (float) $this->normalUser->fresh()->balance);
+    }
+
     public function test_admin_cannot_subtract_more_than_user_balance(): void
     {
         $response = $this->withHeaders($this->adminHeaders())

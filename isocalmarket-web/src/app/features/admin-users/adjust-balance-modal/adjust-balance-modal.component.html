@@ -18,7 +18,7 @@
         >{{ 'admin.current_balance' | translate }}</span
       >
       <span class="text-base font-extrabold text-[var(--color-primary)] block">
-        {{ currentBalance | appCurrency }}
+        {{ currentBalance | number: '1.2-4' }} USD
       </span>
     </div>
   </div>

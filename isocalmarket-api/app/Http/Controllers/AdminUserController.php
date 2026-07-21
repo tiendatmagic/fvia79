@@ -213,7 +213,7 @@ class AdminUserController extends Controller
     {
         $request->validate([
             'type'   => 'required|string|in:add,subtract',
-            'amount' => 'required|numeric|min:1',
+            'amount' => 'required|numeric|min:0.01',
             'reason' => 'nullable|string|max:500',
         ]);
 
