@@ -50,13 +50,16 @@ class DashboardController extends Controller
                     ->value('total') ?? 0;
 
                 // Xác định chế định lọc: lt (less than) hoặc gte (greater than or equal)
-                if ($thresholdParam === 'gte_100') {
+                if (str_starts_with($thresholdParam, 'gte_')) {
                     $compareMode = 'gte';
-                    $threshold = 100;
-                    $thresholdLabel = '≥ 100 items';
+                    $threshold = (int) substr($thresholdParam, 4);
+                    if (!in_array($threshold, [10, 50, 100])) {
+                        $threshold = 100;
+                    }
+                    $thresholdLabel = '≥ ' . $threshold . ' items';
                 } else {
                     $thresholdInput = (int) $thresholdParam;
-                    $threshold = in_array($thresholdInput, [5, 10, 50, 100]) ? $thresholdInput : 5;
+                    $threshold = in_array($thresholdInput, [5]) ? $thresholdInput : 5;
                     $compareMode = 'lt';
                     $thresholdLabel = '< ' . $threshold . ' items';
                 }

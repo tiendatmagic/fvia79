@@ -1786,9 +1786,19 @@
          - Cập nhật endpoint `v1/admin/dashboard-stats` trong `DashboardController.php`.
          - Thay thế truy vấn MySQL thô phức tạp trước đó bằng Eloquent query sạch sẽ, sử dụng mệnh đề `having('available_count', ...)` và phương thức `paginate()` tích hợp sẵn của Laravel để phân trang trực tiếp ở tầng database.
          - Thêm `low_stock_page` và `low_stock_limit` vào cache key để cache riêng lẻ từng trang dữ liệu low stock.
+         - Điều chỉnh logic parse tham số `low_stock_threshold` để nhận diện tiền tố `gte_` (như `gte_10`, `gte_50`, `gte_100`) nhằm lọc các sản phẩm có tồn kho lớn hơn hoặc bằng (`>=`) ngưỡng tương ứng, thay vì chỉ lọc nhỏ hơn (`<`) như trước.
       2. **Frontend Angular**:
          - Cập nhật `AdminDashboardComponent` (`admin-dashboard.component.ts`): Import component `PaginationComponent`, bổ sung tín hiệu `lowStockCurrentPage` (mặc định là 1) và `lowStockLimit` (mặc định là 10) cùng phương thức `fetchLowStockPage(page)`.
-         - Cập nhật `admin-dashboard.component.html` để gán dữ liệu nguồn bảng từ `stats().low_stock_products.data`, cập nhật các điều kiện kiểm tra độ dài mảng và chèn thẻ `<app-pagination>` với nhãn sản phẩm `admin.product_item` đồng bộ.
-    - **Xác minh**: Biên dịch Angular thành công không lỗi và kiểm tra API hoạt động hoàn hảo không bị lỗi 500.
+         - Thay đổi bộ lọc tồn kho (`thresholdOptions`) sang các giá trị: `< 5` (`'5'`), `>= 10` (`'gte_10'`), `>= 50` (`'gte_50'`), và `>= 100` (`'gte_100'`).
+         - Cập nhật [language.service.ts](file:///d:/git/isocalmarket/isocalmarket-web/src/app/core/services/language.service.ts) bổ sung key dịch thuật mới `dash.at_least_items_simple` cho cả bản dịch tiếng Anh và tiếng Việt.
+         - Cập nhật `admin-dashboard.component.html` để gán dữ liệu nguồn bảng từ `stats().low_stock_products.data`, cập nhật các điều kiện kiểm tra độ dài mảng và chèn thẻ `<app-pagination>` với nhãn sản phẩm `admin.product_item` đồng bộ. Điều chỉnh logic kiểm tra trạng thái hiển thị "Cần nhập hàng gấp" (Restock Urgent) chỉ kích hoạt khi bộ lọc được chọn là `'5'`.
+    - **Xác minh**: Biên dịch Angular thành công không lỗi và kiểm tra các bộ lọc hoạt động chính xác 100% trên database.
+1797: 
+1798:   - **[THÊM LIÊN KẾT THÔNG TIN CÁ NHÂN VÀO SIDEBAR PHÍA USER]**:
+1799:     - **Yêu cầu**: Thêm mục "Thông tin cá nhân" nằm ở dưới lịch sử nạp tiền, đường dẫn là `/profile/information`.
+1800:     - **Thực hiện & Kết quả**:
+1801:       1. Cập nhật [sidebar.component.html](file:///d:/git/isocalmarket/isocalmarket-web/src/app/shared/layout/sidebar/sidebar.component.html) (Desktop) và [app.html](file:///d:/git/isocalmarket/isocalmarket-web/src/app/app.html) (Mobile sidebar drawer) để bổ sung thẻ `a` liên kết đến `/profile/information` ngay phía dưới liên kết Lịch sử nạp tiền `/deposit/history` và trên mục User API `/user-api`.
+1802:       2. Sử dụng icon `'user'` và khóa dịch thuật `'nav.profile'` đã có sẵn trong `LanguageService` (đã dịch chính xác sang tiếng Việt là "Thông tin cá nhân" và tiếng Anh là "Profile Settings").
+1803:     - **Xác minh**: Chạy biên dịch frontend Angular (`npm run build`) thành công 100% không phát sinh lỗi.
 
 
