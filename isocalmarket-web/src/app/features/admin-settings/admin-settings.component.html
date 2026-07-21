@@ -99,14 +99,22 @@
             </div>
 
             <div class="form-field md:col-span-2">
-              <label>{{ 'settings.moralis_api_key' | translate }} <span class="text-red-500">*</span></label>
+              <div class="flex items-center justify-between">
+                <label>{{ 'settings.moralis_api_key' | translate }} <span class="text-red-500">*</span></label>
+                @if (form.has_scanner_api_key) {
+                  <span class="text-xs px-2.5 py-0.5 rounded-full font-bold bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 border border-emerald-500/20 flex items-center gap-1">
+                    <app-icon name="check-circle" class="w-3.5 h-3.5" />
+                    {{ 'settings.configured' | translate }}
+                  </span>
+                }
+              </div>
               <div class="relative mt-1">
                 <textarea
                   name="scanner_api_key"
                   class="form-textarea w-full pr-12 py-3 text-xs leading-relaxed resize-none"
                   [class.mask-security]="!showApiKey()"
                   rows="5"
-                  [placeholder]="'settings.moralis_placeholder' | translate"
+                  [placeholder]="form.has_scanner_api_key ? ('settings.key_configured' | translate) : ('settings.moralis_placeholder' | translate)"
                   [(ngModel)]="form.scanner_api_key"
                   [disabled]="isLocked()"
                   [required]="!form.has_scanner_api_key"
@@ -119,6 +127,12 @@
                   <app-icon [name]="showApiKey() ? 'eye-slash' : 'eye'" class="w-5 h-5" />
                 </button>
               </div>
+              @if (form.has_scanner_api_key && !form.scanner_api_key) {
+                <p class="mt-1.5 text-xs text-emerald-600 dark:text-emerald-400 font-semibold flex items-center gap-1">
+                  <app-icon name="check-circle" class="w-3.5 h-3.5 shrink-0" />
+                  {{ 'settings.key_saved_hint' | translate }}
+                </p>
+              }
               <p class="mt-1.5 text-xs text-slate-400 dark:text-slate-500">
                 {{ 'settings.moralis_hint' | translate }}
                 <span class="font-bold text-slate-600 dark:text-slate-300">{{ 'settings.moralis_api_key' | translate }}</span>
@@ -156,7 +170,7 @@
               </div>
             </div>
 
-                        <div
+            <div
               class="form-field md:col-span-2 pt-4 border-t border-slate-200/50 dark:border-slate-800/50"
             >
               <h4
@@ -184,14 +198,22 @@
             </div>
 
             <div class="form-field md:col-span-2">
-              <label>{{ 'settings.binance_api_key' | translate }} <span class="text-red-500">*</span></label>
+              <div class="flex items-center justify-between">
+                <label>{{ 'settings.binance_api_key' | translate }} <span class="text-red-500">*</span></label>
+                @if (form.has_binance_api_key) {
+                  <span class="text-xs px-2.5 py-0.5 rounded-full font-bold bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 border border-emerald-500/20 flex items-center gap-1">
+                    <app-icon name="check-circle" class="w-3.5 h-3.5" />
+                    {{ 'settings.configured' | translate }}
+                  </span>
+                }
+              </div>
               <div class="relative mt-1">
                 <input
                   type="text"
                   name="binance_api_key"
                   class="form-input w-full pr-12"
                   [class.mask-security]="!showBinanceKey()"
-                  [placeholder]="'settings.binance_key_placeholder' | translate"
+                  [placeholder]="form.has_binance_api_key ? ('settings.key_configured' | translate) : ('settings.binance_key_placeholder' | translate)"
                   [(ngModel)]="form.binance_api_key"
                   [disabled]="isLocked()"
                 />
@@ -203,20 +225,34 @@
                   <app-icon [name]="showBinanceKey() ? 'eye-slash' : 'eye'" class="w-5 h-5" />
                 </button>
               </div>
+              @if (form.has_binance_api_key && !form.binance_api_key) {
+                <p class="mt-1.5 text-xs text-emerald-600 dark:text-emerald-400 font-semibold flex items-center gap-1">
+                  <app-icon name="check-circle" class="w-3.5 h-3.5 shrink-0" />
+                  {{ 'settings.key_saved_hint' | translate }}
+                </p>
+              }
               <p class="mt-1.5 text-xs text-slate-400 dark:text-slate-500">
                 {{ 'settings.binance_key_hint' | translate }}
               </p>
             </div>
 
             <div class="form-field md:col-span-2">
-              <label>{{ 'settings.binance_api_secret' | translate }} <span class="text-red-500">*</span></label>
+              <div class="flex items-center justify-between">
+                <label>{{ 'settings.binance_api_secret' | translate }} <span class="text-red-500">*</span></label>
+                @if (form.has_binance_api_secret) {
+                  <span class="text-xs px-2.5 py-0.5 rounded-full font-bold bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 border border-emerald-500/20 flex items-center gap-1">
+                    <app-icon name="check-circle" class="w-3.5 h-3.5" />
+                    {{ 'settings.configured' | translate }}
+                  </span>
+                }
+              </div>
               <div class="relative mt-1">
                 <input
                   type="text"
                   name="binance_api_secret"
                   class="form-input w-full pr-12"
                   [class.mask-security]="!showBinanceSecret()"
-                  [placeholder]="'settings.binance_secret_placeholder' | translate"
+                  [placeholder]="form.has_binance_api_secret ? ('settings.key_configured' | translate) : ('settings.binance_secret_placeholder' | translate)"
                   [(ngModel)]="form.binance_api_secret"
                   [disabled]="isLocked()"
                 />
@@ -228,6 +264,12 @@
                   <app-icon [name]="showBinanceSecret() ? 'eye-slash' : 'eye'" class="w-5 h-5" />
                 </button>
               </div>
+              @if (form.has_binance_api_secret && !form.binance_api_secret) {
+                <p class="mt-1.5 text-xs text-emerald-600 dark:text-emerald-400 font-semibold flex items-center gap-1">
+                  <app-icon name="check-circle" class="w-3.5 h-3.5 shrink-0" />
+                  {{ 'settings.key_saved_hint' | translate }}
+                </p>
+              }
               <p class="mt-1.5 text-xs text-slate-400 dark:text-slate-500">
                 {{ 'settings.binance_secret_hint' | translate }}
               </p>
