@@ -1750,3 +1750,14 @@
     - **Xác minh**:
       * Chạy test suite `B2bAdminApiTest` thành công 100% (8 tests passed).
       * Chạy test suite `SecurityHardeningTest` thành công 100% (5 tests passed), xác nhận API Key được mã hóa thành công trong DB và xác thực fallback qua `JwtAuthMiddleware` hoạt động hoàn hảo.
+  - **[SỬA LỖI DECRYPTEXCEPTION KHI REFRESH TOKEN]**:
+    - **Vấn đề**: Khi gọi API `/api/v1/auth/refresh`, backend gặp lỗi `500 Internal Server Error` với exception `Illuminate\Contracts\Encryption\DecryptException: The payload is invalid` ném ra từ `UserMapper::toDomain` tại `AuthService.php:107` khi cố gắng đọc thuộc tính `api_key` của model `UserModel`.
+    - **Nguyên nhân**: Cột `api_key` của tài khoản `admin` hiện tại trong database đang lưu giá trị dạng plaintext (`7urYI76SIhPlmn7Y`) từ trước khi thêm cast `'api_key' => 'encrypted'`. Hơn thế nữa, kiểu dữ liệu cột `api_key` đang là `varchar(255)`, trong khi chuỗi mã hóa AES-256 của API key dài 32 ký tự của Laravel sau khi mã hóa có độ dài lên tới 256 ký tự (lớn hơn 255), có nguy cơ bị cắt cụt dữ liệu gây lỗi giải mã.
+    - **Giải pháp & Triển khai**:
+      1. **Tạo Migration Mới**: Tạo file migration `2026_07_21_062251_encrypt_existing_api_keys.php` để xử lý dữ liệu cũ.
+      2. **Thay Đổi Kiểu Cột**: Đổi kiểu cột `api_key` trong bảng `users` từ `varchar(255)` sang `text` nhằm đảm bảo đủ độ dài chứa toàn bộ chuỗi mã hóa mà không lo bị cắt cụt.
+      3. **Mã Hóa Dữ Liệu Cũ**: Quét toàn bộ bảng `users`, kiểm tra xem `api_key` nào chưa được mã hóa (bằng cách thử decrypt và bắt exception `DecryptException`). Nếu là plaintext, mã hóa nó bằng `Crypt::encryptString` và điền băm SHA-256 vào `api_key_hash`. Nếu đã được mã hóa nhưng thiếu hash, tự động tính và điền hash SHA-256 tương ứng.
+      4. **Chạy Migration**: Đã chạy thành công lệnh `php artisan migrate` để cập nhật cơ sở dữ liệu.
+    - **Xác minh**:
+      * Dữ liệu trong database của user `admin` đã được mã hóa an toàn và tự động điền `api_key_hash` khớp với giá trị ban đầu.
+      * Chạy thành công toàn bộ suite test gồm 35 bài test (`php artisan test`) với kết quả 100% Passed.
