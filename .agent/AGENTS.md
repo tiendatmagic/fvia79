@@ -1993,3 +1993,12 @@
   2. **`inventory.component.ts`**: Đọc param `product_id` / `productId` từ URL, tự động set `selectedProductFilter = productId` để lọc sẵn sản phẩm trên bảng kho hàng, và truyền đồng thời `productId` & `selectedProductId` vào `modalData`.
   3. **Xác minh**: Chạy `npm run build` thành công 100% không có lỗi.
 
+## [2026-07-22] Rà soát và thay thế toàn bộ Emoji bằng Icon SVG trong Frontend
+- **Yêu cầu:** Kiểm tra toàn bộ mã nguồn Frontend (Angular), xóa tất cả các ký tự Emoji và thay thế bằng Icon SVG tương ứng.
+- **Thực hiện rà soát & kết quả:**
+  1. **Rà soát toàn bộ Frontend (`isocalmarket-web`)**: Chạy script quét unicode surrogate pairs (emojis), dingbats và symbol ranges trên toàn bộ mã nguồn (`.html`, `.ts`, `.css`, `.scss`, `.json`).
+  2. **Kết quả rà soát**: Phát hiện duy nhất 1 ký tự emoji `💡` (Lightbulb) tại dòng 49 của file `import-inventory-modal.component.html`.
+  3. **Thay thế bằng Icon SVG**: Thay thế emoji `💡` bằng thẻ SVG inline `text-amber-500` mượt mà, responsive và đúng chuẩn thiết kế hệ thống.
+  4. **Xác minh lại**: Chạy lại script rà soát xác nhận 0 ký tự emoji còn sót lại trong toàn bộ repository Frontend. Chạy `npm run build` biên dịch thành công 100%.
+
+
