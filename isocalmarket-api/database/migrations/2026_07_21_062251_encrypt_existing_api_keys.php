@@ -9,9 +9,6 @@ use Illuminate\Contracts\Encryption\DecryptException;
 
 return new class extends Migration
 {
-    /**
-     * Run the migrations.
-     */
     public function up(): void
     {
         // 1. Thay đổi kiểu dữ liệu cột api_key từ string (varchar(255)) sang text để có đủ độ dài chứa chuỗi mã hóa AES-256
@@ -62,10 +59,6 @@ return new class extends Migration
             }
         }
     }
-
-    /**
-     * Reverse the migrations.
-     */
     public function down(): void
     {
         Schema::table('users', function (Blueprint $table) {

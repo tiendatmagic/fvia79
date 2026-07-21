@@ -1,13 +1,10 @@
-<!-- Cụm đổi theme & ngôn ngữ góc trên phải -->
 <div class="absolute top-6 right-6 z-20">
   <div class="flex items-center gap-3 bg-white dark:bg-slate-900 border border-slate-200/50 dark:border-slate-800/50 px-3 py-1.5 rounded-full shadow-xs transition-colors duration-300">
-    <!-- Theme Switcher không nhãn -->
-    <app-theme-switcher [showLabels]="false" [showAuto]="true" />
+        <app-theme-switcher [showLabels]="false" [showAuto]="true" />
 
     <div class="w-[1px] h-3.5 bg-slate-200 dark:bg-slate-800 transition-colors"></div>
 
-    <!-- Language Switcher dạng text VI/EN -->
-    <div class="flex items-center gap-1.5 select-none">
+        <div class="flex items-center gap-1.5 select-none">
       <button
         type="button"
         (click)="lang.setLanguage('vi')"
@@ -37,8 +34,7 @@
 
 <div class="w-full max-w-[400px] flex flex-col justify-between min-h-[550px] py-4">
   <div>
-    <!-- Tabs chuyển đổi Đăng nhập / Đăng ký -->
-    <div class="flex border-b border-slate-200 dark:border-slate-800/60 mb-8">
+        <div class="flex border-b border-slate-200 dark:border-slate-800/60 mb-8">
       <button class="flex-1 text-center pb-4 text-sm font-bold border-b-2 border-primary text-slate-900 dark:text-white" type="button">
         {{ 'nav.login' | translate }}
       </button>
@@ -47,8 +43,7 @@
       </a>
     </div>
 
-    <!-- Chào mừng trở lại -->
-    <div class="mb-8">
+        <div class="mb-8">
       <h2 class="text-2xl font-black text-slate-900 dark:text-white tracking-tight mb-2">
         {{ 'auth.welcome_back' | translate }}
       </h2>
@@ -57,8 +52,7 @@
       </p>
     </div>
 
-    <!-- Hiển thị lỗi nếu có -->
-    @if (state.authStore.loginError()) {
+        @if (state.authStore.loginError()) {
       <div class="flex items-start gap-3 p-3.5 rounded-xl bg-red-50 dark:bg-red-950/40 border border-red-200 dark:border-red-900/60 mb-6">
         <svg class="w-4 h-4 text-red-500 shrink-0 mt-0.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
           <circle cx="12" cy="12" r="10"/>
@@ -71,11 +65,9 @@
       </div>
     }
 
-    <!-- Form nhập liệu -->
-    <form (ngSubmit)="onSubmit()" class="space-y-6">
+        <form (ngSubmit)="onSubmit()" class="space-y-6">
       @if (!requires2Fa()) {
-        <!-- Trường Tài khoản / Email -->
-        <div class="form-field">
+                <div class="form-field">
           <label>
             {{ 'auth.email_or_username' | translate }} <span class="text-red-500">*</span>
           </label>
@@ -89,8 +81,7 @@
           />
         </div>
 
-        <!-- Trường Mật khẩu -->
-        <div class="form-field">
+                <div class="form-field">
           <label>
             {{ 'auth.password' | translate }} <span class="text-red-500">*</span>
           </label>
@@ -104,8 +95,7 @@
           />
         </div>
 
-        <!-- Checkbox cam kết hoặc nhớ mật khẩu -->
-        <label class="flex items-start gap-2.5 text-xs text-slate-500 dark:text-slate-400 cursor-pointer select-none">
+                <label class="flex items-start gap-2.5 text-xs text-slate-500 dark:text-slate-400 cursor-pointer select-none">
           <input
             type="checkbox"
             name="remember"
@@ -116,8 +106,7 @@
           <span>{{ 'auth.terms_commitment' | translate }}</span>
         </label>
 
-        <!-- Nút submit -->
-        <div class="pt-2">
+                <div class="pt-2">
           <button
             app-button
             [variant]="'primary'"
@@ -129,16 +118,14 @@
           </button>
         </div>
 
-        <!-- Chưa có tài khoản? Đăng ký ngay -->
-        <div class="text-center text-xs font-semibold text-slate-500 pt-3">
+                <div class="text-center text-xs font-semibold text-slate-500 pt-3">
           {{ 'auth.dont_have_account' | translate }}
           <a routerLink="/register" class="text-primary hover:underline ml-1 font-bold">
             {{ 'auth.register_now' | translate }}
           </a>
         </div>
       } @else {
-        <!-- Logic 2FA OTP -->
-        <div class="text-center pb-2">
+                <div class="text-center pb-2">
           <p class="text-sm font-semibold text-slate-500 dark:text-slate-400">
             {{ 'auth.otp_instruction' | translate }}
           </p>
@@ -181,8 +168,7 @@
     </form>
   </div>
 
-  <!-- Secure strip ở dưới cùng của cột phải -->
-  <div class="mt-12">
+    <div class="mt-12">
     <div class="flex items-center justify-between px-4 py-3 bg-slate-100 dark:bg-slate-900 border border-slate-200/40 dark:border-slate-800/40 rounded-xl transition-colors duration-300">
       <div class="flex items-center gap-1.5 text-[10px] font-black uppercase tracking-wider text-slate-400 dark:text-slate-500">
         <svg class="w-3.5 h-3.5 text-primary shrink-0" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">

@@ -1,27 +1,23 @@
 <div class="min-h-screen w-full flex bg-slate-50 dark:bg-slate-950">
   <div class="grid grid-cols-1 lg:grid-cols-2 w-full min-h-screen">
-    <!-- Cột trái: Static - KHÔNG bao giờ thay đổi khi chuyển tab -->
-    <div
+        <div
       class="hidden lg:flex lg:col-span-1 flex-col justify-between p-10 xl:p-12 bg-white dark:bg-slate-950 text-slate-900 dark:text-slate-100 border-r border-slate-200/60 dark:border-slate-800/40 relative overflow-hidden transition-colors"
     >
-      <!-- Blur glow effects -->
-      <div
+            <div
         class="absolute -top-40 -left-40 w-96 h-96 bg-primary/[0.08] dark:bg-primary/15 rounded-full blur-[128px] pointer-events-none"
       ></div>
       <div
         class="absolute -bottom-40 -right-40 w-96 h-96 bg-secondary/[0.08] dark:bg-secondary/15 rounded-full blur-[128px] pointer-events-none"
       ></div>
 
-      <!-- Logo -->
-      <div class="relative z-10 flex items-center gap-3">
+            <div class="relative z-10 flex items-center gap-3">
         <app-logo class="w-10 h-10 text-slate-900 dark:text-white" />
         <span class="text-lg font-black tracking-wider uppercase text-slate-900 dark:text-white"
           >Isocalmarket</span
         >
       </div>
 
-      <!-- Content -->
-      <div class="relative z-10 max-w-md my-auto space-y-6">
+            <div class="relative z-10 max-w-md my-auto space-y-6">
         <div
           class="inline-flex items-center gap-2 text-xs font-bold tracking-widest uppercase text-primary"
         >
@@ -117,28 +113,24 @@
         </div>
       </div>
 
-      <!-- Disclaimer -->
-      <div class="relative z-10 pt-6 border-t border-slate-200 dark:border-slate-900">
+            <div class="relative z-10 pt-6 border-t border-slate-200 dark:border-slate-900">
         <p class="text-xs text-slate-400 dark:text-slate-500 leading-relaxed font-medium">
           {{ 'auth.legal_disclaimer' | translate }}
         </p>
       </div>
     </div>
 
-    <!-- Cột phải: Form area - không dùng router-outlet, chỉ @if toggle -->
-    <div
+        <div
       class="col-span-1 flex items-center justify-center p-6 md:p-10 bg-slate-50 dark:bg-slate-950 transition-colors min-h-screen relative"
     >
-      <!-- Theme & Language switcher -->
-      <div class="absolute top-6 right-6 z-20">
+            <div class="absolute top-6 right-6 z-20">
         <div
           class="flex items-center gap-3 bg-white dark:bg-slate-900 border border-slate-200/50 dark:border-slate-800/50 px-3 py-1.5 rounded-full shadow-sm transition-colors"
         >
           <app-theme-switcher [showLabels]="false" [showAuto]="true" />
           <div class="w-[1px] h-3.5 bg-slate-200 dark:bg-slate-800"></div>
 
-          <!-- Language Switcher Dropdown (tương tự Header) -->
-          <div class="relative">
+                    <div class="relative">
             <button
               type="button"
               (click)="toggleLangDropdown($event)"
@@ -264,12 +256,10 @@
         </div>
       </div>
 
-      <!-- Card bao quanh form -->
-      <div
+            <div
         class="w-full max-w-[460px] bg-white dark:bg-slate-900 rounded-2xl shadow-xl shadow-slate-200/80 dark:shadow-slate-950/80 border border-slate-200/60 dark:border-slate-800/60 overflow-hidden"
       >
-        <!-- Tab header bên trong card -->
-        <div class="flex border-b border-slate-200 dark:border-slate-800">
+                <div class="flex border-b border-slate-200 dark:border-slate-800">
           <button
             type="button"
             (click)="switchTab('login')"
@@ -298,12 +288,9 @@
           </button>
         </div>
 
-        <!-- Body card -->
-        <div class="p-7 md:p-8">
-          <!-- ===== FORM ĐĂNG NHẬP ===== -->
-          @if (isLogin()) {
-            <!-- Title -->
-            <div class="mb-7">
+                <div class="p-7 md:p-8">
+                    @if (isLogin()) {
+                        <div class="mb-7">
               <h2 class="text-2xl font-black text-slate-900 dark:text-white tracking-tight mb-1.5">
                 {{ 'auth.welcome_back' | translate }}
               </h2>
@@ -312,8 +299,7 @@
               </p>
             </div>
 
-            <!-- Login error -->
-            @if (state.authStore.loginError()) {
+                        @if (state.authStore.loginError()) {
               <div
                 class="flex items-start gap-3 p-3.5 rounded-xl bg-red-50 dark:bg-red-950/40 border border-red-200 dark:border-red-900/60 mb-5"
               >
@@ -403,8 +389,7 @@
                   </button>
                 </div>
               } @else {
-                <!-- 2FA OTP -->
-                <div class="text-center pb-2">
+                                <div class="text-center pb-2">
                   <p class="text-sm font-semibold text-slate-500 dark:text-slate-400">
                     {{ 'auth.otp_instruction' | translate }}
                   </p>
@@ -444,10 +429,8 @@
             </form>
           }
 
-          <!-- ===== FORM ĐĂNG KÝ ===== -->
-          @if (!isLogin()) {
-            <!-- Title -->
-            <div class="mb-6">
+                    @if (!isLogin()) {
+                        <div class="mb-6">
               <h2 class="text-2xl font-black text-slate-900 dark:text-white tracking-tight mb-1.5">
                 {{ 'auth.register_title' | translate }}
               </h2>
@@ -456,8 +439,7 @@
               </p>
             </div>
 
-            <!-- Register error -->
-            @if (state.authStore.registerError()) {
+                        @if (state.authStore.registerError()) {
               <div
                 class="flex items-start gap-3 p-3.5 rounded-xl bg-red-50 dark:bg-red-950/40 border border-red-200 dark:border-red-900/60 mb-5"
               >
@@ -553,8 +535,7 @@
             </form>
           }
 
-          <!-- Secure strip bên trong card -->
-          <div class="mt-6 pt-5 border-t border-slate-100 dark:border-slate-800">
+                    <div class="mt-6 pt-5 border-t border-slate-100 dark:border-slate-800">
             <div class="flex items-center justify-between">
               <div
                 class="flex items-center gap-1.5 text-[10px] font-black uppercase tracking-wider text-slate-400 dark:text-slate-500"
@@ -612,7 +593,6 @@
           </div>
         </div>
       </div>
-      <!-- End card -->
-    </div>
+          </div>
   </div>
 </div>

@@ -6,19 +6,12 @@ use Illuminate\Support\Facades\Schema;
 
 return new class extends Migration
 {
-    /**
-     * Run the migrations.
-     */
     public function up(): void
     {
         Schema::table('deposits', function (Blueprint $table) {
             $table->string('admin_wallet_address')->nullable()->after('tx_hash');
         });
     }
-
-    /**
-     * Reverse the migrations.
-     */
     public function down(): void
     {
         Schema::table('deposits', function (Blueprint $table) {

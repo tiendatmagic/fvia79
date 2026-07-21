@@ -19,6 +19,12 @@
 - Tận dụng triệt để components tại `isocalmarket-web/src/app/shared/components`.
 
 ## Phân tích & Thực hiện
+- **[RÀ SOÁT & LÀM SẠCH COMMENT TOÀN BỘ CODEBASE]**:
+  - Đã rà soát và phân loại comment trong toàn bộ dự án (Frontend Angular & Backend Laravel).
+  - Loại bỏ các comment rác / boilerplate của Laravel trong 20+ file migrations, 3 file middleware, `UserFactory`, `ExampleTest`, `TestCase`, `public/index.php`.
+  - Loại bỏ các comment nhãn HTML trùng lặp trong `auth-layout.component.html`, `login.component.html`, `register.component.html`, `admin-dashboard.component.html`, `header.component.html`, `index.html`.
+  - Giữ lại 100% các comment quan trọng giải thích logic nghiệp vụ (mã hóa API key, bảo lưu số lượng đã bán của lô hàng, đếm ngược nạp tiền theo thời gian tuyệt đối, token rotation, dung sai đối soát deposit).
+  - Đã chạy kiểm tra: `npm run build` biên dịch Angular thành công 100%, `php artisan test` vượt qua 47/47 unit & feature tests.
 - **[CẤU HÌNH NETLIFY DEPLOY]**:
   - Đã kiểm tra và cập nhật file [netlify.toml](file:///d:/git/isocalmarket/netlify.toml) ở thư mục gốc và `isocalmarket-web/netlify.toml`.
   - Sửa đường dẫn `publish` từ `dist/isocalmarket-web/browser` sang `dist/angular-web3-wallet/browser` để khớp với tên ứng dụng cấu hình trong `angular.json`.

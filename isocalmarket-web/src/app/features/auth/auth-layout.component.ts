@@ -48,8 +48,6 @@ export class AuthLayoutComponent {
 
   // Tab state - driven by URL, never triggers left panel re-render
   public readonly isLogin = signal(true);
-
-  // Login fields
   public loginEmail = '';
   public loginPassword = '';
   public requires2Fa = signal(false);
@@ -57,8 +55,6 @@ export class AuthLayoutComponent {
   public otpCode = '';
   private tempToken = '';
   private returnUrl = '/';
-
-  // Register fields
   public regUsername = '';
   public regEmail = '';
   public regPassword = '';
@@ -87,8 +83,6 @@ export class AuthLayoutComponent {
     this.state.authStore.loginError.set('');
     this.state.authStore.registerError.set('');
   }
-
-  // --- Login methods ---
   public toggleLoginPassword() {
     this.showLoginPassword.update(v => !v);
   }
@@ -132,8 +126,6 @@ export class AuthLayoutComponent {
       }
     });
   }
-
-  // --- Register methods ---
   public toggleRegPassword() {
     this.showRegPassword.update(v => !v);
   }

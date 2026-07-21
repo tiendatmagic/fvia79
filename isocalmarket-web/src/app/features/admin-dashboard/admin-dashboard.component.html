@@ -54,8 +54,7 @@
   </div>
 
   <div *ngIf="!loading() && stats()" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 2xl:grid-cols-5 gap-4">
-    <!-- Total Revenue -->
-    <app-card class="flex flex-col justify-between min-h-[136px] h-auto p-4 md:p-5 overflow-hidden">
+        <app-card class="flex flex-col justify-between min-h-[136px] h-auto p-4 md:p-5 overflow-hidden">
       <div class="flex items-center justify-between">
         <span class="text-xs font-bold text-slate-400 dark:text-slate-500 uppercase tracking-wider">
           {{ 'dash.total_revenue' | translate }}
@@ -72,8 +71,7 @@
       </div>
     </app-card>
 
-    <!-- Total Orders -->
-    <app-card class="flex flex-col justify-between min-h-[136px] h-auto p-4 md:p-5 overflow-hidden">
+        <app-card class="flex flex-col justify-between min-h-[136px] h-auto p-4 md:p-5 overflow-hidden">
       <div class="flex items-center justify-between">
         <span class="text-xs font-bold text-slate-400 dark:text-slate-500 uppercase tracking-wider">
           {{ 'dash.total_orders' | translate }}
@@ -91,8 +89,7 @@
       </div>
     </app-card>
 
-    <!-- Product Categories -->
-    <app-card class="flex flex-col justify-between min-h-[136px] h-auto p-4 md:p-5 overflow-hidden">
+        <app-card class="flex flex-col justify-between min-h-[136px] h-auto p-4 md:p-5 overflow-hidden">
       <div class="flex items-center justify-between">
         <span class="text-xs font-bold text-slate-400 dark:text-slate-500 uppercase tracking-wider">
           {{ 'dash.product_categories' | translate }}
@@ -110,8 +107,7 @@
       </div>
     </app-card>
 
-    <!-- Available Inventory -->
-    <app-card class="flex flex-col justify-between min-h-[136px] h-auto p-4 md:p-5 overflow-hidden">
+        <app-card class="flex flex-col justify-between min-h-[136px] h-auto p-4 md:p-5 overflow-hidden">
       <div class="flex items-center justify-between">
         <span class="text-xs font-bold text-slate-400 dark:text-slate-500 uppercase tracking-wider">
           {{ 'dash.available_inventory' | translate }}
@@ -129,8 +125,7 @@
       </div>
     </app-card>
 
-    <!-- Total Users -->
-    <app-card class="sm:col-span-2 lg:col-span-1 flex flex-col justify-between min-h-[136px] h-auto p-4 md:p-5 overflow-hidden">
+        <app-card class="sm:col-span-2 lg:col-span-1 flex flex-col justify-between min-h-[136px] h-auto p-4 md:p-5 overflow-hidden">
       <div class="flex items-center justify-between">
         <span class="text-xs font-bold text-slate-400 dark:text-slate-500 uppercase tracking-wider">
           {{ 'dash.total_users' | translate }}
@@ -183,12 +178,10 @@
       }
     </div>
 
-    <!-- Filter Bar -->
-    <div
+        <div
       class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 bg-slate-50/50 dark:bg-slate-950/20 border border-slate-200/30 dark:border-slate-800/30 rounded-2xl p-4 sm:p-5"
     >
-      <!-- Stock Threshold -->
-      <div class="form-field">
+            <div class="form-field">
         <label
           class="text-xs font-bold text-slate-400 dark:text-slate-500 uppercase tracking-wider block mb-1"
           >{{ 'dash.stock_threshold' | translate }}</label
@@ -202,8 +195,7 @@
         />
       </div>
 
-      <!-- Category -->
-      <div class="form-field">
+            <div class="form-field">
         <label
           class="text-xs font-bold text-slate-400 dark:text-slate-500 uppercase tracking-wider block mb-1"
           >{{ 'prod.category' | translate }}</label
@@ -217,8 +209,7 @@
         />
       </div>
 
-      <!-- Search Product -->
-      <div class="form-field sm:col-span-2">
+            <div class="form-field sm:col-span-2">
         <label
           class="text-xs font-bold text-slate-400 dark:text-slate-500 uppercase tracking-wider block mb-1"
           >{{ 'prod.search' | translate }}</label
@@ -234,8 +225,7 @@
       </div>
     </div>
 
-    <!-- Low Stock Loading -->
-    <div *ngIf="lowStockLoading()" class="space-y-4">
+        <div *ngIf="lowStockLoading()" class="space-y-4">
       <div
         *ngFor="let i of [1, 2, 3]"
         class="flex items-center justify-between py-2 border-b border-slate-100 dark:border-slate-800/40 last:border-0"
@@ -247,8 +237,7 @@
       </div>
     </div>
 
-    <!-- Low Stock Table -->
-    <ng-container *ngIf="!lowStockLoading() && stats()">
+        <ng-container *ngIf="!lowStockLoading() && stats()">
       <div
         *ngIf="(stats()?.low_stock_products?.data || []).length === 0"
         class="flex flex-col items-center justify-center py-8 text-center space-y-2"

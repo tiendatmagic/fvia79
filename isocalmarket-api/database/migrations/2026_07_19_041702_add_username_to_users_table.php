@@ -8,9 +8,6 @@ use Illuminate\Support\Str;
  
 return new class extends Migration
 {
-    /**
-     * Run the migrations.
-     */
     public function up(): void
     {
         Schema::table('users', function (Blueprint $table) {
@@ -45,10 +42,6 @@ return new class extends Migration
             $table->string('username')->nullable(false)->change();
         });
     }
- 
-    /**
-     * Reverse the migrations.
-     */
     public function down(): void
     {
         Schema::table('users', function (Blueprint $table) {

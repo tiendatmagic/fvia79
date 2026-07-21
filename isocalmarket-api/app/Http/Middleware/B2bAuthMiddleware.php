@@ -10,9 +10,6 @@ use Illuminate\Support\Facades\Auth;
 
 class B2bAuthMiddleware
 {
-    /**
-     * Handle an incoming request.
-     */
     public function handle(Request $request, Closure $next): Response
     {
         $apiKey = $request->query('api_key');
