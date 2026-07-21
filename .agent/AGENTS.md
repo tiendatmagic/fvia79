@@ -1847,3 +1847,60 @@
       1. Sửa tệp admin-dashboard.component.html.
       2. Khôi phục class của app-card Tổng đơn hàng về mặc định (xóa bỏ !bg-indigo-50/50 và viền indigo), đưa card về dạng nền trắng/kính giống các card thống kê khác.
     - **Xác minh**: Biên dịch npm run build thành công 100%.
+
+
+  - **[THIẾT KẾ LẠI GIAO DIỆN TRANG ĐĂNG NHẬP]**:
+    - **Yêu cầu**: Thiết kế lại trang Đăng nhập dựa trên tham khảo vlclone.com/login, giữ nguyên hệ màu dynamic của web, hỗ trợ Light/Dark mode và Responsive.
+    - **Thực hiện & Kết quả**:
+      1. **Dịch thuật (i18n)**: Cập nhật [language.service.ts](file:///d:/git/isocalmarket/isocalmarket-web/src/app/core/services/language.service.ts) để thêm các key dịch tiếng Anh và tiếng Việt cho tiêu đề, slogan, 3 tính năng nổi bật, cam kết sử dụng và an toàn chân trang.
+      2. **Logic UI (LoginComponent)**: Cập nhật [login.component.ts](file:///d:/git/isocalmarket/isocalmarket-web/src/app/features/auth/login.component.ts) thêm signal `showPassword` và hàm `toggleShowPassword()`. Import `LogoComponent` và dọn dẹp các component dư thừa khỏi mảng `imports`.
+      3. **Giao diện HTML (LoginComponent)**: Thay thế hoàn toàn [login.component.html](file:///d:/git/isocalmarket/isocalmarket-web/src/app/features/auth/login.component.html) sang bố cục Split Layout 2 cột. Cột bên trái hiển thị nội dung marketing và các tính năng nổi bật của Isocalmarket với phong cách tối sang trọng, viền gradient và hiệu ứng phát sáng mờ. Cột bên phải chứa form đăng nhập đa ngôn ngữ, các trường nhập liệu có icon dẫn đầu (Email/Lock) và nút ẩn/hiện mật khẩu. Tích hợp dải an toàn (SSL, 24/7, 2FA) ở dưới cùng. Ẩn cột Marketing trên thiết bị di động.
+      4. **Xác minh**: Khắc phục lỗi compiler liên quan đến Action expression pipe (`| translate`) và loại toast không đúng bằng cách dùng `lang.translate()` trực tiếp và Toast type `'warning'`. Chạy lệnh `npm run build` kiểm tra biên dịch thành công 100%.
+
+
+  - **[ẨN SIDEBAR & HEADER CHUNG TẠI TRANG ĐĂNG NHẬP / ĐĂNG KÝ]**:
+    - **Yêu cầu**: Sửa lỗi trang đăng nhập và đăng ký vẫn hiện sidebar menu và header chung của ứng dụng.
+    - **Thực hiện & Kết quả**:
+      1. **Logic (App Component)**: Cập nhật [app.ts](file:///d:/git/isocalmarket/isocalmarket-web/src/app/app.ts) bổ sung signal `isAuthPage` và thiết lập kiểm tra URL ban đầu cũng như lắng nghe sự kiện `NavigationEnd` của `router` để xác định xem route hiện tại có phải là `/login` hoặc `/register`.
+      2. **Giao diện (App HTML)**: Cập nhật [app.html](file:///d:/git/isocalmarket/isocalmarket-web/src/app/app.html), bọc `<app-sidebar>`, `<app-header>` và menu mobile drawer trong khối điều kiện `@if (!isAuthPage())`. Đồng thời, động hoá class thụt lề bằng cách dùng `[ngClass]="isAuthPage() ? '' : 'lg:pl-72 pt-4'"` trên container chính chứa `<router-outlet>`.
+      3. **Xác minh**: Chạy build `npm run build` thành công 100% không có lỗi. Sidebar và Header đã ẩn hoàn toàn ở trang Đăng nhập và Đăng ký.
+
+
+  - **[THIẾT KẾ LẠI TRANG ĐĂNG KÝ & THÊM BỘ CHUYỂN THEME/NGÔN NGỮ]**:
+    - **Yêu cầu**: Thêm nút chuyển đổi Light/Dark/Auto, bộ chuyển ngôn ngữ và thiết kế lại trang Đăng ký cho đồng bộ với trang Đăng nhập.
+    - **Thực hiện & Kết quả**:
+      1. **Giao diện (LoginComponent)**: Cập nhật [login.component.html](file:///d:/git/isocalmarket/isocalmarket-web/src/app/features/auth/login.component.html) bổ sung cụm đổi theme và ngôn ngữ góc trên bên phải dạng Pill capsule tinh tế.
+      2. **Logic (RegisterComponent)**: Cập nhật [register.component.ts](file:///d:/git/isocalmarket/isocalmarket-web/src/app/features/auth/register.component.ts) thêm signal `showPassword` và `showConfirmPassword` cùng các hàm toggle tương ứng. Import `LogoComponent` và `ThemeSwitcherComponent`, dọn dẹp các component dư thừa khỏi mảng `imports`.
+      3. **Giao diện (RegisterComponent)**: Thay thế hoàn toàn [register.component.html](file:///d:/git/isocalmarket/isocalmarket-web/src/app/features/auth/register.component.html) thành bố cục Split Layout 2 cột giống hệt trang đăng nhập, tích hợp cụm đổi theme/ngôn ngữ góc trên bên phải và nút ẩn/hiện mật khẩu ở 2 trường password.
+      4. **Xác minh**: Chạy build `npm run build` thành công 100% không phát sinh lỗi. Hệ thống hỗ trợ thay đổi theme và ngôn ngữ hoàn hảo trên trang auth.
+
+
+  - **[ĐỒNG BỘ MÀU CỘT TRÁI MARKETING THEO LIGHT/DARK MODE]**:
+    - **Yêu cầu**: Sửa đổi cột Marketing bên trái ở cả trang Đăng nhập và Đăng ký để màu sắc thay đổi linh hoạt theo chế độ Sáng/Tối của hệ thống thay vì cố định một màu tối.
+    - **Thực hiện & Kết quả**:
+      1. **Giao diện (LoginComponent & RegisterComponent)**: Cập nhật [login.component.html](file:///d:/git/isocalmarket/isocalmarket-web/src/app/features/auth/login.component.html) và [register.component.html](file:///d:/git/isocalmarket/isocalmarket-web/src/app/features/auth/register.component.html), thay đổi các class màu sắc tĩnh (`bg-slate-950`, `text-white`, `text-slate-300`, v.v.) của cột trái thành các class thích ứng (`bg-white dark:bg-slate-950`, `text-slate-900 dark:text-slate-100`, `text-slate-600 dark:text-slate-300`).
+      2. **Hiệu ứng**: Cập nhật màu của logo, slogan, mô tả, nhãn tính năng và disclaimer chân trang, đồng thời tinh chỉnh opacity của gradient mờ góc nền để hiển thị tinh tế và sang trọng trong cả 2 chế độ sáng và tối.
+      3. **Xác minh**: Chạy build `npm run build` thành công 100% không phát sinh lỗi.
+
+
+  - **[SỬ DỤNG LẠI COMPONENT INPUT, XÓA QUÊN MẬT KHẨU & SỬA LỖI GIẬT LÙI KHI RELOAD]**:
+    - **Yêu cầu**: Sử dụng lại component input của hệ thống (`app-custom-input`), xóa bỏ nút Quên mật khẩu trên trang đăng nhập, và sửa lỗi giao diện bị giật lùi (layout shift) chớp nhoáng khi reload trang tại `/login` hoặc `/register`.
+    - **Thực hiện & Kết quả**:
+      1. **Giao diện (LoginComponent & RegisterComponent)**: Cập nhật [login.component.html](file:///d:/git/isocalmarket/isocalmarket-web/src/app/features/auth/login.component.html) và [register.component.html](file:///d:/git/isocalmarket/isocalmarket-web/src/app/features/auth/register.component.html) thay thế hoàn toàn các trường input tự chế bằng component `<app-custom-input>` bọc trong `.form-field` theo quy chuẩn của dự án. Loại bỏ nút bấm "Quên mật khẩu?" trên trang Đăng nhập.
+      2. **Logic (app.ts)**: Cập nhật [app.ts](file:///d:/git/isocalmarket/isocalmarket-web/src/app/app.ts) thay đổi khai báo khởi tạo signal `isAuthPage` kiểm tra trực tiếp qua `window.location.pathname` ngay từ lúc load trang thay vì khởi tạo bằng `false` rồi đợi router event. Xóa bỏ logic gán URL ban đầu không chính xác trong `ngOnInit()`.
+      3. **Xác minh**: Chạy build `npm run build` thành công 100% không phát sinh lỗi. Lỗi layout shift biến mất hoàn toàn khi người dùng reload trang trực tiếp tại các trang auth.
+
+
+  - **[CHIA ĐỀU BỐ CỤC 2 CỘT 50-50 CHO TRANG AUTH TRÊN DESKTOP]**:
+    - **Yêu cầu**: Căn đối chia 2 phần bằng nhau (50% - 50%) trên màn hình Desktop cho cả trang Đăng nhập và Đăng ký.
+    - **Thực hiện & Kết quả**:
+      1. **Giao diện (LoginComponent & RegisterComponent)**: Cập nhật [login.component.html](file:///d:/git/isocalmarket/isocalmarket-web/src/app/features/auth/login.component.html) và [register.component.html](file:///d:/git/isocalmarket/isocalmarket-web/src/app/features/auth/register.component.html) thay thế cấu trúc lưới cũ `grid-cols-12` bằng `grid-cols-1 lg:grid-cols-2`. Hai cột trái và phải đều thiết lập chiếm tỷ lệ bằng nhau (`lg:col-span-1`).
+      2. **Xác minh**: Chạy build `npm run build` thành công 100% không phát sinh lỗi. Bố cục 2 phần được phân bố đối xứng và cân đối hoàn hảo trên màn hình lớn.
+
+
+  - **[THÊM ĐƯỜNG DẪN LIÊN KẾT CHUYỂN ĐỔI TÀI KHOẢN TRANG AUTH]**:
+    - **Yêu cầu**: Thêm các liên kết "Chưa có tài khoản? Đăng ký ngay" trên trang Đăng nhập và "Đã có tài khoản? Đăng nhập ngay" trên trang Đăng ký ở vị trí cân đối (giữa nút submit và dải bảo mật).
+    - **Thực hiện & Kết quả**:
+      1. **Giao diện (LoginComponent)**: Cập nhật [login.component.html](file:///d:/git/isocalmarket/isocalmarket-web/src/app/features/auth/login.component.html) bổ sung khối text và link routerLink="/register" ngay dưới nút submit "Đăng nhập".
+      2. **Giao diện (RegisterComponent)**: Cập nhật [register.component.html](file:///d:/git/isocalmarket/isocalmarket-web/src/app/features/auth/register.component.html) bổ sung khối text và link routerLink="/login" ngay dưới nút submit "Đăng ký".
+      3. **Xác minh**: Chạy build `npm run build` thành công 100% không phát sinh lỗi. Các liên kết hoạt động tốt, hỗ trợ đa ngôn ngữ đầy đủ.

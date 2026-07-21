@@ -3,17 +3,17 @@ import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { RouterModule, ActivatedRoute, Router } from '@angular/router';
 import { StateService } from '@core/services/state.service';
-import { CustomInputComponent } from '@shared/components/custom-input/custom-input.component';
 import { ButtonComponent } from '@shared/components/button/button.component';
-import { CardComponent } from '@shared/components/card/card.component';
-import { IconComponent } from '@shared/components/icon/icon.component';
+import { LogoComponent } from '@shared/components/logo/logo.component';
+import { ThemeSwitcherComponent } from '@shared/components/theme-switcher/theme-switcher.component';
+import { CustomInputComponent } from '@shared/components/custom-input/custom-input.component';
 import { LanguageService } from '@core/services/language.service';
 import { TranslatePipe } from '@shared/pipes/translate.pipe';
 
 @Component({
   selector: 'app-login',
   standalone: true,
-  imports: [CommonModule, FormsModule, RouterModule, CustomInputComponent, ButtonComponent, CardComponent, IconComponent, TranslatePipe],
+  imports: [CommonModule, FormsModule, RouterModule, ButtonComponent, LogoComponent, ThemeSwitcherComponent, CustomInputComponent, TranslatePipe],
   templateUrl: './login.component.html',
   styles: [`
     :host {
@@ -31,9 +31,14 @@ export class LoginComponent {
   public password = '';
   
   public requires2Fa = signal<boolean>(false);
+  public showPassword = signal<boolean>(false);
   public otpCode = '';
   private tempToken = '';
   private returnUrl = '/';
+
+  public toggleShowPassword() {
+    this.showPassword.update(v => !v);
+  }
 
   constructor() {
     this.returnUrl = this.route.snapshot.queryParams['returnUrl'] || '/';

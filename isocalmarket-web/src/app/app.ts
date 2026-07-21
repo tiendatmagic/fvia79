@@ -36,6 +36,10 @@ export class App implements OnInit {
   private router = inject(Router);
   public hasBeenOpened = signal<boolean>(false);
   public activeMenuState = signal<boolean>(false);
+  public isAuthPage = signal<boolean>(
+    typeof window !== 'undefined' && 
+    (window.location.pathname.includes('/login') || window.location.pathname.includes('/register'))
+  );
 
   constructor() {
     effect(() => {
@@ -61,8 +65,10 @@ export class App implements OnInit {
 
     this.router.events.pipe(
       filter(event => event instanceof NavigationEnd)
-    ).subscribe(() => {
+    ).subscribe((event: any) => {
       this.stateService.authStore.checkMe().subscribe();
+      const url = event.urlAfterRedirects || event.url || '';
+      this.isAuthPage.set(url.includes('/login') || url.includes('/register'));
     });
   }
 }
