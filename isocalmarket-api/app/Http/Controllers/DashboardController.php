@@ -19,9 +19,12 @@ class DashboardController extends Controller
             $lowStockSearch = $request->query('low_stock_search');
             $thresholdParam = $request->query('low_stock_threshold', '5');
 
-            $cacheKey = 'admin_dashboard_stats_' . md5($startDate . '_' . $endDate . '_' . $lowStockCategoryId . '_' . $lowStockSearch . '_' . $thresholdParam);
+            $lowStockPage = (int) $request->query('low_stock_page', 1);
+            $lowStockLimit = (int) $request->query('low_stock_limit', 10);
 
-            $data = \Illuminate\Support\Facades\Cache::remember($cacheKey, 300, function () use ($startDate, $endDate, $lowStockCategoryId, $lowStockSearch, $thresholdParam) {
+            $cacheKey = 'admin_dashboard_stats_' . md5($startDate . '_' . $endDate . '_' . $lowStockCategoryId . '_' . $lowStockSearch . '_' . $thresholdParam . '_' . $lowStockPage . '_' . $lowStockLimit);
+
+            $data = \Illuminate\Support\Facades\Cache::remember($cacheKey, 300, function () use ($startDate, $endDate, $lowStockCategoryId, $lowStockSearch, $thresholdParam, $lowStockPage, $lowStockLimit) {
                 $revenueQuery = OrderModel::where('status', 'paid');
                 $ordersQuery = OrderModel::query();
 
@@ -58,36 +61,41 @@ class DashboardController extends Controller
                     $thresholdLabel = '< ' . $threshold . ' items';
                 }
 
-                $productQuery = ProductModel::where('status', 'active');
+                $productQuery = ProductModel::where('products.status', 'active')
+                    ->select('products.id', 'products.name', 'products.slug', 'products.price', 'products.created_at')
+                    ->selectSub(function ($query) {
+                        $query->selectRaw('COALESCE(SUM(initial_count - sold_count), 0)')
+                            ->from('inventory_batches')
+                            ->whereColumn('product_id', 'products.id')
+                            ->where('status', 'active');
+                    }, 'available_count');
+
                 if ($lowStockCategoryId) {
-                    $productQuery->where('category_id', $lowStockCategoryId);
+                    $productQuery->where('products.category_id', $lowStockCategoryId);
                 }
                 if ($lowStockSearch) {
-                    $productQuery->where('name', 'like', "%{$lowStockSearch}%");
+                    $productQuery->where('products.name', 'like', "%{$lowStockSearch}%");
                 }
 
-                $products = $productQuery->get();
+                if ($compareMode === 'gte') {
+                    $productQuery->having('available_count', '>=', $threshold);
+                } else {
+                    $productQuery->having('available_count', '<', $threshold);
+                }
+
+                $productQuery->orderBy('products.created_at', 'desc');
+
+                $paginator = $productQuery->paginate($lowStockLimit, ['*'], 'low_stock_page', $lowStockPage);
+
                 $lowStockProducts = [];
-
-                foreach ($products as $product) {
-                    $availableCount = (int) InventoryBatchModel::where('product_id', $product->id)
-                        ->where('status', 'active')
-                        ->selectRaw('SUM(initial_count - sold_count) as total')
-                        ->value('total') ?? 0;
-
-                    $matches = $compareMode === 'gte'
-                        ? $availableCount >= $threshold
-                        : $availableCount < $threshold;
-
-                    if ($matches) {
-                        $lowStockProducts[] = [
-                            'id' => $product->id,
-                            'name' => $product->name,
-                            'slug' => $product->slug,
-                            'price' => (float) $product->price,
-                            'available_count' => $availableCount
-                        ];
-                    }
+                foreach ($paginator->items() as $item) {
+                    $lowStockProducts[] = [
+                        'id' => $item->id,
+                        'name' => $item->name,
+                        'slug' => $item->slug,
+                        'price' => (float) $item->price,
+                        'available_count' => (int) $item->available_count
+                    ];
                 }
 
                 return [
@@ -96,7 +104,13 @@ class DashboardController extends Controller
                     'total_products' => $totalProducts,
                     'total_available_inventory' => $totalAvailableInventory,
                     'total_users' => $totalUsers,
-                    'low_stock_products' => $lowStockProducts,
+                    'low_stock_products' => [
+                        'data' => $lowStockProducts,
+                        'current_page' => $paginator->currentPage(),
+                        'last_page' => $paginator->lastPage(),
+                        'per_page' => $paginator->perPage(),
+                        'total' => $paginator->total()
+                    ],
                     'low_stock_threshold' => $thresholdParam,
                     'low_stock_threshold_label' => $thresholdLabel
                 ];

@@ -1779,4 +1779,16 @@
       4. Cập nhật [web3.service.ts](file:///d:/git/isocalmarket/isocalmarket-web/src/app/core/services/web3.service.ts) trỏ icon AppKit sang `assets/logo-light.png` và dọn dẹp file `logo.svg` cũ.
     - **Xác minh**: Chạy biên dịch frontend Angular (`npm run build`) thành công 100% không phát sinh lỗi.
 
+  - **[PHÂN TRANG CHO INVENTORY FILTER TẠI ADMIN DASHBOARD]**:
+    - **Yêu cầu**: Phân trang danh sách "Inventory Filter (< 5 items)" tại trang Admin Dashboard.
+    - **Thực hiện & Kết quả**:
+      1. **Backend API**:
+         - Cập nhật endpoint `v1/admin/dashboard-stats` trong `DashboardController.php`.
+         - Thay thế truy vấn MySQL thô phức tạp trước đó bằng Eloquent query sạch sẽ, sử dụng mệnh đề `having('available_count', ...)` và phương thức `paginate()` tích hợp sẵn của Laravel để phân trang trực tiếp ở tầng database.
+         - Thêm `low_stock_page` và `low_stock_limit` vào cache key để cache riêng lẻ từng trang dữ liệu low stock.
+      2. **Frontend Angular**:
+         - Cập nhật `AdminDashboardComponent` (`admin-dashboard.component.ts`): Import component `PaginationComponent`, bổ sung tín hiệu `lowStockCurrentPage` (mặc định là 1) và `lowStockLimit` (mặc định là 10) cùng phương thức `fetchLowStockPage(page)`.
+         - Cập nhật `admin-dashboard.component.html` để gán dữ liệu nguồn bảng từ `stats().low_stock_products.data`, cập nhật các điều kiện kiểm tra độ dài mảng và chèn thẻ `<app-pagination>` với nhãn sản phẩm `admin.product_item` đồng bộ.
+    - **Xác minh**: Biên dịch Angular thành công không lỗi và kiểm tra API hoạt động hoàn hảo không bị lỗi 500.
+
 

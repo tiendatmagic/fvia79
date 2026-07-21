@@ -17,6 +17,7 @@ import { TableComponent, TableCellDirective, TableColumn } from '@shared/compone
 import { LanguageService } from '@core/services/language.service';
 import { TranslatePipe } from '@shared/pipes/translate.pipe';
 import { CurrencyPipe } from '@shared/pipes/currency.pipe';
+import { PaginationComponent } from '@shared/components/pagination/pagination.component';
 
 @Component({
   selector: 'app-admin-dashboard',
@@ -37,7 +38,8 @@ import { CurrencyPipe } from '@shared/pipes/currency.pipe';
     TableComponent,
     TableCellDirective,
     TranslatePipe,
-    CurrencyPipe
+    CurrencyPipe,
+    PaginationComponent
   ],
   templateUrl: './admin-dashboard.component.html',
   styles: [`
@@ -67,6 +69,8 @@ export class AdminDashboardComponent implements OnInit {
   public readonly selectedCategory = signal<string>('');
   public readonly lowStockSearch = signal<string>('');
   public readonly selectedThreshold = signal<string>('5');
+  public readonly lowStockCurrentPage = signal<number>(1);
+  public readonly lowStockLimit = 10;
   public rawSearchQuery = '';
 
   public get thresholdOptions() {
@@ -114,6 +118,8 @@ export class AdminDashboardComponent implements OnInit {
       params = params.set('low_stock_search', this.lowStockSearch().trim());
     }
     params = params.set('low_stock_threshold', this.selectedThreshold());
+    params = params.set('low_stock_page', this.lowStockCurrentPage().toString());
+    params = params.set('low_stock_limit', this.lowStockLimit.toString());
 
     this.apiService.get<any>('v1/admin/dashboard-stats', params).subscribe({
       next: (res) => {
@@ -131,6 +137,12 @@ export class AdminDashboardComponent implements OnInit {
 
   public onSearchLowStock(query: string) {
     this.lowStockSearch.set(query);
+    this.lowStockCurrentPage.set(1);
+    this.loadStats(true);
+  }
+
+  public fetchLowStockPage(page: number) {
+    this.lowStockCurrentPage.set(page);
     this.loadStats(true);
   }
 }

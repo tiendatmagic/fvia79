@@ -152,9 +152,9 @@
   <app-card class="p-6 space-y-6">
     <div class="flex items-center justify-between">
       <div class="flex items-center gap-2">
-        @if (!lowStockLoading() && stats()?.low_stock_products?.length > 0 && selectedThreshold() !== 'gte_100') {
+        @if (!lowStockLoading() && stats()?.low_stock_products?.data?.length > 0 && selectedThreshold() !== 'gte_100') {
           <div class="w-2.5 h-2.5 rounded-full bg-red-500 animate-ping"></div>
-        } @else if (!lowStockLoading() && stats()?.low_stock_products?.length > 0 && selectedThreshold() === 'gte_100') {
+        } @else if (!lowStockLoading() && stats()?.low_stock_products?.data?.length > 0 && selectedThreshold() === 'gte_100') {
           <div class="w-2.5 h-2.5 rounded-full bg-emerald-400"></div>
         } @else {
           <div class="w-2.5 h-2.5 rounded-full bg-emerald-400"></div>
@@ -168,11 +168,11 @@
           }
         </h3>
       </div>
-      @if (!lowStockLoading() && stats()?.low_stock_products?.length > 0 && selectedThreshold() !== 'gte_100') {
+      @if (!lowStockLoading() && stats()?.low_stock_products?.data?.length > 0 && selectedThreshold() !== 'gte_100') {
         <app-badge variant="danger" size="sm" rounded="full" [pulse]="true"
           >{{ 'dash.restock_urgent' | translate }}</app-badge
         >
-      } @else if (!lowStockLoading() && stats()?.low_stock_products?.length > 0 && selectedThreshold() === 'gte_100') {
+      } @else if (!lowStockLoading() && stats()?.low_stock_products?.data?.length > 0 && selectedThreshold() === 'gte_100') {
         <app-badge variant="success" size="sm" rounded="full"
           >{{ 'dash.good_stock' | translate }}</app-badge
         >
@@ -250,7 +250,7 @@
     <!-- Low Stock Table -->
     <ng-container *ngIf="!lowStockLoading() && stats()">
       <div
-        *ngIf="stats().low_stock_products.length === 0"
+        *ngIf="stats().low_stock_products.data.length === 0"
         class="flex flex-col items-center justify-center py-8 text-center space-y-2"
       >
         <div
@@ -266,10 +266,10 @@
         </p>
       </div>
 
-      <div *ngIf="stats().low_stock_products.length > 0">
+      <div *ngIf="stats().low_stock_products.data.length > 0" class="space-y-4">
         <app-table
           [columns]="lowStockColumns()"
-          [data]="stats().low_stock_products"
+          [data]="stats().low_stock_products.data"
           [loading]="lowStockLoading()"
           [emptyText]="'dash.stock_full_desc' | translate"
         >
@@ -307,6 +307,15 @@
             </a>
           </ng-template>
         </app-table>
+
+        <app-pagination
+          [currentPage]="stats().low_stock_products.current_page"
+          [totalPages]="stats().low_stock_products.last_page"
+          [totalItems]="stats().low_stock_products.total"
+          [itemsPerPage]="lowStockLimit"
+          [itemName]="'admin.product_item' | translate"
+          (pageChange)="fetchLowStockPage($event)"
+        />
       </div>
     </ng-container>
   </app-card>
