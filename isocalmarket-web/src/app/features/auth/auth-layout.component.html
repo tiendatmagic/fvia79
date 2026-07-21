@@ -2,7 +2,7 @@
   <div class="grid grid-cols-1 lg:grid-cols-2 w-full min-h-screen">
     <!-- Cột trái: Static - KHÔNG bao giờ thay đổi khi chuyển tab -->
     <div
-      class="hidden lg:flex lg:col-span-1 flex-col justify-between p-10 xl:p-12 bg-white dark:bg-slate-950 text-slate-900 dark:text-slate-100 border-r border-slate-200/60 dark:border-slate-800/40 relative overflow-hidden transition-colors duration-300"
+      class="hidden lg:flex lg:col-span-1 flex-col justify-between p-10 xl:p-12 bg-white dark:bg-slate-950 text-slate-900 dark:text-slate-100 border-r border-slate-200/60 dark:border-slate-800/40 relative overflow-hidden transition-colors"
     >
       <!-- Blur glow effects -->
       <div
@@ -127,16 +127,16 @@
 
     <!-- Cột phải: Form area - không dùng router-outlet, chỉ @if toggle -->
     <div
-      class="col-span-1 flex items-center justify-center p-6 md:p-10 bg-slate-50 dark:bg-slate-950 transition-colors duration-300 min-h-screen relative"
+      class="col-span-1 flex items-center justify-center p-6 md:p-10 bg-slate-50 dark:bg-slate-950 transition-colors min-h-screen relative"
     >
       <!-- Theme & Language switcher -->
       <div class="absolute top-6 right-6 z-20">
         <div
-          class="flex items-center gap-3 bg-white dark:bg-slate-900 border border-slate-200/50 dark:border-slate-800/50 px-3 py-1.5 rounded-full shadow-sm transition-colors duration-300"
+          class="flex items-center gap-3 bg-white dark:bg-slate-900 border border-slate-200/50 dark:border-slate-800/50 px-3 py-1.5 rounded-full shadow-sm transition-colors"
         >
           <app-theme-switcher [showLabels]="false" [showAuto]="true" />
           <div class="w-[1px] h-3.5 bg-slate-200 dark:bg-slate-800"></div>
-          
+
           <!-- Language Switcher Dropdown (tương tự Header) -->
           <div class="relative">
             <button
@@ -152,17 +152,26 @@
               [attr.aria-expanded]="showLangDropdown()"
             >
               @if (lang.currentLang() === 'vi') {
-                <svg viewBox="0 0 30 20" class="w-4 h-3.5 shrink-0 rounded-[2px] overflow-hidden border border-slate-200/20 dark:border-slate-800/40 shadow-xs">
-                  <rect width="30" height="20" fill="#da251d"/>
-                  <polygon points="15,4 16.236,7.803 20.236,7.803 17,10.153 18.236,13.956 15,11.6 11.764,13.956 13,10.153 9.764,7.803 13.764,7.803" fill="#ffff00"/>
+                <svg
+                  viewBox="0 0 30 20"
+                  class="w-4 h-3.5 shrink-0 rounded-[2px] overflow-hidden border border-slate-200/20 dark:border-slate-800/40 shadow-xs"
+                >
+                  <rect width="30" height="20" fill="#da251d" />
+                  <polygon
+                    points="15,4 16.236,7.803 20.236,7.803 17,10.153 18.236,13.956 15,11.6 11.764,13.956 13,10.153 9.764,7.803 13.764,7.803"
+                    fill="#ffff00"
+                  />
                 </svg>
               } @else {
-                <svg viewBox="0 0 60 30" class="w-4 h-3.5 shrink-0 rounded-[2px] overflow-hidden border border-slate-200/20 dark:border-slate-800/40 shadow-xs">
-                  <rect width="60" height="30" fill="#012169"/>
-                  <path d="M0,0 L60,30 M60,0 L0,30" stroke="#fff" stroke-width="6"/>
-                  <path d="M0,0 L60,30 M60,0 L0,30" stroke="#c8102e" stroke-width="4"/>
-                  <path d="M30,0 v30 M0,15 h60" stroke="#fff" stroke-width="10"/>
-                  <path d="M30,0 v30 M0,15 h60" stroke="#c8102e" stroke-width="6"/>
+                <svg
+                  viewBox="0 0 60 30"
+                  class="w-4 h-3.5 shrink-0 rounded-[2px] overflow-hidden border border-slate-200/20 dark:border-slate-800/40 shadow-xs"
+                >
+                  <rect width="60" height="30" fill="#012169" />
+                  <path d="M0,0 L60,30 M60,0 L0,30" stroke="#fff" stroke-width="6" />
+                  <path d="M0,0 L60,30 M60,0 L0,30" stroke="#c8102e" stroke-width="4" />
+                  <path d="M30,0 v30 M0,15 h60" stroke="#fff" stroke-width="10" />
+                  <path d="M30,0 v30 M0,15 h60" stroke="#c8102e" stroke-width="6" />
                 </svg>
               }
               <span class="uppercase leading-none">{{ lang.currentLang() }}</span>
@@ -191,41 +200,62 @@
                   type="button"
                   (click)="selectLang('en')"
                   class="w-full flex items-center justify-between gap-3 px-4 py-2.5 rounded-xl text-sm font-semibold transition-colors cursor-pointer"
-                  [ngClass]="lang.currentLang() === 'en' ? 'bg-[var(--color-primary)]/10 text-[var(--color-primary)]' : 'text-slate-700 dark:text-slate-300 hover:bg-slate-50 dark:hover:bg-slate-800/40'"
+                  [ngClass]="
+                    lang.currentLang() === 'en'
+                      ? 'bg-[var(--color-primary)]/10 text-[var(--color-primary)]'
+                      : 'text-slate-700 dark:text-slate-300 hover:bg-slate-50 dark:hover:bg-slate-800/40'
+                  "
                   role="menuitemradio"
                   [attr.aria-checked]="lang.currentLang() === 'en'"
                 >
                   <div class="flex items-center gap-2.5 min-w-0">
-                    <svg viewBox="0 0 60 30" class="w-5 h-4 shrink-0 rounded-[2px] overflow-hidden border border-slate-200/20 dark:border-slate-800/40 shadow-xs">
-                      <rect width="60" height="30" fill="#012169"/>
-                      <path d="M0,0 L60,30 M60,0 L0,30" stroke="#fff" stroke-width="6"/>
-                      <path d="M0,0 L60,30 M60,0 L0,30" stroke="#c8102e" stroke-width="4"/>
-                      <path d="M30,0 v30 M0,15 h60" stroke="#fff" stroke-width="10"/>
-                      <path d="M30,0 v30 M0,15 h60" stroke="#c8102e" stroke-width="6"/>
+                    <svg
+                      viewBox="0 0 60 30"
+                      class="w-5 h-4 shrink-0 rounded-[2px] overflow-hidden border border-slate-200/20 dark:border-slate-800/40 shadow-xs"
+                    >
+                      <rect width="60" height="30" fill="#012169" />
+                      <path d="M0,0 L60,30 M60,0 L0,30" stroke="#fff" stroke-width="6" />
+                      <path d="M0,0 L60,30 M60,0 L0,30" stroke="#c8102e" stroke-width="4" />
+                      <path d="M30,0 v30 M0,15 h60" stroke="#fff" stroke-width="10" />
+                      <path d="M30,0 v30 M0,15 h60" stroke="#c8102e" stroke-width="6" />
                     </svg>
                     <span class="truncate">{{ 'header.english' | translate }}</span>
                   </div>
                   @if (lang.currentLang() === 'en') {
-                    <span class="w-1.5 h-1.5 shrink-0 rounded-full bg-[var(--color-primary)]"></span>
+                    <span
+                      class="w-1.5 h-1.5 shrink-0 rounded-full bg-[var(--color-primary)]"
+                    ></span>
                   }
                 </button>
                 <button
                   type="button"
                   (click)="selectLang('vi')"
                   class="w-full flex items-center justify-between gap-3 px-4 py-2.5 rounded-xl text-sm font-semibold transition-colors cursor-pointer"
-                  [ngClass]="lang.currentLang() === 'vi' ? 'bg-[var(--color-primary)]/10 text-[var(--color-primary)]' : 'text-slate-700 dark:text-slate-300 hover:bg-slate-50 dark:hover:bg-slate-800/40'"
+                  [ngClass]="
+                    lang.currentLang() === 'vi'
+                      ? 'bg-[var(--color-primary)]/10 text-[var(--color-primary)]'
+                      : 'text-slate-700 dark:text-slate-300 hover:bg-slate-50 dark:hover:bg-slate-800/40'
+                  "
                   role="menuitemradio"
                   [attr.aria-checked]="lang.currentLang() === 'vi'"
                 >
                   <div class="flex items-center gap-2.5 min-w-0">
-                    <svg viewBox="0 0 30 20" class="w-5 h-4 shrink-0 rounded-[2px] overflow-hidden border border-slate-200/20 dark:border-slate-800/40 shadow-xs">
-                      <rect width="30" height="20" fill="#da251d"/>
-                      <polygon points="15,4 16.236,7.803 20.236,7.803 17,10.153 18.236,13.956 15,11.6 11.764,13.956 13,10.153 9.764,7.803 13.764,7.803" fill="#ffff00"/>
+                    <svg
+                      viewBox="0 0 30 20"
+                      class="w-5 h-4 shrink-0 rounded-[2px] overflow-hidden border border-slate-200/20 dark:border-slate-800/40 shadow-xs"
+                    >
+                      <rect width="30" height="20" fill="#da251d" />
+                      <polygon
+                        points="15,4 16.236,7.803 20.236,7.803 17,10.153 18.236,13.956 15,11.6 11.764,13.956 13,10.153 9.764,7.803 13.764,7.803"
+                        fill="#ffff00"
+                      />
                     </svg>
                     <span class="truncate">{{ 'header.vietnamese' | translate }}</span>
                   </div>
                   @if (lang.currentLang() === 'vi') {
-                    <span class="w-1.5 h-1.5 shrink-0 rounded-full bg-[var(--color-primary)]"></span>
+                    <span
+                      class="w-1.5 h-1.5 shrink-0 rounded-full bg-[var(--color-primary)]"
+                    ></span>
                   }
                 </button>
               </div>
