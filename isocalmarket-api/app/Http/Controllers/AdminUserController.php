@@ -85,11 +85,14 @@ class AdminUserController extends Controller
 
         try {
             $apiKey = \App\Infrastructure\Persistence\Eloquent\UserModel::generateUniqueApiKey();
+            $displayName = $request->filled('name')
+                ? trim($request->input('name'))
+                : $request->input('username');
 
             $user = new User(
                 null,
                 $request->username,
-                $request->name,
+                $displayName,
                 $request->email,
                 Hash::make($request->password),
                 $request->role,
@@ -150,28 +153,33 @@ class AdminUserController extends Controller
                     return response()->json(['message' => 'User not found.'], 404);
                 }
 
-            $updatedUser = new User(
-                $user->getId(),
-                $request->username ?? $user->getUsername(),
-                $request->name,
-                $request->email,
-                $request->password ? Hash::make($request->password) : $user->getPassword(),
-                $request->role,
-                $user->getBalance(),
-                $user->getRefreshTokenHash(),
-                $user->getRefreshTokenExpiredAt(),
-                $request->phone,
-                $user->getGoogle2faSecret(),
-                $user->isGoogle2faEnabled(),
-                $user->getApiKey(),
-                $request->status ?? $user->getStatus()
-            );
+                $username = $request->input('username', $user->getUsername());
+                $displayName = $request->filled('name')
+                    ? trim($request->input('name'))
+                    : $username;
 
-            if ($request->input('generate_api_key')) {
-                $updatedUser->setApiKey(\App\Infrastructure\Persistence\Eloquent\UserModel::generateUniqueApiKey());
-            } elseif ($request->input('revoke_api_key')) {
-                $updatedUser->setApiKey(null);
-            }
+                $updatedUser = new User(
+                    $user->getId(),
+                    $username,
+                    $displayName,
+                    $request->email,
+                    $request->password ? Hash::make($request->password) : $user->getPassword(),
+                    $request->role,
+                    $user->getBalance(),
+                    $user->getRefreshTokenHash(),
+                    $user->getRefreshTokenExpiredAt(),
+                    $request->phone,
+                    $user->getGoogle2faSecret(),
+                    $user->isGoogle2faEnabled(),
+                    $user->getApiKey(),
+                    $request->status ?? $user->getStatus()
+                );
+
+                if ($request->input('generate_api_key')) {
+                    $updatedUser->setApiKey(\App\Infrastructure\Persistence\Eloquent\UserModel::generateUniqueApiKey());
+                } elseif ($request->input('revoke_api_key')) {
+                    $updatedUser->setApiKey(null);
+                }
 
                 $savedUser = $this->userRepository->save($updatedUser);
 

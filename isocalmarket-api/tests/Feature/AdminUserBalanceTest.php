@@ -80,6 +80,53 @@ class AdminUserBalanceTest extends TestCase
             ->assertJsonPath('data.0.role', 'customer');
     }
 
+    public function test_admin_can_create_user_without_optional_display_name(): void
+    {
+        $response = $this->withHeaders($this->adminHeaders())
+            ->postJson('/api/v1/admin/users', [
+                'username' => 'created_without_name',
+                'name' => null,
+                'email' => 'created_without_name@example.com',
+                'phone' => null,
+                'role' => 'customer',
+                'balance' => 0,
+                'password' => 'password123',
+            ]);
+
+        $response->assertCreated()
+            ->assertJsonPath('user.username', 'created_without_name')
+            ->assertJsonPath('user.name', 'created_without_name');
+
+        $this->assertDatabaseHas('users', [
+            'username' => 'created_without_name',
+            'name' => 'created_without_name',
+            'email' => 'created_without_name@example.com',
+        ]);
+    }
+
+    public function test_admin_can_clear_display_name_when_updating_user(): void
+    {
+        $response = $this->withHeaders($this->adminHeaders())
+            ->putJson("/api/v1/admin/users/{$this->normalUser->id}", [
+                'username' => 'renamed_user',
+                'name' => null,
+                'email' => $this->normalUser->email,
+                'phone' => null,
+                'role' => 'customer',
+                'balance' => 20,
+            ]);
+
+        $response->assertOk()
+            ->assertJsonPath('user.username', 'renamed_user')
+            ->assertJsonPath('user.name', 'renamed_user');
+
+        $this->assertDatabaseHas('users', [
+            'id' => $this->normalUser->id,
+            'username' => 'renamed_user',
+            'name' => 'renamed_user',
+        ]);
+    }
+
     private function adminHeaders(): array
     {
         $token = resolve(JwtService::class)->generateToken([
