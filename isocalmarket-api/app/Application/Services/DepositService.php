@@ -340,8 +340,8 @@ class DepositService
             $adminWallet = strtolower($this->adminWalletAddress);
             $tokenContract = strtolower($this->tokenContractAddress);
 
-            // Fetch Moralis API ngoài transaction để tránh giữ lock lâu trong lúc chờ HTTP response
-            if (!array_key_exists($adminWallet, $this->cachedBep20TransactionsByWallet)) {
+            // Fetch Moralis API ngoài transaction và lưu Cache 15s để tránh dính Rate Limit khi Polling
+            $transactions = Cache::remember("bep20_txs_{$adminWallet}", 15, function () use ($adminWallet) {
                 $response = Http::timeout(10)
                     ->withHeader('X-API-Key', $this->scannerApiKey)
                     ->get("https://deep-index.moralis.io/api/v2.2/{$adminWallet}/erc20/transfers", [
@@ -353,14 +353,12 @@ class DepositService
 
                 if ($response->successful()) {
                     $result = $response->json();
-                    $this->cachedBep20TransactionsByWallet[$adminWallet] = $result['result'] ?? [];
-                } else {
-                    Log::error("Moralis API HTTP error: " . $response->status() . " - " . $response->body());
-                    throw new \RuntimeException("Unable to connect to blockchain scanner API. Please try again later.");
+                    return $result['result'] ?? [];
                 }
-            }
 
-            $transactions = $this->cachedBep20TransactionsByWallet[$adminWallet];
+                Log::error("Moralis API HTTP error: " . $response->status() . " - " . $response->body());
+                throw new \RuntimeException("Unable to connect to blockchain scanner API. Please try again later.");
+            });
 
             // Vá CVE-1: Bọc toàn bộ check deposit status, isTxHashUsed và credit tiền trong 1 DB transaction với pessimistic lock (lockForUpdate)
             return \Illuminate\Support\Facades\DB::transaction(function () use ($id, $userId, $adminWallet, $tokenContract, $transactions) {
@@ -436,7 +434,7 @@ class DepositService
                 throw new \RuntimeException("The administrator has not configured the Binance API Key/Secret yet.");
             }
 
-            if ($this->cachedBinanceTransactions === null) {
+            $transactions = Cache::remember("binance_pay_txs", 15, function () use ($binanceApiKey, $binanceApiSecret) {
                 $timestamp = round(microtime(true) * 1000);
                 $queryString = "timestamp=" . $timestamp . "&recvWindow=60000";
                 $signature = hash_hmac('sha256', $queryString, $binanceApiSecret);
@@ -453,14 +451,12 @@ class DepositService
                         Log::error('Binance Pay API returned an unsuccessful payload: ' . $response->body());
                         throw new \RuntimeException('Binance Pay API rejected the transaction history request.');
                     }
-                    $this->cachedBinanceTransactions = $result['data'] ?? [];
-                } else {
-                    Log::error("Binance Pay API HTTP error: " . $response->status() . " - " . $response->body());
-                    throw new \RuntimeException("Unable to connect to Binance Pay API. Please try again later.");
+                    return $result['data'] ?? [];
                 }
-            }
 
-            $transactions = $this->cachedBinanceTransactions;
+                Log::error("Binance Pay API HTTP error: " . $response->status() . " - " . $response->body());
+                throw new \RuntimeException("Unable to connect to Binance Pay API. Please try again later.");
+            });
 
             return \Illuminate\Support\Facades\DB::transaction(function () use ($id, $userId, $transactions) {
                 $depositModel = \App\Infrastructure\Persistence\Eloquent\DepositModel::where('id', $id)

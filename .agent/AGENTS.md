@@ -1970,5 +1970,14 @@
 - **Thực hiện:**
   1. **CustomInputComponent (`custom-input.component.ts` & `.html`)**: Tích hợp sẵn nút toggle icon con mắt cho tất cả các trường `type="password"`. Tự động gán style padding-right và icon ẩn/hiện mật khẩu trực tiếp trong component dùng chung.
   2. **Giao diện 2FA OTP Code (`auth-layout.component.html` & `login.component.html`)**: Chuyển đổi ô nhập mã OTP dạng đường gạch dưới (`border-b-2`) cũ sang component `<app-custom-input>` với góc bo tròn `rounded-xl` chuẩn thiết kế hệ thống.
-  3. **Rút gọn code HTML**: Loại bỏ các nút toggle thủ công ở các trang Auth, tận dụng tính năng tự động của `CustomInputComponent`.
-  4. **Xác minh**: Chạy `npm run build` biên dịch thành công 100%. All password & OTP input fields đồng bộ hoàn hảo.
+## [2026-07-21] Sửa lỗi trang nạp tiền bị treo không tự động kiểm tra giao dịch
+- **Yêu cầu:** Trang nạp tiền `/deposit/invoice/{id}` sau khi chuyển khoản bị treo, không tự động kiểm tra giao dịch.
+- **Phân tích nguyên nhân:**
+  1. Polling ở frontend trước đây chỉ gọi `fetchInvoice()` (chỉ đọc lại status từ Database) chứ không trigger kiểm tra blockchain.
+  2. Backend chỉ quét Moralis/Binance API khi người dùng bấm nút "Tôi đã chuyển khoản" thủ công hoặc khi cronjob backend `deposit:check-pending` chạy.
+  3. Cả Moralis API lẫn Binance Pay API ở backend chưa được lưu Cache ngắn hạn, gây rủi ro rate-limit nếu polling dồn dập.
+- **Thực hiện:**
+  1. **Backend (`DepositService.php`)**: Áp dụng `Cache::remember()` cho kết quả gọi Moralis API transfers và Binance Pay API với thời gian lưu cache 10 giây.
+  2. **Frontend (`deposit-invoice.component.ts`)**: Rút ngắn thời gian polling từ 30s xuống 10s, tự động kích hoạt `checkTransaction(invoiceId)` ngầm khi polling. Nếu tiền về -> Tự động bật Modal thông báo thành công.
+  3. **Giao diện (`deposit-invoice.component.html`)**: Thêm banner Live Status *"🤖 BOT đang tự động quét và đối soát giao dịch mỗi 10 giây..."* với radar nhấp nháy xanh lá.
+  4. **Xác minh**: Chạy `npm run build` biên dịch thành công 100%, `php artisan test` vượt qua 47/47 unit & feature tests.

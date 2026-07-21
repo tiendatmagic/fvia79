@@ -107,6 +107,21 @@
       }
     </div>
 
+    @if (invoice.status === 'pending_payment') {
+      <div class="mt-4 p-3.5 bg-blue-500/10 border border-blue-500/20 rounded-xl flex items-center justify-between gap-3 text-blue-600 dark:text-blue-400 shadow-xs">
+        <div class="flex items-center gap-3">
+          <span class="relative flex h-3 w-3 shrink-0">
+            <span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-blue-400 opacity-75"></span>
+            <span class="relative inline-flex rounded-full h-3 w-3 bg-blue-500"></span>
+          </span>
+          <span class="text-xs font-extrabold leading-tight">
+            BOT đang tự động quét và đối soát giao dịch mỗi 15 giây. Tiền sẽ tự động cộng khi nhận chuyển khoản!
+          </span>
+        </div>
+        <span class="text-[10px] uppercase tracking-widest font-black px-2 py-0.5 rounded-md bg-blue-500/20 text-blue-600 dark:text-blue-300 shrink-0">Live Scanner</span>
+      </div>
+    }
+
     <div class="grid grid-cols-1 lg:grid-cols-12 gap-6 lg:gap-8 pt-6">
       <div
         class="lg:col-span-5 flex flex-col items-center gap-5 border-b border-slate-200/60 dark:border-slate-700/40 lg:border-b-0 lg:border-r pb-6 lg:pb-0 lg:pr-6"

@@ -57,7 +57,7 @@ Route::prefix('v1')->group(function () {
         Route::get('/deposit/history', ['App\Http\Controllers\DepositController', 'history']);
         Route::get('/deposit/invoice/{id}', ['App\Http\Controllers\DepositController', 'showInvoice']);
         Route::post('/deposit/invoice/{id}/cancel', ['App\Http\Controllers\DepositController', 'cancelInvoice']);
-        Route::post('/deposit/invoice/{id}/check', ['App\Http\Controllers\DepositController', 'checkTransaction'])->middleware('throttle:10,1');
+        Route::post('/deposit/invoice/{id}/check', ['App\Http\Controllers\DepositController', 'checkTransaction'])->middleware('throttle:20,1');
 
         Route::middleware(['admin'])->group(function () {
             Route::get('/admin/dashboard-stats', ['App\Http\Controllers\DashboardController', 'stats']);

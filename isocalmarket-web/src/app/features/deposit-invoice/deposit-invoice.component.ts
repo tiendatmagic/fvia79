@@ -10,7 +10,7 @@ import { QrCodeModule } from 'ng-qrcode';
 import { DepositHistoryItem } from '../deposit-history/deposit-history.component';
 import { TranslatePipe } from '@shared/pipes/translate.pipe';
 import { LanguageService } from '@core/services/language.service';
-import { Subscription, interval } from 'rxjs';
+import { Subscription, interval, timer } from 'rxjs';
 import { finalize } from 'rxjs/operators';
 
 @Component({
@@ -70,14 +70,25 @@ export class DepositInvoiceComponent implements OnInit, OnDestroy {
     }
   };
 
+  private routeSub: Subscription | null = null;
+
   ngOnInit() {
-    this.loadInvoice();
+    this.routeSub = this.route.paramMap.subscribe(params => {
+      const id = params.get('id');
+      if (id) {
+        this.loadInvoice(id);
+      }
+    });
     if (typeof document !== 'undefined') {
       document.addEventListener('visibilitychange', this.visibilityHandler);
     }
   }
 
   ngOnDestroy() {
+    if (this.routeSub) {
+      this.routeSub.unsubscribe();
+      this.routeSub = null;
+    }
     this.stopCountdown();
     this.stopStatusPolling();
     if (typeof document !== 'undefined') {
@@ -86,14 +97,10 @@ export class DepositInvoiceComponent implements OnInit, OnDestroy {
   }
 
   // Tải chi tiết hóa đơn từ Backend API
-  private loadInvoice() {
-    const invoiceId = this.route.snapshot.paramMap.get('id');
-    if (!invoiceId) {
-      this.invoiceError.set(this.lang.translate('invoice.missing_id'));
-      this.isLoadingInvoice.set(false);
-      return;
-    }
-
+  private loadInvoice(invoiceId: string) {
+    this.stopCountdown();
+    this.stopStatusPolling();
+    this.isChecking = false;
     this.isLoadingInvoice.set(true);
     this.invoiceError.set(null);
 
@@ -102,47 +109,45 @@ export class DepositInvoiceComponent implements OnInit, OnDestroy {
         this.isLoadingInvoice.set(false);
         this.invoice = res.invoice;
 
-        const method = res.invoice?.paymentMethod || 'bep20';
-        if (method === 'bep20') {
-          const wallet = res.invoice?.adminWalletAddress || '';
-          if (!wallet.trim()) {
-            this.invoiceError.set(this.lang.translate('invoice.wallet_support'));
-            return;
-          }
-          this.adminWalletAddress.set(wallet);
-        } else if (method === 'binance') {
-          const binanceId = res.invoice?.adminBinanceId || '';
-          if (!binanceId.trim()) {
-            this.invoiceError.set(this.lang.translate('invoice.binance_support'));
-            return;
-          }
+        if (!this.invoice) {
+          this.invoiceError.set(this.lang.translate('invoice.not_found_or_forbidden'));
+          return;
         }
-        
+
+        const method = this.invoice.paymentMethod || 'bep20';
+        if (method === 'bep20') {
+          const wallet = this.invoice.adminWalletAddress || '';
+          this.adminWalletAddress.set(wallet);
+        }
+
         if (this.invoice.status === 'pending_payment') {
-          // Tính toán đếm ngược thực tế dựa trên thời gian tạo tuyệt đối
+          // Chuẩn hóa parse date createdAt tránh bị lệch timezone
+          let createdTime = NaN;
           if (this.invoice.createdAt) {
-            const createdTime = new Date(this.invoice.createdAt).getTime();
-            this.expirationTime = createdTime + (900 * 1000); // 15 phút từ lúc tạo
-
-            const nowTime = Date.now();
-            const remaining = Math.max(0, Math.floor((this.expirationTime - nowTime) / 1000));
-
-            if (remaining <= 0) {
-              this.timeLeft.set(0);
-              setTimeout(() => {
-                this.onInvoiceExpired();
-              }, 50);
-            } else {
-              this.timeLeft.set(remaining);
-              this.startCountdown();
-              this.startStatusPolling(this.invoice.id);
+            let isoStr = String(this.invoice.createdAt).replace(' ', 'T');
+            if (!isoStr.endsWith('Z') && !isoStr.includes('+')) {
+              isoStr += 'Z';
             }
+            createdTime = new Date(isoStr).getTime();
+          }
+
+          if (isNaN(createdTime)) {
+            createdTime = Date.now();
+          }
+
+          this.expirationTime = createdTime + (900 * 1000); // 15 phút từ lúc tạo
+          const nowTime = Date.now();
+          const remaining = Math.floor((this.expirationTime - nowTime) / 1000);
+
+          if (remaining <= 0) {
+            this.timeLeft.set(0);
+            setTimeout(() => {
+              this.onInvoiceExpired();
+            }, 50);
           } else {
-            this.expirationTime = Date.now() + (900 * 1000);
+            this.timeLeft.set(remaining);
             this.startCountdown();
-            if (this.invoice.id) {
-              this.startStatusPolling(this.invoice.id);
-            }
+            this.startStatusPolling(this.invoice.id);
           }
         } else {
           // Hóa đơn đã hoàn thành/hết hạn, không chạy countdown và polling
@@ -156,7 +161,7 @@ export class DepositInvoiceComponent implements OnInit, OnDestroy {
         this.isLoadingInvoice.set(false);
         const status = err?.status;
         const errMsg = err?.error?.message || '';
-        
+
         if (errMsg.includes('configured the receiving USDT wallet')) {
           this.invoiceError.set(this.lang.translate('invoice.wallet_admin'));
         } else if (errMsg.includes('configured the scanner API key')) {
@@ -185,7 +190,7 @@ export class DepositInvoiceComponent implements OnInit, OnDestroy {
   private updateTimerDisplay() {
     const nowTime = Date.now();
     const remaining = Math.max(0, Math.floor((this.expirationTime - nowTime) / 1000));
-    
+
     this.timeLeft.set(remaining);
     const mins = Math.floor(remaining / 60);
     const secs = remaining % 60;
@@ -205,21 +210,26 @@ export class DepositInvoiceComponent implements OnInit, OnDestroy {
 
   private startStatusPolling(invoiceId: string) {
     this.stopStatusPolling();
-    this.pollingSubscription = interval(30000).subscribe(() => {
+    // timer(3000, 15000) hoãn 3 giây ban đầu sau khi load UI rồi tự động check lượt đầu, sau đó lặp lại định kỳ mỗi 15s
+    this.pollingSubscription = timer(5000, 15000).subscribe(() => {
       if (typeof document !== 'undefined' && document.hidden) {
         return;
       }
-      this.state.depositStore.fetchInvoice(invoiceId, true).subscribe({
+
+      // Chống trùng lặp API check: Nếu đang có 1 request check (do user bấm nút hoặc do lượt polling trước chưa xong) -> Bỏ qua
+      if (this.isChecking) {
+        return;
+      }
+
+      this.isChecking = true;
+
+      // Tự động kích hoạt đối soát blockchain ngầm mỗi 15s
+      this.state.depositStore.checkTransaction(invoiceId).pipe(
+        finalize(() => this.isChecking = false)
+      ).subscribe({
         next: (res) => {
-          if (res && res.invoice) {
-            if (res.invoice.status === 'completed') {
-              this.showSuccessModal();
-            } else if (res.invoice.status === 'failed' || res.invoice.status === 'expired') {
-              this.stopCountdown();
-              this.stopStatusPolling();
-              this.state.showToast(this.lang.translate('toast.deposit_invalid_expired'), 'error');
-              this.router.navigate(['/deposit/history']);
-            }
+          if (res.success) {
+            this.showSuccessModal();
           }
         }
       });
