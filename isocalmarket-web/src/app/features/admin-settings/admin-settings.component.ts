@@ -13,6 +13,7 @@ import { ToastService } from '@core/services/toast.service';
 import { ModalService } from '@core/services/modal.service';
 import { LanguageService } from '@core/services/language.service';
 import { TranslatePipe } from '@shared/pipes/translate.pipe';
+import { SupplierSettings, SupplierStore } from './supplier.store';
 
 @Component({
   selector: 'app-admin-settings',
@@ -40,6 +41,7 @@ import { TranslatePipe } from '@shared/pipes/translate.pipe';
 })
 export class AdminSettingsComponent implements OnInit, OnDestroy {
   public readonly store = inject(SystemSettingStore);
+  public readonly supplierStore = inject(SupplierStore);
   private readonly toast = inject(ToastService);
   private readonly modalService = inject(ModalService);
   public readonly lang = inject(LanguageService);
@@ -53,9 +55,10 @@ export class AdminSettingsComponent implements OnInit, OnDestroy {
   public readonly showApiKey = signal<boolean>(false);
   public readonly showBinanceKey = signal<boolean>(false);
   public readonly showBinanceSecret = signal<boolean>(false);
+  public readonly showSupplierApiKey = signal<boolean>(false);
 
   // Tab management - driven by route param
-  public readonly activeTab = signal<'general' | 'maintenance'>('general');
+  public readonly activeTab = signal<'general' | 'suppliers' | 'maintenance'>('general');
   public readonly tokenCleanupDays = signal<number>(7);
 
   public form: SystemSettingsPayload = {
@@ -68,15 +71,29 @@ export class AdminSettingsComponent implements OnInit, OnDestroy {
     binance_api_secret: ''
   };
 
+  public supplierForm: Partial<SupplierSettings> = {
+    api_key: '',
+    enabled: true,
+    auto_sync: false,
+    sync_interval_minutes: 30,
+    price_adjustment_type: 'fixed',
+    price_adjustment_value: 0
+  };
+
   ngOnInit(): void {
     // Sync active tab from URL param
     this.routeSub = this.route.paramMap.subscribe(params => {
       const tab = params.get('tab');
-      if (tab === 'maintenance') {
-        this.activeTab.set('maintenance');
+      if (tab === 'maintenance' || tab === 'suppliers') {
+        this.activeTab.set(tab);
       } else {
         this.activeTab.set('general');
       }
+    });
+
+    this.supplierStore.fetchAds7979().subscribe({
+      next: supplier => this.supplierForm = { ...supplier, api_key: '' },
+      error: () => this.toast.showToast(this.lang.translate('supplier.load_failed'), 'error')
     });
 
     this.store.fetchSettings().subscribe({
@@ -114,8 +131,49 @@ export class AdminSettingsComponent implements OnInit, OnDestroy {
     this.showBinanceSecret.set(!this.showBinanceSecret());
   }
 
-  public changeTab(tab: 'general' | 'maintenance'): void {
+  public toggleSupplierApiKeyVisibility(): void {
+    this.showSupplierApiKey.set(!this.showSupplierApiKey());
+  }
+
+  public changeTab(tab: 'general' | 'suppliers' | 'maintenance'): void {
     this.router.navigate(['/admin/settings', tab]);
+  }
+
+  public saveSupplier(): void {
+    const payload = { ...this.supplierForm };
+    if (!payload.api_key?.trim()) delete payload.api_key;
+
+    this.supplierStore.updateAds7979(payload).subscribe({
+      next: supplier => {
+        this.supplierForm = { ...supplier, api_key: '' };
+        this.toast.showToast(this.lang.translate('supplier.saved'), 'success');
+      },
+      error: err => this.toast.showToast(err?.error?.message || this.lang.translate('supplier.save_failed'), 'error')
+    });
+  }
+
+  public syncSupplier(): void {
+    this.supplierStore.syncAds7979().subscribe({
+      next: response => {
+        this.supplierForm = { ...response.supplier, api_key: '' };
+        this.toast.showToast(this.lang.translate('supplier.synced', response.result), 'success');
+      },
+      error: err => this.toast.showToast(err?.error?.message || this.lang.translate('supplier.sync_failed'), 'error')
+    });
+  }
+
+  public supplierExamplePriceVnd(): number {
+    const basePrice = 20000;
+    const adjustment = Number(this.supplierForm.price_adjustment_value || 0);
+    const result = this.supplierForm.price_adjustment_type === 'percent'
+      ? basePrice * (1 + adjustment / 100)
+      : basePrice + adjustment;
+    return Math.max(0, result);
+  }
+
+  public supplierExampleUsd(): number {
+    const rate = this.supplierStore.exchangeRate();
+    return rate > 0 ? this.supplierExamplePriceVnd() / rate : 0;
   }
 
   public onSubmit(): void {

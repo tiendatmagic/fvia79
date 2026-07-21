@@ -64,6 +64,9 @@ Route::prefix('v1')->group(function () {
 
             Route::get('/admin/settings', ['App\Http\Controllers\SystemSettingController', 'index']);
             Route::put('/admin/settings', ['App\Http\Controllers\SystemSettingController', 'update']);
+            Route::get('/admin/suppliers', ['App\Http\Controllers\SupplierController', 'index']);
+            Route::put('/admin/suppliers/{code}', ['App\Http\Controllers\SupplierController', 'update']);
+            Route::post('/admin/suppliers/{code}/sync', ['App\Http\Controllers\SupplierController', 'sync']);
             Route::post('/admin/maintenance/clear-views', ['App\Http\Controllers\SystemSettingController', 'clearViews']);
             Route::post('/admin/maintenance/clear-config', ['App\Http\Controllers\SystemSettingController', 'clearConfig']);
             Route::post('/admin/maintenance/clear-routes', ['App\Http\Controllers\SystemSettingController', 'clearRoutes']);

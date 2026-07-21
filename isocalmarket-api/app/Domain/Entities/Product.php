@@ -5,15 +5,38 @@ namespace App\Domain\Entities;
 class Product
 {
     private ?string $id;
+
     private ?string $categoryId;
+
     private string $name;
+
     private string $slug;
+
     private ?string $description;
+
     private float $price;
+
     private string $status;
+
     private int $availableCount;
+
     private ?array $attributes;
+
     private ?\DateTimeInterface $deletedAt;
+
+    private ?string $supplierId;
+
+    private ?string $supplierCode;
+
+    private ?string $supplierName;
+
+    private ?string $externalId;
+
+    private ?float $supplierPriceVnd;
+
+    private ?int $supplierStock;
+
+    private ?\DateTimeInterface $supplierSyncedAt;
 
     public function __construct(
         ?string $id,
@@ -25,7 +48,14 @@ class Product
         int $availableCount = 0,
         ?array $attributes = null,
         ?string $categoryId = null,
-        ?\DateTimeInterface $deletedAt = null
+        ?\DateTimeInterface $deletedAt = null,
+        ?string $supplierId = null,
+        ?string $supplierCode = null,
+        ?string $supplierName = null,
+        ?string $externalId = null,
+        ?float $supplierPriceVnd = null,
+        ?int $supplierStock = null,
+        ?\DateTimeInterface $supplierSyncedAt = null
     ) {
         $this->id = $id;
         $this->categoryId = $categoryId;
@@ -37,6 +67,13 @@ class Product
         $this->availableCount = $availableCount;
         $this->attributes = $attributes;
         $this->deletedAt = $deletedAt;
+        $this->supplierId = $supplierId;
+        $this->supplierCode = $supplierCode;
+        $this->supplierName = $supplierName;
+        $this->externalId = $externalId;
+        $this->supplierPriceVnd = $supplierPriceVnd;
+        $this->supplierStock = $supplierStock;
+        $this->supplierSyncedAt = $supplierSyncedAt;
     }
 
     public function getId(): ?string
@@ -97,5 +134,40 @@ class Product
     public function isDeleted(): bool
     {
         return $this->deletedAt !== null;
+    }
+
+    public function getSupplierId(): ?string
+    {
+        return $this->supplierId;
+    }
+
+    public function getSupplierCode(): ?string
+    {
+        return $this->supplierCode;
+    }
+
+    public function getSupplierName(): ?string
+    {
+        return $this->supplierName;
+    }
+
+    public function getExternalId(): ?string
+    {
+        return $this->externalId;
+    }
+
+    public function getSupplierPriceVnd(): ?float
+    {
+        return $this->supplierPriceVnd;
+    }
+
+    public function getSupplierStock(): ?int
+    {
+        return $this->supplierStock;
+    }
+
+    public function getSupplierSyncedAt(): ?\DateTimeInterface
+    {
+        return $this->supplierSyncedAt;
     }
 }

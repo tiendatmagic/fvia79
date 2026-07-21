@@ -2,14 +2,18 @@
 
 namespace App\Infrastructure\Persistence\Eloquent;
 
-use Illuminate\Database\Eloquent\Model;
-use Illuminate\Database\Eloquent\Concerns\HasUuids;
 use Illuminate\Database\Eloquent\Attributes\Fillable;
+use Illuminate\Database\Eloquent\Concerns\HasUuids;
+use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\SoftDeletes;
 use Illuminate\Support\Str;
 
-#[Fillable(['category_id', 'name', 'slug', 'description', 'price', 'status', 'attributes'])]
+#[Fillable([
+    'supplier_id', 'external_id', 'category_id', 'name', 'slug', 'description',
+    'price', 'supplier_price_vnd', 'supplier_stock', 'supplier_synced_at', 'status', 'attributes',
+])]
 class ProductModel extends Model
 {
     use HasUuids, NormalizeTextTrait, SoftDeletes;
@@ -34,13 +38,21 @@ class ProductModel extends Model
     {
         return [
             'price' => 'float',
+            'supplier_price_vnd' => 'float',
+            'supplier_stock' => 'integer',
+            'supplier_synced_at' => 'datetime',
             'attributes' => 'array',
         ];
     }
 
-    public function category(): \Illuminate\Database\Eloquent\Relations\BelongsTo
+    public function category(): BelongsTo
     {
         return $this->belongsTo(CategoryModel::class, 'category_id');
+    }
+
+    public function supplier(): BelongsTo
+    {
+        return $this->belongsTo(SupplierModel::class, 'supplier_id');
     }
 
     public function inventoryItems(): HasMany

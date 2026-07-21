@@ -1,0 +1,177 @@
+<?php
+
+namespace App\Application\Services;
+
+use App\Infrastructure\Persistence\Eloquent\CategoryModel;
+use App\Infrastructure\Persistence\Eloquent\ProductModel;
+use App\Infrastructure\Persistence\Eloquent\SupplierModel;
+use App\Integrations\Suppliers\SupplierConnectorFactory;
+use Illuminate\Support\Facades\Cache;
+use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Str;
+use RuntimeException;
+use Throwable;
+
+class SupplierCatalogSyncService
+{
+    public function __construct(
+        private readonly SupplierConnectorFactory $connectorFactory,
+        private readonly SupplierPriceService $priceService,
+    ) {}
+
+    public function syncByCode(string $code): array
+    {
+        $supplier = SupplierModel::where('code', $code)->firstOrFail();
+
+        return $this->sync($supplier);
+    }
+
+    public function sync(SupplierModel $supplier): array
+    {
+        if (! $supplier->enabled) {
+            throw new RuntimeException("Supplier {$supplier->name} is disabled.");
+        }
+
+        try {
+            $catalog = $this->connectorFactory->make($supplier->code)->fetchCatalog($supplier);
+            $result = DB::transaction(fn () => $this->persistCatalog($supplier, $catalog));
+            $this->markSucceeded($supplier);
+            $this->clearStorefrontCache();
+
+            return $result;
+        } catch (Throwable $exception) {
+            $this->markFailed($supplier, $exception);
+            throw $exception;
+        }
+    }
+
+    public function syncDue(): array
+    {
+        $results = [];
+        $suppliers = SupplierModel::where('enabled', true)->where('auto_sync', true)->get();
+
+        foreach ($suppliers as $supplier) {
+            if ($this->isDue($supplier)) {
+                try {
+                    $results[$supplier->code] = $this->sync($supplier);
+                } catch (Throwable) {
+                    continue;
+                }
+            }
+        }
+
+        return $results;
+    }
+
+    private function persistCatalog(SupplierModel $supplier, array $catalog): array
+    {
+        $categoryCount = 0;
+        $productCount = 0;
+        $externalProductIds = [];
+
+        foreach ($catalog as $categoryData) {
+            $category = $this->upsertCategory($supplier, $categoryData);
+            $categoryCount++;
+
+            foreach (($categoryData['children'] ?? []) as $productData) {
+                $this->upsertProduct($supplier, $category, $productData);
+                $externalProductIds[] = (string) $productData['id'];
+                $productCount++;
+            }
+        }
+
+        $this->deactivateMissingProducts($supplier, $externalProductIds);
+
+        return ['categories' => $categoryCount, 'products' => $productCount];
+    }
+
+    private function upsertCategory(SupplierModel $supplier, array $data): CategoryModel
+    {
+        $externalId = (string) ($data['id'] ?? '');
+        if ($externalId === '') {
+            throw new RuntimeException('Supplier category is missing its id.');
+        }
+
+        return CategoryModel::updateOrCreate(
+            ['supplier_id' => $supplier->id, 'external_id' => $externalId],
+            [
+                'name' => (string) ($data['name'] ?? "Category {$externalId}"),
+                'slug' => $this->sourceSlug($supplier, $externalId, (string) ($data['name'] ?? 'category')),
+                'description' => null,
+            ],
+        );
+    }
+
+    private function upsertProduct(SupplierModel $supplier, CategoryModel $category, array $data): void
+    {
+        $externalId = (string) ($data['id'] ?? '');
+        if ($externalId === '') {
+            throw new RuntimeException('Supplier product is missing its id.');
+        }
+
+        $product = ProductModel::firstOrNew([
+            'supplier_id' => $supplier->id,
+            'external_id' => $externalId,
+        ]);
+        $priceVnd = (float) ($data['price'] ?? 0);
+        $product->fill([
+            'category_id' => $category->id,
+            'name' => (string) ($data['name'] ?? "Product {$externalId}"),
+            'slug' => $this->sourceSlug($supplier, $externalId, (string) ($data['name'] ?? 'product')),
+            'description' => $data['data']['description'] ?? null,
+            'price' => $this->priceService->calculateUsd($priceVnd, $supplier),
+            'supplier_price_vnd' => $priceVnd,
+            'supplier_stock' => max(0, (int) ($data['quantity'] ?? 0)),
+            'supplier_synced_at' => now(),
+            'attributes' => [],
+        ]);
+
+        if (! $product->exists) {
+            $product->status = 'active';
+        }
+        $product->save();
+    }
+
+    private function sourceSlug(SupplierModel $supplier, string $externalId, string $name): string
+    {
+        return Str::limit(Str::slug("{$supplier->code}-{$externalId}-{$name}"), 240, '');
+    }
+
+    private function deactivateMissingProducts(SupplierModel $supplier, array $externalIds): void
+    {
+        $query = ProductModel::where('supplier_id', $supplier->id);
+        if ($externalIds !== []) {
+            $query->whereNotIn('external_id', $externalIds);
+        }
+        $query->update(['status' => 'inactive', 'supplier_stock' => 0]);
+    }
+
+    private function isDue(SupplierModel $supplier): bool
+    {
+        return ! $supplier->last_synced_at
+            || $supplier->last_synced_at->lte(now()->subMinutes($supplier->sync_interval_minutes));
+    }
+
+    private function markSucceeded(SupplierModel $supplier): void
+    {
+        $supplier->update([
+            'last_synced_at' => now(),
+            'last_sync_status' => 'success',
+            'last_sync_error' => null,
+        ]);
+    }
+
+    private function markFailed(SupplierModel $supplier, Throwable $exception): void
+    {
+        $supplier->update([
+            'last_sync_status' => 'failed',
+            'last_sync_error' => Str::limit($exception->getMessage(), 2000),
+        ]);
+    }
+
+    private function clearStorefrontCache(): void
+    {
+        Cache::forget('products_active_storefront');
+        Cache::forget('categories_active_storefront');
+    }
+}

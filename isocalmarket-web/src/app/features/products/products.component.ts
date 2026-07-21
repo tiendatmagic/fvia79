@@ -56,6 +56,7 @@ export class ProductsComponent implements OnInit {
     return [
       { key: 'id', label: this.lang.translate('common.id'), sortable: true },
       { key: 'name', label: this.lang.translate('modal.product_name'), sortable: true },
+      { key: 'supplier', label: this.lang.translate('prod.source'), sortable: false },
       { key: 'slug', label: this.lang.translate('cat.slug'), sortable: true },
       { key: 'price', label: this.lang.translate('modal.product_price'), sortable: true },
       { key: 'available_count', label: this.lang.translate('inv.in_stock'), sortable: true, align: 'center' },

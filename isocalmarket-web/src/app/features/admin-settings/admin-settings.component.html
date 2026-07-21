@@ -7,7 +7,7 @@
     <div class="flex items-center gap-2 border-b border-slate-200/50 dark:border-slate-800/50 overflow-x-auto scrollbar-none whitespace-nowrap flex-nowrap">
     <button
       (click)="changeTab('general')"
-      class="px-5 py-3 border-b-2 font-bold text-sm transition-all flex items-center gap-2 cursor-pointer -mb-px whitespace-nowrap"
+      class="px-5 py-3 border-b-2 font-bold text-sm transition-colors flex items-center gap-2 cursor-pointer -mb-px whitespace-nowrap"
       [class.border-primary]="activeTab() === 'general'"
       [class.text-primary]="activeTab() === 'general'"
       [class.border-transparent]="activeTab() !== 'general'"
@@ -19,8 +19,19 @@
       {{ 'settings.tab_general' | translate }}
     </button>
     <button
+      (click)="changeTab('suppliers')"
+      class="px-5 py-3 border-b-2 font-bold text-sm transition-colors flex items-center gap-2 cursor-pointer -mb-px whitespace-nowrap"
+      [class.border-primary]="activeTab() === 'suppliers'"
+      [class.text-primary]="activeTab() === 'suppliers'"
+      [class.border-transparent]="activeTab() !== 'suppliers'"
+      [class.text-slate-500]="activeTab() !== 'suppliers'"
+    >
+      <app-icon name="sync" class="w-4 h-4" />
+      {{ 'settings.tab_suppliers' | translate }}
+    </button>
+    <button
       (click)="changeTab('maintenance')"
-      class="px-5 py-3 border-b-2 font-bold text-sm transition-all flex items-center gap-2 cursor-pointer -mb-px whitespace-nowrap"
+      class="px-5 py-3 border-b-2 font-bold text-sm transition-colors flex items-center gap-2 cursor-pointer -mb-px whitespace-nowrap"
       [class.border-primary]="activeTab() === 'maintenance'"
       [class.text-primary]="activeTab() === 'maintenance'"
       [class.border-transparent]="activeTab() !== 'maintenance'"
@@ -276,6 +287,104 @@
                 {{ 'settings.save' | translate }}
               </button>
             }
+          </div>
+        </form>
+      </app-card>
+    }
+
+    @if (activeTab() === 'suppliers') {
+      <app-card>
+        <div class="flex flex-col sm:flex-row sm:items-start justify-between gap-4 mb-6">
+          <div>
+            <div class="flex items-center gap-2">
+              <h3 class="text-lg font-black text-slate-800 dark:text-white">ADS7979</h3>
+              <span class="px-2 py-0.5 rounded-md text-xs font-bold"
+                [class.bg-emerald-100]="supplierForm.last_sync_status === 'success'"
+                [class.text-emerald-700]="supplierForm.last_sync_status === 'success'"
+                [class.bg-slate-100]="supplierForm.last_sync_status !== 'success'"
+                [class.text-slate-600]="supplierForm.last_sync_status !== 'success'">
+                {{ supplierForm.last_sync_status || ('supplier.not_synced' | translate) }}
+              </span>
+            </div>
+            <p class="mt-1 text-sm text-slate-500">{{ 'supplier.description' | translate }}</p>
+            <p class="mt-2 text-xs font-semibold text-slate-400">
+              {{ 'supplier.products_count' | translate: { count: supplierForm.products_count || 0 } }}
+              · {{ 'supplier.last_sync' | translate }}:
+              {{ supplierForm.last_synced_at ? (supplierForm.last_synced_at | date: 'short') : ('supplier.never' | translate) }}
+            </p>
+          </div>
+          <button app-button variant="primary" type="button" (click)="syncSupplier()"
+            [loading]="supplierStore.syncing()" [disabled]="supplierStore.syncing() || !supplierForm.enabled">
+            {{ 'supplier.sync_now' | translate }}
+          </button>
+        </div>
+
+        @if (supplierForm.last_sync_error) {
+          <div class="mb-5 rounded-lg border border-red-200 bg-red-50 p-3 text-sm text-red-700 dark:border-red-900/50 dark:bg-red-950/20 dark:text-red-300">
+            {{ supplierForm.last_sync_error }}
+          </div>
+        }
+
+        <form (ngSubmit)="saveSupplier()" class="space-y-6">
+          <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+            <div class="form-field md:col-span-2">
+              <label for="supplier_api_key">{{ 'supplier.api_key' | translate }}</label>
+              <div class="relative mt-1">
+                <input id="supplier_api_key" [type]="showSupplierApiKey() ? 'text' : 'password'" name="supplier_api_key"
+                  class="form-input w-full pr-12" [(ngModel)]="supplierForm.api_key" autocomplete="off" spellcheck="false"
+                  [placeholder]="supplierForm.has_api_key ? ('supplier.key_configured' | translate) : ('supplier.key_placeholder' | translate)" />
+                <button type="button" (click)="toggleSupplierApiKeyVisibility()"
+                  [attr.aria-label]="showSupplierApiKey() ? ('supplier.hide_key' | translate) : ('supplier.show_key' | translate)"
+                  class="absolute right-3 top-1/2 -translate-y-1/2 text-slate-400">
+                  <app-icon [name]="showSupplierApiKey() ? 'eye-slash' : 'eye'" class="w-5 h-5" />
+                </button>
+              </div>
+              <p class="mt-1.5 text-xs text-slate-400">{{ 'supplier.key_hint' | translate }}</p>
+            </div>
+
+            <div class="form-field">
+              <label for="supplier_adjustment_type">{{ 'supplier.adjustment_type' | translate }}</label>
+              <select id="supplier_adjustment_type" name="price_adjustment_type" class="form-input mt-1 w-full" [(ngModel)]="supplierForm.price_adjustment_type">
+                <option value="fixed">{{ 'supplier.fixed_vnd' | translate }}</option>
+                <option value="percent">{{ 'supplier.percent' | translate }}</option>
+              </select>
+            </div>
+            <div class="form-field">
+              <label for="supplier_adjustment_value">{{ 'supplier.adjustment_value' | translate }}</label>
+              <input id="supplier_adjustment_value" type="number" name="price_adjustment_value" class="form-input mt-1 w-full"
+                [(ngModel)]="supplierForm.price_adjustment_value" required />
+            </div>
+            <div class="form-field">
+              <label for="supplier_sync_interval">{{ 'supplier.interval' | translate }}</label>
+              <select id="supplier_sync_interval" name="sync_interval_minutes" class="form-input mt-1 w-full" [(ngModel)]="supplierForm.sync_interval_minutes">
+                <option [ngValue]="10">10 {{ 'supplier.minutes' | translate }}</option>
+                <option [ngValue]="30">30 {{ 'supplier.minutes' | translate }}</option>
+              </select>
+            </div>
+            <div class="flex flex-col justify-center gap-3 pt-5">
+              <label class="flex items-center gap-2 text-sm font-semibold text-slate-700 dark:text-slate-300">
+                <input type="checkbox" name="enabled" [(ngModel)]="supplierForm.enabled" class="h-4 w-4" />
+                {{ 'supplier.enabled' | translate }}
+              </label>
+              <label class="flex items-center gap-2 text-sm font-semibold text-slate-700 dark:text-slate-300">
+                <input type="checkbox" name="auto_sync" [(ngModel)]="supplierForm.auto_sync" class="h-4 w-4" />
+                {{ 'supplier.auto_sync' | translate }}
+              </label>
+            </div>
+          </div>
+
+          <div class="rounded-xl border border-slate-200 bg-slate-50 p-4 text-sm dark:border-slate-800 dark:bg-slate-900/50">
+            <p class="font-bold text-slate-700 dark:text-slate-200">{{ 'supplier.price_example' | translate }}</p>
+            <p class="mt-1 text-slate-500">
+              20.000đ → {{ supplierExamplePriceVnd() | number: '1.0-0' }}đ → ${{ supplierExampleUsd() | number: '1.2-2' }}
+              ({{ 'supplier.rate' | translate }} CoinGecko: {{ supplierStore.exchangeRate() | number: '1.0-0' }} VND/USD)
+            </p>
+          </div>
+
+          <div class="flex justify-end">
+            <button app-button variant="primary" type="submit" [loading]="supplierStore.saving()" [disabled]="supplierStore.saving()">
+              {{ 'supplier.save' | translate }}
+            </button>
           </div>
         </form>
       </app-card>

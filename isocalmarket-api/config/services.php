@@ -35,4 +35,8 @@ return [
         ],
     ],
 
+    'ads7979' => [
+        'api_key' => env('ADS7979_API_KEY'),
+    ],
+
 ];

@@ -4,8 +4,9 @@ namespace App\Infrastructure\Persistence\Repositories;
 
 use App\Domain\Entities\Product;
 use App\Domain\Repositories\ProductRepositoryInterface;
-use App\Infrastructure\Persistence\Eloquent\ProductModel;
+use App\Infrastructure\Persistence\Eloquent\CategoryModel;
 use App\Infrastructure\Persistence\Eloquent\InventoryBatchModel;
+use App\Infrastructure\Persistence\Eloquent\ProductModel;
 use App\Infrastructure\Persistence\Mappers\ProductMapper;
 
 class ProductRepository implements ProductRepositoryInterface
@@ -14,6 +15,10 @@ class ProductRepository implements ProductRepositoryInterface
 
     private function getAvailableCount(ProductModel $model): int
     {
+        if ($model->supplier_id !== null) {
+            return max(0, (int) $model->supplier_stock);
+        }
+
         $batches = $model->relationLoaded('activeBatches')
             ? $model->activeBatches
             : InventoryBatchModel::where('product_id', $model->id)
@@ -23,8 +28,9 @@ class ProductRepository implements ProductRepositoryInterface
 
         $total = 0;
         foreach ($batches as $batch) {
-            $total += max(0, (int)$batch->initial_count - (int)$batch->sold_count);
+            $total += max(0, (int) $batch->initial_count - (int) $batch->sold_count);
         }
+
         return $total;
     }
 
@@ -55,12 +61,13 @@ class ProductRepository implements ProductRepositoryInterface
                 $this->applyAccentInsensitiveSearch($q, 'name', $search);
             });
         }
-        $models = $query->with(['activeBatches:id,product_id,initial_count,sold_count,status,created_at'])->orderBy('created_at', 'desc')->get();
+        $models = $query->with(['supplier:id,code,name', 'activeBatches:id,product_id,initial_count,sold_count,status,created_at'])->orderBy('created_at', 'desc')->get();
         $products = [];
         foreach ($models as $model) {
             $availableCount = $this->getAvailableCount($model);
             $products[] = ProductMapper::toDomain($model, $availableCount);
         }
+
         return $products;
     }
 
@@ -92,7 +99,7 @@ class ProductRepository implements ProductRepositoryInterface
             });
         }
         $total = $query->count();
-        $models = $query->with(['activeBatches:id,product_id,initial_count,sold_count,status,created_at'])->orderBy('created_at', 'desc')
+        $models = $query->with(['supplier:id,code,name', 'activeBatches:id,product_id,initial_count,sold_count,status,created_at'])->orderBy('created_at', 'desc')
             ->skip(($page - 1) * $limit)
             ->take($limit)
             ->get();
@@ -105,25 +112,31 @@ class ProductRepository implements ProductRepositoryInterface
 
         return [
             'items' => $products,
-            'total' => $total
+            'total' => $total,
         ];
     }
 
     public function findById(string $id): ?Product
     {
-        $model = ProductModel::withTrashed()->with(['activeBatches:id,product_id,initial_count,sold_count,status,created_at'])->find($id);
-        if (!$model) return null;
+        $model = ProductModel::withTrashed()->with(['supplier:id,code,name', 'activeBatches:id,product_id,initial_count,sold_count,status,created_at'])->find($id);
+        if (! $model) {
+            return null;
+        }
 
         $availableCount = $this->getAvailableCount($model);
+
         return ProductMapper::toDomain($model, $availableCount);
     }
 
     public function findBySlug(string $slug): ?Product
     {
-        $model = ProductModel::withTrashed()->with(['activeBatches:id,product_id,initial_count,sold_count,status,created_at'])->where('slug', $slug)->first();
-        if (!$model) return null;
+        $model = ProductModel::withTrashed()->with(['supplier:id,code,name', 'activeBatches:id,product_id,initial_count,sold_count,status,created_at'])->where('slug', $slug)->first();
+        if (! $model) {
+            return null;
+        }
 
         $availableCount = $this->getAvailableCount($model);
+
         return ProductMapper::toDomain($model, $availableCount);
     }
 
@@ -133,6 +146,7 @@ class ProductRepository implements ProductRepositoryInterface
         $model->save();
 
         $availableCount = $this->getAvailableCount($model);
+
         return ProductMapper::toDomain($model, $availableCount);
     }
 
@@ -142,6 +156,7 @@ class ProductRepository implements ProductRepositoryInterface
         if ($model) {
             return (bool) $model->delete();
         }
+
         return false;
     }
 
@@ -151,12 +166,13 @@ class ProductRepository implements ProductRepositoryInterface
         if ($model) {
             return (bool) $model->restore();
         }
+
         return false;
     }
 
     public function findGroupedActiveProducts(int $limit, ?string $search = null): array
     {
-        $categories = \App\Infrastructure\Persistence\Eloquent\CategoryModel::orderBy('name', 'asc')->get();
+        $categories = CategoryModel::orderBy('name', 'asc')->get();
 
         $productQuery = ProductModel::query()->where('status', 'active');
         if ($search) {
@@ -175,12 +191,12 @@ class ProductRepository implements ProductRepositoryInterface
         }
 
         $allActiveProducts = (clone $productQuery)
-            ->with(['activeBatches:id,product_id,initial_count,sold_count,status,created_at'])
+            ->with(['supplier:id,code,name', 'activeBatches:id,product_id,initial_count,sold_count,status,created_at'])
             ->orderBy('created_at', 'desc')
             ->get();
 
         $grouped = [];
-        $productsByCat = $allActiveProducts->groupBy(fn($p) => (string)($p->category_id ?? 'other'));
+        $productsByCat = $allActiveProducts->groupBy(fn ($p) => (string) ($p->category_id ?? 'other'));
 
         foreach ($categories as $cat) {
             $catId = (string) $cat->id;
@@ -197,7 +213,7 @@ class ProductRepository implements ProductRepositoryInterface
                     'name' => $cat->name,
                     'description' => $cat->description,
                     'products' => $products,
-                    'total' => (int)($countsByCategory[$catId] ?? count($catProductsModels))
+                    'total' => (int) ($countsByCategory[$catId] ?? count($catProductsModels)),
                 ];
             }
         }
@@ -210,13 +226,13 @@ class ProductRepository implements ProductRepositoryInterface
                 $productsOther[] = ProductMapper::toDomain($model, $availableCount);
             }
 
-            $totalOther = (int)($countsByCategory[''] ?? $countsByCategory[null] ?? count($otherModels));
+            $totalOther = (int) ($countsByCategory[''] ?? $countsByCategory[null] ?? count($otherModels));
             $grouped[] = [
                 'id' => 'other',
                 'name' => __('messages.other_products'),
                 'description' => __('messages.other_products_description'),
                 'products' => $productsOther,
-                'total' => $totalOther
+                'total' => $totalOther,
             ];
         }
 

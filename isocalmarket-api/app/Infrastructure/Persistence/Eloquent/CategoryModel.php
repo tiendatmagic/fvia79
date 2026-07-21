@@ -2,13 +2,14 @@
 
 namespace App\Infrastructure\Persistence\Eloquent;
 
-use Illuminate\Database\Eloquent\Model;
-use Illuminate\Database\Eloquent\Concerns\HasUuids;
 use Illuminate\Database\Eloquent\Attributes\Fillable;
+use Illuminate\Database\Eloquent\Concerns\HasUuids;
+use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Support\Str;
 
-#[Fillable(['name', 'slug', 'description'])]
+#[Fillable(['supplier_id', 'external_id', 'name', 'slug', 'description'])]
 class CategoryModel extends Model
 {
     use HasUuids, NormalizeTextTrait;
@@ -32,5 +33,10 @@ class CategoryModel extends Model
     public function products(): HasMany
     {
         return $this->hasMany(ProductModel::class, 'category_id');
+    }
+
+    public function supplier(): BelongsTo
+    {
+        return $this->belongsTo(SupplierModel::class, 'supplier_id');
     }
 }

@@ -2,8 +2,11 @@
 
 namespace App\Http\Controllers;
 
-use App\Http\Requests\CreateProductRequest;
 use App\Application\Services\ProductService;
+use App\Domain\Entities\Product;
+use App\Http\Requests\CreateProductRequest;
+use App\Infrastructure\Persistence\Eloquent\UserModel;
+use App\Infrastructure\Security\JwtService;
 use Illuminate\Http\Request;
 
 class ProductController extends Controller
@@ -29,134 +32,82 @@ class ProductController extends Controller
             $user = $this->getAuthenticatedUser($request);
 
             $isAdmin = $user && $user->role === 'admin';
-            if (!$isAdmin) {
+            if (! $isAdmin) {
                 $filterDeleted = 'active';
-                if (!$status) {
+                if (! $status) {
                     $status = 'active';
                 }
             }
 
             if ($page) {
-                $result = $this->productService->getActiveProductsPaginated((int)$page, (int)$limit, $categoryId, $status, $search, $filterDeleted);
+                $result = $this->productService->getActiveProductsPaginated((int) $page, (int) $limit, $categoryId, $status, $search, $filterDeleted);
                 $products = $result['items'];
                 $total = $result['total'];
 
-                $data = array_map(function ($product) {
-                    return [
-                        'id' => $product->getId(),
-                        'category_id' => $product->getCategoryId(),
-                        'name' => $product->getName(),
-                        'slug' => $product->getSlug(),
-                        'description' => $product->getDescription(),
-                        'price' => $product->getPrice(),
-                        'status' => $product->getStatus(),
-                        'available_count' => $product->getAvailableCount(),
-                        'attributes' => $product->getAttributes(),
-                        'deleted_at' => $product->getDeletedAt() ? $product->getDeletedAt()->format('Y-m-d H:i:s') : null,
-                        'is_deleted' => $product->isDeleted()
-                    ];
-                }, $products);
+                $data = array_map(fn (Product $product) => $this->serializeProduct($product), $products);
 
                 return response()->json([
                     'data' => $data,
                     'meta' => [
                         'total' => $total,
-                        'page' => (int)$page,
-                        'limit' => (int)$limit,
-                        'last_page' => (int)ceil($total / $limit)
-                    ]
+                        'page' => (int) $page,
+                        'limit' => (int) $limit,
+                        'last_page' => (int) ceil($total / $limit),
+                    ],
                 ]);
             }
 
             $products = $this->productService->getAllActiveProducts($categoryId, $status, $search, $filterDeleted);
-            
-            $data = array_map(function ($product) {
-                return [
-                    'id' => $product->getId(),
-                    'category_id' => $product->getCategoryId(),
-                    'name' => $product->getName(),
-                    'slug' => $product->getSlug(),
-                    'description' => $product->getDescription(),
-                    'price' => $product->getPrice(),
-                    'status' => $product->getStatus(),
-                    'available_count' => $product->getAvailableCount(),
-                    'attributes' => $product->getAttributes(),
-                    'deleted_at' => $product->getDeletedAt() ? $product->getDeletedAt()->format('Y-m-d H:i:s') : null,
-                    'is_deleted' => $product->isDeleted()
-                ];
-            }, $products);
+
+            $data = array_map(fn (Product $product) => $this->serializeProduct($product), $products);
 
             return response()->json($data);
         } catch (\Exception $e) {
-            return response()->json(['message' => 'Cannot fetch products: ' . $e->getMessage()], 500);
+            return response()->json(['message' => 'Cannot fetch products: '.$e->getMessage()], 500);
         }
     }
 
     public function indexGrouped(Request $request)
     {
         try {
-            $limit = (int)$request->query('limit', 8);
+            $limit = (int) $request->query('limit', 8);
             $search = $request->query('search');
 
             $groupedData = $this->productService->getGroupedActiveProducts($limit, $search);
 
             $result = array_map(function ($group) {
-                $mappedProducts = array_map(function ($product) {
-                    return [
-                        'id' => $product->getId(),
-                        'category_id' => $product->getCategoryId(),
-                        'name' => $product->getName(),
-                        'slug' => $product->getSlug(),
-                        'description' => $product->getDescription(),
-                        'price' => $product->getPrice(),
-                        'status' => $product->getStatus(),
-                        'available_count' => $product->getAvailableCount(),
-                        'attributes' => $product->getAttributes()
-                    ];
-                }, $group['products']);
+                $mappedProducts = array_map(fn (Product $product) => $this->serializeProduct($product, false), $group['products']);
 
                 return [
                     'id' => $group['id'],
                     'name' => $group['name'],
                     'description' => $group['description'],
                     'products' => $mappedProducts,
-                    'total' => $group['total']
+                    'total' => $group['total'],
                 ];
             }, $groupedData);
 
             return response()->json($result);
         } catch (\Exception $e) {
-            return response()->json(['message' => 'Cannot fetch grouped products: ' . $e->getMessage()], 500);
+            return response()->json(['message' => 'Cannot fetch grouped products: '.$e->getMessage()], 500);
         }
     }
 
-    public function show($id)
+    public function show(Request $request, $id)
     {
         try {
             $product = $this->productService->getProductById($id);
-            if (!$product) {
+            if (! $product) {
                 return response()->json(['message' => 'Product not found.'], 404);
             }
 
             $user = $this->getAuthenticatedUser($request);
             $isAdmin = $user && $user->role === 'admin';
-            if ($product->isDeleted() && !$isAdmin) {
+            if ($product->isDeleted() && ! $isAdmin) {
                 return response()->json(['message' => 'Product not found.'], 404);
             }
 
-            return response()->json([
-                'id' => $product->getId(),
-                'category_id' => $product->getCategoryId(),
-                'name' => $product->getName(),
-                'slug' => $product->getSlug(),
-                'description' => $product->getDescription(),
-                'price' => $product->getPrice(),
-                'status' => $product->getStatus(),
-                'available_count' => $product->getAvailableCount(),
-                'attributes' => $product->getAttributes(),
-                'deleted_at' => $product->getDeletedAt() ? $product->getDeletedAt()->format('Y-m-d H:i:s') : null,
-                'is_deleted' => $product->isDeleted()
-            ]);
+            return response()->json($this->serializeProduct($product));
         } catch (\Exception $e) {
             return response()->json(['message' => $e->getMessage()], 500);
         }
@@ -169,7 +120,7 @@ class ProductController extends Controller
                 $request->name,
                 $request->slug,
                 $request->description,
-                (float)$request->price,
+                (float) $request->price,
                 $request->status,
                 $request->input('attributes'),
                 $request->category_id
@@ -185,8 +136,8 @@ class ProductController extends Controller
                     'description' => $product->getDescription(),
                     'price' => $product->getPrice(),
                     'status' => $product->getStatus(),
-                    'attributes' => $product->getAttributes()
-                ]
+                    'attributes' => $product->getAttributes(),
+                ],
             ], 201);
         } catch (\Exception $e) {
             return response()->json(['message' => $e->getMessage()], 500);
@@ -197,7 +148,7 @@ class ProductController extends Controller
     {
         try {
             $product = $this->productService->getProductById($id);
-            if (!$product) {
+            if (! $product) {
                 return response()->json(['message' => 'Product not found.'], 404);
             }
             if ($product->isDeleted()) {
@@ -209,7 +160,7 @@ class ProductController extends Controller
                 $request->name,
                 $request->slug,
                 $request->description,
-                (float)$request->price,
+                (float) $request->price,
                 $request->status,
                 $request->input('attributes'),
                 $request->category_id
@@ -225,8 +176,8 @@ class ProductController extends Controller
                     'description' => $product->getDescription(),
                     'price' => $product->getPrice(),
                     'status' => $product->getStatus(),
-                    'attributes' => $product->getAttributes()
-                ]
+                    'attributes' => $product->getAttributes(),
+                ],
             ]);
         } catch (\Exception $e) {
             return response()->json(['message' => $e->getMessage()], 500);
@@ -237,7 +188,7 @@ class ProductController extends Controller
     {
         try {
             $deleted = $this->productService->deleteProduct($id);
-            if (!$deleted) {
+            if (! $deleted) {
                 return response()->json(['message' => 'Product not found or delete failed.'], 404);
             }
 
@@ -251,7 +202,7 @@ class ProductController extends Controller
     {
         try {
             $restored = $this->productService->restoreProduct($id);
-            if (!$restored) {
+            if (! $restored) {
                 return response()->json(['message' => 'Product not found or restore failed.'], 404);
             }
 
@@ -264,25 +215,55 @@ class ProductController extends Controller
     private function getAuthenticatedUser(Request $request)
     {
         $token = $request->cookie('access_token');
-        if (!$token) {
+        if (! $token) {
             $authHeader = $request->header('Authorization');
             if ($authHeader && preg_match('/Bearer\s(\S+)/', $authHeader, $matches)) {
                 $token = $matches[1];
             }
         }
 
-        if (!$token) {
+        if (! $token) {
             return null;
         }
 
         try {
-            $jwtService = app(\App\Infrastructure\Security\JwtService::class);
+            $jwtService = app(JwtService::class);
             $payload = $jwtService->validateToken($token);
-            if ($payload && !empty($payload['sub'])) {
-                return \App\Infrastructure\Persistence\Eloquent\UserModel::find($payload['sub']);
+            if ($payload && ! empty($payload['sub'])) {
+                return UserModel::find($payload['sub']);
             }
-        } catch (\Exception $e) {}
+        } catch (\Exception $e) {
+        }
 
         return null;
+    }
+
+    private function serializeProduct(Product $product, bool $includeDeleted = true): array
+    {
+        $data = [
+            'id' => $product->getId(),
+            'category_id' => $product->getCategoryId(),
+            'name' => $product->getName(),
+            'slug' => $product->getSlug(),
+            'description' => $product->getDescription(),
+            'price' => $product->getPrice(),
+            'status' => $product->getStatus(),
+            'available_count' => $product->getAvailableCount(),
+            'attributes' => $product->getAttributes(),
+            'supplier' => $product->getSupplierId() ? [
+                'code' => $product->getSupplierCode(),
+                'name' => $product->getSupplierName(),
+                'external_id' => $product->getExternalId(),
+                'price_vnd' => $product->getSupplierPriceVnd(),
+                'synced_at' => $product->getSupplierSyncedAt()?->format(DATE_ATOM),
+            ] : null,
+        ];
+
+        if ($includeDeleted) {
+            $data['deleted_at'] = $product->getDeletedAt()?->format('Y-m-d H:i:s');
+            $data['is_deleted'] = $product->isDeleted();
+        }
+
+        return $data;
     }
 }

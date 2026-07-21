@@ -1,11 +1,11 @@
 <?php
 
+use App\Application\Services\DepositService;
+use App\Infrastructure\Persistence\Eloquent\UserModel;
 use Illuminate\Foundation\Inspiring;
 use Illuminate\Support\Facades\Artisan;
-use App\Application\Services\DepositService;
-use App\Infrastructure\Persistence\Eloquent\DepositModel;
-use Illuminate\Support\Facades\Schedule;
 use Illuminate\Support\Facades\Log;
+use Illuminate\Support\Facades\Schedule;
 
 Artisan::command('inspire', function () {
     $this->comment(Inspiring::quote());
@@ -14,9 +14,9 @@ Artisan::command('inspire', function () {
 Artisan::command('auth:force-logout-all', function () {
     $this->info('Starting force logout of all users...');
 
-    $affected = \App\Infrastructure\Persistence\Eloquent\UserModel::query()->update([
+    $affected = UserModel::query()->update([
         'refresh_token_hash' => null,
-        'refresh_token_expired_at' => null
+        'refresh_token_expired_at' => null,
     ]);
     $this->comment("Cleared refresh tokens for {$affected} users in database.");
 
@@ -49,4 +49,4 @@ Artisan::command('deposit:check-pending', function (DepositService $depositServi
 
 // Đăng ký lịch chạy định kỳ mỗi phút
 Schedule::command('deposit:check-pending')->everyMinute();
-
+Schedule::command('suppliers:sync --due')->everyTenMinutes()->withoutOverlapping();

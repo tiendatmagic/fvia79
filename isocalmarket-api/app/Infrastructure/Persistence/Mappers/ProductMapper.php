@@ -19,13 +19,20 @@ class ProductMapper
             $availableCount,
             $model->attributes,
             $model->category_id,
-            $model->deleted_at
+            $model->deleted_at,
+            $model->supplier_id,
+            $model->supplier?->code,
+            $model->supplier?->name,
+            $model->external_id,
+            $model->supplier_price_vnd,
+            $model->supplier_stock,
+            $model->supplier_synced_at
         );
     }
 
     public static function toPersistence(Product $entity): ProductModel
     {
-        $model = new ProductModel();
+        $model = new ProductModel;
         if ($entity->getId()) {
             $model = ProductModel::withTrashed()->find($entity->getId()) ?: $model;
         }
@@ -37,6 +44,11 @@ class ProductMapper
         $model->price = $entity->getPrice();
         $model->status = $entity->getStatus();
         $model->attributes = $entity->getAttributes();
+        $model->supplier_id = $entity->getSupplierId();
+        $model->external_id = $entity->getExternalId();
+        $model->supplier_price_vnd = $entity->getSupplierPriceVnd();
+        $model->supplier_stock = $entity->getSupplierStock();
+        $model->supplier_synced_at = $entity->getSupplierSyncedAt();
 
         return $model;
     }

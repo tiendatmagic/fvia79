@@ -4,8 +4,8 @@ namespace App\Application\Services;
 
 use App\Domain\Entities\Product;
 use App\Domain\Repositories\ProductRepositoryInterface;
-use Illuminate\Support\Str;
 use Illuminate\Support\Facades\Cache;
+use Illuminate\Support\Str;
 
 class ProductService
 {
@@ -18,11 +18,12 @@ class ProductService
 
     public function getAllActiveProducts(?string $categoryId = null, ?string $status = null, ?string $search = null, ?string $filterDeleted = 'active'): array
     {
-        $isStorefrontLoad = !$categoryId && ($status === 'active' || !$status) && !$search && $filterDeleted === 'active';
+        $isStorefrontLoad = ! $categoryId && ($status === 'active' || ! $status) && ! $search && $filterDeleted === 'active';
         if ($isStorefrontLoad) {
             $cached = Cache::remember('products_active_storefront', 600, function () use ($categoryId, $status, $search, $filterDeleted) {
                 $products = $this->productRepository->findAllActive($categoryId, $status, $search, $filterDeleted);
-                return array_map(fn($p) => [
+
+                return array_map(fn ($p) => [
                     'id' => $p->getId(),
                     'name' => $p->getName(),
                     'slug' => $p->getSlug(),
@@ -33,10 +34,17 @@ class ProductService
                     'attributes' => $p->getAttributes(),
                     'categoryId' => $p->getCategoryId(),
                     'deletedAt' => $p->getDeletedAt()?->format('Y-m-d H:i:s'),
+                    'supplierId' => $p->getSupplierId(),
+                    'supplierCode' => $p->getSupplierCode(),
+                    'supplierName' => $p->getSupplierName(),
+                    'externalId' => $p->getExternalId(),
+                    'supplierPriceVnd' => $p->getSupplierPriceVnd(),
+                    'supplierStock' => $p->getSupplierStock(),
+                    'supplierSyncedAt' => $p->getSupplierSyncedAt()?->format('Y-m-d H:i:s'),
                 ], $products);
             });
 
-            return array_map(fn($p) => new Product(
+            return array_map(fn ($p) => new Product(
                 $p['id'],
                 $p['name'],
                 $p['slug'],
@@ -46,9 +54,17 @@ class ProductService
                 $p['available_count'],
                 $p['attributes'],
                 $p['categoryId'],
-                $p['deletedAt'] ? new \DateTime($p['deletedAt']) : null
+                $p['deletedAt'] ? new \DateTime($p['deletedAt']) : null,
+                $p['supplierId'],
+                $p['supplierCode'],
+                $p['supplierName'],
+                $p['externalId'],
+                $p['supplierPriceVnd'],
+                $p['supplierStock'],
+                $p['supplierSyncedAt'] ? new \DateTime($p['supplierSyncedAt']) : null
             ), $cached);
         }
+
         return $this->productRepository->findAllActive($categoryId, $status, $search, $filterDeleted);
     }
 
@@ -76,13 +92,14 @@ class ProductService
         $saved = $this->productRepository->save($product);
         Cache::forget('products_active_storefront');
         Cache::forget('categories_active_storefront');
+
         return $saved;
     }
 
     public function updateProduct(string $id, string $name, ?string $slug, ?string $description, float $price, string $status, ?array $attributes = null, ?string $categoryId = null): Product
     {
         $product = $this->productRepository->findById($id);
-        if (!$product) {
+        if (! $product) {
             throw new \Exception('Product not found.');
         }
 
@@ -93,10 +110,16 @@ class ProductService
         $baseSlug = $slug ?: Str::slug($name);
         $finalSlug = $this->generateUniqueSlug($baseSlug, $id);
 
-        $updatedProduct = new Product($id, $name, $finalSlug, $description, $price, $status, 0, $attributes, $categoryId);
+        $updatedProduct = new Product(
+            $id, $name, $finalSlug, $description, $price, $status, $product->getAvailableCount(),
+            $attributes, $categoryId, $product->getDeletedAt(), $product->getSupplierId(),
+            $product->getSupplierCode(), $product->getSupplierName(), $product->getExternalId(),
+            $product->getSupplierPriceVnd(), $product->getSupplierStock(), $product->getSupplierSyncedAt()
+        );
         $saved = $this->productRepository->save($updatedProduct);
         Cache::forget('products_active_storefront');
         Cache::forget('categories_active_storefront');
+
         return $saved;
     }
 
@@ -106,10 +129,10 @@ class ProductService
         $count = 1;
         while (true) {
             $existing = $this->productRepository->findBySlug($slug);
-            if (!$existing || ($excludeId && $existing->getId() === $excludeId)) {
+            if (! $existing || ($excludeId && $existing->getId() === $excludeId)) {
                 return $slug;
             }
-            $slug = $baseSlug . '-' . $count;
+            $slug = $baseSlug.'-'.$count;
             $count++;
         }
     }
@@ -121,6 +144,7 @@ class ProductService
             Cache::forget('products_active_storefront');
             Cache::forget('categories_active_storefront');
         }
+
         return $deleted;
     }
 
@@ -131,6 +155,7 @@ class ProductService
             Cache::forget('products_active_storefront');
             Cache::forget('categories_active_storefront');
         }
+
         return $restored;
     }
 }
