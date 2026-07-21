@@ -293,11 +293,27 @@
     }
 
     @if (activeTab() === 'suppliers') {
+      <div class="mb-4 flex flex-wrap items-center gap-2">
+        @for (supplier of supplierStore.suppliers(); track supplier.code) {
+          <button type="button" class="rounded-lg border px-3 py-2 text-sm font-bold"
+            [class.border-blue-500]="selectedSupplierCode() === supplier.code"
+            [class.text-blue-600]="selectedSupplierCode() === supplier.code"
+            [class.border-slate-200]="selectedSupplierCode() !== supplier.code"
+            (click)="selectSupplier(supplier)">
+            {{ supplier.name }}
+          </button>
+        }
+        <button app-button variant="secondary" type="button" (click)="startCreatingSupplier()">
+          + {{ 'supplier.add' | translate }}
+        </button>
+      </div>
       <app-card>
         <div class="flex flex-col sm:flex-row sm:items-start justify-between gap-4 mb-6">
           <div>
             <div class="flex items-center gap-2">
-              <h3 class="text-lg font-black text-slate-800 dark:text-white">ADS7979</h3>
+              <h3 class="text-lg font-black text-slate-800 dark:text-white">
+                {{ isCreatingSupplier() ? ('supplier.add' | translate) : supplierForm.name }}
+              </h3>
               <span class="px-2 py-0.5 rounded-md text-xs font-bold"
                 [class.bg-emerald-100]="supplierForm.last_sync_status === 'success'"
                 [class.text-emerald-700]="supplierForm.last_sync_status === 'success'"
@@ -313,10 +329,12 @@
               {{ supplierForm.last_synced_at ? (supplierForm.last_synced_at | date: 'short') : ('supplier.never' | translate) }}
             </p>
           </div>
+          @if (!isCreatingSupplier()) {
           <button app-button variant="primary" type="button" (click)="syncSupplier()"
             [loading]="supplierStore.syncing()" [disabled]="supplierStore.syncing() || !supplierForm.enabled">
             {{ 'supplier.sync_now' | translate }}
           </button>
+          }
         </div>
 
         @if (supplierForm.last_sync_error) {
@@ -327,6 +345,16 @@
 
         <form (ngSubmit)="saveSupplier()" class="space-y-6">
           <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+            <div class="form-field">
+              <label for="supplier_name">{{ 'supplier.name' | translate }}</label>
+              <input id="supplier_name" type="text" name="supplier_name" class="form-input mt-1 w-full"
+                [(ngModel)]="supplierForm.name" required />
+            </div>
+            <div class="form-field">
+              <label for="supplier_base_url">{{ 'supplier.base_url' | translate }}</label>
+              <input id="supplier_base_url" type="url" name="supplier_base_url" class="form-input mt-1 w-full"
+                [(ngModel)]="supplierForm.base_url" placeholder="https://vlclone.com" required />
+            </div>
             <div class="form-field md:col-span-2">
               <label for="supplier_api_key">{{ 'supplier.api_key' | translate }}</label>
               <div class="relative mt-1">
@@ -340,6 +368,11 @@
                 </button>
               </div>
               <p class="mt-1.5 text-xs text-slate-400">{{ 'supplier.key_hint' | translate }}</p>
+              @if (supplierForm.catalog_driver) {
+                <p class="mt-1 text-xs font-semibold text-emerald-600">
+                  {{ 'supplier.detected_standard' | translate }}: {{ supplierForm.catalog_driver === 'clone_store_v2' ? 'API V2' : 'API V1' }}
+                </p>
+              }
             </div>
 
             <div class="form-field">

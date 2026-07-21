@@ -56,6 +56,8 @@ export class AdminSettingsComponent implements OnInit, OnDestroy {
   public readonly showBinanceKey = signal<boolean>(false);
   public readonly showBinanceSecret = signal<boolean>(false);
   public readonly showSupplierApiKey = signal<boolean>(false);
+  public readonly selectedSupplierCode = signal<string | null>(null);
+  public readonly isCreatingSupplier = signal<boolean>(false);
 
   // Tab management - driven by route param
   public readonly activeTab = signal<'general' | 'suppliers' | 'maintenance'>('general');
@@ -91,8 +93,11 @@ export class AdminSettingsComponent implements OnInit, OnDestroy {
       }
     });
 
-    this.supplierStore.fetchAds7979().subscribe({
-      next: supplier => this.supplierForm = { ...supplier, api_key: '' },
+    this.supplierStore.fetchSuppliers().subscribe({
+      next: suppliers => {
+        const supplier = suppliers.find(item => item.code === 'ads7979') || suppliers[0];
+        if (supplier) this.selectSupplier(supplier);
+      },
       error: () => this.toast.showToast(this.lang.translate('supplier.load_failed'), 'error')
     });
 
@@ -148,8 +153,19 @@ export class AdminSettingsComponent implements OnInit, OnDestroy {
     const payload = { ...this.supplierForm };
     if (!payload.api_key?.trim()) delete payload.api_key;
 
-    this.supplierStore.updateAds7979(payload).subscribe({
+    if (this.isCreatingSupplier() && (!payload.name?.trim() || !payload.base_url?.trim() || !payload.api_key?.trim())) {
+      this.toast.showToast(this.lang.translate('supplier.required_fields'), 'warning');
+      return;
+    }
+
+    const request = this.isCreatingSupplier()
+      ? this.supplierStore.create(payload)
+      : this.supplierStore.update(this.selectedSupplierCode()!, payload);
+
+    request.subscribe({
       next: supplier => {
+        this.selectedSupplierCode.set(supplier.code);
+        this.isCreatingSupplier.set(false);
         this.supplierForm = { ...supplier, api_key: '' };
         this.toast.showToast(this.lang.translate('supplier.saved'), 'success');
       },
@@ -158,13 +174,39 @@ export class AdminSettingsComponent implements OnInit, OnDestroy {
   }
 
   public syncSupplier(): void {
-    this.supplierStore.syncAds7979().subscribe({
+    const code = this.selectedSupplierCode();
+    if (!code) return;
+
+    this.supplierStore.sync(code).subscribe({
       next: response => {
         this.supplierForm = { ...response.supplier, api_key: '' };
         this.toast.showToast(this.lang.translate('supplier.synced', response.result), 'success');
       },
       error: err => this.toast.showToast(err?.error?.message || this.lang.translate('supplier.sync_failed'), 'error')
     });
+  }
+
+  public selectSupplier(supplier: SupplierSettings): void {
+    this.selectedSupplierCode.set(supplier.code);
+    this.isCreatingSupplier.set(false);
+    this.showSupplierApiKey.set(false);
+    this.supplierForm = { ...supplier, api_key: '' };
+  }
+
+  public startCreatingSupplier(): void {
+    this.selectedSupplierCode.set(null);
+    this.isCreatingSupplier.set(true);
+    this.showSupplierApiKey.set(false);
+    this.supplierForm = {
+      name: '',
+      base_url: 'https://',
+      api_key: '',
+      enabled: true,
+      auto_sync: false,
+      sync_interval_minutes: 30,
+      price_adjustment_type: 'fixed',
+      price_adjustment_value: 0
+    };
   }
 
   public supplierExamplePriceVnd(): number {

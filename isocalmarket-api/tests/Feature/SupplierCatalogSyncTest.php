@@ -6,8 +6,12 @@ use App\Application\Services\SupplierCatalogSyncService;
 use App\Infrastructure\Persistence\Eloquent\CategoryModel;
 use App\Infrastructure\Persistence\Eloquent\ProductModel;
 use App\Infrastructure\Persistence\Eloquent\SupplierModel;
+use App\Infrastructure\Persistence\Eloquent\UserModel;
+use App\Infrastructure\Security\JwtService;
+use App\Integrations\Suppliers\CloneStoreConnector;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Support\Facades\Cache;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Http;
 use Tests\TestCase;
 
@@ -65,6 +69,96 @@ class SupplierCatalogSyncTest extends TestCase
             ->assertJsonPath('0.available_count', 17)
             ->assertJsonPath('0.supplier.code', 'ads7979')
             ->assertJsonPath('0.supplier.external_id', '2');
+    }
+
+    public function test_admin_can_add_and_sync_another_compatible_v2_supplier_without_new_connector(): void
+    {
+        Http::fake([
+            'https://vlclone.com/api/v2/categories' => Http::response($this->catalog()),
+            'https://api.coingecko.com/api/v3/simple/price*' => Http::response([
+                'tether' => ['vnd' => 26000],
+            ]),
+        ]);
+        $admin = UserModel::create([
+            'username' => 'supplier_admin',
+            'name' => 'Supplier Admin',
+            'email' => 'supplier-admin@example.com',
+            'password' => 'password123',
+            'role' => 'admin',
+            'balance' => 0,
+            'google2fa_enabled' => false,
+            'status' => 'active',
+        ]);
+        $token = app(JwtService::class)->generateToken([
+            'sub' => $admin->id,
+            'email' => $admin->email,
+            'role' => 'admin',
+            'ver' => 0,
+        ], 1800);
+
+        $create = $this->withToken($token)->postJson('/api/v1/admin/suppliers', [
+            'name' => 'VLClone',
+            'base_url' => 'https://vlclone.com',
+            'api_key' => 'vlclone-test-key',
+            'price_adjustment_type' => 'fixed',
+            'price_adjustment_value' => 20000,
+        ]);
+
+        $create->assertCreated()
+            ->assertJsonPath('name', 'VLClone')
+            ->assertJsonPath('catalog_driver', 'clone_store_v2')
+            ->assertJsonPath('has_api_key', true);
+        $code = $create->json('code');
+        $supplier = SupplierModel::where('code', $code)->firstOrFail();
+        $this->assertNotSame(
+            'vlclone-test-key',
+            DB::table('suppliers')->where('id', $supplier->id)->value('api_key'),
+        );
+
+        $this->withToken($token)
+            ->postJson("/api/v1/admin/suppliers/{$code}/sync")
+            ->assertOk()
+            ->assertJsonPath('result.products', 1);
+        $this->assertSame(1, ProductModel::where('supplier_id', $supplier->id)->count());
+    }
+
+    public function test_compatible_supplier_driver_falls_back_to_v1_and_normalizes_its_catalog(): void
+    {
+        Http::fake([
+            'https://vlclone.com/api/v2/categories' => Http::response(['message' => 'Unauthorized'], 401),
+            'https://vlclone.com/api/v1/balance' => Http::response(['status' => true, 'balance' => 100000]),
+            'https://vlclone.com/api/v1/categories' => Http::response([
+                'data' => [[
+                    'id' => 5,
+                    'name' => 'V1 Category',
+                    'icon' => null,
+                    'list_product' => [[
+                        'id_product' => 99,
+                        'name' => 'V1 Product',
+                        'desc' => 'V1 description',
+                        'price' => 15000,
+                        'quantity' => 7,
+                        'hdsd' => 'Instructions',
+                    ]],
+                ]],
+            ]),
+        ]);
+        $supplier = new SupplierModel([
+            'code' => 'vlclone',
+            'name' => 'VLClone',
+            'base_url' => 'https://vlclone.com',
+            'api_key' => 'v1-test-key',
+            'catalog_driver' => CloneStoreConnector::V2,
+        ]);
+        $connector = app(CloneStoreConnector::class);
+
+        $this->assertSame(CloneStoreConnector::V1, $connector->detectDriver($supplier));
+        $supplier->catalog_driver = CloneStoreConnector::V1;
+        $catalog = $connector->fetchCatalog($supplier);
+
+        $this->assertSame(99, $catalog[0]['children'][0]['id']);
+        $this->assertSame('V1 description', $catalog[0]['children'][0]['data']['description']);
+        $this->assertSame(7, $catalog[0]['children'][0]['quantity']);
     }
 
     private function fakeSupplierAndRateApis(): void

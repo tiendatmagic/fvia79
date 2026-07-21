@@ -2,16 +2,16 @@
 
 namespace App\Integrations\Suppliers;
 
+use App\Infrastructure\Persistence\Eloquent\SupplierModel;
 use App\Integrations\Suppliers\Contracts\SupplierCatalogConnector;
-use InvalidArgumentException;
 
 class SupplierConnectorFactory
 {
-    public function make(string $code): SupplierCatalogConnector
+    public function make(SupplierModel $supplier): SupplierCatalogConnector
     {
-        return match ($code) {
-            'ads7979' => app(Ads7979Connector::class),
-            default => throw new InvalidArgumentException("Unsupported supplier: {$code}"),
+        return match ($supplier->catalog_driver) {
+            CloneStoreConnector::V1, CloneStoreConnector::V2 => app(CloneStoreConnector::class),
+            default => throw new \InvalidArgumentException("Unsupported supplier driver: {$supplier->catalog_driver}"),
         };
     }
 }

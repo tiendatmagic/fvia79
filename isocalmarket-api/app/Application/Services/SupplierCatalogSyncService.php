@@ -33,7 +33,7 @@ class SupplierCatalogSyncService
         }
 
         try {
-            $catalog = $this->connectorFactory->make($supplier->code)->fetchCatalog($supplier);
+            $catalog = $this->connectorFactory->make($supplier)->fetchCatalog($supplier);
             $result = DB::transaction(fn () => $this->persistCatalog($supplier, $catalog));
             $this->markSucceeded($supplier);
             $this->clearStorefrontCache();

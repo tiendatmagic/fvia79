@@ -1577,7 +1577,7 @@
     - **Thực hiện & Kết quả**:
       1. Sửa tệp [enable-2fa-modal.component.html](file:///d:/git/isocalmarket/isocalmarket-web/src/app/features/profile/security/enable-2fa-modal/enable-2fa-modal.component.html), thay thế class của nút Xác nhận kích hoạt từ `flex-[2]` thành `flex-1` để có độ rộng bằng với nút Hủy (`flex-1`).
       2. Sửa tệp [disable-2fa-modal.component.html](file:///d:/git/isocalmarket/isocalmarket-web/src/app/features/profile/security/disable-2fa-modal/disable-2fa-modal.component.html) đổi class nút Tắt 2FA tương tự từ `flex-[2]` thành `flex-1` để đồng bộ.
-    - **Xác minh**: Biên dịch `npm run build` thành công 100%.��n nào ở trạng thái chờ thanh toán (`pending_payment`) — cho cả cổng Binance Pay và USDT BEP-20 — đều hiển thị đầy đủ 2 nút "Hủy Lệnh Nạp" và "Tôi đã chuyển khoản".
+    - **Xác minh**: Biên dịch `npm run build` thành công 100%.��n nào ở trạng thái chờ thanh toán (`pending_payment`) — cho cả cổng Binance Pay và USDT BEP-20 — đều hiển thị đầy đủ 2 nút "Hủy Lệnh Nạp" và "Tôi đã chuyển khoản".
       2. Cập nhật Backend [DepositService.php](file:///d:/git/isocalmarket/isocalmarket-api/app/Application/Services/DepositService.php) cho phép Admin hoặc chủ sở hữu đơn nạp có thể gọi API hủy hóa đơn (`cancelInvoice`).
       3. Bổ sung `userId` vào hàm `formatDeposit` trong [DepositController.php](file:///d:/git/isocalmarket/isocalmarket-api/app/Http/Controllers/DepositController.php) và giao diện `DepositHistoryItem` tại Frontend.
     - **Xác minh**: Biên dịch ứng dụng Angular thành công không lỗi.
@@ -1935,3 +1935,16 @@
       3. **Xác minh**: Build dự án Angular thành công.
 
   - **[CHO PHÊP TRUY CẬP STOREFRONT KHI CHƯA ĐĂNG NHẬP]**:\n    - **Yêu cầu**: Cho phép khách vãng lai chưa đăng nhập vẫn truy cập được /storefront để xem sản phẩm. Nếu click biểu tượng giỏ hàng hoặc nút thêm vào giỏ, hiển thị Toast cảnh báo yêu cáu đăng nhập. Nếu truy cập các trang bảo mật, hiển thị Toast yêu cáu đăng nhập và chuyển hướng sang /login. Khi phiên hết hạn tại /storefront, giỿ họ lại dưới vai trò khách vãng lai.\n    - **Thực hiện & Kết quả**:\n      1. **Dịch thuật (language.service.ts)**: Thêm các key cảnh báo yêu cáu đăng nhập cho cả EN và VI.\n      2. **Interceptor (auth.interceptor.ts)**: Cập nhật handle401Error để không chuyển hướng về /login nếu đang truy cập trang công khai (/storefront, /, /login, /register).\n      3. **Route Guard (auth.guard.ts)**: Thêm Toast cảnh báo khi chặn các route yêu cáu bảo mật.\n      4. **Component (storefront.component.ts & header.component.ts)**: Thêm check isAuthenticated() để chặn hành động giỏ hàng và hiển thị Toast cảnh báo tương ứng.\n      5. **Xác minh**: Chạy build Angular thành công.\n
+
+## [2026-07-21] Sửa lỗi i18n thiếu key
+- Đã bổ sung key uth.marketing_title_normal_2 vào từ điển tiếng Anh (en) trong LanguageService.
+- Bổ sung các key dịch cho UI tab (User Info, Permissions, Security & API, Deposit History) đồng bộ cả 2 ngôn ngữ EN và VI.
+- Cập nhật pipe translate cho tiêu đề mô tả Deposit History.
+
+## [2026-07-21T11:25:57.947Z] Audit & Synchronize i18n Translations
+- **Yêu cầu:** Rà soát toàn bộ source code HTML, các component TS và file `language.service.ts` để kiểm tra việc gắn key i18n và bổ sung các bản dịch còn thiếu.
+- **Thực hiện:**
+  1. Đã phân tích 65 file HTML template và 105 file TypeScript trong dự án Angular frontend.
+  2. Xác nhận 100% các thành phần HTML và Toast/Alert/Modal messages đều đã được gắn key i18n đầy đủ.
+  3. Rà soát file `language.service.ts` với 1080 key dịch ở cả hai ngôn ngữ (`en` và `vi`), kiểm tra tính đồng nhất của các tham số biến (`{{count}}`, `{{code}}`, ...).
+  4. Cập nhật bổ sung key `auth.marketing_title_normal_2` trong cấu hình tiếng Anh để chuẩn hóa kết thúc câu giao diện Login.
