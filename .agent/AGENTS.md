@@ -1822,3 +1822,12 @@
       2. Đổi màu nền và text cho icon Tổng đơn hàng từ xám (bg-slate-100 / text-slate-500) sang màu chàm (bg-indigo-50 / text-indigo-500).
       3. Đổi variant của <app-badge> tại nhãn 'Toàn hệ thống' từ neutral (màu xám) sang ultra (gradient đa sắc chuyển màu từ primary sang secondary rất độc đáo).
     - **Xác minh**: Biên dịch npm run build thành công 100%.
+
+
+  - **[TỐI ƯU HÓA MÀU SẮC ĐỒNG BỘ CHO 5 CARD THỐNG KÊ DASHBOARD]**:
+    - **Yêu cầu**: Thay đổi màu sắc các nhãn (badge) và icon trên các card thống kê của Dashboard cho sinh động, rực rỡ và đặc sắc.
+    - **Thực hiện & Kết quả**:
+      1. Sửa tệp admin-dashboard.component.html.
+      2. Chuyển đổi card **Tổng đơn hàng** sang tông màu chàm (**Indigo**): Icon dùng màu indigo (	ext-indigo-500 / g-indigo-50), nhãn 'Toàn hệ thống' đổi từ variant 'ultra' sang class custom màu Indigo (!bg-indigo-500/10 !text-indigo-600 !border-indigo-500/20).
+      3. Chuyển đổi card **Tổng người dùng** sang tông màu tím (**Purple**) đồng bộ: Giữ nguyên icon màu tím, đổi nhãn 'Đăng ký hệ thống' từ variant 'info' (màu xanh lục lệch tông) sang class custom màu Purple (!bg-purple-500/10 !text-purple-600 !border-purple-500/20).
+    - **Xác minh**: Biên dịch npm run build thành công 100%.

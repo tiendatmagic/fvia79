@@ -87,7 +87,7 @@
           {{ stats().total_orders | number }}
           <span class="text-xs font-extrabold text-slate-500 ml-0.5">{{ 'dash.unit_orders' | translate }}</span>
         </h2>
-        <app-badge variant="ultra" size="sm" rounded="md">{{ 'dash.all_system' | translate }}</app-badge>
+        <app-badge variant="primary" class="!bg-indigo-500/10 dark:!bg-indigo-500/20 !text-indigo-600 dark:!text-indigo-400 !border-indigo-500/20 dark:!border-indigo-500/30" size="sm" rounded="md">{{ 'dash.all_system' | translate }}</app-badge>
       </div>
     </app-card>
 
@@ -144,7 +144,7 @@
           {{ stats().total_users | number }}
           <span class="text-xs font-extrabold text-slate-500 ml-0.5">{{ 'dash.unit_members' | translate }}</span>
         </h2>
-        <app-badge variant="info" size="sm" rounded="md">{{ 'dash.registered_users' | translate }}</app-badge>
+        <app-badge variant="primary" class="!bg-purple-500/10 dark:!bg-purple-500/20 !text-purple-600 dark:!text-purple-400 !border-purple-500/20 dark:!border-purple-500/30" size="sm" rounded="md">{{ 'dash.registered_users' | translate }}</app-badge>
       </div>
     </app-card>
   </div>
