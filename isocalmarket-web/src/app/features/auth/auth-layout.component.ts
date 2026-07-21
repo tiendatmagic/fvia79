@@ -1,4 +1,4 @@
-import { Component, inject, signal } from '@angular/core';
+import { Component, inject, signal, HostListener } from '@angular/core';
 import { CommonModule, Location } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { RouterModule, Router, ActivatedRoute, NavigationEnd } from '@angular/router';
@@ -8,7 +8,7 @@ import { ButtonComponent } from '@shared/components/button/button.component';
 import { LogoComponent } from '@shared/components/logo/logo.component';
 import { ThemeSwitcherComponent } from '@shared/components/theme-switcher/theme-switcher.component';
 import { CustomInputComponent } from '@shared/components/custom-input/custom-input.component';
-import { LanguageService } from '@core/services/language.service';
+import { LanguageService, SupportedLanguage } from '@core/services/language.service';
 import { TranslatePipe } from '@shared/pipes/translate.pipe';
 
 @Component({
@@ -28,6 +28,23 @@ export class AuthLayoutComponent {
   private readonly router = inject(Router);
   private readonly route = inject(ActivatedRoute);
   private readonly location = inject(Location);
+
+  public showLangDropdown = signal(false);
+
+  public toggleLangDropdown(event: Event) {
+    event.stopPropagation();
+    this.showLangDropdown.update(v => !v);
+  }
+
+  public selectLang(lang: SupportedLanguage) {
+    this.lang.setLanguage(lang);
+    this.showLangDropdown.set(false);
+  }
+
+  @HostListener('document:click')
+  public closeDropdowns() {
+    this.showLangDropdown.set(false);
+  }
 
   // Tab state - driven by URL, never triggers left panel re-render
   public readonly isLogin = signal(true);

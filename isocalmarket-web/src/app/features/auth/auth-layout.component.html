@@ -1,13 +1,9 @@
-<div class="min-h-screen w-full flex bg-slate-50 dark:bg-slate-950 transition-colors duration-300">
+<div class="min-h-screen w-full flex bg-slate-50 dark:bg-slate-950">
   <div class="grid grid-cols-1 lg:grid-cols-2 w-full min-h-screen">
     <!-- Cột trái: Static - KHÔNG bao giờ thay đổi khi chuyển tab -->
     <div
       class="hidden lg:flex lg:col-span-1 flex-col justify-between p-10 xl:p-12 bg-white dark:bg-slate-950 text-slate-900 dark:text-slate-100 border-r border-slate-200/60 dark:border-slate-800/40 relative overflow-hidden transition-colors duration-300"
     >
-      <!-- Accent gradient line -->
-      <div
-        class="absolute left-0 top-0 bottom-0 w-[4px] bg-gradient-to-b from-primary to-secondary"
-      ></div>
       <!-- Blur glow effects -->
       <div
         class="absolute -top-40 -left-40 w-96 h-96 bg-primary/[0.08] dark:bg-primary/15 rounded-full blur-[128px] pointer-events-none"
@@ -140,27 +136,47 @@
         >
           <app-theme-switcher [showLabels]="false" [showAuto]="true" />
           <div class="w-[1px] h-3.5 bg-slate-200 dark:bg-slate-800"></div>
-          <div class="flex items-center gap-1.5 select-none">
+          <div class="flex items-center gap-2 select-none">
             <button
               type="button"
               (click)="lang.setLanguage('vi')"
               [class.text-primary]="lang.currentLang() === 'vi'"
               [class.font-extrabold]="lang.currentLang() === 'vi'"
               [class.text-slate-400]="lang.currentLang() !== 'vi'"
-              class="text-xs transition-colors cursor-pointer focus:outline-none bg-transparent border-none p-0"
+              class="text-xs flex items-center gap-1.5 transition-colors cursor-pointer focus:outline-none bg-transparent border-none p-0 hover:opacity-80"
             >
-              VI
+              <svg
+                viewBox="0 0 30 20"
+                class="w-4 h-3.5 shrink-0 rounded-[2px] overflow-hidden border border-slate-200/20 dark:border-slate-800/40 shadow-xs"
+              >
+                <rect width="30" height="20" fill="#da251d" />
+                <polygon
+                  points="15,4 16.236,7.803 20.236,7.803 17,10.153 18.236,13.956 15,11.6 11.764,13.956 13,10.153 9.764,7.803 13.764,7.803"
+                  fill="#ffff00"
+                />
+              </svg>
+              <span>VI</span>
             </button>
-            <span class="text-xs text-slate-300 dark:text-slate-700">/</span>
+            <span class="text-xs text-slate-300 dark:text-slate-700">|</span>
             <button
               type="button"
               (click)="lang.setLanguage('en')"
               [class.text-primary]="lang.currentLang() === 'en'"
               [class.font-extrabold]="lang.currentLang() === 'en'"
               [class.text-slate-400]="lang.currentLang() !== 'en'"
-              class="text-xs transition-colors cursor-pointer focus:outline-none bg-transparent border-none p-0"
+              class="text-xs flex items-center gap-1.5 transition-colors cursor-pointer focus:outline-none bg-transparent border-none p-0 hover:opacity-80"
             >
-              EN
+              <svg
+                viewBox="0 0 60 30"
+                class="w-4 h-3.5 shrink-0 rounded-[2px] overflow-hidden border border-slate-200/20 dark:border-slate-800/40 shadow-xs"
+              >
+                <rect width="60" height="30" fill="#012169" />
+                <path d="M0,0 L60,30 M60,0 L0,30" stroke="#fff" stroke-width="6" />
+                <path d="M0,0 L60,30 M60,0 L0,30" stroke="#c8102e" stroke-width="4" />
+                <path d="M30,0 v30 M0,15 h60" stroke="#fff" stroke-width="10" />
+                <path d="M30,0 v30 M0,15 h60" stroke="#c8102e" stroke-width="6" />
+              </svg>
+              <span>EN</span>
             </button>
           </div>
         </div>
@@ -259,19 +275,20 @@
                   <label
                     >{{ 'auth.password' | translate }} <span class="text-red-500">*</span></label
                   >
-                  <div class="relative flex items-center">
+                  <div class="relative w-full">
                     <app-custom-input
                       [type]="showLoginPassword() ? 'text' : 'password'"
                       [(ngModel)]="loginPassword"
                       (ngModelChange)="state.authStore.loginError.set('')"
                       name="loginPassword"
                       [placeholder]="'auth.password_placeholder' | translate"
+                      customClass="form-input-password"
                       required
                     />
                     <button
                       type="button"
                       (click)="toggleLoginPassword()"
-                      class="absolute right-3 text-slate-400 hover:text-slate-600 dark:text-slate-500 dark:hover:text-slate-400 focus:outline-none cursor-pointer bg-transparent border-none p-0 z-10 flex items-center justify-center"
+                      class="absolute right-3 top-1/2 -translate-y-1/2 text-slate-400 hover:text-slate-600 dark:text-slate-500 dark:hover:text-slate-400 focus:outline-none cursor-pointer bg-transparent border-none p-0 z-10 flex items-center justify-center"
                     >
                       @if (showLoginPassword()) {
                         <svg
@@ -467,18 +484,19 @@
 
               <div class="form-field">
                 <label>{{ 'auth.password' | translate }} <span class="text-red-500">*</span></label>
-                <div class="relative flex items-center">
+                <div class="relative w-full">
                   <app-custom-input
                     [type]="showRegPassword() ? 'text' : 'password'"
                     [(ngModel)]="regPassword"
                     name="regPassword"
                     [placeholder]="'auth.password_placeholder' | translate"
+                    customClass="form-input-password"
                     required
                   />
                   <button
                     type="button"
                     (click)="toggleRegPassword()"
-                    class="absolute right-3 text-slate-400 hover:text-slate-600 dark:text-slate-500 dark:hover:text-slate-400 focus:outline-none cursor-pointer bg-transparent border-none p-0 z-10 flex items-center justify-center"
+                    class="absolute right-3 top-1/2 -translate-y-1/2 text-slate-400 hover:text-slate-600 dark:text-slate-500 dark:hover:text-slate-400 focus:outline-none cursor-pointer bg-transparent border-none p-0 z-10 flex items-center justify-center"
                   >
                     @if (showRegPassword()) {
                       <svg
@@ -520,18 +538,19 @@
                   >{{ 'auth.confirm_password' | translate }}
                   <span class="text-red-500">*</span></label
                 >
-                <div class="relative flex items-center">
+                <div class="relative w-full">
                   <app-custom-input
                     [type]="showRegConfirmPassword() ? 'text' : 'password'"
                     [(ngModel)]="regPasswordConfirmation"
                     name="regPasswordConfirmation"
                     [placeholder]="'auth.confirm_password_placeholder' | translate"
+                    customClass="form-input-password"
                     required
                   />
                   <button
                     type="button"
                     (click)="toggleRegConfirmPassword()"
-                    class="absolute right-3 text-slate-400 hover:text-slate-600 dark:text-slate-500 dark:hover:text-slate-400 focus:outline-none cursor-pointer bg-transparent border-none p-0 z-10 flex items-center justify-center"
+                    class="absolute right-3 top-1/2 -translate-y-1/2 text-slate-400 hover:text-slate-600 dark:text-slate-500 dark:hover:text-slate-400 focus:outline-none cursor-pointer bg-transparent border-none p-0 z-10 flex items-center justify-center"
                   >
                     @if (showRegConfirmPassword()) {
                       <svg

@@ -146,6 +146,11 @@ body.dark ::-webkit-scrollbar-thumb {
   padding-right: 1rem !important;
 }
 
+.form-input-password {
+  padding-right: 2.75rem !important;
+}
+
+
 .form-textarea {
   @apply w-full text-sm font-semibold rounded-xl bg-white dark:bg-slate-950 border border-slate-200/40 dark:border-slate-800/40 text-slate-800 dark:text-white placeholder-slate-400 focus:outline-none focus:border-primary focus:ring-1 focus:ring-primary/20 resize-none;
   padding: 0.75rem 1rem !important;

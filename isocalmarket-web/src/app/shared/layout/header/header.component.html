@@ -28,7 +28,7 @@
       <div class="relative">
         <button
           (click)="toggleLangDropdown($event)"
-          class="flex items-center gap-1.5 px-3 h-10 rounded-xl border shadow-sm text-xs font-black transition-all cursor-pointer group"
+          class="flex items-center gap-2 px-3 h-10 rounded-xl border shadow-sm text-xs font-black transition-all cursor-pointer group"
           [ngClass]="
             showLangDropdown()
               ? 'border-[var(--color-primary)] bg-[var(--color-primary)]/5 dark:bg-[var(--color-primary)]/10 text-[var(--color-primary)]'
@@ -38,7 +38,21 @@
           [attr.aria-expanded]="showLangDropdown()"
           aria-haspopup="menu"
         >
-          <span class="uppercase">{{ langService.currentLang() }}</span>
+          @if (langService.currentLang() === 'vi') {
+            <svg viewBox="0 0 30 20" class="w-4 h-3.5 shrink-0 rounded-[2px] overflow-hidden border border-slate-200/20 dark:border-slate-800/40 shadow-xs">
+              <rect width="30" height="20" fill="#da251d"/>
+              <polygon points="15,4 16.236,7.803 20.236,7.803 17,10.153 18.236,13.956 15,11.6 11.764,13.956 13,10.153 9.764,7.803 13.764,7.803" fill="#ffff00"/>
+            </svg>
+          } @else {
+            <svg viewBox="0 0 60 30" class="w-4 h-3.5 shrink-0 rounded-[2px] overflow-hidden border border-slate-200/20 dark:border-slate-800/40 shadow-xs">
+              <rect width="60" height="30" fill="#012169"/>
+              <path d="M0,0 L60,30 M60,0 L0,30" stroke="#fff" stroke-width="6"/>
+              <path d="M0,0 L60,30 M60,0 L0,30" stroke="#c8102e" stroke-width="4"/>
+              <path d="M30,0 v30 M0,15 h60" stroke="#fff" stroke-width="10"/>
+              <path d="M30,0 v30 M0,15 h60" stroke="#c8102e" stroke-width="6"/>
+            </svg>
+          }
+          <span class="uppercase leading-none">{{ langService.currentLang() }}</span>
           <app-icon
             name="chevron-down"
             class="w-3 h-3 text-slate-400 transition-transform group-hover:text-[var(--color-primary)]"
@@ -60,7 +74,16 @@
               role="menuitemradio"
               [attr.aria-checked]="langService.currentLang() === 'en'"
             >
-              <span class="truncate">{{ 'header.english' | translate }}</span>
+              <div class="flex items-center gap-2.5 min-w-0">
+                <svg viewBox="0 0 60 30" class="w-5 h-4 shrink-0 rounded-[2px] overflow-hidden border border-slate-200/20 dark:border-slate-800/40 shadow-xs">
+                  <rect width="60" height="30" fill="#012169"/>
+                  <path d="M0,0 L60,30 M60,0 L0,30" stroke="#fff" stroke-width="6"/>
+                  <path d="M0,0 L60,30 M60,0 L0,30" stroke="#c8102e" stroke-width="4"/>
+                  <path d="M30,0 v30 M0,15 h60" stroke="#fff" stroke-width="10"/>
+                  <path d="M30,0 v30 M0,15 h60" stroke="#c8102e" stroke-width="6"/>
+                </svg>
+                <span class="truncate">{{ 'header.english' | translate }}</span>
+              </div>
               @if (langService.currentLang() === 'en') {
                 <span class="w-1.5 h-1.5 shrink-0 rounded-full bg-[var(--color-primary)]"></span>
               }
@@ -72,7 +95,13 @@
               role="menuitemradio"
               [attr.aria-checked]="langService.currentLang() === 'vi'"
             >
-              <span class="truncate">{{ 'header.vietnamese' | translate }}</span>
+              <div class="flex items-center gap-2.5 min-w-0">
+                <svg viewBox="0 0 30 20" class="w-5 h-4 shrink-0 rounded-[2px] overflow-hidden border border-slate-200/20 dark:border-slate-800/40 shadow-xs">
+                  <rect width="30" height="20" fill="#da251d"/>
+                  <polygon points="15,4 16.236,7.803 20.236,7.803 17,10.153 18.236,13.956 15,11.6 11.764,13.956 13,10.153 9.764,7.803 13.764,7.803" fill="#ffff00"/>
+                </svg>
+                <span class="truncate">{{ 'header.vietnamese' | translate }}</span>
+              </div>
               @if (langService.currentLang() === 'vi') {
                 <span class="w-1.5 h-1.5 shrink-0 rounded-full bg-[var(--color-primary)]"></span>
               }

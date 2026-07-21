@@ -1918,3 +1918,11 @@
       1. **Phân tích**: Angular CLI mặc định tối ưu CSS bằng cách tải bất đồng bộ qua onload="this.media='all'". Tuy nhiên CSP của Netlify cấu hình script-src 'self' chặn toàn bộ inline event handlers, làm stylesheet kẹt ở media="print" và không áp dụng lên màn hình.
       2. **Khắc phục**: Sửa cấu hình angular.json, thêm "optimization": { "styles": { "inlineCritical": false } } vào cấu hình build production. Điều này giúp Angular sinh ra link style đồng bộ truyền thống không chứa inline script.
       3. **Xác minh**: Chạy build frontend thành công. File index.html đầu ra hiển thị link style sạch sẽ <link rel="stylesheet" href="styles-HFGYCSND.css">.
+
+  - **[THÊM LÁ CỜ NGÔN NGỮ & SỬA LỖI Ô MẬT KHẨU]**:
+    - **Yêu cầu**: Thêm hình ảnh logo lá cờ (Việt Nam và Anh) cho đổi ngôn ngữ, sửa lỗi width/focus ô mật khẩu.
+    - **Thực hiện & Kết quả**:
+      1. **Styles**: Định nghĩa class .form-input-password trong styles.scss để tăng padding-right.
+      2. **Auth Layout**: Đổi wrapper ô mật khẩu thành elative w-full giúp input tự động rộng 100%; căn giữa lại nút con mắt; tích hợp cờ SVG chất lượng cao cho VI/EN switcher.
+      3. **Header**: Hiển thị cờ SVG tương ứng ở nút chọn và các tùy chọn dropdown ngôn ngữ của Header.
+      4. **Xác minh**: Build dự án Angular thành công.
