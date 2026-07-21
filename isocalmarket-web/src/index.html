@@ -2,31 +2,44 @@
 <html lang="en">
   <head>
     <meta charset="utf-8" />
-    <title>Isocalmarket</title>
+    <title>Isocalmarket - Enterprise Digital Inventory Management System</title>
     <base href="/" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
-    <link rel="icon" type="image/svg+xml" href="assets/logo.svg" />
+    
+    <!-- Favicon & Device Icons -->
+    <link rel="icon" type="image/x-icon" href="favicon.ico" />
+    <link rel="icon" type="image/png" sizes="16x16" href="assets/favicon-16x16.png" />
+    <link rel="icon" type="image/png" sizes="32x32" href="assets/favicon-32x32.png" />
+    <link rel="apple-touch-icon" sizes="180x180" href="assets/apple-touch-icon.png" />
 
-        <script>
-      (function () {
-        const savedTheme = localStorage.getItem('theme_mode');
-        const systemDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
-        if (
-          savedTheme === 'dark' ||
-          (!savedTheme && systemDark) ||
-          (savedTheme === 'auto' && systemDark)
-        ) {
-          document.documentElement.classList.add('dark');
-        }
-      })();
-    </script>
+    <!-- Meta SEO -->
+    <meta name="description" content="Isocalmarket - Enterprise Digital Inventory Management System. Optimize your warehouse, track products in real-time, manage orders efficiently, and secure your data with built-in 2FA protection." />
+    <meta name="keywords" content="isocalmarket, inventory management, digital inventory, warehouse system, stock tracker, order management, enterprise inventory" />
+    <meta name="author" content="Isocalmarket Team" />
+    <meta name="robots" content="index, follow" />
 
-        <style>
+    <!-- Open Graph / Facebook -->
+    <meta property="og:type" content="website" />
+    <meta property="og:url" content="https://isocalmarket.com" />
+    <meta property="og:title" content="Isocalmarket - Enterprise Digital Inventory Management" />
+    <meta property="og:description" content="Optimize your warehouse, track products in real-time, manage orders efficiently, and secure your data with built-in 2FA protection." />
+    <meta property="og:image" content="assets/og-image.png" />
+
+    <!-- Twitter -->
+    <meta property="twitter:card" content="summary_large_image" />
+    <meta property="twitter:url" content="https://isocalmarket.com" />
+    <meta property="twitter:title" content="Isocalmarket - Enterprise Digital Inventory Management" />
+    <meta property="twitter:description" content="Optimize your warehouse, track products in real-time, manage orders efficiently, and secure your data with built-in 2FA protection." />
+    <meta property="twitter:image" content="assets/og-image.png" />
+
+    <script src="theme-init.js"></script>
+
+    <style>
       :root {
         --splash-bg: #f8fafc;
         --splash-text: #0f172a;
-        --splash-brand: #8000ff;
-        --splash-primary: #ff00dd;
+        --splash-brand: #006dd0;
+        --splash-primary: #0d9488;
       }
       html.dark {
         --splash-bg: #030712;
@@ -62,44 +75,20 @@
         display: flex;
         align-items: center;
         justify-content: center;
-        border-radius: 50%;
-        background-color: rgba(128, 0, 255, 0.08);
-        border: 1px solid rgba(128, 0, 255, 0.15);
-        padding: 10px;
-      }
-      html.dark .app-splash-logo-container {
-        background-color: rgba(128, 0, 255, 0.12);
-        border-color: rgba(128, 0, 255, 0.2);
-      }
-      .app-splash-logo-glow {
-        position: absolute;
-        inset: 0;
-        border-radius: 50%;
-        background: linear-gradient(to top right, rgba(255, 0, 221, 0.1), rgba(128, 0, 255, 0.1));
-        filter: blur(8px);
       }
       .app-splash-logo {
         width: 100%;
         height: 100%;
         position: relative;
         z-index: 10;
-        animation: splash-spin 20s linear infinite;
       }
       .app-splash-spinner {
         width: 24px;
         height: 24px;
-        border: 3px solid rgba(128, 0, 255, 0.1);
+        border: 3px solid rgba(0, 109, 208, 0.1);
         border-radius: 50%;
         border-top-color: var(--splash-brand);
         animation: splash-spin-spinner 0.8s infinite linear;
-      }
-      @keyframes splash-spin {
-        from {
-          transform: rotate(0deg);
-        }
-        to {
-          transform: rotate(360deg);
-        }
       }
       @keyframes splash-spin-spinner {
         from {
@@ -113,10 +102,10 @@
   </head>
   <body>
     <app-root>
-            <div class="app-splash-screen">
+      <div class="app-splash-screen">
         <div class="app-splash-logo-container">
-          <div class="app-splash-logo-glow"></div>
-          <img src="assets/logo.svg" class="app-splash-logo" alt="Logo" />
+          <img src="assets/logo-dark.png" class="app-splash-logo dark:hidden" alt="Logo" />
+          <img src="assets/logo-light.png" class="app-splash-logo hidden dark:block" alt="Logo" />
         </div>
         <div class="app-splash-spinner"></div>
       </div>

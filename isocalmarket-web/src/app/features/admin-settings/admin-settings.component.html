@@ -109,7 +109,7 @@
                   [placeholder]="'settings.moralis_placeholder' | translate"
                   [(ngModel)]="form.scanner_api_key"
                   [disabled]="isLocked()"
-                  required
+                  [required]="!form.has_scanner_api_key"
                 ></textarea>
                 <button
                   type="button"

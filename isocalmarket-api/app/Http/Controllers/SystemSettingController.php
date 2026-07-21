@@ -25,6 +25,11 @@ class SystemSettingController extends Controller
     {
         $settings = $this->settingService->getAllSettings();
 
+        foreach (['scanner_api_key', 'binance_api_key', 'binance_api_secret'] as $sensitiveKey) {
+            $settings['has_'.$sensitiveKey] = ! empty($settings[$sensitiveKey] ?? null);
+            unset($settings[$sensitiveKey]);
+        }
+
         return response()->json($settings);
     }
 
@@ -35,7 +40,7 @@ class SystemSettingController extends Controller
     {
         $request->validate([
             'admin_wallet_address' => ['sometimes', 'required', 'string', 'regex:/^0x[a-fA-F0-9]{40}$/'],
-            'scanner_api_key' => 'sometimes|required|string|max:1000',
+            'scanner_api_key' => 'sometimes|nullable|string|max:1000',
             'token_cleanup_days' => 'sometimes|required|integer|min:1|max:365',
             'usdt_exchange_rate' => 'sometimes|required|numeric|min:0|max:1000000',
             'admin_binance_id' => 'sometimes|nullable|string|max:100',
@@ -49,7 +54,7 @@ class SystemSettingController extends Controller
         if ($request->has('admin_wallet_address')) {
             $settingsToSave['admin_wallet_address'] = $request->input('admin_wallet_address');
         }
-        if ($request->has('scanner_api_key')) {
+        if ($request->filled('scanner_api_key')) {
             $settingsToSave['scanner_api_key'] = $request->input('scanner_api_key');
         }
         if ($request->has('token_cleanup_days')) {
@@ -62,11 +67,11 @@ class SystemSettingController extends Controller
             $settingsToSave['admin_binance_id'] = $request->input('admin_binance_id') ?: '';
         }
 
-        if ($request->has('binance_api_key')) {
-            $settingsToSave['binance_api_key'] = $request->input('binance_api_key') ?: '';
+        if ($request->filled('binance_api_key')) {
+            $settingsToSave['binance_api_key'] = $request->input('binance_api_key');
         }
-        if ($request->has('binance_api_secret')) {
-            $settingsToSave['binance_api_secret'] = $request->input('binance_api_secret') ?: '';
+        if ($request->filled('binance_api_secret')) {
+            $settingsToSave['binance_api_secret'] = $request->input('binance_api_secret');
         }
 
         if (! empty($settingsToSave)) {

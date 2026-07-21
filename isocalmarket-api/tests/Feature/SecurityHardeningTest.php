@@ -3,6 +3,7 @@
 namespace Tests\Feature;
 
 use App\Application\Services\AuthService;
+use App\Application\Services\SystemSettingService;
 use App\Http\Middleware\VerifyCookieRequestOrigin;
 use App\Infrastructure\Persistence\Eloquent\SystemSettingModel;
 use App\Infrastructure\Persistence\Eloquent\UserModel;
@@ -10,6 +11,7 @@ use App\Infrastructure\Persistence\Mappers\UserMapper;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Artisan;
+use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\Crypt;
 use Illuminate\Support\Facades\DB;
 use Tests\TestCase;
@@ -83,6 +85,65 @@ class SecurityHardeningTest extends TestCase
         $this->assertSame('existing-secret', SystemSettingModel::findOrFail('scanner_api_key')->value);
     }
 
+    public function test_sensitive_settings_bypass_cache_and_are_masked_in_admin_response(): void
+    {
+        $admin = $this->createAdmin();
+        SystemSettingModel::updateOrCreate(
+            ['key' => 'scanner_api_key'],
+            ['value' => 'real-scanner-secret', 'description' => 'Test secret']
+        );
+        SystemSettingModel::updateOrCreate(
+            ['key' => 'binance_api_key'],
+            ['value' => 'real-binance-key', 'description' => 'Test secret']
+        );
+
+        Cache::put('system_setting:scanner_api_key', 'poisoned-cache-value', 3600);
+        $this->assertSame(
+            'real-scanner-secret',
+            app(SystemSettingService::class)->getSetting('scanner_api_key')
+        );
+
+        $token = app(AuthService::class)->generateAccessToken(UserMapper::toDomain($admin));
+        $response = $this->withToken($token)->getJson('/api/v1/admin/settings');
+
+        $response->assertOk()
+            ->assertJsonMissingPath('scanner_api_key')
+            ->assertJsonMissingPath('binance_api_key')
+            ->assertJsonMissingPath('binance_api_secret')
+            ->assertJsonPath('has_scanner_api_key', true)
+            ->assertJsonPath('has_binance_api_key', true)
+            ->assertJsonPath('has_binance_api_secret', false);
+    }
+
+    public function test_password_change_revokes_existing_access_and_refresh_tokens(): void
+    {
+        $user = UserModel::create([
+            'username' => 'password_change_user',
+            'name' => 'Password Change User',
+            'email' => 'password-change@example.com',
+            'password' => 'old-password-123',
+            'role' => 'customer',
+            'balance' => 0,
+            'google2fa_enabled' => false,
+            'status' => 'active',
+            'refresh_token_hash' => hash('sha256', 'existing-refresh-token'),
+            'refresh_token_expired_at' => now()->addDay(),
+        ]);
+        $token = app(AuthService::class)->generateAccessToken(UserMapper::toDomain($user));
+
+        $this->withToken($token)->putJson('/api/v1/profile/password', [
+            'current_password' => 'old-password-123',
+            'new_password' => 'new-password-456',
+            'new_password_confirmation' => 'new-password-456',
+        ])->assertOk();
+
+        $user->refresh();
+        $this->assertSame(1, $user->token_version);
+        $this->assertNull($user->refresh_token_hash);
+        $this->assertNull($user->refresh_token_expired_at);
+        $this->withToken($token)->getJson('/api/v1/auth/me')->assertUnauthorized();
+    }
+
     public function test_api_key_is_encrypted_in_db_and_can_be_decrypted(): void
     {
         $user = UserModel::create([
@@ -109,14 +170,14 @@ class SecurityHardeningTest extends TestCase
         $this->assertSame('MY-SECRET-B2B-KEY-32-CHARS-12345', $userFresh->api_key);
     }
 
-    public function test_jwt_auth_middleware_accepts_api_key_as_fallback(): void
+    public function test_jwt_routes_reject_api_keys_in_every_supported_b2b_transport(): void
     {
         $user = UserModel::create([
             'username' => 'api_key_fallback_user',
             'name' => 'API Key Fallback User',
             'email' => 'api-key-fallback@example.com',
             'password' => 'password123',
-            'role' => 'customer',
+            'role' => 'admin',
             'balance' => 100,
             'google2fa_enabled' => false,
             'status' => 'active',
@@ -128,19 +189,21 @@ class SecurityHardeningTest extends TestCase
             'X-API-KEY' => 'MY-FALLBACK-B2B-KEY-12345'
         ])->getJson('/api/v1/auth/me');
 
-        $response1->assertOk();
-        $response1->assertJsonPath('user.email', 'api-key-fallback@example.com');
+        $response1->assertUnauthorized();
 
         // Gọi API /auth/me bằng query string api_key
         $response2 = $this->getJson('/api/v1/auth/me?api_key=MY-FALLBACK-B2B-KEY-12345');
-        $response2->assertOk();
-        $response2->assertJsonPath('user.email', 'api-key-fallback@example.com');
+        $response2->assertUnauthorized();
 
         // Gọi API /auth/me bằng Authorization header thô
         $response3 = $this->withHeaders([
             'Authorization' => 'MY-FALLBACK-B2B-KEY-12345'
         ])->getJson('/api/v1/auth/me');
-        $response3->assertOk();
+        $response3->assertUnauthorized();
+
+        $this->withHeaders([
+            'X-API-KEY' => 'MY-FALLBACK-B2B-KEY-12345'
+        ])->getJson('/api/v1/admin/settings')->assertUnauthorized();
     }
 
     private function createAdmin(): UserModel

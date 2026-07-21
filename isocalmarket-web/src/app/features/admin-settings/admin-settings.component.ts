@@ -99,7 +99,12 @@ export class AdminSettingsComponent implements OnInit, OnDestroy {
     this.store.fetchSettings().subscribe({
       next: (settings) => {
         if (settings) {
-          this.form = { ...settings };
+          this.form = {
+            ...settings,
+            scanner_api_key: '',
+            binance_api_key: '',
+            binance_api_secret: ''
+          };
           if (settings.token_cleanup_days) {
             this.tokenCleanupDays.set(Number(settings.token_cleanup_days));
           }
@@ -192,7 +197,8 @@ export class AdminSettingsComponent implements OnInit, OnDestroy {
       return;
     }
 
-    if (!this.form.scanner_api_key.trim()) {
+    const scannerApiKey = this.form.scanner_api_key?.trim();
+    if (!scannerApiKey && !this.form.has_scanner_api_key) {
       this.toast.showToast(this.lang.translate('toast.scanner_key_required'), 'warning');
       return;
     }
@@ -201,23 +207,35 @@ export class AdminSettingsComponent implements OnInit, OnDestroy {
     const binanceKey = this.form.binance_api_key?.trim();
     const binanceSecret = this.form.binance_api_secret?.trim();
 
-    if (binanceId || binanceKey || binanceSecret) {
+    const hasStoredBinanceCredentials = this.form.has_binance_api_key && this.form.has_binance_api_secret;
+    if (binanceId || binanceKey || binanceSecret || hasStoredBinanceCredentials) {
       if (!binanceId) {
         this.toast.showToast(this.lang.translate('toast.binance_id_required'), 'warning');
         return;
       }
-      if (!binanceKey) {
+      if (!binanceKey && !this.form.has_binance_api_key) {
         this.toast.showToast(this.lang.translate('toast.binance_key_required'), 'warning');
         return;
       }
-      if (!binanceSecret) {
+      if (!binanceSecret && !this.form.has_binance_api_secret) {
         this.toast.showToast(this.lang.translate('toast.binance_secret_required'), 'warning');
         return;
       }
     }
 
-    this.store.updateSettings(this.form).subscribe({
+    const payload: SystemSettingsPayload = { ...this.form };
+    if (!scannerApiKey) delete payload.scanner_api_key;
+    if (!binanceKey) delete payload.binance_api_key;
+    if (!binanceSecret) delete payload.binance_api_secret;
+
+    this.store.updateSettings(payload).subscribe({
       next: () => {
+        this.form.scanner_api_key = '';
+        this.form.binance_api_key = '';
+        this.form.binance_api_secret = '';
+        if (scannerApiKey) this.form.has_scanner_api_key = true;
+        if (binanceKey) this.form.has_binance_api_key = true;
+        if (binanceSecret) this.form.has_binance_api_secret = true;
         this.toast.showToast(this.lang.translate('toast.settings_updated'), 'success');
         this.isLocked.set(true);
       },

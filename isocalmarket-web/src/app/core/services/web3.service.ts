@@ -103,7 +103,7 @@ export class Web3Service {
           name: 'Angular Web3 DApp',
           description: 'Angular Web3 Application Framework',
           url: window.location.origin,
-          icons: [window.location.origin + '/assets/logo.svg']
+          icons: [window.location.origin + '/assets/logo-light.png']
         },
         projectId,
         themeMode: isDark ? 'dark' : 'light',

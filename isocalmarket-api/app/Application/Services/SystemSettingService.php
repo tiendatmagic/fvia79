@@ -8,6 +8,12 @@ use Illuminate\Support\Facades\Cache;
 
 class SystemSettingService
 {
+    private const SENSITIVE_KEYS = [
+        'scanner_api_key',
+        'binance_api_key',
+        'binance_api_secret',
+    ];
+
     private SystemSettingRepositoryInterface $settingRepository;
 
     public function __construct(SystemSettingRepositoryInterface $settingRepository)
@@ -20,6 +26,12 @@ class SystemSettingService
      */
     public function getSetting(string $key, ?string $default = null): ?string
     {
+        if (in_array($key, self::SENSITIVE_KEYS, true)) {
+            $setting = $this->settingRepository->findByKey($key);
+
+            return $setting ? $setting->getValue() : $default;
+        }
+
         return Cache::remember("system_setting:{$key}", 3600, function () use ($key, $default) {
             $setting = $this->settingRepository->findByKey($key);
             return $setting ? $setting->getValue() : $default;
@@ -46,14 +58,13 @@ class SystemSettingService
      */
     public function getAllSettings(): array
     {
-        return Cache::remember("system_settings_all", 3600, function () {
-            $list = $this->settingRepository->findAll();
-            $map = [];
-            foreach ($list as $setting) {
-                $map[$setting->getKey()] = $setting->getValue();
-            }
-            return $map;
-        });
+        $list = $this->settingRepository->findAll();
+        $map = [];
+        foreach ($list as $setting) {
+            $map[$setting->getKey()] = $setting->getValue();
+        }
+
+        return $map;
     }
 
     /**

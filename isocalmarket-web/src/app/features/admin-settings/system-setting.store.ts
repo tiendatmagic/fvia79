@@ -5,12 +5,15 @@ import { Observable, of } from 'rxjs';
 
 export interface SystemSettingsPayload {
   admin_wallet_address: string;
-  scanner_api_key: string;
+  scanner_api_key?: string;
   token_cleanup_days?: number;
   usdt_exchange_rate?: number;
   admin_binance_id?: string;
   binance_api_key?: string;
   binance_api_secret?: string;
+  has_scanner_api_key?: boolean;
+  has_binance_api_key?: boolean;
+  has_binance_api_secret?: boolean;
 }
 
 @Injectable({
@@ -77,7 +80,6 @@ export class SystemSettingStore {
     return this.api.put<any>('v1/admin/settings', payload).pipe(
       tap(res => {
         this.clearCache();
-        this.settings.set(payload);
       }),
       finalize(() => this.submitting.set(false))
     );

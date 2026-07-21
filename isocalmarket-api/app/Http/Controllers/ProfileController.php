@@ -62,11 +62,19 @@ class ProfileController extends Controller
         }
 
         $userModel->password = Hash::make($request->new_password);
+        $userModel->refresh_token_hash = null;
+        $userModel->refresh_token_expired_at = null;
+        $userModel->token_version = ((int) $userModel->token_version) + 1;
         $userModel->save();
+
+        $isProduction = config('app.env') === 'production';
+        $sameSite = $isProduction ? 'None' : 'Lax';
+        $accessTokenCookie = cookie('access_token', '', -2628000, '/', null, $isProduction, true, false, $sameSite);
+        $refreshTokenCookie = cookie('refresh_token', '', -2628000, '/api/v1/auth/refresh', null, $isProduction, true, false, $sameSite);
 
         return response()->json([
             'message' => 'Password updated successfully.'
-        ]);
+        ])->withCookie($accessTokenCookie)->withCookie($refreshTokenCookie);
     }
 
     /**

@@ -19,12 +19,23 @@ class DatabaseSeeder extends Seeder
 {
     public function run(): void
     {
+        $adminPassword = env('SEED_ADMIN_PASSWORD');
+        $customerPassword = env('SEED_CUSTOMER_PASSWORD');
+
+        if (! is_string($adminPassword) || strlen($adminPassword) < 12) {
+            throw new \RuntimeException('SEED_ADMIN_PASSWORD must be set and contain at least 12 characters before seeding.');
+        }
+
+        if (! is_string($customerPassword) || strlen($customerPassword) < 12) {
+            throw new \RuntimeException('SEED_CUSTOMER_PASSWORD must be set and contain at least 12 characters before seeding.');
+        }
+
         // 1. Tạo Admin và Khách hàng
         $admin = UserModel::create([
             'username' => 'admin',
             'name' => 'admin',
             'email' => 'admin@isocalmarket.com',
-            'password' => Hash::make('Admin@Isocal2025!'),
+            'password' => Hash::make($adminPassword),
             'role' => 'admin',
             'api_key' => UserModel::generateUniqueApiKey(),
         ]);
@@ -34,7 +45,7 @@ class DatabaseSeeder extends Seeder
             'username' => 'customer1',
             'name' => 'Nguyễn Văn A',
             'email' => 'customer1@isocalmarket.com',
-            'password' => Hash::make('password'),
+            'password' => Hash::make($customerPassword),
             'role' => 'customer',
             'phone' => '098'.rand(1000000, 9999999),
         ]);
