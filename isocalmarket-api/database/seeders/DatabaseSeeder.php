@@ -2,17 +2,18 @@
 
 namespace Database\Seeders;
 
-use Illuminate\Database\Seeder;
-use App\Infrastructure\Persistence\Eloquent\UserModel;
-use App\Infrastructure\Persistence\Eloquent\ProductModel;
 use App\Infrastructure\Persistence\Eloquent\CategoryModel;
 use App\Infrastructure\Persistence\Eloquent\InventoryBatchModel;
-use App\Infrastructure\Persistence\Eloquent\OrderModel;
 use App\Infrastructure\Persistence\Eloquent\OrderItemModel;
-use Illuminate\Support\Facades\Hash;
-use Illuminate\Support\Facades\Crypt;
-use Illuminate\Support\Str;
+use App\Infrastructure\Persistence\Eloquent\OrderModel;
+use App\Infrastructure\Persistence\Eloquent\ProductModel;
+use App\Infrastructure\Persistence\Eloquent\UserModel;
 use Carbon\Carbon;
+use Illuminate\Database\Seeder;
+use Illuminate\Support\Facades\Crypt;
+use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Hash;
+use Illuminate\Support\Str;
 
 class DatabaseSeeder extends Seeder
 {
@@ -21,23 +22,22 @@ class DatabaseSeeder extends Seeder
         // 1. Tạo Admin và Khách hàng
         $admin = UserModel::create([
             'username' => 'admin',
-            'name'     => 'admin',
-            'email'    => 'admin@isocalmarket.com',
+            'name' => 'admin',
+            'email' => 'admin@isocalmarket.com',
             'password' => Hash::make('Admin@Isocal2025!'),
-            'role'     => 'admin',
-            'api_key'  => UserModel::generateUniqueApiKey()
+            'role' => 'admin',
+            'api_key' => UserModel::generateUniqueApiKey(),
         ]);
- 
+
         $customers = [];
         $customers[] = UserModel::create([
             'username' => 'customer1',
-            'name'     => 'Nguyễn Văn A',
-            'email'    => 'customer1@isocalmarket.com',
+            'name' => 'Nguyễn Văn A',
+            'email' => 'customer1@isocalmarket.com',
             'password' => Hash::make('password'),
-            'role'     => 'customer',
-            'phone'    => '098' . rand(1000000, 9999999),
+            'role' => 'customer',
+            'phone' => '098'.rand(1000000, 9999999),
         ]);
-
 
         // 2. Tạo 12 Danh mục MMO mẫu thực tế theo yêu cầu
         $categoriesData = [
@@ -52,7 +52,7 @@ class DatabaseSeeder extends Seeder
             ['name' => 'Clone Việt Nam', 'slug' => 'clone-viet-nam', 'description' => 'Clone Việt chất lượng tốt reg tay sạch.'],
             ['name' => 'Via Ngoại DIE ADS', 'slug' => 'via-ngoai-die-ads', 'description' => 'Via ngoại bị hạn chế quảng cáo thích hợp seeding, spy.'],
             ['name' => 'Hotmail Live V.V', 'slug' => 'hotmail-live-vv', 'description' => 'Hộp thư Hotmail/Outlook ngâm lâu năm hỗ trợ API.'],
-            ['name' => 'Clone Instagram', 'slug' => 'clone-instagram', 'description' => 'Tài khoản Instagram ngâm phục vụ marketing.']
+            ['name' => 'Clone Instagram', 'slug' => 'clone-instagram', 'description' => 'Tài khoản Instagram ngâm phục vụ marketing.'],
         ];
 
         $categoriesMap = [];
@@ -67,7 +67,7 @@ class DatabaseSeeder extends Seeder
                 'slug' => 'bm3-ngam-full-3-tkqc',
                 'description' => 'BM3 Ngâm Full 3 Tài Khoản chất lượng cao.',
                 'price' => 80000,
-                'attributes' => [['label' => 'Loại', 'value' => 'BM3 Ngâm'], ['label' => 'Số TKQC', 'value' => '3 TKQC']]
+                'attributes' => [['label' => 'Loại', 'value' => 'BM3 Ngâm'], ['label' => 'Số TKQC', 'value' => '3 TKQC']],
             ],
             [
                 'category_slug' => 'bang-gia-bm',
@@ -75,7 +75,7 @@ class DatabaseSeeder extends Seeder
                 'slug' => 'bm5-scan-trong-5',
                 'description' => 'BM5 SCAN Trống 5 tài khoản quảng cáo.',
                 'price' => 2900000,
-                'attributes' => [['label' => 'Loại', 'value' => 'BM5 SCAN'], ['label' => 'Trạng thái', 'value' => 'Trống 5']]
+                'attributes' => [['label' => 'Loại', 'value' => 'BM5 SCAN'], ['label' => 'Trạng thái', 'value' => 'Trống 5']],
             ],
             [
                 'category_slug' => 'bang-gia-bm',
@@ -83,7 +83,7 @@ class DatabaseSeeder extends Seeder
                 'slug' => 'bm5-trong-3-tao-2018-kem-page-6500-like',
                 'description' => 'Sẵn 2 Tài Khoản tổng Ngưỡng 150$|Trống 3 |Kèm Page 6500 Like|',
                 'price' => 2800000,
-                'attributes' => [['label' => 'Năm tạo', 'value' => '2018'], ['label' => 'Page kèm', 'value' => '6500 Like'], ['label' => 'Ngưỡng', 'value' => '150$']]
+                'attributes' => [['label' => 'Năm tạo', 'value' => '2018'], ['label' => 'Page kèm', 'value' => '6500 Like'], ['label' => 'Ngưỡng', 'value' => '150$']],
             ],
             [
                 'category_slug' => 'bang-gia-bm',
@@ -91,7 +91,7 @@ class DatabaseSeeder extends Seeder
                 'slug' => 'bm3-xmdn-ngam-full-3-tkqc',
                 'description' => '📌 Đã tạo 3 TKQC 📌 Limit tăng theo chi tiêu cực nhanh 📌 Limit 50$ 📌 BM Verify Business 📌 Created: Jun/2026',
                 'price' => 230000,
-                'attributes' => [['label' => 'Limit', 'value' => '50$'], ['label' => 'Xác minh', 'value' => 'Verify Business'], ['label' => 'Created', 'value' => 'Jun/2026']]
+                'attributes' => [['label' => 'Limit', 'value' => '50$'], ['label' => 'Xác minh', 'value' => 'Verify Business'], ['label' => 'Created', 'value' => 'Jun/2026']],
             ],
             [
                 'category_slug' => 'bang-gia-bm',
@@ -99,7 +99,7 @@ class DatabaseSeeder extends Seeder
                 'slug' => 'bm1-co-goc-scan-kem-page',
                 'description' => 'BM 1 CỔ GỐC SCAN TẠO TRỐNG 1 + KÈM PAGE SCAN',
                 'price' => 400000,
-                'attributes' => [['label' => 'Loại', 'value' => 'BM1 Cổ gốc'], ['label' => 'Page kèm', 'value' => 'Page Scan']]
+                'attributes' => [['label' => 'Loại', 'value' => 'BM1 Cổ gốc'], ['label' => 'Page kèm', 'value' => 'Page Scan']],
             ],
             [
                 'category_slug' => 'bang-gia-bm',
@@ -107,7 +107,7 @@ class DatabaseSeeder extends Seeder
                 'slug' => 'bm3-ngam-full-4-tkqc',
                 'description' => 'BM full 4 Tài Khoản ngâm trâu bò.',
                 'price' => 90000,
-                'attributes' => [['label' => 'Loại', 'value' => 'BM3 ngâm'], ['label' => 'Số TKQC', 'value' => '4 TKQC']]
+                'attributes' => [['label' => 'Loại', 'value' => 'BM3 ngâm'], ['label' => 'Số TKQC', 'value' => '4 TKQC']],
             ],
             [
                 'category_slug' => 'bang-gia-bm',
@@ -115,7 +115,7 @@ class DatabaseSeeder extends Seeder
                 'slug' => 'bm3-ngam-1-thang-full-3-tkqc',
                 'description' => 'Soak BM full 3 account over 1 month.',
                 'price' => 80000,
-                'attributes' => [['label' => 'Thời gian ngâm', 'value' => '> 1 tháng'], ['label' => 'Số TKQC', 'value' => '3 TKQC']]
+                'attributes' => [['label' => 'Thời gian ngâm', 'value' => '> 1 tháng'], ['label' => 'Số TKQC', 'value' => '3 TKQC']],
             ],
 
             // 2. Via US Live Ads
@@ -125,7 +125,7 @@ class DatabaseSeeder extends Seeder
                 'slug' => 'via-us-live-ads-kem-bm1-2fa',
                 'description' => 'Friend:Random | LIVE ADS | Checkpoint Mail | Created: 2025-2026 | Chưa dính IP Việt|Kèm BM1|',
                 'price' => 450000,
-                'attributes' => [['label' => 'Quốc gia', 'value' => 'US (Mỹ)'], ['label' => 'Kèm theo', 'value' => 'BM1'], ['label' => 'Bảo mật', 'value' => '2FA']]
+                'attributes' => [['label' => 'Quốc gia', 'value' => 'US (Mỹ)'], ['label' => 'Kèm theo', 'value' => 'BM1'], ['label' => 'Bảo mật', 'value' => '2FA']],
             ],
             [
                 'category_slug' => 'via-us-live-ads',
@@ -133,7 +133,7 @@ class DatabaseSeeder extends Seeder
                 'slug' => 'via-us-live-ads-2fa',
                 'description' => 'Friend:Random | LIVE ADS | Checkpoint Mail | Created: 2025-2026 | Chưa dính IP Việt',
                 'price' => 400000,
-                'attributes' => [['label' => 'Quốc gia', 'value' => 'US (Mỹ)'], ['label' => 'Bảo mật', 'value' => '2FA']]
+                'attributes' => [['label' => 'Quốc gia', 'value' => 'US (Mỹ)'], ['label' => 'Bảo mật', 'value' => '2FA']],
             ],
             [
                 'category_slug' => 'via-us-live-ads',
@@ -141,7 +141,7 @@ class DatabaseSeeder extends Seeder
                 'slug' => 'via-us-co-chuan-local-2fa',
                 'description' => 'Friend: 30-5000 | LIVE ADS | Created: 2008-2021 | Chưa dính IP Việt',
                 'price' => 550000,
-                'attributes' => [['label' => 'Độ tuổi', 'value' => 'Cổ (2008-2021)'], ['label' => 'Bảo mật', 'value' => '2FA Local US']]
+                'attributes' => [['label' => 'Độ tuổi', 'value' => 'Cổ (2008-2021)'], ['label' => 'Bảo mật', 'value' => '2FA Local US']],
             ],
 
             // 3. Via Kháng 902 & Chat Support
@@ -151,7 +151,7 @@ class DatabaseSeeder extends Seeder
                 'slug' => 'via-colombia-co-khang-902-live-ads',
                 'description' => 'Green tick: 3 Lines | Tích ẩn | Ad account: Live | Created: 2008-2022',
                 'price' => 216000,
-                'attributes' => [['label' => 'Quốc gia', 'value' => 'Colombia'], ['label' => 'Kháng', 'value' => '902 Tick xanh'], ['label' => 'TKQC', 'value' => 'Live Ads']]
+                'attributes' => [['label' => 'Quốc gia', 'value' => 'Colombia'], ['label' => 'Kháng', 'value' => '902 Tick xanh'], ['label' => 'TKQC', 'value' => 'Live Ads']],
             ],
             [
                 'category_slug' => 'via-khang-902-chat-support',
@@ -159,7 +159,7 @@ class DatabaseSeeder extends Seeder
                 'slug' => 'via-colombia-co-khang-902-die-ads',
                 'description' => 'Green tick: 3 Lines | Tích ẩn | Ad account: Die | Created: 2008-2022',
                 'price' => 144000,
-                'attributes' => [['label' => 'Quốc gia', 'value' => 'Colombia'], ['label' => 'Kháng', 'value' => '902 Tick xanh'], ['label' => 'TKQC', 'value' => 'Die Ads']]
+                'attributes' => [['label' => 'Quốc gia', 'value' => 'Colombia'], ['label' => 'Kháng', 'value' => '902 Tick xanh'], ['label' => 'TKQC', 'value' => 'Die Ads']],
             ],
             [
                 'category_slug' => 'via-khang-902-chat-support',
@@ -167,7 +167,7 @@ class DatabaseSeeder extends Seeder
                 'slug' => 'via-indonesia-co-khang-902-live-ads',
                 'description' => 'Green tick: 3 Lines | Tích ẩn | Ad account: Live | Created: 2008-2022',
                 'price' => 216000,
-                'attributes' => [['label' => 'Quốc gia', 'value' => 'Indonesia'], ['label' => 'Kháng', 'value' => '902 Tick xanh']]
+                'attributes' => [['label' => 'Quốc gia', 'value' => 'Indonesia'], ['label' => 'Kháng', 'value' => '902 Tick xanh']],
             ],
             [
                 'category_slug' => 'via-khang-902-chat-support',
@@ -175,7 +175,7 @@ class DatabaseSeeder extends Seeder
                 'slug' => 'via-ngoai-co-khang-902-die-ads',
                 'description' => 'Green tick: 3 Lines | Tích ẩn | Ad account: Die | Created: 2008-2024',
                 'price' => 119000,
-                'attributes' => [['label' => 'Quốc gia', 'value' => 'Ngoại cổ'], ['label' => 'Trạng thái', 'value' => 'Kháng 902']]
+                'attributes' => [['label' => 'Quốc gia', 'value' => 'Ngoại cổ'], ['label' => 'Trạng thái', 'value' => 'Kháng 902']],
             ],
             [
                 'category_slug' => 'via-khang-902-chat-support',
@@ -183,7 +183,7 @@ class DatabaseSeeder extends Seeder
                 'slug' => 'via-philippines-co-xmdt-50',
                 'description' => 'Green tick: 2 Lines | Tích ẩn | Created: 2008-2023',
                 'price' => 200000,
-                'attributes' => [['label' => 'Quốc gia', 'value' => 'Philippines'], ['label' => 'Xác minh', 'value' => 'XMDT 2 Lines']]
+                'attributes' => [['label' => 'Quốc gia', 'value' => 'Philippines'], ['label' => 'Xác minh', 'value' => 'XMDT 2 Lines']],
             ],
             [
                 'category_slug' => 'via-khang-902-chat-support',
@@ -191,7 +191,7 @@ class DatabaseSeeder extends Seeder
                 'slug' => 'via-chat-support-fbook',
                 'description' => 'Có thể Chat Support Facebook | Năm tạo: 2025 | Checkpoint Mail',
                 'price' => 144000,
-                'attributes' => [['label' => 'Hỗ trợ', 'value' => 'Chat Support FB'], ['label' => 'Bảo mật', 'value' => '2FA']]
+                'attributes' => [['label' => 'Hỗ trợ', 'value' => 'Chat Support FB'], ['label' => 'Bảo mật', 'value' => '2FA']],
             ],
 
             // 4. Via Chuyên Set Camp
@@ -201,7 +201,7 @@ class DatabaseSeeder extends Seeder
                 'slug' => 'via-chuyen-set-camp-hold-low',
                 'description' => 'Friend: 30-1000 | LIVE ADS | Checkpoint Mail | Chuyên lên camp voi/sạch.',
                 'price' => 300000,
-                'attributes' => [['label' => 'Đặc tính', 'value' => 'Chuyên Set Camp'], ['label' => 'Tỉ lệ tụt', 'value' => 'Cực thấp']]
+                'attributes' => [['label' => 'Đặc tính', 'value' => 'Chuyên Set Camp'], ['label' => 'Tỉ lệ tụt', 'value' => 'Cực thấp']],
             ],
             [
                 'category_slug' => 'via-chuyen-set-camp',
@@ -209,7 +209,7 @@ class DatabaseSeeder extends Seeder
                 'slug' => 'full-via-limit-50-paid-moi-no2fa',
                 'description' => 'TKQC đã camp mồi, paid mồi | Đã kháng 273 | Tiền tệ: -7 USD | Quốc gia US lách thuế',
                 'price' => 216000,
-                'attributes' => [['label' => 'Paid mồi', 'value' => 'Đã paid mồi'], ['label' => 'Bảo mật', 'value' => 'No2FA']]
+                'attributes' => [['label' => 'Paid mồi', 'value' => 'Đã paid mồi'], ['label' => 'Bảo mật', 'value' => 'No2FA']],
             ],
             [
                 'category_slug' => 'via-chuyen-set-camp',
@@ -217,7 +217,7 @@ class DatabaseSeeder extends Seeder
                 'slug' => 'full-via-limit-50-plus-7-paid-no2fa',
                 'description' => 'TKQC đã camp mồi, paid mồi | Đã kháng 273 | Tiền tệ: +7 USD | Quốc gia US lách thuế',
                 'price' => 250000,
-                'attributes' => [['label' => 'Tiền tệ', 'value' => '+7 USD'], ['label' => 'Bảo mật', 'value' => 'No2FA']]
+                'attributes' => [['label' => 'Tiền tệ', 'value' => '+7 USD'], ['label' => 'Bảo mật', 'value' => 'No2FA']],
             ],
             [
                 'category_slug' => 'via-chuyen-set-camp',
@@ -225,7 +225,7 @@ class DatabaseSeeder extends Seeder
                 'slug' => 'via-ngoai-limit-50-tkqc-co-no2fa',
                 'description' => 'Bao đổi tiền, múi giờ, quốc gia | TKQC Cổ tạo từ: 2010–2024 | Chưa dính IP Việt',
                 'price' => 156000,
-                'attributes' => [['label' => 'TKQC', 'value' => 'Cổ (2010-2024)'], ['label' => 'Bảo mật', 'value' => 'No2FA']]
+                'attributes' => [['label' => 'TKQC', 'value' => 'Cổ (2010-2024)'], ['label' => 'Bảo mật', 'value' => 'No2FA']],
             ],
             [
                 'category_slug' => 'via-chuyen-set-camp',
@@ -233,7 +233,7 @@ class DatabaseSeeder extends Seeder
                 'slug' => 'combo-1-acc-9-tkcn-1m1-2022',
                 'description' => 'Combo Account random country with 9 personal ad accounts 1m1 creat 2022',
                 'price' => 800000,
-                'attributes' => [['label' => 'Loại', 'value' => 'Combo Account'], ['label' => 'Số TKQC', 'value' => '9 TKCN 1M1']]
+                'attributes' => [['label' => 'Loại', 'value' => 'Combo Account'], ['label' => 'Số TKQC', 'value' => '9 TKCN 1M1']],
             ],
 
             // 5. Ad account Limit 250$
@@ -243,7 +243,7 @@ class DatabaseSeeder extends Seeder
                 'slug' => 'full-via-limit-200-usd',
                 'description' => 'Bao đổi tiền, múi giờ, quốc gia | Không bao tụt Limit | TKQC Cổ tạo từ 2010-2023',
                 'price' => 240000,
-                'attributes' => [['label' => 'Limit', 'value' => '200$'], ['label' => 'Bảo hành', 'value' => 'Bao đổi tiền, múi giờ']]
+                'attributes' => [['label' => 'Limit', 'value' => '200$'], ['label' => 'Bảo hành', 'value' => 'Bao đổi tiền, múi giờ']],
             ],
             [
                 'category_slug' => 'ad-account-limit-250',
@@ -251,7 +251,7 @@ class DatabaseSeeder extends Seeder
                 'slug' => 'via-ngoai-limit-250-co-ngam',
                 'description' => 'Via Ngoại limit 250$ cổ ngâm trên 6 tháng.',
                 'price' => 350000,
-                'attributes' => [['label' => 'Limit', 'value' => '250$'], ['label' => 'Trạng thái', 'value' => 'Cổ ngâm']]
+                'attributes' => [['label' => 'Limit', 'value' => '250$'], ['label' => 'Trạng thái', 'value' => 'Cổ ngâm']],
             ],
 
             // 6. Via Ngoại Live Ads (No2FA)
@@ -261,7 +261,7 @@ class DatabaseSeeder extends Seeder
                 'slug' => 'via-ngoai-co-no2fa',
                 'description' => 'Friend: 30-1000 | LIVE ADS | Checkpoint Mail | Created: 2008-2023',
                 'price' => 40000,
-                'attributes' => [['label' => 'Độ tuổi', 'value' => 'Cổ (2008-2023)'], ['label' => 'Bảo mật', 'value' => 'No2FA']]
+                'attributes' => [['label' => 'Độ tuổi', 'value' => 'Cổ (2008-2023)'], ['label' => 'Bảo mật', 'value' => 'No2FA']],
             ],
             [
                 'category_slug' => 'via-ngoai-live-ads-no2fa',
@@ -269,7 +269,7 @@ class DatabaseSeeder extends Seeder
                 'slug' => 'via-colombia-co-no2fa',
                 'description' => 'Friend: 30-5000 | LIVE ADS | Checkpoint Mail | Created: 2008-2022 | Chưa dính IP Việt',
                 'price' => 72000,
-                'attributes' => [['label' => 'Quốc gia', 'value' => 'Colombia'], ['label' => 'Bảo mật', 'value' => 'No2FA']]
+                'attributes' => [['label' => 'Quốc gia', 'value' => 'Colombia'], ['label' => 'Bảo mật', 'value' => 'No2FA']],
             ],
             [
                 'category_slug' => 'via-ngoai-live-ads-no2fa',
@@ -277,7 +277,7 @@ class DatabaseSeeder extends Seeder
                 'slug' => 'via-ecuador-new-no2fa',
                 'description' => 'Friend: 30-5000 | LIVE ADS | Checkpoint Mail | Created: 2024-2025 | Chưa dính IP Việt',
                 'price' => 72000,
-                'attributes' => [['label' => 'Quốc gia', 'value' => 'Ecuador'], ['label' => 'Bảo mật', 'value' => 'No2FA']]
+                'attributes' => [['label' => 'Quốc gia', 'value' => 'Ecuador'], ['label' => 'Bảo mật', 'value' => 'No2FA']],
             ],
             [
                 'category_slug' => 'via-ngoai-live-ads-no2fa',
@@ -285,7 +285,7 @@ class DatabaseSeeder extends Seeder
                 'slug' => 'via-brazil-co-no2fa',
                 'description' => 'Friend: 30-5000 | LIVE ADS | Checkpoint Mail | Created: 2008-2023 | Chưa dính IP Việt',
                 'price' => 144000,
-                'attributes' => [['label' => 'Quốc gia', 'value' => 'Brazil'], ['label' => 'Bảo mật', 'value' => 'No2FA']]
+                'attributes' => [['label' => 'Quốc gia', 'value' => 'Brazil'], ['label' => 'Bảo mật', 'value' => 'No2FA']],
             ],
             [
                 'category_slug' => 'via-ngoai-live-ads-no2fa',
@@ -293,7 +293,7 @@ class DatabaseSeeder extends Seeder
                 'slug' => 'via-peru-new-no2fa',
                 'description' => 'Friend: 30-5000 | LIVE ADS | Checkpoint Mail | Created: 2024-2025 | Chưa dính IP Việt',
                 'price' => 84000,
-                'attributes' => [['label' => 'Quốc gia', 'value' => 'Peru'], ['label' => 'Bảo mật', 'value' => 'No2FA']]
+                'attributes' => [['label' => 'Quốc gia', 'value' => 'Peru'], ['label' => 'Bảo mật', 'value' => 'No2FA']],
             ],
             [
                 'category_slug' => 'via-ngoai-live-ads-no2fa',
@@ -301,7 +301,7 @@ class DatabaseSeeder extends Seeder
                 'slug' => 'via-philippines-co-no2fa',
                 'description' => 'Friend: 30-5000 | LIVE ADS | Checkpoint Mail | Created: 2008-2023 | Chưa dính IP Việt',
                 'price' => 72000,
-                'attributes' => [['label' => 'Quốc gia', 'value' => 'Philippines'], ['label' => 'Bảo mật', 'value' => 'No2FA']]
+                'attributes' => [['label' => 'Quốc gia', 'value' => 'Philippines'], ['label' => 'Bảo mật', 'value' => 'No2FA']],
             ],
             [
                 'category_slug' => 'via-ngoai-live-ads-no2fa',
@@ -309,7 +309,7 @@ class DatabaseSeeder extends Seeder
                 'slug' => 'via-indonesia-co-no2fa',
                 'description' => 'Friend: 30-5000 | LIVE ADS | Checkpoint Mail | Created: 2008-2023 | Chưa dính IP Việt',
                 'price' => 72000,
-                'attributes' => [['label' => 'Quốc gia', 'value' => 'Indonesia'], ['label' => 'Bảo mật', 'value' => 'No2FA']]
+                'attributes' => [['label' => 'Quốc gia', 'value' => 'Indonesia'], ['label' => 'Bảo mật', 'value' => 'No2FA']],
             ],
             [
                 'category_slug' => 'via-ngoai-live-ads-no2fa',
@@ -317,7 +317,7 @@ class DatabaseSeeder extends Seeder
                 'slug' => 'via-bangladesh-new-no2fa',
                 'description' => 'Friend: 30-5000 | LIVE ADS | Checkpoint Mail | Created: 2024-2025 | Chưa dính IP Việt',
                 'price' => 60000,
-                'attributes' => [['label' => 'Quốc gia', 'value' => 'Bangladesh'], ['label' => 'Bảo mật', 'value' => 'No2FA']]
+                'attributes' => [['label' => 'Quốc gia', 'value' => 'Bangladesh'], ['label' => 'Bảo mật', 'value' => 'No2FA']],
             ],
 
             // 7. Via Ngoại Live Ads (2FA)
@@ -327,7 +327,7 @@ class DatabaseSeeder extends Seeder
                 'slug' => 'via-france-2fa',
                 'description' => 'Friend: 30-1000 | LIVE ADS | Created: 2025-2026 | Chưa dính IP Việt | Checkpoint Mail',
                 'price' => 260000,
-                'attributes' => [['label' => 'Quốc gia', 'value' => 'Pháp (France)'], ['label' => 'Bảo mật', 'value' => '2FA']]
+                'attributes' => [['label' => 'Quốc gia', 'value' => 'Pháp (France)'], ['label' => 'Bảo mật', 'value' => '2FA']],
             ],
             [
                 'category_slug' => 'via-ngoai-live-ads-2fa',
@@ -335,7 +335,7 @@ class DatabaseSeeder extends Seeder
                 'slug' => 'via-switzerland-co-2fa',
                 'description' => 'Friend: 30-5000 | LIVE ADS | Created: 2008-2021 | Chưa dính IP Việt',
                 'price' => 191000,
-                'attributes' => [['label' => 'Quốc gia', 'value' => 'Thụy Sĩ'], ['label' => 'Bảo mật', 'value' => '2FA']]
+                'attributes' => [['label' => 'Quốc gia', 'value' => 'Thụy Sĩ'], ['label' => 'Bảo mật', 'value' => '2FA']],
             ],
             [
                 'category_slug' => 'via-ngoai-live-ads-2fa',
@@ -343,7 +343,7 @@ class DatabaseSeeder extends Seeder
                 'slug' => 'via-uk-co-2fa',
                 'description' => 'Friend: 30-5000 | LIVE ADS | Created: 2008-2021 | Chưa dính IP Việt',
                 'price' => 240000,
-                'attributes' => [['label' => 'Quốc gia', 'value' => 'Anh Quốc (UK)'], ['label' => 'Bảo mật', 'value' => '2FA']]
+                'attributes' => [['label' => 'Quốc gia', 'value' => 'Anh Quốc (UK)'], ['label' => 'Bảo mật', 'value' => '2FA']],
             ],
             [
                 'category_slug' => 'via-ngoai-live-ads-2fa',
@@ -351,7 +351,7 @@ class DatabaseSeeder extends Seeder
                 'slug' => 'via-poland-co-2fa',
                 'description' => 'Friend: 30-5000 | LIVE ADS | Created: 2008-2021 | Chưa dính IP Việt',
                 'price' => 191000,
-                'attributes' => [['label' => 'Quốc gia', 'value' => 'Ba Lan'], ['label' => 'Bảo mật', 'value' => '2FA']]
+                'attributes' => [['label' => 'Quốc gia', 'value' => 'Ba Lan'], ['label' => 'Bảo mật', 'value' => '2FA']],
             ],
             [
                 'category_slug' => 'via-ngoai-live-ads-2fa',
@@ -359,7 +359,7 @@ class DatabaseSeeder extends Seeder
                 'slug' => 'via-germany-co-2fa',
                 'description' => 'Friend: 30-5000 | LIVE ADS | Created: 2008-2021 | Chưa dính IP Việt',
                 'price' => 200000,
-                'attributes' => [['label' => 'Quốc gia', 'value' => 'Đức (Germany)'], ['label' => 'Bảo mật', 'value' => '2FA']]
+                'attributes' => [['label' => 'Quốc gia', 'value' => 'Đức (Germany)'], ['label' => 'Bảo mật', 'value' => '2FA']],
             ],
             [
                 'category_slug' => 'via-ngoai-live-ads-2fa',
@@ -367,7 +367,7 @@ class DatabaseSeeder extends Seeder
                 'slug' => 'via-indonesia-co-2fa',
                 'description' => 'Friend: 30-5000 | LIVE ADS | Created: 2008-2023 | Chưa dính IP Việt',
                 'price' => 120000,
-                'attributes' => [['label' => 'Quốc gia', 'value' => 'Indonesia'], ['label' => 'Bảo mật', 'value' => '2FA']]
+                'attributes' => [['label' => 'Quốc gia', 'value' => 'Indonesia'], ['label' => 'Bảo mật', 'value' => '2FA']],
             ],
             [
                 'category_slug' => 'via-ngoai-live-ads-2fa',
@@ -375,7 +375,7 @@ class DatabaseSeeder extends Seeder
                 'slug' => 'via-philippines-co-2fa-ads',
                 'description' => 'Friend: 30-5000 | LIVE ADS | Created: 2008-2023 | Chưa dính IP Việt',
                 'price' => 120000,
-                'attributes' => [['label' => 'Quốc gia', 'value' => 'Philippines'], ['label' => 'Bảo mật', 'value' => '2FA']]
+                'attributes' => [['label' => 'Quốc gia', 'value' => 'Philippines'], ['label' => 'Bảo mật', 'value' => '2FA']],
             ],
             [
                 'category_slug' => 'via-ngoai-live-ads-2fa',
@@ -383,7 +383,7 @@ class DatabaseSeeder extends Seeder
                 'slug' => 'via-egypt-co-2fa',
                 'description' => 'Friend: 30-5000 | LIVE ADS | Created: 2008-2024 | Chưa dính IP Việt',
                 'price' => 96000,
-                'attributes' => [['label' => 'Quốc gia', 'value' => 'Ai Cập'], ['label' => 'Bảo mật', 'value' => '2FA']]
+                'attributes' => [['label' => 'Quốc gia', 'value' => 'Ai Cập'], ['label' => 'Bảo mật', 'value' => '2FA']],
             ],
 
             // 8. Clone Global
@@ -393,7 +393,7 @@ class DatabaseSeeder extends Seeder
                 'slug' => 'clone-ngoai-random-die-ads-v2',
                 'description' => 'Có Avatar + Cover + Info | Created: > 3 month | Very Hotmail | Đã Bật 2FA',
                 'price' => 2500,
-                'attributes' => [['label' => 'Loại', 'value' => 'Clone ngoại'], ['label' => 'Bảo mật', 'value' => 'Có 2FA'], ['label' => 'Tuổi', 'value' => '> 3 tháng']]
+                'attributes' => [['label' => 'Loại', 'value' => 'Clone ngoại'], ['label' => 'Bảo mật', 'value' => 'Có 2FA'], ['label' => 'Tuổi', 'value' => '> 3 tháng']],
             ],
             [
                 'category_slug' => 'clone-global',
@@ -401,7 +401,7 @@ class DatabaseSeeder extends Seeder
                 'slug' => 'clone-us-facebook',
                 'description' => 'Có Avatar + Cover + Info | Created: > 5 day | Created Ads: > 5 day | Verify Hotmail | Đã bật 2FA',
                 'price' => 7000,
-                'attributes' => [['label' => 'Quốc gia', 'value' => 'Mỹ (US)'], ['label' => 'Xác minh', 'value' => 'Verify Hotmail']]
+                'attributes' => [['label' => 'Quốc gia', 'value' => 'Mỹ (US)'], ['label' => 'Xác minh', 'value' => 'Verify Hotmail']],
             ],
             [
                 'category_slug' => 'clone-global',
@@ -409,7 +409,7 @@ class DatabaseSeeder extends Seeder
                 'slug' => 'clone-canada-fb',
                 'description' => 'Có Avatar + Cover + Info | Created: > 2 month | Created Ads: > 2 month | Verify Hotmail | Đã bật 2FA',
                 'price' => 10000,
-                'attributes' => [['label' => 'Quốc gia', 'value' => 'Canada'], ['label' => 'Tuổi', 'value' => '> 2 tháng']]
+                'attributes' => [['label' => 'Quốc gia', 'value' => 'Canada'], ['label' => 'Tuổi', 'value' => '> 2 tháng']],
             ],
 
             [
@@ -418,7 +418,7 @@ class DatabaseSeeder extends Seeder
                 'slug' => 'clone-vn-verify-hotmail',
                 'description' => 'Có Avatar + Cover + Info | Ngày tạo: > 3 month | Đã bật 2FA | Very Hotmail',
                 'price' => 7000,
-                'attributes' => [['label' => 'Quốc gia', 'value' => 'Việt Nam'], ['label' => 'Verify', 'value' => 'Hotmail'], ['label' => 'Bảo mật', 'value' => '2FA']]
+                'attributes' => [['label' => 'Quốc gia', 'value' => 'Việt Nam'], ['label' => 'Verify', 'value' => 'Hotmail'], ['label' => 'Bảo mật', 'value' => '2FA']],
             ],
             [
                 'category_slug' => 'clone-viet-nam',
@@ -426,7 +426,7 @@ class DatabaseSeeder extends Seeder
                 'slug' => 'clone-vn-verify-gmail-no2fa',
                 'description' => 'Có Avatar + Cover + Info | Ngày tạo: > 2 month | Chưa bật 2FA | Very Gmail | Friend: 0-20',
                 'price' => 6000,
-                'attributes' => [['label' => 'Quốc gia', 'value' => 'Việt Nam'], ['label' => 'Verify', 'value' => 'Gmail'], ['label' => 'Bảo mật', 'value' => 'No2FA']]
+                'attributes' => [['label' => 'Quốc gia', 'value' => 'Việt Nam'], ['label' => 'Verify', 'value' => 'Gmail'], ['label' => 'Bảo mật', 'value' => 'No2FA']],
             ],
 
             // 10. Via Ngoại DIE ADS
@@ -436,7 +436,7 @@ class DatabaseSeeder extends Seeder
                 'slug' => 'via-us-co-die-ads',
                 'description' => 'Thích hợp Seeding, Spy | DIE ADS | Friend : 30-5000 | Created: 2010-2021',
                 'price' => 239000,
-                'attributes' => [['label' => 'Quốc gia', 'value' => 'US (Mỹ)'], ['label' => 'TKQC', 'value' => 'Die Ads']]
+                'attributes' => [['label' => 'Quốc gia', 'value' => 'US (Mỹ)'], ['label' => 'TKQC', 'value' => 'Die Ads']],
             ],
             [
                 'category_slug' => 'via-ngoai-die-ads',
@@ -444,7 +444,7 @@ class DatabaseSeeder extends Seeder
                 'slug' => 'via-ngoai-co-die-ads-3-5k-friend',
                 'description' => 'Thích hợp Seeding | DIE ADS | Friend : 3000-5000 | Năm tạo: 2008-2024',
                 'price' => 156000,
-                'attributes' => [['label' => 'Friend', 'value' => '3K - 5K'], ['label' => 'TKQC', 'value' => 'Die Ads']]
+                'attributes' => [['label' => 'Friend', 'value' => '3K - 5K'], ['label' => 'TKQC', 'value' => 'Die Ads']],
             ],
             [
                 'category_slug' => 'via-ngoai-die-ads',
@@ -452,7 +452,7 @@ class DatabaseSeeder extends Seeder
                 'slug' => 'via-ngoai-new-die-ads',
                 'description' => 'Thích hợp Seeding | DIE ADS | Friend : 30-5000 | Checkpoint Mail | Created: 2024-2025',
                 'price' => 24000,
-                'attributes' => [['label' => 'Loại', 'value' => 'Via Ngoại New'], ['label' => 'TKQC', 'value' => 'Die Ads']]
+                'attributes' => [['label' => 'Loại', 'value' => 'Via Ngoại New'], ['label' => 'TKQC', 'value' => 'Die Ads']],
             ],
 
             // 11. Hotmail Live V.V
@@ -462,7 +462,7 @@ class DatabaseSeeder extends Seeder
                 'slug' => 'outlook-trusted-graph-api',
                 'description' => 'Live for 6-12 months | Không cần very SĐT | Recommend to use Graph API for access',
                 'price' => 400,
-                'attributes' => [['label' => 'Hạn dùng', 'value' => '6-12 tháng'], ['label' => 'Yêu cầu', 'value' => 'Graph API']]
+                'attributes' => [['label' => 'Hạn dùng', 'value' => '6-12 tháng'], ['label' => 'Yêu cầu', 'value' => 'Graph API']],
             ],
             [
                 'category_slug' => 'hotmail-live-vv',
@@ -470,7 +470,7 @@ class DatabaseSeeder extends Seeder
                 'slug' => 'hotmail-trusted-graph-api',
                 'description' => 'Live for 6-12 months | Không cần very SĐT | Recommend to use Graph API for access',
                 'price' => 400,
-                'attributes' => [['label' => 'Hạn dùng', 'value' => '6-12 tháng'], ['label' => 'API', 'value' => 'Graph API']]
+                'attributes' => [['label' => 'Hạn dùng', 'value' => '6-12 tháng'], ['label' => 'API', 'value' => 'Graph API']],
             ],
 
             // 12. Clone Instagram
@@ -480,7 +480,7 @@ class DatabaseSeeder extends Seeder
                 'slug' => 'clone-instagram-us-reg-bm',
                 'description' => 'Reg Android | Verify Phone | Đã Bật 2FA | Name US | Created: > 2 month | Phù hợp spam, fishing...',
                 'price' => 2000,
-                'attributes' => [['label' => 'Quốc gia', 'value' => 'US (Mỹ)'], ['label' => 'Đã Reg', 'value' => 'BM Facebook']]
+                'attributes' => [['label' => 'Quốc gia', 'value' => 'US (Mỹ)'], ['label' => 'Đã Reg', 'value' => 'BM Facebook']],
             ],
             [
                 'category_slug' => 'clone-instagram',
@@ -488,8 +488,8 @@ class DatabaseSeeder extends Seeder
                 'slug' => 'clone-instagram-us-basic',
                 'description' => 'Reg Android | Verify Phone | Đã Bật 2FA | Name US | Created: > 15 day',
                 'price' => 3000,
-                'attributes' => [['label' => 'Quốc gia', 'value' => 'US (Mỹ)'], ['label' => 'Tuổi', 'value' => '> 15 ngày']]
-            ]
+                'attributes' => [['label' => 'Quốc gia', 'value' => 'US (Mỹ)'], ['label' => 'Tuổi', 'value' => '> 15 ngày']],
+            ],
         ];
 
         $products = [];
@@ -502,18 +502,18 @@ class DatabaseSeeder extends Seeder
 
             $products[] = ProductModel::create(array_merge($data, [
                 'category_id' => $catId,
-                'status' => 'active'
+                'status' => 'active',
             ]));
         }
 
         foreach ($products as $p) {
-            $template = "1000" . rand(100000000, 999999999) . "{i}|pass_secret_via_{i}|2FA_SECRET_KEY_XYZ_{i}|recovery_mail_{i}@gmail.com|pass_mail";
+            $template = '1000'.rand(100000000, 999999999).'{i}|pass_secret_via_{i}|2FA_SECRET_KEY_XYZ_{i}|recovery_mail_{i}@gmail.com|pass_mail';
             if (str_contains($p->slug, 'gmail') || str_contains($p->slug, 'outlook') || str_contains($p->slug, 'hotmail')) {
-                $template = "mail_seed_account_{i}@hotmail.com|pass_mail_{i}|recovery_seed_mail_{i}@outlook.com";
+                $template = 'mail_seed_account_{i}@hotmail.com|pass_mail_{i}|recovery_seed_mail_{i}@outlook.com';
             } elseif (str_contains($p->slug, 'proxy')) {
-                $template = "45.122.134.{i}:8080:proxy_user_{i}:proxy_pass_{i}";
+                $template = '45.122.134.{i}:8080:proxy_user_{i}:proxy_pass_{i}';
             } elseif (str_contains($p->slug, 'instagram')) {
-                $template = "ig_user_{i}|pass_ig_{i}|2FA_SECRET_XYZ_{i}|mail_ig_{i}@example.com";
+                $template = 'ig_user_{i}|pass_ig_{i}|2FA_SECRET_XYZ_{i}|mail_ig_{i}@example.com';
             }
 
             $keysList = [];
@@ -523,12 +523,12 @@ class DatabaseSeeder extends Seeder
             $keysPool = implode("\n", $keysList);
 
             InventoryBatchModel::create([
-                'product_id'    => $p->id,
-                'batch_name'    => 'Lô hàng mẫu #' . strtoupper(Str::random(5)),
-                'keys_pool'     => $keysPool,
+                'product_id' => $p->id,
+                'batch_name' => 'Lô hàng mẫu #'.strtoupper(Str::random(5)),
+                'keys_pool' => $keysPool,
                 'initial_count' => count($keysList),
-                'sold_count'    => 0,
-                'status'        => 'active'
+                'sold_count' => 0,
+                'status' => 'active',
             ]);
         }
 
@@ -548,11 +548,11 @@ class DatabaseSeeder extends Seeder
 
             $status = $statusDistribution[array_rand($statusDistribution)];
 
-            $orderCode = 'ORD-' . $orderDate->format('Ymd') . '-' . strtoupper(Str::random(6));
+            $orderCode = 'ORD-'.$orderDate->format('Ymd').'-'.strtoupper(Str::random(6));
 
             $numItems = rand(1, 2);
             $selectedProducts = (array) array_rand($products, $numItems);
-            if (!is_array($selectedProducts)) {
+            if (! is_array($selectedProducts)) {
                 $selectedProducts = [$selectedProducts];
             }
 
@@ -566,18 +566,18 @@ class DatabaseSeeder extends Seeder
                 $orderItems[] = [
                     'product' => $p,
                     'price' => $p->price,
-                    'quantity' => $quantity
+                    'quantity' => $quantity,
                 ];
                 $totalPrice += $p->price * $quantity;
             }
 
             $order = OrderModel::create([
-                'user_id'     => $customer->id,
-                'order_code'  => $orderCode,
+                'user_id' => $customer->id,
+                'order_code' => $orderCode,
                 'total_price' => $totalPrice,
-                'status'      => $status,
-                'created_at'  => $orderDate,
-                'updated_at'  => $orderDate
+                'status' => $status,
+                'created_at' => $orderDate,
+                'updated_at' => $orderDate,
             ]);
 
             foreach ($orderItems as $item) {
@@ -628,20 +628,20 @@ class DatabaseSeeder extends Seeder
                 }
 
                 OrderItemModel::create([
-                    'order_id'       => $order->id,
-                    'product_id'     => $p->id,
-                    'product_name'   => $p->name,
-                    'price'          => $item['price'],
-                    'quantity'       => $qty,
+                    'order_id' => $order->id,
+                    'product_id' => $p->id,
+                    'product_name' => $p->name,
+                    'price' => $item['price'],
+                    'quantity' => $qty,
                     'delivered_keys' => (empty($deliveredKeys) ? null : $deliveredKeys),
-                    'created_at'     => $orderDate,
-                    'updated_at'     => $orderDate
+                    'created_at' => $orderDate,
+                    'updated_at' => $orderDate,
                 ]);
             }
         }
 
         // 5. Seed cấu hình hệ thống (System Settings)
-        \Illuminate\Support\Facades\DB::table('system_settings')->insert([
+        DB::table('system_settings')->insert([
             [
                 'key' => 'admin_wallet_address',
                 'value' => env('ADMIN_WALLET_ADDRESS', ''),
@@ -651,7 +651,7 @@ class DatabaseSeeder extends Seeder
             ],
             [
                 'key' => 'scanner_api_key',
-                'value' => env('SCANNER_API_KEY', ''),
+                'value' => Crypt::encryptString(env('SCANNER_API_KEY', '')),
                 'description' => 'API Key của Moralis để đối soát giao dịch nạp tiền tự động',
                 'created_at' => now(),
                 'updated_at' => now(),
@@ -669,7 +669,7 @@ class DatabaseSeeder extends Seeder
                 'description' => 'Tỷ giá quy đổi USDT sang VND cố định (Đặt 0 để tự động lấy từ CoinGecko)',
                 'created_at' => now(),
                 'updated_at' => now(),
-            ]
+            ],
         ]);
     }
 }

@@ -2,19 +2,19 @@
 
 namespace App\Infrastructure\Persistence\Eloquent;
 
+use Illuminate\Database\Eloquent\Attributes\Fillable;
+use Illuminate\Database\Eloquent\Attributes\Hidden;
 use Illuminate\Database\Eloquent\Concerns\HasUuids;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
-use Illuminate\Database\Eloquent\Attributes\Fillable;
-use Illuminate\Database\Eloquent\Attributes\Hidden;
 use Illuminate\Support\Str;
 
-#[Fillable(['username', 'name', 'email', 'phone', 'password', 'role', 'balance', 'refresh_token_hash', 'refresh_token_expired_at', 'google2fa_secret', 'google2fa_enabled', 'api_key', 'status'])]
+#[Fillable(['username', 'name', 'email', 'phone', 'password', 'role', 'balance', 'refresh_token_hash', 'refresh_token_expired_at', 'google2fa_secret', 'google2fa_enabled', 'api_key', 'status', 'token_version'])]
 #[Hidden(['password', 'remember_token'])]
 class UserModel extends Authenticatable
 {
-    use HasFactory, Notifiable, HasUuids, NormalizeTextTrait;
+    use HasFactory, HasUuids, NormalizeTextTrait, Notifiable;
 
     protected $table = 'users';
 
@@ -49,6 +49,7 @@ class UserModel extends Authenticatable
             'refresh_token_expired_at' => 'datetime',
             'google2fa_enabled' => 'boolean',
             'balance' => 'float',
+            'token_version' => 'integer',
         ];
     }
 }

@@ -4,6 +4,8 @@ namespace App\Application\Services;
 
 use App\Domain\Entities\User;
 use App\Domain\Repositories\UserRepositoryInterface;
+use App\Infrastructure\Persistence\Eloquent\UserModel;
+use App\Infrastructure\Persistence\Mappers\UserMapper;
 use App\Infrastructure\Security\JwtService;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Str;
@@ -11,6 +13,7 @@ use Illuminate\Support\Str;
 class AuthService
 {
     private UserRepositoryInterface $userRepository;
+
     private JwtService $jwtService;
 
     public function __construct(
@@ -27,44 +30,51 @@ class AuthService
         if ($existingEmail) {
             throw new \Exception('Email already registered.');
         }
- 
+
         $existingUsername = $this->userRepository->findByEmailOrUsername($username);
         if ($existingUsername) {
             throw new \Exception('Username already taken.');
         }
- 
-        $displayName = !empty($name) ? $name : $username;
+
+        $displayName = ! empty($name) ? $name : $username;
         $hashedPassword = Hash::make($password);
         $user = new User(null, $username, $displayName, $email, $hashedPassword, 'customer');
+
         return $this->userRepository->save($user);
     }
- 
+
     public function login(string $login, string $password): ?User
     {
         $user = $this->userRepository->findByEmailOrUsername($login);
- 
-        if (!$user) {
+
+        if (! $user) {
             return null;
         }
- 
-        if (!Hash::check($password, $user->getPassword())) {
+
+        if (! Hash::check($password, $user->getPassword())) {
             return null;
         }
- 
+
         if ($user->isBanned()) {
             throw new \Exception('Your account has been banned. Please contact administrator.');
         }
- 
+
         return $user;
     }
 
     public function generateAccessToken(User $user): string
     {
+        $tokenVersion = (int) UserModel::query()
+            ->whereKey($user->getId())
+            ->value('token_version');
+
         $payload = [
             'sub' => $user->getId(),
             'email' => $user->getEmail(),
-            'role' => $user->getRole()
+            'role' => $user->getRole(),
+            'ver' => $tokenVersion,
         ];
+
         // Hết hạn sau 30 phút (1800 giây)
         return $this->jwtService->generateToken($payload, 1800);
     }
@@ -73,7 +83,7 @@ class AuthService
     {
         $rawToken = Str::random(64);
         $hash = hash('sha256', $rawToken);
-        $expiredAt = (new \DateTime())->modify('+7 days');
+        $expiredAt = (new \DateTime)->modify('+7 days');
 
         $user->setRefreshToken($hash, $expiredAt);
         $this->userRepository->save($user);
@@ -84,18 +94,18 @@ class AuthService
     public function refresh(string $refreshToken): ?array
     {
         $hash = hash('sha256', $refreshToken);
-        
+
         // Tìm user có refresh token hash trùng khớp
-        $userModel = \App\Infrastructure\Persistence\Eloquent\UserModel::where('refresh_token_hash', $hash)
+        $userModel = UserModel::where('refresh_token_hash', $hash)
             ->where('refresh_token_expired_at', '>', now())
             ->first();
 
-        if (!$userModel) {
+        if (! $userModel) {
             return null;
         }
 
-        $user = \App\Infrastructure\Persistence\Mappers\UserMapper::toDomain($userModel);
-        
+        $user = UserMapper::toDomain($userModel);
+
         // Rotate token: Sinh mới cả access và refresh token
         $newAccessToken = $this->generateAccessToken($user);
         $newRefreshToken = $this->generateRefreshToken($user);
@@ -103,7 +113,7 @@ class AuthService
         return [
             'access_token' => $newAccessToken,
             'refresh_token' => $newRefreshToken,
-            'user' => $user
+            'user' => $user,
         ];
     }
 
@@ -120,17 +130,19 @@ class AuthService
     {
         $payload = [
             'sub' => $user->getId(),
-            'scope' => '2fa'
+            'scope' => '2fa',
         ];
+
         return $this->jwtService->generateToken($payload, 300);
     }
 
     public function validateTemp2FaToken(string $tempToken): ?string
     {
         $payload = $this->jwtService->validateToken($tempToken);
-        if (!$payload || empty($payload['sub']) || ($payload['scope'] ?? '') !== '2fa') {
+        if (! $payload || empty($payload['sub']) || ($payload['scope'] ?? '') !== '2fa') {
             return null;
         }
+
         return $payload['sub'];
     }
 

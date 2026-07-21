@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Application\Services\SystemSettingService;
+use App\Infrastructure\Persistence\Eloquent\UserModel;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Artisan;
 use Illuminate\Support\Facades\File;
@@ -23,6 +24,7 @@ class SystemSettingController extends Controller
     public function index()
     {
         $settings = $this->settingService->getAllSettings();
+
         return response()->json($settings);
     }
 
@@ -51,10 +53,10 @@ class SystemSettingController extends Controller
             $settingsToSave['scanner_api_key'] = $request->input('scanner_api_key');
         }
         if ($request->has('token_cleanup_days')) {
-            $settingsToSave['token_cleanup_days'] = (string)$request->input('token_cleanup_days');
+            $settingsToSave['token_cleanup_days'] = (string) $request->input('token_cleanup_days');
         }
         if ($request->has('usdt_exchange_rate')) {
-            $settingsToSave['usdt_exchange_rate'] = (string)$request->input('usdt_exchange_rate');
+            $settingsToSave['usdt_exchange_rate'] = (string) $request->input('usdt_exchange_rate');
         }
         if ($request->has('admin_binance_id')) {
             $settingsToSave['admin_binance_id'] = $request->input('admin_binance_id') ?: '';
@@ -67,12 +69,12 @@ class SystemSettingController extends Controller
             $settingsToSave['binance_api_secret'] = $request->input('binance_api_secret') ?: '';
         }
 
-        if (!empty($settingsToSave)) {
+        if (! empty($settingsToSave)) {
             $this->settingService->saveSettings($settingsToSave);
         }
 
         return response()->json([
-            'message' => 'System settings updated successfully.'
+            'message' => 'System settings updated successfully.',
         ]);
     }
 
@@ -82,6 +84,7 @@ class SystemSettingController extends Controller
     public function clearViews()
     {
         Artisan::call('view:clear');
+
         return response()->json(['success' => true, 'message' => 'Compiled views cleared successfully.']);
     }
 
@@ -91,6 +94,7 @@ class SystemSettingController extends Controller
     public function clearConfig()
     {
         Artisan::call('config:clear');
+
         return response()->json(['success' => true, 'message' => 'Config cache cleared successfully.']);
     }
 
@@ -100,6 +104,7 @@ class SystemSettingController extends Controller
     public function clearRoutes()
     {
         Artisan::call('route:clear');
+
         return response()->json(['success' => true, 'message' => 'Route cache cleared successfully.']);
     }
 
@@ -109,6 +114,7 @@ class SystemSettingController extends Controller
     public function optimize()
     {
         Artisan::call('optimize');
+
         return response()->json(['success' => true, 'message' => 'System optimization completed successfully.']);
     }
 
@@ -118,6 +124,7 @@ class SystemSettingController extends Controller
     public function clearOptimize()
     {
         Artisan::call('optimize:clear');
+
         return response()->json(['success' => true, 'message' => 'Optimization cache cleared successfully.']);
     }
 
@@ -149,7 +156,7 @@ class SystemSettingController extends Controller
      */
     private function recursiveCleanDirectory($dirPath)
     {
-        if (!is_dir($dirPath)) {
+        if (! is_dir($dirPath)) {
             return;
         }
 
@@ -163,7 +170,7 @@ class SystemSettingController extends Controller
                 continue;
             }
 
-            $path = $dirPath . DIRECTORY_SEPARATOR . $item;
+            $path = $dirPath.DIRECTORY_SEPARATOR.$item;
             @chmod($path, 0777);
 
             if (is_dir($path)) {
@@ -180,14 +187,14 @@ class SystemSettingController extends Controller
      */
     public function cleanTokens(Request $request)
     {
-        $deletedCount = \App\Infrastructure\Persistence\Eloquent\UserModel::where('refresh_token_expired_at', '<', now())->update([
+        $deletedCount = UserModel::where('refresh_token_expired_at', '<', now())->update([
             'refresh_token_hash' => null,
-            'refresh_token_expired_at' => null
+            'refresh_token_expired_at' => null,
         ]);
-        
+
         return response()->json([
             'success' => true,
-            'message' => "Successfully cleaned up {$deletedCount} expired refresh tokens from database."
+            'message' => "Successfully cleaned up {$deletedCount} expired refresh tokens from database.",
         ]);
     }
 
@@ -200,7 +207,7 @@ class SystemSettingController extends Controller
 
         return response()->json([
             'success' => true,
-            'message' => "Successfully cleared all active tokens and regenerated application key. All users logged out."
+            'message' => 'Successfully revoked all active tokens. All users logged out.',
         ]);
     }
 }

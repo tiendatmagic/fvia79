@@ -23,7 +23,7 @@ Hệ thống sử dụng cơ chế tự động quét lịch sử nhận USDT qu
 
 ### 2. Các lệnh bảo trì khác
 
-- **Force Logout và làm mới App Key**:
+- **Force Logout toàn bộ bằng cách thu hồi phiên bản token (không thay đổi App Key)**:
     ```bash
     php artisan auth:force-logout-all
     ```

@@ -24,10 +24,14 @@ export const authInterceptor: HttpInterceptorFn = (
   const toastService = inject(ToastService);
   const uiStateService = inject(UiStateService);
   const authStore = inject(AuthStore);
+  const isApiRequest = req.url.startsWith(environment.apiBaseUrl);
+  const protectedReq = isApiRequest
+    ? req.clone({ setHeaders: { 'X-Requested-With': 'XMLHttpRequest' } })
+    : req;
 
   const isBypassCancel = req.url.includes('/auth/refresh') || req.url.includes('/auth/logout');
 
-  let requestStream$ = next(req);
+  let requestStream$ = next(protectedReq);
   if (!isBypassCancel) {
     requestStream$ = requestStream$.pipe(takeUntil(cancelPending$));
   }
@@ -47,13 +51,12 @@ export const authInterceptor: HttpInterceptorFn = (
         }
       }
 
-      const isApiRequest = req.url.includes(environment.apiBaseUrl);
       const isRefreshRequest = req.url.includes('/auth/refresh');
       const isAuthEndpoint = req.url.includes('/auth/login') || req.url.includes('/auth/register')
         || req.url.includes('/v1/auth/login') || req.url.includes('/v1/auth/register');
 
       if (error.status === 401 && isApiRequest && !isRefreshRequest && !isAuthEndpoint) {
-        return handle401Error(req, next, http, router, authStore);
+        return handle401Error(protectedReq, next, http, router, authStore);
       }
 
       return throwError(() => error);

@@ -2,12 +2,12 @@
 
 namespace App\Http\Middleware;
 
+use App\Infrastructure\Persistence\Eloquent\UserModel;
+use App\Infrastructure\Security\JwtService;
 use Closure;
 use Illuminate\Http\Request;
-use Symfony\Component\HttpFoundation\Response;
-use App\Infrastructure\Security\JwtService;
-use App\Infrastructure\Persistence\Eloquent\UserModel;
 use Illuminate\Support\Facades\Auth;
+use Symfony\Component\HttpFoundation\Response;
 
 class JwtAuthMiddleware
 {
@@ -25,7 +25,7 @@ class JwtAuthMiddleware
     {
         $token = $request->cookie('access_token');
 
-        if (!$token) {
+        if (! $token) {
             // Hỗ trợ Authorization Header làm fallback (cho test API)
             $authHeader = $request->header('Authorization');
             if ($authHeader && preg_match('/Bearer\s(\S+)/', $authHeader, $matches)) {
@@ -33,19 +33,23 @@ class JwtAuthMiddleware
             }
         }
 
-        if (!$token) {
+        if (! $token) {
             return response()->json(['message' => 'Unauthorized. Token missing.'], 401);
         }
 
         $payload = $this->jwtService->validateToken($token);
 
-        if (!$payload || empty($payload['sub'])) {
+        if (! $payload || empty($payload['sub'])) {
             return response()->json(['message' => 'Unauthorized. Invalid or expired token.'], 401);
         }
 
         $userModel = UserModel::find($payload['sub']);
-        if (!$userModel) {
+        if (! $userModel) {
             return response()->json(['message' => 'Unauthorized. User not found.'], 401);
+        }
+
+        if ((int) ($payload['ver'] ?? 0) !== (int) $userModel->token_version) {
+            return response()->json(['message' => 'Unauthorized. Token has been revoked.'], 401);
         }
 
         if ($userModel->status === 'banned') {

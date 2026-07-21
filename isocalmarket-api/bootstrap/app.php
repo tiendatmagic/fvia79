@@ -14,6 +14,7 @@ return Application::configure(basePath: dirname(__DIR__))
     )
     ->withMiddleware(function (Middleware $middleware): void {
         $middleware->prependToGroup('api', \App\Http\Middleware\SetLocale::class);
+        $middleware->appendToGroup('api', \App\Http\Middleware\VerifyCookieRequestOrigin::class);
         $middleware->appendToGroup('api', 'throttle:api');
         $middleware->appendToGroup('api', \App\Http\Middleware\QueryLimitMiddleware::class);
         $middleware->alias([
