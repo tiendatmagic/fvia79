@@ -94,7 +94,14 @@ function handle401Error(
           document.cookie = 'auth_logged_in=; path=/; expires=Thu, 01 Jan 1970 00:00:00 GMT; SameSite=Lax';
         }
 
-        router.navigate(['/login']);
+        const currentUrl = router.url || '';
+        const isPublicRoute = currentUrl === '/' || 
+                              currentUrl.startsWith('/storefront') || 
+                              currentUrl.startsWith('/login') || 
+                              currentUrl.startsWith('/register');
+        if (!isPublicRoute) {
+          router.navigate(['/login']);
+        }
         return throwError(() => refreshError);
       })
     );

@@ -96,6 +96,10 @@ export class HeaderComponent {
   }
 
   public openCart() {
+    if (!this.stateService.isAuthenticated()) {
+      this.stateService.showToast(this.langService.translate('storefront.please_login_to_use_cart'), 'warning');
+      return;
+    }
     this.modalService.open(CartModalComponent, {
       title: this.langService.translate('cart.title'),
       size: 'lg'

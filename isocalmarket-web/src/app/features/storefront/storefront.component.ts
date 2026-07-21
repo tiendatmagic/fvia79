@@ -69,6 +69,10 @@ export class StorefrontComponent implements OnInit {
   public searchQuery = '';
 
   public openCart() {
+    if (!this.state.isAuthenticated()) {
+      this.state.showToast(this.lang.translate('storefront.please_login_to_use_cart'), 'warning');
+      return;
+    }
     this.modalService.open(CartModalComponent, {
       title: this.lang.translate('cart.title'),
       size: 'lg'
@@ -199,6 +203,10 @@ export class StorefrontComponent implements OnInit {
   }
 
   public addToCart(product: any) {
+    if (!this.state.isAuthenticated()) {
+      this.state.showToast(this.lang.translate('storefront.please_login_to_add_to_cart'), 'warning');
+      return;
+    }
     if (product.available_count <= 0) {
       this.state.showToast(this.lang.translate('storefront.out_of_stock'), 'warning');
       return;

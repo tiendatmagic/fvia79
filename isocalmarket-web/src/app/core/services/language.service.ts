@@ -255,6 +255,9 @@ export const TRANSLATIONS: Record<SupportedLanguage, Record<string, string>> = {
     'action.add_user': 'Add User',
     'action.back': 'Back',
     'action.restore': 'Restore',
+    'common.please_login': 'Please sign in to access this feature.',
+    'storefront.please_login_to_add_to_cart': 'Please log in to add items to your cart.',
+    'storefront.please_login_to_use_cart': 'Please log in to use the cart.',
 
     // Storefront & Products
     'storefront.title': 'Digital Accounts Store',
@@ -1362,6 +1365,9 @@ export const TRANSLATIONS: Record<SupportedLanguage, Record<string, string>> = {
     'action.add_user': 'Thêm thành viên',
     'action.back': 'Quay lại',
     'action.restore': 'Khôi phục',
+    'common.please_login': 'Vui lòng đăng nhập để sử dụng tính năng này.',
+    'storefront.please_login_to_add_to_cart': 'Vui lòng đăng nhập để thêm sản phẩm vào giỏ hàng.',
+    'storefront.please_login_to_use_cart': 'Vui lòng đăng nhập để sử dụng giỏ hàng.',
 
     // Storefront & Products
     'storefront.title': 'Cửa hàng Tài khoản Số',
