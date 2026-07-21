@@ -1911,3 +1911,10 @@
       1. **Phân tích**: Xác định lỗi xảy ra do việc truy cập trực tiếp .length và .data của stats().low_stock_products.data trong template admin-dashboard.component.html mà không dùng safe navigation operator ?.. Khi API trả về lỗi hoặc thiếu dữ liệu, hoặc trong lúc loading, các thuộc tính này bị undefined làm crash giao diện.
       2. **Khắc phục**: Thay thế các truy cập trực tiếp thành dạng an toàn có safe navigation stats()?.low_stock_products?.data và sử dụng mảng rỗng làm fallback: (stats()?.low_stock_products?.data || []).length. Áp dụng safe navigation cho toàn bộ các thuộc tính hiển thị khác của stats().
       3. **Xác minh**: Chạy kiểm tra biên dịch npm run build thành công 100%.
+
+  - **[TẮT INLINE CRITICAL CSS TRÁNH LỖI CSP LÀM MẤT CSS]**:
+    - **Yêu cầu**: Khắc phục lỗi CSP chặn inline event handler onload trên thẻ stylesheet làm trang web bị mất sạch CSS (style Tailwind/CSS không được áp dụng).
+    - **Thực hiện & Kết quả**:
+      1. **Phân tích**: Angular CLI mặc định tối ưu CSS bằng cách tải bất đồng bộ qua onload="this.media='all'". Tuy nhiên CSP của Netlify cấu hình script-src 'self' chặn toàn bộ inline event handlers, làm stylesheet kẹt ở media="print" và không áp dụng lên màn hình.
+      2. **Khắc phục**: Sửa cấu hình angular.json, thêm "optimization": { "styles": { "inlineCritical": false } } vào cấu hình build production. Điều này giúp Angular sinh ra link style đồng bộ truyền thống không chứa inline script.
+      3. **Xác minh**: Chạy build frontend thành công. File index.html đầu ra hiển thị link style sạch sẽ <link rel="stylesheet" href="styles-HFGYCSND.css">.
