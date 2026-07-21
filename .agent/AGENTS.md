@@ -2001,4 +2001,17 @@
   3. **Thay thế bằng Icon SVG**: Thay thế emoji `💡` bằng thẻ SVG inline `text-amber-500` mượt mà, responsive và đúng chuẩn thiết kế hệ thống.
   4. **Xác minh lại**: Chạy lại script rà soát xác nhận 0 ký tự emoji còn sót lại trong toàn bộ repository Frontend. Chạy `npm run build` biên dịch thành công 100%.
 
+## [2026-07-22] Sửa hiển thị trạng thái đã lưu cho Moralis API Key, Binance API Key & Binance API Secret
+- **Yêu cầu:** Tại trang Cấu hình hệ thống (`/admin/settings/general`), Admin đã lưu Moralis API Key, Binance API Key, Binance API Secret thành công nhưng khi tải lại trang thì các ô nhập liệu bị trống trơn, không hiển thị bất kỳ dấu hiệu nào cho biết API keys đã được lưu hay chưa.
+- **Phân tích nguyên nhân:**
+  1. **Bảo mật Backend**: Backend `SystemSettingController@index` không bao giờ trả về chuỗi API Key/Secret công khai (security best practice), mà chỉ trả về các cờ boolean (`has_scanner_api_key`, `has_binance_api_key`, `has_binance_api_secret`).
+  2. **Frontend UI**: Frontend khi load xong gán giá trị các key thành chuỗi rỗng `''`. Tuy nhiên template HTML `admin-settings.component.html` lại dùng placeholder mặc định "Nhập API Key..." mà không hề kiểm tra các cờ `has_X_key`, và không có nhãn/badge hiển thị trạng thái cho Admin biết là API Key đã được mã hóa & lưu an toàn.
+- **Thực hiện khắc phục:**
+  1. **`language.service.ts`**: Bổ sung các translation keys `settings.key_configured`, `settings.configured`, `settings.key_saved_hint` cho cả tiếng Việt và tiếng Anh.
+  2. **`admin-settings.component.html`**:
+     - Thêm Badge xanh nổi bật `[✔ Đã cấu hình]` cạnh nhãn của Moralis API Key, Binance API Key và Binance API Secret khi key đã có trong hệ thống.
+     - Cập nhật placeholder hiển thị `•••••••••••••••• (Đã lưu & bảo mật — để trống nếu giữ nguyên)` khi key đã được thiết lập.
+     - Bổ sung dòng chú thích màu xanh lá ngọc `✔ Key/Secret đã được lưu & mã hóa an toàn trong hệ thống. Để trống nếu giữ nguyên.` ngay dưới ô nhập liệu.
+  3. **Xác minh**: Chạy `npm run build` biên dịch Angular thành công 100% không phát sinh lỗi.
+
 
