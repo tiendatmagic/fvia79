@@ -44,12 +44,10 @@ class DashboardController extends Controller
                 $totalProducts = ProductModel::where('status', 'active')->count();
                 $totalUsers = UserModel::count();
 
-                // Tổng số tài nguyên khả dụng trong kho
                 $totalAvailableInventory = (int) InventoryBatchModel::where('status', 'active')
                     ->selectRaw('SUM(initial_count - sold_count) as total')
                     ->value('total') ?? 0;
 
-                // Xác định chế định lọc: lt (less than) hoặc gte (greater than or equal)
                 if (str_starts_with($thresholdParam, 'gte_')) {
                     $compareMode = 'gte';
                     $threshold = (int) substr($thresholdParam, 4);

@@ -99,7 +99,6 @@ class OrderService
                 );
             }
 
-            // Xử lý mã giảm giá
             $discountAmount = 0.0;
             $couponId = null;
             $appliedCouponCode = null;
@@ -132,7 +131,6 @@ class OrderService
                 $couponId = $coupon->getId();
                 $appliedCouponCode = $coupon->getCode();
 
-                // Tăng số lần sử dụng của coupon
                 $updatedCoupon = new \App\Domain\Entities\Coupon(
                     $coupon->getId(),
                     $coupon->getCode(),
@@ -150,7 +148,6 @@ class OrderService
 
             $finalPrice = max(0.0, $totalPrice - $discountAmount);
 
-            // Kiểm tra và trừ tiền từ số dư của người dùng
             $user = $this->userRepository->findByIdForUpdate($userId);
             if (!$user) {
                 throw new OrderException('User account not found.');
@@ -195,7 +192,6 @@ class OrderService
             return null;
         }
 
-        // Kiểm tra quyền: chỉ Admin hoặc chính User mua hàng mới xem được
         if ($role !== 'admin' && $order->getUserId() !== $requestingUserId) {
             throw new OrderException('Forbidden. Access denied.');
         }

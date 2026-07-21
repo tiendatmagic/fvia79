@@ -14,10 +14,6 @@ class JwtService
         }
         $this->secret = $key;
     }
-
-    /**
-     * Sinh JWT Token
-     */
     public function generateToken(array $payload, int $expirationSeconds): string
     {
         $header = json_encode(['alg' => 'HS256', 'typ' => 'JWT']);
@@ -34,10 +30,6 @@ class JwtService
 
         return $base64UrlHeader . "." . $base64UrlPayload . "." . $base64UrlSignature;
     }
-
-    /**
-     * Giải mã và kiểm tra tính hợp lệ của Token
-     */
     public function validateToken(string $token): ?array
     {
         $parts = explode('.', $token);
@@ -55,8 +47,6 @@ class JwtService
         }
 
         $payload = json_decode($this->base64UrlDecode($base64UrlPayload), true);
-        
-        // Kiểm tra xem token hết hạn chưa
         if (isset($payload['exp']) && $payload['exp'] < time()) {
             return null;
         }

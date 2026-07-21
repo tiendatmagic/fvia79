@@ -20,7 +20,6 @@ return new class extends Migration
             $table->rememberToken();
             $table->timestamps();
 
-            // Index để đăng nhập bằng username (name)
             $table->index('name');
         });
 

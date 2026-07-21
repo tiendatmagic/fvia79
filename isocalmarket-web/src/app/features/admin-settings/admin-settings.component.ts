@@ -59,7 +59,6 @@ export class AdminSettingsComponent implements OnInit, OnDestroy {
   public readonly selectedSupplierCode = signal<string | null>(null);
   public readonly isCreatingSupplier = signal<boolean>(false);
 
-  // Tab management - driven by route param
   public readonly activeTab = signal<'general' | 'suppliers' | 'maintenance'>('general');
   public readonly tokenCleanupDays = signal<number>(7);
 
@@ -83,7 +82,6 @@ export class AdminSettingsComponent implements OnInit, OnDestroy {
   };
 
   ngOnInit(): void {
-    // Sync active tab from URL param
     this.routeSub = this.route.paramMap.subscribe(params => {
       const tab = params.get('tab');
       if (tab === 'maintenance' || tab === 'suppliers') {
@@ -232,7 +230,6 @@ export class AdminSettingsComponent implements OnInit, OnDestroy {
       return;
     }
 
-    // Kiểm tra định dạng ví BEP20/EVM (0x + 40 ký tự hex)
     const walletRegex = /^0x[a-fA-F0-9]{40}$/;
     if (!walletRegex.test(walletAddress)) {
       this.toast.showToast(this.lang.translate('toast.wallet_invalid'), 'error');
@@ -288,7 +285,6 @@ export class AdminSettingsComponent implements OnInit, OnDestroy {
     });
   }
 
-  // Tác vụ Bảo trì Cache & Tối ưu hóa
   public runMaintenance(action: string): void {
     if (this.store.runningMaintenance()) return;
 
@@ -335,7 +331,6 @@ export class AdminSettingsComponent implements OnInit, OnDestroy {
     });
   }
 
-  // Thực hiện dọn dẹp Token hết hạn thủ công
   public triggerCleanTokens(): void {
     if (this.store.isCleaningTokens()) return;
 
@@ -352,7 +347,6 @@ export class AdminSettingsComponent implements OnInit, OnDestroy {
     });
   }
 
-  // Xóa toàn bộ Token đăng nhập (logout tất cả)
   public triggerCleanAllTokens(): void {
     if (this.store.isCleaningTokens()) return;
 
@@ -367,7 +361,6 @@ export class AdminSettingsComponent implements OnInit, OnDestroy {
         this.store.cleanAllTokens().subscribe({
           next: (res) => {
             this.toast.showToast(res.message || this.lang.translate('toast.tokens_cleaned'), 'success');
-            // Reload trang để ép đăng xuất (guard sẽ bắt chuyển về trang login)
             setTimeout(() => {
               window.location.reload();
             }, 1500);

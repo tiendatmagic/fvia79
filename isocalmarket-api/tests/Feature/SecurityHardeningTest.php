@@ -163,14 +163,11 @@ class SecurityHardeningTest extends TestCase
             'api_key' => 'MY-SECRET-B2B-KEY-32-CHARS-12345'
         ]);
 
-        // 1. Kiểm tra xem trong DB raw có được mã hóa (không bằng plaintext) hay không
         $dbRaw = DB::table('users')->where('id', $user->id)->first();
         $this->assertNotSame('MY-SECRET-B2B-KEY-32-CHARS-12345', $dbRaw->api_key);
         
-        // Cột api_key_hash phải lưu mã băm SHA-256
         $this->assertSame(hash('sha256', 'MY-SECRET-B2B-KEY-32-CHARS-12345'), $dbRaw->api_key_hash);
 
-        // 2. Eloquent phải tự động giải mã ra bản rõ khi truy xuất
         $userFresh = UserModel::find($user->id);
         $this->assertSame('MY-SECRET-B2B-KEY-32-CHARS-12345', $userFresh->api_key);
     }
@@ -218,18 +215,15 @@ class SecurityHardeningTest extends TestCase
             'api_key' => 'MY-FALLBACK-B2B-KEY-12345'
         ]);
 
-        // Gọi API /auth/me (bảo vệ bởi jwt.auth) bằng header X-API-KEY
         $response1 = $this->withHeaders([
             'X-API-KEY' => 'MY-FALLBACK-B2B-KEY-12345'
         ])->getJson('/api/v1/auth/me');
 
         $response1->assertUnauthorized();
 
-        // Gọi API /auth/me bằng query string api_key
         $response2 = $this->getJson('/api/v1/auth/me?api_key=MY-FALLBACK-B2B-KEY-12345');
         $response2->assertUnauthorized();
 
-        // Gọi API /auth/me bằng Authorization header thô
         $response3 = $this->withHeaders([
             'Authorization' => 'MY-FALLBACK-B2B-KEY-12345'
         ])->getJson('/api/v1/auth/me');

@@ -9,9 +9,6 @@ use Illuminate\Support\ServiceProvider;
 
 class AppServiceProvider extends ServiceProvider
 {
-    /**
-     * Register any application services.
-     */
     public function register(): void
     {
         $this->app->bind(
@@ -47,19 +44,11 @@ class AppServiceProvider extends ServiceProvider
             \App\Infrastructure\Persistence\Repositories\CouponRepository::class
         );
     }
-
-    /**
-     * Bootstrap any application services.
-     */
     public function boot(): void
     {
-        // Rate limiter chung cho toàn bộ API: 60 requests/phút
         RateLimiter::for('api', function (Request $request) {
             return Limit::perMinute(40)->by($request->ip());
         });
-
-        // Rate limiter nghiêm ngặt cho auth (chống brute-force):
-        // Tối đa 10 requests/phút theo IP + email kết hợp
         RateLimiter::for('auth', function (Request $request) {
             $key = $request->ip() . '|' . strtolower((string) $request->input('email', ''));
             return Limit::perMinute(10)->by($key)->response(function () {

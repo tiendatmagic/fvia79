@@ -65,7 +65,6 @@ export class AdminDashboardComponent implements OnInit {
   public readonly lowStockLoading = signal<boolean>(true);
   public selectedDateRange: DateTimeRangeValue = { startDate: '', endDate: '' };
 
-  // low stock filter/search signals
   public readonly selectedCategory = signal<string>('');
   public readonly lowStockSearch = signal<string>('');
   public readonly selectedThreshold = signal<string>('5');

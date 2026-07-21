@@ -24,7 +24,6 @@ return new class extends Migration
             $table->string('normalized_name')->nullable()->index();
         });
 
-        // Backfill data
         \Illuminate\Support\Facades\DB::table('categories')->get()->each(function ($cat) {
             \Illuminate\Support\Facades\DB::table('categories')->where('id', $cat->id)->update([
                 'normalized_name' => $this->normalizeText($cat->name)

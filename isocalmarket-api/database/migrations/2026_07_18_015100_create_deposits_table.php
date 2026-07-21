@@ -19,7 +19,6 @@ return new class extends Migration
             $table->enum('status', ['pending_payment', 'completed', 'failed', 'expired'])->default('pending_payment');
             $table->timestamps();
 
-            // Indexes
             $table->index(['user_id', 'status']);
             $table->index('created_at');
         });

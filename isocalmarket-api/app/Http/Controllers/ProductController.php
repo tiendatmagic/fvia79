@@ -28,7 +28,6 @@ class ProductController extends Controller
             $status = $request->query('status');
             $filterDeleted = $request->query('filter_deleted', 'active');
 
-            // Default behavior for storefront / guest is to show active status only
             $user = $this->getAuthenticatedUser($request);
 
             $isAdmin = $user && $user->role === 'admin';

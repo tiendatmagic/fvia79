@@ -5,7 +5,6 @@ export type SupportedLanguage = 'en' | 'vi';
 
 export const TRANSLATIONS: Record<SupportedLanguage, Record<string, string>> = {
   en: {
-    // General & Navigation
     'nav.home': 'Storefront',
     'nav.products': 'Products',
     'nav.inventory': 'Inventory',
@@ -34,7 +33,6 @@ export const TRANSLATIONS: Record<SupportedLanguage, Record<string, string>> = {
     'theme.dark': 'Dark',
     'theme.auto': 'Auto',
 
-    // B2B API
     'api.user_description': 'Integrate B2B API system to sync product catalog, prices, stock and place automated orders quickly.',
     'api.switch_to_admin': 'Switch to Admin API',
     'api.your_api_key': 'Your B2B API Key',
@@ -45,7 +43,6 @@ export const TRANSLATIONS: Record<SupportedLanguage, Record<string, string>> = {
     'api.show_key': 'Show API Key',
     'api.create_key': 'Generate API Key',
     'api.regen_key': 'Generate New Key',
-    // Admin API
     'api.admin_description': 'Privileged gateway for Admin to automate agent management, update balances, and reconcile the system.',
     'api.switch_to_user': 'Switch to User API',
     'api.admin_key_section': 'Admin API Key & Configuration',
@@ -57,7 +54,6 @@ export const TRANSLATIONS: Record<SupportedLanguage, Record<string, string>> = {
     'api.admin_security_warning': 'Keep this key absolutely secure and never share it with anyone to avoid asset losses!',
     'api.admin_docs_title': 'B2B Admin API Integration Documentation',
     'api.admin_docs_subtitle': 'Privileged gateway for system administration and B2B member reconciliation',
-    // Admin API endpoints
     'api.admin_ep1_title': '1. List B2B Members',
     'api.admin_ep1_desc': 'Returns members with their profile, role, USD wallet balance, and API lock status. Supports pagination (?page=1&limit=10), search (?search=...), role filter (?role=...) and API Key status (?has_api_key=yes/no).',
     'api.admin_ep2_title': '2. List All B2B System Orders',
@@ -66,7 +62,6 @@ export const TRANSLATIONS: Record<SupportedLanguage, Record<string, string>> = {
     'api.admin_ep3_desc': 'Add stock data to a product. Can send content directly as JSON or upload a TXT file via multipart/form-data.',
     'api.admin_ep4_title': '4. Get B2B System Statistics',
     'api.admin_ep4_desc': 'View overall system activity including: Revenue, Orders, Products, Available Inventory and Total Users.',
-    // API param descriptions
     'api.admin_api_key_desc': 'Admin API Key to authenticate. Can be passed via query parameter or header X-API-KEY.',
     'api.admin_users_limit_desc': 'Number of members per page. Default is',
     'api.admin_users_search_desc': 'Search keyword by name, email, or phone number.',
@@ -86,7 +81,6 @@ export const TRANSLATIONS: Record<SupportedLanguage, Record<string, string>> = {
     'api.stats_start_date_desc': 'Start date for revenue and order calculation.',
     'api.stats_end_date_desc': 'End date for revenue and order calculation.',
     'api.max': 'max',
-    // User API docs
     'api.docs_title': 'B2B API Integration Documentation',
     'api.docs_subtitle': 'Connect directly via URL, auto-sync inventory and place transactions',
     'api.ep1_title': '1. Get Product List',
@@ -135,7 +129,6 @@ export const TRANSLATIONS: Record<SupportedLanguage, Record<string, string>> = {
     'api.copy_inventory_url': 'Inventory import URL',
     'api.copy_stats_curl': 'B2B statistics CURL sample',
     'api.copy_stats_url': 'B2B statistics URL',
-    // Settings
     'settings.title': 'System Configuration',
     'settings.description': 'Manage the admin USDT receiving wallet address and blockchain scanner integration keys',
     'settings.tab_general': 'System Information Config',
@@ -236,11 +229,9 @@ export const TRANSLATIONS: Record<SupportedLanguage, Record<string, string>> = {
     'settings.refresh': 'Refresh',
     'settings.clear_cache': 'Clear Cache',
 
-    // Role & Badges
     'role.admin': 'Administrator',
     'role.customer': 'Customer',
 
-    // Header & Common Actions
     'action.save': 'Save Changes',
     'action.cancel': 'Cancel',
     'action.delete': 'Delete',
@@ -264,7 +255,6 @@ export const TRANSLATIONS: Record<SupportedLanguage, Record<string, string>> = {
     'storefront.please_login_to_add_to_cart': 'Please log in to add items to your cart.',
     'storefront.please_login_to_use_cart': 'Please log in to use the cart.',
 
-    // Storefront & Products
     'storefront.title': 'Digital Accounts Store',
     'storefront.subtitle': 'High quality automated account marketplace',
     'storefront.search_placeholder': 'Search accounts or categories...',
@@ -280,7 +270,6 @@ export const TRANSLATIONS: Record<SupportedLanguage, Record<string, string>> = {
     'storefront.total': 'Total',
     'storefront.added_to_cart': 'Added to cart successfully!',
 
-    // Cart Modal
     'cart.title': 'Your Shopping Cart',
     'cart.empty': 'Your cart is empty',
     'cart.empty_desc': 'Browse our storefront to add items to your cart.',
@@ -290,7 +279,6 @@ export const TRANSLATIONS: Record<SupportedLanguage, Record<string, string>> = {
     'cart.please_login': 'Please sign in to place an order.',
     'cart.order_success': 'Order placed successfully!',
 
-    // Orders
     'orders.title': 'Order History',
     'orders.order_code': 'Order Code',
     'orders.product_name': 'Product Name',
@@ -318,7 +306,6 @@ export const TRANSLATIONS: Record<SupportedLanguage, Record<string, string>> = {
     'orders.back_to_history': 'Back to Order History',
     'orders.info': 'Order Information',
 
-    // Admin Dashboard & Management
     'admin.dashboard_title': 'System Overview',
     'admin.total_revenue': 'Total Revenue',
     'admin.total_orders': 'Total Orders',
@@ -330,7 +317,6 @@ export const TRANSLATIONS: Record<SupportedLanguage, Record<string, string>> = {
     'admin.manage_categories': 'Category Management',
     'admin.manage_users': 'User Management',
 
-    // Dashboard
     'dash.description': 'Dashboard performance overview & digital inventory status.',
     'dash.filter_note': 'Revenue and order counts filtered within selected date range.',
     'dash.total_revenue': 'Total Revenue',
@@ -354,7 +340,6 @@ export const TRANSLATIONS: Record<SupportedLanguage, Record<string, string>> = {
     'dash.no_low_stock_desc': 'No products are below the selected warning threshold.',
     'dash.remaining': 'Remaining',
 
-    // Categories
     'cat.title': 'Category Management',
     'cat.description': 'Manage digital MMO product categories system wide.',
     'cat.add': 'Add Category',
@@ -364,7 +349,6 @@ export const TRANSLATIONS: Record<SupportedLanguage, Record<string, string>> = {
     'cat.status': 'Status',
     'cat.search_placeholder': 'Search category name...',
 
-    // Products & Inventory
     'prod.title': 'Digital Product Catalog',
     'prod.description': 'Manage digital account resource catalog distributed on system.',
     'inv.title': 'Digital Inventory Management',
@@ -372,7 +356,6 @@ export const TRANSLATIONS: Record<SupportedLanguage, Record<string, string>> = {
     'inv.batch_name': 'Batch Name',
     'inv.resource_data': 'Resource Data (Formatted: User|Pass|2FA...)',
 
-    // Orders & Admin
     'ord.admin_title': 'Orders Management',
     'ord.admin_description': 'Review customer purchase transactions and distribution history.',
     'usr.title': 'User Management',
@@ -382,7 +365,6 @@ export const TRANSLATIONS: Record<SupportedLanguage, Record<string, string>> = {
     'coup.title': 'Coupon Management',
     'coup.description': 'Manage promotional discount campaigns and coupon codes.',
 
-    // Common UI Labels
     'common.reload': 'Reload',
     'common.filter_date': 'Filter Date Range',
     'common.select_date': 'Filter by created date...',
@@ -397,7 +379,6 @@ export const TRANSLATIONS: Record<SupportedLanguage, Record<string, string>> = {
     'common.inactive': 'Inactive',
     'common.deleted': 'Deleted',
 
-    // Modals & Confirmation
     'modal.confirm_title': 'Confirm Action',
     'modal.confirm_desc': 'Are you sure you want to perform this action?',
     'modal.delete_product_title': 'Delete Product',
@@ -443,7 +424,6 @@ export const TRANSLATIONS: Record<SupportedLanguage, Record<string, string>> = {
     'modal.restore_coupon_desc': 'Are you sure you want to restore this coupon?',
     'modal.system_notice': 'System Notice',
 
-    // Toast Messages
     'toast.copied': 'Copied to clipboard!',
     'toast.copy_error': 'Failed to copy!',
     'toast.copy_not_supported': 'Auto-copy is not supported in this browser!',
@@ -623,7 +603,6 @@ export const TRANSLATIONS: Record<SupportedLanguage, Record<string, string>> = {
     'toast.error_load_products': 'Failed to load products list!',
     'toast.error_load_categories': 'Failed to load categories list!',
 
-    // Auth & Others
     'auth.login_title': 'Sign In to Account',
     'auth.register_title': 'Create Account',
     'auth.register_subtitle': 'Create customer account for shopping',
@@ -673,7 +652,6 @@ export const TRANSLATIONS: Record<SupportedLanguage, Record<string, string>> = {
     'auth.security_2fa': '2-Factor Security',
     'auth.no_account': "Don't have an account?",
 
-    // Remaining shared and feature UI
     'common.no_description': 'No description.',
     'common.not_available': 'Not available',
     'common.unnamed': 'Unnamed',
@@ -1125,7 +1103,6 @@ export const TRANSLATIONS: Record<SupportedLanguage, Record<string, string>> = {
     'toast.expired_tokens_clean_failed': 'Failed to clean expired tokens!',
   },
   vi: {
-    // General & Navigation
     'nav.home': 'Cửa hàng',
     'nav.products': 'Sản phẩm',
     'nav.inventory': 'Kho hàng',
@@ -1154,7 +1131,6 @@ export const TRANSLATIONS: Record<SupportedLanguage, Record<string, string>> = {
     'theme.dark': 'Tối',
     'theme.auto': 'Tự động',
 
-    // B2B API
     'api.user_description': 'Tích hợp hệ thống B2B để đồng bộ danh sách sản phẩm, giá bán, tồn kho và tự động đặt hàng nhanh chóng.',
     'api.switch_to_admin': 'Chuyển sang Admin API',
     'api.your_api_key': 'API Key của bạn',
@@ -1165,7 +1141,6 @@ export const TRANSLATIONS: Record<SupportedLanguage, Record<string, string>> = {
     'api.show_key': 'Hiển thị API Key',
     'api.create_key': 'Tạo API Key',
     'api.regen_key': 'Tạo Key Mới',
-    // Admin API
     'api.admin_description': 'Cổng kết nối đặc quyền dành cho Admin để tự động hóa quản lý đại lý, cập nhật số dư và đối soát hệ thống.',
     'api.switch_to_user': 'Chuyển sang User API',
     'api.admin_key_section': 'API Key của Admin & Cấu hình',
@@ -1177,7 +1152,6 @@ export const TRANSLATIONS: Record<SupportedLanguage, Record<string, string>> = {
     'api.admin_security_warning': 'Tuyệt đối bảo mật và không chia sẻ khóa này cho người khác để tránh thất thoát tài sản!',
     'api.admin_docs_title': 'Tài liệu tích hợp B2B Admin API',
     'api.admin_docs_subtitle': 'Cổng kết nối đặc quyền dành cho quản trị hệ thống và đối soát thành viên B2B',
-    // Admin API endpoints
     'api.admin_ep1_title': '1. Lấy danh sách thành viên B2B',
     'api.admin_ep1_desc': 'Trả về danh sách thành viên gồm hồ sơ, vai trò, số dư ví USD và trạng thái khóa API. Hỗ trợ phân trang (?page=1&limit=10), tìm kiếm (?search=...), lọc theo vai trò (?role=...) và trạng thái API Key (?has_api_key=yes/no).',
     'api.admin_ep2_title': '2. Lấy danh sách đơn hàng B2B toàn hệ thống',
@@ -1186,7 +1160,6 @@ export const TRANSLATIONS: Record<SupportedLanguage, Record<string, string>> = {
     'api.admin_ep3_desc': 'Thêm dữ liệu kho hàng vào sản phẩm. Có thể gửi nội dung trực tiếp bằng JSON hoặc tải file TXT thông qua multipart/form-data.',
     'api.admin_ep4_title': '4. Lấy số liệu thống kê hệ thống B2B',
     'api.admin_ep4_desc': 'Xem tổng quan số liệu hoạt động toàn hệ thống bao gồm: Doanh thu, Đơn hàng, Sản phẩm, Tồn kho khả dụng và Tổng số người dùng.',
-    // API param descriptions
     'api.admin_api_key_desc': 'Khóa API Key của Admin để xác thực. Có thể truyền qua query parameter hoặc header X-API-KEY.',
     'api.admin_users_limit_desc': 'Số lượng thành viên hiển thị trên mỗi trang. Mặc định là',
     'api.admin_users_search_desc': 'Từ khóa tìm kiếm theo tên, email hoặc số điện thoại thành viên.',
@@ -1206,7 +1179,6 @@ export const TRANSLATIONS: Record<SupportedLanguage, Record<string, string>> = {
     'api.stats_start_date_desc': 'Ngày bắt đầu để tính toán doanh thu và đơn hàng.',
     'api.stats_end_date_desc': 'Ngày kết thúc để tính toán doanh thu và đơn hàng.',
     'api.max': 'tối đa là',
-    // User API docs
     'api.docs_title': 'Tài liệu tích hợp API B2B',
     'api.docs_subtitle': 'Kết nối trực tiếp qua URL, tự động đồng bộ kho hàng và thực hiện giao dịch',
     'api.ep1_title': '1. Lấy danh sách sản phẩm',
@@ -1255,7 +1227,6 @@ export const TRANSLATIONS: Record<SupportedLanguage, Record<string, string>> = {
     'api.copy_inventory_url': 'Đường dẫn nhập kho',
     'api.copy_stats_curl': 'Mẫu CURL thống kê B2B',
     'api.copy_stats_url': 'Đường dẫn thống kê B2B',
-    // Settings
     'settings.title': 'Cấu hình hệ thống',
     'settings.description': 'Quản lý địa chỉ ví nhận USDT nạp tiền và các khóa tích hợp với blockchain scanner',
     'settings.tab_general': 'Cấu hình thông tin hệ thống',
@@ -1356,11 +1327,9 @@ export const TRANSLATIONS: Record<SupportedLanguage, Record<string, string>> = {
     'settings.refresh': 'Làm mới',
     'settings.clear_cache': 'Xóa cache',
 
-    // Role & Badges
     'role.admin': 'Quản trị viên',
     'role.customer': 'Khách hàng',
 
-    // Header & Common Actions
     'action.save': 'Lưu thay đổi',
     'action.cancel': 'Hủy',
     'action.delete': 'Xóa',
@@ -1384,7 +1353,6 @@ export const TRANSLATIONS: Record<SupportedLanguage, Record<string, string>> = {
     'storefront.please_login_to_add_to_cart': 'Vui lòng đăng nhập để thêm sản phẩm vào giỏ hàng.',
     'storefront.please_login_to_use_cart': 'Vui lòng đăng nhập để sử dụng giỏ hàng.',
 
-    // Storefront & Products
     'storefront.title': 'Cửa hàng Tài khoản Số',
     'storefront.subtitle': 'Hệ thống tự động phân phối tài khoản chất lượng cao',
     'storefront.search_placeholder': 'Tìm kiếm sản phẩm hoặc danh mục...',
@@ -1400,7 +1368,6 @@ export const TRANSLATIONS: Record<SupportedLanguage, Record<string, string>> = {
     'storefront.total': 'Tổng tiền',
     'storefront.added_to_cart': 'Đã thêm sản phẩm vào giỏ hàng!',
 
-    // Cart Modal
     'cart.title': 'Giỏ hàng của bạn',
     'cart.empty': 'Giỏ hàng trống',
     'cart.empty_desc': 'Hãy khám phá cửa hàng để thêm sản phẩm vào giỏ.',
@@ -1410,7 +1377,6 @@ export const TRANSLATIONS: Record<SupportedLanguage, Record<string, string>> = {
     'cart.please_login': 'Vui lòng đăng nhập để tiến hành mua hàng.',
     'cart.order_success': 'Đặt hàng thành công!',
 
-    // Orders
     'orders.title': 'Lịch sử đơn hàng',
     'orders.order_code': 'Mã đơn hàng',
     'orders.product_name': 'Tên sản phẩm',
@@ -1438,7 +1404,6 @@ export const TRANSLATIONS: Record<SupportedLanguage, Record<string, string>> = {
     'orders.back_to_history': 'Quay lại lịch sử đơn hàng',
     'orders.info': 'Thông tin đơn hàng',
 
-    // Admin Dashboard & Management
     'admin.dashboard_title': 'Tổng quan hệ thống',
     'admin.total_revenue': 'Tổng doanh thu',
     'admin.total_orders': 'Tổng đơn hàng',
@@ -1450,7 +1415,6 @@ export const TRANSLATIONS: Record<SupportedLanguage, Record<string, string>> = {
     'admin.manage_categories': 'Quản lý danh mục',
     'admin.manage_users': 'Quản lý người dùng',
 
-    // Dashboard
     'dash.description': 'Tổng quan hiệu suất bán hàng & trạng thái tồn kho tài nguyên kỹ thuật số.',
     'dash.filter_note': 'Doanh thu và số lượng đơn hàng được lọc theo khoảng thời gian đã chọn.',
     'dash.total_revenue': 'Tổng Doanh Thu',
@@ -1474,7 +1438,6 @@ export const TRANSLATIONS: Record<SupportedLanguage, Record<string, string>> = {
     'dash.no_low_stock_desc': 'Không có sản phẩm nào nằm dưới ngưỡng cảnh báo của bộ lọc.',
     'dash.remaining': 'Còn lại',
 
-    // Categories
     'cat.title': 'Quản Lý Danh Mục',
     'cat.description': 'Quản lý danh sách các loại danh mục sản phẩm MMO của hệ thống.',
     'cat.add': 'Thêm Danh Mục',
@@ -1484,7 +1447,6 @@ export const TRANSLATIONS: Record<SupportedLanguage, Record<string, string>> = {
     'cat.status': 'Trạng thái',
     'cat.search_placeholder': 'Tìm kiếm danh mục...',
 
-    // Products & Inventory
     'prod.title': 'Danh Mục Sản Phẩm Số',
     'prod.description': 'Quản lý danh sách các loại tài nguyên kỹ thuật số phân phối trên hệ thống.',
     'inv.title': 'Quản Lý Kho Hàng Số',
@@ -1492,7 +1454,6 @@ export const TRANSLATIONS: Record<SupportedLanguage, Record<string, string>> = {
     'inv.batch_name': 'Tên lô hàng',
     'inv.resource_data': 'Dữ liệu tài nguyên (Định dạng: User|Pass|2FA...)',
 
-    // Orders & Admin
     'ord.admin_title': 'Quản Lý Đơn Hàng',
     'ord.admin_description': 'Quản lý danh sách đơn hàng đã mua và trạng thái tài nguyên.',
     'usr.title': 'Quản Lý Thành Viên',
@@ -1502,7 +1463,6 @@ export const TRANSLATIONS: Record<SupportedLanguage, Record<string, string>> = {
     'coup.title': 'Quản Lý Mã Giảm Giá',
     'coup.description': 'Quản lý danh sách các chương trình khuyến mãi, mã giảm giá áp dụng cho khách hàng mua tài nguyên MMO.',
 
-    // Common UI Labels
     'common.reload': 'Tải lại',
     'common.filter_date': 'Bộ lọc khoảng thời gian',
     'common.select_date': 'Lọc theo ngày tạo...',
@@ -1517,7 +1477,6 @@ export const TRANSLATIONS: Record<SupportedLanguage, Record<string, string>> = {
     'common.inactive': 'Ngừng hoạt động',
     'common.deleted': 'Đã xóa',
 
-    // Modals & Confirmation
     'modal.confirm_title': 'Xác nhận hành động',
     'modal.confirm_desc': 'Bạn có chắc chắn muốn thực hiện hành động này không?',
     'modal.delete_product_title': 'Xóa Sản Phẩm',
@@ -1563,7 +1522,6 @@ export const TRANSLATIONS: Record<SupportedLanguage, Record<string, string>> = {
     'modal.restore_coupon_desc': 'Bạn có chắc chắn muốn khôi phục mã giảm giá này không?',
     'modal.system_notice': 'Thông Báo Hệ Thống',
 
-    // Toast Messages
     'toast.copied': 'Đã sao chép vào bộ nhớ tạm!',
     'toast.copy_error': 'Không thể sao chép!',
     'toast.copy_not_supported': 'Trình duyệt không hỗ trợ sao chép tự động!',
@@ -1721,7 +1679,6 @@ export const TRANSLATIONS: Record<SupportedLanguage, Record<string, string>> = {
     'toast.coupon_date_invalid': 'Ngày kết thúc phải sau ngày bắt đầu!',
     'toast.coupon_copied': 'Đã sao chép mã giảm giá!',
 
-    // Auth & Others
     'auth.login_title': 'Đăng Nhập Tài Khoản',
     'auth.register_title': 'Đăng Ký Tài Khoản',
     'auth.register_subtitle': 'Tạo tài khoản khách hàng để mua sắm',
@@ -1771,7 +1728,6 @@ export const TRANSLATIONS: Record<SupportedLanguage, Record<string, string>> = {
     'auth.security_2fa': 'Bảo mật 2 lớp',
     'auth.no_account': 'Chưa có tài khoản?',
 
-    // Giao diện dùng chung và các tính năng còn lại
     'common.no_description': 'Không có mô tả.',
     'common.not_available': 'Không khả dụng',
     'common.unnamed': 'Không tên',

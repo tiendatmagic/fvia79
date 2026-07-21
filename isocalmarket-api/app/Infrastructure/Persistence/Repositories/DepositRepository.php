@@ -45,7 +45,6 @@ class DepositRepository implements DepositRepositoryInterface
 
     public function findPendingByAmountToPay(float $amountToPay): ?Deposit
     {
-        // Cho phép dung sai làm tròn nhỏ nếu cần, ở đây so khớp trực tiếp tới 4 số thập phân
         $model = DepositModel::where('status', 'pending_payment')
             ->where('amount_to_pay', $amountToPay)
             ->first();

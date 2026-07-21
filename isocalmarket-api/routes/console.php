@@ -35,6 +35,5 @@ Artisan::command('deposit:check-pending', function (DepositService $depositServi
     $this->info('Pending deposits check completed.');
 })->purpose('Scan blockchain and reconcile pending USDT BEP20 deposits');
 
-// Đăng ký lịch chạy định kỳ mỗi phút
 Schedule::command('deposit:check-pending')->everyMinute();
 Schedule::command('suppliers:sync --due')->everyTenMinutes()->withoutOverlapping();

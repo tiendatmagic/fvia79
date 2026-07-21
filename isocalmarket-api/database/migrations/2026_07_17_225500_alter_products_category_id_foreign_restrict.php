@@ -9,10 +9,8 @@ return new class extends Migration
     public function up(): void
     {
         Schema::table('products', function (Blueprint $table) {
-            // Drop foreign key cũ
             $table->dropForeign(['category_id']);
             
-            // Định nghĩa lại foreign key với onDelete('restrict')
             $table->foreign('category_id')
                 ->references('id')
                 ->on('categories')

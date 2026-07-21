@@ -9,10 +9,8 @@ return new class extends Migration
     public function up(): void
     {
         Schema::table('users', function (Blueprint $table) {
-            // Thêm cột api_key_hash sau api_key
             $table->string('api_key_hash', 64)->nullable()->unique()->index()->after('api_key');
 
-            // Bỏ unique constraint trên api_key để hỗ trợ lưu trữ chuỗi mã hóa AES-256 an toàn
             $table->dropUnique(['api_key']);
         });
     }

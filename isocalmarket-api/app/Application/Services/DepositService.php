@@ -13,11 +13,8 @@ class DepositService
     private DepositRepositoryInterface $depositRepository;
 
     private string $adminWalletAddress;
-    // API Key của blockchain scanner (cấu hình qua .env, hỗ trợ BscScan/Etherscan...)
     private string $scannerApiKey;
-    // Địa chỉ contract của token đối soát (USDT mặc định trên BSC)
     private string $tokenContractAddress;
-    // Số chữ số thập phân (decimals) của token đối soát (mặc định USDT trên BSC có 18 decimals)
     private int $tokenDecimals;
 
     private SystemSettingService $settingService;
@@ -35,34 +32,19 @@ class DepositService
         $this->adminWalletAddress = $this->settingService->getSetting('admin_wallet_address', '');
         $this->scannerApiKey = $this->settingService->getSetting('scanner_api_key', '');
 
-        // Cấu hình linh hoạt token đối soát (mặc định là USDT BEP20 trên BSC)
         $this->tokenContractAddress = env('TOKEN_CONTRACT_ADDRESS', '0x55d398326f99059ff775485246999027b3197955');
         $this->tokenDecimals = (int) env('TOKEN_DECIMALS', 18);
     }
-
-    /**
-     * Lấy ví nhận tiền của Admin
-     */
     public function getAdminWalletAddress(): string
     {
         return $this->settingService->getSetting('admin_wallet_address', '');
     }
-
-    /**
-     * Lấy Binance ID nhận tiền của Admin
-     */
     public function getAdminBinanceIdSetting(): string
     {
         return $this->settingService->getSetting('admin_binance_id', '');
     }
-
-    /**
-     * Lấy tỷ giá USDT/VND từ CoinGecko API (Free)
-     * Cache kết quả trong 10 phút (600 giây)
-     */
     public function getUsdtToVndRate(): float
     {
-        // 1. Kiểm tra xem admin có thiết lập tỷ giá cố định trong cài đặt hệ thống không
         $fixedRate = $this->settingService->getSetting('usdt_exchange_rate', '0');
         if (!empty($fixedRate) && (float) $fixedRate > 0) {
             return (float) $fixedRate;
@@ -91,17 +73,9 @@ class DepositService
                 Log::error("Failed to fetch USDT rate from CoinGecko: " . $e->getMessage());
             }
 
-            // Fallback tỷ giá mặc định nếu API lỗi
             return 26500.0;
         });
     }
-
-    /**
-     * Lập lệnh nạp tiền mới cho người dùng
-     */
-    /**
-     * Lập lệnh nạp tiền mới cho người dùng
-     */
     public function createDeposit(string $userId, float $amountUsdt, string $paymentMethod = 'bep20', ?string $payerBinanceId = null): Deposit
     {
         $this->adminWalletAddress = $this->settingService->getSetting('admin_wallet_address', '');
@@ -131,7 +105,6 @@ class DepositService
         }
 
         return \Illuminate\Support\Facades\DB::transaction(function () use ($userId, $amountUsdt, $paymentMethod, $payerBinanceId, $adminBinanceIdSetting) {
-            // Chặn tạo nhiều hóa đơn nếu đang có hóa đơn chờ thanh toán chưa giải quyết (với lock)
             $hasPending = \App\Infrastructure\Persistence\Eloquent\DepositModel::where('user_id', $userId)
                 ->where('status', 'pending_payment')
                 ->lockForUpdate()
@@ -144,7 +117,6 @@ class DepositService
             $rate = $this->getUsdtToVndRate();
             $baseAmount = round($amountUsdt, 2);
 
-            // Khóa các số tiền lẻ đang chờ thanh toán HOẶC mới bị hủy/hết hạn trong vòng 10 phút
             $activeAmounts = \App\Infrastructure\Persistence\Eloquent\DepositModel::where(function ($q) {
                 $q->where('status', 'pending_payment')
                     ->orWhere(function ($sub) {
@@ -156,7 +128,6 @@ class DepositService
                 ->pluck('amount_to_pay')
                 ->toArray();
 
-            // Tìm đuôi lẻ tiếp theo (từ .0000, .0001, .0002, ...) chưa bị trùng lắp
             $suffix = 0.0000;
             $step = 0.0001;
             $maxSuffix = 0.0999;
@@ -178,7 +149,6 @@ class DepositService
 
             $amountVnd = round($baseAmount * $rate);
 
-            // Sinh mã lệnh nạp gồm 6 ký tự (chữ viết hoa + số) không trùng lặp (loại bỏ 0, O, 1, I để tránh nhầm lẫn)
             $chars = '23456789ABCDEFGHJKLMNPQRSTUVWXYZ';
             do {
                 $nextCode = '';
@@ -208,18 +178,10 @@ class DepositService
             return $this->depositRepository->save($deposit);
         });
     }
-
-    /**
-     * Lấy chi tiết một hóa đơn nạp
-     */
     public function getInvoice(string $id): ?Deposit
     {
         return $this->depositRepository->find($id);
     }
-
-    /**
-     * Hủy lệnh nạp chủ động
-     */
     public function cancelInvoice(string $id, string $userId): bool
     {
         $deposit = $this->depositRepository->find($id);
@@ -237,7 +199,6 @@ class DepositService
         try {
             $matched = $this->checkTransaction($id, $deposit->getUserId());
             if ($matched) {
-                // Đã khớp giao dịch và cộng tiền thành công trên blockchain, không hủy nữa
                 return true;
             }
         } catch (\Exception $e) {
@@ -265,10 +226,6 @@ class DepositService
             return true;
         });
     }
-
-    /**
-     * Lấy lịch sử nạp tiền phân trang và có lọc/tìm kiếm của user
-     */
     public function getHistoryPaginated(
         string $userId,
         int $page = 1,
@@ -311,11 +268,6 @@ class DepositService
             'limit' => $limit
         ];
     }
-
-    /**
-     * BOT tự động đối soát giao dịch chuỗi block (BscScan/Moralis API)
-     * Quét các giao dịch token BEP-20 được gửi đến ví chủ sàn
-     */
     public function checkTransaction(string $id, string $userId): bool
     {
         $depositModel = \App\Infrastructure\Persistence\Eloquent\DepositModel::where('id', $id)->first();
@@ -340,7 +292,6 @@ class DepositService
             $adminWallet = strtolower($this->adminWalletAddress);
             $tokenContract = strtolower($this->tokenContractAddress);
 
-            // Fetch Moralis API ngoài transaction và lưu Cache 15s để tránh dính Rate Limit khi Polling
             $transactions = Cache::remember("bep20_txs_{$adminWallet}", 15, function () use ($adminWallet) {
                 $response = Http::timeout(10)
                     ->withHeader('X-API-Key', $this->scannerApiKey)
@@ -360,7 +311,6 @@ class DepositService
                 throw new \RuntimeException("Unable to connect to blockchain scanner API. Please try again later.");
             });
 
-            // Vá CVE-1: Bọc toàn bộ check deposit status, isTxHashUsed và credit tiền trong 1 DB transaction với pessimistic lock (lockForUpdate)
             return \Illuminate\Support\Facades\DB::transaction(function () use ($id, $userId, $adminWallet, $tokenContract, $transactions) {
                 $depositModel = \App\Infrastructure\Persistence\Eloquent\DepositModel::where('id', $id)
                     ->lockForUpdate()
@@ -378,32 +328,26 @@ class DepositService
                 }
 
                 foreach ($transactions as $tx) {
-                    // 1. Kiểm tra token có khớp với token đối soát cấu hình không
                     if (strtolower($tx['address'] ?? '') !== $tokenContract) {
                         continue;
                     }
 
-                    // 2. Kiểm tra ví nhận có phải ví chủ sàn không
                     if (strtolower($tx['to_address'] ?? '') !== $adminWallet) {
                         continue;
                     }
 
-                    // 3. Quy đổi số lượng chuyển khoản từ wei sang giá trị thực
                     $txValueUsdt = (float) ($tx['value'] ?? 0) / pow(10, $this->tokenDecimals);
                     $amountToPay = $deposit->getAmountToPay();
 
-                    // 4. So khớp số lượng thực nhận chính xác 100% không dung sai (Vá CVE-4)
                     if (round($txValueUsdt, 4) !== round($amountToPay, 4)) {
                         continue;
                     }
 
-                    // 5. Kiểm tra mã băm TxHash này đã được dùng đối soát chưa (Vá CVE-1 & CVE-3 - thực hiện trong lock)
                     $txHash = $tx['transaction_hash'] ?? '';
                     if (empty($txHash) || $this->depositRepository->isTxHashUsed($txHash)) {
                         continue;
                     }
 
-                    // 6. Kiểm tra giao dịch có diễn ra trong vòng 15 phút (900 giây) kể từ lúc tạo hóa đơn không
                     $invoiceCreatedEpoch = $deposit->getCreatedAt()->getTimestamp();
                     $txEpoch = isset($tx['block_timestamp'])
                         ? (new \DateTime($tx['block_timestamp']))->getTimestamp()
@@ -413,7 +357,6 @@ class DepositService
                         continue;
                     }
 
-                    // Giao dịch khớp hoàn toàn! Cập nhật hóa đơn & cộng tiền user trong cùng transaction lock
                     $deposit->setStatus('completed');
                     $deposit->setTxHash($txHash);
                     $this->depositRepository->save($deposit);
@@ -483,20 +426,16 @@ class DepositService
                     $txValueUsdt = (float) ($tx['amount'] ?? 0);
                     $amountToPay = $deposit->getAmountToPay();
 
-                    // So khớp số lượng thực nhận chính xác 100% không dung sai
                     if ($txValueUsdt <= 0 || round($txValueUsdt, 4) !== round($amountToPay, 4)) {
                         continue;
                     }
 
-                    // Không kiểm tra Binance ID người gửi theo cấu hình mới, đối soát hoàn toàn bằng số tiền lẻ giống BEP-20
 
-                    // Kiểm tra transactionId này đã được dùng đối soát chưa
                     $transactionId = $tx['transactionId'] ?? '';
                     if (empty($transactionId) || $this->depositRepository->isTxHashUsed($transactionId)) {
                         continue;
                     }
 
-                    // Kiểm tra thời gian giao dịch trong vòng 15 phút (900 giây)
                     $invoiceCreatedEpoch = $deposit->getCreatedAt()->getTimestamp();
                     $txEpoch = isset($tx['transactionTime'])
                         ? round((float)$tx['transactionTime'] / 1000)
@@ -520,12 +459,6 @@ class DepositService
             });
         }
     }
-
-    /**
-     * Tự động quét và đối soát toàn bộ hóa đơn nạp USDT BEP20 đang ở trạng thái pending_payment
-     *
-     * @param \Closure|null $logCallback Hàm callback để in log ra màn hình console khi chạy Artisan
-     */
     public function checkAllPendingDeposits(?\Closure $logCallback = null): void
     {
         $pendingDeposits = \App\Infrastructure\Persistence\Eloquent\DepositModel::where('status', 'pending_payment')->get();
@@ -535,7 +468,6 @@ class DepositService
             return;
         }
 
-        // Xóa cache trước mỗi lần chạy batch (Vá CVE-10)
         $this->cachedBep20TransactionsByWallet = [];
         $this->cachedBinanceTransactions = null;
 
@@ -543,13 +475,11 @@ class DepositService
             try {
                 if ($logCallback) $logCallback('info', "Checking deposit code: {$deposit->code} (ID: {$deposit->id})");
 
-                // Đối soát blockchain
                 $matched = $this->checkTransaction($deposit->id, $deposit->user_id);
 
                 if ($matched) {
                     if ($logCallback) $logCallback('info', "Successfully matched and completed deposit code: {$deposit->code}");
                 } else {
-                    // Kiểm tra hết hạn (16 phút = 960 giây)
                     $createdTime = $deposit->created_at->getTimestamp();
                     $now = time();
                     if (($now - $createdTime) > 960) {
@@ -569,10 +499,6 @@ class DepositService
             }
         }
     }
-
-    /**
-     * Lấy danh sách nạp tiền phân trang dành cho Admin
-     */
     public function getDepositsPaginatedForAdmin(
         int $page = 1,
         int $limit = 10,
@@ -584,10 +510,6 @@ class DepositService
     ): array {
         return $this->depositRepository->findAllPaginated($page, $limit, $search, $status, $paymentMethod, $startDate, $endDate);
     }
-
-    /**
-     * Admin duyệt thủ công hóa đơn nạp tiền
-     */
     public function approveDepositManually(string $id, string $txHash, string $adminId): bool
     {
         return \Illuminate\Support\Facades\DB::transaction(function () use ($id, $txHash, $adminId) {
@@ -630,10 +552,6 @@ class DepositService
             return true;
         });
     }
-
-    /**
-     * Admin từ chối/hủy hóa đơn nạp tiền
-     */
     public function rejectDepositManually(string $id, string $adminId): bool
     {
         return \Illuminate\Support\Facades\DB::transaction(function () use ($id, $adminId) {
@@ -663,11 +581,6 @@ class DepositService
             return true;
         });
     }
-
-    /**
-     * Credit the invoice's USD balance while holding the user row lock.
-     * Callers must already be inside a database transaction.
-     */
     private function creditDepositToUser(Deposit $deposit): void
     {
         $userModel = \App\Infrastructure\Persistence\Eloquent\UserModel::where('id', $deposit->getUserId())

@@ -67,7 +67,6 @@ class AuthController extends Controller
             $isProduction = config('app.env') === 'production';
             $sameSite = $isProduction ? 'None' : 'Lax';
 
-            // Access token cookie: 30 phút
             $accessTokenCookie = cookie(
                 'access_token',
                 $accessToken,
@@ -80,7 +79,6 @@ class AuthController extends Controller
                 $sameSite
             );
 
-            // Refresh token cookie: 7 ngày (10080 phút)
             $refreshTokenCookie = cookie(
                 'refresh_token',
                 $refreshToken,
@@ -259,7 +257,6 @@ class AuthController extends Controller
         $isProduction = config('app.env') === 'production';
         $sameSite = $isProduction ? 'None' : 'Lax';
 
-        // Xóa cookie bằng cách thiết lập cookie hết hạn với cùng các thuộc tính SameSite và Secure
         $accessTokenCookie = cookie('access_token', '', -2628000, '/', null, $isProduction, true, false, $sameSite);
         $refreshTokenCookie = cookie('refresh_token', '', -2628000, '/api/v1/auth/refresh', null, $isProduction, true, false, $sameSite);
 

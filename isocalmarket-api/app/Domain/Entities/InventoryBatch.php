@@ -95,12 +95,6 @@ class InventoryBatch
     {
         return $this->status === 'active';
     }
-
-    /**
-     * Cắt (pop) N keys khỏi pool của lô hàng
-     * @param int $quantity
-     * @return array Danh sách keys đã cắt ra
-     */
     public function popKeys(int $quantity): array
     {
         if ($quantity <= 0 || empty($this->keysPool)) {

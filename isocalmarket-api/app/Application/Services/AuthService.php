@@ -75,7 +75,6 @@ class AuthService
             'ver' => $tokenVersion,
         ];
 
-        // Hết hạn sau 30 phút (1800 giây)
         return $this->jwtService->generateToken($payload, 1800);
     }
 
@@ -95,7 +94,6 @@ class AuthService
     {
         $hash = hash('sha256', $refreshToken);
 
-        // Tìm user có refresh token hash trùng khớp
         $userModel = UserModel::where('refresh_token_hash', $hash)
             ->where('refresh_token_expired_at', '>', now())
             ->first();
@@ -106,7 +104,6 @@ class AuthService
 
         $user = UserMapper::toDomain($userModel);
 
-        // Rotate token: Sinh mới cả access và refresh token
         $newAccessToken = $this->generateAccessToken($user);
         $newRefreshToken = $this->generateRefreshToken($user);
 

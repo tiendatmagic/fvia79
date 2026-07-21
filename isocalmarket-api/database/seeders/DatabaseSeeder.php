@@ -30,7 +30,6 @@ class DatabaseSeeder extends Seeder
             throw new \RuntimeException('SEED_CUSTOMER_PASSWORD must be set and contain at least 12 characters before seeding.');
         }
 
-        // 1. Tạo Admin và Khách hàng
         $admin = UserModel::create([
             'username' => 'admin',
             'name' => 'admin',
@@ -50,7 +49,6 @@ class DatabaseSeeder extends Seeder
             'phone' => '098'.rand(1000000, 9999999),
         ]);
 
-        // 2. Tạo 12 Danh mục MMO mẫu thực tế theo yêu cầu
         $categoriesData = [
             ['name' => 'BẢNG GIÁ BM', 'slug' => 'bang-gia-bm', 'description' => 'Business Manager chất lượng cao, ngâm lâu năm.'],
             ['name' => 'Via US Live Ads', 'slug' => 'via-us-live-ads', 'description' => 'Via Mỹ chuyên chạy quảng cáo, ngâm chuẩn local.'],
@@ -129,7 +127,6 @@ class DatabaseSeeder extends Seeder
                 'attributes' => [['label' => 'Thời gian ngâm', 'value' => '> 1 tháng'], ['label' => 'Số TKQC', 'value' => '3 TKQC']],
             ],
 
-            // 2. Via US Live Ads
             [
                 'category_slug' => 'via-us-live-ads',
                 'name' => 'VIA US LIVE ADS KÈM BM1 (2FA )',
@@ -155,7 +152,6 @@ class DatabaseSeeder extends Seeder
                 'attributes' => [['label' => 'Độ tuổi', 'value' => 'Cổ (2008-2021)'], ['label' => 'Bảo mật', 'value' => '2FA Local US']],
             ],
 
-            // 3. Via Kháng 902 & Chat Support
             [
                 'category_slug' => 'via-khang-902-chat-support',
                 'name' => 'Via Colombia Cổ Kháng 902 Live Ads',
@@ -205,7 +201,6 @@ class DatabaseSeeder extends Seeder
                 'attributes' => [['label' => 'Hỗ trợ', 'value' => 'Chat Support FB'], ['label' => 'Bảo mật', 'value' => '2FA']],
             ],
 
-            // 4. Via Chuyên Set Camp
             [
                 'category_slug' => 'via-chuyen-set-camp',
                 'name' => 'VIA CHUYÊN SET CAMP (tỉ lệ HOLD , Need , Die cực thấp)',
@@ -247,7 +242,6 @@ class DatabaseSeeder extends Seeder
                 'attributes' => [['label' => 'Loại', 'value' => 'Combo Account'], ['label' => 'Số TKQC', 'value' => '9 TKCN 1M1']],
             ],
 
-            // 5. Ad account Limit 250$
             [
                 'category_slug' => 'ad-account-limit-250',
                 'name' => 'Full Via Limit 200$',
@@ -265,7 +259,6 @@ class DatabaseSeeder extends Seeder
                 'attributes' => [['label' => 'Limit', 'value' => '250$'], ['label' => 'Trạng thái', 'value' => 'Cổ ngâm']],
             ],
 
-            // 6. Via Ngoại Live Ads (No2FA)
             [
                 'category_slug' => 'via-ngoai-live-ads-no2fa',
                 'name' => 'Via Ngoại Cổ (No2FA)',
@@ -331,7 +324,6 @@ class DatabaseSeeder extends Seeder
                 'attributes' => [['label' => 'Quốc gia', 'value' => 'Bangladesh'], ['label' => 'Bảo mật', 'value' => 'No2FA']],
             ],
 
-            // 7. Via Ngoại Live Ads (2FA)
             [
                 'category_slug' => 'via-ngoai-live-ads-2fa',
                 'name' => 'Via France (2FA)',
@@ -397,7 +389,6 @@ class DatabaseSeeder extends Seeder
                 'attributes' => [['label' => 'Quốc gia', 'value' => 'Ai Cập'], ['label' => 'Bảo mật', 'value' => '2FA']],
             ],
 
-            // 8. Clone Global
             [
                 'category_slug' => 'clone-global',
                 'name' => 'Clone Ngoại Random Die Ads V2',
@@ -440,7 +431,6 @@ class DatabaseSeeder extends Seeder
                 'attributes' => [['label' => 'Quốc gia', 'value' => 'Việt Nam'], ['label' => 'Verify', 'value' => 'Gmail'], ['label' => 'Bảo mật', 'value' => 'No2FA']],
             ],
 
-            // 10. Via Ngoại DIE ADS
             [
                 'category_slug' => 'via-ngoai-die-ads',
                 'name' => 'Via United States Cổ DIE ADS',
@@ -466,7 +456,6 @@ class DatabaseSeeder extends Seeder
                 'attributes' => [['label' => 'Loại', 'value' => 'Via Ngoại New'], ['label' => 'TKQC', 'value' => 'Die Ads']],
             ],
 
-            // 11. Hotmail Live V.V
             [
                 'category_slug' => 'hotmail-live-vv',
                 'name' => 'Outlook Trusted [GRAPH API]',
@@ -484,7 +473,6 @@ class DatabaseSeeder extends Seeder
                 'attributes' => [['label' => 'Hạn dùng', 'value' => '6-12 tháng'], ['label' => 'API', 'value' => 'Graph API']],
             ],
 
-            // 12. Clone Instagram
             [
                 'category_slug' => 'clone-instagram',
                 'name' => 'Clone Instagram US đã qua reg BM',
@@ -508,7 +496,6 @@ class DatabaseSeeder extends Seeder
             $catSlug = $data['category_slug'];
             $catId = isset($categoriesMap[$catSlug]) ? $categoriesMap[$catSlug]->id : null;
 
-            // Xóa category_slug trước khi insert DB
             unset($data['category_slug']);
 
             $products[] = ProductModel::create(array_merge($data, [
@@ -550,10 +537,8 @@ class DatabaseSeeder extends Seeder
         );
 
         for ($orderIdx = 1; $orderIdx <= 50; $orderIdx++) {
-            // Chọn ngẫu nhiên khách hàng
             $customer = $customers[array_rand($customers)];
 
-            // Ngày đặt hàng ngẫu nhiên trong vòng 30 ngày qua
             $daysAgo = rand(0, 30);
             $orderDate = Carbon::now()->subDays($daysAgo)->subHours(rand(0, 23))->subMinutes(rand(0, 59));
 
@@ -651,7 +636,6 @@ class DatabaseSeeder extends Seeder
             }
         }
 
-        // 5. Seed cấu hình hệ thống (System Settings)
         DB::table('system_settings')->insert([
             [
                 'key' => 'admin_wallet_address',

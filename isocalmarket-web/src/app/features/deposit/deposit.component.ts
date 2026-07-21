@@ -56,7 +56,6 @@ export class DepositComponent implements OnInit {
     });
   }
 
-  // Tự động tính VND tương đương
   public onAmountChange() {
     const rate = this.state.depositStore.rate();
     if (this.amountUsdt && this.amountUsdt > 0) {
@@ -66,7 +65,6 @@ export class DepositComponent implements OnInit {
     }
   }
 
-  // Xác nhận tạo lệnh nạp tiền
   public onCreateInvoice() {
     if (this.isSubmitting()) return;
 

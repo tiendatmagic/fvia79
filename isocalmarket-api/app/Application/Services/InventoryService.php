@@ -76,13 +76,10 @@ class InventoryService
         $keysPool = $data['keys_pool'] ?? $batch->getKeysPool();
         $status = $data['status'] ?? $batch->getStatus();
 
-        // Đếm lại số lượng khả dụng hiện có
         $lines = preg_split('/\r\n|\r|\n/', $keysPool);
         $cleanKeys = array_filter(array_map('trim', $lines), fn($k) => !empty($k));
         $currentAvailableCount = count($cleanKeys);
 
-        // Khi admin sửa keys_pool, sold_count (số lượng đã bán thực tế) được giữ nguyên.
-        // initial_count (tổng số lượng ban đầu) sẽ được tính lại bằng: số lượng khả dụng hiện tại + số lượng đã bán.
         $soldCount = $batch->getSoldCount();
         $initialCount = $currentAvailableCount + $soldCount;
 

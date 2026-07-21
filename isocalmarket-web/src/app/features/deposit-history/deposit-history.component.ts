@@ -114,7 +114,6 @@ export class DepositHistoryComponent implements OnInit {
     this.fetchPage(1);
   }
 
-  // Tải danh sách giao dịch từ API thật
   public fetchPage(page: number) {
     this.currentPage.set(page);
     this.state.depositStore.fetchHistory(

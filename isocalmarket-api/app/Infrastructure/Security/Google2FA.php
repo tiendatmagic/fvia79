@@ -4,9 +4,6 @@ namespace App\Infrastructure\Security;
 
 class Google2FA
 {
-    /**
-     * Sinh khóa bí mật ngẫu nhiên Base32 (16 ký tự)
-     */
     public static function generateSecretKey(): string
     {
         $chars = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ234567';
@@ -16,34 +13,19 @@ class Google2FA
         }
         return $secret;
     }
-
-    /**
-     * Tạo OTPAuth URL để vẽ QR Code quét Google Authenticator
-     */
     public static function getQrCodeUrl(string $email, string $secret, string $issuer = 'Isocalmarket'): string
     {
-        return 'otpauth://totp/' . rawurlencode($issuer) . ':' . rawurlencode($email) . '?secret=' . $secret . '&issuer=' . rawurlencode($issuer);
+        return 'otpauth:
     }
-
-    /**
-     * Xác minh mã OTP 6 số
-     */
     public static function verifyCode(string $secret, string $code): bool
     {
-        // Decode base32 secret
         $key = self::base32Decode($secret);
         if (!$key) {
             return false;
         }
-
-        // Window thời gian (mỗi slice 30s)
         $timeSlice = floor(time() / 30);
-
-        // Cho phép lệch trước/sau 1 time slice (30s) để bù đắp sai số đồng hồ client-server
         for ($i = -1; $i <= 1; $i++) {
             $slice = $timeSlice + $i;
-            
-            // Pack slice thời gian về chuỗi nhị phân 64-bit
             $time = pack('N*', 0) . pack('N*', $slice);
             
             $hmac = hash_hmac('sha1', $time, $key, true);
@@ -51,8 +33,6 @@ class Google2FA
             $offset = ord(substr($hmac, -1)) & 0x0F;
             
             $hashpart = substr($hmac, $offset, 4);
-            
-            // Unpack giá trị số nguyên 32-bit
             $value = unpack('N', $hashpart);
             $value = $value[1];
             
@@ -68,10 +48,6 @@ class Google2FA
 
         return false;
     }
-
-    /**
-     * Giải mã chuỗi Base32 về dữ liệu nhị phân
-     */
     private static function base32Decode(string $secret): ?string
     {
         $chars = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ234567';

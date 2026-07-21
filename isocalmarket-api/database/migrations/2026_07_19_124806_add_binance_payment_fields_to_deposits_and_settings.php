@@ -17,7 +17,6 @@ return new class extends Migration
             $table->index(['payer_binance_id', 'payment_method']);
         });
 
-        // Insert system settings
         DB::table('system_settings')->insert([
             [
                 'key' => 'admin_binance_id',

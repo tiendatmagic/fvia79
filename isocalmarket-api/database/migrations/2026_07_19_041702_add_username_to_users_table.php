@@ -14,7 +14,6 @@ return new class extends Migration
             $table->string('username')->nullable()->unique()->after('id');
         });
  
-        // Điền username tự động cho các tài khoản cũ
         $users = DB::table('users')->get();
         foreach ($users as $user) {
             if ($user->name === 'admin') {

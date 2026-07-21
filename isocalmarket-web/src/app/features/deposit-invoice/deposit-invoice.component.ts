@@ -43,11 +43,9 @@ export class DepositInvoiceComponent implements OnInit, OnDestroy {
 
   public invoice: DepositHistoryItem | null = null;
 
-  // Loading & Error states (dùng Signal để đảm bảo Angular change detection)
   public readonly isLoadingInvoice = signal(true);
   public readonly invoiceError = signal<string | null>(null);
 
-  // Bộ đếm ngược (dùng Signal để Angular luôn detect khi interval() tick)
   public readonly timeLeft = signal(900);
   public readonly countdownText = signal('15:00');
   private timerSubscription: Subscription | null = null;
@@ -57,7 +55,6 @@ export class DepositInvoiceComponent implements OnInit, OnDestroy {
   public isCancelling = false;
   public isChecking = false;
 
-  // Admin có thể xem bất kỳ invoice nào nhưng không thao tác thay user
   public get isAdmin(): boolean {
     return this.state.authStore.currentUser()?.role === 'admin';
   }
@@ -96,7 +93,6 @@ export class DepositInvoiceComponent implements OnInit, OnDestroy {
     }
   }
 
-  // Tải chi tiết hóa đơn từ Backend API
   private loadInvoice(invoiceId: string) {
     this.stopCountdown();
     this.stopStatusPolling();
@@ -121,7 +117,6 @@ export class DepositInvoiceComponent implements OnInit, OnDestroy {
         }
 
         if (this.invoice.status === 'pending_payment') {
-          // Chuẩn hóa parse date createdAt tránh bị lệch timezone
           let createdTime = NaN;
           if (this.invoice.createdAt) {
             let isoStr = String(this.invoice.createdAt).replace(' ', 'T');
@@ -150,7 +145,6 @@ export class DepositInvoiceComponent implements OnInit, OnDestroy {
             this.startStatusPolling(this.invoice.id);
           }
         } else {
-          // Hóa đơn đã hoàn thành/hết hạn, không chạy countdown và polling
           this.stopCountdown();
           this.stopStatusPolling();
           this.timeLeft.set(0);
@@ -177,7 +171,6 @@ export class DepositInvoiceComponent implements OnInit, OnDestroy {
     });
   }
 
-  // Bắt đầu đếm ngược 15 phút (tự động hiệu chỉnh theo đồng hồ hệ thống)
   private startCountdown() {
     this.stopCountdown();
     this.updateTimerDisplay();
@@ -210,20 +203,17 @@ export class DepositInvoiceComponent implements OnInit, OnDestroy {
 
   private startStatusPolling(invoiceId: string) {
     this.stopStatusPolling();
-    // timer(3000, 15000) hoãn 3 giây ban đầu sau khi load UI rồi tự động check lượt đầu, sau đó lặp lại định kỳ mỗi 15s
     this.pollingSubscription = timer(5000, 15000).subscribe(() => {
       if (typeof document !== 'undefined' && document.hidden) {
         return;
       }
 
-      // Chống trùng lặp API check: Nếu đang có 1 request check (do user bấm nút hoặc do lượt polling trước chưa xong) -> Bỏ qua
       if (this.isChecking) {
         return;
       }
 
       this.isChecking = true;
 
-      // Tự động kích hoạt đối soát blockchain ngầm mỗi 15s
       this.state.depositStore.checkTransaction(invoiceId).pipe(
         finalize(() => this.isChecking = false)
       ).subscribe({
@@ -243,7 +233,6 @@ export class DepositInvoiceComponent implements OnInit, OnDestroy {
     }
   }
 
-  // Khi hóa đơn hết thời gian đếm ngược
   private onInvoiceExpired() {
     this.stopCountdown();
     if (this.invoice && !this.isCancelling) {
@@ -266,7 +255,6 @@ export class DepositInvoiceComponent implements OnInit, OnDestroy {
     }
   }
 
-  // Sao chép văn bản (ví hoặc số tiền)
   public copyText(text: string, label: string) {
     navigator.clipboard.writeText(text).then(() => {
       this.state.showToast(this.lang.translate('toast.copied_text') + ' ' + label, 'success');
@@ -275,7 +263,6 @@ export class DepositInvoiceComponent implements OnInit, OnDestroy {
     });
   }
 
-  // Hủy lệnh nạp tiền chủ động
   public cancelInvoice() {
     if (!this.invoice || this.isCancelling) return;
 
@@ -318,7 +305,6 @@ export class DepositInvoiceComponent implements OnInit, OnDestroy {
     });
   }
 
-  // Kiểm tra giao dịch tự động bằng BOT quét blockchain
   public checkTransaction() {
     if (this.isChecking || !this.invoice) return;
     this.isChecking = true;
@@ -354,32 +340,26 @@ export class DepositInvoiceComponent implements OnInit, OnDestroy {
 
     const lowerMsg = msg.toLowerCase();
 
-    // Lỗi chưa cấu hình địa chỉ ví nhận USDT nạp tiền
     if (lowerMsg.includes('receiving usdt wallet') || lowerMsg.includes('receiving wallet')) {
       return this.lang.translate('invoice.reconcile_wallet_error');
     }
 
-    // Lỗi chưa cấu hình Scanner API Key
     if (lowerMsg.includes('scanner api key')) {
       return this.lang.translate('invoice.reconcile_scanner_error');
     }
 
-    // Lỗi chưa cấu hình Binance API Key/Secret
     if (lowerMsg.includes('binance api key/secret') || lowerMsg.includes('binance api key') || lowerMsg.includes('binance_api_key')) {
       return this.lang.translate('invoice.reconcile_binance_error');
     }
 
-    // Lỗi không thể kết nối tới blockchain scanner API
     if (lowerMsg.includes('blockchain scanner api') || lowerMsg.includes('deep-index.moralis.io')) {
       return this.lang.translate('invoice.blockchain_api_error');
     }
 
-    // Lỗi không thể kết nối tới Binance Pay API
     if (lowerMsg.includes('binance pay api') || lowerMsg.includes('api.binance.com')) {
       return this.lang.translate('invoice.binance_api_error');
     }
 
-    // Lỗi chưa phát hiện giao dịch nạp tiền
     if (lowerMsg.includes('could not detect') || lowerMsg.includes('not detect your usdt payment')) {
       if (this.invoice?.paymentMethod === 'binance') {
         return this.lang.translate('invoice.binance_transaction_missing');
