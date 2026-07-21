@@ -10,7 +10,7 @@ use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
 use Illuminate\Support\Str;
 
-#[Fillable(['username', 'name', 'email', 'phone', 'password', 'role', 'balance', 'refresh_token_hash', 'refresh_token_expired_at', 'google2fa_secret', 'google2fa_enabled', 'api_key', 'status', 'token_version'])]
+#[Fillable(['username', 'name', 'email', 'phone', 'password', 'role', 'balance', 'refresh_token_hash', 'refresh_token_expired_at', 'google2fa_secret', 'google2fa_enabled', 'api_key', 'api_key_hash', 'status', 'token_version'])]
 #[Hidden(['password', 'remember_token'])]
 class UserModel extends Authenticatable
 {
@@ -24,6 +24,9 @@ class UserModel extends Authenticatable
             if ($model->isDirty('name')) {
                 $model->normalized_name = self::normalizeText($model->name);
             }
+            if ($model->isDirty('api_key')) {
+                $model->api_key_hash = $model->api_key ? hash('sha256', $model->api_key) : null;
+            }
         });
     }
 
@@ -35,8 +38,8 @@ class UserModel extends Authenticatable
     public static function generateUniqueApiKey(): string
     {
         do {
-            $key = Str::random(16);
-        } while (static::where('api_key', $key)->exists());
+            $key = Str::random(32);
+        } while (static::where('api_key_hash', hash('sha256', $key))->exists());
 
         return $key;
     }
@@ -50,6 +53,7 @@ class UserModel extends Authenticatable
             'google2fa_enabled' => 'boolean',
             'balance' => 'float',
             'token_version' => 'integer',
+            'api_key' => 'encrypted',
         ];
     }
 }

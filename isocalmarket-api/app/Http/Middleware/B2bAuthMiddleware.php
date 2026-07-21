@@ -36,7 +36,7 @@ class B2bAuthMiddleware
             return response()->json(['message' => 'Unauthorized. API Key is missing.'], 401);
         }
 
-        $userModel = UserModel::where('api_key', $apiKey)->first();
+        $userModel = UserModel::where('api_key_hash', hash('sha256', $apiKey))->first();
         if (!$userModel) {
             return response()->json(['message' => 'Unauthorized. Invalid API Key.'], 401);
         }

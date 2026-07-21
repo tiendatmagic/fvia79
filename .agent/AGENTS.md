@@ -1739,3 +1739,14 @@
       4. Chỉ ra các lỗi phản hồi dự kiến:
          - `401 Unauthorized` nếu API Key sai hoặc thiếu.
          - `404 Order not found` nếu mã đơn hàng không tồn tại hoặc đơn hàng đó thuộc sở hữu của tài khoản đại lý khác (cơ chế bảo mật dữ liệu của B2B API).
+
+  - **[NÂNG CẤP BẢO MẬT & TÍCH HỢP ĐA DỤNG API KEY B2B]**:
+    - **Yêu cầu**: Khắc phục lỗ hổng lưu trữ plaintext của API Key B2B trong database và nâng cấp để người dùng có thể xem lại khóa, đồng thời cho phép sử dụng API Key làm phương thức xác thực thay thế cho JWT token trên toàn bộ các route API (bao gồm cả user API và admin API).
+    - **Giải pháp & Triển khai**:
+      1. **Database Migration**: Tạo và chạy thành công migration [2026_07_21_200002_add_api_key_hash_to_users_table.php](file:///d:/git/isocalmarket/isocalmarket-api/database/migrations/2026_07_21_200002_add_api_key_hash_to_users_table.php) thêm cột `api_key_hash` (`string(64)`, unique, index) để tìm kiếm nhanh và xóa unique constraint trên cột `api_key` cũ.
+      2. **Eloquent Model**: Cập nhật [UserModel.php](file:///d:/git/isocalmarket/isocalmarket-api/app/Infrastructure/Persistence/Eloquent/UserModel.php) thêm cast `'api_key' => 'encrypted'` để tự động mã hóa đối xứng AES-256 (hỗ trợ giải mã xem lại). Sinh khóa ngẫu nhiên dài **32 ký tự** (`Str::random(32)`) và thêm sự kiện `saving` để tự động băm SHA-256 vào `api_key_hash`.
+      3. **Repositories & Middleware**: Cập nhật [UserRepository.php](file:///d:/git/isocalmarket/isocalmarket-api/app/Infrastructure/Persistence/Repositories/UserRepository.php) và [B2bAuthMiddleware.php](file:///d:/git/isocalmarket/isocalmarket-api/app/Http/Middleware/B2bAuthMiddleware.php) để đối khớp API Key qua `api_key_hash`.
+      4. **JWT Authentication Fallback**: Cập nhật [JwtAuthMiddleware.php](file:///d:/git/isocalmarket/isocalmarket-api/app/Http/Middleware/JwtAuthMiddleware.php) hỗ trợ kiểm tra API Key (`X-API-KEY` header, `api_key` query param, hoặc `Authorization` header thô) làm fallback khi không có JWT token, cho phép gọi bất kỳ API nào (bao gồm user và admin) bằng API Key.
+    - **Xác minh**:
+      * Chạy test suite `B2bAdminApiTest` thành công 100% (8 tests passed).
+      * Chạy test suite `SecurityHardeningTest` thành công 100% (5 tests passed), xác nhận API Key được mã hóa thành công trong DB và xác thực fallback qua `JwtAuthMiddleware` hoạt động hoàn hảo.

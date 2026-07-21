@@ -44,7 +44,7 @@ class UserRepository implements UserRepositoryInterface
 
     public function findByApiKey(string $apiKey): ?User
     {
-        $model = UserModel::where('api_key', $apiKey)->first();
+        $model = UserModel::where('api_key_hash', hash('sha256', $apiKey))->first();
         return $model ? UserMapper::toDomain($model) : null;
     }
 

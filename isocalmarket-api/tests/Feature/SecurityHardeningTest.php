@@ -83,6 +83,66 @@ class SecurityHardeningTest extends TestCase
         $this->assertSame('existing-secret', SystemSettingModel::findOrFail('scanner_api_key')->value);
     }
 
+    public function test_api_key_is_encrypted_in_db_and_can_be_decrypted(): void
+    {
+        $user = UserModel::create([
+            'username' => 'api_key_test_user',
+            'name' => 'API Key Test',
+            'email' => 'api-key-test@example.com',
+            'password' => 'password123',
+            'role' => 'customer',
+            'balance' => 0,
+            'google2fa_enabled' => false,
+            'status' => 'active',
+            'api_key' => 'MY-SECRET-B2B-KEY-32-CHARS-12345'
+        ]);
+
+        // 1. Kiểm tra xem trong DB raw có được mã hóa (không bằng plaintext) hay không
+        $dbRaw = DB::table('users')->where('id', $user->id)->first();
+        $this->assertNotSame('MY-SECRET-B2B-KEY-32-CHARS-12345', $dbRaw->api_key);
+        
+        // Cột api_key_hash phải lưu mã băm SHA-256
+        $this->assertSame(hash('sha256', 'MY-SECRET-B2B-KEY-32-CHARS-12345'), $dbRaw->api_key_hash);
+
+        // 2. Eloquent phải tự động giải mã ra bản rõ khi truy xuất
+        $userFresh = UserModel::find($user->id);
+        $this->assertSame('MY-SECRET-B2B-KEY-32-CHARS-12345', $userFresh->api_key);
+    }
+
+    public function test_jwt_auth_middleware_accepts_api_key_as_fallback(): void
+    {
+        $user = UserModel::create([
+            'username' => 'api_key_fallback_user',
+            'name' => 'API Key Fallback User',
+            'email' => 'api-key-fallback@example.com',
+            'password' => 'password123',
+            'role' => 'customer',
+            'balance' => 100,
+            'google2fa_enabled' => false,
+            'status' => 'active',
+            'api_key' => 'MY-FALLBACK-B2B-KEY-12345'
+        ]);
+
+        // Gọi API /auth/me (bảo vệ bởi jwt.auth) bằng header X-API-KEY
+        $response1 = $this->withHeaders([
+            'X-API-KEY' => 'MY-FALLBACK-B2B-KEY-12345'
+        ])->getJson('/api/v1/auth/me');
+
+        $response1->assertOk();
+        $response1->assertJsonPath('user.email', 'api-key-fallback@example.com');
+
+        // Gọi API /auth/me bằng query string api_key
+        $response2 = $this->getJson('/api/v1/auth/me?api_key=MY-FALLBACK-B2B-KEY-12345');
+        $response2->assertOk();
+        $response2->assertJsonPath('user.email', 'api-key-fallback@example.com');
+
+        // Gọi API /auth/me bằng Authorization header thô
+        $response3 = $this->withHeaders([
+            'Authorization' => 'MY-FALLBACK-B2B-KEY-12345'
+        ])->getJson('/api/v1/auth/me');
+        $response3->assertOk();
+    }
+
     private function createAdmin(): UserModel
     {
         return UserModel::create([
