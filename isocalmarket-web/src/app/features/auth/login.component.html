@@ -1,332 +1,239 @@
-<div class="min-h-screen w-full flex bg-slate-50 dark:bg-slate-950 transition-colors duration-300">
-  <div class="grid grid-cols-1 lg:grid-cols-2 w-full min-h-screen">
-    
-    <!-- Cột trái: Marketing & Giới thiệu dịch vụ (Chỉ hiện trên màn hình Desktop) -->
-    <div class="hidden lg:flex lg:col-span-1 flex-col justify-between p-10 xl:p-12 bg-white dark:bg-slate-950 text-slate-900 dark:text-slate-100 border-r border-slate-200/60 dark:border-slate-800/40 relative overflow-hidden transition-colors duration-300">
-      <!-- Accent gradient line bên trái -->
-      <div class="absolute left-0 top-0 bottom-0 w-[4px] bg-gradient-to-b from-primary to-secondary"></div>
-      
-      <!-- Nền mờ ảo (Blur Glow Effect) -->
-      <div class="absolute -top-40 -left-40 w-96 h-96 bg-primary/[0.08] dark:bg-primary/15 rounded-full blur-[128px] pointer-events-none"></div>
-      <div class="absolute -bottom-40 -right-40 w-96 h-96 bg-secondary/[0.08] dark:bg-secondary/15 rounded-full blur-[128px] pointer-events-none"></div>
-      
-      <!-- Top: Logo và slogan -->
-      <div class="relative z-10 flex items-center gap-3">
-        <app-logo class="w-10 h-10 text-slate-900 dark:text-white" />
-        <span class="text-lg font-black tracking-wider uppercase text-slate-900 dark:text-white">Isocalmarket</span>
-      </div>
-      
-      <!-- Mid: Kicker & Content -->
-      <div class="relative z-10 max-w-md my-auto space-y-6">
-        <div class="inline-flex items-center gap-2 text-xs font-bold tracking-widest uppercase text-primary">
-          <span class="w-5 h-[1.5px] bg-primary"></span>
-          {{ 'auth.marketing_kicker' | translate }}
-        </div>
-        
-        <h1 class="text-3xl xl:text-4xl font-extrabold tracking-tight leading-tight text-slate-950 dark:text-white">
-          {{ 'auth.marketing_title_normal' | translate }}
-          <span class="text-transparent bg-clip-text bg-gradient-to-r from-primary to-secondary font-black">
-            {{ 'auth.marketing_title_highlight' | translate }}
-          </span>
-          {{ 'auth.marketing_title_normal_2' | translate }}
-        </h1>
-        
-        <p class="text-slate-500 dark:text-slate-400 text-sm leading-relaxed">
-          {{ 'auth.marketing_desc' | translate }}
-        </p>
-        
-        <!-- Features List -->
-        <div class="flex flex-col gap-5 pt-2">
-          <div class="flex items-start gap-3.5 text-sm text-slate-600 dark:text-slate-300">
-            <span class="flex items-center justify-center w-7 h-7 rounded-lg bg-slate-100 dark:bg-slate-900 border border-slate-200 dark:border-slate-800 shrink-0 text-primary">
-              <svg class="w-4 h-4 animate-pulse" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                <polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"/>
-              </svg>
-            </span>
-            <span>
-              <strong class="text-slate-900 dark:text-white font-semibold">{{ 'auth.feature_1_title' | translate }}</strong>
-              {{ 'auth.feature_1_desc' | translate }}
-            </span>
-          </div>
-          
-          <div class="flex items-start gap-3.5 text-sm text-slate-600 dark:text-slate-300">
-            <span class="flex items-center justify-center w-7 h-7 rounded-lg bg-slate-100 dark:bg-slate-900 border border-slate-200 dark:border-slate-800 shrink-0 text-primary">
-              <svg class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                <rect x="3" y="11" width="18" height="11" rx="2" ry="2"/>
-                <path d="M7 11V7a5 5 0 0 1 10 0v4"/>
-              </svg>
-            </span>
-            <span>
-              <strong class="text-slate-900 dark:text-white font-semibold">{{ 'auth.feature_2_title' | translate }}</strong>
-              {{ 'auth.feature_2_desc' | translate }}
-            </span>
-          </div>
-          
-          <div class="flex items-start gap-3.5 text-sm text-slate-600 dark:text-slate-300">
-            <span class="flex items-center justify-center w-7 h-7 rounded-lg bg-slate-100 dark:bg-slate-900 border border-slate-200 dark:border-slate-800 shrink-0 text-primary">
-              <svg class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                <path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/>
-                <polyline points="22 4 12 14.01 9 11.01"/>
-              </svg>
-            </span>
-            <span>
-              <strong class="text-slate-900 dark:text-white font-semibold">{{ 'auth.feature_3_title' | translate }}</strong>
-              {{ 'auth.feature_3_desc' | translate }}
-            </span>
-          </div>
-        </div>
-      </div>
-      
-      <!-- Bottom: Disclaimer -->
-      <div class="relative z-10 pt-6 border-t border-slate-200 dark:border-slate-900">
-        <p class="text-xs text-slate-400 dark:text-slate-500 leading-relaxed font-medium">
-          {{ 'auth.legal_disclaimer' | translate }}
-        </p>
-      </div>
+<!-- Cụm đổi theme & ngôn ngữ góc trên phải -->
+<div class="absolute top-6 right-6 z-20">
+  <div class="flex items-center gap-3 bg-white dark:bg-slate-900 border border-slate-200/50 dark:border-slate-800/50 px-3 py-1.5 rounded-full shadow-xs transition-colors duration-300">
+    <!-- Theme Switcher không nhãn -->
+    <app-theme-switcher [showLabels]="false" [showAuto]="true" />
+
+    <div class="w-[1px] h-3.5 bg-slate-200 dark:bg-slate-800 transition-colors"></div>
+
+    <!-- Language Switcher dạng text VI/EN -->
+    <div class="flex items-center gap-1.5 select-none">
+      <button
+        type="button"
+        (click)="lang.setLanguage('vi')"
+        [class.text-primary]="lang.currentLang() === 'vi'"
+        [class.font-extrabold]="lang.currentLang() === 'vi'"
+        [class.text-slate-400]="lang.currentLang() !== 'vi'"
+        [class.dark:text-slate-600]="lang.currentLang() !== 'vi'"
+        class="text-xs transition-colors cursor-pointer focus:outline-none bg-transparent border-none p-0"
+      >
+        VI
+      </button>
+      <span class="text-xs text-slate-300 dark:text-slate-700">/</span>
+      <button
+        type="button"
+        (click)="lang.setLanguage('en')"
+        [class.text-primary]="lang.currentLang() === 'en'"
+        [class.font-extrabold]="lang.currentLang() === 'en'"
+        [class.text-slate-400]="lang.currentLang() !== 'en'"
+        [class.dark:text-slate-600]="lang.currentLang() !== 'en'"
+        class="text-xs transition-colors cursor-pointer focus:outline-none bg-transparent border-none p-0"
+      >
+        EN
+      </button>
     </div>
-    
-    <!-- Cột phải: Form đăng nhập -->
-    <div class="col-span-1 lg:col-span-1 flex items-center justify-center p-6 md:p-12 xl:p-16 bg-slate-50 dark:bg-slate-950 transition-colors duration-300 min-h-screen relative">
-      
-      <!-- Cụm đổi theme & ngôn ngữ góc trên phải -->
-      <div class="absolute top-6 right-6 z-20">
-        <div class="flex items-center gap-3 bg-white dark:bg-slate-900 border border-slate-200/50 dark:border-slate-800/50 px-3 py-1.5 rounded-full shadow-xs transition-colors duration-300">
-          <!-- Theme Switcher không nhãn -->
-          <app-theme-switcher [showLabels]="false" [showAuto]="true" />
-          
-          <div class="w-[1px] h-3.5 bg-slate-200 dark:bg-slate-800 transition-colors"></div>
-          
-          <!-- Language Switcher dạng text VI/EN -->
-          <div class="flex items-center gap-1.5 select-none">
-            <button 
-              type="button"
-              (click)="lang.setLanguage('vi')" 
-              [class.text-primary]="lang.currentLang() === 'vi'"
-              [class.font-extrabold]="lang.currentLang() === 'vi'"
-              [class.text-slate-400]="lang.currentLang() !== 'vi'"
-              [class.dark:text-slate-600]="lang.currentLang() !== 'vi'"
-              class="text-xs transition-colors cursor-pointer focus:outline-none bg-transparent border-none p-0"
-            >
-              VI
-            </button>
-            <span class="text-xs text-slate-300 dark:text-slate-700">/</span>
-            <button 
-              type="button"
-              (click)="lang.setLanguage('en')" 
-              [class.text-primary]="lang.currentLang() === 'en'"
-              [class.font-extrabold]="lang.currentLang() === 'en'"
-              [class.text-slate-400]="lang.currentLang() !== 'en'"
-              [class.dark:text-slate-600]="lang.currentLang() !== 'en'"
-              class="text-xs transition-colors cursor-pointer focus:outline-none bg-transparent border-none p-0"
-            >
-              EN
-            </button>
-          </div>
-        </div>
+  </div>
+</div>
+
+<div class="w-full max-w-[400px] flex flex-col justify-between min-h-[550px] py-4">
+  <div>
+    <!-- Tabs chuyển đổi Đăng nhập / Đăng ký -->
+    <div class="flex border-b border-slate-200 dark:border-slate-800/60 mb-8">
+      <button class="flex-1 text-center pb-4 text-sm font-bold border-b-2 border-primary text-slate-900 dark:text-white" type="button">
+        {{ 'nav.login' | translate }}
+      </button>
+      <a class="flex-1 text-center pb-4 text-sm font-semibold border-b-2 border-transparent text-slate-400 dark:text-slate-500 hover:text-slate-600 dark:hover:text-slate-400" routerLink="/register">
+        {{ 'auth.register_now' | translate }}
+      </a>
+    </div>
+
+    <!-- Chào mừng trở lại -->
+    <div class="mb-8">
+      <h2 class="text-2xl font-black text-slate-900 dark:text-white tracking-tight mb-2">
+        {{ 'auth.welcome_back' | translate }}
+      </h2>
+      <p class="text-sm font-semibold text-slate-400 dark:text-slate-500">
+        {{ 'auth.welcome_back_desc' | translate }}
+      </p>
+    </div>
+
+    <!-- Hiển thị lỗi nếu có -->
+    @if (state.authStore.loginError()) {
+      <div class="flex items-start gap-3 p-3.5 rounded-xl bg-red-50 dark:bg-red-950/40 border border-red-200 dark:border-red-900/60 mb-6">
+        <svg class="w-4 h-4 text-red-500 shrink-0 mt-0.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <circle cx="12" cy="12" r="10"/>
+          <line x1="12" y1="8" x2="12" y2="12"/>
+          <line x1="12" y1="16" x2="12.01" y2="16"/>
+        </svg>
+        <p class="text-xs font-bold text-red-600 dark:text-red-400 leading-relaxed">
+          {{ state.authStore.loginError() }}
+        </p>
       </div>
+    }
 
-      <div class="w-full max-w-[400px] flex flex-col justify-between min-h-[550px] py-4">
-        <div>
-          <!-- Tabs chuyển đổi Đăng nhập / Đăng ký -->
-          <div class="flex border-b border-slate-200 dark:border-slate-800/60 mb-8">
-            <button class="flex-1 text-center pb-4 text-sm font-bold border-b-2 border-primary text-slate-900 dark:text-white" type="button">
-              {{ 'nav.login' | translate }}
+    <!-- Form nhập liệu -->
+    <form (ngSubmit)="onSubmit()" class="space-y-6">
+      @if (!requires2Fa()) {
+        <!-- Trường Tài khoản / Email -->
+        <div class="form-field">
+          <label>
+            {{ 'auth.email_or_username' | translate }} <span class="text-red-500">*</span>
+          </label>
+          <app-custom-input
+            [(ngModel)]="email"
+            (ngModelChange)="state.authStore.loginError.set('')"
+            name="email"
+            type="text"
+            [placeholder]="'auth.email_or_username_placeholder' | translate"
+            required
+          />
+        </div>
+
+        <!-- Trường Mật khẩu -->
+        <div class="form-field">
+          <label>
+            {{ 'auth.password' | translate }} <span class="text-red-500">*</span>
+          </label>
+          <div class="relative flex items-center">
+            <app-custom-input
+              [type]="showPassword() ? 'text' : 'password'"
+              [(ngModel)]="password"
+              (ngModelChange)="state.authStore.loginError.set('')"
+              name="password"
+              [placeholder]="'auth.password_placeholder' | translate"
+              required
+            />
+            <!-- Toggle Show/Hide password -->
+            <button
+              type="button"
+              (click)="toggleShowPassword()"
+              class="absolute right-3 text-slate-400 hover:text-slate-600 dark:text-slate-500 dark:hover:text-slate-400 focus:outline-none cursor-pointer bg-transparent border-none p-0 z-10 flex items-center justify-center"
+            >
+              @if (showPassword()) {
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                  <path d="M17.94 17.94A10.07 10.07 0 0 1 12 20c-7 0-11-8-11-8a18.45 18.45 0 0 1 5.06-5.94M9.9 4.24A9.12 9.12 0 0 1 12 4c7 0 11 8 11 8a18.5 18.5 0 0 1-2.16 3.19m-6.72-1.07a3 3 0 1 1-4.24-4.24"/>
+                  <line x1="1" y1="1" x2="23" y2="23"/>
+                </svg>
+              } @else {
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                  <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/>
+                  <circle cx="12" cy="12" r="3"/>
+                </svg>
+              }
             </button>
-            <a class="flex-1 text-center pb-4 text-sm font-semibold border-b-2 border-transparent text-slate-400 dark:text-slate-500 hover:text-slate-600 dark:hover:text-slate-400" routerLink="/register">
-              {{ 'auth.register_now' | translate }}
-            </a>
           </div>
-          
-          <!-- Chào mừng trở lại -->
-          <div class="mb-8">
-            <h2 class="text-2xl font-black text-slate-900 dark:text-white tracking-tight mb-2">
-              {{ 'auth.welcome_back' | translate }}
-            </h2>
-            <p class="text-sm font-semibold text-slate-400 dark:text-slate-500">
-              {{ 'auth.welcome_back_desc' | translate }}
-            </p>
-          </div>
-          
-          <!-- Hiển thị lỗi nếu có -->
-          @if (state.authStore.loginError()) {
-            <div class="flex items-start gap-3 p-3.5 rounded-xl bg-red-50 dark:bg-red-950/40 border border-red-200 dark:border-red-900/60 mb-6">
-              <svg class="w-4 h-4 text-red-500 shrink-0 mt-0.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                <circle cx="12" cy="12" r="10"/>
-                <line x1="12" y1="8" x2="12" y2="12"/>
-                <line x1="12" y1="16" x2="12.01" y2="16"/>
-              </svg>
-              <p class="text-xs font-bold text-red-600 dark:text-red-400 leading-relaxed">
-                {{ state.authStore.loginError() }}
-              </p>
-            </div>
-          }
-          
-          <!-- Form nhập liệu -->
-          <form (ngSubmit)="onSubmit()" class="space-y-6">
-            @if (!requires2Fa()) {
-              <!-- Trường Tài khoản / Email -->
-              <div class="form-field">
-                <label>
-                  {{ 'auth.email_or_username' | translate }} <span class="text-red-500">*</span>
-                </label>
-                <app-custom-input
-                  [(ngModel)]="email"
-                  (ngModelChange)="state.authStore.loginError.set('')"
-                  name="email"
-                  type="text"
-                  [placeholder]="'auth.email_or_username_placeholder' | translate"
-                  required
-                />
-              </div>
-              
-              <!-- Trường Mật khẩu -->
-              <div class="form-field">
-                <label>
-                  {{ 'auth.password' | translate }} <span class="text-red-500">*</span>
-                </label>
-                <div class="relative flex items-center">
-                  <app-custom-input
-                    [type]="showPassword() ? 'text' : 'password'"
-                    [(ngModel)]="password"
-                    (ngModelChange)="state.authStore.loginError.set('')"
-                    name="password"
-                    [placeholder]="'auth.password_placeholder' | translate"
-                    required
-                  />
-                  <!-- Toggle Show/Hide password -->
-                  <button 
-                    type="button" 
-                    (click)="toggleShowPassword()" 
-                    class="absolute right-3 text-slate-400 hover:text-slate-600 dark:text-slate-500 dark:hover:text-slate-400 focus:outline-none cursor-pointer bg-transparent border-none p-0 z-10 flex items-center justify-center"
-                  >
-                    @if (showPassword()) {
-                      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                        <path d="M17.94 17.94A10.07 10.07 0 0 1 12 20c-7 0-11-8-11-8a18.45 18.45 0 0 1 5.06-5.94M9.9 4.24A9.12 9.12 0 0 1 12 4c7 0 11 8 11 8a18.5 18.5 0 0 1-2.16 3.19m-6.72-1.07a3 3 0 1 1-4.24-4.24"/>
-                        <line x1="1" y1="1" x2="23" y2="23"/>
-                      </svg>
-                    } @else {
-                      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                        <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/>
-                        <circle cx="12" cy="12" r="3"/>
-                      </svg>
-                    }
-                  </button>
-                </div>
-              </div>
-              
-              <!-- Checkbox cam kết hoặc nhớ mật khẩu -->
-              <label class="flex items-start gap-2.5 text-xs text-slate-500 dark:text-slate-400 cursor-pointer select-none">
-                <input 
-                  type="checkbox" 
-                  name="remember" 
-                  checked 
-                  required
-                  class="mt-0.5 rounded border-slate-300 text-primary focus:ring-primary focus:ring-opacity-20 cursor-pointer"
-                />
-                <span>{{ 'auth.terms_commitment' | translate }}</span>
-              </label>
-              
-              <!-- Nút submit -->
-              <div class="pt-2">
-                <button
-                  app-button
-                  [variant]="'primary'"
-                  [loading]="state.authStore.authLoading()"
-                  class="w-full py-3.5 text-sm rounded-xl bg-gradient-to-r from-primary to-secondary hover:opacity-95 text-white font-extrabold shadow-md shadow-primary/15 active:scale-[0.98] transition-all hover:scale-[1.01]"
-                  type="submit"
-                >
-                  {{ 'nav.login' | translate }}
-                </button>
-              </div>
+        </div>
 
-              <!-- Chưa có tài khoản? Đăng ký ngay -->
-              <div class="text-center text-xs font-semibold text-slate-500 pt-3">
-                {{ 'auth.dont_have_account' | translate }}
-                <a routerLink="/register" class="text-primary hover:underline ml-1 font-bold">
-                  {{ 'auth.register_now' | translate }}
-                </a>
-              </div>
-            } @else {
-              <!-- Logic 2FA OTP -->
-              <div class="text-center pb-2">
-                <p class="text-sm font-semibold text-slate-500 dark:text-slate-400">
-                  {{ 'auth.otp_instruction' | translate }}
-                </p>
-              </div>
-              
-              <div class="flex flex-col gap-2">
-                <label class="text-[11px] font-black uppercase tracking-wider text-slate-400 dark:text-slate-500 select-none">
-                  {{ 'auth.otp_code' | translate }} <span class="text-red-500">*</span>
-                </label>
-                <div class="relative flex items-center group">
-                  <svg class="absolute left-0 text-slate-400 dark:text-slate-600 group-focus-within:text-primary transition-colors duration-200 pointer-events-none" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                    <rect x="3" y="11" width="18" height="11" rx="2" ry="2"/>
-                    <path d="M7 11V7a5 5 0 0 1 10 0v4"/>
-                  </svg>
-                  <input 
-                    type="text" 
-                    [(ngModel)]="otpCode" 
-                    name="otpCode"
-                    [placeholder]="'auth.otp_placeholder' | translate" 
-                    required 
-                    maxlength="6"
-                    class="w-full pl-7 pr-3 py-3 bg-transparent border-b-2 border-slate-200 dark:border-slate-800/80 focus:border-primary text-slate-800 dark:text-white text-sm font-semibold focus:outline-none transition-colors duration-200"
-                  />
-                </div>
-              </div>
-              
-              <div class="pt-2 flex gap-3">
-                <button
-                  app-button
-                  type="button"
-                  [variant]="'secondary'"
-                  (click)="requires2Fa.set(false); otpCode = ''"
-                  class="flex-1 py-3 text-sm rounded-xl font-bold transition-all"
-                >
-                  {{ 'action.cancel' | translate }}
-                </button>
-                
-                <button
-                  app-button
-                  [variant]="'primary'"
-                  [loading]="state.authStore.authLoading()"
-                  class="flex-[2] py-3 text-sm rounded-xl bg-gradient-to-r from-primary to-secondary hover:opacity-95 text-white font-extrabold shadow-md shadow-primary/15 active:scale-[0.98] transition-all hover:scale-[1.01]"
-                  type="submit"
-                >
-                  {{ 'action.confirm' | translate }}
-                </button>
-              </div>
-            }
-          </form>
+        <!-- Checkbox cam kết hoặc nhớ mật khẩu -->
+        <label class="flex items-start gap-2.5 text-xs text-slate-500 dark:text-slate-400 cursor-pointer select-none">
+          <input
+            type="checkbox"
+            name="remember"
+            checked
+            required
+            class="mt-0.5 rounded border-slate-300 text-primary focus:ring-primary focus:ring-opacity-20 cursor-pointer"
+          />
+          <span>{{ 'auth.terms_commitment' | translate }}</span>
+        </label>
+
+        <!-- Nút submit -->
+        <div class="pt-2">
+          <button
+            app-button
+            [variant]="'primary'"
+            [loading]="state.authStore.authLoading()"
+            class="w-full py-3.5 text-sm rounded-xl bg-gradient-to-r from-primary to-secondary hover:opacity-95 text-white font-extrabold shadow-md shadow-primary/15 active:scale-[0.98] transition-all hover:scale-[1.01]"
+            type="submit"
+          >
+            {{ 'nav.login' | translate }}
+          </button>
         </div>
-        
-        <!-- Secure strip ở dưới cùng của cột phải -->
-        <div class="mt-12">
-          <div class="flex items-center justify-between px-4 py-3 bg-slate-100 dark:bg-slate-900 border border-slate-200/40 dark:border-slate-800/40 rounded-xl transition-colors duration-300">
-            <div class="flex items-center gap-1.5 text-[10px] font-black uppercase tracking-wider text-slate-400 dark:text-slate-500">
-              <svg class="w-3.5 h-3.5 text-primary shrink-0" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/>
-              </svg>
-              <span>{{ 'auth.ssl_encryption' | translate }}</span>
-            </div>
-            <div class="w-[1px] h-3 bg-slate-200 dark:bg-slate-800"></div>
-            <div class="flex items-center gap-1.5 text-[10px] font-black uppercase tracking-wider text-slate-400 dark:text-slate-500">
-              <svg class="w-3.5 h-3.5 text-primary shrink-0" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                <circle cx="12" cy="12" r="10"/>
-                <polyline points="12 6 12 12 16 14"/>
-              </svg>
-              <span>{{ 'auth.operation_247' | translate }}</span>
-            </div>
-            <div class="w-[1px] h-3 bg-slate-200 dark:bg-slate-800"></div>
-            <div class="flex items-center gap-1.5 text-[10px] font-black uppercase tracking-wider text-slate-400 dark:text-slate-500">
-              <svg class="w-3.5 h-3.5 text-primary shrink-0" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                <path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/>
-                <polyline points="22 4 12 14.01 9 11.01"/>
-              </svg>
-              <span>{{ 'auth.security_2fa' | translate }}</span>
-            </div>
+
+        <!-- Chưa có tài khoản? Đăng ký ngay -->
+        <div class="text-center text-xs font-semibold text-slate-500 pt-3">
+          {{ 'auth.dont_have_account' | translate }}
+          <a routerLink="/register" class="text-primary hover:underline ml-1 font-bold">
+            {{ 'auth.register_now' | translate }}
+          </a>
+        </div>
+      } @else {
+        <!-- Logic 2FA OTP -->
+        <div class="text-center pb-2">
+          <p class="text-sm font-semibold text-slate-500 dark:text-slate-400">
+            {{ 'auth.otp_instruction' | translate }}
+          </p>
+        </div>
+
+        <div class="flex flex-col gap-2">
+          <label class="text-[11px] font-black uppercase tracking-wider text-slate-400 dark:text-slate-500 select-none">
+            {{ 'auth.otp_code' | translate }} <span class="text-red-500">*</span>
+          </label>
+          <div class="relative flex items-center group">
+            <svg class="absolute left-0 text-slate-400 dark:text-slate-600 group-focus-within:text-primary transition-colors duration-200 pointer-events-none" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <rect x="3" y="11" width="18" height="11" rx="2" ry="2"/>
+              <path d="M7 11V7a5 5 0 0 1 10 0v4"/>
+            </svg>
+            <input
+              type="text"
+              [(ngModel)]="otpCode"
+              name="otpCode"
+              [placeholder]="'auth.otp_placeholder' | translate"
+              required
+              maxlength="6"
+              class="w-full pl-7 pr-3 py-3 bg-transparent border-b-2 border-slate-200 dark:border-slate-800/80 focus:border-primary text-slate-800 dark:text-white text-sm font-semibold focus:outline-none transition-colors duration-200"
+            />
           </div>
         </div>
+
+        <div class="pt-2 flex gap-3">
+          <button
+            app-button
+            type="button"
+            [variant]="'secondary'"
+            (click)="requires2Fa.set(false); otpCode = ''"
+            class="flex-1 py-3 text-sm rounded-xl font-bold transition-all"
+          >
+            {{ 'action.cancel' | translate }}
+          </button>
+
+          <button
+            app-button
+            [variant]="'primary'"
+            [loading]="state.authStore.authLoading()"
+            class="flex-[2] py-3 text-sm rounded-xl bg-gradient-to-r from-primary to-secondary hover:opacity-95 text-white font-extrabold shadow-md shadow-primary/15 active:scale-[0.98] transition-all hover:scale-[1.01]"
+            type="submit"
+          >
+            {{ 'action.confirm' | translate }}
+          </button>
+        </div>
+      }
+    </form>
+  </div>
+
+  <!-- Secure strip ở dưới cùng của cột phải -->
+  <div class="mt-12">
+    <div class="flex items-center justify-between px-4 py-3 bg-slate-100 dark:bg-slate-900 border border-slate-200/40 dark:border-slate-800/40 rounded-xl transition-colors duration-300">
+      <div class="flex items-center gap-1.5 text-[10px] font-black uppercase tracking-wider text-slate-400 dark:text-slate-500">
+        <svg class="w-3.5 h-3.5 text-primary shrink-0" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/>
+        </svg>
+        <span>{{ 'auth.ssl_encryption' | translate }}</span>
+      </div>
+      <div class="w-[1px] h-3 bg-slate-200 dark:bg-slate-800"></div>
+      <div class="flex items-center gap-1.5 text-[10px] font-black uppercase tracking-wider text-slate-400 dark:text-slate-500">
+        <svg class="w-3.5 h-3.5 text-primary shrink-0" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <circle cx="12" cy="12" r="10"/>
+          <polyline points="12 6 12 12 16 14"/>
+        </svg>
+        <span>{{ 'auth.operation_247' | translate }}</span>
+      </div>
+      <div class="w-[1px] h-3 bg-slate-200 dark:bg-slate-800"></div>
+      <div class="flex items-center gap-1.5 text-[10px] font-black uppercase tracking-wider text-slate-400 dark:text-slate-500">
+        <svg class="w-3.5 h-3.5 text-primary shrink-0" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/>
+          <polyline points="22 4 12 14.01 9 11.01"/>
+        </svg>
+        <span>{{ 'auth.security_2fa' | translate }}</span>
       </div>
     </div>
   </div>

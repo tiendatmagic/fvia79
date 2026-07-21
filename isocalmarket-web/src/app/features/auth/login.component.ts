@@ -4,7 +4,6 @@ import { FormsModule } from '@angular/forms';
 import { RouterModule, ActivatedRoute, Router } from '@angular/router';
 import { StateService } from '@core/services/state.service';
 import { ButtonComponent } from '@shared/components/button/button.component';
-import { LogoComponent } from '@shared/components/logo/logo.component';
 import { ThemeSwitcherComponent } from '@shared/components/theme-switcher/theme-switcher.component';
 import { CustomInputComponent } from '@shared/components/custom-input/custom-input.component';
 import { LanguageService } from '@core/services/language.service';
@@ -13,7 +12,7 @@ import { TranslatePipe } from '@shared/pipes/translate.pipe';
 @Component({
   selector: 'app-login',
   standalone: true,
-  imports: [CommonModule, FormsModule, RouterModule, ButtonComponent, LogoComponent, ThemeSwitcherComponent, CustomInputComponent, TranslatePipe],
+  imports: [CommonModule, FormsModule, RouterModule, ButtonComponent, ThemeSwitcherComponent, CustomInputComponent, TranslatePipe],
   templateUrl: './login.component.html',
   styles: [`
     :host {
