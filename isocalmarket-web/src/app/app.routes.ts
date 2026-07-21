@@ -14,19 +14,14 @@ export const routes: Routes = [
   { path: 'auth/login', redirectTo: 'login', pathMatch: 'full' },
   { path: 'auth/register', redirectTo: 'register', pathMatch: 'full' },
   {
-    path: '',
+    path: 'login',
     canActivate: [NoAuthGuard],
-    loadComponent: () => import('@features/auth/auth-layout.component').then(m => m.AuthLayoutComponent),
-    children: [
-      {
-        path: 'login',
-        loadComponent: () => import('@features/auth/login.component').then(m => m.LoginComponent)
-      },
-      {
-        path: 'register',
-        loadComponent: () => import('@features/auth/register.component').then(m => m.RegisterComponent)
-      }
-    ]
+    loadComponent: () => import('@features/auth/auth-layout.component').then(m => m.AuthLayoutComponent)
+  },
+  {
+    path: 'register',
+    canActivate: [NoAuthGuard],
+    loadComponent: () => import('@features/auth/auth-layout.component').then(m => m.AuthLayoutComponent)
   },
 
   {
