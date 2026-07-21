@@ -1831,3 +1831,19 @@
       2. Chuyển đổi card **Tổng đơn hàng** sang tông màu chàm (**Indigo**): Icon dùng màu indigo (	ext-indigo-500 / g-indigo-50), nhãn 'Toàn hệ thống' đổi từ variant 'ultra' sang class custom màu Indigo (!bg-indigo-500/10 !text-indigo-600 !border-indigo-500/20).
       3. Chuyển đổi card **Tổng người dùng** sang tông màu tím (**Purple**) đồng bộ: Giữ nguyên icon màu tím, đổi nhãn 'Đăng ký hệ thống' từ variant 'info' (màu xanh lục lệch tông) sang class custom màu Purple (!bg-purple-500/10 !text-purple-600 !border-purple-500/20).
     - **Xác minh**: Biên dịch npm run build thành công 100%.
+
+
+  - **[SỬA MÀU NỀN CARD TỔNG ĐƠN HÀNG TOÀN HỆ THỐNG]**:
+    - **Yêu cầu**: Sửa màu background của card Tổng đơn hàng (Toàn hệ thống) trên Dashboard cho đặc sắc.
+    - **Thực hiện & Kết quả**:
+      1. Sửa tệp admin-dashboard.component.html.
+      2. Đổi class của app-card Tổng đơn hàng, thêm màu nền chàm nhạt (!bg-indigo-50/50 / dark:!bg-indigo-950/15) và viền chàm nhạt (!border-indigo-100 / dark:!border-indigo-900/30) giúp card nổi bật hơn hẳn so với nền trắng mặc định.
+    - **Xác minh**: Biên dịch npm run build thành công 100%.
+
+
+  - **[XÓA MÀU NỀN CARD TỔNG ĐƠN HÀNG TOÀN HỆ THỐNG]**:
+    - **Yêu cầu**: Xóa màu background của card Tổng đơn hàng (Toàn hệ thống) trên Dashboard để trở lại mặc định.
+    - **Thực hiện & Kết quả**:
+      1. Sửa tệp admin-dashboard.component.html.
+      2. Khôi phục class của app-card Tổng đơn hàng về mặc định (xóa bỏ !bg-indigo-50/50 và viền indigo), đưa card về dạng nền trắng/kính giống các card thống kê khác.
+    - **Xác minh**: Biên dịch npm run build thành công 100%.
