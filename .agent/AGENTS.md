@@ -1926,3 +1926,10 @@
       2. **Auth Layout**: Đổi wrapper ô mật khẩu thành elative w-full giúp input tự động rộng 100%; căn giữa lại nút con mắt; tích hợp cờ SVG chất lượng cao cho VI/EN switcher.
       3. **Header**: Hiển thị cờ SVG tương ứng ở nút chọn và các tùy chọn dropdown ngôn ngữ của Header.
       4. **Xác minh**: Build dự án Angular thành công.
+
+  - **[CHUYỂN SWITHCHER NGÔN NGỮ TRANG AUTH THÀNH DROPDOWN]**:
+    - **Yêu cầu**: Chuyển đổi cụm đổi ngôn ngữ tĩnh VI | EN trên trang Auth thành dropdown có cờ tương tự Header.
+    - **Thực hiện & Kết quả**:
+      1. **Logic (auth-layout.component.ts)**: Import HostListener, thêm signal showLangDropdown và các phương thức toggle/select/close dropdown.
+      2. **Giao diện (auth-layout.component.html)**: Thay thế cụm đổi ngôn ngữ tĩnh thành dropdown cao 32px (h-8) có cờ, chữ viết tắt, chevron và menu thả xuống.
+      3. **Xác minh**: Build dự án Angular thành công.
