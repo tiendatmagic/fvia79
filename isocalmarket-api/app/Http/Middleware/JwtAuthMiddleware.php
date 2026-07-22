@@ -40,12 +40,12 @@ class JwtAuthMiddleware
             return response()->json(['message' => 'Unauthorized. User not found.'], 401);
         }
 
-        if ((int) ($payload['ver'] ?? 0) !== (int) $userModel->token_version) {
-            return response()->json(['message' => 'Unauthorized. Token has been revoked.'], 401);
-        }
-
         if ($userModel->status === 'banned') {
             return response()->json(['message' => 'Your account has been banned.'], 403);
+        }
+
+        if ((int) ($payload['ver'] ?? 0) !== (int) $userModel->token_version) {
+            return response()->json(['message' => 'Unauthorized. Token has been revoked.'], 401);
         }
 
         Auth::login($userModel);

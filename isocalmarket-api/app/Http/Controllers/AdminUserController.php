@@ -160,6 +160,9 @@ class AdminUserController extends Controller
                     ? trim($request->input('name'))
                     : $username;
 
+                $targetStatus = $request->status ?? $user->getStatus();
+                $isBanned = $targetStatus === 'banned';
+
                 $updatedUser = new User(
                     $user->getId(),
                     $username,
@@ -168,13 +171,13 @@ class AdminUserController extends Controller
                     $request->password ? Hash::make($request->password) : $user->getPassword(),
                     $request->role,
                     $user->getBalance(),
-                    $user->getRefreshTokenHash(),
-                    $user->getRefreshTokenExpiredAt(),
+                    $isBanned ? null : $user->getRefreshTokenHash(),
+                    $isBanned ? null : $user->getRefreshTokenExpiredAt(),
                     $request->phone,
                     $user->getGoogle2faSecret(),
                     $user->isGoogle2faEnabled(),
                     $user->getApiKey(),
-                    $request->status ?? $user->getStatus(),
+                    $targetStatus,
                     $user->getUid()
                 );
 
@@ -185,6 +188,10 @@ class AdminUserController extends Controller
                 }
 
                 $savedUser = $this->userRepository->save($updatedUser);
+
+                if ($isBanned) {
+                    \App\Infrastructure\Persistence\Eloquent\UserModel::whereKey($id)->increment('token_version');
+                }
 
                 return response()->json([
                     'message' => 'User updated successfully.',

@@ -136,6 +136,10 @@ class AuthController extends Controller
                 return response()->json(['message' => 'User not found.'], 404);
             }
 
+            if ($user->isBanned()) {
+                return response()->json(['message' => 'Your account has been banned. Please contact administrator.'], 403);
+            }
+
             $verified = \App\Infrastructure\Security\Google2FA::verifyCode($user->getGoogle2faSecret(), $request->code);
             if (!$verified) {
                 return response()->json(['message' => 'Invalid OTP code. Please try again.'], 400);

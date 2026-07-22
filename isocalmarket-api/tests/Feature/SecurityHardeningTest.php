@@ -234,6 +234,76 @@ class SecurityHardeningTest extends TestCase
         ])->getJson('/api/v1/admin/settings')->assertUnauthorized();
     }
 
+    public function test_banned_user_is_completely_blocked_across_all_auth_transports_and_endpoints(): void
+    {
+        $bannedUser = UserModel::create([
+            'username' => 'banned_test_user',
+            'name' => 'Banned Test User',
+            'email' => 'banned-test@example.com',
+            'password' => \Illuminate\Support\Facades\Hash::make('password123'),
+            'role' => 'admin',
+            'balance' => 500,
+            'google2fa_enabled' => false,
+            'status' => 'banned',
+            'api_key' => 'BANNED-USER-B2B-KEY-123456',
+            'refresh_token_hash' => hash('sha256', 'banned-refresh-token'),
+            'refresh_token_expired_at' => now()->addDays(7),
+        ]);
+
+        // 1. Normal Login is blocked (403)
+        $this->postJson('/api/v1/auth/login', [
+            'email' => 'banned-test@example.com',
+            'password' => 'password123',
+        ])->assertStatus(403);
+
+        // 2. Token refresh is blocked (401)
+        $this->withUnencryptedCookie('refresh_token', 'banned-refresh-token')
+            ->postJson('/api/v1/auth/refresh')
+            ->assertUnauthorized();
+
+        // 3. JWT Access Token is blocked (403)
+        $accessToken = app(AuthService::class)->generateAccessToken(UserMapper::toDomain($bannedUser));
+        $this->withToken($accessToken)
+            ->getJson('/api/v1/auth/me')
+            ->assertStatus(403);
+
+        // 4. B2B API Key is blocked (403)
+        $this->withHeaders(['X-API-KEY' => 'BANNED-USER-B2B-KEY-123456'])
+            ->getJson('/api/v1/b2b/products')
+            ->assertStatus(403);
+
+        // 5. Admin API Key is blocked (403)
+        $this->withHeaders(['X-API-KEY' => 'BANNED-USER-B2B-KEY-123456'])
+            ->getJson('/api/v1/admin/b2b/stats')
+            ->assertStatus(403);
+
+        // 6. Admin JWT route is blocked (403)
+        $this->withToken($accessToken)
+            ->getJson('/api/v1/admin/settings')
+            ->assertStatus(403);
+
+        // 7. Banning an active user clears refresh token and increments token_version
+        $activeAdmin = $this->createAdmin();
+        $adminToken = app(AuthService::class)->generateAccessToken(UserMapper::toDomain($activeAdmin));
+        $this->withToken($adminToken)->getJson('/api/v1/admin/settings')->assertOk();
+
+        $updateResp = $this->withToken($adminToken)->putJson('/api/v1/admin/users/' . $activeAdmin->id, [
+            'username' => $activeAdmin->username,
+            'email' => $activeAdmin->email,
+            'role' => $activeAdmin->role,
+            'status' => 'banned',
+        ]);
+        $updateResp->assertOk();
+
+        $freshActiveAdmin = $activeAdmin->fresh();
+        $this->assertSame('banned', $freshActiveAdmin->status);
+        $this->assertSame(1, (int) $freshActiveAdmin->token_version);
+        $this->assertNull($freshActiveAdmin->refresh_token_hash);
+
+        // Subsequent requests with old token fail with 403
+        $this->withToken($adminToken)->getJson('/api/v1/admin/settings')->assertStatus(403);
+    }
+
     private function createAdmin(): UserModel
     {
         return UserModel::create([

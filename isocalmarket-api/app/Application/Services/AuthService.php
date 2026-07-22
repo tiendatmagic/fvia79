@@ -98,7 +98,7 @@ class AuthService
             ->where('refresh_token_expired_at', '>', now())
             ->first();
 
-        if (! $userModel) {
+        if (! $userModel || $userModel->status === 'banned') {
             return null;
         }
 

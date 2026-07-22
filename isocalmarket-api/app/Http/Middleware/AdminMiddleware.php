@@ -13,7 +13,7 @@ class AdminMiddleware
     {
         $user = Auth::user();
 
-        if (!$user || $user->role !== 'admin') {
+        if (!$user || $user->role !== 'admin' || $user->status === 'banned') {
             return response()->json(['message' => 'Forbidden. Admin access required.'], 403);
         }
 
