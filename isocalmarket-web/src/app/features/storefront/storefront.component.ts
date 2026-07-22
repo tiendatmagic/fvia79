@@ -182,6 +182,7 @@ export class StorefrontComponent implements OnInit {
 
   ngOnInit() {
     this.state.authStore.checkMe(true).subscribe();
+    this.state.productStore.clearCache();
     this.loadAllGroupedProducts();
   }
 

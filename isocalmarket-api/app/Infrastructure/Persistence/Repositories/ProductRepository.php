@@ -15,10 +15,6 @@ class ProductRepository implements ProductRepositoryInterface
 
     private function getAvailableCount(ProductModel $model): int
     {
-        if ($model->supplier_id !== null) {
-            return max(0, (int) $model->supplier_stock);
-        }
-
         $batches = $model->relationLoaded('activeBatches')
             ? $model->activeBatches
             : InventoryBatchModel::where('product_id', $model->id)

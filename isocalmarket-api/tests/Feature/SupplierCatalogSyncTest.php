@@ -66,7 +66,7 @@ class SupplierCatalogSyncTest extends TestCase
         $response = $this->getJson('/api/v1/products?status=active');
 
         $response->assertOk()
-            ->assertJsonPath('0.available_count', 17)
+            ->assertJsonPath('0.available_count', 0)
             ->assertJsonPath('0.supplier.code', 'ads7979')
             ->assertJsonPath('0.supplier.external_id', '2');
     }

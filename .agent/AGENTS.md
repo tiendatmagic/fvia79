@@ -2012,6 +2012,17 @@
      - Thêm Badge xanh nổi bật `[✔ Đã cấu hình]` cạnh nhãn của Moralis API Key, Binance API Key và Binance API Secret khi key đã có trong hệ thống.
      - Cập nhật placeholder hiển thị `•••••••••••••••• (Đã lưu & bảo mật — để trống nếu giữ nguyên)` khi key đã được thiết lập.
      - Bổ sung dòng chú thích màu xanh lá ngọc `✔ Key/Secret đã được lưu & mã hóa an toàn trong hệ thống. Để trống nếu giữ nguyên.` ngay dưới ô nhập liệu.
-  3. **Xác minh**: Chạy `npm run build` biên dịch Angular thành công 100% không phát sinh lỗi.
+  ## [2026-07-22] Chuẩn hóa logic kho hàng: Sản phẩm mới import từ Nhà cung cấp mặc định Khả dụng = 0
+- **Yêu cầu & Quy tắc nghiệp vụ:**
+  1. Tất cả sản phẩm (kể cả sản phẩm đồng bộ từ Nhà cung cấp ngoài) mặc định khi mới import về chưa được Admin nhập kho local thì **luôn có số lượng khả dụng là 0 (Hết hàng)**.
+  2. Không được tự động lấy số lượng ảo từ Nhà cung cấp (`supplier_stock`) làm số khả dụng trên Storefront để tránh lỗi người dùng mua sản phẩm chưa có dữ liệu tài nguyên số.
+  3. Chỉ khi Admin vào **Quản lý kho hàng -> Nhập kho** tạo lô hàng số cho sản phẩm đó thì số lượng khả dụng mới tăng lên đúng bằng số lượng key thực tế trong kho local.
+- **Thực hiện khắc phục:**
+  1. **`ProductRepository.php`**: Cập nhật `getAvailableCount` tính số lượng khả dụng dựa trên 100% các lô hàng số đang hoạt động (`activeBatches`) trong kho local cho tất cả sản phẩm.
+  2. **`OrderService.php`**: Yêu cầu rút key thực tế từ kho local khi tạo đơn hàng. Nếu kho local hết key sẽ báo lỗi không đủ tài nguyên số rõ ràng.
+  3. **`storefront.component.ts`**: Bổ sung `this.state.productStore.clearCache()` khi chuyển tới Storefront để luôn fetch dữ liệu kho tươi mới nhất từ server.
+  4. **Xóa dữ liệu test**: Đã dọn dẹp toàn bộ các lô hàng test tạm thời trong CSDL.
+  5. **Xác minh**: Chạy `php artisan test` vượt qua 47/47 unit & feature tests. Chạy `npm run build` biên dịch Angular thành công 100%.
+
 
 

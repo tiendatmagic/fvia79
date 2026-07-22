@@ -54,7 +54,7 @@ class OrderService
                     throw new OrderException('Product is not available or has been discontinued.');
                 }
 
-                $availableCount = $this->inventoryRepository->countAvailableByProductId($productId);
+                $availableCount = $product->getAvailableCount();
                 if ($availableCount < $quantity) {
                     throw new OrderException("Product '{$product->getName()}' does not have enough stock available (Requested: {$quantity}, Available: {$availableCount}).");
                 }
