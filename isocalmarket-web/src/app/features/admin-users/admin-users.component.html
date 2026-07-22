@@ -78,13 +78,13 @@
       <ng-template appTableCell="id" let-row="row">
         <div class="flex items-center gap-1.5">
           <span
-            [appTooltip]="row.id"
-            class="font-bold text-[var(--color-primary)] border-b border-dashed border-slate-300 dark:border-slate-700 pb-0.5"
+            [appTooltip]="'ID: ' + row.id + (row.uid ? ' | UID: ' + row.uid : '')"
+            class="font-mono font-extrabold text-[var(--color-primary)] bg-[var(--color-primary)]/10 dark:bg-[var(--color-primary)]/20 px-2 py-0.5 rounded-md text-xs tracking-wider border border-[var(--color-primary)]/20"
           >
-            #{{ row.id | slice: 0 : 8 }}...{{ row.id | slice: -4 }}
+            #{{ row.uid || (row.id | slice: 0 : 8) }}
           </span>
           <button
-            (click)="copyApiKey(row.id)"
+            (click)="copyApiKey(row.uid || row.id)"
             class="p-1 hover:bg-slate-100 dark:hover:bg-slate-800 rounded transition-colors text-slate-400 hover:text-slate-600 dark:hover:text-slate-200 cursor-pointer"
             [appTooltip]="'admin.full_id_copy' | translate"
           >

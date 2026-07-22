@@ -23,7 +23,8 @@ class UserMapper
             $model->google2fa_secret,
             $model->google2fa_enabled,
             $model->api_key,
-            $model->status ?? 'active'
+            $model->status ?? 'active',
+            $model->uid
         );
     }
  
@@ -32,6 +33,10 @@ class UserMapper
         $model = new UserModel();
         if ($entity->getId()) {
             $model = UserModel::find($entity->getId()) ?: $model;
+        }
+
+        if ($entity->getUid()) {
+            $model->uid = $entity->getUid();
         }
  
         $model->username = $entity->getUsername();

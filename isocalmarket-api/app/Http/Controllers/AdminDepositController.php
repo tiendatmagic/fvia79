@@ -150,7 +150,8 @@ class AdminDepositController extends Controller
             'updatedAt' => $deposit->getUpdatedAt() ? $deposit->getUpdatedAt()->format('c') : null,
             'adminWalletAddress' => $deposit->getAdminWalletAddress() ?: $this->depositService->getAdminWalletAddress(),
             'userEmail' => $deposit->getUserEmail(),
-            'userName' => $deposit->getUserName()
+            'userName' => $deposit->getUserName(),
+            'userUid' => $deposit->getUserUid()
         ];
     }
 }

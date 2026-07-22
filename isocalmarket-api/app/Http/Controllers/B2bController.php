@@ -170,6 +170,8 @@ class B2bController extends Controller
 
             return response()->json([
                 'id' => $userModel->id,
+                'uid' => $userModel->uid,
+                'username' => $userModel->username,
                 'name' => $userModel->name,
                 'email' => $userModel->email,
                 'phone' => $userModel->phone,

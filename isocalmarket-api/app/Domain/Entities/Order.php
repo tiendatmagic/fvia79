@@ -12,6 +12,8 @@ class Order
     private array $items;
     private ?\DateTime $createdAt;
     private ?string $userEmail;
+    private ?string $userName;
+    private ?string $userUid;
     private ?string $couponCode;
     private float $discountAmount;
     private ?string $couponId;
@@ -27,7 +29,9 @@ class Order
         ?string $userEmail = null,
         ?string $couponCode = null,
         float $discountAmount = 0.0,
-        ?string $couponId = null
+        ?string $couponId = null,
+        ?string $userName = null,
+        ?string $userUid = null
     ) {
         $this->id = $id;
         $this->userId = $userId;
@@ -40,6 +44,8 @@ class Order
         $this->couponCode = $couponCode;
         $this->discountAmount = $discountAmount;
         $this->couponId = $couponId;
+        $this->userName = $userName;
+        $this->userUid = $userUid;
     }
 
     public function getId(): ?string
@@ -110,5 +116,15 @@ class Order
     public function isCancelled(): bool
     {
         return $this->status === 'cancelled';
+    }
+
+    public function getUserName(): ?string
+    {
+        return $this->userName;
+    }
+
+    public function getUserUid(): ?string
+    {
+        return $this->userUid;
     }
 }

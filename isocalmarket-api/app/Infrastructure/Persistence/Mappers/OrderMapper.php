@@ -28,6 +28,9 @@ class OrderMapper
         }
 
         $userEmail = $model->relationLoaded('user') && $model->user ? $model->user->email : null;
+        $userName = $model->relationLoaded('user') && $model->user ? ($model->user->name ?: $model->user->username) : null;
+        $userUid = $model->relationLoaded('user') && $model->user ? $model->user->uid : null;
+
         return new Order(
             $model->id,
             $model->user_id,
@@ -39,7 +42,9 @@ class OrderMapper
             $userEmail,
             $model->coupon_code,
             (float) $model->discount_amount,
-            $model->coupon_id
+            $model->coupon_id,
+            $userName,
+            $userUid
         );
     }
 

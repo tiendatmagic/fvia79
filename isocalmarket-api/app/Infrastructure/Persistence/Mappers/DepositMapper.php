@@ -11,6 +11,7 @@ class DepositMapper
     {
         $userEmail = $model->relationLoaded('user') && $model->user ? $model->user->email : null;
         $userName = $model->relationLoaded('user') && $model->user ? ($model->user->name ?: $model->user->username) : null;
+        $userUid = $model->relationLoaded('user') && $model->user ? $model->user->uid : null;
 
         return new Deposit(
             $model->id,
@@ -28,7 +29,8 @@ class DepositMapper
             $model->created_at ? new \DateTime($model->created_at->toDateTimeString()) : null,
             $model->updated_at ? new \DateTime($model->updated_at->toDateTimeString()) : null,
             $userEmail,
-            $userName
+            $userName,
+            $userUid
         );
     }
 

@@ -5,6 +5,7 @@ namespace App\Domain\Entities;
 class User
 {
     private ?string $id;
+    private ?string $uid;
     private string $username;
     private string $name;
     private string $email;
@@ -33,9 +34,11 @@ class User
         ?string $google2faSecret = null,
         bool $google2faEnabled = false,
         ?string $apiKey = null,
-        string $status = 'active'
+        string $status = 'active',
+        ?string $uid = null
     ) {
         $this->id = $id;
+        $this->uid = $uid;
         $this->username = $username;
         $this->name = $name;
         $this->email = $email;
@@ -54,6 +57,11 @@ class User
     public function getId(): ?string
     {
         return $this->id;
+    }
+
+    public function getUid(): ?string
+    {
+        return $this->uid;
     }
  
     public function getUsername(): string

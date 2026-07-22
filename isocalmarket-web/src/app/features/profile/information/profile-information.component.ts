@@ -24,6 +24,7 @@ export class ProfileInformationComponent implements OnInit {
   public readonly lang = inject(LanguageService);
 
   public username = '';
+  public uid = '';
   public name = '';
   public email = '';
   public phone = '';
@@ -33,6 +34,7 @@ export class ProfileInformationComponent implements OnInit {
     const user = this.state.authStore.currentUser();
     if (user) {
       this.username = user.username || '';
+      this.uid = user.uid || '';
       this.name = user.name;
       this.email = user.email;
       this.phone = user.phone || '';

@@ -2086,19 +2086,24 @@
      - Cập nhật thông điệp `common.results_summary`: `"Hiển thị {{visible}} trên {{total}} kết quả. Cuộn xuống hoặc gõ từ khóa để tìm thêm..."`.
   4. **Xác minh**: Chạy `npm run build` biên dịch Angular thành công 100%.
 
-## [2026-07-22] Sửa lỗi Bất đồng bộ API (Async Race Condition) & Bổ sung Loading State cho CustomSelectComponent
-- **Phân tích lỗi & Nguyên nhân:**
-  1. Khi người dùng click mở Select UI sớm (trước khi API `/products` hoàn tất tải dữ liệu), mảng `options` lúc này mới chỉ có 1 item mặc định ("Tất cả sản phẩm").
-  2. Trước đây `options` và `value` là các biến `@Input()` thô, `computed()` của Angular không tự động lắng nghe được khi reference của `options` bị thay đổi từ component cha sau khi API kết thúc, khiến menu bị "kẹt" không cập nhật danh sách sản phẩm mới dù API đã trả về 100+ items.
-- **Thực hiện khắc phục:**
-  1. **`custom-select.component.ts`**:
-     - Chuyển đổi `@Input() options`, `@Input() value` và `@Input() loading` sang dạng **signal-backed setters** (`optionsSignal`, `valueSignal`, `loadingSignal`).
-     - Khi mảng `options` hoặc cờ `loading` thay đổi từ component cha (khi API phản hồi xong), `optionsSignal` tự động bắn tín hiệu làm cho `filteredOptions()`, `displayedOptions()` và `selectedLabel()` re-evaluate tức thì ngay khi menu đang mở.
-  2. **`custom-select.component.html`**:
-     - Bổ sung hiệu ứng **Loading Spinner** (`common.loading`: *"Đang tải dữ liệu..."*) hiển thị ngay trong menu xổ xuống khi `loadingSignal() = true`.
-  3. **`inventory.component.html` & `import-inventory-modal.component.html`**:
-     - Truyền thuộc tính `[loading]="state.productStore.loading()"` vào các component `app-custom-select`.
-  4. **Xác minh**: Chạy `npm run build` biên dịch Angular thành công 100%.
+
+## [2026-07-23] Bổ sung trường UID (8 ký tự duy nhất) cho bảng users
+- **Phân tích & Yêu cầu:**
+  - Người dùng muốn bổ sung mã User (`uid`) 8 ký tự dạng chữ thường + số (ví dụ: `abcd1234`), duy nhất và tự động tăng tiến dựa trên mốc thời gian timestamp để thay thế cho chuỗi UUID7 quá dài và rắc rối trên giao diện.
+- **Thực hiện triển khai:**
+  1. **Backend Laravel (`isocalmarket-api`)**:
+     - `UserModel.php`: Thêm `uid` vào `#[Fillable]`, xây dựng hàm `generateUniqueUid()` sinh 5 ký tự Base36 từ timestamp milisecond (`microtime(true)*1000`) + 3 ký tự ngẫu nhiên chữ thường trong vòng lặp `do-while` kiểm tra DB. Thêm sự kiện `static::creating` tự động sinh `uid` cho mọi user mới.
+     - `2026_07_23_000000_add_uid_to_users_table.php`: Migration tạo cột `uid` (`string('uid', 8)->unique()`) và backfill `uid` duy nhất cho toàn bộ user hiện có trong CSDL.
+     - `User.php` Domain Entity & `UserMapper.php`: Bổ sung thuộc tính `uid`, getter `getUid()`, và chuyển đổi thuộc tính giữa Eloquent & Domain.
+     - `UserRepositoryInterface.php` & `UserRepository.php`: Bổ sung `findByUid()` và cập nhật tìm kiếm theo `uid` trong `findAllPaginated`.
+     - `AuthController.php`, `AdminUserController.php`: Bổ sung trường `uid` vào JSON response của tất cả các API liên quan đến user (`register`, `login`, `me`, `admin users list/store/update/adjust-balance`).
+  2. **Frontend Angular (`isocalmarket-web`)**:
+     - `admin-users.component.html`: Cập nhật bảng Quản lý User để ưu tiên hiển thị `#{{ row.uid }}` dạng badge monospace nổi bật thay cho đoạn UUID7 rắc rối.
+  3. **Xác minh**:
+     - Chạy `php artisan migrate` thành công 100%.
+     - Chạy `php artisan test` vượt qua **47/47 unit & feature tests** (189 assertions).
+     - Chạy `npm run build` biên dịch Angular thành công 100%.
+
 
 
 

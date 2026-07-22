@@ -30,7 +30,9 @@ class B2bAdminController extends Controller
                 $query->where(function ($q) use ($search) {
                     $q->where('name', 'like', "%{$search}%")
                       ->orWhere('email', 'like', "%{$search}%")
-                      ->orWhere('phone', 'like', "%{$search}%");
+                      ->orWhere('phone', 'like', "%{$search}%")
+                      ->orWhere('uid', 'like', "%{$search}%")
+                      ->orWhere('username', 'like', "%{$search}%");
                 });
             }
 
@@ -56,6 +58,8 @@ class B2bAdminController extends Controller
                 ->map(function ($u) {
                     return [
                         'id' => $u->id,
+                        'uid' => $u->uid,
+                        'username' => $u->username,
                         'name' => $u->name,
                         'email' => $u->email,
                         'phone' => $u->phone,

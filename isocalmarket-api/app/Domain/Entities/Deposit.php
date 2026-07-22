@@ -20,6 +20,7 @@ class Deposit
     private ?\DateTime $updatedAt;
     private ?string $userEmail;
     private ?string $userName;
+    private ?string $userUid;
 
     public function __construct(
         ?string $id,
@@ -37,7 +38,8 @@ class Deposit
         ?\DateTime $createdAt = null,
         ?\DateTime $updatedAt = null,
         ?string $userEmail = null,
-        ?string $userName = null
+        ?string $userName = null,
+        ?string $userUid = null
     ) {
         $this->id = $id;
         $this->userId = $userId;
@@ -55,6 +57,7 @@ class Deposit
         $this->updatedAt = $updatedAt;
         $this->userEmail = $userEmail;
         $this->userName = $userName;
+        $this->userUid = $userUid;
     }
 
     public function getId(): ?string
@@ -160,5 +163,10 @@ class Deposit
     public function getUserName(): ?string
     {
         return $this->userName;
+    }
+
+    public function getUserUid(): ?string
+    {
+        return $this->userUid;
     }
 }

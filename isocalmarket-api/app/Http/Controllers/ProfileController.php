@@ -218,6 +218,7 @@ class ProfileController extends Controller
     {
         return [
             'id' => $userModel->id,
+            'uid' => $userModel->uid,
             'username' => $userModel->username,
             'name' => $userModel->name,
             'email' => $userModel->email,

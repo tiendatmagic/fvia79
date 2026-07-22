@@ -10,7 +10,7 @@ use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
 use Illuminate\Support\Str;
 
-#[Fillable(['username', 'name', 'email', 'phone', 'password', 'role', 'balance', 'refresh_token_hash', 'refresh_token_expired_at', 'google2fa_secret', 'google2fa_enabled', 'api_key', 'api_key_hash', 'status', 'token_version'])]
+#[Fillable(['uid', 'username', 'name', 'email', 'phone', 'password', 'role', 'balance', 'refresh_token_hash', 'refresh_token_expired_at', 'google2fa_secret', 'google2fa_enabled', 'api_key', 'api_key_hash', 'status', 'token_version'])]
 #[Hidden(['password', 'remember_token'])]
 class UserModel extends Authenticatable
 {
@@ -20,6 +20,12 @@ class UserModel extends Authenticatable
 
     protected static function booted()
     {
+        static::creating(function ($model) {
+            if (empty($model->uid)) {
+                $model->uid = self::generateUniqueUid();
+            }
+        });
+
         static::saving(function ($model) {
             if ($model->isDirty('name')) {
                 $model->normalized_name = self::normalizeText($model->name);
@@ -28,6 +34,18 @@ class UserModel extends Authenticatable
                 $model->api_key_hash = $model->api_key ? hash('sha256', $model->api_key) : null;
             }
         });
+    }
+
+    public static function generateUniqueUid(): string
+    {
+        do {
+            $timeBase36 = base_convert((string) (int) (microtime(true) * 1000), 10, 36);
+            $timePart = substr($timeBase36, -5);
+            $randomPart = strtolower(Str::random(3));
+            $uid = $timePart . $randomPart;
+        } while (static::where('uid', $uid)->exists());
+
+        return $uid;
     }
 
     public function newUniqueId(): string

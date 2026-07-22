@@ -40,6 +40,7 @@ class AdminUserController extends Controller
             $data = array_map(function (User $user) {
                 return [
                     'id' => $user->getId(),
+                    'uid' => $user->getUid(),
                     'username' => $user->getUsername(),
                     'name' => $user->getName(),
                     'email' => $user->getEmail(),
@@ -111,6 +112,7 @@ class AdminUserController extends Controller
                 'message' => 'User created successfully.',
                 'user' => [
                     'id'      => $savedUser->getId(),
+                    'uid'     => $savedUser->getUid(),
                     'username'=> $savedUser->getUsername(),
                     'name'    => $savedUser->getName(),
                     'email'   => $savedUser->getEmail(),
@@ -172,7 +174,8 @@ class AdminUserController extends Controller
                     $user->getGoogle2faSecret(),
                     $user->isGoogle2faEnabled(),
                     $user->getApiKey(),
-                    $request->status ?? $user->getStatus()
+                    $request->status ?? $user->getStatus(),
+                    $user->getUid()
                 );
 
                 if ($request->input('generate_api_key')) {
@@ -187,6 +190,7 @@ class AdminUserController extends Controller
                     'message' => 'User updated successfully.',
                     'user' => [
                         'id'      => $savedUser->getId(),
+                        'uid'     => $savedUser->getUid(),
                         'username'=> $savedUser->getUsername(),
                         'name'    => $savedUser->getName(),
                         'email'   => $savedUser->getEmail(),
@@ -249,6 +253,7 @@ class AdminUserController extends Controller
                     'message' => 'User balance adjusted successfully.',
                     'user' => [
                         'id'      => $savedUser->getId(),
+                        'uid'     => $savedUser->getUid(),
                         'name'    => $savedUser->getName(),
                         'email'   => $savedUser->getEmail(),
                         'balance' => $savedUser->getBalance(),
@@ -309,7 +314,8 @@ class AdminUserController extends Controller
                 null,  // google2fa_secret
                 false, // google2fa_enabled
                 $user->getApiKey(),
-                $user->getStatus()
+                $user->getStatus(),
+                $user->getUid()
             );
 
             $this->userRepository->save($updatedUser);
@@ -348,7 +354,8 @@ class AdminUserController extends Controller
                 $secret,  // google2fa_secret
                 true,     // google2fa_enabled
                 $user->getApiKey(),
-                $user->getStatus()
+                $user->getStatus(),
+                $user->getUid()
             );
 
             $this->userRepository->save($updatedUser);
