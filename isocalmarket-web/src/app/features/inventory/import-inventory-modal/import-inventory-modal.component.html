@@ -9,6 +9,7 @@
         valueKey="value"
         labelKey="label"
         [(value)]="importProductId"
+        [loading]="state.productStore.loading()"
         (valueChange)="onProductSelect($event)"
       />
     </div>

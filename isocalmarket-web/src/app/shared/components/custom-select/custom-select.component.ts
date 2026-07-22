@@ -67,10 +67,32 @@ export class CustomSelectComponent implements ControlValueAccessor, AfterViewChe
     }
   }
 
-  @Input() value: any = null;
+  @Input() set value(val: any) {
+    this._value = val;
+    this.valueSignal.set(val);
+  }
+  get value(): any {
+    return this._value;
+  }
+  private _value: any = null;
   @Output() valueChange = new EventEmitter<any>();
 
-  @Input() options: any[] = [];
+  public readonly optionsSignal = signal<any[]>([]);
+  @Input() set options(val: any[]) {
+    this.optionsSignal.set(val || []);
+  }
+  get options(): any[] {
+    return this.optionsSignal();
+  }
+
+  public readonly loadingSignal = signal<boolean>(false);
+  @Input() set loading(val: boolean) {
+    this.loadingSignal.set(!!val);
+  }
+  get loading(): boolean {
+    return this.loadingSignal();
+  }
+
   @Input() valueKey: string = 'value';
   @Input() labelKey: string = 'label';
   @Input() placeholder: string = '';
@@ -81,10 +103,13 @@ export class CustomSelectComponent implements ControlValueAccessor, AfterViewChe
   @Input() triggerClass: string = 'w-full form-input';
   @Input() maxDisplay: number = 50;
 
+  public readonly valueSignal = signal<any>(null);
+
   @ViewChild('triggerBtn', { static: false }) triggerBtn!: ElementRef<HTMLButtonElement>;
 
   public readonly isOpen = signal<boolean>(false);
   public readonly searchQuery = signal<string>('');
+  public readonly displayLimit = signal<number>(50);
 
   public dropdownStyle: { [key: string]: string } = {};
   public resolvedPlacement: 'top' | 'bottom' = 'bottom';
@@ -100,9 +125,25 @@ export class CustomSelectComponent implements ControlValueAccessor, AfterViewChe
     const nextState = !this.isOpen();
     if (nextState) {
       this.searchQuery.set('');
+      this.displayLimit.set(this.maxDisplay || 50);
       this.updateDropdownPosition();
     }
     this.isOpen.set(nextState);
+  }
+
+  public onSearchInput(query: string): void {
+    this.searchQuery.set(query);
+    this.displayLimit.set(this.maxDisplay || 50);
+  }
+
+  public onDropdownScroll(event: Event): void {
+    const el = event.target as HTMLElement;
+    if (!el) return;
+    const scrollBottom = el.scrollTop + el.clientHeight;
+    const scrollThreshold = el.scrollHeight * 0.5;
+    if (scrollBottom >= scrollThreshold && this.displayLimit() < this.filteredOptions().length) {
+      this.displayLimit.update(limit => limit + (this.maxDisplay || 50));
+    }
   }
 
     private updateDropdownPosition(): void {
@@ -177,13 +218,15 @@ export class CustomSelectComponent implements ControlValueAccessor, AfterViewChe
     this.isOpen.set(false);
   }
 
-  public get selectedLabel(): string {
-    const selected = this.options.find((opt) => {
+  public readonly selectedLabel = computed(() => {
+    const opts = this.optionsSignal();
+    const val = this.valueSignal();
+    const selected = opts.find((opt) => {
       const optVal = this.getOptionValue(opt);
-      return String(optVal) === String(this.value);
+      return String(optVal) === String(val);
     });
     return selected !== undefined ? this.getOptionLabel(selected) : '';
-  }
+  });
 
   public getOptionValue(option: any): any {
     if (option && typeof option === 'object' && this.valueKey) {
@@ -206,7 +249,7 @@ export class CustomSelectComponent implements ControlValueAccessor, AfterViewChe
   }
 
   public readonly filteredOptions = computed(() => {
-    const opts = this.options || [];
+    const opts = this.optionsSignal();
     const query = this.searchQuery().trim().toLowerCase();
     if (!query) return opts;
     return opts.filter((opt) => {
@@ -216,15 +259,16 @@ export class CustomSelectComponent implements ControlValueAccessor, AfterViewChe
   });
 
   public readonly shouldShowSearch = computed(() => {
-    return this.showSearch || (this.options || []).length > 8;
+    return this.showSearch || (this.optionsSignal() || []).length > 8;
   });
 
   public readonly displayedOptions = computed(() => {
     const filtered = this.filteredOptions();
-    if (filtered.length <= this.maxDisplay) {
+    const limit = this.displayLimit();
+    if (filtered.length <= limit) {
       return filtered;
     }
-    return filtered.slice(0, this.maxDisplay);
+    return filtered.slice(0, limit);
   });
 
   private onChange: (value: any) => void = () => {};

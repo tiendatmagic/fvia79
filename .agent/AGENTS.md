@@ -2069,6 +2069,39 @@
   4. **`edit-inventory-modal.component.html`**: Đổi nhãn trường thành `'common.product'`.
   5. **Xác minh**: Chạy `npm run build` biên dịch Angular thành công 100%.
 
+## [2026-07-22] Bổ sung tính năng Lazy Load / Infinite Scroll khi cuộn danh sách cho CustomSelectComponent
+- **Yêu cầu & Ý tưởng:**
+  - Tối ưu hóa trải nghiệm Select UI khi số lượng bản ghi lớn (trên 50, 100+ items).
+  - Ban đầu hiển thị 50 bản ghi. Khi người dùng cuộn danh sách xuống 50% độ dài, tự động tải thêm 50 bản ghi tiếp theo (50 -> 100 -> 150... cho đến khi hiển thị hết).
+- **Thực hiện triển khai:**
+  1. **`custom-select.component.ts`**:
+     - Thêm `displayLimit` dạng signal (mặc định = `maxDisplay` = 50).
+     - Bổ sung hàm `onDropdownScroll(event: Event)` phát hiện ngưỡng cuộn `scrollTop + clientHeight >= scrollHeight * 0.5`. Tự động tăng `displayLimit` thêm `maxDisplay` nếu còn bản ghi chưa render.
+     - Reset `displayLimit` về 50 khi người dùng đóng/mở lại dropdown hoặc gõ từ khóa tìm kiếm mới (`onSearchInput`).
+     - Cập nhật `displayedOptions` computed signal để cắt mảng theo `displayLimit()` thay vì `maxDisplay` tĩnh.
+  2. **`custom-select.component.html`**:
+     - Gắn sự kiện `(scroll)="onDropdownScroll($event)"` vào container cuộn của dropdown.
+     - Cập nhật thông số `visible` truyền cho `common.results_summary` thành `displayedOptions().length`.
+  3. **`language.service.ts`**:
+     - Cập nhật thông điệp `common.results_summary`: `"Hiển thị {{visible}} trên {{total}} kết quả. Cuộn xuống hoặc gõ từ khóa để tìm thêm..."`.
+  4. **Xác minh**: Chạy `npm run build` biên dịch Angular thành công 100%.
+
+## [2026-07-22] Sửa lỗi Bất đồng bộ API (Async Race Condition) & Bổ sung Loading State cho CustomSelectComponent
+- **Phân tích lỗi & Nguyên nhân:**
+  1. Khi người dùng click mở Select UI sớm (trước khi API `/products` hoàn tất tải dữ liệu), mảng `options` lúc này mới chỉ có 1 item mặc định ("Tất cả sản phẩm").
+  2. Trước đây `options` và `value` là các biến `@Input()` thô, `computed()` của Angular không tự động lắng nghe được khi reference của `options` bị thay đổi từ component cha sau khi API kết thúc, khiến menu bị "kẹt" không cập nhật danh sách sản phẩm mới dù API đã trả về 100+ items.
+- **Thực hiện khắc phục:**
+  1. **`custom-select.component.ts`**:
+     - Chuyển đổi `@Input() options`, `@Input() value` và `@Input() loading` sang dạng **signal-backed setters** (`optionsSignal`, `valueSignal`, `loadingSignal`).
+     - Khi mảng `options` hoặc cờ `loading` thay đổi từ component cha (khi API phản hồi xong), `optionsSignal` tự động bắn tín hiệu làm cho `filteredOptions()`, `displayedOptions()` và `selectedLabel()` re-evaluate tức thì ngay khi menu đang mở.
+  2. **`custom-select.component.html`**:
+     - Bổ sung hiệu ứng **Loading Spinner** (`common.loading`: *"Đang tải dữ liệu..."*) hiển thị ngay trong menu xổ xuống khi `loadingSignal() = true`.
+  3. **`inventory.component.html` & `import-inventory-modal.component.html`**:
+     - Truyền thuộc tính `[loading]="state.productStore.loading()"` vào các component `app-custom-select`.
+  4. **Xác minh**: Chạy `npm run build` biên dịch Angular thành công 100%.
+
+
+
 
 
 

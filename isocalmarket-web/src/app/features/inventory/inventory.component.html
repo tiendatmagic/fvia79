@@ -33,6 +33,7 @@
         valueKey="value"
         labelKey="label"
         [(value)]="selectedProductFilter"
+        [loading]="state.productStore.loading()"
         (valueChange)="fetchFilteredItems(1)"
       />
     </div>
