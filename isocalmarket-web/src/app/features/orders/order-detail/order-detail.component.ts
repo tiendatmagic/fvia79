@@ -3,7 +3,6 @@ import { CommonModule } from '@angular/common';
 import { ActivatedRoute, Router, RouterModule } from '@angular/router';
 import { StateService } from '@core/services/state.service';
 import { ApiService } from '@core/services/api.service';
-import { generateTotp } from '@core/utils/totp.utils';
 import { SkeletonLoaderComponent } from '@shared/components/skeleton-loader/skeleton-loader.component';
 import { BadgeComponent } from '@shared/components/badge/badge.component';
 import { CardComponent } from '@shared/components/card/card.component';
@@ -46,11 +45,6 @@ export class OrderDetailComponent implements OnInit {
   public orderId = '';
   public orderDetails = signal<any | null>(null);
   public loadingDetails = signal<boolean>(true);
-
-  public viewMode = signal<'parsed' | 'raw'>('parsed');
-  public activeOtpIndex = signal<number | null>(null);
-  public currentOtpCode = signal<string>('');
-  public loadingOtp = signal<boolean>(false);
 
   ngOnInit() {
     this.orderId = this.route.snapshot.paramMap.get('id') ?? '';
@@ -108,49 +102,5 @@ export class OrderDetailComponent implements OnInit {
     URL.revokeObjectURL(url);
     this.state.showToast(this.lang.translate('toast.accounts_downloaded'), 'success');
   }
-
-  public parseAccountData(data: string): { label: string, value: string, is2FA?: boolean }[] {
-    if (!data || !data.includes('|')) {
-      return [{ label: this.lang.translate('orders.raw_label'), value: data }];
-    }
-    const parts = data.split('|').map(p => p.trim());
-    const result: { label: string, value: string, is2FA?: boolean }[] = [];
-    
-    if (parts[0]) result.push({ label: this.lang.translate('orders.account_uid'), value: parts[0] });
-    if (parts[1]) result.push({ label: this.lang.translate('orders.password'), value: parts[1] });
-    if (parts[2]) {
-      result.push({ label: this.lang.translate('orders.secret_2fa'), value: parts[2], is2FA: true });
-    }
-    if (parts[3]) result.push({ label: this.lang.translate('orders.recovery_email'), value: parts[3] });
-    if (parts[4]) result.push({ label: this.lang.translate('orders.email_password'), value: parts[4] });
-    
-    for (let i = 5; i < parts.length; i++) {
-      result.push({ label: this.lang.translate('orders.other_info', { number: i - 4 }), value: parts[i] });
-    }
-    
-    return result;
-  }
-
-  public async get2FAOtp(secret: string, index: number) {
-    if (this.loadingOtp()) return;
-    this.activeOtpIndex.set(index);
-    this.currentOtpCode.set('');
-    this.loadingOtp.set(true);
-    try {
-      const code = await generateTotp(secret);
-      this.currentOtpCode.set(code);
-
-      if (typeof window !== 'undefined' && navigator.clipboard) {
-        navigator.clipboard.writeText(code).then(() => {
-          this.state.showToast(this.lang.translate('toast.otp_copied') + code, 'success');
-        }).catch(() => {
-          this.state.showToast(this.lang.translate('toast.copy_error'), 'error');
-        });
-      }
-    } catch {
-      this.state.showToast(this.lang.translate('toast.otp_failed'), 'error');
-    } finally {
-      this.loadingOtp.set(false);
-    }
-  }
 }
+

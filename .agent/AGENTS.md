@@ -2039,6 +2039,15 @@
   5. **`language.service.ts`**: Bổ sung các từ khóa dịch thuật `'action.buy_now'`, `'cart.confirm_order_title'`, `'storefront.please_login_to_buy'` cho cả tiếng Việt và tiếng Anh.
   6. **Xác minh**: Chạy `npm run build` thành công 100% không phát sinh lỗi biên dịch.
 
+## [2026-07-22] Sửa Bug Cache Lịch sử đơn hàng & Chuẩn hóa hiển thị Dữ liệu thô (Raw Data)
+- **Yêu cầu & Quy tắc nghiệp vụ:**
+  1. Khi thanh toán thành công redirect sang trang Lịch sử đơn hàng, phải làm sạch cache để tải ngay đơn hàng vừa tạo.
+  2. Bỏ hoàn toàn việc parse bóc tách tài khoản/mật khẩu/2FA secret và nút Lấy OTP ở chi tiết đơn hàng. Hiển thị 100% dữ liệu thô (Raw data) của từng tài nguyên kèm nút Sao chép.
+- **Thực hiện khắc phục & Cập nhật:**
+  1. **`cart-modal.component.ts` & `orders.component.ts`**: Gọi `this.state.orderStore.clearCache()` khi thanh toán thành công và khi khởi tạo `OrdersComponent` để làm mới danh sách đơn hàng lập tức.
+  2. **`order-detail.component.html` & `order-detail.component.ts`**: Gỡ bỏ hàm `parseAccountData()`, `get2FAOtp()`, TOTP utils, và 2 tab switcher. Thiết kế lại phần hiển thị tài nguyên phân phối hiển thị trực tiếp dữ liệu thô (`acc.data`) dạng font monospace, bôi đen `select-all` kèm nút Sao chép cho từng tài nguyên.
+  3. **Xác minh**: Chạy `npm run build` thành công 100%.
+
 
 
 

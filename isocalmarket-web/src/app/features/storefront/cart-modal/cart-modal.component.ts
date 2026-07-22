@@ -144,6 +144,7 @@ export class CartModalComponent implements OnInit {
         }
         this.state.authStore.checkMe(true).subscribe();
         this.cart.clearCart();
+        this.state.orderStore.clearCache();
         this.state.showToast(this.lang.translate('cart.order_success'), 'success');
         this.isSubmitting.set(false);
         this.modalRef.close('success');

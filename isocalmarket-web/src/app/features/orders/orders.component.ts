@@ -79,6 +79,7 @@ export class OrdersComponent implements OnInit {
   }
 
   ngOnInit() {
+    this.state.orderStore.clearCache();
     this.fetchPage(1);
   }
 
