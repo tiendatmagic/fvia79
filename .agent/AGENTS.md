@@ -16,7 +16,8 @@
 - **[CHUYỂN MÃ UID NGƯỜI DÙNG SANG DẠNG SỐ TỰ ĐỘNG MỞ RỘNG (DYNAMIC AUTO-EXPANDING NUMERIC UID 8-32 DIGITS)]**:
   - Cập nhật thuật toán tạo UID `UserModel::generateUniqueUid()`: Khởi đầu bằng mã 8 chữ số số thuần (`10000000` -> `99999999`) dựa theo timestamp tăng tiến kết hợp bộ đếm sequence trong bộ nhớ. Khi số lượng tài khoản/thời gian vượt ngưỡng 90 triệu người dùng, thuật toán tự động nới rộng lên 9 chữ số (`100000000`), 10 chữ số... mượt mà mà không bao giờ bị giới hạn đụng trần.
   - Nâng độ rộng cột `uid` trong bảng `users` lên `VARCHAR(32)` tại migrations `2026_07_23_000000_add_uid_to_users_table.php` và `2026_07_23_000002_update_uid_to_numeric_in_users_table.php` để CSDL sẵn sàng mở rộng mà không cần chạy lại migration sau này.
-  - Cập nhật test case tự động `test_user_uid_is_purely_numeric_and_unique()` trong `SecurityHardeningTest.php`, đã chạy `php artisan test` vượt qua 54/54 test cases (100% PASSED).
+  - Sửa Tooltip và Toast thông báo tại bảng danh sách người dùng (`admin-users.component.html` & `admin-users.component.ts`): Bổ sung hàm `copyUid()`, khi click copy UID sẽ hiển thị đúng Toast `Đã sao chép UID!` thay vì báo nhầm `Đã sao chép API Key!`.
+  - Cập nhật test case tự động `test_user_uid_is_purely_numeric_and_unique()` trong `SecurityHardeningTest.php`, đã chạy `php artisan test` vượt qua 56/56 test cases (100% PASSED).
 
 - **[THÊM CHỨC NĂNG XÓA TÀI KHOẢN HÀNG LOẠT (BULK DELETE USERS)]**:
   - Triển khai tính năng Xóa tài khoản thành viên hàng loạt bằng cách tích chọn checkbox tại trang Quản lý thành viên (`AdminUsersComponent`).

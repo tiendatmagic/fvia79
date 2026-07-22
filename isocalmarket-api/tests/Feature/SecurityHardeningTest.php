@@ -422,6 +422,69 @@ class SecurityHardeningTest extends TestCase
         $this->assertTrue(strlen($user->uid) >= 8 && strlen($user->uid) <= 32);
     }
 
+    public function test_user_registration_assigns_numeric_uid_and_can_login_with_uid(): void
+    {
+        $regResponse = $this->postJson('/api/v1/auth/register', [
+            'username' => 'reg_user_test',
+            'name' => 'Registration User',
+            'email' => 'reg_user@example.com',
+            'password' => 'password123',
+            'password_confirmation' => 'password123',
+        ]);
+
+        $regResponse->assertStatus(201)
+            ->assertJsonPath('message', 'Registration successful.');
+
+        $uid = $regResponse->json('user.uid');
+        $this->assertNotNull($uid);
+        $this->assertTrue(ctype_digit($uid));
+        $this->assertSame(8, strlen($uid));
+
+        // Test login using UID in login field
+        $loginResponse = $this->postJson('/api/v1/auth/login', [
+            'email' => $uid, // system accepts email, username, or UID as login
+            'password' => 'password123',
+        ]);
+
+        $loginResponse->assertOk()
+            ->assertJsonPath('user.uid', $uid);
+    }
+
+    public function test_admin_store_and_update_user_handles_numeric_uid(): void
+    {
+        $admin = $this->createAdmin();
+        $adminToken = app(AuthService::class)->generateAccessToken(UserMapper::toDomain($admin));
+
+        $storeResponse = $this->withToken($adminToken)->postJson('/api/v1/admin/users', [
+            'username' => 'admin_created_user',
+            'name' => 'Admin Created User',
+            'email' => 'admin_created@example.com',
+            'password' => 'password123',
+            'role' => 'customer',
+            'balance' => 50,
+        ]);
+
+        $storeResponse->assertStatus(201);
+        $createdUid = $storeResponse->json('user.uid');
+        $createdId = $storeResponse->json('user.id');
+
+        $this->assertNotNull($createdUid);
+        $this->assertTrue(ctype_digit($createdUid));
+        $this->assertSame(8, strlen($createdUid));
+
+        // Update user and check that UID is preserved
+        $updateResponse = $this->withToken($adminToken)->putJson('/api/v1/admin/users/' . $createdId, [
+            'username' => 'admin_created_user_upd',
+            'name' => 'Admin Created User Updated',
+            'email' => 'admin_created@example.com',
+            'role' => 'customer',
+            'balance' => 50,
+        ]);
+
+        $updateResponse->assertOk()
+            ->assertJsonPath('user.uid', $createdUid);
+    }
+
     private function createAdmin(): UserModel
     {
         return UserModel::create([

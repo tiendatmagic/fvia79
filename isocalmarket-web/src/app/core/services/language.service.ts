@@ -1151,6 +1151,7 @@ export const TRANSLATIONS: Record<SupportedLanguage, Record<string, string>> = {
     'toast.token_settings_update_failed': 'Failed to update token settings!',
     'toast.expired_tokens_cleaned': 'Expired tokens cleaned successfully!',
     'toast.expired_tokens_clean_failed': 'Failed to clean expired tokens!',
+    'toast.uid_copied': 'UID copied successfully!',
   },
   vi: {
     'nav.home': 'Cửa hàng',
@@ -2299,6 +2300,7 @@ export const TRANSLATIONS: Record<SupportedLanguage, Record<string, string>> = {
     'toast.token_settings_update_failed': 'Không thể cập nhật thiết lập token!',
     'toast.expired_tokens_cleaned': 'Đã dọn dẹp token hết hạn thành công!',
     'toast.expired_tokens_clean_failed': 'Không thể dọn dẹp token hết hạn!',
+    'toast.uid_copied': 'Đã sao chép UID!',
   }
 };
 

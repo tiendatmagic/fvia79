@@ -354,6 +354,14 @@ export class AdminUsersComponent implements OnInit {
     });
   }
 
+  public copyUid(uid: string) {
+    if (typeof navigator !== 'undefined' && navigator.clipboard) {
+      navigator.clipboard.writeText(uid).then(() => {
+        this.state.showToast(this.lang.translate('toast.uid_copied'), 'success');
+      });
+    }
+  }
+
   public copyApiKey(key: string) {
     if (typeof navigator !== 'undefined' && navigator.clipboard) {
       navigator.clipboard.writeText(key).then(() => {
