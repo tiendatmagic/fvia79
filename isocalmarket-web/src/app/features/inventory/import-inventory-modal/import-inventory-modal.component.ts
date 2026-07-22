@@ -64,9 +64,37 @@ export class ImportInventoryModalComponent implements OnInit {
             value: String(p.id)
           }));
           this.productOptions = [{ label: this.lang.translate('modal.product_category'), value: '' }, ...list];
+          if (this.importProductId) {
+            this.onProductSelect(this.importProductId);
+          }
         }
       });
+    } else {
+      if (this.importProductId) {
+        this.onProductSelect(this.importProductId);
+      }
     }
+  }
+
+  public onProductSelect(productId: any) {
+    this.importProductId = String(productId || '');
+    if (!this.importProductId) {
+      return;
+    }
+    const selected = this.productOptions.find((p) => String(p.value) === String(this.importProductId));
+    if (selected && selected.label && selected.value !== '') {
+      this.batchName = this.generateDefaultBatchName(selected.label);
+    }
+  }
+
+  private generateDefaultBatchName(productName: string): string {
+    const now = new Date();
+    const day = now.getDate();
+    const month = now.getMonth() + 1;
+    const year = now.getFullYear();
+    const hours = String(now.getHours()).padStart(2, '0');
+    const minutes = String(now.getMinutes()).padStart(2, '0');
+    return `${productName} - ${day}/${month}/${year} ${hours}:${minutes}`;
   }
 
   public onClose() {
