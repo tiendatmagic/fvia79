@@ -104,7 +104,12 @@ class B2bAdminController extends Controller
             }
 
             if ($userId) {
-                $query->where('user_id', $userId);
+                $query->where(function ($q) use ($userId) {
+                    $q->where('user_id', $userId)
+                      ->orWhereHas('user', function ($uq) use ($userId) {
+                          $uq->where('uid', $userId);
+                      });
+                });
             }
 
             if ($search) {
@@ -112,7 +117,9 @@ class B2bAdminController extends Controller
                     $q->where('order_code', 'like', "%{$search}%")
                       ->orWhereHas('user', function ($uq) use ($search) {
                           $uq->where('name', 'like', "%{$search}%")
-                             ->orWhere('email', 'like', "%{$search}%");
+                             ->orWhere('email', 'like', "%{$search}%")
+                             ->orWhere('username', 'like', "%{$search}%")
+                             ->orWhere('uid', 'like', "%{$search}%");
                       });
                 });
             }
@@ -135,6 +142,8 @@ class B2bAdminController extends Controller
                         'order_code' => $order->order_code,
                         'user' => [
                             'id' => $order->user->id,
+                            'uid' => $order->user->uid,
+                            'username' => $order->user->username,
                             'name' => $order->user->name,
                             'email' => $order->user->email,
                         ],
