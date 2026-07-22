@@ -21,7 +21,26 @@ Hệ thống sử dụng cơ chế tự động quét lịch sử nhận USDT qu
     ```
     _Scheduler đã được lập lịch sẵn trong `routes/console.php` để tự động gọi lệnh `deposit:check-pending` mỗi 1 phút._
 
-### 2. Các lệnh bảo trì khác
+### 2. Lệnh đồng bộ danh mục & sản phẩm từ Nhà cung cấp (Supplier Sync)
+
+- **Lệnh chạy thủ công (Đồng bộ tất cả nhà cung cấp đang bật)**:
+
+    ```bash
+    php artisan suppliers:sync
+    ```
+
+- **Đồng bộ 1 Nhà cung cấp cụ thể theo mã Code (ví dụ: `ads7979`, `vlclone`)**:
+
+    ```bash
+    php artisan suppliers:sync ads7979
+    ```
+
+- **Chỉ đồng bộ các nhà cung cấp đã đến hạn (chạy ngầm mỗi 10 phút qua Scheduler)**:
+    ```bash
+    php artisan suppliers:sync --due
+    ```
+
+### 3. Các lệnh bảo trì khác
 
 - **Force Logout toàn bộ bằng cách thu hồi phiên bản token (không thay đổi App Key)**:
     ```bash
