@@ -13,6 +13,12 @@
 > Khi cần seed dữ liệu cho một seeder cụ thể, chỉ dùng:
 > - `php artisan db:seed --class=TenSeederClass` — chạy đúng 1 seeder.
 
+- **[CHUYỂN MÃ UID NGƯỜI DÙNG SANG DẠNG SỐ 8 CHỮ SỐ CHÍNH XÁC & KHÔNG TRÙNG (8-DIGIT NUMERIC TIMESTAMP UID)]**:
+  - Cập nhật thuật toán tạo UID `UserModel::generateUniqueUid()`: Chuẩn hóa UID thành **chính xác 8 chữ số thuần (0-9)** tăng tiến theo timestamp decisecond kết hợp bộ đếm sequence trong bộ nhớ và kiểm tra chống trùng lặp DB tuyệt đối (`10000000` -> `99999999`).
+  - Đảm bảo cột `uid` trong bảng `users` được giữ nguyên `VARCHAR(8)`.
+  - Tự động chuyển đổi toàn bộ UID của các tài khoản hiện có trong database sang dạng số 8 chữ số mới mà KHÔNG làm mất/xóa dữ liệu cũ.
+  - Cập nhật test case tự động `test_user_uid_is_purely_numeric_and_unique()` trong `SecurityHardeningTest.php` kiểm tra `ctype_digit` và `strlen === 8`, đã chạy `php artisan test` vượt qua 54/54 test cases (100% PASSED).
+
 - **[THÊM CHỨC NĂNG XÓA TÀI KHOẢN HÀNG LOẠT (BULK DELETE USERS)]**:
   - Triển khai tính năng Xóa tài khoản thành viên hàng loạt bằng cách tích chọn checkbox tại trang Quản lý thành viên (`AdminUsersComponent`).
   - Thêm nút **Xóa đã chọn (X)** (màu đỏ / rose với icon thùng rác) trên thanh công cụ Header khi tích chọn ít nhất 1 tài khoản (bất kể trạng thái active hay banned).

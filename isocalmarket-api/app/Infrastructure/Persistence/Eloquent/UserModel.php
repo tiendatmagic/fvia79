@@ -38,14 +38,33 @@ class UserModel extends Authenticatable
 
     public static function generateUniqueUid(): string
     {
-        do {
-            $timeBase36 = base_convert((string) (int) (microtime(true) * 1000), 10, 36);
-            $timePart = substr($timeBase36, -5);
-            $randomPart = strtolower(Str::random(3));
-            $uid = $timePart . $randomPart;
-        } while (static::where('uid', $uid)->exists());
+        static $lastCandidateInt = 0;
 
-        return $uid;
+        $baseEpoch = 1767225600; // Jan 1 2026 UTC
+        $diff = max(0, (int) ((microtime(true) - $baseEpoch) * 10));
+        $candidateInt = 10000000 + ($diff % 80000000);
+
+        if ($candidateInt <= $lastCandidateInt) {
+            $candidateInt = $lastCandidateInt + 1;
+        }
+
+        if ($candidateInt > 99999999) {
+            $candidateInt = 10000000;
+        }
+
+        $candidate = (string) $candidateInt;
+
+        while (static::where('uid', $candidate)->exists()) {
+            $candidateInt++;
+            if ($candidateInt > 99999999) {
+                $candidateInt = 10000000;
+            }
+            $candidate = (string) $candidateInt;
+        }
+
+        $lastCandidateInt = (int) $candidate;
+
+        return $candidate;
     }
 
     public function newUniqueId(): string

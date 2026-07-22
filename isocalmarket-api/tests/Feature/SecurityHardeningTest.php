@@ -398,6 +398,30 @@ class SecurityHardeningTest extends TestCase
         $this->assertNotNull(UserModel::find($admin->id)); // Admin self is protected
     }
 
+    public function test_user_uid_is_purely_numeric_and_unique(): void
+    {
+        $uids = [];
+        for ($i = 0; $i < 50; $i++) {
+            $uid = UserModel::generateUniqueUid();
+            $this->assertTrue(ctype_digit($uid), "UID {$uid} must consist of digits only");
+            $this->assertSame(8, strlen($uid), "UID {$uid} must be exactly 8 digits long");
+            $this->assertNotContains($uid, $uids, "UID {$uid} must be unique");
+            $uids[] = $uid;
+        }
+
+        $user = UserModel::create([
+            'username' => 'numeric_uid_test',
+            'name' => 'Numeric UID User',
+            'email' => 'numeric_uid@example.com',
+            'password' => 'password123',
+            'role' => 'customer',
+        ]);
+
+        $this->assertNotNull($user->uid);
+        $this->assertTrue(ctype_digit($user->uid));
+        $this->assertSame(8, strlen($user->uid));
+    }
+
     private function createAdmin(): UserModel
     {
         return UserModel::create([
