@@ -15,6 +15,7 @@ import { PaginationComponent } from '@shared/components/pagination/pagination.co
 import { UserFormModalComponent } from './user-form-modal/user-form-modal.component';
 import { AdjustBalanceModalComponent } from './adjust-balance-modal/adjust-balance-modal.component';
 import { CustomSelectComponent } from '@shared/components/custom-select/custom-select.component';
+import { CustomCheckboxComponent } from '@shared/components/custom-checkbox/custom-checkbox.component';
 import { CustomDateTimeRangeComponent, DateTimeRangeValue } from '@shared/components/custom-date-time-range/custom-date-time-range.component';
 import { TableComponent, TableCellDirective, TableColumn } from '@shared/components/table/table.component';
 import { TranslatePipe } from '@shared/pipes/translate.pipe';
@@ -34,6 +35,7 @@ import { TranslatePipe } from '@shared/pipes/translate.pipe';
     TooltipDirective,
     PaginationComponent,
     CustomSelectComponent,
+    CustomCheckboxComponent,
     CustomDateTimeRangeComponent,
     TableComponent,
     TableCellDirective,
@@ -51,9 +53,62 @@ export class AdminUsersComponent implements OnInit {
   private readonly modalService = inject(ModalService);
   public readonly lang = inject(LanguageService);
 
+  public readonly selectedUserIds = signal<Set<string>>(new Set<string>());
+
+  public get currentAdminId(): string | null {
+    return this.state.authStore.currentUser()?.id || null;
+  }
+
+  public get selectedActiveUsers(): any[] {
+    const selectedIds = this.selectedUserIds();
+    return this.state.userStore.users().filter(u => selectedIds.has(u.id) && u.status === 'active' && u.id !== this.currentAdminId);
+  }
+
+  public get selectedBannedUsers(): any[] {
+    const selectedIds = this.selectedUserIds();
+    return this.state.userStore.users().filter(u => selectedIds.has(u.id) && u.status === 'banned' && u.id !== this.currentAdminId);
+  }
+
+  public isSelectedUser(id: string): boolean {
+    return this.selectedUserIds().has(id);
+  }
+
+  public toggleSelectUser(id: string) {
+    if (id === this.currentAdminId) return;
+    const current = new Set(this.selectedUserIds());
+    if (current.has(id)) {
+      current.delete(id);
+    } else {
+      current.add(id);
+    }
+    this.selectedUserIds.set(current);
+  }
+
+  public isAllUsersSelected(): boolean {
+    const validUsers = this.state.userStore.users().filter(u => u.id !== this.currentAdminId);
+    if (validUsers.length === 0) return false;
+    const selectedIds = this.selectedUserIds();
+    return validUsers.every(u => selectedIds.has(u.id));
+  }
+
+  public toggleSelectAllUsers() {
+    const validUsers = this.state.userStore.users().filter(u => u.id !== this.currentAdminId);
+    if (this.isAllUsersSelected()) {
+      this.selectedUserIds.set(new Set<string>());
+    } else {
+      const allIds = new Set<string>(validUsers.map(u => u.id));
+      this.selectedUserIds.set(allIds);
+    }
+  }
+
+  public clearSelection() {
+    this.selectedUserIds.set(new Set<string>());
+  }
+
   public readonly columns = computed<TableColumn[]>(() => {
     this.lang.currentLang();
     return [
+      { key: 'select', label: '', sortable: false, width: '40px' },
       { key: 'id', label: this.lang.translate('common.id'), sortable: true },
       { key: 'name', label: this.lang.translate('usr.name'), sortable: true },
       { key: 'email', label: this.lang.translate('usr.contact'), sortable: true },
@@ -97,6 +152,7 @@ export class AdminUsersComponent implements OnInit {
 
   public fetchUsers(page: number = 1) {
     this.currentPage.set(page);
+    this.clearSelection();
     this.state.userStore.fetchUsers(
       page,
       this.limit,
@@ -105,6 +161,81 @@ export class AdminUsersComponent implements OnInit {
       this.selectedDateRange().startDate || undefined,
       this.selectedDateRange().endDate || undefined
     ).subscribe();
+  }
+
+  public bulkLockUsers() {
+    const activeUsers = this.selectedActiveUsers;
+    if (activeUsers.length === 0) return;
+
+    const ids = activeUsers.map(u => u.id);
+    const ref = this.modalService.confirm({
+      title: this.lang.translate('modal.bulk_lock_title'),
+      descriptionHtml: `${this.lang.translate('modal.bulk_lock_desc')} (<strong>${ids.length}</strong> ${this.lang.translate('admin.user_item')})`,
+      confirmText: this.lang.translate('modal.bulk_lock_confirm'),
+      cancelText: this.lang.translate('common.cancel'),
+      variant: 'danger'
+    });
+
+    ref.afterClosed$.subscribe((confirmed: any) => {
+      if (confirmed) {
+        this.state.userStore.bulkUpdateStatus(ids, 'banned').subscribe((res) => {
+          if (res !== null) {
+            this.clearSelection();
+            this.fetchUsers(this.currentPage());
+          }
+        });
+      }
+    });
+  }
+
+  public bulkUnlockUsers() {
+    const bannedUsers = this.selectedBannedUsers;
+    if (bannedUsers.length === 0) return;
+
+    const ids = bannedUsers.map(u => u.id);
+    const ref = this.modalService.confirm({
+      title: this.lang.translate('modal.bulk_unlock_title'),
+      descriptionHtml: `${this.lang.translate('modal.bulk_unlock_desc')} (<strong>${ids.length}</strong> ${this.lang.translate('admin.user_item')})`,
+      confirmText: this.lang.translate('modal.bulk_unlock_confirm'),
+      cancelText: this.lang.translate('common.cancel'),
+      variant: 'info'
+    });
+
+    ref.afterClosed$.subscribe((confirmed: any) => {
+      if (confirmed) {
+        this.state.userStore.bulkUpdateStatus(ids, 'active').subscribe((res) => {
+          if (res !== null) {
+            this.clearSelection();
+            this.fetchUsers(this.currentPage());
+          }
+        });
+      }
+    });
+  }
+
+  public bulkDeleteUsers() {
+    const validUsers = this.state.userStore.users().filter(u => this.selectedUserIds().has(u.id) && u.id !== this.currentAdminId);
+    if (validUsers.length === 0) return;
+
+    const ids = validUsers.map(u => u.id);
+    const ref = this.modalService.confirm({
+      title: this.lang.translate('modal.bulk_delete_user_title'),
+      descriptionHtml: `${this.lang.translate('modal.bulk_delete_user_desc')} (<strong>${ids.length}</strong> ${this.lang.translate('admin.user_item')})`,
+      confirmText: this.lang.translate('modal.bulk_delete_user_confirm'),
+      cancelText: this.lang.translate('common.cancel'),
+      variant: 'danger'
+    });
+
+    ref.afterClosed$.subscribe((confirmed: any) => {
+      if (confirmed) {
+        this.state.userStore.bulkDeleteUsers(ids).subscribe((res) => {
+          if (res !== null) {
+            this.clearSelection();
+            this.fetchUsers(this.currentPage());
+          }
+        });
+      }
+    });
   }
 
   public fetchPage(page: number) {

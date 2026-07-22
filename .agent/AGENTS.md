@@ -13,6 +13,24 @@
 > Khi cần seed dữ liệu cho một seeder cụ thể, chỉ dùng:
 > - `php artisan db:seed --class=TenSeederClass` — chạy đúng 1 seeder.
 
+- **[THÊM CHỨC NĂNG XÓA TÀI KHOẢN HÀNG LOẠT (BULK DELETE USERS)]**:
+  - Triển khai tính năng Xóa tài khoản thành viên hàng loạt bằng cách tích chọn checkbox tại trang Quản lý thành viên (`AdminUsersComponent`).
+  - Thêm nút **Xóa đã chọn (X)** (màu đỏ / rose với icon thùng rác) trên thanh công cụ Header khi tích chọn ít nhất 1 tài khoản (bất kể trạng thái active hay banned).
+  - Tự động bảo vệ an toàn cho tài khoản Admin đang đăng nhập thao tác (loại trừ khỏi danh sách bị xóa).
+  - Tích hợp Modal xác nhận (`modalService.confirm`) cảnh báo hành động xóa vĩnh viễn không thể hoàn tác.
+  - Backend API (`POST /v1/admin/users/bulk-delete`): Bọc DB Transaction để xóa hàng loạt các tài khoản được chọn ngoại trừ ID Admin hiện tại.
+  - Đã thêm test cases tự động trong `SecurityHardeningTest.php`, chạy `php artisan test` vượt qua 53/53 test cases (100% PASSED) và Angular `npm run build` thành công 100%.
+
+- **[THÊM CHỨC NĂNG KHÓA / MỞ KHÓA TÀI KHOẢN HÀNG LOẠT (BULK LOCK & UNLOCK)]**:
+  - Triển khai tính năng tích chọn hàng loạt nhiều tài khoản người dùng tại trang Quản lý thành viên (`AdminUsersComponent`).
+  - Thêm cột checkbox chọn dòng và checkbox chọn tất cả trên header bảng (`select_header`). Tự động bảo vệ tài khoản Admin hiện tại đang thao tác (không cho phép tự tích chọn khóa chính mình).
+  - Thêm 2 nút thao tác hàng loạt linh hoạt trên thanh công cụ Header:
+    - **Khóa đã chọn (X)**: Nút màu hổ phách / danger chỉ kích hoạt khi chọn ít nhất 1 tài khoản đang hoạt động.
+    - **Mở khóa đã chọn (X)**: Nút màu xanh lá / info chỉ kích hoạt khi chọn ít nhất 1 tài khoản đang bị khóa.
+  - Tích hợp Modal xác nhận an toàn (`modalService.confirm`) thông báo số lượng tài khoản sẽ bị ảnh hưởng.
+  - Backend API (`POST /v1/admin/users/bulk-status`): Sử dụng DB Transaction để cập nhật hàng loạt trạng thái (`active` / `banned`). Khi khóa hàng loạt, hệ thống tự động loại trừ ID Admin hiện tại, xóa toàn bộ `refresh_token_hash` và tăng `token_version` để thu hồi tức thì toàn bộ JWT Token active của tất cả các tài khoản bị khóa.
+  - Đã viết unit & feature test suite đầy đủ (`SecurityHardeningTest.php`), chạy `php artisan test` vượt qua 52/52 test cases (100% PASSED) và Angular `npm run build` thành công 100%.
+
 - **[CHUYỂN CHỌN TRẠNG THÁI TÀI KHOẢN SANG SWITCH & THÊM NÚT KHÓA/MỞ KHÓA BẢNG TÀI KHOẢN]**:
   - Đã chuyển dropdown lựa chọn Trạng thái tài khoản (`statusOptions`) trong `UserFormModalComponent` (`user-form-modal.component.html`) thành công tắc `app-custom-switch` (Bật = Hoạt động, Tắt = Bị khóa / Bị ban).
   - Tích hợp Modal xác nhận (`modalService.confirm`) khi người dùng gạt công tắc switch chuyển trạng thái tài khoản trong modal.

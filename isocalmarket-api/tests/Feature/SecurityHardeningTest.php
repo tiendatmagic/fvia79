@@ -304,6 +304,100 @@ class SecurityHardeningTest extends TestCase
         $this->withToken($adminToken)->getJson('/api/v1/admin/settings')->assertStatus(403);
     }
 
+    public function test_admin_can_bulk_lock_and_unlock_users(): void
+    {
+        $admin = $this->createAdmin();
+        $adminToken = app(AuthService::class)->generateAccessToken(UserMapper::toDomain($admin));
+
+        $user1 = UserModel::create([
+            'username' => 'bulk_user_1',
+            'name' => 'Bulk User 1',
+            'email' => 'bulk1@example.com',
+            'password' => 'password123',
+            'role' => 'customer',
+            'balance' => 10,
+            'status' => 'active',
+            'refresh_token_hash' => hash('sha256', 'refresh-1'),
+            'refresh_token_expired_at' => now()->addDays(7),
+        ]);
+
+        $user2 = UserModel::create([
+            'username' => 'bulk_user_2',
+            'name' => 'Bulk User 2',
+            'email' => 'bulk2@example.com',
+            'password' => 'password123',
+            'role' => 'customer',
+            'balance' => 20,
+            'status' => 'active',
+            'refresh_token_hash' => hash('sha256', 'refresh-2'),
+            'refresh_token_expired_at' => now()->addDays(7),
+        ]);
+
+        // Bulk lock user1 and user2
+        $responseLock = $this->withToken($adminToken)->postJson('/api/v1/admin/users/bulk-status', [
+            'user_ids' => [$user1->id, $user2->id, $admin->id], // admin.id should be safely skipped
+            'status' => 'banned',
+        ]);
+
+        $responseLock->assertOk()
+            ->assertJsonPath('updated_count', 2);
+
+        $this->assertSame('banned', $user1->fresh()->status);
+        $this->assertSame('banned', $user2->fresh()->status);
+        $this->assertSame('active', $admin->fresh()->status); // Self admin remains active
+        $this->assertSame(1, (int) $user1->fresh()->token_version);
+        $this->assertNull($user1->fresh()->refresh_token_hash);
+
+        // Bulk unlock user1 and user2
+        $responseUnlock = $this->withToken($adminToken)->postJson('/api/v1/admin/users/bulk-status', [
+            'user_ids' => [$user1->id, $user2->id],
+            'status' => 'active',
+        ]);
+
+        $responseUnlock->assertOk()
+            ->assertJsonPath('updated_count', 2);
+
+        $this->assertSame('active', $user1->fresh()->status);
+        $this->assertSame('active', $user2->fresh()->status);
+    }
+
+    public function test_admin_can_bulk_delete_users(): void
+    {
+        $admin = $this->createAdmin();
+        $adminToken = app(AuthService::class)->generateAccessToken(UserMapper::toDomain($admin));
+
+        $user1 = UserModel::create([
+            'username' => 'bulk_del_1',
+            'name' => 'Bulk Delete 1',
+            'email' => 'bulkdel1@example.com',
+            'password' => 'password123',
+            'role' => 'customer',
+            'balance' => 0,
+            'status' => 'active',
+        ]);
+
+        $user2 = UserModel::create([
+            'username' => 'bulk_del_2',
+            'name' => 'Bulk Delete 2',
+            'email' => 'bulkdel2@example.com',
+            'password' => 'password123',
+            'role' => 'customer',
+            'balance' => 0,
+            'status' => 'active',
+        ]);
+
+        $response = $this->withToken($adminToken)->postJson('/api/v1/admin/users/bulk-delete', [
+            'user_ids' => [$user1->id, $user2->id, $admin->id], // admin.id should be safely skipped
+        ]);
+
+        $response->assertOk()
+            ->assertJsonPath('deleted_count', 2);
+
+        $this->assertNull(UserModel::find($user1->id));
+        $this->assertNull(UserModel::find($user2->id));
+        $this->assertNotNull(UserModel::find($admin->id)); // Admin self is protected
+    }
+
     private function createAdmin(): UserModel
     {
         return UserModel::create([

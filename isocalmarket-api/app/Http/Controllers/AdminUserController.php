@@ -378,4 +378,86 @@ class AdminUserController extends Controller
             return $this->serverError($e, 'Failed to enable user 2FA.');
         }
     }
+
+    /**
+     * POST /api/v1/admin/users/bulk-status
+     * Cập nhật trạng thái (Khóa / Mở khóa) hàng loạt cho danh sách thành viên được chọn
+     */
+    public function bulkStatus(Request $request)
+    {
+        $request->validate([
+            'user_ids'   => 'required|array|min:1',
+            'user_ids.*' => 'required|string',
+            'status'     => 'required|string|in:active,banned',
+        ]);
+
+        try {
+            return \Illuminate\Support\Facades\DB::transaction(function () use ($request) {
+                $currentAdminId = Auth::id();
+                $targetIds = array_values(array_filter($request->input('user_ids'), function ($id) use ($currentAdminId) {
+                    return $id !== $currentAdminId;
+                }));
+
+                if (empty($targetIds)) {
+                    return response()->json(['message' => 'No valid target users selected for status update.'], 400);
+                }
+
+                $status = $request->input('status');
+
+                if ($status === 'banned') {
+                    \App\Infrastructure\Persistence\Eloquent\UserModel::whereIn('id', $targetIds)->update([
+                        'status' => 'banned',
+                        'refresh_token_hash' => null,
+                        'refresh_token_expired_at' => null,
+                    ]);
+                    \App\Infrastructure\Persistence\Eloquent\UserModel::whereIn('id', $targetIds)->increment('token_version');
+                } else {
+                    \App\Infrastructure\Persistence\Eloquent\UserModel::whereIn('id', $targetIds)->update([
+                        'status' => 'active',
+                    ]);
+                }
+
+                return response()->json([
+                    'message' => 'Bulk user status updated successfully.',
+                    'updated_count' => count($targetIds)
+                ]);
+            });
+        } catch (\Throwable $e) {
+            return $this->serverError($e, 'Failed to update bulk user status.');
+        }
+    }
+
+    /**
+     * POST /api/v1/admin/users/bulk-delete
+     * Xóa hàng loạt thành viên được chọn (loại trừ tài khoản Admin hiện tại)
+     */
+    public function bulkDestroy(Request $request)
+    {
+        $request->validate([
+            'user_ids'   => 'required|array|min:1',
+            'user_ids.*' => 'required|string',
+        ]);
+
+        try {
+            return \Illuminate\Support\Facades\DB::transaction(function () use ($request) {
+                $currentAdminId = Auth::id();
+                $targetIds = array_values(array_filter($request->input('user_ids'), function ($id) use ($currentAdminId) {
+                    return $id !== $currentAdminId;
+                }));
+
+                if (empty($targetIds)) {
+                    return response()->json(['message' => 'No valid target users selected for deletion.'], 400);
+                }
+
+                $deletedCount = \App\Infrastructure\Persistence\Eloquent\UserModel::whereIn('id', $targetIds)->delete();
+
+                return response()->json([
+                    'message' => 'Bulk user deletion successful.',
+                    'deleted_count' => $deletedCount
+                ]);
+            });
+        } catch (\Throwable $e) {
+            return $this->serverError($e, 'Failed to perform bulk user deletion.');
+        }
+    }
 }

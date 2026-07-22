@@ -155,4 +155,36 @@ export class UserStore {
       finalize(() => this.loading.set(false))
     );
   }
+
+  public bulkUpdateStatus(userIds: string[], status: 'active' | 'banned'): Observable<any> {
+    this.loading.set(true);
+    return this.api.post<any>('v1/admin/users/bulk-status', { user_ids: userIds, status }).pipe(
+      tap(() => {
+        this.clearCache();
+        this.toast.showToast(this.lang.translate('toast.bulk_user_status_updated'), 'success');
+      }),
+      catchError((err) => {
+        const msg = err.error?.message || this.lang.translate('toast.user_update_failed');
+        this.toast.showToast(msg, 'error');
+        return of(null);
+      }),
+      finalize(() => this.loading.set(false))
+    );
+  }
+
+  public bulkDeleteUsers(userIds: string[]): Observable<any> {
+    this.loading.set(true);
+    return this.api.post<any>('v1/admin/users/bulk-delete', { user_ids: userIds }).pipe(
+      tap(() => {
+        this.clearCache();
+        this.toast.showToast(this.lang.translate('toast.bulk_users_deleted'), 'success');
+      }),
+      catchError((err) => {
+        const msg = err.error?.message || this.lang.translate('toast.user_delete_failed');
+        this.toast.showToast(msg, 'error');
+        return of(null);
+      }),
+      finalize(() => this.loading.set(false))
+    );
+  }
 }

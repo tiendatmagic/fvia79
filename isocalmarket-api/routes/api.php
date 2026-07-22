@@ -81,6 +81,8 @@ Route::prefix('v1')->group(function () {
 
             Route::get('/admin/users', ['App\Http\Controllers\AdminUserController', 'index']);
             Route::post('/admin/users', ['App\Http\Controllers\AdminUserController', 'store']);
+            Route::post('/admin/users/bulk-status', ['App\Http\Controllers\AdminUserController', 'bulkStatus']);
+            Route::post('/admin/users/bulk-delete', ['App\Http\Controllers\AdminUserController', 'bulkDestroy']);
             Route::put('/admin/users/{id}', ['App\Http\Controllers\AdminUserController', 'update']);
             Route::post('/admin/users/{id}/adjust-balance', ['App\Http\Controllers\AdminUserController', 'adjustBalance']);
             Route::post('/admin/users/{id}/reset-2fa', ['App\Http\Controllers\AdminUserController', 'reset2fa']);
