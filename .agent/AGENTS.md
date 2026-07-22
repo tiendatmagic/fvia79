@@ -2046,7 +2046,17 @@
 - **Thực hiện khắc phục & Cập nhật:**
   1. **`cart-modal.component.ts` & `orders.component.ts`**: Gọi `this.state.orderStore.clearCache()` khi thanh toán thành công và khi khởi tạo `OrdersComponent` để làm mới danh sách đơn hàng lập tức.
   2. **`order-detail.component.html` & `order-detail.component.ts`**: Gỡ bỏ hàm `parseAccountData()`, `get2FAOtp()`, TOTP utils, và 2 tab switcher. Thiết kế lại phần hiển thị tài nguyên phân phối hiển thị trực tiếp dữ liệu thô (`acc.data`) dạng font monospace, bôi đen `select-all` kèm nút Sao chép cho từng tài nguyên.
-  3. **Xác minh**: Chạy `npm run build` thành công 100%.
+
+## [2026-07-22] Khắc phục Lỗi tính Tồn kho Khả dụng & Bổ sung Key i18n Status
+- **Yêu cầu & Quy tắc nghiệp vụ:**
+  1. Khắc phục lỗi khi admin cập nhật kho hàng nhưng Storefront báo "Khả dụng: 0".
+  2. Bổ sung key i18n cho trạng thái badge tránh hiển thị `status.inactive`.
+- **Thực hiện khắc phục & Cập nhật:**
+  1. **`ProductRepository.php` & `InventoryBatchRepository.php`**: Sửa `getAvailableCount` và `findActiveBatchesByProductId` để tính tất cả các lô hàng thực tế còn key (`initial_count > sold_count` và `status != 'inactive'`), không còn bị bỏ qua do cờ `'completed'` tự động.
+  2. **`InventoryService.php`**: Khi admin thêm/sửa lô hàng có key khả dụng, tự động đưa cờ status về `'active'` và làm sạch backend Cache.
+  3. **`InventoryStore.ts`**: Tự động làm sạch `productStore` cache khi có thao tác nhập/sửa kho hàng.
+  4. **`language.service.ts`**: Bổ sung key dịch `status.inactive` ('Tắt / Vô hiệu' / 'Inactive') và `status.pending` ('Chờ xử lý' / 'Pending') cho cả tiếng Việt và tiếng Anh, loại bỏ khai báo duplicate.
+  5. **Xác minh**: `php artisan test` vượt qua 47/47 tests, `npm run build` biên dịch thành công 100%.
 
 
 

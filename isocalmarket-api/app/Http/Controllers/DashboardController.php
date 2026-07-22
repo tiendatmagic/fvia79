@@ -24,7 +24,7 @@ class DashboardController extends Controller
 
             $cacheKey = 'admin_dashboard_stats_' . md5($startDate . '_' . $endDate . '_' . $lowStockCategoryId . '_' . $lowStockSearch . '_' . $thresholdParam . '_' . $lowStockPage . '_' . $lowStockLimit);
 
-            $data = \Illuminate\Support\Facades\Cache::remember($cacheKey, 300, function () use ($startDate, $endDate, $lowStockCategoryId, $lowStockSearch, $thresholdParam, $lowStockPage, $lowStockLimit) {
+            $data = \Illuminate\Support\Facades\Cache::remember($cacheKey, 10, function () use ($startDate, $endDate, $lowStockCategoryId, $lowStockSearch, $thresholdParam, $lowStockPage, $lowStockLimit) {
                 $revenueQuery = OrderModel::where('status', 'paid');
                 $ordersQuery = OrderModel::query();
 
@@ -44,7 +44,7 @@ class DashboardController extends Controller
                 $totalProducts = ProductModel::where('status', 'active')->count();
                 $totalUsers = UserModel::count();
 
-                $totalAvailableInventory = (int) InventoryBatchModel::where('status', 'active')
+                $totalAvailableInventory = (int) InventoryBatchModel::where('status', '!=', 'inactive')
                     ->selectRaw('SUM(initial_count - sold_count) as total')
                     ->value('total') ?? 0;
 
