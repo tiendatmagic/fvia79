@@ -2024,5 +2024,21 @@
   4. **Xóa dữ liệu test**: Đã dọn dẹp toàn bộ các lô hàng test tạm thời trong CSDL.
   5. **Xác minh**: Chạy `php artisan test` vượt qua 47/47 unit & feature tests. Chạy `npm run build` biên dịch Angular thành công 100%.
 
+## [2026-07-22] Chuyển đổi Quy trình Mua ngay tại chỗ (Buy Now) & Bỏ Nút Giỏ hàng Header
+- **Yêu cầu & Quy tắc nghiệp vụ:**
+  1. Gỡ bỏ nút Giỏ hàng trên thanh Header Menu (không cản trở thao tác khác).
+  2. Thay thế toàn bộ các nút "Thêm vào giỏ" thành nút "Mua ngay" trên Storefront (Grid view, Table view, Featured list view).
+  3. Bấm "Mua ngay" trên sản phẩm sẽ tự động gán duy nhất sản phẩm được chọn vào đơn và mở ngay Modal "Xác nhận đơn hàng của bạn" tại chỗ.
+  4. Loại bỏ lưu trữ giỏ hàng trong `localStorage`, không lưu thông tin đơn cũ khi reload/F5 trang.
+  5. Gỡ bỏ nút Xóa sản phẩm (thùng rác) và màn hình Giỏ hàng trống khỏi Modal Xác nhận đơn hàng vì đơn luôn mua 1 sản phẩm trực tiếp.
+- **Thực hiện khắc phục & Cập nhật:**
+  1. **`header.component.html` & `header.component.ts`**: Gỡ bỏ nút biểu tượng giỏ hàng và các hàm `openCart()` thừa.
+  2. **`cart.store.ts`**: Bỏ `effect` lưu `localStorage` và `loadFromStorage()`, bổ sung hàm `setSingleProduct()` hỗ trợ mua tại chỗ.
+  3. **`storefront.component.html` & `storefront.component.ts`**: Cập nhật 3 vị trí nút sang "Mua ngay" và gán hàm `buyNow()` mở trực tiếp `CartModalComponent`.
+  4. **`cart-modal.component.html` & `cart-modal.component.ts`**: Xóa nút icon thùng rác, xóa khối HTML `Giỏ hàng trống`, giới hạn nút `-` không giảm xuống dưới 1 và nút `+` không vượt quá tồn kho. Dọn dẹp import `TooltipDirective`.
+  5. **`language.service.ts`**: Bổ sung các từ khóa dịch thuật `'action.buy_now'`, `'cart.confirm_order_title'`, `'storefront.please_login_to_buy'` cho cả tiếng Việt và tiếng Anh.
+  6. **Xác minh**: Chạy `npm run build` thành công 100% không phát sinh lỗi biên dịch.
+
+
 
 

@@ -11,7 +11,6 @@ import { ButtonComponent } from '@shared/components/button/button.component';
 import { IconComponent } from '@shared/components/icon/icon.component';
 import { TranslatePipe } from '@shared/pipes/translate.pipe';
 import { CurrencyPipe } from '@shared/pipes/currency.pipe';
-import { TooltipDirective } from '@shared/components/tooltip/tooltip.directive';
 import { Subject, of } from 'rxjs';
 import { debounceTime, distinctUntilChanged, switchMap, catchError, finalize } from 'rxjs/operators';
 
@@ -24,8 +23,7 @@ import { debounceTime, distinctUntilChanged, switchMap, catchError, finalize } f
     ButtonComponent,
     IconComponent,
     TranslatePipe,
-    CurrencyPipe,
-    TooltipDirective
+    CurrencyPipe
   ],
   templateUrl: './cart-modal.component.html',
   styles: [`

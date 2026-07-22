@@ -8,10 +8,8 @@ import { TranslatePipe } from '@shared/pipes/translate.pipe';
 import { CurrencyPipe } from '@shared/pipes/currency.pipe';
 import { IconComponent } from '@shared/components/icon/icon.component';
 import { LogoComponent } from '@shared/components/logo/logo.component';
-import { CartStore } from '@features/storefront/cart.store';
-import { ModalService } from '@core/services/modal.service';
-import { CartModalComponent } from '@features/storefront/cart-modal/cart-modal.component';
 import { BadgeComponent } from '@shared/components/badge/badge.component';
+import { ModalService } from '@core/services/modal.service';
 
 @Component({
   selector: 'app-header',
@@ -38,7 +36,6 @@ export class HeaderComponent {
   public langService = inject(LanguageService);
   public currencyService = inject(CurrencyService);
   public router = inject(Router);
-  public cart = inject(CartStore);
   private modalService = inject(ModalService);
 
   public showUserDropdown = signal(false);
@@ -95,22 +92,7 @@ export class HeaderComponent {
     this.showCurrencyDropdown.set(false);
   }
 
-  public openCart() {
-    if (!this.stateService.isAuthenticated()) {
-      this.stateService.showToast(this.langService.translate('storefront.please_login_to_use_cart'), 'warning');
-      return;
-    }
-    this.modalService.open(CartModalComponent, {
-      title: this.langService.translate('cart.title'),
-      size: 'lg'
-    }).afterClosed$.subscribe((result) => {
-      if (result === 'login') {
-        this.router.navigate(['/login'], { queryParams: { returnUrl: '/storefront' } });
-      } else if (result === 'success') {
-        this.router.navigate(['/orders']);
-      }
-    });
-  }
+
 
   public getUserInitial(): string {
     const name = this.stateService.currentUser()?.name || '';

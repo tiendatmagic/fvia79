@@ -248,6 +248,7 @@ export const TRANSLATIONS: Record<SupportedLanguage, Record<string, string>> = {
     'action.adjust_balance': 'Adjust Balance',
     'action.checkout': 'Checkout',
     'action.add_to_cart': 'Add to Cart',
+    'action.buy_now': 'Buy Now',
     'action.close': 'Close',
     'action.confirm': 'Confirm',
     'action.view': 'View',
@@ -257,6 +258,8 @@ export const TRANSLATIONS: Record<SupportedLanguage, Record<string, string>> = {
     'common.please_login': 'Please sign in to access this feature.',
     'storefront.please_login_to_add_to_cart': 'Please log in to add items to your cart.',
     'storefront.please_login_to_use_cart': 'Please log in to use the cart.',
+    'storefront.please_login_to_buy': 'Please log in to purchase products.',
+    'cart.confirm_order_title': 'Confirm Your Order',
 
     'storefront.title': 'Digital Accounts Store',
     'storefront.subtitle': 'High quality automated account marketplace',
@@ -1349,6 +1352,7 @@ export const TRANSLATIONS: Record<SupportedLanguage, Record<string, string>> = {
     'action.adjust_balance': 'Định chỉnh số dư',
     'action.checkout': 'Thanh toán',
     'action.add_to_cart': 'Thêm vào giỏ',
+    'action.buy_now': 'Mua ngay',
     'action.close': 'Đóng',
     'action.confirm': 'Xác nhận',
     'action.view': 'Xem',
@@ -1358,6 +1362,8 @@ export const TRANSLATIONS: Record<SupportedLanguage, Record<string, string>> = {
     'common.please_login': 'Vui lòng đăng nhập để sử dụng tính năng này.',
     'storefront.please_login_to_add_to_cart': 'Vui lòng đăng nhập để thêm sản phẩm vào giỏ hàng.',
     'storefront.please_login_to_use_cart': 'Vui lòng đăng nhập để sử dụng giỏ hàng.',
+    'storefront.please_login_to_buy': 'Vui lòng đăng nhập để mua hàng.',
+    'cart.confirm_order_title': 'Xác nhận đơn hàng của bạn',
 
     'storefront.title': 'Cửa hàng Tài khoản Số',
     'storefront.subtitle': 'Hệ thống tự động phân phối tài khoản chất lượng cao',

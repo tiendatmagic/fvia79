@@ -1,4 +1,4 @@
-import { Injectable, signal, computed, effect } from '@angular/core';
+import { Injectable, signal, computed } from '@angular/core';
 
 export interface CartItem {
   id: string;
@@ -22,47 +22,22 @@ export class CartStore {
     return this.items().reduce((total, item) => total + item.quantity, 0);
   });
 
-  constructor() {
-    this.loadFromStorage();
+  constructor() {}
 
-    effect(() => {
-      if (typeof window !== 'undefined') {
-        localStorage.setItem('isocalmarket_cart', JSON.stringify(this.items()));
-      }
-    });
-  }
-
-  private loadFromStorage() {
-    if (typeof window !== 'undefined') {
-      const stored = localStorage.getItem('isocalmarket_cart');
-      if (stored) {
-        try {
-          this.items.set(JSON.parse(stored));
-        } catch (e) {
-          this.items.set([]);
-        }
-      }
-    }
+  public setSingleProduct(product: any, quantity: number = 1) {
+    const maxQty = product.available_count || 1;
+    const finalQty = Math.min(Math.max(1, quantity), maxQty);
+    this.items.set([{
+      id: product.id,
+      name: product.name,
+      price: product.price,
+      quantity: finalQty,
+      available_count: product.available_count || 0
+    }]);
   }
 
   public addToCart(product: any, quantity: number = 1) {
-    const current = this.items();
-    const index = current.findIndex(item => item.id === product.id);
-
-    if (index > -1) {
-      const updated = [...current];
-      const newQty = updated[index].quantity + quantity;
-      updated[index].quantity = Math.min(newQty, product.available_count || 1);
-      this.items.set(updated);
-    } else {
-      this.items.set([...current, {
-        id: product.id,
-        name: product.name,
-        price: product.price,
-        quantity: Math.min(quantity, product.available_count || 1),
-        available_count: product.available_count || 0
-      }]);
-    }
+    this.setSingleProduct(product, quantity);
   }
 
   public removeFromCart(productId: string) {
@@ -83,3 +58,4 @@ export class CartStore {
     this.items.set([]);
   }
 }
+

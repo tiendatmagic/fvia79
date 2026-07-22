@@ -205,12 +205,12 @@
 
                   <button
                     app-button
-                    (click)="addToCart(p)"
+                    (click)="buyNow(p)"
                     [disabled]="p.available_count <= 0"
                     variant="primary"
                     class="w-full py-2.5 px-4 rounded-xl bg-gradient-to-r from-[var(--color-primary)] to-[var(--color-secondary)] text-white text-xs font-extrabold active:scale-95 transition-all shadow-sm shadow-[var(--color-primary)]/10 cursor-pointer disabled:opacity-50 disabled:pointer-events-none"
                   >
-                    {{ 'action.add_to_cart' | translate }}
+                    {{ 'action.buy_now' | translate }}
                   </button>
                 </div>
               </div>
@@ -281,12 +281,12 @@
                 <ng-template appTableCell="actions" let-row="row">
                   <button
                     app-button
-                    (click)="addToCart(row)"
+                    (click)="buyNow(row)"
                     [disabled]="row.available_count <= 0"
                     variant="primary"
                     class="py-1.5 px-3.5 rounded-lg bg-gradient-to-r from-[var(--color-primary)] to-[var(--color-secondary)] text-white text-xs font-extrabold active:scale-95 transition-all shadow-sm shadow-[var(--color-primary)]/10 cursor-pointer disabled:opacity-50 disabled:pointer-events-none whitespace-nowrap shrink-0"
                   >
-                    {{ 'action.add_to_cart' | translate }}
+                    {{ 'action.buy_now' | translate }}
                   </button>
                 </ng-template>
               </app-table>
@@ -345,12 +345,12 @@
 
                   <button
                     app-button
-                    (click)="addToCart(p)"
+                    (click)="buyNow(p)"
                     [disabled]="p.available_count <= 0"
                     variant="primary"
                     class="py-1.5 px-4 rounded-lg bg-gradient-to-r from-[var(--color-primary)] to-[var(--color-secondary)] text-white text-xs font-extrabold active:scale-95 transition-all shadow-sm shadow-[var(--color-primary)]/10 cursor-pointer disabled:opacity-50 disabled:pointer-events-none whitespace-nowrap shrink-0"
                   >
-                    {{ 'action.add_to_cart' | translate }}
+                    {{ 'action.buy_now' | translate }}
                   </button>
                 </div>
               </div>
