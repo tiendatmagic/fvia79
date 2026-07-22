@@ -1,7 +1,7 @@
 import { Injectable, signal, computed, effect } from '@angular/core';
 
 export interface CartItem {
-  id: number;
+  id: string;
   name: string;
   price: number;
   quantity: number;
@@ -65,11 +65,11 @@ export class CartStore {
     }
   }
 
-  public removeFromCart(productId: number) {
+  public removeFromCart(productId: string) {
     this.items.set(this.items().filter(item => item.id !== productId));
   }
 
-  public updateQuantity(productId: number, quantity: number) {
+  public updateQuantity(productId: string, quantity: number) {
     const current = this.items();
     const index = current.findIndex(item => item.id === productId);
     if (index > -1 && quantity > 0) {
