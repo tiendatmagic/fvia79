@@ -1258,7 +1258,7 @@ export const TRANSLATIONS: Record<SupportedLanguage, Record<string, string>> = {
     'supplier.price_example': 'Ví dụ quy đổi giá',
     'supplier.rate': 'tỷ giá',
     'supplier.save': 'Lưu cấu hình nhà cung cấp',
-    'supplier.sync_now': 'Import danh mục nhà cung cấp',
+    'supplier.sync_now': 'Đồng bộ danh mục & sản phẩm',
     'supplier.last_sync': 'Đồng bộ gần nhất',
     'supplier.never': 'Chưa từng chạy',
     'supplier.not_synced': 'Chưa đồng bộ',
