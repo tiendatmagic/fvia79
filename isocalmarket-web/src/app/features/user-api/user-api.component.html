@@ -496,7 +496,6 @@ curl -X GET "{{ siteUrl() }}/api/v1/b2b/products/PRODUCT_ID?api_key={{
 
             @if (activeTab() === 'bash') {
               <div class="space-y-2.5 mt-1.5">
-                <div class="text-[11px] font-bold text-slate-500 dark:text-slate-400">{{ 'api.buy_single_hint' | translate }}</div>
                 <div
                   class="relative bg-slate-50 dark:bg-slate-950 rounded-xl border border-slate-200/60 dark:border-slate-900 overflow-hidden"
                 >
@@ -516,31 +515,9 @@ curl -X POST "{{ siteUrl() }}/api/v1/b2b/buy" -H "Content-Type: application/json
                     <app-icon name="copy" class="w-4 h-4" />
                   </button>
                 </div>
-
-                <div class="text-[11px] font-bold text-slate-500 dark:text-slate-400 pt-1">{{ 'api.buy_multi_hint' | translate }}</div>
-                <div
-                  class="relative bg-slate-50 dark:bg-slate-950 rounded-xl border border-slate-200/60 dark:border-slate-900 overflow-hidden"
-                >
-                  <div
-                    class="overflow-x-auto p-3.5 pr-12 text-xs text-slate-700 dark:text-slate-300 leading-relaxed"
-                  >
-                    <pre class="whitespace-pre">
-curl -X POST "{{ siteUrl() }}/api/v1/b2b/buy" -H "Content-Type: application/json" -H "X-API-KEY: {{
-                        apiKey() || 'API_KEY_CUA_BAN'
-                      }}" -d '{{ '{' }}"items": [{{ '{' }}"product_id": "PRODUCT_ID_1", "quantity": 2{{ '}' }}, {{ '{' }}"product_id": "PRODUCT_ID_2", "quantity": 1{{ '}' }}], "coupon_code": "DISCOUNT10"{{ '}' }}'</pre>
-                  </div>
-                  <button
-                    (click)="copyBuyMultiCurl()"
-                    class="absolute right-3.5 top-3.5 text-slate-400 dark:text-slate-500 hover:text-[var(--color-primary)] dark:hover:text-white transition-colors cursor-pointer"
-                [title]="'api.copy_multi_linux' | translate"
-                  >
-                    <app-icon name="copy" class="w-4 h-4" />
-                  </button>
-                </div>
               </div>
             } @else if (activeTab() === 'cmd') {
               <div class="space-y-2.5 mt-1.5">
-                <div class="text-[11px] font-bold text-slate-500 dark:text-slate-400">{{ 'api.buy_single_cmd_hint' | translate }}</div>
                 <div
                   class="relative bg-slate-50 dark:bg-slate-950 rounded-xl border border-slate-200/60 dark:border-slate-900 overflow-hidden"
                 >
@@ -556,27 +533,6 @@ curl -X POST "{{ siteUrl() }}/api/v1/b2b/buy" -H "Content-Type: application/json
                     (click)="copyBuyWindowsCurl()"
                     class="absolute right-3.5 top-3.5 text-slate-400 dark:text-slate-500 hover:text-[var(--color-primary)] dark:hover:text-white transition-colors cursor-pointer"
                     [title]="'api.copy_single_windows' | translate"
-                  >
-                    <app-icon name="copy" class="w-4 h-4" />
-                  </button>
-                </div>
-
-                <div class="text-[11px] font-bold text-slate-500 dark:text-slate-400 pt-1">{{ 'api.buy_multi_cmd_hint' | translate }}</div>
-                <div
-                  class="relative bg-slate-50 dark:bg-slate-950 rounded-xl border border-slate-200/60 dark:border-slate-900 overflow-hidden"
-                >
-                  <div
-                    class="overflow-x-auto p-3.5 pr-12 text-xs text-slate-700 dark:text-slate-300 leading-relaxed"
-                  >
-                    <pre class="whitespace-pre">
-curl -X POST "{{ siteUrl() }}/api/v1/b2b/buy" -H "Content-Type: application/json" -H "X-API-KEY: {{
-                        apiKey() || 'API_KEY_CUA_BAN'
-                      }}" -d "{{ '{' }}\"items\": [{{ '{' }}\"product_id\": \"PRODUCT_ID_1\", \"quantity\": 2{{ '}' }}, {{ '{' }}\"product_id\": \"PRODUCT_ID_2\", \"quantity\": 1{{ '}' }}], \"coupon_code\": \"DISCOUNT10\"{{ '}' }}"</pre>
-                  </div>
-                  <button
-                    (click)="copyBuyMultiWindowsCurl()"
-                    class="absolute right-3.5 top-3.5 text-slate-400 dark:text-slate-500 hover:text-[var(--color-primary)] dark:hover:text-white transition-colors cursor-pointer"
-                [title]="'api.copy_multi_windows' | translate"
                   >
                     <app-icon name="copy" class="w-4 h-4" />
                   </button>
@@ -678,30 +634,6 @@ curl -X POST "{{ siteUrl() }}/api/v1/b2b/buy" -H "Content-Type: application/json
                   </div>
                   <p class="text-slate-500 dark:text-slate-400 font-semibold">
                     {{ 'api.coupon_code_desc' | translate }} (<code>DISCOUNT10</code>).
-                  </p>
-                </div>
-              </div>
-
-              <div class="h-px bg-slate-200/50 dark:bg-slate-800/40"></div>
-
-              <div class="flex items-start gap-4 text-xs">
-                <div class="min-w-[120px] text-[var(--color-primary)] font-bold">
-                  items
-                </div>
-                <div class="flex-1 space-y-1">
-                  <div class="flex items-center gap-1.5">
-                    <span
-                      class="text-xs font-black uppercase bg-slate-500/10 text-slate-500 px-1.5 py-0.5 rounded"
-                      >{{ 'api.optional' | translate }}</span
-                    >
-                    <span class="text-slate-400 dark:text-slate-500 text-xs"
-                      >{{ 'api.type_object_array' | translate }}</span
-                    >
-                  </div>
-                  <p class="text-slate-500 dark:text-slate-400 font-semibold">
-                    {{ 'api.items_desc' | translate }}
-                    <br/>- <code>product_id</code>: UUID ({{ 'api.required' | translate }})
-                    <br/>- <code>quantity</code>: >= 1 ({{ 'api.required' | translate }})
                   </p>
                 </div>
               </div>

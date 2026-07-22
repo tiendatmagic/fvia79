@@ -104,18 +104,6 @@ export class UserApiComponent {
     this.copyToClipboard(text);
   }
 
-  public copyBuyMultiCurl() {
-    const key = this.apiKey() || 'API_KEY_CUA_BAN';
-    const text = `curl -X POST "${this.siteUrl()}/api/v1/b2b/buy" -H "Content-Type: application/json" -H "X-API-KEY: ${key}" -d '{"items": [{"product_id": "PRODUCT_ID_1", "quantity": 2}, {"product_id": "PRODUCT_ID_2", "quantity": 1}], "coupon_code": "DISCOUNT10"}'`;
-    this.copyToClipboard(text);
-  }
-
-  public copyBuyMultiWindowsCurl() {
-    const key = this.apiKey() || 'API_KEY_CUA_BAN';
-    const text = `curl -X POST "${this.siteUrl()}/api/v1/b2b/buy" -H "Content-Type: application/json" -H "X-API-KEY: ${key}" -d "{\\"items\\": [{\\"product_id\\": \\"PRODUCT_ID_1\\", \\"quantity\\": 2}, {\\"product_id\\": \\"PRODUCT_ID_2\\", \\"quantity\\": 1}], \\"coupon_code\\": \\"DISCOUNT10\\"}"`;
-    this.copyToClipboard(text);
-  }
-
   public copyBuyUrl() {
     const text = `${this.siteUrl()}/api/v1/b2b/buy`;
     this.copyToClipboard(text);
