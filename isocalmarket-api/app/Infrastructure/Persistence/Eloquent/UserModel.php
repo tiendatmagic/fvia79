@@ -40,8 +40,8 @@ class UserModel extends Authenticatable
     {
         static $lastCandidateInt = 0;
 
-        $baseEpoch = 1767225600; // Jan 1 2026 UTC
-        $diff = max(0, (int) ((microtime(true) - $baseEpoch) * 10));
+        $baseEpoch = 1767225600;
+        $diff = max(0, time() - $baseEpoch);
         $candidateInt = 10000000 + $diff;
 
         if ($candidateInt <= $lastCandidateInt) {
