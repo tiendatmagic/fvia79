@@ -2058,6 +2058,18 @@
   4. **`language.service.ts`**: Bổ sung key dịch `status.inactive` ('Tắt / Vô hiệu' / 'Inactive') và `status.pending` ('Chờ xử lý' / 'Pending') cho cả tiếng Việt và tiếng Anh, loại bỏ khai báo duplicate.
   5. **Xác minh**: `php artisan test` vượt qua 47/47 tests, `npm run build` biên dịch thành công 100%.
 
+## [2026-07-22] Sửa nhãn hiển thị "SẢN PHẨM" thay vì "DANH MỤC SẢN PHẨM" tại trang Quản lý kho hàng
+- **Yêu cầu & Quy tắc nghiệp vụ:**
+  1. Tại trang Quản lý kho hàng (`/admin/inventory`) và các Modal Import / Edit kho hàng, danh sách lựa chọn trong dropdown là các **Sản phẩm cụ thể** (ví dụ: `BM50$ Ngâm`, `Full Via Limit 200$`), không phải là **Danh mục sản phẩm** (như `Tài khoản FB`, `Mã giảm giá`).
+  2. Do đó nhãn tiêu đề của ô filter và ô chọn trong Modal phải hiển thị là **"SẢN PHẨM"** (hoặc option "Chọn sản phẩm"), tránh gây hiểu nhầm với "DANH MỤC SẢN PHẨM".
+- **Thực hiện khắc phục & Cập nhật:**
+  1. **`language.service.ts`**: Bổ sung key dịch `'common.product': 'Sản phẩm'` (EN: `'Product'`) và `'modal.select_product': 'Chọn sản phẩm'` (EN: `'Select Product'`).
+  2. **`inventory.component.html` & `inventory.component.ts`**: Đổi nhãn bộ lọc thành `'common.product'` ("SẢN PHẨM") và option mặc định thành `'modal.select_product'` ("Chọn sản phẩm").
+  3. **`import-inventory-modal.component.html` & `import-inventory-modal.component.ts`**: Đổi nhãn trường thành `'common.product'` và option mặc định thành `'modal.select_product'`.
+  4. **`edit-inventory-modal.component.html`**: Đổi nhãn trường thành `'common.product'`.
+  5. **Xác minh**: Chạy `npm run build` biên dịch Angular thành công 100%.
+
+
 
 
 

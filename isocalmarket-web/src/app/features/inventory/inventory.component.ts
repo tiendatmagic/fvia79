@@ -87,7 +87,7 @@ export class InventoryComponent implements OnInit {
       label: p.name,
       value: String(p.id)
     }));
-    return [{ label: this.lang.translate('modal.product_category'), value: '' }, ...options];
+    return [{ label: this.lang.translate('modal.select_product'), value: '' }, ...options];
   }
 
   public get productFilterOptions() {

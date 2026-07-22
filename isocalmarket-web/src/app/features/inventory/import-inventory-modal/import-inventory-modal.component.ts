@@ -53,7 +53,7 @@ export class ImportInventoryModalComponent implements OnInit {
         label: p.name,
         value: String(p.id)
       }));
-      this.productOptions = [{ label: this.lang.translate('modal.product_category'), value: '' }, ...options];
+      this.productOptions = [{ label: this.lang.translate('modal.select_product'), value: '' }, ...options];
     }
 
     if (this.productOptions.length <= 1) {
@@ -63,7 +63,7 @@ export class ImportInventoryModalComponent implements OnInit {
             label: p.name,
             value: String(p.id)
           }));
-          this.productOptions = [{ label: this.lang.translate('modal.product_category'), value: '' }, ...list];
+          this.productOptions = [{ label: this.lang.translate('modal.select_product'), value: '' }, ...list];
           if (this.importProductId) {
             this.onProductSelect(this.importProductId);
           }
