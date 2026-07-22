@@ -169,6 +169,43 @@ export class AdminUsersComponent implements OnInit {
     });
   }
 
+  public toggleUserStatus(user: any) {
+    const targetStatus = user.status === 'active' ? 'banned' : 'active';
+    const isLocking = targetStatus === 'banned';
+
+    const ref = this.modalService.confirm({
+      title: isLocking
+        ? this.lang.translate('modal.lock_user_title')
+        : this.lang.translate('modal.unlock_user_title'),
+      descriptionHtml: isLocking
+        ? `${this.lang.translate('modal.lock_user_desc_prefix')} <strong>${user.name || user.username}</strong> (@${user.username})${this.lang.translate('modal.lock_user_desc_suffix')}`
+        : `${this.lang.translate('modal.unlock_user_desc_prefix')} <strong>${user.name || user.username}</strong> (@${user.username})${this.lang.translate('modal.unlock_user_desc_suffix')}`,
+      confirmText: isLocking
+        ? this.lang.translate('modal.lock_user_confirm')
+        : this.lang.translate('modal.unlock_user_confirm'),
+      cancelText: this.lang.translate('common.cancel'),
+      variant: isLocking ? 'danger' : 'info'
+    });
+
+    ref.afterClosed$.subscribe((confirmed: any) => {
+      if (confirmed) {
+        const updateData = {
+          username: user.username,
+          email: user.email,
+          role: user.role,
+          name: user.name,
+          phone: user.phone,
+          status: targetStatus
+        };
+        this.state.userStore.updateUser(user.id, updateData).subscribe((res) => {
+          if (res !== null) {
+            this.fetchUsers(this.currentPage());
+          }
+        });
+      }
+    });
+  }
+
   public deleteUser(user: any) {
     const ref = this.modalService.confirm({
       title: this.lang.translate('modal.delete_user_title'),

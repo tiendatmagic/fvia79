@@ -150,37 +150,55 @@
 
     @if (activeTab === 'permissions') {
       <div class="space-y-4 flex-1">
-        <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+        <div class="space-y-1.5">
+          <label
+            class="text-xs font-bold text-slate-400 dark:text-slate-500 uppercase tracking-wider block"
+          >
+            {{ 'user.role' | translate }}
+          </label>
+          <app-custom-select
+            [options]="roleOptions"
+            valueKey="value"
+            labelKey="label"
+            [(value)]="role"
+          />
+        </div>
+
+        @if (isEditMode) {
           <div class="space-y-1.5">
             <label
               class="text-xs font-bold text-slate-400 dark:text-slate-500 uppercase tracking-wider block"
             >
-              {{ 'user.role' | translate }}
+              {{ 'user.status' | translate }}
             </label>
-            <app-custom-select
-              [options]="roleOptions"
-              valueKey="value"
-              labelKey="label"
-              [(value)]="role"
-            />
-          </div>
-
-          @if (isEditMode) {
-            <div class="space-y-1.5">
-              <label
-                class="text-xs font-bold text-slate-400 dark:text-slate-500 uppercase tracking-wider block"
-              >
-                {{ 'user.status' | translate }}
-              </label>
-              <app-custom-select
-                [options]="statusOptions"
-                valueKey="value"
-                labelKey="label"
-                [(value)]="status"
+            <div
+              class="p-4 rounded-2xl border transition-all cursor-pointer"
+              [ngClass]="
+                status === 'active'
+                  ? 'bg-emerald-50/60 dark:bg-emerald-950/10 border-emerald-200/40 dark:border-emerald-900/30'
+                  : 'bg-rose-50/60 dark:bg-rose-950/10 border-rose-200/40 dark:border-rose-900/30'
+              "
+              (click)="onStatusSwitchClick()"
+            >
+              <app-custom-switch
+                class="pointer-events-none"
+                [checked]="status === 'active'"
+                [disabled]="isConfirming"
+                [label]="
+                  status === 'active'
+                    ? ('status.active' | translate)
+                    : ('status.blocked' | translate)
+                "
+                [description]="
+                  status === 'active'
+                    ? ('user.status_active_desc' | translate)
+                    : ('user.status_blocked_desc' | translate)
+                "
+                type="full"
               />
             </div>
-          }
-        </div>
+          </div>
+        }
 
         @if (isEditMode) {
           <div

@@ -232,6 +232,34 @@ export class UserFormModalComponent implements OnInit {
     this.onToggle2Fa(!this.google2fa_enabled);
   }
 
+  public onStatusSwitchClick() {
+    if (this.isConfirming) return;
+
+    const targetStatus = this.status === 'active' ? 'banned' : 'active';
+    const isLocking = targetStatus === 'banned';
+
+    this.isConfirming = true;
+    this.modalService.confirm({
+      title: isLocking
+        ? this.lang.translate('modal.lock_user_title')
+        : this.lang.translate('modal.unlock_user_title'),
+      descriptionHtml: isLocking
+        ? `${this.lang.translate('modal.lock_user_desc_prefix')} <strong>${this.email || this.username}</strong>${this.lang.translate('modal.lock_user_desc_suffix')}`
+        : `${this.lang.translate('modal.unlock_user_desc_prefix')} <strong>${this.email || this.username}</strong>${this.lang.translate('modal.unlock_user_desc_suffix')}`,
+      confirmText: isLocking
+        ? this.lang.translate('modal.lock_user_confirm')
+        : this.lang.translate('modal.unlock_user_confirm'),
+      cancelText: this.lang.translate('common.cancel'),
+      variant: isLocking ? 'danger' : 'info'
+    }).afterClosed$.subscribe((confirmed) => {
+      this.isConfirming = false;
+      if (confirmed) {
+        this.status = targetStatus;
+        this.cdr.detectChanges();
+      }
+    });
+  }
+
   public toggleSecretVisibility() {
     this.isSecretVisible = !this.isSecretVisible;
   }

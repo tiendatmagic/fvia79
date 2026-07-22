@@ -1,6 +1,9 @@
 # Lịch sử Yêu cầu & Quy trình Làm việc (Isocalmarket)
 
 ## ⛔ QUY TẮC BẮT BUỘC (MANDATORY RULES)
+# Lịch sử Yêu cầu & Quy trình Làm việc (Isocalmarket)
+
+## ⛔ QUY TẮC BẮT BUỘC (MANDATORY RULES)
 
 > **TUYỆT ĐỐI KHÔNG được chạy lệnh `php artisan migrate:fresh --seed`** vì lệnh này sẽ **XÓA TOÀN BỘ DỮ LIỆU** hiện có trong database. Chỉ được dùng trong môi trường dev sạch hoàn toàn.
 >
@@ -9,6 +12,14 @@
 >
 > Khi cần seed dữ liệu cho một seeder cụ thể, chỉ dùng:
 > - `php artisan db:seed --class=TenSeederClass` — chạy đúng 1 seeder.
+
+- **[CHUYỂN CHỌN TRẠNG THÁI TÀI KHOẢN SANG SWITCH & THÊM NÚT KHÓA/MỞ KHÓA BẢNG TÀI KHOẢN]**:
+  - Đã chuyển dropdown lựa chọn Trạng thái tài khoản (`statusOptions`) trong `UserFormModalComponent` (`user-form-modal.component.html`) thành công tắc `app-custom-switch` (Bật = Hoạt động, Tắt = Bị khóa / Bị ban).
+  - Tích hợp Modal xác nhận (`modalService.confirm`) khi người dùng gạt công tắc switch chuyển trạng thái tài khoản trong modal.
+  - Bổ sung nút **Khóa** (màu hổ phách / danger với icon khóa) và **Mở khóa** (màu xanh lá với icon mở khóa) tại cột hành động trong danh sách người dùng (`AdminUsersComponent`), nằm ngay trước nút `+ Cộng / Trừ Số Dư`.
+  - Tích hợp Modal xác nhận với thông tin chi tiết tên thành viên (`name`), username (`@username`) và cảnh báo tác động trước khi thực hiện hành động khóa/mở khóa tài khoản.
+  - Thêm đầy đủ từ khóa dịch trong `LanguageService` cho cả tiếng Việt và tiếng Anh.
+  - Đã biên dịch Angular `npm run build` và kiểm tra backend tests `php artisan test` vượt qua 50/50 test cases thành công 100%.
 
 - **[THÊM CHỨC NĂNG THU HỒI NẠP TIỀN ĐƠN LẺ & HÀNG LOẠT (REVOKE DEPOSITS)]**:
   - Triển khai thành công tính năng Thu hồi số tiền đã nạp cho hóa đơn `completed` (cả đơn lẻ và tích chọn hàng loạt nhiều hóa đơn của nhiều người dùng khác nhau).

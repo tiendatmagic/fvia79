@@ -230,6 +230,39 @@
 
       <ng-template appTableCell="actions" let-row="row">
         <div class="flex items-center justify-end gap-2 whitespace-nowrap">
+          @if (row.status === 'active') {
+            <button
+              (click)="toggleUserStatus(row)"
+              class="text-xs font-bold px-3 py-1.5 rounded-lg border border-amber-500/20 dark:border-amber-500/30 hover:bg-amber-100 dark:hover:bg-amber-950/40 text-amber-700 dark:text-amber-400 bg-amber-50 dark:bg-amber-950/20 hover:scale-105 active:scale-95 transition-all cursor-pointer flex items-center gap-1 shrink-0"
+              [appTooltip]="'admin.lock_user' | translate"
+            >
+              <svg class="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                  stroke-width="2"
+                  d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z"
+                />
+              </svg>
+              <span>{{ 'admin.lock_action_short' | translate }}</span>
+            </button>
+          } @else {
+            <button
+              (click)="toggleUserStatus(row)"
+              class="text-xs font-bold px-3 py-1.5 rounded-lg border border-emerald-500/20 dark:border-emerald-500/30 hover:bg-emerald-100 dark:hover:bg-emerald-950/40 text-emerald-700 dark:text-emerald-400 bg-emerald-50 dark:bg-emerald-950/20 hover:scale-105 active:scale-95 transition-all cursor-pointer flex items-center gap-1 shrink-0"
+              [appTooltip]="'admin.unlock_user' | translate"
+            >
+              <svg class="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                  stroke-width="2"
+                  d="M8 11V7a4 4 0 118 0m-4 8v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2z"
+                />
+              </svg>
+              <span>{{ 'admin.unlock_action_short' | translate }}</span>
+            </button>
+          }
           <button
             (click)="openAdjustBalanceModal(row)"
             class="text-xs font-bold px-3 py-1.5 rounded-lg border border-teal-500/20 dark:border-teal-500/30 hover:bg-teal-100 dark:hover:bg-teal-950/40 text-teal-700 dark:text-teal-400 bg-teal-50 dark:bg-teal-950/20 hover:scale-105 active:scale-95 transition-all cursor-pointer flex items-center gap-1 shrink-0"
