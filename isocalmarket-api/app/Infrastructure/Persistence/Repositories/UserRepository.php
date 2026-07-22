@@ -9,6 +9,8 @@ use App\Infrastructure\Persistence\Mappers\UserMapper;
 
 class UserRepository implements UserRepositoryInterface
 {
+    use AccentInsensitiveSearchTrait;
+
     public function findById(string $id): ?User
     {
         $model = UserModel::find($id);
@@ -59,12 +61,19 @@ class UserRepository implements UserRepositoryInterface
     {
         $query = UserModel::query();
         if ($search) {
-            $query->where(function ($q) use ($search) {
-                $q->where('name', 'like', "%{$search}%")
+            $normalized = $this->normalizeSearchKeyword($search);
+            $query->where(function ($q) use ($search, $normalized) {
+                $q->where('id', $search)
+                  ->orWhere('uid', $search)
+                  ->orWhere('username', $search)
+                  ->orWhere('email', $search)
+                  ->orWhere('normalized_name', 'like', "%{$normalized}%")
+                  ->orWhere('name', 'like', "%{$search}%")
                   ->orWhere('email', 'like', "%{$search}%")
                   ->orWhere('phone', 'like', "%{$search}%")
                   ->orWhere('uid', 'like', "%{$search}%")
-                  ->orWhere('username', 'like', "%{$search}%");
+                  ->orWhere('username', 'like', "%{$search}%")
+                  ->orWhere('id', 'like', "%{$search}%");
             });
         }
         if ($role) {

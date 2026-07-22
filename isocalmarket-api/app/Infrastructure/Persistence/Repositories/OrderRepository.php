@@ -108,7 +108,10 @@ class OrderRepository implements OrderRepositoryInterface
                     $this->applyAccentInsensitiveSearch($qu, 'email', $search);
                     $qu->orWhere(function ($qu2) use ($search) {
                         $this->applyAccentInsensitiveSearch($qu2, 'name', $search);
-                    });
+                    })
+                    ->orWhere('username', 'like', "%{$search}%")
+                    ->orWhere('uid', 'like', "%{$search}%")
+                    ->orWhere('id', 'like', "%{$search}%");
                 });
             });
         }

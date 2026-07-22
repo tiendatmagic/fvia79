@@ -92,7 +92,9 @@ class DepositRepository implements DepositRepositoryInterface
                     ->orWhereHas('user', function ($uq) use ($search) {
                         $uq->where('name', 'like', "%{$search}%")
                             ->orWhere('email', 'like', "%{$search}%")
-                            ->orWhere('username', 'like', "%{$search}%");
+                            ->orWhere('username', 'like', "%{$search}%")
+                            ->orWhere('uid', 'like', "%{$search}%")
+                            ->orWhere('id', 'like', "%{$search}%");
                     });
             });
         }
