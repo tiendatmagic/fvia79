@@ -44,7 +44,11 @@
                   'justify-end': col.align === 'right',
                 }"
               >
-                <span>{{ col.label }}</span>
+                @if (getTemplate(col.key + '_header'); as headerTemplate) {
+                  <ng-container *ngTemplateOutlet="headerTemplate; context: { col: col }"></ng-container>
+                } @else {
+                  <span>{{ col.label }}</span>
+                }
                 @if (col.sortable) {
                   <span
                     class="inline-flex items-center text-slate-400 dark:text-slate-500 w-3.5 h-3.5 transition-all"

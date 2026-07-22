@@ -10,6 +10,20 @@
 > Khi cần seed dữ liệu cho một seeder cụ thể, chỉ dùng:
 > - `php artisan db:seed --class=TenSeederClass` — chạy đúng 1 seeder.
 
+- **[THÊM CHỨC NĂNG THU HỒI NẠP TIỀN ĐƠN LẺ & HÀNG LOẠT (REVOKE DEPOSITS)]**:
+  - Triển khai thành công tính năng Thu hồi số tiền đã nạp cho hóa đơn `completed` (cả đơn lẻ và tích chọn hàng loạt nhiều hóa đơn của nhiều người dùng khác nhau).
+  - **Đảm bảo tuyệt đối không để tài khoản user bị âm số dư**:
+    - Thu hồi đơn lẻ: Kiểm tra `user.balance >= deposit.amount_usdt`. Nếu số dư không đủ, hệ thống chặn và báo lỗi rõ ràng.
+    - Thu hồi hàng loạt: Gom nhóm các hóa đơn theo `user_id`, kiểm tra tổng số tiền cần thu hồi với số dư người dùng. Chỉ thu hồi khi số dư >= tổng tiền cần thu hồi, tự động bỏ qua và báo cáo chi tiết các hóa đơn không đủ điều kiện.
+  - Backend (Laravel DDD):
+    - Thêm migration `2026_07_23_000001_add_revoked_status_to_deposits_table.php` và cập nhật cột status hỗ trợ `'revoked'`.
+    - Thêm `revokeDepositManually()` và `bulkRevokeDepositsManually()` trong `DepositService.php` bọc DB Transaction & locking.
+    - Khai báo API endpoints `POST /v1/admin/deposits/{id}/revoke` và `POST /v1/admin/deposits/bulk-revoke` trong `AdminDepositController.php` & `routes/api.php`.
+    - Viết test suite đầy đủ cho 2 tính năng, đã chạy `php artisan test` vượt qua 50/50 test cases.
+  - Frontend (Angular 18):
+    - Cập nhật `TableComponent` hỗ trợ custom header template (cho phép checkbox chọn tất cả trên header).
+    - Cập nhật `AdminDepositStore`, `AdminDepositsComponent` & template: Thêm cột checkbox chọn dòng, nút **Thu hồi** cho đơn `completed`, nút **Thu hồi đã chọn (X đơn)** trên thanh công cụ, cập nhật badge/filter cho trạng thái `revoked`, và tích hợp confirm modal an toàn.
+
 ## Yêu cầu ban đầu
 - Xóa bỏ tất cả các page/feature demo như `home`, `about`, `contact`...
 - Đọc và tuân thủ các quy tắc trong `design.md`, `ARCHITECTURE.md` và toàn bộ các tệp tại thư mục `working/`.

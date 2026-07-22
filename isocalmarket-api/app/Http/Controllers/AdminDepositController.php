@@ -131,6 +131,71 @@ class AdminDepositController extends Controller
     }
 
     /**
+     * POST /api/v1/admin/deposits/{id}/revoke
+     * Thu hồi thủ công số tiền nạp từ một đơn nạp tiền đã duyệt (completed)
+     */
+    public function revoke(Request $request, string $id): JsonResponse
+    {
+        $request->validate([
+            'reason' => 'nullable|string|max:500',
+        ]);
+
+        try {
+            $adminId = Auth::id();
+            $reason = $request->input('reason');
+            $success = $this->depositService->revokeDepositManually($id, $adminId, $reason);
+
+            if ($success) {
+                return response()->json([
+                    'message' => 'Deposit invoice revoked successfully. User balance has been deducted.'
+                ]);
+            }
+
+            return response()->json([
+                'message' => 'Failed to revoke deposit invoice.'
+            ], 400);
+        } catch (\RuntimeException $e) {
+            return response()->json([
+                'message' => $e->getMessage()
+            ], 400);
+        } catch (\Throwable $e) {
+            return $this->serverError($e, 'Failed to revoke deposit.');
+        }
+    }
+
+    /**
+     * POST /api/v1/admin/deposits/bulk-revoke
+     * Thu hồi thủ công số tiền nạp hàng loạt cho nhiều đơn nạp tiền đã chọn
+     */
+    public function bulkRevoke(Request $request): JsonResponse
+    {
+        $request->validate([
+            'ids' => 'required|array|min:1',
+            'ids.*' => 'required|string',
+            'reason' => 'nullable|string|max:500',
+        ]);
+
+        try {
+            $adminId = Auth::id();
+            $ids = $request->input('ids');
+            $reason = $request->input('reason');
+
+            $result = $this->depositService->bulkRevokeDepositsManually($ids, $adminId, $reason);
+
+            return response()->json([
+                'data' => $result,
+                'message' => $result['message']
+            ]);
+        } catch (\RuntimeException $e) {
+            return response()->json([
+                'message' => $e->getMessage()
+            ], 400);
+        } catch (\Throwable $e) {
+            return $this->serverError($e, 'Failed to perform bulk revoke deposits.');
+        }
+    }
+
+    /**
      * Format domain model sang JSON thống nhất
      */
     private function formatDeposit($deposit): array

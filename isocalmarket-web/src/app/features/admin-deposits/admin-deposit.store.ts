@@ -139,4 +139,37 @@ export class AdminDepositStore {
       finalize(() => this.loading.set(false))
     );
   }
+
+  public revokeDeposit(id: string, reason?: string): Observable<any> {
+    this.loading.set(true);
+    return this.api.post<any>(`v1/admin/deposits/${id}/revoke`, { reason }).pipe(
+      tap((res) => {
+        this.toast.showToast(this.lang.translate('toast.revoke_success'), 'success');
+        this.clearCache();
+      }),
+      catchError((err) => {
+        const errorMsg = err.error?.message || this.lang.translate('toast.revoke_failed');
+        this.toast.showToast(errorMsg, 'error');
+        return of(null);
+      }),
+      finalize(() => this.loading.set(false))
+    );
+  }
+
+  public bulkRevokeDeposits(ids: string[], reason?: string): Observable<any> {
+    this.loading.set(true);
+    return this.api.post<any>('v1/admin/deposits/bulk-revoke', { ids, reason }).pipe(
+      tap((res) => {
+        const count = res?.data?.success_count || ids.length;
+        this.toast.showToast(this.lang.translate('toast.bulk_revoke_success', { count }), 'success');
+        this.clearCache();
+      }),
+      catchError((err) => {
+        const errorMsg = err.error?.message || this.lang.translate('toast.bulk_revoke_failed');
+        this.toast.showToast(errorMsg, 'error');
+        return of(null);
+      }),
+      finalize(() => this.loading.set(false))
+    );
+  }
 }

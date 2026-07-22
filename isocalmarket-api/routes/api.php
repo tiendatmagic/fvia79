@@ -103,8 +103,10 @@ Route::prefix('v1')->group(function () {
             Route::delete('/inventory/items/{id}', ['App\Http\Controllers\InventoryController', 'destroy']);
 
             Route::get('/admin/deposits', ['App\Http\Controllers\AdminDepositController', 'index']);
+            Route::post('/admin/deposits/bulk-revoke', ['App\Http\Controllers\AdminDepositController', 'bulkRevoke']);
             Route::post('/admin/deposits/{id}/approve', ['App\Http\Controllers\AdminDepositController', 'approve']);
             Route::post('/admin/deposits/{id}/reject', ['App\Http\Controllers\AdminDepositController', 'reject']);
+            Route::post('/admin/deposits/{id}/revoke', ['App\Http\Controllers\AdminDepositController', 'revoke']);
         });
     });
 });

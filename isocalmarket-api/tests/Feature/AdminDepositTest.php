@@ -353,4 +353,102 @@ class AdminDepositTest extends TestCase
             'balance' => 0.0
         ]);
     }
+
+    public function test_admin_can_revoke_completed_deposit_and_deduct_balance(): void
+    {
+        $this->normalUser->update(['balance' => 50.0]);
+
+        $deposit = DepositModel::create([
+            'id' => '019f6699-e6d2-70f2-89bd-d3b93946a790',
+            'user_id' => $this->normalUser->id,
+            'code' => 'REV001',
+            'amount_usdt' => 20.0,
+            'amount_to_pay' => 20.0001,
+            'amount_vnd' => 500000.0,
+            'status' => 'completed',
+            'payment_method' => 'bep20'
+        ]);
+
+        $response = $this->withHeaders($this->getHeadersForUser($this->adminUser))
+            ->postJson("/api/v1/admin/deposits/{$deposit->id}/revoke", [
+                'reason' => 'Duplicate topup mistake'
+            ]);
+
+        $response->assertStatus(200);
+
+        $this->assertDatabaseHas('deposits', [
+            'id' => $deposit->id,
+            'status' => 'revoked'
+        ]);
+
+        $this->assertEquals(30.0, (float) $this->normalUser->fresh()->balance);
+    }
+
+    public function test_admin_cannot_revoke_deposit_if_user_balance_is_insufficient(): void
+    {
+        $this->normalUser->update(['balance' => 5.0]);
+
+        $deposit = DepositModel::create([
+            'id' => '019f6699-e6d2-70f2-89bd-d3b93946a791',
+            'user_id' => $this->normalUser->id,
+            'code' => 'REV002',
+            'amount_usdt' => 20.0,
+            'amount_to_pay' => 20.0001,
+            'amount_vnd' => 500000.0,
+            'status' => 'completed',
+            'payment_method' => 'bep20'
+        ]);
+
+        $response = $this->withHeaders($this->getHeadersForUser($this->adminUser))
+            ->postJson("/api/v1/admin/deposits/{$deposit->id}/revoke");
+
+        $response->assertStatus(400);
+
+        $this->assertDatabaseHas('deposits', [
+            'id' => $deposit->id,
+            'status' => 'completed'
+        ]);
+
+        $this->assertEquals(5.0, (float) $this->normalUser->fresh()->balance);
+    }
+
+    public function test_admin_can_bulk_revoke_deposits(): void
+    {
+        $this->normalUser->update(['balance' => 100.0]);
+
+        $d1 = DepositModel::create([
+            'id' => '019f6699-e6d2-70f2-89bd-d3b93946a792',
+            'user_id' => $this->normalUser->id,
+            'code' => 'BULK01',
+            'amount_usdt' => 30.0,
+            'amount_to_pay' => 30.0001,
+            'amount_vnd' => 750000.0,
+            'status' => 'completed',
+            'payment_method' => 'bep20'
+        ]);
+
+        $d2 = DepositModel::create([
+            'id' => '019f6699-e6d2-70f2-89bd-d3b93946a793',
+            'user_id' => $this->normalUser->id,
+            'code' => 'BULK02',
+            'amount_usdt' => 20.0,
+            'amount_to_pay' => 20.0001,
+            'amount_vnd' => 500000.0,
+            'status' => 'completed',
+            'payment_method' => 'binance'
+        ]);
+
+        $response = $this->withHeaders($this->getHeadersForUser($this->adminUser))
+            ->postJson('/api/v1/admin/deposits/bulk-revoke', [
+                'ids' => [$d1->id, $d2->id],
+                'reason' => 'Bulk mistake correction'
+            ]);
+
+        $response->assertStatus(200);
+        $response->assertJsonPath('data.success_count', 2);
+
+        $this->assertEquals('revoked', $d1->fresh()->status);
+        $this->assertEquals('revoked', $d2->fresh()->status);
+        $this->assertEquals(50.0, (float) $this->normalUser->fresh()->balance);
+    }
 }

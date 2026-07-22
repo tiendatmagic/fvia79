@@ -559,6 +559,18 @@ export const TRANSLATIONS: Record<SupportedLanguage, Record<string, string>> = {
     'status.pending_payment': 'Pending Payment',
     'status.expired': 'Expired',
     'status.failed': 'Failed',
+    'status.revoked': 'Revoked',
+    'deposit.revoke': 'Revoke',
+    'deposit.revoke_tooltip': 'Revoke credited amount from user balance',
+    'deposit.bulk_revoke': 'Revoke Selected',
+    'deposit.revoke_confirm_title': 'Revoke Deposit Invoice',
+    'deposit.revoke_confirm_desc': 'Are you sure you want to revoke deposit invoice #{{code}} of user "{{userName}}"? The amount of {{amount}} USDT will be deducted from the user balance.',
+    'deposit.bulk_revoke_confirm_title': 'Bulk Revoke Deposit Invoices',
+    'deposit.bulk_revoke_confirm_desc': 'Are you sure you want to revoke {{count}} selected deposit invoice(s) totaling {{amount}} USDT? User balance(s) will be deducted accordingly.',
+    'toast.revoke_success': 'Deposit invoice revoked successfully!',
+    'toast.revoke_failed': 'Failed to revoke deposit invoice!',
+    'toast.bulk_revoke_success': 'Processed revocation for {{count}} deposit invoice(s).',
+    'toast.bulk_revoke_failed': 'Failed to perform bulk revocation!',
     'toast.copied_text': 'Successfully copied',
     'toast.copy_error_text': 'Failed to copy',
     'modal.cancel_deposit_title': 'Cancel Deposit Invoice',
@@ -1636,10 +1648,22 @@ export const TRANSLATIONS: Record<SupportedLanguage, Record<string, string>> = {
     'deposit.continue_payment': 'Tiếp tục thanh toán',
     'deposit.pay': 'Thanh toán',
     'deposit.item_name': 'lệnh nạp',
-    'status.completed': 'Hoạt động thành công',
+    'status.completed': 'Hoàn thành',
     'status.pending_payment': 'Chờ thanh toán',
     'status.expired': 'Đã hết hạn',
     'status.failed': 'Thất bại',
+    'status.revoked': 'Đã thu hồi',
+    'deposit.revoke': 'Thu hồi',
+    'deposit.revoke_tooltip': 'Thu hồi số tiền đã cộng từ số dư người dùng',
+    'deposit.bulk_revoke': 'Thu hồi đã chọn',
+    'deposit.revoke_confirm_title': 'Thu hồi hóa đơn nạp tiền',
+    'deposit.revoke_confirm_desc': 'Bạn có chắc chắn muốn thu hồi số tiền {{amount}} USDT từ hóa đơn nạp #{{code}} của người dùng "{{userName}}"? Số tiền này sẽ bị trừ khỏi số dư của người dùng.',
+    'deposit.bulk_revoke_confirm_title': 'Thu hồi nạp tiền hàng loạt',
+    'deposit.bulk_revoke_confirm_desc': 'Bạn có chắc chắn muốn thu hồi {{count}} hóa đơn nạp tiền đã chọn với tổng số tiền {{amount}} USDT? Hệ thống sẽ kiểm tra và trừ tiền từ số dư từng người dùng.',
+    'toast.revoke_success': 'Thu hồi hóa đơn nạp tiền thành công!',
+    'toast.revoke_failed': 'Không thể thu hồi hóa đơn nạp tiền!',
+    'toast.bulk_revoke_success': 'Đã xử lý thu hồi thành công {{count}} hóa đơn nạp tiền.',
+    'toast.bulk_revoke_failed': 'Không thể thu hồi các hóa đơn nạp tiền đã chọn!',
     'modal.cancel_deposit_title': 'Xác nhận hủy lệnh nạp tiền',
     'modal.cancel_deposit_desc': 'Bạn có chắc chắn muốn hủy lệnh nạp tiền này không? Hành động này không thể hoàn tác.',
     'modal.cancel_deposit_warning': 'Lưu ý quan trọng: Nếu bạn đã thực hiện chuyển khoản rồi, vui lòng KHÔNG hủy lệnh nạp này! BOT sẽ không thể tự động đối soát cộng tiền khi lệnh đã bị hủy.',
@@ -2252,7 +2276,7 @@ export class LanguageService {
 
     if (params) {
       Object.keys(params).forEach(param => {
-        text = text.replace(new RegExp(`{{\\s*${param}\\s*}}`, 'g'), params[param]);
+        text = text.replace(new RegExp(`{+\\s*${param}\\s*}+`, 'g'), params[param]);
       });
     }
 

@@ -581,6 +581,129 @@ class DepositService
             return true;
         });
     }
+
+    public function revokeDepositManually(string $id, string $adminId, ?string $reason = null): bool
+    {
+        return \Illuminate\Support\Facades\DB::transaction(function () use ($id, $adminId, $reason) {
+            $depositModel = \App\Infrastructure\Persistence\Eloquent\DepositModel::where('id', $id)
+                ->lockForUpdate()
+                ->first();
+
+            if (!$depositModel) {
+                throw new \RuntimeException("Deposit invoice not found.");
+            }
+
+            if ($depositModel->status !== 'completed') {
+                throw new \RuntimeException("Only completed deposit invoices can be revoked.");
+            }
+
+            $userModel = \App\Infrastructure\Persistence\Eloquent\UserModel::where('id', $depositModel->user_id)
+                ->lockForUpdate()
+                ->first();
+
+            if (!$userModel) {
+                throw new \RuntimeException("User not found for this deposit.");
+            }
+
+            $amountToRevoke = (float) $depositModel->amount_usdt;
+            $currentBalance = (float) $userModel->balance;
+
+            if ($currentBalance < $amountToRevoke) {
+                throw new \RuntimeException("Cannot revoke deposit invoice #{$depositModel->code}. User current balance ({$currentBalance} USDT) is less than the deposit amount ({$amountToRevoke} USDT).");
+            }
+
+            $userModel->balance = round($currentBalance - $amountToRevoke, 4);
+            $userModel->save();
+
+            $depositModel->status = 'revoked';
+            $depositModel->save();
+
+            Log::info("Admin [{$adminId}] manually revoked Deposit ID [{$id}]: Code={$depositModel->code}, Amount={$amountToRevoke} USDT from User ID [{$userModel->id}]. Reason: " . ($reason ?: 'N/A'));
+
+            return true;
+        });
+    }
+
+    public function bulkRevokeDepositsManually(array $ids, string $adminId, ?string $reason = null): array
+    {
+        if (empty($ids)) {
+            throw new \RuntimeException("No deposit invoice IDs selected for bulk revocation.");
+        }
+
+        return \Illuminate\Support\Facades\DB::transaction(function () use ($ids, $adminId, $reason) {
+            $depositModels = \App\Infrastructure\Persistence\Eloquent\DepositModel::whereIn('id', $ids)
+                ->lockForUpdate()
+                ->get();
+
+            $successCount = 0;
+            $failedCount = 0;
+            $failedDetails = [];
+
+            $completedDeposits = $depositModels->filter(fn($d) => $d->status === 'completed');
+
+            $unmatchedOrInvalid = array_diff($ids, $completedDeposits->pluck('id')->toArray());
+            foreach ($unmatchedOrInvalid as $invalidId) {
+                $failedCount++;
+                $failedDetails[] = [
+                    'id' => $invalidId,
+                    'reason' => 'Deposit invoice not found or not in completed status.'
+                ];
+            }
+
+            $groupedByUser = $completedDeposits->groupBy('user_id');
+
+            foreach ($groupedByUser as $userId => $userDeposits) {
+                $userModel = \App\Infrastructure\Persistence\Eloquent\UserModel::where('id', $userId)
+                    ->lockForUpdate()
+                    ->first();
+
+                if (!$userModel) {
+                    foreach ($userDeposits as $d) {
+                        $failedCount++;
+                        $failedDetails[] = [
+                            'id' => $d->id,
+                            'code' => $d->code,
+                            'reason' => 'User account not found.'
+                        ];
+                    }
+                    continue;
+                }
+
+                $totalRevokeAmount = (float) $userDeposits->sum('amount_usdt');
+                $currentBalance = (float) $userModel->balance;
+
+                if ($currentBalance < $totalRevokeAmount) {
+                    foreach ($userDeposits as $d) {
+                        $failedCount++;
+                        $failedDetails[] = [
+                            'id' => $d->id,
+                            'code' => $d->code,
+                            'reason' => "User current balance ({$currentBalance} USDT) is insufficient to revoke selected total ({$totalRevokeAmount} USDT)."
+                        ];
+                    }
+                    continue;
+                }
+
+                $userModel->balance = round($currentBalance - $totalRevokeAmount, 4);
+                $userModel->save();
+
+                foreach ($userDeposits as $d) {
+                    $d->status = 'revoked';
+                    $d->save();
+                    $successCount++;
+
+                    Log::info("Admin [{$adminId}] bulk revoked Deposit ID [{$d->id}]: Code={$d->code}, Amount={$d->amount_usdt} USDT from User ID [{$userId}]. Reason: " . ($reason ?: 'Bulk action'));
+                }
+            }
+
+            return [
+                'success_count' => $successCount,
+                'failed_count' => $failedCount,
+                'failed_details' => $failedDetails,
+                'message' => "Successfully revoked {$successCount} deposit(s)." . ($failedCount > 0 ? " {$failedCount} deposit(s) failed or skipped due to insufficient balance or invalid status." : "")
+            ];
+        });
+    }
     private function creditDepositToUser(Deposit $deposit): void
     {
         $userModel = \App\Infrastructure\Persistence\Eloquent\UserModel::where('id', $deposit->getUserId())

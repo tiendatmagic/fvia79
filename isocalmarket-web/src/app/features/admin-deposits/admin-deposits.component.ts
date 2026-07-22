@@ -15,6 +15,7 @@ import { PaginationComponent } from '@shared/components/pagination/pagination.co
 import { CustomSelectComponent } from '@shared/components/custom-select/custom-select.component';
 import { CustomDateTimeRangeComponent, DateTimeRangeValue } from '@shared/components/custom-date-time-range/custom-date-time-range.component';
 import { TableComponent, TableCellDirective, TableColumn } from '@shared/components/table/table.component';
+import { CustomCheckboxComponent } from '@shared/components/custom-checkbox/custom-checkbox.component';
 import { TranslatePipe } from '@shared/pipes/translate.pipe';
 import { AdminDepositStore } from './admin-deposit.store';
 import { ApproveDepositModalComponent } from './approve-deposit-modal/approve-deposit-modal.component';
@@ -37,6 +38,7 @@ import { ApproveDepositModalComponent } from './approve-deposit-modal/approve-de
     CustomDateTimeRangeComponent,
     TableComponent,
     TableCellDirective,
+    CustomCheckboxComponent,
     TranslatePipe
   ],
   templateUrl: './admin-deposits.component.html',
@@ -52,9 +54,12 @@ export class AdminDepositsComponent implements OnInit {
   private readonly modalService = inject(ModalService);
   public readonly lang = inject(LanguageService);
 
+  public readonly selectedIds = signal<Set<string>>(new Set());
+
   public readonly columns = computed<TableColumn[]>(() => {
     this.lang.currentLang();
     return [
+      { key: 'select', label: '', sortable: false, align: 'center', headerClass: 'w-10' },
       { key: 'code', label: this.lang.translate('deposit.code'), sortable: true },
       { key: 'userName', label: this.lang.translate('usr.name'), sortable: true },
       { key: 'amountUsdt', label: this.lang.translate('deposit.amount_usdt'), sortable: true, align: 'right' },
@@ -73,13 +78,55 @@ export class AdminDepositsComponent implements OnInit {
   public readonly selectedMethodFilter = signal<string>('');
   public readonly selectedDateRange = signal<DateTimeRangeValue>({ startDate: '', endDate: '' });
 
+  public get completedDeposits() {
+    return this.depositStore.deposits().filter((d) => d.status === 'completed');
+  }
+
+  public get selectedCompletedDeposits() {
+    const selected = this.selectedIds();
+    return this.depositStore.deposits().filter((d) => selected.has(d.id) && d.status === 'completed');
+  }
+
+  public isAllCompletedSelected() {
+    const completed = this.completedDeposits;
+    if (completed.length === 0) return false;
+    const selected = this.selectedIds();
+    return completed.every((d) => selected.has(d.id));
+  }
+
+  public toggleSelectAllCompleted() {
+    const completed = this.completedDeposits;
+    const selected = new Set(this.selectedIds());
+    if (this.isAllCompletedSelected()) {
+      completed.forEach((d) => selected.delete(d.id));
+    } else {
+      completed.forEach((d) => selected.add(d.id));
+    }
+    this.selectedIds.set(selected);
+  }
+
+  public isSelected(id: string): boolean {
+    return this.selectedIds().has(id);
+  }
+
+  public toggleSelect(id: string) {
+    const selected = new Set(this.selectedIds());
+    if (selected.has(id)) {
+      selected.delete(id);
+    } else {
+      selected.add(id);
+    }
+    this.selectedIds.set(selected);
+  }
+
   public get statusOptions() {
     return [
       { label: this.lang.translate('common.all_status'), value: '' },
       { label: this.lang.translate('status.pending_payment'), value: 'pending_payment' },
       { label: this.lang.translate('status.completed'), value: 'completed' },
       { label: this.lang.translate('status.failed'), value: 'failed' },
-      { label: this.lang.translate('status.expired'), value: 'expired' }
+      { label: this.lang.translate('status.expired'), value: 'expired' },
+      { label: this.lang.translate('status.revoked'), value: 'revoked' }
     ];
   }
 
@@ -100,6 +147,7 @@ export class AdminDepositsComponent implements OnInit {
 
   public fetchDeposits(page: number = 1) {
     this.currentPage.set(page);
+    this.selectedIds.set(new Set());
     this.depositStore.fetchDeposits(
       page,
       this.limit,
@@ -127,6 +175,7 @@ export class AdminDepositsComponent implements OnInit {
       case 'pending_payment': return 'warning';
       case 'failed': return 'danger';
       case 'expired': return 'neutral';
+      case 'revoked': return 'danger';
       default: return 'neutral';
     }
   }
@@ -137,6 +186,7 @@ export class AdminDepositsComponent implements OnInit {
       case 'pending_payment': return this.lang.translate('status.pending_payment');
       case 'failed': return this.lang.translate('status.failed');
       case 'expired': return this.lang.translate('status.expired');
+      case 'revoked': return this.lang.translate('status.revoked');
       default: return status;
     }
   }
@@ -190,4 +240,57 @@ export class AdminDepositsComponent implements OnInit {
       }
     });
   }
+
+  public revokeDeposit(deposit: any) {
+    const ref = this.modalService.confirm({
+      title: this.lang.translate('deposit.revoke_confirm_title'),
+      description: this.lang.translate('deposit.revoke_confirm_desc', {
+        code: deposit.code,
+        userName: deposit.userName || deposit.userEmail,
+        amount: deposit.amountUsdt
+      })
+    });
+
+    ref.afterClosed$.subscribe((confirmed: any) => {
+      if (confirmed) {
+        this.depositStore.revokeDeposit(deposit.id).subscribe((res) => {
+          if (res !== null) {
+            const selected = new Set(this.selectedIds());
+            selected.delete(deposit.id);
+            this.selectedIds.set(selected);
+            this.fetchDeposits(this.currentPage());
+          }
+        });
+      }
+    });
+  }
+
+  public bulkRevokeDeposits() {
+    const selectedList = this.selectedCompletedDeposits;
+    if (selectedList.length === 0) return;
+
+    const totalAmount = selectedList.reduce((sum, d) => sum + (d.amountUsdt || 0), 0);
+    const count = selectedList.length;
+
+    const ref = this.modalService.confirm({
+      title: this.lang.translate('deposit.bulk_revoke_confirm_title'),
+      description: this.lang.translate('deposit.bulk_revoke_confirm_desc', {
+        count: count,
+        amount: totalAmount.toFixed(2)
+      })
+    });
+
+    ref.afterClosed$.subscribe((confirmed: any) => {
+      if (confirmed) {
+        const ids = selectedList.map((d) => d.id);
+        this.depositStore.bulkRevokeDeposits(ids).subscribe((res) => {
+          if (res !== null) {
+            this.selectedIds.set(new Set());
+            this.fetchDeposits(this.currentPage());
+          }
+        });
+      }
+    });
+  }
 }
+

@@ -16,7 +16,7 @@ return new class extends Migration
             $table->decimal('amount_to_pay', 16, 4);
             $table->decimal('amount_vnd', 16, 4);
             $table->string('tx_hash')->nullable()->unique();
-            $table->enum('status', ['pending_payment', 'completed', 'failed', 'expired'])->default('pending_payment');
+            $table->string('status', 32)->default('pending_payment');
             $table->timestamps();
 
             $table->index(['user_id', 'status']);
