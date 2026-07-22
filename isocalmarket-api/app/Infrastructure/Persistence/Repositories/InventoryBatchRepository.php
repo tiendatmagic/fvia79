@@ -14,7 +14,8 @@ class InventoryBatchRepository implements InventoryBatchRepositoryInterface
     public function findActiveBatchesByProductId(string $productId, bool $lock = false): array
     {
         $query = InventoryBatchModel::where('product_id', $productId)
-            ->where('status', 'active')
+            ->where('status', '!=', 'inactive')
+            ->whereRaw('initial_count > sold_count')
             ->orderBy('created_at', 'asc'); // FIFO (First In First Out)
 
         if ($lock) {
@@ -28,7 +29,7 @@ class InventoryBatchRepository implements InventoryBatchRepositoryInterface
     public function countAvailableByProductId(string $productId): int
     {
         return (int) InventoryBatchModel::where('product_id', $productId)
-            ->where('status', 'active')
+            ->where('status', '!=', 'inactive')
             ->selectRaw('SUM(initial_count - sold_count) as total')
             ->value('total') ?? 0;
     }

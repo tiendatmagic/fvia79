@@ -83,6 +83,12 @@ class InventoryService
         $soldCount = $batch->getSoldCount();
         $initialCount = $currentAvailableCount + $soldCount;
 
+        if ($currentAvailableCount > 0 && $status !== 'inactive') {
+            $status = 'active';
+        } elseif ($currentAvailableCount === 0 && $status === 'active') {
+            $status = 'completed';
+        }
+
         $updatedBatch = new InventoryBatch(
             $batch->getId(),
             $productId,

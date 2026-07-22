@@ -6,6 +6,8 @@ import { HttpParams } from '@angular/common/http';
 import { tap, catchError, finalize } from 'rxjs/operators';
 import { of, Subscription, Subject } from 'rxjs';
 
+import { ProductStore } from '../products/product.store';
+
 @Injectable({
   providedIn: 'root'
 })
@@ -13,6 +15,7 @@ export class InventoryStore {
   private readonly api = inject(ApiService);
   private readonly toast = inject(ToastService);
   private readonly lang = inject(LanguageService);
+  private readonly productStore = inject(ProductStore);
  
   private activeFetchItemsSub?: Subscription;
  
@@ -20,6 +23,7 @@ export class InventoryStore {
  
   public clearCache() {
     this.itemsCache.clear();
+    this.productStore.clearCache();
   }
 
   public readonly items = signal<any[]>([]);

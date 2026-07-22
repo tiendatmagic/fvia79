@@ -15,12 +15,10 @@ class ProductRepository implements ProductRepositoryInterface
 
     private function getAvailableCount(ProductModel $model): int
     {
-        $batches = $model->relationLoaded('activeBatches')
-            ? $model->activeBatches
-            : InventoryBatchModel::where('product_id', $model->id)
-                ->where('status', 'active')
-                ->select('id', 'product_id', 'initial_count', 'sold_count', 'status', 'created_at')
-                ->get();
+        $batches = InventoryBatchModel::where('product_id', $model->id)
+            ->where('status', '!=', 'inactive')
+            ->select('id', 'product_id', 'initial_count', 'sold_count', 'status', 'created_at')
+            ->get();
 
         $total = 0;
         foreach ($batches as $batch) {
