@@ -10,7 +10,7 @@ return new class extends Migration
     public function up(): void
     {
         Schema::table('users', function (Blueprint $table) {
-            $table->string('uid', 8)->nullable()->unique()->after('id');
+            $table->string('uid', 32)->nullable()->unique()->after('id');
         });
 
         // Backfill existing users with unique 8-character UIDs

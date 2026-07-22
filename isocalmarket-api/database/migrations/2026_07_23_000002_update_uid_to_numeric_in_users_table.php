@@ -10,7 +10,7 @@ return new class extends Migration
     public function up(): void
     {
         Schema::table('users', function (Blueprint $table) {
-            $table->string('uid', 8)->nullable()->change();
+            $table->string('uid', 32)->nullable()->change();
         });
 
         // Update all existing users with new numeric UIDs

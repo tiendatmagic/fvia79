@@ -404,7 +404,7 @@ class SecurityHardeningTest extends TestCase
         for ($i = 0; $i < 50; $i++) {
             $uid = UserModel::generateUniqueUid();
             $this->assertTrue(ctype_digit($uid), "UID {$uid} must consist of digits only");
-            $this->assertSame(8, strlen($uid), "UID {$uid} must be exactly 8 digits long");
+            $this->assertTrue(strlen($uid) >= 8 && strlen($uid) <= 32, "UID {$uid} length must be between 8 and 32 digits");
             $this->assertNotContains($uid, $uids, "UID {$uid} must be unique");
             $uids[] = $uid;
         }
@@ -419,7 +419,7 @@ class SecurityHardeningTest extends TestCase
 
         $this->assertNotNull($user->uid);
         $this->assertTrue(ctype_digit($user->uid));
-        $this->assertSame(8, strlen($user->uid));
+        $this->assertTrue(strlen($user->uid) >= 8 && strlen($user->uid) <= 32);
     }
 
     private function createAdmin(): UserModel

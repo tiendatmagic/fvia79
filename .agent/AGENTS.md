@@ -13,11 +13,10 @@
 > Khi cần seed dữ liệu cho một seeder cụ thể, chỉ dùng:
 > - `php artisan db:seed --class=TenSeederClass` — chạy đúng 1 seeder.
 
-- **[CHUYỂN MÃ UID NGƯỜI DÙNG SANG DẠNG SỐ 8 CHỮ SỐ CHÍNH XÁC & KHÔNG TRÙNG (8-DIGIT NUMERIC TIMESTAMP UID)]**:
-  - Cập nhật thuật toán tạo UID `UserModel::generateUniqueUid()`: Chuẩn hóa UID thành **chính xác 8 chữ số thuần (0-9)** tăng tiến theo timestamp decisecond kết hợp bộ đếm sequence trong bộ nhớ và kiểm tra chống trùng lặp DB tuyệt đối (`10000000` -> `99999999`).
-  - Đảm bảo cột `uid` trong bảng `users` được giữ nguyên `VARCHAR(8)`.
-  - Tự động chuyển đổi toàn bộ UID của các tài khoản hiện có trong database sang dạng số 8 chữ số mới mà KHÔNG làm mất/xóa dữ liệu cũ.
-  - Cập nhật test case tự động `test_user_uid_is_purely_numeric_and_unique()` trong `SecurityHardeningTest.php` kiểm tra `ctype_digit` và `strlen === 8`, đã chạy `php artisan test` vượt qua 54/54 test cases (100% PASSED).
+- **[CHUYỂN MÃ UID NGƯỜI DÙNG SANG DẠNG SỐ TỰ ĐỘNG MỞ RỘNG (DYNAMIC AUTO-EXPANDING NUMERIC UID 8-32 DIGITS)]**:
+  - Cập nhật thuật toán tạo UID `UserModel::generateUniqueUid()`: Khởi đầu bằng mã 8 chữ số số thuần (`10000000` -> `99999999`) dựa theo timestamp tăng tiến kết hợp bộ đếm sequence trong bộ nhớ. Khi số lượng tài khoản/thời gian vượt ngưỡng 90 triệu người dùng, thuật toán tự động nới rộng lên 9 chữ số (`100000000`), 10 chữ số... mượt mà mà không bao giờ bị giới hạn đụng trần.
+  - Nâng độ rộng cột `uid` trong bảng `users` lên `VARCHAR(32)` tại migrations `2026_07_23_000000_add_uid_to_users_table.php` và `2026_07_23_000002_update_uid_to_numeric_in_users_table.php` để CSDL sẵn sàng mở rộng mà không cần chạy lại migration sau này.
+  - Cập nhật test case tự động `test_user_uid_is_purely_numeric_and_unique()` trong `SecurityHardeningTest.php`, đã chạy `php artisan test` vượt qua 54/54 test cases (100% PASSED).
 
 - **[THÊM CHỨC NĂNG XÓA TÀI KHOẢN HÀNG LOẠT (BULK DELETE USERS)]**:
   - Triển khai tính năng Xóa tài khoản thành viên hàng loạt bằng cách tích chọn checkbox tại trang Quản lý thành viên (`AdminUsersComponent`).
