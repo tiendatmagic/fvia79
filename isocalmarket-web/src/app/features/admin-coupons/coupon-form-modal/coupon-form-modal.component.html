@@ -48,7 +48,12 @@
         class="text-xs font-bold text-slate-400 dark:text-slate-500 uppercase tracking-wider block mb-1"
         >{{ 'coupon.start_date' | translate }} <span class="text-rose-500">*</span></label
       >
-      <app-custom-input [(ngModel)]="startDate" name="startDate" type="date" required />
+      <app-custom-date-picker
+        [(ngModel)]="startDate"
+        name="startDate"
+        [enableTime]="true"
+        [placeholder]="'common.select_date' | translate"
+      />
     </div>
 
     <div class="form-field">
@@ -56,7 +61,12 @@
         class="text-xs font-bold text-slate-400 dark:text-slate-500 uppercase tracking-wider block mb-1"
         >{{ 'coupon.end_date' | translate }} <span class="text-rose-500">*</span></label
       >
-      <app-custom-input [(ngModel)]="endDate" name="endDate" type="date" required />
+      <app-custom-date-picker
+        [(ngModel)]="endDate"
+        name="endDate"
+        [enableTime]="true"
+        [placeholder]="'common.select_date' | translate"
+      />
     </div>
   </div>
 

@@ -68,7 +68,8 @@ export class CustomDatePickerComponent implements ControlValueAccessor, AfterVie
   @Input() disabled: boolean = false;
   @Input() minDate: string = '';
   @Input() maxDate: string = '';
-  @Input() showPresets: boolean = true;
+  @Input() showPresets: boolean = false;
+  @Input() enableTime: boolean = false;
 
   @Output() valueChange = new EventEmitter<string>();
 
@@ -79,6 +80,15 @@ export class CustomDatePickerComponent implements ControlValueAccessor, AfterVie
 
   public readonly currentYear = signal<number>(new Date().getFullYear());
   public readonly currentMonth = signal<number>(new Date().getMonth());
+  public readonly selectedHour = signal<number>(0);
+  public readonly selectedMinute = signal<number>(0);
+
+  public readonly hours = Array.from({ length: 24 }, (_, i) => i);
+  public readonly minutes = Array.from({ length: 60 }, (_, i) => i);
+
+  public pad2(n: number): string {
+    return String(n).padStart(2, '0');
+  }
 
   public get weekdays(): string[] {
     return this.lang.currentLang() === 'vi'
@@ -101,9 +111,14 @@ export class CustomDatePickerComponent implements ControlValueAccessor, AfterVie
   public readonly displayValue = computed(() => {
     const val = this.value();
     if (!val) return '';
-    const parts = val.split('-');
-    if (parts.length === 3) {
-      return `${parts[2]}/${parts[1]}/${parts[0]}`;
+    const parts = val.split(/[ T]/);
+    const dateParts = parts[0].split('-');
+    if (dateParts.length === 3) {
+      const dateFormatted = `${dateParts[2]}/${dateParts[1]}/${dateParts[0]}`;
+      if (this.enableTime && parts[1]) {
+        return `${dateFormatted} ${parts[1].substring(0, 5)}`;
+      }
+      return dateFormatted;
     }
     return val;
   });
@@ -146,6 +161,12 @@ export class CustomDatePickerComponent implements ControlValueAccessor, AfterVie
       const baseDate = dateVal || new Date();
       this.currentYear.set(baseDate.getFullYear());
       this.currentMonth.set(baseDate.getMonth());
+      if (this.enableTime) {
+        if (dateVal) {
+          this.selectedHour.set(dateVal.getHours());
+          this.selectedMinute.set(dateVal.getMinutes());
+        }
+      }
       this.updatePopoverPosition();
     }
   }
@@ -155,7 +176,8 @@ export class CustomDatePickerComponent implements ControlValueAccessor, AfterVie
     if (!triggerEl) return;
 
     const rect = triggerEl.getBoundingClientRect();
-    const popoverHeight = this.showPresets ? 380 : 340;
+    const baseHeight = this.showPresets ? 380 : 340;
+    const popoverHeight = this.enableTime ? baseHeight + 52 : baseHeight;
     const popoverWidth = 300;
     const gap = 6;
 
@@ -243,24 +265,80 @@ export class CustomDatePickerComponent implements ControlValueAccessor, AfterVie
     event.stopPropagation();
     if (this.isDateDisabled(date)) return;
 
-    const formatted = this.formatDate(date);
-    this.value.set(formatted);
-    this.valueChange.emit(formatted);
-    this.onChange(formatted);
-    this.onTouched();
+    if (this.enableTime) {
+      const formattedDate = this.formatDateOnly(date);
+      const h = this.pad2(this.selectedHour());
+      const m = this.pad2(this.selectedMinute());
+      const formatted = `${formattedDate} ${h}:${m}`;
+      this.value.set(formatted);
+      this.valueChange.emit(formatted);
+      this.onChange(formatted);
+      this.onTouched();
+    } else {
+      const formatted = this.formatDateOnly(date);
+      this.value.set(formatted);
+      this.valueChange.emit(formatted);
+      this.onChange(formatted);
+      this.onTouched();
+      this.isOpen.set(false);
+    }
+  }
+
+  public onHourChange(hVal: any): void {
+    const h = parseInt(hVal, 10);
+    if (!isNaN(h)) {
+      this.selectedHour.set(h);
+      this.updateDateTimeValue();
+    }
+  }
+
+  public onMinuteChange(mVal: any): void {
+    const m = parseInt(mVal, 10);
+    if (!isNaN(m)) {
+      this.selectedMinute.set(m);
+      this.updateDateTimeValue();
+    }
+  }
+
+  public confirmSelection(event: Event): void {
+    event.stopPropagation();
     this.isOpen.set(false);
   }
 
-    public selectPreset(days: number, event: Event): void {
-    event.stopPropagation();
-    const target = new Date();
-    target.setDate(target.getDate() + days);
-    const formatted = this.formatDate(target);
+  private updateDateTimeValue(): void {
+    if (!this.enableTime) return;
+    const val = this.value();
+    const dateStr = val ? val.split(/[ T]/)[0] : this.formatDateOnly(new Date());
+    const h = this.pad2(this.selectedHour());
+    const m = this.pad2(this.selectedMinute());
+    const formatted = `${dateStr} ${h}:${m}`;
     this.value.set(formatted);
     this.valueChange.emit(formatted);
     this.onChange(formatted);
     this.onTouched();
-    this.isOpen.set(false);
+  }
+
+  public selectPreset(days: number, event: Event): void {
+    event.stopPropagation();
+    const target = new Date();
+    target.setDate(target.getDate() + days);
+    if (this.enableTime) {
+      const formattedDate = this.formatDateOnly(target);
+      const h = this.pad2(this.selectedHour());
+      const m = this.pad2(this.selectedMinute());
+      const formatted = `${formattedDate} ${h}:${m}`;
+      this.value.set(formatted);
+      this.valueChange.emit(formatted);
+      this.onChange(formatted);
+      this.onTouched();
+    } else {
+      const formatted = this.formatDateOnly(target);
+      this.value.set(formatted);
+      this.valueChange.emit(formatted);
+      this.onChange(formatted);
+      this.onTouched();
+      this.isOpen.set(false);
+    }
   }
 
   public isToday(date: Date): boolean {
@@ -273,14 +351,15 @@ export class CustomDatePickerComponent implements ControlValueAccessor, AfterVie
   public isSelected(date: Date): boolean {
     const val = this.value();
     if (!val) return false;
-    return val === this.formatDate(date);
+    const datePart = val.split(/[ T]/)[0];
+    return datePart === this.formatDateOnly(date);
   }
 
   public isCurrentMonth(date: Date): boolean {
     return date.getMonth() === this.currentMonth();
   }
 
-    public isDateDisabled(date: Date): boolean {
+  public isDateDisabled(date: Date): boolean {
     if (this.minDate) {
       const min = this.parseDate(this.minDate);
       if (min) {
@@ -300,7 +379,7 @@ export class CustomDatePickerComponent implements ControlValueAccessor, AfterVie
     return false;
   }
 
-  private formatDate(date: Date): string {
+  private formatDateOnly(date: Date): string {
     const year = date.getFullYear();
     const month = String(date.getMonth() + 1).padStart(2, '0');
     const day = String(date.getDate()).padStart(2, '0');
@@ -309,16 +388,27 @@ export class CustomDatePickerComponent implements ControlValueAccessor, AfterVie
 
   private parseDate(str: string): Date | null {
     if (!str) return null;
-    const parts = str.split('-');
-    if (parts.length === 3) {
-      const year = parseInt(parts[0], 10);
-      const month = parseInt(parts[1], 10) - 1;
-      const day = parseInt(parts[2], 10);
-      const d = new Date(year, month, day);
+    const parts = str.split(/[ T]/);
+    const dateParts = parts[0].split('-');
+    if (dateParts.length === 3) {
+      const year = parseInt(dateParts[0], 10);
+      const month = parseInt(dateParts[1], 10) - 1;
+      const day = parseInt(dateParts[2], 10);
+      let hour = 0;
+      let min = 0;
+      if (parts[1]) {
+        const timeParts = parts[1].split(':');
+        if (timeParts.length >= 2) {
+          hour = parseInt(timeParts[0], 10) || 0;
+          min = parseInt(timeParts[1], 10) || 0;
+        }
+      }
+      const d = new Date(year, month, day, hour, min);
       if (!isNaN(d.getTime())) return d;
     }
     return null;
   }
+
   public static todayString(): string {
     const d = new Date();
     return `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}-${String(d.getDate()).padStart(2, '0')}`;
@@ -328,7 +418,15 @@ export class CustomDatePickerComponent implements ControlValueAccessor, AfterVie
   private onTouched: () => void = () => {};
 
   public writeValue(value: any): void {
-    this.value.set(value ? String(value) : '');
+    const strVal = value ? String(value) : '';
+    this.value.set(strVal);
+    if (this.enableTime && strVal) {
+      const dateObj = this.parseDate(strVal);
+      if (dateObj) {
+        this.selectedHour.set(dateObj.getHours());
+        this.selectedMinute.set(dateObj.getMinutes());
+      }
+    }
   }
 
   public registerOnChange(fn: any): void {

@@ -108,6 +108,49 @@
           </button>
         }
       </div>
+
+      @if (enableTime) {
+        <div class="mt-3 pt-3 border-t border-slate-100 dark:border-slate-800 flex items-center justify-between gap-2">
+          <div class="flex items-center gap-1.5 text-xs text-slate-500 dark:text-slate-400 font-bold">
+            <div class="w-3.5 h-3.5 text-[var(--color-primary)] shrink-0">
+              <app-icon name="clock" />
+            </div>
+            <span>Giờ:</span>
+            <div class="flex items-center gap-1 bg-slate-50 dark:bg-slate-900 border border-slate-200/60 dark:border-slate-800 rounded-lg px-2 py-1">
+              <select
+                [ngModel]="selectedHour()"
+                (ngModelChange)="onHourChange($event)"
+                class="bg-transparent text-xs font-black text-slate-800 dark:text-slate-200 outline-none cursor-pointer"
+              >
+                @for (h of hours; track h) {
+                  <option [value]="h" class="bg-white dark:bg-slate-900 text-slate-800 dark:text-slate-200">
+                    {{ pad2(h) }}
+                  </option>
+                }
+              </select>
+              <span class="font-black text-slate-400 dark:text-slate-500">:</span>
+              <select
+                [ngModel]="selectedMinute()"
+                (ngModelChange)="onMinuteChange($event)"
+                class="bg-transparent text-xs font-black text-slate-800 dark:text-slate-200 outline-none cursor-pointer"
+              >
+                @for (m of minutes; track m) {
+                  <option [value]="m" class="bg-white dark:bg-slate-900 text-slate-800 dark:text-slate-200">
+                    {{ pad2(m) }}
+                  </option>
+                }
+              </select>
+            </div>
+          </div>
+          <button
+            type="button"
+            (click)="confirmSelection($event)"
+            class="px-2.5 py-1 text-xs font-extrabold text-white bg-[var(--color-primary)] rounded-lg hover:opacity-90 active:scale-95 transition-all cursor-pointer shadow-sm shadow-[var(--color-primary)]/20"
+          >
+            Xong
+          </button>
+        </div>
+      }
     </div>
   }
 </div>

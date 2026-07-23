@@ -13,6 +13,13 @@
 > Khi cần seed dữ liệu cho một seeder cụ thể, chỉ dùng:
 > - `php artisan db:seed --class=TenSeederClass` — chạy đúng 1 seeder.
 
+- **[NÂNG CẤP DATETIME PICKER UI CHO QUẢN LÝ MÃ GIẢM GIÁ (COUPONS DATETIME UI)]**:
+  - Nâng cấp component `CustomDatePickerComponent` (`custom-date-picker`): Bổ sung chế độ chọn Ngày + Giờ linh hoạt (`@Input() enableTime: boolean = false`), tích hợp bộ chọn Giờ (00-23) và Phút (00-59) mượt mà với hiệu ứng theme thích ứng Light/Dark mode.
+  - Tắt hiển thị các nút chọn nhanh thời gian (7 ngày, 1 tháng, 3 tháng, 6 tháng, 1 năm) theo mặc định bằng cách đặt `@Input() showPresets: boolean = false` giúp giao diện popover ngày tháng gọn gàng, tập trung.
+  - Cập nhật `CouponFormModalComponent` (`coupon-form-modal.component.html` & `coupon-form-modal.component.ts`): Thay thế `<app-custom-input type="date">` đơn điệu thành `<app-custom-date-picker [enableTime]="true">`. Khi thêm mới hoặc chỉnh sửa mã giảm giá, người dùng có thể chọn chính xác Ngày và Giờ bắt đầu/kết thúc (VD: `2026-07-23 15:30`).
+  - Cập nhật hiển thị badge viết tắt Ngày bắt đầu (`BĐ` / `START`) và Ngày kết thúc (`KT` / `END`) trên bảng danh sách mã giảm giá (`AdminCouponsComponent`).
+  - Đã rà soát loại bỏ key dịch trùng lặp trong `LanguageService.ts`, kiểm thử backend `php artisan test` vượt qua 56/56 test cases (100% PASSED) và biên dịch Angular `npm run build` hoàn toàn thành công!
+
 - **[THÊM BORDER & ĐỊNH TUYẾN ROUTERLINK CHO LOGO WEBSITE TRÊN HEADER VÀ SIDEBAR MENU]**:
   - Cập nhật `LogoComponent` (`logo.component.ts`): Thêm container bo góc `rounded-xl`, viền thích ứng `border-slate-300/70` ở Light Mode và `dark:border-slate-800` ở Dark Mode, hỗ trợ `@Input() link = '/'` mặc định để bất kỳ khi nào nhấp vào logo đều tự động chuyển hướng về trang chủ (`/`).
   - Thêm `@Input() showBorder: boolean = true` linh hoạt tùy chọn bật/tắt viền khi tái sử dụng.

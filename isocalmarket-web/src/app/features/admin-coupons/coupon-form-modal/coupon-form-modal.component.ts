@@ -11,6 +11,8 @@ import { LanguageService } from '@core/services/language.service';
 import { TranslatePipe } from '@shared/pipes/translate.pipe';
 import { finalize } from 'rxjs/operators';
 
+import { CustomDatePickerComponent } from '@shared/components/custom-date-picker/custom-date-picker.component';
+
 @Component({
   selector: 'app-coupon-form-modal',
   standalone: true,
@@ -19,6 +21,7 @@ import { finalize } from 'rxjs/operators';
     FormsModule,
     CustomInputComponent,
     CustomSelectComponent,
+    CustomDatePickerComponent,
     ButtonComponent,
     TranslatePipe
   ],
@@ -65,12 +68,26 @@ export class CouponFormModalComponent implements OnInit {
       this.value = this.modalData.value;
       this.minSpend = this.modalData.minSpend || 0;
       if (this.modalData.startDate) {
-        this.startDate = this.modalData.startDate.substring(0, 10);
+        this.startDate = this.modalData.startDate.substring(0, 16).replace('T', ' ');
       }
       if (this.modalData.endDate) {
-        this.endDate = this.modalData.endDate.substring(0, 10);
+        this.endDate = this.modalData.endDate.substring(0, 16).replace('T', ' ');
       }
       this.usageLimit = this.modalData.usageLimit || 1;
+    } else {
+      const now = new Date();
+      const year = now.getFullYear();
+      const month = String(now.getMonth() + 1).padStart(2, '0');
+      const day = String(now.getDate()).padStart(2, '0');
+      const hour = String(now.getHours()).padStart(2, '0');
+      const min = String(now.getMinutes()).padStart(2, '0');
+      this.startDate = `${year}-${month}-${day} ${hour}:${min}`;
+
+      const future = new Date(now.getTime() + 30 * 86400000);
+      const fYear = future.getFullYear();
+      const fMonth = String(future.getMonth() + 1).padStart(2, '0');
+      const fDay = String(future.getDate()).padStart(2, '0');
+      this.endDate = `${fYear}-${fMonth}-${fDay} 23:59`;
     }
   }
 
