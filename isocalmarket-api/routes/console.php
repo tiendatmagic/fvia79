@@ -1,6 +1,7 @@
 <?php
 
 use App\Application\Services\DepositService;
+use App\Application\Services\OrderService;
 use App\Infrastructure\Persistence\Eloquent\UserModel;
 use Illuminate\Foundation\Inspiring;
 use Illuminate\Support\Facades\Schedule;
@@ -35,5 +36,11 @@ Artisan::command('deposit:check-pending', function (DepositService $depositServi
     $this->info('Pending deposits check completed.');
 })->purpose('Scan blockchain and reconcile pending USDT BEP20 deposits');
 
+Artisan::command('suppliers:reconcile-orders', function (OrderService $orderService) {
+    $results = $orderService->reconcilePendingSupplierOrders();
+    $this->info('Supplier order reconciliation completed: '.count($results).' order(s) checked.');
+})->purpose('Retrieve pending supplier order resources and finalize local orders');
+
 Schedule::command('deposit:check-pending')->everyMinute();
+Schedule::command('suppliers:reconcile-orders')->everyMinute()->withoutOverlapping();
 Schedule::command('suppliers:sync --due')->everyTenMinutes()->withoutOverlapping();

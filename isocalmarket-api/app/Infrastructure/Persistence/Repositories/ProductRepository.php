@@ -15,10 +15,6 @@ class ProductRepository implements ProductRepositoryInterface
 
     private function getAvailableCount(ProductModel $model): int
     {
-        if ($model->supplier_id !== null) {
-            return max(0, (int) ($model->supplier_stock ?? 0));
-        }
-
         $batches = InventoryBatchModel::where('product_id', $model->id)
             ->where('status', '!=', 'inactive')
             ->select('id', 'product_id', 'initial_count', 'sold_count', 'status', 'created_at')
@@ -29,7 +25,12 @@ class ProductRepository implements ProductRepositoryInterface
             $total += max(0, (int) $batch->initial_count - (int) $batch->sold_count);
         }
 
-        return $total;
+        $supplierEnabled = $model->supplier_id === null
+            || ($model->relationLoaded('supplier')
+                ? (bool) ($model->supplier?->enabled && $model->supplier?->products_enabled)
+                : (bool) $model->supplier()->where('enabled', true)->where('products_enabled', true)->exists());
+
+        return $total + ($supplierEnabled ? max(0, (int) ($model->supplier_stock ?? 0)) : 0);
     }
 
     public function findAllActive(?string $categoryId = null, ?string $status = null, ?string $search = null, ?string $filterDeleted = 'active'): array
@@ -59,7 +60,7 @@ class ProductRepository implements ProductRepositoryInterface
                 $this->applyAccentInsensitiveSearch($q, 'name', $search);
             });
         }
-        $models = $query->with(['supplier:id,code,name', 'activeBatches:id,product_id,initial_count,sold_count,status,created_at'])->orderBy('created_at', 'desc')->get();
+        $models = $query->with(['supplier:id,code,name,enabled,products_enabled', 'activeBatches:id,product_id,initial_count,sold_count,status,created_at'])->orderBy('created_at', 'desc')->get();
         $products = [];
         foreach ($models as $model) {
             $availableCount = $this->getAvailableCount($model);
@@ -97,7 +98,7 @@ class ProductRepository implements ProductRepositoryInterface
             });
         }
         $total = $query->count();
-        $models = $query->with(['supplier:id,code,name', 'activeBatches:id,product_id,initial_count,sold_count,status,created_at'])->orderBy('created_at', 'desc')
+        $models = $query->with(['supplier:id,code,name,enabled,products_enabled', 'activeBatches:id,product_id,initial_count,sold_count,status,created_at'])->orderBy('created_at', 'desc')
             ->skip(($page - 1) * $limit)
             ->take($limit)
             ->get();
@@ -116,7 +117,7 @@ class ProductRepository implements ProductRepositoryInterface
 
     public function findById(string $id): ?Product
     {
-        $model = ProductModel::withTrashed()->with(['supplier:id,code,name', 'activeBatches:id,product_id,initial_count,sold_count,status,created_at'])->find($id);
+        $model = ProductModel::withTrashed()->with(['supplier:id,code,name,enabled,products_enabled', 'activeBatches:id,product_id,initial_count,sold_count,status,created_at'])->find($id);
         if (! $model) {
             return null;
         }
@@ -128,7 +129,7 @@ class ProductRepository implements ProductRepositoryInterface
 
     public function findBySlug(string $slug): ?Product
     {
-        $model = ProductModel::withTrashed()->with(['supplier:id,code,name', 'activeBatches:id,product_id,initial_count,sold_count,status,created_at'])->where('slug', $slug)->first();
+        $model = ProductModel::withTrashed()->with(['supplier:id,code,name,enabled,products_enabled', 'activeBatches:id,product_id,initial_count,sold_count,status,created_at'])->where('slug', $slug)->first();
         if (! $model) {
             return null;
         }
@@ -189,7 +190,7 @@ class ProductRepository implements ProductRepositoryInterface
         }
 
         $allActiveProducts = (clone $productQuery)
-            ->with(['supplier:id,code,name', 'activeBatches:id,product_id,initial_count,sold_count,status,created_at'])
+            ->with(['supplier:id,code,name,enabled,products_enabled', 'activeBatches:id,product_id,initial_count,sold_count,status,created_at'])
             ->orderBy('created_at', 'desc')
             ->get();
 

@@ -12,25 +12,26 @@ import { IconComponent } from '@shared/components/icon/icon.component';
 import { TranslatePipe } from '@shared/pipes/translate.pipe';
 import { CurrencyPipe } from '@shared/pipes/currency.pipe';
 import { Subject, of } from 'rxjs';
-import { debounceTime, distinctUntilChanged, switchMap, catchError, finalize } from 'rxjs/operators';
+import {
+  debounceTime,
+  distinctUntilChanged,
+  switchMap,
+  catchError,
+  finalize,
+} from 'rxjs/operators';
 
 @Component({
   selector: 'app-cart-modal',
   standalone: true,
-  imports: [
-    CommonModule,
-    FormsModule,
-    ButtonComponent,
-    IconComponent,
-    TranslatePipe,
-    CurrencyPipe
-  ],
+  imports: [CommonModule, FormsModule, ButtonComponent, IconComponent, TranslatePipe, CurrencyPipe],
   templateUrl: './cart-modal.component.html',
-  styles: [`
-    :host {
-      display: block;
-    }
-  `]
+  styles: [
+    `
+      :host {
+        display: block;
+      }
+    `,
+  ],
 })
 export class CartModalComponent implements OnInit {
   private readonly modalRef = inject(ModalRef);
@@ -41,6 +42,7 @@ export class CartModalComponent implements OnInit {
   public readonly lang = inject(LanguageService);
 
   public readonly isSubmitting = signal(false);
+  private checkoutIdempotencyKey = this.createIdempotencyKey();
 
   public couponCode = '';
   public couponError = signal<string | null>(null);
@@ -64,40 +66,41 @@ export class CartModalComponent implements OnInit {
   }
 
   ngOnInit() {
-    this.couponSubject.pipe(
-      debounceTime(500),
-      distinctUntilChanged(),
-      switchMap((code) => {
-        this.couponError.set(null);
-        this.couponSuccess.set(null);
+    this.couponSubject
+      .pipe(
+        debounceTime(500),
+        distinctUntilChanged(),
+        switchMap((code) => {
+          this.couponError.set(null);
+          this.couponSuccess.set(null);
 
-        if (!code.trim()) {
-          this.appliedCoupon.set(null);
-          return of(null);
-        }
-
-        this.isValidatingCoupon.set(true);
-        const total = this.cart.totalAmount();
-
-        return this.couponStore.validateCoupon(code.trim(), total).pipe(
-          catchError((err) => {
-            const msg = err.message || this.lang.translate('cart.coupon_invalid');
-            this.couponError.set(msg);
+          if (!code.trim()) {
             this.appliedCoupon.set(null);
             return of(null);
-          }),
-          finalize(() => this.isValidatingCoupon.set(false))
-        );
-      })
-    ).subscribe((res: any) => {
-      if (res && res.valid) {
-        this.appliedCoupon.set(res);
-        const formatDiscount = res.type === 'percentage'
-          ? `${res.value}%`
-          : `${res.discount_amount}`;
-        this.couponSuccess.set(this.lang.translate('cart.coupon_applied', { code: res.code }));
-      }
-    });
+          }
+
+          this.isValidatingCoupon.set(true);
+          const total = this.cart.totalAmount();
+
+          return this.couponStore.validateCoupon(code.trim(), total).pipe(
+            catchError((err) => {
+              const msg = err.message || this.lang.translate('cart.coupon_invalid');
+              this.couponError.set(msg);
+              this.appliedCoupon.set(null);
+              return of(null);
+            }),
+            finalize(() => this.isValidatingCoupon.set(false)),
+          );
+        }),
+      )
+      .subscribe((res: any) => {
+        if (res && res.valid) {
+          this.appliedCoupon.set(res);
+          const formatDiscount =
+            res.type === 'percentage' ? `${res.value}%` : `${res.discount_amount}`;
+          this.couponSuccess.set(this.lang.translate('cart.coupon_applied', { code: res.code }));
+        }
+      });
   }
 
   public onCouponInput(code: string) {
@@ -127,12 +130,15 @@ export class CartModalComponent implements OnInit {
     }
 
     this.isSubmitting.set(true);
-    const itemsInput = cartItems.map(item => ({
+    const itemsInput = cartItems.map((item) => ({
       product_id: item.id,
-      quantity: item.quantity
+      quantity: item.quantity,
     }));
 
-    const payload: any = { items: itemsInput };
+    const payload: any = {
+      items: itemsInput,
+      idempotency_key: this.checkoutIdempotencyKey,
+    };
     if (this.couponCode.trim() && this.appliedCoupon()) {
       payload.coupon_code = this.couponCode.toUpperCase().trim();
     }
@@ -144,20 +150,34 @@ export class CartModalComponent implements OnInit {
         }
         this.state.authStore.checkMe(true).subscribe();
         this.cart.clearCart();
+        this.checkoutIdempotencyKey = this.createIdempotencyKey();
         this.state.orderStore.clearCache();
-        this.state.showToast(this.lang.translate('cart.order_success'), 'success');
+        const isPending = res?.order?.status === 'pending';
+        this.state.showToast(
+          this.lang.translate(isPending ? 'cart.order_pending_supplier' : 'cart.order_success'),
+          isPending ? 'warning' : 'success',
+        );
         this.isSubmitting.set(false);
         this.modalRef.close('success');
       },
       error: (err) => {
         const rawMsg = err.error?.message;
-        const msg = typeof rawMsg === 'string'
-          ? rawMsg
-          : this.lang.translate('toast.order_failed');
+        const msg = typeof rawMsg === 'string' ? rawMsg : this.lang.translate('toast.order_failed');
         this.state.showToast(msg, 'error');
         this.isSubmitting.set(false);
-      }
+      },
+    });
+  }
+
+  private createIdempotencyKey(): string {
+    if (typeof crypto !== 'undefined' && typeof crypto.randomUUID === 'function') {
+      return crypto.randomUUID();
+    }
+
+    return 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g, (character) => {
+      const random = Math.floor(Math.random() * 16);
+      const value = character === 'x' ? random : (random & 0x3) | 0x8;
+      return value.toString(16);
     });
   }
 }
-

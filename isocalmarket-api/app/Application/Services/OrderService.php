@@ -2,30 +2,49 @@
 
 namespace App\Application\Services;
 
+use App\Domain\Entities\Coupon;
 use App\Domain\Entities\Order;
 use App\Domain\Entities\OrderItem;
 use App\Domain\Exceptions\OrderException;
+use App\Domain\Repositories\CouponRepositoryInterface;
+use App\Domain\Repositories\InventoryBatchRepositoryInterface;
 use App\Domain\Repositories\OrderRepositoryInterface;
 use App\Domain\Repositories\ProductRepositoryInterface;
-use App\Domain\Repositories\InventoryBatchRepositoryInterface;
+use App\Domain\Repositories\UserRepositoryInterface;
+use App\Infrastructure\Persistence\Eloquent\CouponModel;
+use App\Infrastructure\Persistence\Eloquent\OrderItemModel;
+use App\Infrastructure\Persistence\Eloquent\OrderModel;
+use App\Infrastructure\Persistence\Eloquent\ProductModel;
+use App\Infrastructure\Persistence\Eloquent\SupplierPurchaseModel;
+use App\Integrations\Suppliers\SupplierConnectorFactory;
+use App\Integrations\Suppliers\SupplierOrderPendingException;
+use App\Integrations\Suppliers\SupplierOutOfStockException;
+use App\Integrations\Suppliers\SupplierPurchaseRejectedException;
+use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Str;
-use Illuminate\Support\Facades\Cache;
+use Throwable;
 
 class OrderService
 {
     private OrderRepositoryInterface $orderRepository;
+
     private ProductRepositoryInterface $productRepository;
+
     private InventoryBatchRepositoryInterface $inventoryRepository;
-    private \App\Domain\Repositories\UserRepositoryInterface $userRepository;
-    private \App\Domain\Repositories\CouponRepositoryInterface $couponRepository;
+
+    private UserRepositoryInterface $userRepository;
+
+    private CouponRepositoryInterface $couponRepository;
 
     public function __construct(
         OrderRepositoryInterface $orderRepository,
         ProductRepositoryInterface $productRepository,
         InventoryBatchRepositoryInterface $inventoryRepository,
-        \App\Domain\Repositories\UserRepositoryInterface $userRepository,
-        \App\Domain\Repositories\CouponRepositoryInterface $couponRepository
+        UserRepositoryInterface $userRepository,
+        CouponRepositoryInterface $couponRepository,
+        private readonly SupplierConnectorFactory $supplierConnectorFactory,
+        private readonly DepositService $depositService,
     ) {
         $this->orderRepository = $orderRepository;
         $this->productRepository = $productRepository;
@@ -34,13 +53,25 @@ class OrderService
         $this->couponRepository = $couponRepository;
     }
 
-    public function createOrder(string $userId, array $itemsInput, ?string $couponCode = null): Order
-    {
-        return DB::transaction(function () use ($userId, $itemsInput, $couponCode) {
-            $orderCode = 'ORD-' . date('Ymd') . '-' . strtoupper(Str::random(6));
+    public function createOrder(
+        string $userId,
+        array $itemsInput,
+        ?string $couponCode = null,
+        ?string $idempotencyKey = null,
+    ): Order {
+        if ($idempotencyKey !== null) {
+            $existingId = OrderModel::where('user_id', $userId)
+                ->where('idempotency_key', $idempotencyKey)
+                ->value('id');
+            if ($existingId) {
+                return $this->orderRepository->findById($existingId);
+            }
+        }
+
+        $preparedOrder = DB::transaction(function () use ($userId, $itemsInput, $couponCode, $idempotencyKey) {
+            $orderCode = 'ORD-'.date('Ymd').'-'.strtoupper(Str::random(6));
             $totalPrice = 0.0;
             $orderItems = [];
-            $batchesToSave = [];
 
             foreach ($itemsInput as $input) {
                 $productId = $input['product_id'];
@@ -50,7 +81,7 @@ class OrderService
                     throw new OrderException('Quantity must be greater than 0.');
                 }
                 $product = $this->productRepository->findById($productId);
-                if (!$product || $product->isDeleted()) {
+                if (! $product || $product->isDeleted() || ! $product->isActive()) {
                     throw new OrderException('Product is not available or has been discontinued.');
                 }
 
@@ -59,39 +90,8 @@ class OrderService
                     throw new OrderException("Product '{$product->getName()}' does not have enough stock available (Requested: {$quantity}, Available: {$availableCount}).");
                 }
 
-                $activeBatches = $this->inventoryRepository->findActiveBatchesByProductId($productId, true);
-
-                $deliveredKeys = [];
-                $neededQuantity = $quantity;
-                $totalCostPriceForItem = 0.0;
-
-                foreach ($activeBatches as $batch) {
-                    if ($neededQuantity <= 0) {
-                        break;
-                    }
-                    $batchAvailable = $batch->getAvailableCount();
-                    if ($batchAvailable === 0) {
-                        continue;
-                    }
-
-                    $takeCount = min($neededQuantity, $batchAvailable);
-                    $popped = $batch->popKeys($takeCount);
-                    $deliveredKeys = array_merge($deliveredKeys, $popped);
-                    $neededQuantity -= $takeCount;
-
-                    $batchCost = $batch->getCostPrice() ?? 0.0;
-                    $totalCostPriceForItem += $batchCost * $takeCount;
-
-                    $batchesToSave[] = $batch;
-                }
-
-                if (count($deliveredKeys) < $quantity) {
-                    throw new OrderException("An error occurred: Could not retrieve enough digital resources for product '{$product->getName()}'.");
-                }
-
                 $itemPrice = $product->getPrice();
                 $totalPrice += $itemPrice * $quantity;
-                $unitCostPrice = $quantity > 0 ? ($totalCostPriceForItem / $quantity) : 0.0;
 
                 $orderItems[] = new OrderItem(
                     null,
@@ -100,8 +100,8 @@ class OrderService
                     $product->getName(),
                     $itemPrice,
                     $quantity,
-                    $deliveredKeys,
-                    $unitCostPrice
+                    [],
+                    0.0
                 );
             }
 
@@ -111,11 +111,11 @@ class OrderService
 
             if ($couponCode) {
                 $coupon = $this->couponRepository->findByCode(strtoupper(trim($couponCode)));
-                if (!$coupon) {
+                if (! $coupon) {
                     throw new OrderException("Coupon code '{$couponCode}' is invalid.");
                 }
 
-                $now = new \DateTime();
+                $now = new \DateTime;
                 $start = (clone $coupon->getStartDate())->setTime(0, 0, 0);
                 $end = (clone $coupon->getEndDate())->setTime(23, 59, 59);
 
@@ -130,14 +130,14 @@ class OrderService
                     throw new OrderException('This coupon has reached its usage limit.');
                 }
                 if ($totalPrice < $coupon->getMinSpend()) {
-                    throw new OrderException('Cart total must be at least ' . number_format($coupon->getMinSpend()) . ' USD.');
+                    throw new OrderException('Cart total must be at least '.number_format($coupon->getMinSpend()).' USD.');
                 }
 
                 $discountAmount = $coupon->calculateDiscount($totalPrice);
                 $couponId = $coupon->getId();
                 $appliedCouponCode = $coupon->getCode();
 
-                $updatedCoupon = new \App\Domain\Entities\Coupon(
+                $updatedCoupon = new Coupon(
                     $coupon->getId(),
                     $coupon->getCode(),
                     $coupon->getType(),
@@ -155,7 +155,7 @@ class OrderService
             $finalPrice = max(0.0, $totalPrice - $discountAmount);
 
             $user = $this->userRepository->findByIdForUpdate($userId);
-            if (!$user) {
+            if (! $user) {
                 throw new OrderException('User account not found.');
             }
 
@@ -171,7 +171,7 @@ class OrderService
                 $userId,
                 $orderCode,
                 $finalPrice,
-                'paid',
+                'pending',
                 $orderItems,
                 null,
                 null,
@@ -180,21 +180,295 @@ class OrderService
                 $couponId
             );
             $savedOrder = $this->orderRepository->save($order);
-
-            foreach ($batchesToSave as $batch) {
-                $this->inventoryRepository->save($batch);
+            if ($idempotencyKey !== null) {
+                OrderModel::whereKey($savedOrder->getId())->update(['idempotency_key' => $idempotencyKey]);
             }
 
+            return $savedOrder;
+        });
+
+        try {
+            return $this->fulfillPreparedOrder($preparedOrder);
+        } catch (OrderException $exception) {
+            $hasUnknownSupplierPurchase = SupplierPurchaseModel::where('order_id', $preparedOrder->getId())
+                ->where('status', 'unknown')
+                ->exists();
+            if ($hasUnknownSupplierPurchase) {
+                return $this->orderRepository->findById($preparedOrder->getId());
+            }
+
+            throw $exception;
+        }
+    }
+
+    private function fulfillPreparedOrder(Order $order): Order
+    {
+        $plans = [];
+        $hasSupplierSuccess = false;
+
+        try {
+            foreach ($order->getItems() as $item) {
+                $product = ProductModel::with('supplier')->findOrFail($item->getProductId());
+                $supplierQuantity = 0;
+                $supplierOrderId = null;
+                $supplierCode = null;
+                $resources = [];
+                $supplierCost = 0.0;
+                $purchase = SupplierPurchaseModel::where('order_item_id', $item->getId())
+                    ->whereIn('status', ['succeeded', 'unknown'])
+                    ->latest()
+                    ->first();
+                $wantedFromSupplier = $purchase
+                    ? $purchase->quantity
+                    : (($product->supplier_id
+                    && $product->external_id
+                    && $product->supplier?->enabled
+                    && $product->supplier?->products_enabled
+                    ? $this->reserveSupplierStock($product->id, $item->getQuantity())
+                    : 0));
+
+                if ($wantedFromSupplier > 0) {
+                    if (! $purchase) {
+                        $purchase = SupplierPurchaseModel::create([
+                            'order_id' => $order->getId(),
+                            'order_item_id' => $item->getId(),
+                            'supplier_id' => $product->supplier_id,
+                            'product_id' => $product->id,
+                            'quantity' => $wantedFromSupplier,
+                            'status' => 'pending',
+                        ]);
+                    } elseif ($purchase->status === 'unknown' && ! $purchase->supplier_order_id) {
+                        throw new OrderException(
+                            'The supplier purchase result is uncertain. The order requires manual reconciliation.',
+                        );
+                    }
+
+                    try {
+                        $connector = $this->supplierConnectorFactory->makeOrderConnector($product->supplier);
+                        $result = $purchase->supplier_order_id
+                            ? $connector->fetchOrder($product->supplier, $purchase->supplier_order_id)
+                            : $connector->purchase(
+                                $product->supplier,
+                                (string) $product->external_id,
+                                $wantedFromSupplier,
+                            );
+                        $resources = array_slice($result['resources'], 0, $wantedFromSupplier);
+                        if (count($resources) !== $wantedFromSupplier) {
+                            throw new SupplierOrderPendingException(
+                                $result['order_id'],
+                                $result['raw'],
+                            );
+                        }
+
+                        $supplierQuantity = $wantedFromSupplier;
+                        $supplierOrderId = $result['order_id'];
+                        $supplierCode = $product->supplier->code;
+                        $purchase->update([
+                            'supplier_order_id' => $supplierOrderId,
+                            'status' => 'succeeded',
+                            'response_payload' => $result['raw'],
+                            'error' => null,
+                        ]);
+                        $hasSupplierSuccess = true;
+                        try {
+                            $rate = $this->depositService->getUsdtToVndRate();
+                            $supplierCost = $rate > 0
+                                ? ((float) $product->supplier_price_vnd / $rate) * $supplierQuantity
+                                : 0.0;
+                        } catch (Throwable) {
+                            $supplierCost = 0.0;
+                        }
+                    } catch (SupplierOutOfStockException $exception) {
+                        $purchase->update([
+                            'status' => 'failed',
+                            'error' => Str::limit($exception->getMessage(), 2000),
+                        ]);
+                        $product->update(['supplier_stock' => 0]);
+                    } catch (SupplierPurchaseRejectedException $exception) {
+                        $purchase->update([
+                            'status' => 'failed',
+                            'error' => Str::limit($exception->getMessage(), 2000),
+                        ]);
+                        ProductModel::whereKey($product->id)->increment(
+                            'supplier_stock',
+                            $wantedFromSupplier,
+                        );
+                        throw new OrderException(
+                            'The supplier rejected the purchase. The order has been cancelled and refunded.',
+                            previous: $exception,
+                        );
+                    } catch (SupplierOrderPendingException $exception) {
+                        $purchase->update([
+                            'supplier_order_id' => $exception->supplierOrderId,
+                            'status' => 'unknown',
+                            'response_payload' => $exception->responsePayload,
+                            'error' => Str::limit($exception->getMessage(), 2000),
+                        ]);
+                        throw new OrderException(
+                            'The supplier order is pending reconciliation and will not be purchased again automatically.',
+                            previous: $exception,
+                        );
+                    } catch (Throwable $exception) {
+                        $purchase->update([
+                            'status' => 'unknown',
+                            'error' => Str::limit($exception->getMessage(), 2000),
+                        ]);
+                        throw new OrderException(
+                            'The supplier purchase result is uncertain. The order is pending reconciliation and will not be purchased again automatically.',
+                            previous: $exception,
+                        );
+                    }
+                }
+
+                $plans[] = [
+                    'item' => $item,
+                    'product' => $product,
+                    'supplier_quantity' => $supplierQuantity,
+                    'local_quantity' => $item->getQuantity() - $supplierQuantity,
+                    'supplier_order_id' => $supplierOrderId,
+                    'supplier_code' => $supplierCode,
+                    'resources' => $resources,
+                    'supplier_cost' => $supplierCost,
+                ];
+            }
+
+            DB::transaction(function () use ($order, $plans): void {
+                $orderModel = OrderModel::whereKey($order->getId())->lockForUpdate()->firstOrFail();
+                if ($orderModel->status !== 'pending') {
+                    return;
+                }
+
+                foreach ($plans as $plan) {
+                    $localResources = [];
+                    $localCost = 0.0;
+                    $needed = $plan['local_quantity'];
+                    $batches = $this->inventoryRepository
+                        ->findActiveBatchesByProductId($plan['product']->id, true);
+
+                    foreach ($batches as $batch) {
+                        if ($needed <= 0) {
+                            break;
+                        }
+                        $take = min($needed, $batch->getAvailableCount());
+                        if ($take <= 0) {
+                            continue;
+                        }
+                        $popped = $batch->popKeys($take);
+                        $localResources = array_merge($localResources, $popped);
+                        $localCost += ($batch->getCostPrice() ?? 0.0) * count($popped);
+                        $needed -= count($popped);
+                        $this->inventoryRepository->save($batch);
+                    }
+
+                    if ($needed > 0) {
+                        throw new OrderException(
+                            "Product '{$plan['product']->name}' does not have enough local fallback stock.",
+                        );
+                    }
+
+                    $itemModel = OrderItemModel::whereKey($plan['item']->getId())->lockForUpdate()->firstOrFail();
+                    $itemModel->delivered_keys = array_merge($plan['resources'], $localResources);
+                    $itemModel->supplier_quantity = $plan['supplier_quantity'];
+                    $itemModel->local_quantity = $plan['local_quantity'];
+                    $itemModel->supplier_order_id = $plan['supplier_order_id'];
+                    $itemModel->supplier_code = $plan['supplier_code'];
+                    $itemModel->cost_price = $itemModel->quantity > 0
+                        ? ($plan['supplier_cost'] + $localCost) / $itemModel->quantity
+                        : 0.0;
+                    $itemModel->save();
+
+                }
+
+                $orderModel->status = 'paid';
+                $orderModel->save();
+            });
+        } catch (Throwable $exception) {
+            if (! $hasSupplierSuccess
+                && ! SupplierPurchaseModel::where('order_id', $order->getId())->where('status', 'unknown')->exists()) {
+                $this->cancelAndRefund($order->getId());
+            }
             Cache::forget('products_active_storefront');
 
-            return $savedOrder;
+            if ($exception instanceof OrderException) {
+                throw $exception;
+            }
+
+            throw new OrderException('Order fulfillment failed.', previous: $exception);
+        }
+
+        Cache::forget('products_active_storefront');
+
+        return $this->orderRepository->findById($order->getId());
+    }
+
+    private function reserveSupplierStock(string $productId, int $requestedQuantity): int
+    {
+        for ($attempt = 0; $attempt < 3; $attempt++) {
+            $available = max(0, (int) ProductModel::whereKey($productId)->value('supplier_stock'));
+            $quantity = min($requestedQuantity, $available);
+            if ($quantity === 0) {
+                return 0;
+            }
+
+            $reserved = ProductModel::whereKey($productId)
+                ->where('supplier_stock', '>=', $quantity)
+                ->decrement('supplier_stock', $quantity);
+            if ($reserved === 1) {
+                return $quantity;
+            }
+        }
+
+        return 0;
+    }
+
+    public function reconcilePendingSupplierOrders(): array
+    {
+        $results = [];
+        $orderIds = SupplierPurchaseModel::whereIn('status', ['unknown', 'succeeded'])
+            ->whereNotNull('supplier_order_id')
+            ->whereIn('order_id', OrderModel::select('id')->where('status', 'pending'))
+            ->pluck('order_id')
+            ->unique();
+
+        foreach ($orderIds as $orderId) {
+            $order = $this->orderRepository->findById($orderId);
+            if (! $order || ! $order->isPending()) {
+                continue;
+            }
+
+            try {
+                $results[$orderId] = $this->fulfillPreparedOrder($order)->getStatus();
+            } catch (Throwable) {
+                $results[$orderId] = 'pending';
+            }
+        }
+
+        return $results;
+    }
+
+    private function cancelAndRefund(string $orderId): void
+    {
+        DB::transaction(function () use ($orderId): void {
+            $order = OrderModel::whereKey($orderId)->lockForUpdate()->first();
+            if (! $order || $order->status !== 'pending') {
+                return;
+            }
+
+            DB::table('users')->where('id', $order->user_id)->increment('balance', $order->total_price);
+            if ($order->coupon_id) {
+                CouponModel::whereKey($order->coupon_id)
+                    ->where('used_count', '>', 0)
+                    ->decrement('used_count');
+            }
+            $order->status = 'cancelled';
+            $order->save();
         });
     }
 
     public function getOrderDetails(string $orderId, string $requestingUserId, string $role): ?array
     {
         $order = $this->orderRepository->findById($orderId);
-        if (!$order) {
+        if (! $order) {
             return null;
         }
 
@@ -204,7 +478,7 @@ class OrderService
 
         return [
             'order' => $order,
-            'inventory_items' => []
+            'inventory_items' => [],
         ];
     }
 

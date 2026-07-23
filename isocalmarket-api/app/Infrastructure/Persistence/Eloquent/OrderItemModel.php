@@ -2,14 +2,17 @@
 
 namespace App\Infrastructure\Persistence\Eloquent;
 
-use Illuminate\Database\Eloquent\Model;
-use Illuminate\Database\Eloquent\Concerns\HasUuids;
 use Illuminate\Database\Eloquent\Attributes\Fillable;
+use Illuminate\Database\Eloquent\Concerns\HasUuids;
+use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
-use Illuminate\Support\Str;
 use Illuminate\Support\Facades\Crypt;
+use Illuminate\Support\Str;
 
-#[Fillable(['order_id', 'product_id', 'product_name', 'price', 'cost_price', 'quantity', 'delivered_keys'])]
+#[Fillable([
+    'order_id', 'product_id', 'product_name', 'price', 'cost_price', 'quantity',
+    'supplier_quantity', 'local_quantity', 'supplier_order_id', 'supplier_code', 'delivered_keys',
+])]
 class OrderItemModel extends Model
 {
     use HasUuids;
@@ -27,6 +30,8 @@ class OrderItemModel extends Model
             'price' => 'float',
             'cost_price' => 'float',
             'quantity' => 'integer',
+            'supplier_quantity' => 'integer',
+            'local_quantity' => 'integer',
         ];
     }
 
@@ -39,9 +44,11 @@ class OrderItemModel extends Model
         try {
             $decrypted = Crypt::decryptString($value);
             $decoded = json_decode($decrypted, true);
+
             return is_array($decoded) ? $decoded : [];
         } catch (\Throwable $e) {
             $decoded = json_decode($value, true);
+
             return is_array($decoded) ? $decoded : [];
         }
     }
@@ -50,6 +57,7 @@ class OrderItemModel extends Model
     {
         if (empty($value)) {
             $this->attributes['delivered_keys'] = Crypt::encryptString(json_encode([], JSON_UNESCAPED_UNICODE));
+
             return;
         }
 

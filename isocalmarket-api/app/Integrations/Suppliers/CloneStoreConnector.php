@@ -4,12 +4,13 @@ namespace App\Integrations\Suppliers;
 
 use App\Infrastructure\Persistence\Eloquent\SupplierModel;
 use App\Integrations\Suppliers\Contracts\SupplierCatalogConnector;
+use App\Integrations\Suppliers\Contracts\SupplierOrderConnector;
 use Illuminate\Http\Client\PendingRequest;
 use Illuminate\Support\Facades\Http;
 use RuntimeException;
 use Throwable;
 
-class CloneStoreConnector implements SupplierCatalogConnector
+class CloneStoreConnector implements SupplierCatalogConnector, SupplierOrderConnector
 {
     public const V1 = 'clone_store_v1';
 
@@ -38,6 +39,81 @@ class CloneStoreConnector implements SupplierCatalogConnector
             self::V2 => $this->fetchV2Account($supplier),
             default => throw new RuntimeException("Unsupported supplier catalog driver: {$supplier->catalog_driver}"),
         };
+    }
+
+    public function purchase(SupplierModel $supplier, string $externalProductId, int $quantity): array
+    {
+        if ($quantity < 1) {
+            throw new RuntimeException('Supplier purchase quantity must be at least one.');
+        }
+
+        $response = match ($supplier->catalog_driver) {
+            self::V1 => $this->baseClient($supplier, false)
+                ->asForm()
+                ->post('/api/v1/buy', [
+                    'api_key' => $this->apiKey($supplier),
+                    'id_product' => $externalProductId,
+                    'quantity' => $quantity,
+                ]),
+            self::V2 => $this->authenticatedClient($supplier, false)
+                ->post('/api/v2/order/create', [
+                    'category_id' => $externalProductId,
+                    'quantity' => $quantity,
+                ]),
+            default => throw new RuntimeException("Unsupported supplier order driver: {$supplier->catalog_driver}"),
+        };
+
+        $this->throwPurchaseFailure($response->status(), $response->json());
+        $payload = $response->json();
+        if (! is_array($payload)) {
+            throw new RuntimeException('Supplier returned an invalid purchase response.');
+        }
+
+        $orderId = $this->extractOrderId($payload);
+        if ($orderId === null) {
+            throw new RuntimeException('Supplier purchase response is missing its order id.');
+        }
+
+        $result = $this->normalizeOrder($payload, $orderId);
+        if (count($result['resources']) < $quantity) {
+            try {
+                $result = $this->fetchOrder($supplier, $orderId);
+            } catch (Throwable $exception) {
+                throw new SupplierOrderPendingException(
+                    $orderId,
+                    $payload,
+                    previous: $exception,
+                );
+            }
+        }
+        if (count($result['resources']) < $quantity) {
+            throw new SupplierOrderPendingException($orderId, $result['raw']);
+        }
+
+        return $result;
+    }
+
+    public function fetchOrder(SupplierModel $supplier, string $supplierOrderId): array
+    {
+        $response = match ($supplier->catalog_driver) {
+            self::V1 => $this->baseClient($supplier)
+                ->asForm()
+                ->post('/api/v1/order', [
+                    'api_key' => $this->apiKey($supplier),
+                    'order_id' => $supplierOrderId,
+                ]),
+            self::V2 => $this->authenticatedClient($supplier)
+                ->post('/api/v2/order/detail', ['id' => $supplierOrderId]),
+            default => throw new RuntimeException("Unsupported supplier order driver: {$supplier->catalog_driver}"),
+        };
+
+        $response->throw();
+        $payload = $response->json();
+        if (! is_array($payload)) {
+            throw new RuntimeException('Supplier returned an invalid order response.');
+        }
+
+        return $this->normalizeOrder($payload, $supplierOrderId);
     }
 
     public function detectDriver(SupplierModel $supplier): string
@@ -197,12 +273,12 @@ class CloneStoreConnector implements SupplierCatalogConnector
         return $catalog;
     }
 
-    private function authenticatedClient(SupplierModel $supplier): PendingRequest
+    private function authenticatedClient(SupplierModel $supplier, bool $retry = true): PendingRequest
     {
-        return $this->baseClient($supplier)->withToken($this->apiKey($supplier));
+        return $this->baseClient($supplier, $retry)->withToken($this->apiKey($supplier));
     }
 
-    private function baseClient(SupplierModel $supplier): PendingRequest
+    private function baseClient(SupplierModel $supplier, bool $retry = true): PendingRequest
     {
         $target = $this->urlGuard->validatedConnection($supplier->base_url);
         if (! defined('CURLOPT_RESOLVE')) {
@@ -211,7 +287,7 @@ class CloneStoreConnector implements SupplierCatalogConnector
         $address = $target['addresses'][0];
         $curlAddress = str_contains($address, ':') ? "[{$address}]" : $address;
 
-        return Http::baseUrl($target['url'])
+        $client = Http::baseUrl($target['url'])
             ->withOptions([
                 'allow_redirects' => false,
                 'protocols' => ['https'],
@@ -220,8 +296,9 @@ class CloneStoreConnector implements SupplierCatalogConnector
                 ],
             ])
             ->acceptJson()
-            ->timeout(30)
-            ->retry(2, 250);
+            ->timeout(30);
+
+        return $retry ? $client->retry(2, 250) : $client;
     }
 
     private function apiKey(SupplierModel $supplier): string
@@ -232,5 +309,124 @@ class CloneStoreConnector implements SupplierCatalogConnector
         }
 
         return $apiKey;
+    }
+
+    private function throwPurchaseFailure(int $status, mixed $payload): void
+    {
+        $message = is_array($payload)
+            ? (string) ($payload['message'] ?? $payload['error'] ?? $payload['msg'] ?? '')
+            : '';
+        $normalized = mb_strtolower($message);
+
+        if (str_contains($normalized, 'hết')
+            || str_contains($normalized, 'không đủ hàng')
+            || str_contains($normalized, 'không đủ số lượng')
+            || str_contains($normalized, 'out of stock')
+            || str_contains($normalized, 'insufficient stock')) {
+            throw new SupplierOutOfStockException($message ?: 'Supplier is out of stock.');
+        }
+
+        if ($status >= 400 || (is_array($payload) && ($payload['status'] ?? true) === false)) {
+            throw new SupplierPurchaseRejectedException($message ?: 'Supplier purchase failed.');
+        }
+    }
+
+    private function extractOrderId(array $payload): ?string
+    {
+        foreach (['order_id', 'id_order', 'order_code'] as $key) {
+            if (isset($payload[$key]) && is_scalar($payload[$key])) {
+                return (string) $payload[$key];
+            }
+        }
+
+        foreach (['data', 'order', 'result', 'detail'] as $container) {
+            if (is_array($payload[$container] ?? null)) {
+                $orderId = $this->extractOrderId($payload[$container]);
+                if ($orderId !== null) {
+                    return $orderId;
+                }
+            }
+        }
+
+        if (isset($payload['id']) && is_scalar($payload['id'])) {
+            return (string) $payload['id'];
+        }
+
+        return null;
+    }
+
+    /**
+     * @return array{order_id: string, resources: array<int, string>, raw: array}
+     */
+    private function normalizeOrder(array $payload, string $orderId): array
+    {
+        return [
+            'order_id' => $orderId,
+            'resources' => $this->extractResources($payload),
+            'raw' => $payload,
+        ];
+    }
+
+    /**
+     * @return array<int, string>
+     */
+    private function extractResources(mixed $payload): array
+    {
+        if (! is_array($payload)) {
+            return is_string($payload) && trim($payload) !== ''
+                ? array_values(array_filter(array_map('trim', preg_split('/\r\n|\r|\n/', $payload) ?: [])))
+                : [];
+        }
+        if (array_is_list($payload)) {
+            return $this->normalizeResourceList($payload);
+        }
+
+        foreach ([
+            'accounts', 'keys', 'data_export', 'export_data', 'order_data',
+            'product_data', 'data_product', 'products', 'items', 'list_data',
+        ] as $key) {
+            if (array_key_exists($key, $payload)) {
+                $resources = $this->normalizeResourceList($payload[$key]);
+                if ($resources !== []) {
+                    return $resources;
+                }
+            }
+        }
+
+        foreach (['data', 'order', 'result', 'detail', 'order_detail'] as $key) {
+            if (array_key_exists($key, $payload)) {
+                $resources = $this->extractResources($payload[$key]);
+                if ($resources !== []) {
+                    return $resources;
+                }
+            }
+        }
+
+        return [];
+    }
+
+    /**
+     * @return array<int, string>
+     */
+    private function normalizeResourceList(mixed $value): array
+    {
+        if (is_string($value)) {
+            return array_values(array_filter(array_map('trim', preg_split('/\r\n|\r|\n/', $value) ?: [])));
+        }
+        if (! is_array($value)) {
+            return [];
+        }
+        if (! array_is_list($value)) {
+            $nested = $this->extractResources($value);
+
+            return $nested !== [] ? $nested : [json_encode($value, JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES)];
+        }
+
+        return array_values(array_filter(array_map(
+            static fn (mixed $item): string => is_scalar($item)
+                ? trim((string) $item)
+                : json_encode($item, JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES),
+            $value,
+        ), static fn (string $item): bool => $item !== ''));
     }
 }

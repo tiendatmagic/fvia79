@@ -2,9 +2,10 @@
 
 namespace App\Http\Controllers;
 
+use App\Application\Services\OrderService;
 use App\Domain\Exceptions\OrderException;
 use App\Http\Requests\CreateOrderRequest;
-use App\Application\Services\OrderService;
+use App\Infrastructure\Persistence\Eloquent\OrderItemModel;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 
@@ -23,23 +24,28 @@ class OrderController extends Controller
             $userId = Auth::id();
             $itemsInput = $request->items;
             $couponCode = $request->input('coupon_code');
+            $idempotencyKey = $request->input('idempotency_key');
 
-            $order = $this->orderService->createOrder($userId, $itemsInput, $couponCode);
+            $order = $this->orderService->createOrder($userId, $itemsInput, $couponCode, $idempotencyKey);
             $freshUser = Auth::user()->fresh();
 
+            $isPending = $order->isPending();
+
             return response()->json([
-                'message' => 'Order created successfully.',
+                'message' => $isPending
+                    ? 'Order is pending supplier reconciliation.'
+                    : 'Order created successfully.',
                 'user' => [
-                    'id' => (string)$freshUser->id,
-                    'uid' => (string)$freshUser->uid,
+                    'id' => (string) $freshUser->id,
+                    'uid' => (string) $freshUser->uid,
                     'username' => $freshUser->username,
                     'name' => $freshUser->name,
                     'email' => $freshUser->email,
                     'phone' => $freshUser->phone,
                     'role' => $freshUser->role,
                     'google2fa_enabled' => $freshUser->google2fa_enabled,
-                    'balance' => (float)$freshUser->balance,
-                    'api_key' => $freshUser->api_key
+                    'balance' => (float) $freshUser->balance,
+                    'api_key' => $freshUser->api_key,
                 ],
                 'order' => [
                     'id' => $order->getId(),
@@ -47,9 +53,9 @@ class OrderController extends Controller
                     'total_price' => $order->getTotalPrice(),
                     'discount_amount' => $order->getDiscountAmount(),
                     'status' => $order->getStatus(),
-                    'created_at' => $order->getCreatedAt()?->format('Y-m-d H:i:s')
-                ]
-            ], 201);
+                    'created_at' => $order->getCreatedAt()?->format('Y-m-d H:i:s'),
+                ],
+            ], $isPending ? 202 : 201);
         } catch (OrderException $e) {
             return response()->json(['message' => $e->getMessage()], 400);
         } catch (\Throwable $e) {
@@ -72,11 +78,11 @@ class OrderController extends Controller
 
             if ($page) {
                 if ($isAdmin) {
-                    $result = $this->orderService->getAllOrdersPaginated((int)$page, (int)$limit, $status, $search, $startDate, $endDate);
+                    $result = $this->orderService->getAllOrdersPaginated((int) $page, (int) $limit, $status, $search, $startDate, $endDate);
                 } else {
-                    $result = $this->orderService->getOrdersByUserPaginated($user->id, (int)$page, (int)$limit, $status, $search, $startDate, $endDate);
+                    $result = $this->orderService->getOrdersByUserPaginated($user->id, (int) $page, (int) $limit, $status, $search, $startDate, $endDate);
                 }
-                
+
                 $orders = $result['items'];
                 $total = $result['total'];
 
@@ -92,7 +98,7 @@ class OrderController extends Controller
                         'coupon_code' => $isAdmin ? $order->getCouponCode() : null,
                         'status' => $order->getStatus(),
                         'created_at' => $order->getCreatedAt()?->format('Y-m-d H:i:s'),
-                        'items_count' => count($order->getItems())
+                        'items_count' => count($order->getItems()),
                     ];
                 }, $orders);
 
@@ -100,10 +106,10 @@ class OrderController extends Controller
                     'data' => $data,
                     'meta' => [
                         'total' => $total,
-                        'page' => (int)$page,
-                        'limit' => (int)$limit,
-                        'last_page' => (int)ceil($total / $limit)
-                    ]
+                        'page' => (int) $page,
+                        'limit' => (int) $limit,
+                        'last_page' => (int) ceil($total / $limit),
+                    ],
                 ]);
             }
 
@@ -125,7 +131,7 @@ class OrderController extends Controller
                     'coupon_code' => $isAdmin ? $order->getCouponCode() : null,
                     'status' => $order->getStatus(),
                     'created_at' => $order->getCreatedAt()?->format('Y-m-d H:i:s'),
-                    'items_count' => count($order->getItems())
+                    'items_count' => count($order->getItems()),
                 ];
             }, $orders);
 
@@ -139,14 +145,14 @@ class OrderController extends Controller
     {
         try {
             $user = Auth::user();
-            
+
             $details = $this->orderService->getOrderDetails(
                 $id,
-                (string)$user->id,
+                (string) $user->id,
                 $user->role
             );
 
-            if (!$details) {
+            if (! $details) {
                 return response()->json(['message' => 'Order not found.'], 404);
             }
 
@@ -154,12 +160,18 @@ class OrderController extends Controller
             $isAdmin = $user->role === 'admin';
 
             $itemsData = array_map(function ($item) {
+                $model = OrderItemModel::find($item->getId());
+
                 return [
                     'id' => $item->getId(),
                     'product_id' => $item->getProductId(),
                     'product_name' => $item->getProductName(),
                     'price' => $item->getPrice(),
-                    'quantity' => $item->getQuantity()
+                    'quantity' => $item->getQuantity(),
+                    'supplier_quantity' => $model?->supplier_quantity ?? 0,
+                    'local_quantity' => $model?->local_quantity ?? $item->getQuantity(),
+                    'supplier_order_id' => $model?->supplier_order_id,
+                    'supplier_code' => $model?->supplier_code,
                 ];
             }, $order->getItems());
 
@@ -170,7 +182,7 @@ class OrderController extends Controller
                     $accountsData[] = [
                         'id' => null,
                         'product_id' => $item->getProductId(),
-                        'data' => $key
+                        'data' => $key,
                     ];
                 }
             }
@@ -184,7 +196,7 @@ class OrderController extends Controller
                 'status' => $order->getStatus(),
                 'created_at' => $order->getCreatedAt()?->format('Y-m-d H:i:s'),
                 'items' => $itemsData,
-                'accounts' => $accountsData
+                'accounts' => $accountsData,
             ]);
         } catch (OrderException $e) {
             return response()->json(['message' => $e->getMessage()], 403);

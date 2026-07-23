@@ -2,14 +2,14 @@
 
 namespace App\Infrastructure\Persistence\Eloquent;
 
-use Illuminate\Database\Eloquent\Model;
-use Illuminate\Database\Eloquent\Concerns\HasUuids;
 use Illuminate\Database\Eloquent\Attributes\Fillable;
+use Illuminate\Database\Eloquent\Concerns\HasUuids;
+use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Support\Str;
 
-#[Fillable(['user_id', 'order_code', 'total_price', 'status', 'coupon_code', 'discount_amount', 'coupon_id'])]
+#[Fillable(['user_id', 'order_code', 'idempotency_key', 'total_price', 'status', 'coupon_code', 'discount_amount', 'coupon_id'])]
 class OrderModel extends Model
 {
     use HasUuids;

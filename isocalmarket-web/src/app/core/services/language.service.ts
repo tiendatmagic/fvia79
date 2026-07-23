@@ -416,6 +416,11 @@ export const TRANSLATIONS: Record<SupportedLanguage, Record<string, string>> = {
     'orders.product_name': 'Product Name',
     'orders.count': 'Quantity',
     'orders.total_price': 'Total Price',
+    'orders.from_supplier': 'Supplier',
+    'orders.from_local_stock': 'Local inventory',
+    'orders.supplier_order': 'Supplier order',
+    'cart.order_pending_supplier':
+      'The order is pending supplier reconciliation. It will not be purchased twice.',
     'orders.created_at': 'Created At',
     'orders.status': 'Status',
     'orders.status_completed': 'Completed',
@@ -1893,6 +1898,11 @@ export const TRANSLATIONS: Record<SupportedLanguage, Record<string, string>> = {
     'orders.product_name': 'Tên sản phẩm',
     'orders.count': 'Số lượng',
     'orders.total_price': 'Tổng tiền',
+    'orders.from_supplier': 'Nhà cung cấp',
+    'orders.from_local_stock': 'Kho nội bộ',
+    'orders.supplier_order': 'Đơn nhà cung cấp',
+    'cart.order_pending_supplier':
+      'Đơn hàng đang chờ đối soát nhà cung cấp và sẽ không bị mua trùng.',
     'orders.created_at': 'Thời gian tạo',
     'orders.status': 'Trạng thái',
     'orders.status_completed': 'Hoàn thành',

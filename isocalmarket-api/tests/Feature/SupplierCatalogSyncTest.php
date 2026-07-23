@@ -356,6 +356,33 @@ class SupplierCatalogSyncTest extends TestCase
             && $request['api_key'] === 'v1-test-key');
     }
 
+    public function test_it_purchases_and_normalizes_a_v1_supplier_order(): void
+    {
+        Http::fake([
+            'https://vlclone.com/api/v1/buy' => Http::response([
+                'status' => true,
+                'order_id' => 'V1-ORDER-1',
+                'data' => ['account-1|password-1', 'account-2|password-2'],
+            ]),
+        ]);
+        $supplier = new SupplierModel([
+            'code' => 'vlclone',
+            'name' => 'VLClone',
+            'base_url' => 'https://vlclone.com',
+            'api_key' => 'v1-test-key',
+            'catalog_driver' => CloneStoreConnector::V1,
+        ]);
+
+        $result = app(CloneStoreConnector::class)->purchase($supplier, '99', 2);
+
+        $this->assertSame('V1-ORDER-1', $result['order_id']);
+        $this->assertSame(['account-1|password-1', 'account-2|password-2'], $result['resources']);
+        Http::assertSent(fn ($request) => $request->url() === 'https://vlclone.com/api/v1/buy'
+            && $request['api_key'] === 'v1-test-key'
+            && $request['id_product'] === '99'
+            && $request['quantity'] === 2);
+    }
+
     public function test_supplier_account_endpoint_requires_post_and_returns_allowlisted_data(): void
     {
         Http::fake([
