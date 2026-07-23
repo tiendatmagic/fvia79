@@ -76,6 +76,7 @@ export class InventoryComponent implements OnInit {
       { key: 'id', label: this.lang.translate('common.id'), sortable: true },
       { key: 'product_id', label: this.lang.translate('modal.product_name'), sortable: true },
       { key: 'batch_name', label: this.lang.translate('inv.batch_name'), sortable: true },
+      { key: 'cost_price', label: this.lang.translate('inv.cost_price'), sortable: true, align: 'right' },
       { key: 'available_count', label: this.lang.translate('inv.in_stock'), sortable: true, align: 'center' },
       { key: 'status', label: this.lang.translate('common.status'), sortable: true, align: 'center' },
       { key: 'actions', label: this.lang.translate('common.actions'), sortable: false, align: 'right' }

@@ -9,6 +9,7 @@ class OrderItem
     private string $productId;
     private string $productName;
     private float $price;
+    private ?float $costPrice;
     private int $quantity;
     private ?array $deliveredKeys;
 
@@ -19,13 +20,15 @@ class OrderItem
         string $productName,
         float $price,
         int $quantity,
-        ?array $deliveredKeys = null
+        ?array $deliveredKeys = null,
+        ?float $costPrice = 0.0
     ) {
         $this->id = $id;
         $this->orderId = $orderId;
         $this->productId = $productId;
         $this->productName = $productName;
         $this->price = $price;
+        $this->costPrice = $costPrice ?? 0.0;
         $this->quantity = $quantity;
         $this->deliveredKeys = $deliveredKeys;
     }
@@ -53,6 +56,11 @@ class OrderItem
     public function getPrice(): float
     {
         return $this->price;
+    }
+
+    public function getCostPrice(): float
+    {
+        return $this->costPrice ?? 0.0;
     }
 
     public function getQuantity(): int

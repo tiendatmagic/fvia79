@@ -110,12 +110,13 @@ export class InventoryStore {
     return subject.asObservable();
   }
 
-  public importItems(productId: number, batchName: string, rawData: string) {
+  public importItems(productId: string | number, batchName: string, rawData: string, costPrice?: number | null) {
     this.loading.set(true);
     return this.api.post<any>('v1/inventory/import', {
       product_id: productId,
       batch_name: batchName,
-      raw_data: rawData
+      raw_data: rawData,
+      cost_price: costPrice ?? null
     }).pipe(
       tap((res) => {
         this.clearCache();
@@ -134,7 +135,7 @@ export class InventoryStore {
     return this.api.get<any>(`v1/inventory/items/${id}`);
   }
  
-  public updateItem(id: string, payload: { product_id: string; batch_name: string; keys_pool: string; status: string; last_updated_at?: string }) {
+  public updateItem(id: string, payload: { product_id: string; batch_name: string; cost_price?: number | null; keys_pool: string; status: string; last_updated_at?: string }) {
     this.loading.set(true);
     return this.api.put<any>(`v1/inventory/items/${id}`, payload).pipe(
       tap(() => {

@@ -17,6 +17,7 @@ class ImportInventoryRequest extends FormRequest
             'product_id' => 'required|exists:products,id',
             'batch_name' => 'required|string',
             'raw_data' => 'required|string',
+            'cost_price' => 'nullable|numeric|min:0',
         ];
     }
 }

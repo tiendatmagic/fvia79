@@ -37,6 +37,7 @@ export class EditInventoryModalComponent implements OnInit {
   public itemId = '';
   public editProductId = '';
   public batchName = '';
+  public costPrice: number | null = null;
   public keysPool = '';
   public status = 'active';
   public lastUpdatedAt = '';
@@ -58,6 +59,7 @@ export class EditInventoryModalComponent implements OnInit {
       this.itemId = String(item.id ?? '');
       this.editProductId = String(item.product_id ?? '');
       this.batchName = item.batch_name || '';
+      this.costPrice = item.cost_price !== null && item.cost_price !== undefined ? Number(item.cost_price) : null;
       this.keysPool = item.keys_pool || '';
       this.status = item.status || 'active';
       this.lastUpdatedAt = item.updated_at || item.last_updated_at || '';
@@ -86,6 +88,7 @@ export class EditInventoryModalComponent implements OnInit {
     this.state.inventoryStore.updateItem(this.itemId, {
       product_id: this.editProductId,
       batch_name: this.batchName,
+      cost_price: this.costPrice !== null && this.costPrice !== undefined ? Number(this.costPrice) : null,
       keys_pool: this.keysPool,
       status: this.status,
       last_updated_at: this.lastUpdatedAt

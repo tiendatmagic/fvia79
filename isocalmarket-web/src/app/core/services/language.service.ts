@@ -360,7 +360,11 @@ export const TRANSLATIONS: Record<SupportedLanguage, Record<string, string>> = {
     'inv.title': 'Digital Inventory Management',
     'inv.description': 'Track stock levels, import batches and account distribution.',
     'inv.batch_name': 'Batch Name',
+    'inv.cost_price': 'Cost Price',
     'inv.resource_data': 'Resource Data (Formatted: User|Pass|2FA...)',
+    'dash.total_cogs': 'Total COGS',
+    'dash.total_profit': 'Gross Profit',
+    'dash.profit_margin': 'Profit Margin',
 
     'ord.admin_title': 'Orders Management',
     'ord.admin_description': 'Review customer purchase transactions and distribution history.',
@@ -1510,7 +1514,11 @@ export const TRANSLATIONS: Record<SupportedLanguage, Record<string, string>> = {
     'inv.title': 'Quản Lý Kho Hàng Số',
     'inv.description': 'Theo dõi tồn kho, nhập lô tài khoản mới và kiểm soát phân phối.',
     'inv.batch_name': 'Tên lô hàng',
+    'inv.cost_price': 'Giá gốc / Giá vốn',
     'inv.resource_data': 'Dữ liệu tài nguyên (Định dạng: User|Pass|2FA...)',
+    'dash.total_cogs': 'Tổng Giá Vốn (Chi phí nhập)',
+    'dash.total_profit': 'Tổng Tiền Lãi (Lợi nhuận)',
+    'dash.profit_margin': 'Tỷ Suất Lợi Nhuận',
 
     'ord.admin_title': 'Quản Lý Đơn Hàng',
     'ord.admin_description': 'Quản lý danh sách đơn hàng đã mua và trạng thái tài nguyên.',

@@ -44,6 +44,43 @@ class DashboardController extends Controller
                 $totalProducts = ProductModel::where('status', 'active')->count();
                 $totalUsers = UserModel::count();
 
+                $cogsQuery = \App\Infrastructure\Persistence\Eloquent\OrderItemModel::query()
+                    ->join('orders', 'order_items.order_id', '=', 'orders.id')
+                    ->where('orders.status', 'paid');
+
+                $chartQuery = \App\Infrastructure\Persistence\Eloquent\OrderItemModel::query()
+                    ->join('orders', 'order_items.order_id', '=', 'orders.id')
+                    ->where('orders.status', 'paid')
+                    ->selectRaw('DATE(orders.created_at) as date, SUM(order_items.quantity * order_items.price) as revenue, SUM(order_items.quantity * order_items.cost_price) as cogs')
+                    ->groupBy(\Illuminate\Support\Facades\DB::raw('DATE(orders.created_at)'))
+                    ->orderBy('date', 'asc');
+
+                if ($startDate) {
+                    $start = strlen($startDate) === 10 ? $startDate . ' 00:00:00' : $startDate;
+                    $cogsQuery->where('orders.created_at', '>=', $start);
+                    $chartQuery->where('orders.created_at', '>=', $start);
+                }
+                if ($endDate) {
+                    $end = strlen($endDate) === 10 ? $endDate . ' 23:59:59' : $endDate;
+                    $cogsQuery->where('orders.created_at', '<=', $end);
+                    $chartQuery->where('orders.created_at', '<=', $end);
+                }
+
+                $totalCogs = (float) $cogsQuery->sum(\Illuminate\Support\Facades\DB::raw('order_items.quantity * order_items.cost_price'));
+                $totalProfit = $totalRevenue - $totalCogs;
+                $profitMarginPercent = $totalRevenue > 0 ? round(($totalProfit / $totalRevenue) * 100, 2) : 0.0;
+
+                $financialChart = $chartQuery->get()->map(function ($row) {
+                    $rev = (float) $row->revenue;
+                    $cogs = (float) $row->cogs;
+                    return [
+                        'date' => $row->date,
+                        'revenue' => $rev,
+                        'cogs' => $cogs,
+                        'profit' => $rev - $cogs
+                    ];
+                })->toArray();
+
                 $totalAvailableInventory = (int) InventoryBatchModel::where('status', '!=', 'inactive')
                     ->selectRaw('SUM(initial_count - sold_count) as total')
                     ->value('total') ?? 0;
@@ -78,6 +115,8 @@ class DashboardController extends Controller
                     $productQuery->where('products.name', 'like', "%{$lowStockSearch}%");
                 }
 
+                $productQuery->groupBy('products.id', 'products.name', 'products.slug', 'products.price', 'products.created_at');
+
                 if ($compareMode === 'gte') {
                     $productQuery->having('available_count', '>=', $threshold);
                 } else {
@@ -101,6 +140,10 @@ class DashboardController extends Controller
 
                 return [
                     'total_revenue' => $totalRevenue,
+                    'total_cogs' => $totalCogs,
+                    'total_profit' => $totalProfit,
+                    'profit_margin_percent' => $profitMarginPercent,
+                    'financial_chart' => $financialChart,
                     'total_orders' => $totalOrders,
                     'total_products' => $totalProducts,
                     'total_available_inventory' => $totalAvailableInventory,

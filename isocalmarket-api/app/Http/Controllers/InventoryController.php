@@ -19,10 +19,12 @@ class InventoryController extends Controller
     public function import(ImportInventoryRequest $request)
     {
         try {
+            $costPrice = $request->has('cost_price') && $request->cost_price !== null ? (float) $request->cost_price : null;
             $batch = $this->inventoryService->importBatch(
                 $request->product_id,
                 $request->batch_name,
-                $request->raw_data
+                $request->raw_data,
+                $costPrice
             );
 
             return response()->json([
@@ -31,6 +33,7 @@ class InventoryController extends Controller
                     'id' => $batch->getId(),
                     'product_id' => $batch->getProductId(),
                     'batch_name' => $batch->getBatchName(),
+                    'cost_price' => $batch->getCostPrice(),
                     'initial_count' => $batch->getInitialCount(),
                     'sold_count' => $batch->getSoldCount(),
                     'available_count' => $batch->getAvailableCount(),
@@ -57,6 +60,7 @@ class InventoryController extends Controller
                 'id' => $item->getId(),
                 'product_id' => $item->getProductId(),
                 'batch_name' => $item->getBatchName(),
+                'cost_price' => $item->getCostPrice(),
                 'keys_pool' => $item->getKeysPool(),
                 'initial_count' => $item->getInitialCount(),
                 'sold_count' => $item->getSoldCount(),
@@ -92,6 +96,7 @@ class InventoryController extends Controller
                         'id' => $item->getId(),
                         'product_id' => $item->getProductId(),
                         'batch_name' => $item->getBatchName(),
+                        'cost_price' => $item->getCostPrice(),
                         'keys_pool' => $item->getKeysPool(),
                         'initial_count' => $item->getInitialCount(),
                         'sold_count' => $item->getSoldCount(),
@@ -119,6 +124,7 @@ class InventoryController extends Controller
                     'id' => $item->getId(),
                     'product_id' => $item->getProductId(),
                     'batch_name' => $item->getBatchName(),
+                    'cost_price' => $item->getCostPrice(),
                     'keys_pool' => $item->getKeysPool(),
                     'initial_count' => $item->getInitialCount(),
                     'sold_count' => $item->getSoldCount(),
@@ -148,6 +154,7 @@ class InventoryController extends Controller
                     'id' => $updated->getId(),
                     'product_id' => $updated->getProductId(),
                     'batch_name' => $updated->getBatchName(),
+                    'cost_price' => $updated->getCostPrice(),
                     'keys_pool' => $updated->getKeysPool(),
                     'initial_count' => $updated->getInitialCount(),
                     'sold_count' => $updated->getSoldCount(),

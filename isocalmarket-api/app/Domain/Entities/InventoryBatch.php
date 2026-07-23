@@ -8,6 +8,7 @@ class InventoryBatch
     private string $productId;
     private string $batchName;
     private ?string $keysPool;
+    private ?float $costPrice;
     private int $initialCount;
     private int $soldCount;
     private string $status;
@@ -23,12 +24,14 @@ class InventoryBatch
         int $soldCount = 0,
         string $status = 'active',
         ?\DateTimeInterface $createdAt = null,
-        ?\DateTimeInterface $updatedAt = null
+        ?\DateTimeInterface $updatedAt = null,
+        ?float $costPrice = null
     ) {
         $this->id = $id;
         $this->productId = $productId;
         $this->batchName = $batchName;
         $this->keysPool = $keysPool;
+        $this->costPrice = $costPrice;
         $this->initialCount = $initialCount;
         $this->soldCount = $soldCount;
         $this->status = $status;
@@ -54,6 +57,16 @@ class InventoryBatch
     public function getKeysPool(): ?string
     {
         return $this->keysPool;
+    }
+
+    public function getCostPrice(): ?float
+    {
+        return $this->costPrice;
+    }
+
+    public function setCostPrice(?float $costPrice): void
+    {
+        $this->costPrice = $costPrice;
     }
 
     public function getInitialCount(): int

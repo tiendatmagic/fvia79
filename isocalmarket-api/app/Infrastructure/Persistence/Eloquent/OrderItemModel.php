@@ -9,7 +9,7 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Support\Str;
 use Illuminate\Support\Facades\Crypt;
 
-#[Fillable(['order_id', 'product_id', 'product_name', 'price', 'quantity', 'delivered_keys'])]
+#[Fillable(['order_id', 'product_id', 'product_name', 'price', 'cost_price', 'quantity', 'delivered_keys'])]
 class OrderItemModel extends Model
 {
     use HasUuids;
@@ -25,6 +25,7 @@ class OrderItemModel extends Model
     {
         return [
             'price' => 'float',
+            'cost_price' => 'float',
             'quantity' => 'integer',
         ];
     }

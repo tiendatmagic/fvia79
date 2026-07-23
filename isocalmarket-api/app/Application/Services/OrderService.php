@@ -63,6 +63,7 @@ class OrderService
 
                 $deliveredKeys = [];
                 $neededQuantity = $quantity;
+                $totalCostPriceForItem = 0.0;
 
                 foreach ($activeBatches as $batch) {
                     if ($neededQuantity <= 0) {
@@ -78,6 +79,9 @@ class OrderService
                     $deliveredKeys = array_merge($deliveredKeys, $popped);
                     $neededQuantity -= $takeCount;
 
+                    $batchCost = $batch->getCostPrice() ?? 0.0;
+                    $totalCostPriceForItem += $batchCost * $takeCount;
+
                     $batchesToSave[] = $batch;
                 }
 
@@ -87,6 +91,7 @@ class OrderService
 
                 $itemPrice = $product->getPrice();
                 $totalPrice += $itemPrice * $quantity;
+                $unitCostPrice = $quantity > 0 ? ($totalCostPriceForItem / $quantity) : 0.0;
 
                 $orderItems[] = new OrderItem(
                     null,
@@ -95,7 +100,8 @@ class OrderService
                     $product->getName(),
                     $itemPrice,
                     $quantity,
-                    $deliveredKeys
+                    $deliveredKeys,
+                    $unitCostPrice
                 );
             }
 

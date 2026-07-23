@@ -28,6 +28,7 @@ class OrderRepository implements OrderRepositoryInterface
                 $itemModel->product_id = $item->getProductId();
                 $itemModel->product_name = $item->getProductName();
                 $itemModel->price = $item->getPrice();
+                $itemModel->cost_price = $item->getCostPrice();
                 $itemModel->quantity = $item->getQuantity();
                 $itemModel->delivered_keys = $item->getDeliveredKeys();
                 $itemModel->save();

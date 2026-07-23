@@ -18,7 +18,8 @@ class InventoryBatchMapper
             $model->sold_count,
             $model->status,
             $model->created_at,
-            $model->updated_at
+            $model->updated_at,
+            $model->cost_price
         );
     }
 
@@ -31,6 +32,7 @@ class InventoryBatchMapper
 
         $model->product_id = $entity->getProductId();
         $model->batch_name = $entity->getBatchName();
+        $model->cost_price = $entity->getCostPrice();
         $model->initial_count = $entity->getInitialCount();
         $model->sold_count = $entity->getSoldCount();
         $model->status = $entity->getStatus();

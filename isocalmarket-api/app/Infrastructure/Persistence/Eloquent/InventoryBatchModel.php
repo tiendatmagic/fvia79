@@ -9,12 +9,19 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Support\Str;
 
-#[Fillable(['product_id', 'batch_name', 'initial_count', 'sold_count', 'status'])]
+#[Fillable(['product_id', 'batch_name', 'cost_price', 'initial_count', 'sold_count', 'status'])]
 class InventoryBatchModel extends Model
 {
     use HasUuids, NormalizeTextTrait;
 
     protected $table = 'inventory_batches';
+
+    protected function casts(): array
+    {
+        return [
+            'cost_price' => 'float',
+        ];
+    }
 
     protected static function booted()
     {

@@ -25,7 +25,7 @@ class InventoryService
         $this->productRepository = $productRepository;
     }
 
-    public function importBatch(string $productId, string $batchName, string $rawData): InventoryBatch
+    public function importBatch(string $productId, string $batchName, string $rawData, ?float $costPrice = null): InventoryBatch
     {
         $product = $this->productRepository->findById($productId);
         if (!$product) {
@@ -53,7 +53,10 @@ class InventoryService
             implode("\n", $cleanKeys),
             $initialCount,
             0,
-            'active'
+            'active',
+            null,
+            null,
+            $costPrice
         );
 
         $saved = $this->inventoryRepository->save($batch);
@@ -80,6 +83,7 @@ class InventoryService
         $batchName = $data['batch_name'] ?? $batch->getBatchName();
         $keysPool = $data['keys_pool'] ?? $batch->getKeysPool();
         $status = $data['status'] ?? $batch->getStatus();
+        $costPrice = array_key_exists('cost_price', $data) ? ($data['cost_price'] !== null ? (float) $data['cost_price'] : null) : $batch->getCostPrice();
 
         $lines = preg_split('/\r\n|\r|\n/', $keysPool);
         $cleanKeys = array_filter(array_map('trim', $lines), fn($k) => !empty($k));
@@ -103,7 +107,8 @@ class InventoryService
             $soldCount,
             $status,
             $batch->getCreatedAt(),
-            $batch->getUpdatedAt()
+            new \DateTime(),
+            $costPrice
         );
 
         $saved = $this->inventoryRepository->save($updatedBatch);

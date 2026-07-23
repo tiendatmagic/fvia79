@@ -13,6 +13,25 @@
 > Khi cần seed dữ liệu cho một seeder cụ thể, chỉ dùng:
 > - `php artisan db:seed --class=TenSeederClass` — chạy đúng 1 seeder.
 
+- **[TRIỂN KHẢI TÍNH NĂNG TÍNH TIỀN LÃI, GIÁ VỐN VÀ BÁO CÁO TÀI CHÍNH Ở TRANG TỔNG QUAN (ADMIN DASHBOARD PROFIT CALCULATION)]**:
+  - **Database Migration (`2026_07_23_000005_add_cost_price_to_inventory_batches_and_order_items.php`)**: Bổ sung cột `cost_price` (`DECIMAL(15,2)`, `nullable`, `default null`) vào bảng Lô hàng (`inventory_batches`) và `order_items` (`default 0.00`).
+  - **Phân Định Rõ Ràng Giá Gốc & Giá Bán**:
+    - **Giá vốn / Giá gốc (`cost_price`)**: Lưu ở cấp Lô hàng (`inventory_batches`), đại diện cho chi phí nhập lô tài khoản vào kho. Admin có thể nhập hoặc bỏ trống (nếu = 0 đ hoặc không theo dõi).
+    - **Giá bán (`price`)**: Lưu ở sản phẩm (`products.price`) / đơn hàng (`order_items.price`).
+    - **Snapshot Giá vốn**: Khi khách hàng mua thành công, `OrderService` tự động chụp snapshot giá vốn từ Lô xuất kho lưu vào `order_items.cost_price` (tính theo weighted average nếu xuất từ nhiều lô), giúp báo cáo tiền lãi quá khứ luôn chính xác 100% dù giá gốc tương lai có thay đổi.
+  - **Backend Calculation (`DashboardController.php`)**: Mở rộng API `/v1/admin/dashboard-stats` tính toán tự động:
+    - `total_cogs`: Tổng Giá Vốn (Chi phí nhập).
+    - `total_profit`: Tổng Tiền Lãi (Lợi nhuận gộp = `total_revenue - total_cogs`).
+    - `profit_margin_percent`: Tỷ Suất Lợi Nhuận % (`(total_profit / total_revenue) * 100`).
+    - `financial_chart`: Danh sách chi tiết Doanh Thu, Giá Vốn và Lãi Net theo từng ngày/tháng trong khoảng thời gian lọc.
+  - **Giao diện Quản Lý Kho (`InventoryComponent`, `ImportInventoryModalComponent`, `EditInventoryModalComponent`)**:
+    - Thêm ô nhập **Giá gốc / Giá vốn (`cost_price`)** *(không bắt buộc)* khi Nhập kho mới hoặc Chỉnh sửa Lô hàng.
+    - Hiển thị cột **Giá gốc** trên bảng Danh Sách Lô Hàng.
+  - **Giao diện Dashboard (`AdminDashboardComponent`)**:
+    - Thiết kế 3 Thẻ chỉ số nổi bật: 💰 **Tổng Tiền Lãi (Lợi Nhuận)**, 📦 **Tổng Giá Vốn (Chi Phí Nhập)**, 📈 **Tỷ Suất Lợi Nhuận (%)**.
+    - Thêm Card **Báo Cáo Phân Tích Lợi Nhuận & Tài Chính**: Thanh visual progress bar phân rã tỷ lệ Lãi Gộp vs Chi Phí Vốn trên Doanh thu, kèm danh sách chi tiết lợi nhuận theo từng ngày.
+  - **Đã kiểm thử toàn diện**: Backend `php artisan test` vượt qua **56/56 test cases (100% PASSED)**, biên dịch Angular `npm run build` hoàn tất thành công 100%!
+
 - **[NÂNG CẤP DATETIME PICKER UI CHO QUẢN LÝ MÃ GIẢM GIÁ (COUPONS DATETIME UI)]**:
   - Nâng cấp component `CustomDatePickerComponent` (`custom-date-picker`): Bổ sung chế độ chọn Ngày + Giờ linh hoạt (`@Input() enableTime: boolean = false`), tích hợp bộ chọn Giờ (00-23) và Phút (00-59) mượt mà với hiệu ứng theme thích ứng Light/Dark mode.
   - Tắt hiển thị các nút chọn nhanh thời gian (7 ngày, 1 tháng, 3 tháng, 6 tháng, 1 năm) theo mặc định bằng cách đặt `@Input() showPresets: boolean = false` giúp giao diện popover ngày tháng gọn gàng, tập trung.

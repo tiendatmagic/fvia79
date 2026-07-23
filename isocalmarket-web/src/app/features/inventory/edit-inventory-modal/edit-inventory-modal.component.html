@@ -25,16 +25,30 @@
     </div>
   </div>
 
-  <div class="form-field">
-    <label class="text-xs font-black text-slate-400 uppercase tracking-wider block mb-2"
-      >{{ 'inv.batch_name' | translate }} <span class="text-red-500">*</span></label
-    >
-    <app-custom-input
-      [placeholder]="'inv.batch_name' | translate"
-      [(ngModel)]="batchName"
-      name="batchName"
-      type="text"
-    />
+  <div class="grid grid-cols-1 sm:grid-cols-2 gap-6">
+    <div class="form-field">
+      <label class="text-xs font-black text-slate-400 uppercase tracking-wider block mb-2"
+        >{{ 'inv.batch_name' | translate }} <span class="text-red-500">*</span></label
+      >
+      <app-custom-input
+        [placeholder]="'inv.batch_name' | translate"
+        [(ngModel)]="batchName"
+        name="batchName"
+        type="text"
+      />
+    </div>
+
+    <div class="form-field">
+      <label class="text-xs font-black text-slate-400 uppercase tracking-wider block mb-2 flex items-center justify-between"
+        ><span>{{ 'inv.cost_price' | translate }}</span> <span class="text-[10px] text-slate-400 font-normal">({{ 'common.optional' | translate }})</span></label
+      >
+      <app-custom-input
+        [placeholder]="'VD: 15000 (Để trống = 0)'"
+        [(ngModel)]="costPrice"
+        name="costPrice"
+        type="number"
+      />
+    </div>
   </div>
 
   <div class="form-field">

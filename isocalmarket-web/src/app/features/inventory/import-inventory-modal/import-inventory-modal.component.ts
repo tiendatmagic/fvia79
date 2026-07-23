@@ -36,6 +36,7 @@ export class ImportInventoryModalComponent implements OnInit {
 
   public importProductId = '';
   public batchName = '';
+  public costPrice: number | null = null;
   public rawData = '';
   public productOptions: any[] = [];
   public readonly isSubmitting = signal(false);
@@ -118,7 +119,8 @@ export class ImportInventoryModalComponent implements OnInit {
     this.state.inventoryStore.importItems(
       this.importProductId as any,
       this.batchName,
-      this.rawData
+      this.rawData,
+      this.costPrice !== null && this.costPrice !== undefined ? Number(this.costPrice) : null
     ).pipe(
       finalize(() => this.isSubmitting.set(false))
     ).subscribe((res) => {
