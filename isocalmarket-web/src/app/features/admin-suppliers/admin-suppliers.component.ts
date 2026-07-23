@@ -6,7 +6,7 @@ import { ToastService } from '@core/services/toast.service';
 import { SupplierSettings, SupplierStore } from './supplier.store';
 import { ButtonComponent } from '@shared/components/button/button.component';
 import { CardComponent } from '@shared/components/card/card.component';
-import { CustomCheckboxComponent } from '@shared/components/custom-checkbox/custom-checkbox.component';
+import { CustomSwitchComponent } from '@shared/components/custom-switch/custom-switch.component';
 import { IconComponent } from '@shared/components/icon/icon.component';
 import { PageHeaderComponent } from '@shared/components/page-header/page-header.component';
 import { TranslatePipe } from '@shared/pipes/translate.pipe';
@@ -20,7 +20,7 @@ import { TranslatePipe } from '@shared/pipes/translate.pipe';
     PageHeaderComponent,
     CardComponent,
     ButtonComponent,
-    CustomCheckboxComponent,
+    CustomSwitchComponent,
     IconComponent,
     TranslatePipe
   ],

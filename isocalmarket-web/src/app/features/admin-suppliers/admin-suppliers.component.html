@@ -41,12 +41,19 @@
           {{ supplierForm.last_synced_at ? (supplierForm.last_synced_at | date: 'short') : ('supplier.never' | translate) }}
         </p>
       </div>
-      @if (!isCreatingSupplier()) {
-        <button app-button variant="primary" type="button" (click)="syncSupplier()"
-          [loading]="supplierStore.syncing()" [disabled]="supplierStore.syncing() || !supplierForm.enabled">
-          {{ 'supplier.sync_now' | translate }}
-        </button>
-      }
+      <div class="flex flex-col items-stretch gap-3 sm:items-end">
+        <app-custom-switch
+          [checked]="supplierForm.enabled ?? false"
+          (checkedChange)="supplierForm.enabled = $event"
+          [label]="'supplier.enabled' | translate"
+        />
+        @if (!isCreatingSupplier()) {
+          <button app-button variant="primary" type="button" (click)="syncSupplier()"
+            [loading]="supplierStore.syncing()" [disabled]="supplierStore.syncing() || !supplierForm.enabled">
+            {{ 'supplier.sync_now' | translate }}
+          </button>
+        }
+      </div>
     </div>
 
     @if (supplierForm.last_sync_error) {
@@ -106,15 +113,12 @@
             <option [ngValue]="30">30 {{ 'supplier.minutes' | translate }}</option>
           </select>
         </div>
-        <div class="flex flex-col justify-center gap-3 pt-5">
-          <app-custom-checkbox
-            [(ngModel)]="supplierForm.enabled"
-            name="enabled"
-            [label]="'supplier.enabled' | translate"
-          />
-          <app-custom-checkbox
-            [(ngModel)]="supplierForm.auto_sync"
-            name="auto_sync"
+        <div class="flex items-end">
+          <app-custom-switch
+            class="w-full"
+            type="full"
+            [checked]="supplierForm.auto_sync ?? false"
+            (checkedChange)="supplierForm.auto_sync = $event"
             [label]="'supplier.auto_sync' | translate"
           />
         </div>
