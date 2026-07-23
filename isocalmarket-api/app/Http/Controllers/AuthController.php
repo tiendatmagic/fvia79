@@ -285,6 +285,13 @@ class AuthController extends Controller
         $user = Auth::user();
         if ($user) {
             $this->authService->logout($user->id);
+
+            $currentSessionId = $request->attributes->get('current_session_id');
+            if ($currentSessionId) {
+                UserSessionModel::where('id', $currentSessionId)
+                    ->where('user_id', $user->id)
+                    ->delete();
+            }
         }
 
         $isProduction = config('app.env') === 'production';
