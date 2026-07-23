@@ -11,6 +11,7 @@ export interface SupplierSettings {
   catalog_driver: 'clone_store_v1' | 'clone_store_v2';
   has_api_key: boolean;
   enabled: boolean;
+  products_enabled: boolean;
   auto_sync: boolean;
   sync_interval_minutes: 10 | 30;
   price_adjustment_type: PriceAdjustmentType;

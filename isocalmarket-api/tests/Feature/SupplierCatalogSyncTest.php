@@ -58,6 +58,47 @@ class SupplierCatalogSyncTest extends TestCase
         $this->assertSame(0.96, ProductModel::where('external_id', '2')->value('price'));
     }
 
+    public function test_sync_keeps_new_products_inactive_when_supplier_products_are_disabled(): void
+    {
+        $this->fakeSupplierAndRateApis();
+        $supplier = SupplierModel::where('code', 'ads7979')->firstOrFail();
+        $supplier->update(['products_enabled' => false]);
+
+        app(SupplierCatalogSyncService::class)->sync($supplier->fresh());
+
+        $this->assertSame(
+            'inactive',
+            ProductModel::where('supplier_id', $supplier->id)->where('external_id', '2')->value('status'),
+        );
+    }
+
+    public function test_admin_can_activate_and_deactivate_all_supplier_products(): void
+    {
+        $supplier = SupplierModel::where('code', 'ads7979')->firstOrFail();
+        ProductModel::create([
+            'supplier_id' => $supplier->id,
+            'external_id' => 'bulk-status-product',
+            'name' => 'Bulk status product',
+            'slug' => 'bulk-status-product',
+            'price' => 1,
+            'status' => 'active',
+            'attributes' => [],
+        ]);
+        $token = $this->adminToken('supplier_bulk_status');
+
+        $this->withToken($token)
+            ->putJson('/api/v1/admin/suppliers/ads7979', ['products_enabled' => false])
+            ->assertOk()
+            ->assertJsonPath('products_enabled', false);
+        $this->assertSame('inactive', ProductModel::where('supplier_id', $supplier->id)->value('status'));
+
+        $this->withToken($token)
+            ->putJson('/api/v1/admin/suppliers/ads7979', ['products_enabled' => true])
+            ->assertOk()
+            ->assertJsonPath('products_enabled', true);
+        $this->assertSame('active', ProductModel::where('supplier_id', $supplier->id)->value('status'));
+    }
+
     public function test_supplier_stock_is_returned_as_available_count(): void
     {
         $this->fakeSupplierAndRateApis();
@@ -262,6 +303,27 @@ class SupplierCatalogSyncTest extends TestCase
                 'tether' => ['vnd' => 26000],
             ]),
         ]);
+    }
+
+    private function adminToken(string $username): string
+    {
+        $admin = UserModel::create([
+            'username' => $username,
+            'name' => 'Supplier Admin',
+            'email' => "{$username}@example.com",
+            'password' => 'password123',
+            'role' => 'admin',
+            'balance' => 0,
+            'google2fa_enabled' => false,
+            'status' => 'active',
+        ]);
+
+        return app(JwtService::class)->generateToken([
+            'sub' => $admin->id,
+            'email' => $admin->email,
+            'role' => 'admin',
+            'ver' => 0,
+        ], 1800);
     }
 
     private function catalog(): array

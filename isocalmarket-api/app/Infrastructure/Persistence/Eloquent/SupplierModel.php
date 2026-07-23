@@ -9,7 +9,7 @@ use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Support\Str;
 
 #[Fillable([
-    'code', 'name', 'base_url', 'catalog_driver', 'api_key', 'enabled', 'auto_sync',
+    'code', 'name', 'base_url', 'catalog_driver', 'api_key', 'enabled', 'products_enabled', 'auto_sync',
     'sync_interval_minutes', 'price_adjustment_type', 'price_adjustment_value',
     'last_synced_at', 'last_sync_status', 'last_sync_error',
 ])]
@@ -31,6 +31,7 @@ class SupplierModel extends Model
         return [
             'api_key' => 'encrypted',
             'enabled' => 'boolean',
+            'products_enabled' => 'boolean',
             'auto_sync' => 'boolean',
             'sync_interval_minutes' => 'integer',
             'price_adjustment_value' => 'float',

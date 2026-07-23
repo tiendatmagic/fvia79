@@ -126,7 +126,9 @@ class SupplierCatalogSyncService
             'attributes' => [],
         ]);
 
-        if (! $product->exists) {
+        if (! $supplier->products_enabled) {
+            $product->status = 'inactive';
+        } elseif (! $product->exists) {
             $product->status = 'active';
         }
         $product->save();

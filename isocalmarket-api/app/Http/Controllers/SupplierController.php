@@ -10,6 +10,8 @@ use Illuminate\Database\Eloquent\ModelNotFoundException;
 use Illuminate\Http\Client\ConnectionException;
 use Illuminate\Http\Client\RequestException;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Cache;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Str;
 use Illuminate\Validation\Rule;
 use InvalidArgumentException;
@@ -36,6 +38,7 @@ class SupplierController extends Controller
             'base_url' => ['required', 'url:https', 'max:255'],
             'api_key' => ['required', 'string', 'max:2000'],
             'enabled' => ['sometimes', 'boolean'],
+            'products_enabled' => ['sometimes', 'boolean'],
             'auto_sync' => ['sometimes', 'boolean'],
             'sync_interval_minutes' => ['sometimes', 'integer', Rule::in([10, 30])],
             'price_adjustment_type' => ['sometimes', Rule::in(['fixed', 'percent'])],
@@ -68,6 +71,7 @@ class SupplierController extends Controller
             'base_url' => ['sometimes', 'required', 'url:https', 'max:255'],
             'api_key' => ['sometimes', 'nullable', 'string', 'max:2000'],
             'enabled' => ['sometimes', 'boolean'],
+            'products_enabled' => ['sometimes', 'boolean'],
             'auto_sync' => ['sometimes', 'boolean'],
             'sync_interval_minutes' => ['sometimes', 'integer', Rule::in([10, 30])],
             'price_adjustment_type' => ['sometimes', Rule::in(['fixed', 'percent'])],
@@ -91,6 +95,8 @@ class SupplierController extends Controller
         }
 
         $mustDetectDriver = array_key_exists('base_url', $validated) || array_key_exists('api_key', $validated);
+        $productsEnabledChanged = array_key_exists('products_enabled', $validated)
+            && (bool) $validated['products_enabled'] !== $supplier->products_enabled;
         $supplier->fill($validated);
         if ($mustDetectDriver) {
             try {
@@ -99,7 +105,18 @@ class SupplierController extends Controller
                 return response()->json(['message' => $exception->getMessage()], 422);
             }
         }
-        $supplier->save();
+        DB::transaction(function () use ($supplier, $productsEnabledChanged): void {
+            $supplier->save();
+            if ($productsEnabledChanged) {
+                $supplier->products()->update([
+                    'status' => $supplier->products_enabled ? 'active' : 'inactive',
+                ]);
+            }
+        });
+        if ($productsEnabledChanged) {
+            Cache::forget('products_active_storefront');
+            Cache::forget('categories_active_storefront');
+        }
 
         return response()->json($this->serialize($supplier->fresh()));
     }
@@ -183,6 +200,7 @@ class SupplierController extends Controller
             'catalog_driver' => $supplier->catalog_driver,
             'has_api_key' => (bool) ($supplier->api_key ?: config("services.{$supplier->code}.api_key")),
             'enabled' => $supplier->enabled,
+            'products_enabled' => $supplier->products_enabled,
             'auto_sync' => $supplier->auto_sync,
             'sync_interval_minutes' => $supplier->sync_interval_minutes,
             'price_adjustment_type' => $supplier->price_adjustment_type,

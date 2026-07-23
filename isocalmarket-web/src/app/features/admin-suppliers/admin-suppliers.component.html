@@ -160,6 +160,16 @@
       </div>
     </div>
 
+    <div class="mb-5">
+      <app-custom-switch
+        type="full"
+        [checked]="supplierForm.products_enabled ?? true"
+        (checkedChange)="supplierForm.products_enabled = $event"
+        [label]="'supplier.products_enabled' | translate"
+        [description]="'supplier.products_enabled_hint' | translate"
+      />
+    </div>
+
     @if (supplierForm.last_sync_error) {
       <div
         class="mb-5 rounded-lg border border-red-200 bg-red-50 p-3 text-sm text-red-700 dark:border-red-900/50 dark:bg-red-950/20 dark:text-red-300"

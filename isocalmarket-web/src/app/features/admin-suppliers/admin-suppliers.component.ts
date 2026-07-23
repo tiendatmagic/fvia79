@@ -39,6 +39,7 @@ export class AdminSuppliersComponent implements OnInit {
   public supplierForm: Partial<SupplierSettings> = {
     api_key: '',
     enabled: true,
+    products_enabled: true,
     auto_sync: false,
     sync_interval_minutes: 30,
     price_adjustment_type: 'fixed',
@@ -116,6 +117,7 @@ export class AdminSuppliersComponent implements OnInit {
       base_url: 'https://',
       api_key: '',
       enabled: true,
+      products_enabled: true,
       auto_sync: false,
       sync_interval_minutes: 30,
       price_adjustment_type: 'fixed',
