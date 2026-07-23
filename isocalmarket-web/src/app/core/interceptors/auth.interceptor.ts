@@ -52,6 +52,7 @@ export const authInterceptor: HttpInterceptorFn = (
       }
 
       const isRefreshRequest = req.url.includes('/auth/refresh');
+      const isSessionCheckRequest = req.url.includes('/auth/me');
       const isAuthEndpoint = req.url.includes('/auth/login') || req.url.includes('/auth/register')
         || req.url.includes('/v1/auth/login') || req.url.includes('/v1/auth/register');
 
@@ -60,7 +61,7 @@ export const authInterceptor: HttpInterceptorFn = (
         isApiRequest &&
         !isRefreshRequest &&
         !isAuthEndpoint &&
-        authStore.hasLoggedInMarker()
+        (authStore.hasLoggedInMarker() || isSessionCheckRequest)
       ) {
         return handle401Error(protectedReq, next, http, router, authStore);
       }

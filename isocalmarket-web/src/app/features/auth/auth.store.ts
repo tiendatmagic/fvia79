@@ -98,8 +98,8 @@ export class AuthStore {
     );
   }
 
-  public checkMe(force = false) {
-    if (!this.hasLoggedInMarker()) {
+  public checkMe(force = false, verifyWithoutMarker = false) {
+    if (!verifyWithoutMarker && !this.hasLoggedInMarker()) {
       this.currentUser.set(null);
       return of(null);
     }
@@ -118,6 +118,9 @@ export class AuthStore {
       map((res) => res?.user || null),
       tap((user) => {
         this.currentUser.set(user);
+        if (user) {
+          this.setFrontendLoggedInCookie();
+        }
       }),
       catchError(() => {
         this.clearFrontendLoggedInCookie();
