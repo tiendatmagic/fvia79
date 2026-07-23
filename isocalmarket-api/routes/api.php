@@ -15,6 +15,7 @@ Route::prefix('v1')->group(function () {
     Route::get('/products', ['App\Http\Controllers\ProductController', 'index']);
     Route::get('/products/{id}', ['App\Http\Controllers\ProductController', 'show']);
     Route::get('/categories', ['App\Http\Controllers\CategoryController', 'index']);
+    Route::post('/tools/check-uid', ['App\Http\Controllers\CheckUidController', 'check'])->middleware('throttle:30,1');
 
     Route::middleware(['b2b.auth'])->group(function () {
         Route::get('/b2b/products', ['App\Http\Controllers\B2bController', 'index']);

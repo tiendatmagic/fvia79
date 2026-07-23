@@ -49,6 +49,10 @@ export const routes: Routes = [
     canActivate: [AuthGuard]
   },
   {
+    path: 'check-uid',
+    loadComponent: () => import('@features/check-uid/check-uid.component').then(m => m.CheckUidComponent)
+  },
+  {
     path: 'deposit',
     canActivate: [AuthGuard],
     children: [

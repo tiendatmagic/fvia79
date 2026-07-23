@@ -13,6 +13,26 @@
 > Khi cần seed dữ liệu cho một seeder cụ thể, chỉ dùng:
 > - `php artisan db:seed --class=TenSeederClass` — chạy đúng 1 seeder.
 
+- **[BỔ SUNG MỤC CHECK LIVE UID FACEBOOK (CHECKUID.LIVE INTEGRATION)]**:
+  - **Mô tả yêu cầu**: Bổ sung công cụ kiểm tra trạng thái Facebook UID Live (hoạt động) hay Die (bị khóa/xóa) hàng loạt siêu tốc (tương tự checkuid.live), áp dụng cho toàn bộ người dùng hệ thống (cả User và Admin).
+  - **Nội dung thực hiện**:
+    - **Backend (`isocalmarket-api`)**:
+      - Tạo `CheckUidController.php` xử lý `POST /v1/tools/check-uid` (sử dụng Laravel Http Concurrent Pool kiểm tra endpoint `https://graph.facebook.com/{uid}/picture?redirect=false`).
+      - Bổ sung Route `POST /v1/tools/check-uid` trong `routes/api.php` đính kèm middleware `jwt.auth` và `throttle:30,1`.
+      - Viết unit test `CheckUidTest.php` đạt **3/3 PASSED (100%)**, nâng tổng số test suite backend lên **70/70 PASSED (100%)**.
+    - **Frontend (`isocalmarket-web`)**:
+      - Bổ sung SVG icons `@case ('check-uid')` và `@case ('facebook')` trong `icon.component.html`.
+      - Cập nhật `LanguageService.ts` bổ sung từ điển Tiếng Việt & Tiếng Anh cho toàn bộ giao diện Check UID.
+      - Tạo component `CheckUidComponent` tại đường dẫn `/check-uid` với thiết kế giao diện Quicksand font-weight medium:
+        - Ô nhập danh sách UID hàng loạt (tự động tách UID gốc từ mọi định dạng `UID`, `UID|PASS|2FA`,...).
+        - Nút "Kiểm tra ngay" kèm chống click đúp spam.
+        - Thanh tiến trình real-time Progress Bar % và đếm `X / Y UID`.
+        - 3 thẻ thống kê (Tổng số, UID Live, UID Die).
+        - 2 ô kết quả phân loại riêng biệt kèm các nút **Copy UID Live**, **Copy UID Die**, **Tải TXT Live**, **Tải TXT Die**.
+      - Bổ sung menu điều hướng "Check Live UID" trên Desktop Sidebar (`sidebar.component.html`) và Mobile Drawer (`app.html`) cho tất cả người dùng.
+      - Đăng ký route `path: 'check-uid'` trong `app.routes.ts`.
+  - **Xác nhận**: Backend test `php artisan test` đạt **70/70 PASSED (100%)** và biên dịch Angular `npm run build` thành công **100% SUCCESS, 0 ERRORS**!
+
 - **[BỔ SUNG THIẾT BỊ ĐĂNG NHẬP VÀ QUẢN LÝ PHIÊN LÀM VIỆC TRÊN TRANG CÀI ĐẶT TÀI KHOẢN (ACTIVE SESSION & DEVICE MANAGEMENT)]**:
   - **Mô tả yêu cầu**: Bổ sung tab "Thiết bị đăng nhập" (`/profile/devices`) giúp người dùng theo dõi danh sách các thiết bị/trình duyệt đang đăng nhập tài khoản và hỗ trợ đăng xuất thiết bị từ xa. Dòng phiên làm việc hiện tại phải ẩn nút Đăng xuất và hiển thị badge "Thiết bị hiện tại".
   - **Nội dung thực hiện**:

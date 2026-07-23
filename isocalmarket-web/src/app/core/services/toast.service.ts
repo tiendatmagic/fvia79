@@ -325,6 +325,14 @@ export class ToastService {
     setTimeout(() => this.removeToast(id), duration || defaultDuration);
   }
 
+  public showSuccess(message: string, duration?: number): void {
+    this.showToast(message, 'success', duration);
+  }
+
+  public showError(message: string, duration?: number): void {
+    this.showToast(message, 'error', duration);
+  }
+
   public removeToast(id: string): void {
     this.toasts.update(current => current.filter(toast => toast.id !== id));
   }
