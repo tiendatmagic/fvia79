@@ -13,6 +13,16 @@
 > Khi cần seed dữ liệu cho một seeder cụ thể, chỉ dùng:
 > - `php artisan db:seed --class=TenSeederClass` — chạy đúng 1 seeder.
 
+- **[BẮT BUỘC TÍCH CHỌN CHECKBOX ĐỒNG Ý ĐIỀU KHOẢN MỚI CHO PHÉP ĐĂNG NHẬP (REQUIRE TERMS AGREEMENT CHECKBOX BEFORE SIGN IN)]**:
+  - **Mô tả yêu cầu**: Bắt buộc người dùng phải tích chọn ô checkbox đồng ý với điều khoản dịch vụ / cam kết không sử dụng tài khoản vào các hoạt động vi phạm pháp luật trước khi thực hiện đăng nhập.
+  - **Nội dung thực hiện**:
+    - **Cập nhật Default State**: Thay đổi giá trị mặc định của biến checkbox `rememberMe` thành `false` (chưa tích chọn) tại cả `LoginComponent` (`login.component.ts`) và `AuthLayoutComponent` (`auth-layout.component.ts`).
+    - **Validation & Toast Thông Báo**: Bổ sung hàm kiểm tra `if (!this.rememberMe)` trước khi gửi API đăng nhập. Nếu người dùng chưa tích chọn checkbox, hệ thống hiển thị ngay Toast thông báo lỗi:
+      - Tiếng Việt: `"Vui lòng đồng ý với điều khoản sử dụng trước khi đăng nhập!"`
+      - Tiếng Anh: `"Please agree to the terms of use before signing in!"`
+    - **Đa ngôn ngữ (`LanguageService.ts`)**: Bổ sung key dịch `toast.terms_required` vào từ điển Tiếng Việt và Tiếng Anh.
+  - **Xác nhận**: Đã kiểm thử backend `php artisan test` đạt **61/61 test cases (100% PASSED)** và biên dịch Angular `npm run build` hoàn toàn thành công!
+
 - **[CHUẨN HÓA TOÀN BỘ FONT-WEIGHT TỐI THIỂU SANG MEDIUM (500) VÀ ĐỒNG BỘ MÀU CHỮ DARK/LIGHT MODE TRÊN FRONTEND]**:
   - **Mô tả yêu cầu**: Rà soát toàn bộ source code Frontend (FE), đảm bảo không còn bất kỳ văn bản nào có `font-weight` thấp hơn 500 (Medium), đồng thời kiểm tra và đồng bộ màu chữ (contrast) chuẩn nét ở cả Light Mode và Dark Mode.
   - **Nội dung thực hiện**:

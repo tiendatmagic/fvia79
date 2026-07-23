@@ -30,7 +30,7 @@ export class LoginComponent {
 
   public email = '';
   public password = '';
-  public rememberMe = true;
+  public rememberMe = false;
   
   public requires2Fa = signal<boolean>(false);
   public showPassword = signal<boolean>(false);
@@ -62,6 +62,11 @@ export class LoginComponent {
         return;
       }
       this.state.authStore.login2Fa(this.tempToken, this.otpCode, this.returnUrl).subscribe();
+      return;
+    }
+
+    if (!this.rememberMe) {
+      this.state.showToast(this.lang.translate('toast.terms_required'), 'error');
       return;
     }
 

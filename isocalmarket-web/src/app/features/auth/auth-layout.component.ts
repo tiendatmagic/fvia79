@@ -51,7 +51,7 @@ export class AuthLayoutComponent {
   public readonly isLogin = signal(true);
   public loginEmail = '';
   public loginPassword = '';
-  public rememberMe = true;
+  public rememberMe = false;
   public requires2Fa = signal(false);
   public showLoginPassword = signal(false);
   public otpCode = '';
@@ -96,6 +96,11 @@ export class AuthLayoutComponent {
         return;
       }
       this.state.authStore.login2Fa(this.tempToken, this.otpCode, this.returnUrl).subscribe();
+      return;
+    }
+
+    if (!this.rememberMe) {
+      this.state.showToast(this.lang.translate('toast.terms_required'), 'error');
       return;
     }
 
