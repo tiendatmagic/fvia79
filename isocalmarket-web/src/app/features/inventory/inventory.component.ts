@@ -13,9 +13,10 @@ import { ModalService } from '@core/services/modal.service';
 import { PaginationComponent } from '@shared/components/pagination/pagination.component';
 import { ImportInventoryModalComponent } from './import-inventory-modal/import-inventory-modal.component';
 import { EditInventoryModalComponent } from './edit-inventory-modal/edit-inventory-modal.component';
+import { EditResourceItemModalComponent } from './edit-resource-item-modal/edit-resource-item-modal.component';
 import { CustomSearchInputComponent } from '@shared/components/custom-search-input/custom-search-input.component';
 import { TooltipDirective } from '@shared/components/tooltip/tooltip.directive';
-import { ActivatedRoute } from '@angular/router';
+import { ActivatedRoute, Router } from '@angular/router';
 import { TableComponent, TableCellDirective, TableColumn } from '@shared/components/table/table.component';
 import { TranslatePipe } from '@shared/pipes/translate.pipe';
 
@@ -50,9 +51,26 @@ export class InventoryComponent implements OnInit {
   public readonly state = inject(StateService);
   private readonly modalService = inject(ModalService);
   private readonly route = inject(ActivatedRoute);
+  private readonly router = inject(Router);
   public readonly lang = inject(LanguageService);
 
-  public readonly columns = computed<TableColumn[]>(() => {
+  public activeTab = signal<'batches' | 'resources'>('batches');
+  public visibleSecrets = signal<Set<string>>(new Set());
+
+  public readonly resourceColumns = computed<TableColumn[]>(() => {
+    this.lang.currentLang();
+    return [
+      { key: 'id', label: this.lang.translate('common.id'), sortable: true },
+      { key: 'product_name', label: this.lang.translate('modal.product_name'), sortable: true },
+      { key: 'batch_name', label: this.lang.translate('inv.batch_name'), sortable: true },
+      { key: 'secret_data', label: 'Tài nguyên (User|Pass|2FA)', sortable: false },
+      { key: 'status', label: this.lang.translate('common.status'), sortable: true, align: 'center' },
+      { key: 'created_at', label: 'Ngày tạo', sortable: true, align: 'center' },
+      { key: 'actions', label: this.lang.translate('common.actions'), sortable: false, align: 'right' }
+    ];
+  });
+
+  public readonly batchColumns = computed<TableColumn[]>(() => {
     this.lang.currentLang();
     return [
       { key: 'id', label: this.lang.translate('common.id'), sortable: true },
@@ -69,25 +87,26 @@ export class InventoryComponent implements OnInit {
   public searchQuery = '';
   private readonly _searchQuery = signal('');
 
-  public readonly currentPage = signal<number>(1);
+  public readonly currentResourcePage = signal<number>(1);
+  public readonly currentBatchPage = signal<number>(1);
   public readonly limit = 10;
   public readonly loadingItemId = signal<string | null>(null);
 
-  public get statusFilterOptions() {
+  public get resourceStatusOptions() {
+    return [
+      { label: this.lang.translate('common.all_status'), value: '' },
+      { label: this.lang.translate('common.active') + ' (Còn hàng)', value: 'available' },
+      { label: this.lang.translate('common.completed') + ' (Đã bán)', value: 'sold' }
+    ];
+  }
+
+  public get batchStatusOptions() {
     return [
       { label: this.lang.translate('common.all_status'), value: '' },
       { label: this.lang.translate('common.active'), value: 'active' },
       { label: this.lang.translate('common.completed'), value: 'completed' },
       { label: this.lang.translate('common.inactive'), value: 'inactive' }
     ];
-  }
-
-  public get productOptions() {
-    const options = this.state.productStore.products().map(p => ({
-      label: p.name,
-      value: String(p.id)
-    }));
-    return [{ label: this.lang.translate('modal.select_product'), value: '' }, ...options];
   }
 
   public get productFilterOptions() {
@@ -98,12 +117,29 @@ export class InventoryComponent implements OnInit {
     return [{ label: this.lang.translate('common.all_products'), value: '' }, ...options];
   }
 
+  public get productOptions() {
+    const options = this.state.productStore.products().map(p => ({
+      label: p.name,
+      value: String(p.id)
+    }));
+    return [{ label: this.lang.translate('modal.select_product'), value: '' }, ...options];
+  }
+
   ngOnInit() {
-    const productId = this.route.snapshot.queryParams['product_id'] || this.route.snapshot.queryParams['productId'];
+    const queryParams = this.route.snapshot.queryParams;
+    const tabParam = queryParams['tab'];
+    if (tabParam === 'resources') {
+      this.activeTab.set('resources');
+    } else {
+      this.activeTab.set('batches');
+    }
+
+    const productId = queryParams['product_id'] || queryParams['productId'];
     if (productId) {
       this.selectedProductFilter = productId;
     }
-    this.fetchFilteredItems(1);
+    
+    this.fetchData(1);
 
     this.state.productStore.fetchProducts().subscribe({
       next: () => {
@@ -112,24 +148,71 @@ export class InventoryComponent implements OnInit {
         }
       }
     });
+
+    this.route.queryParams.subscribe(params => {
+      const currentTab = params['tab'] === 'resources' ? 'resources' : 'batches';
+      if (currentTab !== this.activeTab()) {
+        this.activeTab.set(currentTab);
+        this.fetchData(1);
+      }
+    });
   }
 
-  public fetchFilteredItems(page: number = 1) {
-    this.currentPage.set(page);
-    this.state.inventoryStore.fetchItems({
-      product_id: this.selectedProductFilter || undefined,
-      status: this.selectedStatusFilter || undefined,
-      search: this._searchQuery().trim() || undefined
-    }, page, this.limit).subscribe();
+  public setTab(tab: 'batches' | 'resources') {
+    this.activeTab.set(tab);
+    this.selectedStatusFilter = '';
+    this.router.navigate([], {
+      relativeTo: this.route,
+      queryParams: { tab: tab },
+      queryParamsHandling: 'merge'
+    });
+    this.fetchData(1);
+  }
+
+  public fetchData(page: number = 1) {
+    if (this.activeTab() === 'resources') {
+      this.currentResourcePage.set(page);
+      this.state.inventoryStore.fetchResourceItems({
+        product_id: this.selectedProductFilter || undefined,
+        status: this.selectedStatusFilter || undefined,
+        search: this._searchQuery().trim() || undefined
+      }, page, this.limit).subscribe();
+    } else {
+      this.currentBatchPage.set(page);
+      this.state.inventoryStore.fetchItems({
+        product_id: this.selectedProductFilter || undefined,
+        status: this.selectedStatusFilter || undefined,
+        search: this._searchQuery().trim() || undefined
+      }, page, this.limit).subscribe();
+    }
   }
 
   public onSearch(query: string) {
     this._searchQuery.set(query);
-    this.fetchFilteredItems(1);
+    this.fetchData(1);
   }
 
   public fetchPage(page: number) {
-    this.fetchFilteredItems(page);
+    this.fetchData(page);
+  }
+
+  public toggleSecretVisibility(id: string) {
+    const current = new Set(this.visibleSecrets());
+    if (current.has(id)) {
+      current.delete(id);
+    } else {
+      current.add(id);
+    }
+    this.visibleSecrets.set(current);
+  }
+
+  public getMaskedSecret(secret: string, isVisible: boolean): string {
+    if (isVisible || !secret) return secret;
+    const parts = secret.split('|');
+    if (parts.length > 1) {
+      return parts[0] + '|' + '••••••••';
+    }
+    return secret.substring(0, 4) + '••••••••';
   }
 
   public getProductName(productId: string): string {
@@ -150,12 +233,42 @@ export class InventoryComponent implements OnInit {
     }).afterClosed$.subscribe((success) => {
       if (success) {
         this.state.productStore.fetchProducts().subscribe();
-        this.fetchFilteredItems();
+        this.fetchData(1);
       }
     });
   }
 
-  public openEditModal(item: any) {
+  public openEditResourceModal(item: any) {
+    this.modalService.open(EditResourceItemModalComponent, {
+      title: 'Sửa tài nguyên',
+      size: 'lg',
+      data: { item }
+    }).afterClosed$.subscribe((success) => {
+      if (success) {
+        this.fetchData(this.currentResourcePage());
+      }
+    });
+  }
+
+  public confirmDeleteResourceItem(item: any) {
+    this.modalService.confirm({
+      title: 'Xóa tài nguyên',
+      description: `Bạn có chắc chắn muốn xóa dòng tài nguyên "${item.secret_data}"?`,
+      confirmText: this.lang.translate('action.delete'),
+      cancelText: this.lang.translate('action.cancel'),
+      confirmButtonClass: 'btn-danger'
+    }).afterClosed$.subscribe((confirmed?: boolean) => {
+      if (confirmed) {
+        this.state.inventoryStore.deleteResourceItem(item.id).subscribe((res) => {
+          if (res !== null) {
+            this.fetchData(this.currentResourcePage());
+          }
+        });
+      }
+    });
+  }
+
+  public openEditBatchModal(item: any) {
     if (this.loadingItemId()) return;
     this.loadingItemId.set(item.id);
 
@@ -179,7 +292,7 @@ export class InventoryComponent implements OnInit {
         }).afterClosed$.subscribe((success) => {
           if (success) {
             this.state.productStore.fetchProducts().subscribe();
-            this.fetchFilteredItems(this.currentPage());
+            this.fetchData(this.currentBatchPage());
           }
         });
       },
@@ -189,7 +302,7 @@ export class InventoryComponent implements OnInit {
     });
   }
 
-  public confirmDeleteItem(item: any) {
+  public confirmDeleteBatch(item: any) {
     this.modalService.confirm({
       title: this.lang.translate('modal.delete_inventory_title'),
       description: this.lang.translate('modal.delete_inventory_desc'),
@@ -201,7 +314,7 @@ export class InventoryComponent implements OnInit {
         this.state.inventoryStore.deleteItem(item.id, this.selectedProductFilter).subscribe((res) => {
           if (res !== null) {
             this.state.productStore.fetchProducts().subscribe();
-            this.fetchFilteredItems(this.currentPage());
+            this.fetchData(this.currentBatchPage());
           }
         });
       }

@@ -43,6 +43,10 @@ class AppServiceProvider extends ServiceProvider
             \App\Domain\Repositories\CouponRepositoryInterface::class,
             \App\Infrastructure\Persistence\Repositories\CouponRepository::class
         );
+        $this->app->bind(
+            \App\Domain\Repositories\InventoryItemRepositoryInterface::class,
+            \App\Infrastructure\Persistence\Repositories\InventoryItemRepository::class
+        );
     }
     public function boot(): void
     {

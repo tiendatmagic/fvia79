@@ -104,6 +104,10 @@ Route::prefix('v1')->group(function () {
             Route::put('/inventory/items/{id}', ['App\Http\Controllers\InventoryController', 'update']);
             Route::delete('/inventory/items/{id}', ['App\Http\Controllers\InventoryController', 'destroy']);
 
+            Route::get('/inventory/resource-items', ['App\Http\Controllers\InventoryController', 'listResourceItems']);
+            Route::put('/inventory/resource-items/{id}', ['App\Http\Controllers\InventoryController', 'updateResourceItem']);
+            Route::delete('/inventory/resource-items/{id}', ['App\Http\Controllers\InventoryController', 'destroyResourceItem']);
+
             Route::get('/admin/deposits', ['App\Http\Controllers\AdminDepositController', 'index']);
             Route::post('/admin/deposits/bulk-revoke', ['App\Http\Controllers\AdminDepositController', 'bulkRevoke']);
             Route::post('/admin/deposits/{id}/approve', ['App\Http\Controllers\AdminDepositController', 'approve']);

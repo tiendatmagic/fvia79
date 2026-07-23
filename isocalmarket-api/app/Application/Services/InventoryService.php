@@ -3,20 +3,25 @@
 namespace App\Application\Services;
 
 use App\Domain\Entities\InventoryBatch;
+use App\Domain\Entities\InventoryItem;
 use App\Domain\Repositories\InventoryBatchRepositoryInterface;
+use App\Domain\Repositories\InventoryItemRepositoryInterface;
 use App\Domain\Repositories\ProductRepositoryInterface;
 use Illuminate\Support\Facades\Cache;
 
 class InventoryService
 {
     private InventoryBatchRepositoryInterface $inventoryRepository;
+    private InventoryItemRepositoryInterface $inventoryItemRepository;
     private ProductRepositoryInterface $productRepository;
 
     public function __construct(
         InventoryBatchRepositoryInterface $inventoryRepository,
+        InventoryItemRepositoryInterface $inventoryItemRepository,
         ProductRepositoryInterface $productRepository
     ) {
         $this->inventoryRepository = $inventoryRepository;
+        $this->inventoryItemRepository = $inventoryItemRepository;
         $this->productRepository = $productRepository;
     }
 
@@ -127,6 +132,102 @@ class InventoryService
         if ($deleted) {
             Cache::forget('products_active_storefront');
         }
+        return $deleted;
+    }
+
+    public function getResourceItemsPaginated(array $filters, int $page, int $limit): array
+    {
+        return $this->inventoryItemRepository->findAllPaginated($filters, $page, $limit);
+    }
+
+    public function getResourceItemById(string $id): ?InventoryItem
+    {
+        return $this->inventoryItemRepository->findById($id);
+    }
+
+    public function updateResourceItem(string $id, array $data): ?InventoryItem
+    {
+        $item = $this->inventoryItemRepository->findById($id);
+        if (!$item) {
+            return null;
+        }
+
+        if (isset($data['secret_data'])) {
+            $item->setSecretData(trim($data['secret_data']));
+        }
+        if (isset($data['status'])) {
+            $item->setStatus($data['status']);
+        }
+
+        $saved = $this->inventoryItemRepository->save($item);
+
+        // Sync batch pool text & counts
+        $batch = $this->inventoryRepository->findById($item->getBatchId());
+        if ($batch) {
+            $availableItems = \App\Infrastructure\Persistence\Eloquent\InventoryItemModel::where('batch_id', $batch->getId())
+                ->where('status', 'available')
+                ->pluck('secret_data')
+                ->toArray();
+            
+            $soldCount = $this->inventoryItemRepository->countSoldByBatchId($batch->getId());
+            $initialCount = count($availableItems) + $soldCount;
+            $status = count($availableItems) > 0 ? 'active' : 'completed';
+
+            $updatedBatch = new InventoryBatch(
+                $batch->getId(),
+                $batch->getProductId(),
+                $batch->getBatchName(),
+                implode("\n", $availableItems),
+                $initialCount,
+                $soldCount,
+                $status,
+                $batch->getCreatedAt(),
+                $batch->getUpdatedAt()
+            );
+
+            // Avoid infinite loop sync by saving model directly or repository save
+            \App\Infrastructure\Persistence\Eloquent\InventoryBatchModel::where('id', $batch->getId())->update([
+                'keys_pool' => implode("\n", $availableItems),
+                'initial_count' => $initialCount,
+                'sold_count' => $soldCount,
+                'status' => $status
+            ]);
+        }
+
+        Cache::forget('products_active_storefront');
+        return $saved;
+    }
+
+    public function deleteResourceItem(string $id): bool
+    {
+        $item = $this->inventoryItemRepository->findById($id);
+        if (!$item) {
+            return false;
+        }
+
+        $batchId = $item->getBatchId();
+        $deleted = $this->inventoryItemRepository->delete($id);
+
+        if ($deleted && $batchId) {
+            $availableItems = \App\Infrastructure\Persistence\Eloquent\InventoryItemModel::where('batch_id', $batchId)
+                ->where('status', 'available')
+                ->pluck('secret_data')
+                ->toArray();
+
+            $soldCount = $this->inventoryItemRepository->countSoldByBatchId($batchId);
+            $initialCount = count($availableItems) + $soldCount;
+            $status = count($availableItems) > 0 ? 'active' : 'completed';
+
+            \App\Infrastructure\Persistence\Eloquent\InventoryBatchModel::where('id', $batchId)->update([
+                'keys_pool' => implode("\n", $availableItems),
+                'initial_count' => $initialCount,
+                'sold_count' => $soldCount,
+                'status' => $status
+            ]);
+
+            Cache::forget('products_active_storefront');
+        }
+
         return $deleted;
     }
 }
