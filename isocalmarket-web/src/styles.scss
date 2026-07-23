@@ -1,4 +1,4 @@
-@import url('https://fonts.googleapis.com/css2?family=Quicksand:wght@300;400;500;600;700;800;900&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Quicksand:wght@500;600;700;800;900&display=swap');
 @import 'tailwindcss' source('.');
 
 @variant dark (&:where(.dark, .dark *));
@@ -31,9 +31,19 @@ html.dark {
   @apply bg-slate-950;
 }
 
-body {
+body,
+input,
+button,
+select,
+textarea,
+optgroup,
+option {
   font-family: var(--font-sans);
-  @apply bg-slate-50 text-slate-900 min-h-screen m-0 transition-colors duration-300;
+  font-weight: 500;
+}
+
+body {
+  @apply bg-slate-50 text-slate-900 min-h-screen m-0 transition-colors duration-300 font-medium;
 }
 
 html.dark body,
@@ -166,8 +176,8 @@ body.dark ::-webkit-scrollbar-thumb {
 .form-field > label {
   display: block !important;
   font-size: 0.75rem !important;
-  font-weight: 700 !important;
-  color: #94a3b8 !important;
+  font-weight: 600 !important;
+  color: #475569 !important;
   text-transform: uppercase !important;
   letter-spacing: 0.05em !important;
   margin-bottom: 0px !important;
@@ -175,7 +185,7 @@ body.dark ::-webkit-scrollbar-thumb {
 
 .dark .form-field > label,
 body.dark .form-field > label {
-  color: #64748b !important;
+  color: #cbd5e1 !important;
 }
 
 .search-input {

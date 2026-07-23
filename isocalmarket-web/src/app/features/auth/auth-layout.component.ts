@@ -9,6 +9,7 @@ import { ButtonComponent } from '@shared/components/button/button.component';
 import { LogoComponent } from '@shared/components/logo/logo.component';
 import { ThemeSwitcherComponent } from '@shared/components/theme-switcher/theme-switcher.component';
 import { CustomInputComponent } from '@shared/components/custom-input/custom-input.component';
+import { CustomCheckboxComponent } from '@shared/components/custom-checkbox/custom-checkbox.component';
 import { LanguageService, SupportedLanguage } from '@core/services/language.service';
 import { TranslatePipe } from '@shared/pipes/translate.pipe';
 import { IconComponent } from '@shared/components/icon/icon.component';
@@ -16,7 +17,7 @@ import { IconComponent } from '@shared/components/icon/icon.component';
 @Component({
   selector: 'app-auth-layout',
   standalone: true,
-  imports: [CommonModule, FormsModule, RouterModule, ButtonComponent, LogoComponent, ThemeSwitcherComponent, CustomInputComponent, TranslatePipe, IconComponent],
+  imports: [CommonModule, FormsModule, RouterModule, ButtonComponent, LogoComponent, ThemeSwitcherComponent, CustomInputComponent, CustomCheckboxComponent, TranslatePipe, IconComponent],
   templateUrl: './auth-layout.component.html',
   styles: [`
     :host {
@@ -50,6 +51,7 @@ export class AuthLayoutComponent {
   public readonly isLogin = signal(true);
   public loginEmail = '';
   public loginPassword = '';
+  public rememberMe = true;
   public requires2Fa = signal(false);
   public showLoginPassword = signal(false);
   public otpCode = '';

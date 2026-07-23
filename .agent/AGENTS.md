@@ -13,6 +13,37 @@
 > Khi cần seed dữ liệu cho một seeder cụ thể, chỉ dùng:
 > - `php artisan db:seed --class=TenSeederClass` — chạy đúng 1 seeder.
 
+- **[CHUẨN HÓA TOÀN BỘ FONT-WEIGHT TỐI THIỂU SANG MEDIUM (500) VÀ ĐỒNG BỘ MÀU CHỮ DARK/LIGHT MODE TRÊN FRONTEND]**:
+  - **Mô tả yêu cầu**: Rà soát toàn bộ source code Frontend (FE), đảm bảo không còn bất kỳ văn bản nào có `font-weight` thấp hơn 500 (Medium), đồng thời kiểm tra và đồng bộ màu chữ (contrast) chuẩn nét ở cả Light Mode và Dark Mode.
+  - **Nội dung thực hiện**:
+    - **Global Styles (`src/styles.scss`)**:
+      - Cập nhật import Google Fonts Quicksand chỉ tải các font weight từ 500 đến 900 (`family=Quicksand:wght@500;600;700;800;900`).
+      - Cấu hình quy tắc CSS toàn cục thiết lập `font-weight: 500` làm font weight mặc định cho `body, input, button, select, textarea, optgroup, option`, bổ sung `@apply font-medium` cho `body`.
+      - Cấu hình `.form-field > label` áp dụng màu sắc độ tương phản cao `color: #475569` (slate-600) ở Light Mode và `color: #cbd5e1` (slate-300) ở Dark Mode.
+    - **Rà soát & Sửa các Template HTML (`import-inventory-modal.component.html`, `edit-inventory-modal.component.html`, `sidebar.component.html`)**:
+      - Thay thế tất cả các class `font-normal` (400) còn sót lại thành `font-medium` (500) ở nhãn ghi chú tùy chọn `(Tùy chọn)` của ô nhập Giá vốn.
+      - Chuyển đổi các class nhãn mờ `text-slate-400` trên label thành `text-slate-600 dark:text-slate-300` và ghi chú thành `text-slate-500 dark:text-slate-400`, đảm bảo hiển thị rõ ràng, sắc nét trên cả nền trắng Light Mode và nền tối Dark Mode.
+    - **Xác nhận**: Đảm bảo 100% văn bản, thẻ nhập liệu, nút bấm, nhãn modal và thành phần giao diện trên toàn bộ Frontend đều đạt font-weight tối thiểu là 500 (Medium), màu chữ tương phản chuẩn nét, đồng bộ hoàn hảo ở cả Light Mode và Dark Mode.
+
+- **[CHUẨN HÓA TOÀN BỘ CHECKBOX GIAO DIỆN SANG COMPONENT APP-CUSTOM-CHECKBOX (STANDARDIZE ALL CHECKBOXES TO APP-CUSTOM-CHECKBOX)]**:
+  - **Mô tả yêu cầu**: Rà soát toàn bộ source code Frontend (FE), phát hiện và thay thế tất cả các thẻ `<input type="checkbox">` thủ công còn sót lại thành component dùng chung `<app-custom-checkbox>`.
+  - **Nội dung thực hiện**:
+    - **Rà soát & Phát hiện**: Phát hiện các ô checkbox thủ công tại `auth-layout.component.html` (checkbox đồng ý điều khoản), `login.component.html` (checkbox đồng ý điều khoản) và `admin-settings.component.html` (checkbox Bật nhà cung cấp & Tự động đồng bộ kho).
+    - **Thay thế & Import**: Import `CustomCheckboxComponent` và cập nhật các template sang `<app-custom-checkbox [(ngModel)]="...">`.
+    - **Căn chỉnh mép trên (Top Vertical Alignment)**: Bổ sung `mt-0.5` cho khung ô checkbox và `leading-snug block` cho nhãn văn bản trong `custom-checkbox.component.html`, giúp mép trên của ô checkbox vuông và dòng chữ đầu tiên luôn căn thẳng hàng ngang hoàn hảo (pixel-perfect alignment).
+    - **Xác nhận**: Đảm bảo 100% các ô checkbox trên hệ thống đều sử dụng thống nhất component `<app-custom-checkbox>`, giao diện chuẩn hóa, tùy biến mượt theo theme của hệ thống.
+
+- **[TĂNG ĐỘ NÉT & NÂNG FONT-WEIGHT MEDIUM CHO TRANG ĐĂNG NHẬP / ĐĂNG KÝ (AUTH PAGES FONT-WEIGHT & CONTRAST FIX)]**:
+  - **Mô tả yêu cầu**: Sửa lỗi giao diện chữ quá nhạt/mờ trên các trang Đăng nhập (`/login`) và Đăng ký (`/register`), điều chỉnh toàn bộ văn bản mô tả, label ô nhập liệu và các phần ghi chú về `font-weight: medium` (font-medium) với độ tương phản cao, rõ nét.
+  - **Nội dung thực hiện**:
+    - `src/styles.scss`: Cập nhật `.form-field > label` tăng màu tương phản từ `#94a3b8` / `#64748b` (slate-400/500 nhạt) lên `#475569` (slate-600) ở Light Mode và `#cbd5e1` (slate-300) ở Dark Mode, cùng font-weight 600.
+    - `auth-layout.component.html`, `login.component.html`, `register.component.html`: Thay thế tất cả các class màu chữ bị mờ nhạt (`text-slate-400`, `text-slate-500`) thành `text-slate-600 dark:text-slate-300`, bổ sung class `font-medium` cho các dòng mô tả, checkbox cam kết điều khoản, nút chuyển tab inactive, mã OTP instruction và footer badges.
+
+- **[BỔ SUNG NHÃN MÃ HÓA SSL CHO AUTH LAYOUT FOOTER (AUTH LAYOUT MISSING TEXT FIX)]**:
+  - **Mô tả yêu cầu**: Sửa lỗi giao diện mất chữ ở badge tính năng footer chân trang đăng nhập/đăng ký (`AuthLayoutComponent`), trong đó icon khiên bảo mật (`shield`) bị thiếu tag hiển thị văn bản `Mã hoá SSL` / `SSL Encryption`.
+  - **Nội dung thực hiện**:
+    - `auth-layout.component.html`: Bổ sung tag `<span>{{ 'auth.ssl_encryption' | translate }}</span>` bên cạnh icon `<app-icon name="shield">`, đồng bộ với các trang `login.component.html` và `register.component.html`.
+
 - **[CHUẨN HÓA TOÀN BỘ BIỂU TƯỢNG GIAO DIỆN SANG COMPONENT APP-ICON (STANDARDIZE ALL SVG ICONS TO APP-ICON)]**:
   - **Mô tả yêu cầu**: Rà soát toàn bộ source code Frontend (FE), phát hiện và thay thế tất cả các thẻ SVG thủ công / icon sai định dạng thành component dùng chung `<app-icon>`.
   - **Nội dung thực hiện**:

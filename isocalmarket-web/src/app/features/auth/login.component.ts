@@ -6,6 +6,7 @@ import { StateService } from '@core/services/state.service';
 import { ButtonComponent } from '@shared/components/button/button.component';
 import { ThemeSwitcherComponent } from '@shared/components/theme-switcher/theme-switcher.component';
 import { CustomInputComponent } from '@shared/components/custom-input/custom-input.component';
+import { CustomCheckboxComponent } from '@shared/components/custom-checkbox/custom-checkbox.component';
 import { LanguageService } from '@core/services/language.service';
 import { TranslatePipe } from '@shared/pipes/translate.pipe';
 import { IconComponent } from '@shared/components/icon/icon.component';
@@ -13,7 +14,7 @@ import { IconComponent } from '@shared/components/icon/icon.component';
 @Component({
   selector: 'app-login',
   standalone: true,
-  imports: [CommonModule, FormsModule, RouterModule, ButtonComponent, ThemeSwitcherComponent, CustomInputComponent, TranslatePipe, IconComponent],
+  imports: [CommonModule, FormsModule, RouterModule, ButtonComponent, ThemeSwitcherComponent, CustomInputComponent, CustomCheckboxComponent, TranslatePipe, IconComponent],
   templateUrl: './login.component.html',
   styles: [`
     :host {
@@ -29,6 +30,7 @@ export class LoginComponent {
 
   public email = '';
   public password = '';
+  public rememberMe = true;
   
   public requires2Fa = signal<boolean>(false);
   public showPassword = signal<boolean>(false);

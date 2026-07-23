@@ -1,10 +1,10 @@
 <label
-  class="group flex items-start gap-3 cursor-pointer"
+  class="group flex items-start gap-3 cursor-pointer select-none"
   [class.opacity-50]="disabled"
   [class.pointer-events-none]="disabled"
 >
   <div
-    class="relative shrink-0 h-5 w-5 rounded-[6px] border-2 transition-all duration-200 flex items-center justify-center"
+    class="relative shrink-0 h-5 w-5 mt-0.5 rounded-[6px] border-2 transition-all duration-200 flex items-center justify-center"
     [ngClass]="
       checked()
         ? 'border-[var(--color-primary)] bg-[var(--color-primary)] shadow-sm shadow-[var(--color-primary)]/15'
@@ -31,9 +31,9 @@
   />
 
   @if (label || description) {
-    <div class="text-xs sm:text-sm pt-0.5">
+    <div class="text-xs sm:text-sm">
       @if (label) {
-        <p class="font-semibold text-slate-700 dark:text-slate-300 leading-tight">
+        <p class="font-semibold text-slate-700 dark:text-slate-300 leading-snug">
           {{ label }}
         </p>
       }
@@ -42,8 +42,8 @@
       }
     </div>
   } @else {
-    <span class="text-sm font-semibold text-slate-700 dark:text-slate-300 pt-0.5">
+    <div class="text-sm font-semibold text-slate-700 dark:text-slate-300 leading-snug min-w-0 flex-1">
       <ng-content></ng-content>
-    </span>
+    </div>
   }
 </label>

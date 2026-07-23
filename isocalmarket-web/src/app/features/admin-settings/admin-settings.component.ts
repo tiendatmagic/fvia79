@@ -9,6 +9,7 @@ import { CardComponent } from '@shared/components/card/card.component';
 import { ButtonComponent } from '@shared/components/button/button.component';
 import { SkeletonLoaderComponent } from '@shared/components/skeleton-loader/skeleton-loader.component';
 import { IconComponent } from '@shared/components/icon/icon.component';
+import { CustomCheckboxComponent } from '@shared/components/custom-checkbox/custom-checkbox.component';
 import { ToastService } from '@core/services/toast.service';
 import { ModalService } from '@core/services/modal.service';
 import { LanguageService } from '@core/services/language.service';
@@ -26,6 +27,7 @@ import { SupplierSettings, SupplierStore } from './supplier.store';
     ButtonComponent,
     SkeletonLoaderComponent,
     IconComponent,
+    CustomCheckboxComponent,
     TranslatePipe
   ],
   templateUrl: './admin-settings.component.html',

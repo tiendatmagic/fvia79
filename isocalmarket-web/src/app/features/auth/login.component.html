@@ -5,25 +5,27 @@
     <div class="w-[1px] h-3.5 bg-slate-200 dark:bg-slate-800 transition-colors"></div>
 
         <div class="flex items-center gap-1.5 select-none">
-      <button
+        <button
         type="button"
         (click)="lang.setLanguage('vi')"
         [class.text-primary]="lang.currentLang() === 'vi'"
         [class.font-extrabold]="lang.currentLang() === 'vi'"
-        [class.text-slate-400]="lang.currentLang() !== 'vi'"
-        [class.dark:text-slate-600]="lang.currentLang() !== 'vi'"
+        [class.text-slate-500]="lang.currentLang() !== 'vi'"
+        [class.dark:text-slate-400]="lang.currentLang() !== 'vi'"
+        [class.font-medium]="lang.currentLang() !== 'vi'"
         class="text-xs transition-colors cursor-pointer focus:outline-none bg-transparent border-none p-0"
       >
         VI
       </button>
-      <span class="text-xs text-slate-300 dark:text-slate-700">/</span>
+      <span class="text-xs text-slate-400 dark:text-slate-600">/</span>
       <button
         type="button"
         (click)="lang.setLanguage('en')"
         [class.text-primary]="lang.currentLang() === 'en'"
         [class.font-extrabold]="lang.currentLang() === 'en'"
-        [class.text-slate-400]="lang.currentLang() !== 'en'"
-        [class.dark:text-slate-600]="lang.currentLang() !== 'en'"
+        [class.text-slate-500]="lang.currentLang() !== 'en'"
+        [class.dark:text-slate-400]="lang.currentLang() !== 'en'"
+        [class.font-medium]="lang.currentLang() !== 'en'"
         class="text-xs transition-colors cursor-pointer focus:outline-none bg-transparent border-none p-0"
       >
         EN
@@ -38,7 +40,7 @@
       <button class="flex-1 text-center pb-4 text-sm font-bold border-b-2 border-primary text-slate-900 dark:text-white" type="button">
         {{ 'nav.login' | translate }}
       </button>
-      <a class="flex-1 text-center pb-4 text-sm font-semibold border-b-2 border-transparent text-slate-400 dark:text-slate-500 hover:text-slate-600 dark:hover:text-slate-400" routerLink="/register">
+      <a class="flex-1 text-center pb-4 text-sm font-medium border-b-2 border-transparent text-slate-500 dark:text-slate-400 hover:text-slate-700 dark:hover:text-slate-200" routerLink="/register">
         {{ 'auth.register_now' | translate }}
       </a>
     </div>
@@ -47,7 +49,7 @@
       <h2 class="text-2xl font-black text-slate-900 dark:text-white tracking-tight mb-2">
         {{ 'auth.welcome_back' | translate }}
       </h2>
-      <p class="text-sm font-semibold text-slate-400 dark:text-slate-500">
+      <p class="text-sm font-medium text-slate-600 dark:text-slate-300">
         {{ 'auth.welcome_back_desc' | translate }}
       </p>
     </div>
@@ -91,16 +93,14 @@
           />
         </div>
 
-                <label class="flex items-start gap-2.5 text-xs text-slate-500 dark:text-slate-400 cursor-pointer select-none">
-          <input
-            type="checkbox"
-            name="remember"
-            checked
-            required
-            class="mt-0.5 rounded border-slate-300 text-primary focus:ring-primary focus:ring-opacity-20 cursor-pointer"
-          />
-          <span>{{ 'auth.terms_commitment' | translate }}</span>
-        </label>
+                <app-custom-checkbox
+          [(ngModel)]="rememberMe"
+          name="remember"
+        >
+          <span class="text-xs font-medium text-slate-600 dark:text-slate-300 leading-snug block">
+            {{ 'auth.terms_commitment' | translate }}
+          </span>
+        </app-custom-checkbox>
 
                 <div class="pt-2">
           <button
@@ -114,7 +114,7 @@
           </button>
         </div>
 
-                <div class="text-center text-xs font-semibold text-slate-500 pt-3">
+                <div class="text-center text-xs font-medium text-slate-600 dark:text-slate-300 pt-3">
           {{ 'auth.dont_have_account' | translate }}
           <a routerLink="/register" class="text-primary hover:underline ml-1 font-bold">
             {{ 'auth.register_now' | translate }}
@@ -122,7 +122,7 @@
         </div>
       } @else {
                 <div class="text-center pb-2">
-          <p class="text-sm font-semibold text-slate-500 dark:text-slate-400">
+          <p class="text-sm font-medium text-slate-600 dark:text-slate-300">
             {{ 'auth.otp_instruction' | translate }}
           </p>
         </div>
@@ -166,17 +166,17 @@
 
     <div class="mt-12">
     <div class="flex items-center justify-between px-4 py-3 bg-slate-100 dark:bg-slate-900 border border-slate-200/40 dark:border-slate-800/40 rounded-xl transition-colors duration-300">
-      <div class="flex items-center gap-1.5 text-[10px] font-black uppercase tracking-wider text-slate-400 dark:text-slate-500">
+      <div class="flex items-center gap-1.5 text-[10px] font-bold uppercase tracking-wider text-slate-600 dark:text-slate-300">
         <app-icon name="shield" class="w-3.5 h-3.5 text-primary shrink-0" />
         <span>{{ 'auth.ssl_encryption' | translate }}</span>
       </div>
       <div class="w-[1px] h-3 bg-slate-200 dark:bg-slate-800"></div>
-      <div class="flex items-center gap-1.5 text-[10px] font-black uppercase tracking-wider text-slate-400 dark:text-slate-500">
+      <div class="flex items-center gap-1.5 text-[10px] font-bold uppercase tracking-wider text-slate-600 dark:text-slate-300">
         <app-icon name="clock" class="w-3.5 h-3.5 text-primary shrink-0" />
         <span>{{ 'auth.operation_247' | translate }}</span>
       </div>
       <div class="w-[1px] h-3 bg-slate-200 dark:bg-slate-800"></div>
-      <div class="flex items-center gap-1.5 text-[10px] font-black uppercase tracking-wider text-slate-400 dark:text-slate-500">
+      <div class="flex items-center gap-1.5 text-[10px] font-bold uppercase tracking-wider text-slate-600 dark:text-slate-300">
         <app-icon name="check-circle" class="w-3.5 h-3.5 text-primary shrink-0" />
         <span>{{ 'auth.security_2fa' | translate }}</span>
       </div>

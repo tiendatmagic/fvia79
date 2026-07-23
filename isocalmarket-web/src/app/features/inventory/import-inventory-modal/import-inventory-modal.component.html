@@ -1,7 +1,7 @@
 <div class="space-y-6 pb-2">
   <div class="grid grid-cols-1 sm:grid-cols-3 gap-6">
     <div class="form-field">
-      <label class="text-xs font-black text-slate-400 uppercase tracking-wider block mb-2"
+      <label class="text-xs font-black text-slate-600 dark:text-slate-300 uppercase tracking-wider block mb-2"
         >{{ 'common.product' | translate }} <span class="text-red-500">*</span></label
       >
       <app-custom-select
@@ -15,7 +15,7 @@
     </div>
 
     <div class="form-field">
-      <label class="text-xs font-black text-slate-400 uppercase tracking-wider block mb-2"
+      <label class="text-xs font-black text-slate-600 dark:text-slate-300 uppercase tracking-wider block mb-2"
         >{{ 'inv.batch_name' | translate }} <span class="text-red-500">*</span></label
       >
       <app-custom-input
@@ -27,8 +27,8 @@
     </div>
 
     <div class="form-field">
-      <label class="text-xs font-black text-slate-400 uppercase tracking-wider block mb-2 flex items-center justify-between"
-        ><span>{{ 'inv.cost_price' | translate }}</span> <span class="text-[10px] text-slate-400 font-normal">({{ 'common.optional' | translate }})</span></label
+      <label class="text-xs font-black text-slate-600 dark:text-slate-300 uppercase tracking-wider block mb-2 flex items-center justify-between"
+        ><span>{{ 'inv.cost_price' | translate }}</span> <span class="text-[10px] text-slate-500 dark:text-slate-400 font-medium">({{ 'common.optional' | translate }})</span></label
       >
       <app-custom-input
         [placeholder]="'VD: 1.50 (USD/USDT)'"
@@ -40,7 +40,7 @@
   </div>
 
   <div class="form-field">
-    <label class="text-xs font-black text-slate-400 uppercase tracking-wider block mb-2"
+    <label class="text-xs font-black text-slate-600 dark:text-slate-300 uppercase tracking-wider block mb-2"
       >{{ 'inv.resource_data' | translate }} <span class="text-red-500">*</span></label
     >
     <app-custom-input
@@ -51,7 +51,7 @@
       [rows]="8"
       customClass="min-h-[200px]"
     />
-    <div class="flex justify-between items-center text-xs font-bold text-slate-400 mt-1">
+    <div class="flex justify-between items-center text-xs font-bold text-slate-500 dark:text-slate-400 mt-1">
       <span>{{ 'inventory.one_account_per_line' | translate }}</span>
       <span class="text-[var(--color-primary)]">{{ 'inventory.total' | translate }}: {{ rawDataCount }}</span>
     </div>
