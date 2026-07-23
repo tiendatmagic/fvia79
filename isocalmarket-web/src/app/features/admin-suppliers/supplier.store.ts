@@ -12,6 +12,7 @@ export interface SupplierSettings {
   has_api_key: boolean;
   enabled: boolean;
   products_enabled: boolean;
+  import_out_of_stock: boolean;
   auto_sync: boolean;
   sync_interval_minutes: 10 | 30;
   price_adjustment_type: PriceAdjustmentType;
@@ -55,40 +56,48 @@ export class SupplierStore {
     this.loading.set(true);
     return forkJoin({
       suppliers: this.api.get<SupplierSettings[]>('v1/admin/suppliers'),
-      rate: this.api.get<{ rate: number }>('v1/deposit/rate').pipe(
-        catchError(() => of({ rate: 0 }))
-      )
+      rate: this.api
+        .get<{ rate: number }>('v1/deposit/rate')
+        .pipe(catchError(() => of({ rate: 0 }))),
     }).pipe(
       map(({ suppliers, rate }) => {
         this.exchangeRate.set(Number(rate.rate));
         return suppliers;
       }),
-      tap(suppliers => this.suppliers.set(suppliers)),
-      finalize(() => this.loading.set(false))
+      tap((suppliers) => this.suppliers.set(suppliers)),
+      finalize(() => this.loading.set(false)),
     );
   }
 
   public create(payload: Partial<SupplierSettings>): Observable<SupplierSettings> {
     this.saving.set(true);
     return this.api.post<SupplierSettings>('v1/admin/suppliers', payload).pipe(
-      tap(supplier => this.suppliers.update(items => [...items, supplier])),
-      finalize(() => this.saving.set(false))
+      tap((supplier) => this.suppliers.update((items) => [...items, supplier])),
+      finalize(() => this.saving.set(false)),
     );
   }
 
   public update(code: string, payload: Partial<SupplierSettings>): Observable<SupplierSettings> {
     this.saving.set(true);
     return this.api.put<SupplierSettings>(`v1/admin/suppliers/${code}`, payload).pipe(
-      tap(supplier => this.suppliers.update(items => items.map(item => item.code === code ? supplier : item))),
-      finalize(() => this.saving.set(false))
+      tap((supplier) =>
+        this.suppliers.update((items) =>
+          items.map((item) => (item.code === code ? supplier : item)),
+        ),
+      ),
+      finalize(() => this.saving.set(false)),
     );
   }
 
   public sync(code: string): Observable<any> {
     this.syncing.set(true);
     return this.api.post<any>(`v1/admin/suppliers/${code}/sync`, {}).pipe(
-      tap(response => this.suppliers.update(items => items.map(item => item.code === code ? response.supplier : item))),
-      finalize(() => this.syncing.set(false))
+      tap((response) =>
+        this.suppliers.update((items) =>
+          items.map((item) => (item.code === code ? response.supplier : item)),
+        ),
+      ),
+      finalize(() => this.syncing.set(false)),
     );
   }
 
@@ -112,15 +121,15 @@ export class SupplierStore {
     }
 
     const request = this.api.post<SupplierBalance>(`v1/admin/suppliers/${code}/balance`, {}).pipe(
-      tap(balance => {
+      tap((balance) => {
         const normalizedBalance = {
           balance: Number(balance.balance),
           currency: balance.currency,
-          account: balance.account
+          account: balance.account,
         };
         this.balanceCache.set(code, {
           data: normalizedBalance,
-          fetchedAt: Date.now()
+          fetchedAt: Date.now(),
         });
 
         if (this.balanceRequestCode === code) {
@@ -133,7 +142,7 @@ export class SupplierStore {
           this.balanceLoading.set(false);
         }
       }),
-      shareReplay({ bufferSize: 1, refCount: true })
+      shareReplay({ bufferSize: 1, refCount: true }),
     );
     this.balanceRequests.set(code, request);
 

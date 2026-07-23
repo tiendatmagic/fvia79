@@ -37,7 +37,7 @@ class SupplierCatalogSyncTest extends TestCase
         $this->assertSame(1, ProductModel::where('supplier_id', $supplier->id)->count());
         $product = ProductModel::where('external_id', '2')->firstOrFail();
         $this->assertSame(20000.0, $product->supplier_price_vnd);
-        $this->assertSame(1.54, $product->price);
+        $this->assertSame(1.53846154, $product->price);
         $this->assertSame(17, $product->supplier_stock);
         $this->assertSame([], $product->attributes);
         $this->assertSame('success', $supplier->fresh()->last_sync_status);
@@ -55,7 +55,7 @@ class SupplierCatalogSyncTest extends TestCase
         ]);
         app(SupplierCatalogSyncService::class)->sync($supplier);
 
-        $this->assertSame(0.96, ProductModel::where('external_id', '2')->value('price'));
+        $this->assertSame(0.96153846, ProductModel::where('external_id', '2')->value('price'));
     }
 
     public function test_sync_keeps_new_products_inactive_when_supplier_products_are_disabled(): void
@@ -126,9 +126,87 @@ class SupplierCatalogSyncTest extends TestCase
         $response = $this->getJson('/api/v1/products?status=active');
 
         $response->assertOk()
-            ->assertJsonPath('0.available_count', 0)
+            ->assertJsonPath('0.available_count', 17)
             ->assertJsonPath('0.supplier.code', 'ads7979')
             ->assertJsonPath('0.supplier.external_id', '2');
+    }
+
+    public function test_low_vnd_price_keeps_enough_usd_precision_for_vnd_display(): void
+    {
+        Cache::forget('usdt_to_vnd_rate');
+        config()->set('services.ads7979.api_key', 'test-api-key');
+        $catalog = $this->catalog();
+        $catalog[0]['children'][0]['price'] = 270;
+        Http::fake([
+            'https://ads7979.com/api/v2/categories' => Http::response($catalog),
+            'https://api.coingecko.com/api/v3/simple/price*' => Http::response([
+                'tether' => ['vnd' => 26300],
+            ]),
+        ]);
+
+        app(SupplierCatalogSyncService::class)->syncByCode('ads7979');
+
+        $priceUsd = ProductModel::where('external_id', '2')->value('price');
+        $this->assertSame(0.01026616, $priceUsd);
+        $this->assertSame(270, (int) round($priceUsd * 26300));
+    }
+
+    public function test_out_of_stock_import_can_be_disabled_and_products_return_when_restocked(): void
+    {
+        Cache::forget('usdt_to_vnd_rate');
+        config()->set('services.ads7979.api_key', 'test-api-key');
+        $supplier = SupplierModel::where('code', 'ads7979')->firstOrFail();
+        $this->withToken($this->adminToken('supplier_stock_filter_admin'))
+            ->putJson('/api/v1/admin/suppliers/ads7979', ['import_out_of_stock' => false])
+            ->assertOk()
+            ->assertJsonPath('import_out_of_stock', false);
+
+        $outOfStockCatalog = $this->catalog();
+        $outOfStockCatalog[0]['children'][0]['quantity'] = 0;
+        $catalogSequence = Http::sequence()
+            ->push($outOfStockCatalog)
+            ->push($this->catalog())
+            ->push($outOfStockCatalog)
+            ->push($this->catalog());
+        Http::fake([
+            'https://ads7979.com/api/v2/categories' => $catalogSequence,
+            'https://api.coingecko.com/api/v3/simple/price*' => Http::response([
+                'tether' => ['vnd' => 26000],
+            ]),
+        ]);
+
+        $result = app(SupplierCatalogSyncService::class)->sync($supplier->fresh());
+        $this->assertSame(0, $result['products']);
+        $this->assertDatabaseMissing('products', [
+            'supplier_id' => $supplier->id,
+            'external_id' => '2',
+        ]);
+
+        app(SupplierCatalogSyncService::class)->sync($supplier->fresh());
+        $this->assertDatabaseHas('products', [
+            'supplier_id' => $supplier->id,
+            'external_id' => '2',
+            'supplier_stock' => 17,
+            'status' => 'active',
+        ]);
+
+        app(SupplierCatalogSyncService::class)->sync($supplier->fresh());
+        $this->assertDatabaseHas('products', [
+            'supplier_id' => $supplier->id,
+            'external_id' => '2',
+            'supplier_stock' => 0,
+            'supplier_out_of_stock_hidden' => true,
+            'status' => 'inactive',
+        ]);
+
+        app(SupplierCatalogSyncService::class)->sync($supplier->fresh());
+        $this->assertDatabaseHas('products', [
+            'supplier_id' => $supplier->id,
+            'external_id' => '2',
+            'supplier_stock' => 17,
+            'supplier_out_of_stock_hidden' => false,
+            'status' => 'active',
+        ]);
     }
 
     public function test_admin_can_add_and_sync_another_compatible_v2_supplier_without_new_connector(): void

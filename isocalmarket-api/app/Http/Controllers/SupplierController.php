@@ -42,6 +42,7 @@ class SupplierController extends Controller
             'api_key' => ['required', 'string', 'max:2000'],
             'enabled' => ['sometimes', 'boolean'],
             'products_enabled' => ['sometimes', 'boolean'],
+            'import_out_of_stock' => ['sometimes', 'boolean'],
             'auto_sync' => ['sometimes', 'boolean'],
             'sync_interval_minutes' => ['sometimes', 'integer', Rule::in([10, 30])],
             'price_adjustment_type' => ['sometimes', Rule::in(['fixed', 'percent'])],
@@ -75,6 +76,7 @@ class SupplierController extends Controller
             'api_key' => ['sometimes', 'nullable', 'string', 'max:2000'],
             'enabled' => ['sometimes', 'boolean'],
             'products_enabled' => ['sometimes', 'boolean'],
+            'import_out_of_stock' => ['sometimes', 'boolean'],
             'auto_sync' => ['sometimes', 'boolean'],
             'sync_interval_minutes' => ['sometimes', 'integer', Rule::in([10, 30])],
             'price_adjustment_type' => ['sometimes', Rule::in(['fixed', 'percent'])],
@@ -119,13 +121,29 @@ class SupplierController extends Controller
                     if ($supplier->products_enabled) {
                         $supplier->products()
                             ->whereNotNull('supplier_previous_status')
+                            ->where('supplier_out_of_stock_hidden', false)
                             ->update([
                                 'status' => DB::raw('supplier_previous_status'),
+                                'supplier_previous_status' => null,
+                            ]);
+                        $supplier->products()
+                            ->whereNotNull('supplier_previous_status')
+                            ->where('supplier_out_of_stock_hidden', true)
+                            ->update([
+                                'status' => 'inactive',
                                 'supplier_previous_status' => null,
                             ]);
                     } else {
                         $supplier->products()
                             ->whereNull('supplier_previous_status')
+                            ->where('supplier_out_of_stock_hidden', true)
+                            ->update([
+                                'supplier_previous_status' => 'active',
+                                'status' => 'inactive',
+                            ]);
+                        $supplier->products()
+                            ->whereNull('supplier_previous_status')
+                            ->where('supplier_out_of_stock_hidden', false)
                             ->update([
                                 'supplier_previous_status' => DB::raw('status'),
                                 'status' => 'inactive',
@@ -226,6 +244,7 @@ class SupplierController extends Controller
             'has_api_key' => (bool) ($supplier->api_key ?: config("services.{$supplier->code}.api_key")),
             'enabled' => $supplier->enabled,
             'products_enabled' => $supplier->products_enabled,
+            'import_out_of_stock' => $supplier->import_out_of_stock,
             'auto_sync' => $supplier->auto_sync,
             'sync_interval_minutes' => $supplier->sync_interval_minutes,
             'price_adjustment_type' => $supplier->price_adjustment_type,

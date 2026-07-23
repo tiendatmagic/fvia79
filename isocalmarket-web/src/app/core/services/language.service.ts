@@ -31,10 +31,12 @@ export const TRANSLATIONS: Record<SupportedLanguage, Record<string, string>> = {
     'nav.admin_api': 'Admin API',
     'nav.check_uid': 'Check Live UID',
     'check_uid.title': 'Check Facebook Live UID',
-    'check_uid.subtitle': 'Verify Facebook UIDs live or die status in bulk, fast and accurate (Powered by CheckUID.Live).',
+    'check_uid.subtitle':
+      'Verify Facebook UIDs live or die status in bulk, fast and accurate (Powered by CheckUID.Live).',
     'check_uid.badge_fast': 'Super Fast',
     'check_uid.input_label': 'Enter UID list (one per line):',
-    'check_uid.input_placeholder': 'Paste your Facebook UIDs list here...\nSupports format: UID or UID|PASS|2FA...',
+    'check_uid.input_placeholder':
+      'Paste your Facebook UIDs list here...\nSupports format: UID or UID|PASS|2FA...',
     'check_uid.btn_check': 'Check Live Now',
     'check_uid.btn_checking': 'Checking...',
     'check_uid.btn_clear': 'Clear Input',
@@ -58,51 +60,72 @@ export const TRANSLATIONS: Record<SupportedLanguage, Record<string, string>> = {
     'theme.dark': 'Dark',
     'theme.auto': 'Auto',
 
-    'api.user_description': 'Integrate B2B API system to sync product catalog, prices, stock and place automated orders quickly.',
+    'api.user_description':
+      'Integrate B2B API system to sync product catalog, prices, stock and place automated orders quickly.',
     'api.switch_to_admin': 'Switch to Admin API',
     'api.your_api_key': 'Your B2B API Key',
-    'api.key_instruction': 'Use this API Key to authenticate when calling B2B APIs via URL query parameter (?api_key=...) or HTTP Header X-API-KEY.',
-    'api.security_warning': 'Keep this key secure and never share it publicly to avoid asset losses!',
+    'api.key_instruction':
+      'Use this API Key to authenticate when calling B2B APIs via URL query parameter (?api_key=...) or HTTP Header X-API-KEY.',
+    'api.security_warning':
+      'Keep this key secure and never share it publicly to avoid asset losses!',
     'api.not_configured': 'API Key not generated yet',
     'api.hide_key': 'Hide API Key',
     'api.show_key': 'Show API Key',
     'api.create_key': 'Generate API Key',
     'api.regen_key': 'Generate New Key',
-    'api.admin_description': 'Privileged gateway for Admin to automate agent management, update balances, and reconcile the system.',
+    'api.admin_description':
+      'Privileged gateway for Admin to automate agent management, update balances, and reconcile the system.',
     'api.switch_to_user': 'Switch to User API',
     'api.admin_key_section': 'Admin API Key & Configuration',
     'api.security_warning_title': 'High-Level Security Warning!',
-    'api.admin_security_warning_body': 'The API endpoints below allow direct intervention on user accounts and system balances. Never share the Admin account API Key with anyone or push it to public source repositories (Github, Gitlab).',
-    'api.admin_key_instruction': 'Use this API Key to authenticate when calling B2B Admin APIs by passing it directly on URL (Query param',
+    'api.admin_security_warning_body':
+      'The API endpoints below allow direct intervention on user accounts and system balances. Never share the Admin account API Key with anyone or push it to public source repositories (Github, Gitlab).',
+    'api.admin_key_instruction':
+      'Use this API Key to authenticate when calling B2B Admin APIs by passing it directly on URL (Query param',
     'api.or_header': 'or via HTTP Header',
     'api.or': 'or',
-    'api.admin_security_warning': 'Keep this key absolutely secure and never share it with anyone to avoid asset losses!',
+    'api.admin_security_warning':
+      'Keep this key absolutely secure and never share it with anyone to avoid asset losses!',
     'api.admin_docs_title': 'B2B Admin API Integration Documentation',
-    'api.admin_docs_subtitle': 'Privileged gateway for system administration and B2B member reconciliation',
+    'api.admin_docs_subtitle':
+      'Privileged gateway for system administration and B2B member reconciliation',
     'api.admin_ep1_title': '1. List B2B Members',
-    'api.admin_ep1_desc': 'Returns members with their profile, unique UID (8-digit numeric UID), role, USD wallet balance, and API lock status. Supports pagination (?page=1&limit=10), search (?search=...), role filter (?role=...) and API Key status (?has_api_key=yes/no).',
+    'api.admin_ep1_desc':
+      'Returns members with their profile, unique UID (8-digit numeric UID), role, USD wallet balance, and API lock status. Supports pagination (?page=1&limit=10), search (?search=...), role filter (?role=...) and API Key status (?has_api_key=yes/no).',
     'api.admin_ep2_title': '2. List All B2B System Orders',
-    'api.admin_ep2_desc': 'Retrieves all orders placed through B2B channel by all members. Supports pagination (?page=1&limit=10), search (?search=...), status filter (?status=...) and agent filter (?user_id=...).',
+    'api.admin_ep2_desc':
+      'Retrieves all orders placed through B2B channel by all members. Supports pagination (?page=1&limit=10), search (?search=...), status filter (?status=...) and agent filter (?user_id=...).',
     'api.admin_ep3_title': '3. Import Product Inventory (Import New Batch)',
-    'api.admin_ep3_desc': 'Add stock data to a product. Can send content directly as JSON or upload a TXT file via multipart/form-data.',
+    'api.admin_ep3_desc':
+      'Add stock data to a product. Can send content directly as JSON or upload a TXT file via multipart/form-data.',
     'api.admin_ep4_title': '4. Get B2B System Statistics',
-    'api.admin_ep4_desc': 'View overall system activity metrics including: Revenue, Cost of Goods Sold (COGS), Gross Profit, Profit Margin (%), Orders, Products, Available Inventory and Total Users.',
-    'api.admin_api_key_desc': 'Admin API Key to authenticate. Can be passed via query parameter or header X-API-KEY.',
+    'api.admin_ep4_desc':
+      'View overall system activity metrics including: Revenue, Cost of Goods Sold (COGS), Gross Profit, Profit Margin (%), Orders, Products, Available Inventory and Total Users.',
+    'api.admin_api_key_desc':
+      'Admin API Key to authenticate. Can be passed via query parameter or header X-API-KEY.',
     'api.admin_users_limit_desc': 'Number of members per page. Default is',
-    'api.admin_users_search_desc': 'Search keyword by name, email, phone number, username, or UID (8-digit numeric UID).',
+    'api.admin_users_search_desc':
+      'Search keyword by name, email, phone number, username, or UID (8-digit numeric UID).',
     'api.admin_users_role_desc': 'Filter by member role. Accepts:',
-    'api.admin_users_has_api_key_desc': 'Filter by whether a B2B API Key has been generated. Accepts:',
+    'api.admin_users_has_api_key_desc':
+      'Filter by whether a B2B API Key has been generated. Accepts:',
     'api.admin_orders_limit_desc': 'Number of orders per page. Default is',
     'api.admin_orders_status_desc': 'Filter orders by status. Accepts:',
-    'api.admin_orders_user_id_desc': 'Filter orders by a specific agent/member based on account ID or UID.',
-    'api.admin_orders_search_desc': 'Search keyword by order code (order_code) or agent info (name/email/username/UID).',
+    'api.admin_orders_user_id_desc':
+      'Filter orders by a specific agent/member based on account ID or UID.',
+    'api.admin_orders_search_desc':
+      'Search keyword by order code (order_code) or agent info (name/email/username/UID).',
     'api.admin_ep3_id_desc': 'Product ID in URL. The product must belong to your management.',
-    'api.admin_ep3_batch_desc': 'Batch label for easy classification and reconciliation (defaults to current date/time if not provided).',
-    'api.admin_ep3_cost_price_desc': 'Cost price (unit cost) per resource item in the batch ($ / USD). Optional, used for financial & profit reporting.',
-    'api.admin_ep3_content_desc': 'Stock data as a multi-line string (separated by newline character',
+    'api.admin_ep3_batch_desc':
+      'Batch label for easy classification and reconciliation (defaults to current date/time if not provided).',
+    'api.admin_ep3_cost_price_desc':
+      'Cost price (unit cost) per resource item in the batch ($ / USD). Optional, used for financial & profit reporting.',
+    'api.admin_ep3_content_desc':
+      'Stock data as a multi-line string (separated by newline character',
     'api.admin_ep3_content_note': 'Required if not uploading a file.',
     'api.admin_ep3_file_desc': 'Upload a text file',
-    'api.admin_ep3_file_note': 'containing product data via multipart/form-data. Required if not sending content.',
+    'api.admin_ep3_file_note':
+      'containing product data via multipart/form-data. Required if not sending content.',
     'api.admin_stats_api_key_desc': 'Admin API Key to authenticate access.',
     'api.stats_start_date_desc': 'Start date for revenue and order calculation.',
     'api.stats_end_date_desc': 'End date for revenue and order calculation.',
@@ -110,15 +133,20 @@ export const TRANSLATIONS: Record<SupportedLanguage, Record<string, string>> = {
     'api.docs_title': 'B2B API Integration Documentation',
     'api.docs_subtitle': 'Connect directly via URL, auto-sync inventory and place transactions',
     'api.ep1_title': '1. Get Product List',
-    'api.ep1_desc': 'Get product IDs, names, USD prices, and available stock quantities with pagination support. Supports filtering by category (?category_id=...), search (?search=...), page (?page=...) and limit (?limit=...).',
+    'api.ep1_desc':
+      'Get product IDs, names, USD prices, and available stock quantities with pagination support. Supports filtering by category (?category_id=...), search (?search=...), page (?page=...) and limit (?limit=...).',
     'api.ep2_title': '2. Get Product Detail',
-    'api.ep2_desc': 'View detailed product description along with current available stock quantity.',
+    'api.ep2_desc':
+      'View detailed product description along with current available stock quantity.',
     'api.ep3_title': '3. Purchase Product Account',
-    'api.ep3_desc': 'Automatically creates an order, deducts the API Key owner account balance, and returns the purchased account resource (accounts) immediately.',
+    'api.ep3_desc':
+      'Automatically creates an order, deducts the API Key owner account balance, and returns the purchased account resource (accounts) immediately.',
     'api.ep4_title': '4. Get Account Info & Balance',
-    'api.ep4_desc': 'Get agent personal info and current USD wallet balance (safely without exposing sensitive information).',
+    'api.ep4_desc':
+      'Get agent personal info and current USD wallet balance (safely without exposing sensitive information).',
     'api.ep5_title': '5. Lookup Order Details',
-    'api.ep5_desc': 'Look up status, price, and list of purchased account resources by order code (order_code).',
+    'api.ep5_desc':
+      'Look up status, price, and list of purchased account resources by order code (order_code).',
     'api.curl_sample': 'API Call Sample (CURL)',
     'api.direct_url': 'Direct URL',
     'api.query_params': 'URL Parameters (Query Parameters)',
@@ -128,15 +156,18 @@ export const TRANSLATIONS: Record<SupportedLanguage, Record<string, string>> = {
     'api.required': 'Required',
     'api.required_cond': 'Required*',
     'api.optional': 'Optional',
-    'api.api_key_desc': 'Agent API Key to authenticate access. Can be passed via query parameter or header',
+    'api.api_key_desc':
+      'Agent API Key to authenticate access. Can be passed via query parameter or header',
     'api.page_desc': 'Page number to retrieve data. Default is',
     'api.limit_desc': 'Maximum records per page. Default is',
-    'api.category_id_desc': 'Category ID to filter by. If not provided, products from all categories are returned.',
+    'api.category_id_desc':
+      'Category ID to filter by. If not provided, products from all categories are returned.',
     'api.search_product_desc': 'Search keyword by product name.',
     'api.product_id_body_desc': 'ID of the product you want to purchase.',
     'api.quantity_desc': 'Number of products to purchase.',
     'api.coupon_code_desc': 'Discount code to apply to the order (e.g.',
-    'api.items_desc': 'List of multiple products to buy at once (if items is passed, system ignores product_id and quantity above). Each object contains:',
+    'api.items_desc':
+      'List of multiple products to buy at once (if items is passed, system ignores product_id and quantity above). Each object contains:',
     'api.buy_single_hint': '1. Buy 1 product (Pass product_id & quantity):',
     'api.buy_multi_hint': '2. Buy multiple products at once (Pass items array):',
     'api.buy_single_cmd_hint': '1. Buy 1 product (Windows CMD):',
@@ -156,11 +187,13 @@ export const TRANSLATIONS: Record<SupportedLanguage, Record<string, string>> = {
     'api.copy_stats_curl': 'B2B statistics CURL sample',
     'api.copy_stats_url': 'B2B statistics URL',
     'settings.title': 'System Configuration',
-    'settings.description': 'Manage the admin USDT receiving wallet address and blockchain scanner integration keys',
+    'settings.description':
+      'Manage the admin USDT receiving wallet address and blockchain scanner integration keys',
     'settings.tab_general': 'System Information Config',
     'settings.tab_maintenance': 'Maintenance & Optimization',
     'supplier.title': 'Supplier Management',
-    'supplier.page_description': 'Manage product suppliers, catalog synchronization, stock, and pricing rules.',
+    'supplier.page_description':
+      'Manage product suppliers, catalog synchronization, stock, and pricing rules.',
     'supplier.account_balance': 'Supplier account balance',
     'supplier.account_username': 'Username',
     'supplier.account_email': 'Email',
@@ -190,7 +223,11 @@ export const TRANSLATIONS: Record<SupportedLanguage, Record<string, string>> = {
     'supplier.minutes': 'minutes',
     'supplier.enabled': 'Enable this supplier',
     'supplier.products_enabled': 'Enable this supplier’s products',
-    'supplier.products_enabled_hint': 'Save the configuration to activate or deactivate all products from this supplier.',
+    'supplier.products_enabled_hint':
+      'Save the configuration to activate or deactivate all products from this supplier.',
+    'supplier.import_out_of_stock': 'Import out-of-stock products',
+    'supplier.import_out_of_stock_hint':
+      'When disabled, products with zero supplier inventory are skipped or hidden until they are back in stock.',
     'supplier.auto_sync': 'Enable scheduled synchronization',
     'supplier.price_example': 'Price conversion example',
     'supplier.rate': 'rate',
@@ -207,8 +244,10 @@ export const TRANSLATIONS: Record<SupportedLanguage, Record<string, string>> = {
     'supplier.load_failed': 'Could not load supplier settings.',
     'supplier.percentage_invalid': 'The percentage adjustment cannot be below -100%.',
     'supplier.api_key_missing': 'The supplier API key has not been configured.',
-    'supplier.url_invalid': 'The supplier URL must be a plain HTTPS origin without credentials, query parameters, fragments, or a custom port.',
-    'supplier.url_public_required': 'The supplier URL must resolve only to public internet addresses.',
+    'supplier.url_invalid':
+      'The supplier URL must be a plain HTTPS origin without credentials, query parameters, fragments, or a custom port.',
+    'supplier.url_public_required':
+      'The supplier URL must resolve only to public internet addresses.',
     'supplier.hostname_unresolved': 'The supplier hostname could not be resolved.',
     'supplier.category_id_missing': 'A supplier category is missing its ID.',
     'supplier.product_id_missing': 'A supplier product is missing its ID.',
@@ -218,20 +257,25 @@ export const TRANSLATIONS: Record<SupportedLanguage, Record<string, string>> = {
     'supplier.api_key_rejected': 'The supplier rejected the API key.',
     'supplier.schema_incompatible': 'The supplier returned an incompatible catalog schema.',
     'supplier.catalog_invalid': 'The supplier returned an invalid catalog response.',
-    'supplier.unsupported_api': 'The supplier does not support a compatible API, or its API key is invalid.',
+    'supplier.unsupported_api':
+      'The supplier does not support a compatible API, or its API key is invalid.',
     'supplier.unsupported_driver': 'The supplier catalog driver is not supported.',
     'supplier.exchange_rate_invalid': 'The VND/USD exchange rate must be greater than zero.',
     'supplier.synchronized_named': 'The {{name}} catalog was synchronized successfully.',
     'settings.wallet_label': 'Admin USDT Receiving Wallet (BEP20)',
     'settings.wallet_placeholder': 'Enter USDT wallet address (e.g.: 0xAB4a22a64bBC...)',
-    'settings.wallet_hint': 'This is the BEP20 wallet address on Binance Smart Chain that will receive customer deposits. Make sure this address is correct to avoid losing assets.',
+    'settings.wallet_hint':
+      'This is the BEP20 wallet address on Binance Smart Chain that will receive customer deposits. Make sure this address is correct to avoid losing assets.',
     'settings.exchange_rate_label': 'Fixed USDT to VND Exchange Rate',
-    'settings.exchange_rate_placeholder': 'Enter fixed rate (e.g.: 26500, enter 0 to auto-fetch from CoinGecko)',
+    'settings.exchange_rate_placeholder':
+      'Enter fixed rate (e.g.: 26500, enter 0 to auto-fetch from CoinGecko)',
     'settings.exchange_rate_hint': 'Set a fixed rate (e.g.: 26500) to convert customer deposits.',
-    'settings.exchange_rate_auto_hint': 'Enter 0 to auto-fetch real-time rate from CoinGecko (cached 10 minutes to avoid API spam)',
+    'settings.exchange_rate_auto_hint':
+      'Enter 0 to auto-fetch real-time rate from CoinGecko (cached 10 minutes to avoid API spam)',
     'settings.moralis_placeholder': 'Enter Moralis API Key (JWT Token)...',
     'settings.moralis_hint': 'Use',
-    'settings.moralis_hint2': '(long JWT token format) to automatically reconcile USDT deposits on BSC (BEP-20).',
+    'settings.moralis_hint2':
+      '(long JWT token format) to automatically reconcile USDT deposits on BSC (BEP-20).',
     'settings.moralis_link': 'Go to Moralis Admin',
     'settings.moralis_guide_title': 'How to get free Moralis API Key:',
     'settings.moralis_guide_1': 'Sign up or log in at',
@@ -242,53 +286,70 @@ export const TRANSLATIONS: Record<SupportedLanguage, Record<string, string>> = {
     'settings.binance_id_placeholder': 'Enter Binance ID (e.g.: 12345678)',
     'settings.binance_id_hint': 'The Admin Binance ID that will receive customer deposits.',
     'settings.binance_key_placeholder': 'Enter Binance API Key...',
-    'settings.binance_key_hint': 'Binance API Key for reconciliation. Ensure the key only has read permissions.',
+    'settings.binance_key_hint':
+      'Binance API Key for reconciliation. Ensure the key only has read permissions.',
     'settings.binance_secret_placeholder': 'Enter Binance API Secret...',
     'settings.binance_secret_hint': 'The corresponding Binance API Secret for the above API Key.',
     'settings.binance_guide_title': 'How to get Binance ID & Binance API Key:',
-    'settings.binance_guide_1': 'Log in to Binance, go to your Profile or Binance Pay section in the mobile app to get your Pay ID / UID.',
+    'settings.binance_guide_1':
+      'Log in to Binance, go to your Profile or Binance Pay section in the mobile app to get your Pay ID / UID.',
     'settings.binance_guide_2_prefix': 'Go to',
     'settings.binance_guide_2_link': 'API Management on Binance',
     'settings.binance_guide_3': 'Click Create API -> Select System generated key.',
-    'settings.binance_guide_4': 'Name the API and complete security verification to get the API Key and API Secret.',
+    'settings.binance_guide_4':
+      'Name the API and complete security verification to get the API Key and API Secret.',
     'settings.binance_guide_5_title': 'Important security note:',
-    'settings.binance_guide_5_body': 'Only enable Read Data (Enable Reading) permission. Absolutely DO NOT activate trading, withdrawal, or Future permissions.',
-    'settings.key_configured': '•••••••••••••••• (Configured & secured — leave blank to keep unchanged)',
+    'settings.binance_guide_5_body':
+      'Only enable Read Data (Enable Reading) permission. Absolutely DO NOT activate trading, withdrawal, or Future permissions.',
+    'settings.key_configured':
+      '•••••••••••••••• (Configured & secured — leave blank to keep unchanged)',
     'settings.configured': 'Configured',
-    'settings.key_saved_hint': 'Key/Secret saved & encrypted in system. Leave blank to keep unchanged.',
+    'settings.key_saved_hint':
+      'Key/Secret saved & encrypted in system. Leave blank to keep unchanged.',
     'settings.unlock': 'Unlock to Edit',
     'settings.lock': 'Lock Editing',
     'settings.save': 'Save Configuration',
     'settings.quick_clean_title': 'Quick System Cleanup',
-    'settings.quick_clean_desc': 'Clear all cache files (views, config, routes, optimized files) and reset to optimal state with 1 click.',
+    'settings.quick_clean_desc':
+      'Clear all cache files (views, config, routes, optimized files) and reset to optimal state with 1 click.',
     'settings.clear_all_cache': 'Clear All Cache',
     'settings.cache_section_title': 'Cache & View Maintenance',
     'settings.cache_section_desc': 'Manage config buffer, compiled files, and routing system.',
     'settings.clear_views_title': 'Refresh Compiled Views',
     'settings.clear_views_desc': 'Delete compiled Blade views to force update to latest UI.',
     'settings.clear_config_title': 'Clear Config Cache',
-    'settings.clear_config_desc': 'Refresh project config buffer, apply when changing .env variables.',
+    'settings.clear_config_desc':
+      'Refresh project config buffer, apply when changing .env variables.',
     'settings.clear_routes_title': 'Clear Route Cache',
-    'settings.clear_routes_desc': 'Clear Laravel API routing cache, required when registering new routes.',
+    'settings.clear_routes_desc':
+      'Clear Laravel API routing cache, required when registering new routes.',
     'settings.optimize_section_title': 'Performance Optimization',
-    'settings.optimize_section_desc': 'Compile and cache config, routes, and views to speed up application loading.',
+    'settings.optimize_section_desc':
+      'Compile and cache config, routes, and views to speed up application loading.',
     'settings.optimize_title': 'Optimize Performance',
-    'settings.optimize_desc': 'Execute comprehensive optimization cache command for Laravel project in Production mode.',
+    'settings.optimize_desc':
+      'Execute comprehensive optimization cache command for Laravel project in Production mode.',
     'settings.optimize_btn': 'Optimize',
     'settings.clear_optimize_title': 'Clear Optimization Cache',
-    'settings.clear_optimize_desc': 'Remove all optimization cache files to allow new code changes to take effect.',
+    'settings.clear_optimize_desc':
+      'Remove all optimization cache files to allow new code changes to take effect.',
     'settings.token_section_title': 'Sanctum Token Maintenance',
-    'settings.token_section_desc': 'Remove old or expired login tokens from database to free up storage.',
+    'settings.token_section_desc':
+      'Remove old or expired login tokens from database to free up storage.',
     'settings.profit_section_title': 'Financial & Profit Synchronization',
-    'settings.profit_section_desc': 'Recalculate cost price snapshots and profit metrics across past order history without affecting current inventory batch prices.',
+    'settings.profit_section_desc':
+      'Recalculate cost price snapshots and profit metrics across past order history without affecting current inventory batch prices.',
     'settings.recalculate_profit_title': 'Recalculate Profit & COGS',
-    'settings.recalculate_profit_desc': 'Resynchronize cost prices for completed orders and rebuild dashboard financial stats (Safe: does NOT alter existing selling prices or inventory stock).',
+    'settings.recalculate_profit_desc':
+      'Resynchronize cost prices for completed orders and rebuild dashboard financial stats (Safe: does NOT alter existing selling prices or inventory stock).',
     'settings.recalculate_profit_btn': 'Recalculate Profit',
     'settings.reset_profit_title': 'Reset Historical Profit to 0',
-    'settings.reset_profit_desc': 'Reset gross profit metrics across past order history back to 0 (Safe: does NOT alter existing selling prices or inventory batch cost prices).',
+    'settings.reset_profit_desc':
+      'Reset gross profit metrics across past order history back to 0 (Safe: does NOT alter existing selling prices or inventory batch cost prices).',
     'settings.reset_profit_btn': 'Reset Profit to 0',
     'modal.reset_profit_title': 'Confirm Reset Profit to 0?',
-    'modal.reset_profit_desc': 'Are you sure you want to reset all historical order profit to 0? Cost prices for past orders will match selling prices. Inventory batch cost prices and product prices will remain untouched.',
+    'modal.reset_profit_desc':
+      'Are you sure you want to reset all historical order profit to 0? Cost prices for past orders will match selling prices. Inventory batch cost prices and product prices will remain untouched.',
     'settings.token_days_label': 'Token Retention Period (Days)',
     'settings.token_days_placeholder': 'E.g.: 7',
     'settings.save_token_settings': 'Save Settings',
@@ -373,7 +434,8 @@ export const TRANSLATIONS: Record<SupportedLanguage, Record<string, string>> = {
     'orders.copy_otp': 'Copy OTP',
     'orders.resource_index': 'Digital Resource',
     'orders.copy_raw_tooltip': 'Copy raw data payload',
-    'orders.no_resources_warning': 'This order is unpaid or cancelled. The system does not distribute resources for unpaid orders.',
+    'orders.no_resources_warning':
+      'This order is unpaid or cancelled. The system does not distribute resources for unpaid orders.',
     'orders.back_to_history': 'Back to Order History',
     'orders.info': 'Order Information',
 
@@ -457,24 +519,30 @@ export const TRANSLATIONS: Record<SupportedLanguage, Record<string, string>> = {
     'modal.confirm_title': 'Confirm Action',
     'modal.confirm_desc': 'Are you sure you want to perform this action?',
     'modal.delete_product_title': 'Delete Product',
-    'modal.delete_product_desc': 'Are you sure you want to soft-delete this product? Products in existing orders will not be affected.',
+    'modal.delete_product_desc':
+      'Are you sure you want to soft-delete this product? Products in existing orders will not be affected.',
     'modal.restore_product_title': 'Restore Product',
-    'modal.restore_product_desc': 'Are you sure you want to restore this product back to active inventory catalog?',
+    'modal.restore_product_desc':
+      'Are you sure you want to restore this product back to active inventory catalog?',
     'modal.add_product_title': 'Add New Product',
     'modal.delete_inventory_title': 'Delete Inventory Resource',
-    'modal.delete_inventory_desc': 'Are you sure you want to delete this account resource from inventory?',
+    'modal.delete_inventory_desc':
+      'Are you sure you want to delete this account resource from inventory?',
     'modal.delete_category_title': 'Delete Category',
     'modal.delete_category_desc': 'Are you sure you want to delete this category?',
     'modal.clear_cache_title': 'Quick System Cleanup',
-    'modal.clear_cache_desc': 'Are you sure you want to clear all cache files and optimize the system?',
+    'modal.clear_cache_desc':
+      'Are you sure you want to clear all cache files and optimize the system?',
     'modal.clean_all_tokens_title': 'Revoke All Login Tokens',
-    'modal.clean_all_tokens_desc': 'Attention! This will immediately invalidate all session tokens for all users.',
+    'modal.clean_all_tokens_desc':
+      'Attention! This will immediately invalidate all session tokens for all users.',
     'modal.add_user_title': 'Add New User Account',
     'modal.edit_user_title': 'Edit User Account Information',
     'modal.delete_user_title': 'Delete User Account',
     'modal.delete_user_desc': 'Are you sure you want to permanently delete user account',
     'modal.deposit_success_title': 'Deposit Successful!',
-    'modal.deposit_success_desc': 'The system has successfully recorded your deposit transaction! Your account balance has been updated.',
+    'modal.deposit_success_desc':
+      'The system has successfully recorded your deposit transaction! Your account balance has been updated.',
     'modal.deposit_success_confirm': 'View Deposit History',
     'modal.import_stock_title': 'Import Digital Resources',
     'modal.edit_stock_title': 'Edit Digital Resource Batch',
@@ -483,18 +551,22 @@ export const TRANSLATIONS: Record<SupportedLanguage, Record<string, string>> = {
     'modal.reject_deposit_desc_prefix': 'Are you sure you want to reject deposit invoice',
     'modal.reject_deposit_desc_middle': 'of member',
     'modal.disable_2fa_confirm_title': 'Confirm Disabling 2FA',
-    'modal.disable_2fa_confirm_desc_prefix': 'Are you sure you want to disable two-factor authentication (2FA) for account',
-    'modal.disable_2fa_confirm_desc_suffix': 'The user will need to re-enable it manually from their security settings.',
+    'modal.disable_2fa_confirm_desc_prefix':
+      'Are you sure you want to disable two-factor authentication (2FA) for account',
+    'modal.disable_2fa_confirm_desc_suffix':
+      'The user will need to re-enable it manually from their security settings.',
     'modal.disable_2fa_confirm_btn': 'Disable 2FA',
     'modal.enable_2fa_title': 'Confirm Enabling 2FA',
     'modal.disable_2fa_title': 'Disable 2FA Security',
-    'modal.enable_2fa_desc_prefix': 'Are you sure you want to enable 2FA and generate a new secret key for',
+    'modal.enable_2fa_desc_prefix':
+      'Are you sure you want to enable 2FA and generate a new secret key for',
     'modal.enable_2fa_desc_suffix': 'This will overwrite their existing 2FA device/setup.',
     'modal.enable_2fa_confirm': 'Generate 2FA Key',
     'modal.add_coupon_title': 'Add New Coupon',
     'modal.lock_user_title': 'Confirm Account Lock',
     'modal.lock_user_desc_prefix': 'Are you sure you want to lock account',
-    'modal.lock_user_desc_suffix': '? This user will be blocked from logging in or performing actions.',
+    'modal.lock_user_desc_suffix':
+      '? This user will be blocked from logging in or performing actions.',
     'modal.lock_user_confirm': 'Lock Account',
     'modal.unlock_user_title': 'Confirm Account Unlock',
     'modal.unlock_user_desc_prefix': 'Are you sure you want to unlock account',
@@ -510,13 +582,15 @@ export const TRANSLATIONS: Record<SupportedLanguage, Record<string, string>> = {
     'admin.bulk_unlock': 'Unlock Selected',
     'admin.bulk_delete': 'Delete Selected',
     'modal.bulk_lock_title': 'Confirm Bulk Account Lock',
-    'modal.bulk_lock_desc': 'Are you sure you want to lock all selected user accounts? They will be prevented from logging in or performing actions.',
+    'modal.bulk_lock_desc':
+      'Are you sure you want to lock all selected user accounts? They will be prevented from logging in or performing actions.',
     'modal.bulk_lock_confirm': 'Lock Accounts',
     'modal.bulk_unlock_title': 'Confirm Bulk Account Unlock',
     'modal.bulk_unlock_desc': 'Are you sure you want to unlock all selected user accounts?',
     'modal.bulk_unlock_confirm': 'Unlock Accounts',
     'modal.bulk_delete_user_title': 'Confirm Bulk Account Deletion',
-    'modal.bulk_delete_user_desc': 'Are you sure you want to permanently delete all selected user accounts? This action cannot be undone.',
+    'modal.bulk_delete_user_desc':
+      'Are you sure you want to permanently delete all selected user accounts? This action cannot be undone.',
     'modal.bulk_delete_user_confirm': 'Delete Accounts',
     'toast.bulk_user_status_updated': 'Bulk user status updated successfully!',
     'toast.bulk_users_deleted': 'Selected user accounts deleted successfully!',
@@ -536,8 +610,10 @@ export const TRANSLATIONS: Record<SupportedLanguage, Record<string, string>> = {
     'toast.login_info_required': 'Please fill in both email/username and password!',
     'toast.terms_required': 'Please agree to the terms of use before signing in!',
     'toast.email_invalid_format': 'Invalid email address format!',
-    'toast.username_invalid_format': 'Invalid username format (3-50 characters, no spaces, no accents)!',
-    'toast.web2_mode_warning': 'System is currently running in Web2 mode. Please sign in with username and password!',
+    'toast.username_invalid_format':
+      'Invalid username format (3-50 characters, no spaces, no accents)!',
+    'toast.web2_mode_warning':
+      'System is currently running in Web2 mode. Please sign in with username and password!',
     'toast.wallet_disconnected': 'Wallet disconnected!',
     'toast.network_switched': 'Switched to network',
     'toast.network_not_supported': 'Current network is not supported!',
@@ -559,7 +635,8 @@ export const TRANSLATIONS: Record<SupportedLanguage, Record<string, string>> = {
     'toast.email_required': 'Email address is required!',
     'toast.copied_secret': 'Security key copied to clipboard!',
     'profile.title': 'Personal Settings',
-    'profile.description': 'Manage your basic profile, update account password and configure 2FA security.',
+    'profile.description':
+      'Manage your basic profile, update account password and configure 2FA security.',
     'profile.basic_info': 'Basic Profile',
     'profile.change_password': 'Change Password',
     'profile.security_2fa': '2FA Protection',
@@ -576,7 +653,8 @@ export const TRANSLATIONS: Record<SupportedLanguage, Record<string, string>> = {
     'modal.revoke_session_title': 'Log Out Device Confirmation',
     'modal.revoke_session_desc': 'Are you sure you want to log out your account from this device?',
     'modal.revoke_others_title': 'Log Out All Other Devices Confirmation',
-    'modal.revoke_others_desc': 'Are you sure you want to log out your account from all other active devices except your current device?',
+    'modal.revoke_others_desc':
+      'Are you sure you want to log out your account from all other active devices except your current device?',
     'toast.session_revoked': 'Device logged out successfully!',
     'toast.session_revoke_failed': 'Failed to log out device!',
     'toast.all_other_sessions_revoked': 'Logged out all other devices successfully!',
@@ -641,7 +719,8 @@ export const TRANSLATIONS: Record<SupportedLanguage, Record<string, string>> = {
     'toast.user_balance_insufficient': 'Insufficient user balance for deduction!',
     'toast.settings_load_failed': 'Failed to load system settings!',
     'toast.wallet_required': 'Admin wallet address is required!',
-    'toast.wallet_invalid': 'Invalid BEP20 wallet address! EVM address must start with 0x and have 42 characters.',
+    'toast.wallet_invalid':
+      'Invalid BEP20 wallet address! EVM address must start with 0x and have 42 characters.',
     'toast.scanner_key_required': 'BscScan API key is required!',
     'toast.binance_id_required': 'Binance Pay Merchant ID is required!',
     'toast.binance_key_required': 'Binance API Key is required!',
@@ -653,21 +732,27 @@ export const TRANSLATIONS: Record<SupportedLanguage, Record<string, string>> = {
     'toast.coingecko_error': 'Failed to fetch USDT exchange rate from CoinGecko!',
     'toast.deposit_max_limit': 'Maximum deposit amount is 100,000 USDT!',
     'toast.deposit_min_limit': 'Minimum deposit amount is 0.1 USDT!',
-    'toast.deposit_created_success': 'Deposit invoice created successfully! Redirecting to payment screen...',
+    'toast.deposit_created_success':
+      'Deposit invoice created successfully! Redirecting to payment screen...',
     'toast.deposit_invalid_expired': 'Deposit order has been cancelled or expired.',
-    'toast.deposit_auto_cancelled': 'Deposit order payment timeout reached. Automatically cancelled!',
-    'toast.admin_wallet_not_configured': 'System administrator has not configured the receiving USDT wallet address! Please try again later.',
-    'toast.scanner_key_not_configured': 'Automated transaction matching system is missing BscScan API Key config! Please try again later.',
+    'toast.deposit_auto_cancelled':
+      'Deposit order payment timeout reached. Automatically cancelled!',
+    'toast.admin_wallet_not_configured':
+      'System administrator has not configured the receiving USDT wallet address! Please try again later.',
+    'toast.scanner_key_not_configured':
+      'Automated transaction matching system is missing BscScan API Key config! Please try again later.',
     'toast.deposit_create_failed': 'Failed to create deposit order. Please try again!',
     'modal.pending_deposit_title': 'Pending Deposit Order',
-    'modal.pending_deposit_desc': 'You currently have an unpaid deposit invoice. Please view, complete payment or cancel the existing invoice before creating a new one.',
+    'modal.pending_deposit_desc':
+      'You currently have an unpaid deposit invoice. Please view, complete payment or cancel the existing invoice before creating a new one.',
     'modal.pending_deposit_confirm': 'View Existing Order',
     'modal.pending_deposit_cancel': 'Close Modal',
     'deposit.amount_vnd': 'VND Amount',
     'deposit.equivalent_vnd': 'VND Equivalent',
     'deposit.empty_history': 'No deposit invoices found!',
     'deposit.view_invoice_prefix': 'View invoice',
-    'deposit.actual_send_tooltip': 'Actual odd USDT amount you need to send to match automation matching',
+    'deposit.actual_send_tooltip':
+      'Actual odd USDT amount you need to send to match automation matching',
     'deposit.actual_send': 'Actual send',
     'deposit.continue_payment': 'Continue payment',
     'deposit.pay': 'Pay',
@@ -681,9 +766,11 @@ export const TRANSLATIONS: Record<SupportedLanguage, Record<string, string>> = {
     'deposit.revoke_tooltip': 'Revoke credited amount from user balance',
     'deposit.bulk_revoke': 'Revoke Selected',
     'deposit.revoke_confirm_title': 'Revoke Deposit Invoice',
-    'deposit.revoke_confirm_desc': 'Are you sure you want to revoke deposit invoice #{{code}} of user "{{userName}}"? The amount of {{amount}} USDT will be deducted from the user balance.',
+    'deposit.revoke_confirm_desc':
+      'Are you sure you want to revoke deposit invoice #{{code}} of user "{{userName}}"? The amount of {{amount}} USDT will be deducted from the user balance.',
     'deposit.bulk_revoke_confirm_title': 'Bulk Revoke Deposit Invoices',
-    'deposit.bulk_revoke_confirm_desc': 'Are you sure you want to revoke {{count}} selected deposit invoice(s) totaling {{amount}} USDT? User balance(s) will be deducted accordingly.',
+    'deposit.bulk_revoke_confirm_desc':
+      'Are you sure you want to revoke {{count}} selected deposit invoice(s) totaling {{amount}} USDT? User balance(s) will be deducted accordingly.',
     'toast.revoke_success': 'Deposit invoice revoked successfully!',
     'toast.revoke_failed': 'Failed to revoke deposit invoice!',
     'toast.bulk_revoke_success': 'Processed revocation for {{count}} deposit invoice(s).',
@@ -691,8 +778,10 @@ export const TRANSLATIONS: Record<SupportedLanguage, Record<string, string>> = {
     'toast.copied_text': 'Successfully copied',
     'toast.copy_error_text': 'Failed to copy',
     'modal.cancel_deposit_title': 'Cancel Deposit Invoice',
-    'modal.cancel_deposit_desc': 'Are you sure you want to cancel this deposit order? This action cannot be undone.',
-    'modal.cancel_deposit_warning': 'Important Notice: If you have already made the transfer/payment, please DO NOT cancel this invoice! The system automated BOT will not be able to auto-reconcile and deposit funds once the order has been cancelled.',
+    'modal.cancel_deposit_desc':
+      'Are you sure you want to cancel this deposit order? This action cannot be undone.',
+    'modal.cancel_deposit_warning':
+      'Important Notice: If you have already made the transfer/payment, please DO NOT cancel this invoice! The system automated BOT will not be able to auto-reconcile and deposit funds once the order has been cancelled.',
     'modal.cancel_deposit_confirm': 'Confirm Cancellation',
     'toast.deposit_cancelled_success': 'Deposit order cancelled successfully!',
     'toast.deposit_cancel_failed': 'Failed to cancel deposit order!',
@@ -736,7 +825,8 @@ export const TRANSLATIONS: Record<SupportedLanguage, Record<string, string>> = {
     'toast.stock_imported': 'Inventory imported successfully!',
     'toast.stock_updated': 'Inventory updated successfully!',
     'toast.stock_deleted': 'Inventory deleted successfully!',
-    'toast.import_validation': 'Please provide a batch name, select a product, and input resource account data!',
+    'toast.import_validation':
+      'Please provide a batch name, select a product, and input resource account data!',
     'toast.edit_inventory_validation': 'Please select a product and enter a batch name!',
     'toast.error_load_stats': 'Failed to load dashboard statistics!',
     'toast.error_load_stock': 'Failed to load inventory data!',
@@ -769,24 +859,31 @@ export const TRANSLATIONS: Record<SupportedLanguage, Record<string, string>> = {
     'auth.welcome_back_desc': 'Sign in to continue using the system.',
     'auth.remember_me': 'Remember Me',
     'auth.forgot_password': 'Forgot password?',
-    'auth.forgot_password_notice': 'Please contact support or administration to recover your password.',
-    'auth.terms_commitment': 'I commit not to use the account for gambling, betting, fraud, black credit or any illegal activities. Agree to the terms of use.',
+    'auth.forgot_password_notice':
+      'Please contact support or administration to recover your password.',
+    'auth.terms_commitment':
+      'I commit not to use the account for gambling, betting, fraud, black credit or any illegal activities. Agree to the terms of use.',
     'auth.marketing_kicker': 'Digital Operation · Automation',
     'auth.marketing_title_normal': 'Stable processing system, ',
     'auth.marketing_title_highlight': 'speed is commitment',
     'auth.marketing_title_normal_2': '.',
-    'auth.marketing_desc': 'Isocalmarket provides digital service solutions, operation support tools and automatic, transparent request processing systems.',
+    'auth.marketing_desc':
+      'Isocalmarket provides digital service solutions, operation support tools and automatic, transparent request processing systems.',
     'User Info': 'User Info',
-    'Permissions': 'Permissions',
+    Permissions: 'Permissions',
     'Security & API': 'Security & API',
     'Deposit History': 'Deposit History',
     'auth.feature_1_title': 'Automated processing',
-    'auth.feature_1_desc': ' - requests are received and responded to by system processes, independent of office hours.',
+    'auth.feature_1_desc':
+      ' - requests are received and responded to by system processes, independent of office hours.',
     'auth.feature_2_title': 'Clear decentralized roles',
-    'auth.feature_2_desc': ' - manage advertising systems and accounts according to each operating level.',
+    'auth.feature_2_desc':
+      ' - manage advertising systems and accounts according to each operating level.',
     'auth.feature_3_title': 'Optimized & safe',
-    'auth.feature_3_desc': ' - minimize operational risks, increase campaign performance on digital platforms.',
-    'auth.legal_disclaimer': 'Legal scope of use: Services for legal advertising, marketing and campaign management. Strictly prohibit use for law violations, fraud, scam, privacy invasion or platform policy violations.',
+    'auth.feature_3_desc':
+      ' - minimize operational risks, increase campaign performance on digital platforms.',
+    'auth.legal_disclaimer':
+      'Legal scope of use: Services for legal advertising, marketing and campaign management. Strictly prohibit use for law violations, fraud, scam, privacy invasion or platform policy violations.',
     'auth.ssl_encryption': 'SSL Encryption',
     'auth.operation_247': '24/7 Operation',
     'auth.security_2fa': '2-Factor Security',
@@ -800,7 +897,8 @@ export const TRANSLATIONS: Record<SupportedLanguage, Record<string, string>> = {
     'common.optional': 'Optional',
     'common.required': 'Required',
     'common.processed': 'Processed',
-    'common.results_summary': 'Showing {{visible}} of {{total}} results. Scroll down or type a keyword to see more...',
+    'common.results_summary':
+      'Showing {{visible}} of {{total}} results. Scroll down or type a keyword to see more...',
     'common.no_options': 'No options found',
     'common.search_options': 'Search...',
     'common.clear_search': 'Clear search',
@@ -934,9 +1032,11 @@ export const TRANSLATIONS: Record<SupportedLanguage, Record<string, string>> = {
     'coupon.end_abbr': 'END',
     'currency.vnd_symbol': 'VND',
     'deposit.important_notice': 'Important Notice',
-    'deposit.network_warning': 'Only USDT BEP-20 deposits are supported. Sending funds through another network may result in permanent loss and cannot be recovered!',
+    'deposit.network_warning':
+      'Only USDT BEP-20 deposits are supported. Sending funds through another network may result in permanent loss and cannot be recovered!',
     'deposit.binance_notice': 'Binance Deposit Notice',
-    'deposit.binance_warning': 'Internal Binance Pay USDT transfers are free. Send the exact decimal amount so the system can automatically reconcile and credit your balance immediately.',
+    'deposit.binance_warning':
+      'Internal Binance Pay USDT transfers are free. Send the exact decimal amount so the system can automatically reconcile and credit your balance immediately.',
     'deposit.network': 'Deposit Network',
     'deposit.gateway': 'Payment Gateway',
     'deposit.binance_gateway': 'Binance Pay (Free internal transfer)',
@@ -954,7 +1054,8 @@ export const TRANSLATIONS: Record<SupportedLanguage, Record<string, string>> = {
     'deposit.tx_hash_optional': 'Transaction TxHash',
     'deposit.binance_order_placeholder': 'Enter any manual transaction reference...',
     'deposit.tx_hash_placeholder': 'Enter any manual transaction reference...',
-    'deposit.reconciliation_hint': 'The backend saves this as manual_approved_by_admin_<your input>. The resulting reference cannot be reused.',
+    'deposit.reconciliation_hint':
+      'The backend saves this as manual_approved_by_admin_<your input>. The resulting reference cannot be reused.',
     'deposit.approve': 'Approve',
     'deposit.approve_confirm': 'Confirm Approval',
     'deposit.reject': 'Reject',
@@ -996,12 +1097,14 @@ export const TRANSLATIONS: Record<SupportedLanguage, Record<string, string>> = {
     'invoice.copy_amount': 'Click to copy amount',
     'invoice.binance_id': 'Receiving Binance ID',
     'invoice.binance_guide_title': 'BINANCE PAY DEPOSIT GUIDE:',
-    'invoice.binance_guide': 'Open the Binance app and transfer the exact amount {{amount}} through Binance Pay/Binance ID to the Admin account {{id}}. The BOT will scan and credit your balance within 1–3 minutes. An incorrect decimal amount cannot be recognized.',
+    'invoice.binance_guide':
+      'Open the Binance app and transfer the exact amount {{amount}} through Binance Pay/Binance ID to the Admin account {{id}}. The BOT will scan and credit your balance within 1–3 minutes. An incorrect decimal amount cannot be recognized.',
     'invoice.wallet_address': 'Receiving Wallet Address',
     'invoice.copy_wallet': 'Copy wallet address',
     'invoice.wallet_label': 'Deposit wallet address',
     'invoice.warning_title': 'IMPORTANT NOTICE:',
-    'invoice.wallet_warning': 'Transfer the exact decimal amount {{amount}} (network fee included). The BOT will scan and credit your balance within 1–3 minutes. An incorrect decimal amount cannot be recognized.',
+    'invoice.wallet_warning':
+      'Transfer the exact decimal amount {{amount}} (network fee included). The BOT will scan and credit your balance within 1–3 minutes. An incorrect decimal amount cannot be recognized.',
     'invoice.cancel': 'Cancel Deposit Invoice',
     'invoice.transferred': 'I Have Transferred',
     'invoice.back': 'Back to Deposit Management',
@@ -1037,14 +1140,18 @@ export const TRANSLATIONS: Record<SupportedLanguage, Record<string, string>> = {
     'security.inactive_desc': 'Two-factor authentication is not enabled.',
     'security.enabled': 'Enabled',
     'security.disabled': 'Not Enabled',
-    'security.enable_desc': 'Enable Google Authenticator two-factor authentication to prevent unauthorized access even if your password is exposed.',
+    'security.enable_desc':
+      'Enable Google Authenticator two-factor authentication to prevent unauthorized access even if your password is exposed.',
     'security.enable': 'Enable 2FA',
-    'security.enabled_desc': 'Your account is protected by strong two-factor authentication. Keep this feature enabled to protect your assets.',
+    'security.enabled_desc':
+      'Your account is protected by strong two-factor authentication. Keep this feature enabled to protect your assets.',
     'security.disable': 'Disable 2FA',
-    'security.disable_instruction': 'To protect your account, enter the 6-digit code from Google Authenticator to disable two-factor authentication.',
+    'security.disable_instruction':
+      'To protect your account, enter the 6-digit code from Google Authenticator to disable two-factor authentication.',
     'security.otp_label': '2FA Verification Code',
     'security.disable_confirm': 'Confirm Disable 2FA',
-    'security.enable_instruction': 'Open Google Authenticator (or Authy) on your phone and scan the QR code below.',
+    'security.enable_instruction':
+      'Open Google Authenticator (or Authy) on your phone and scan the QR code below.',
     'security.manual_key': 'Or enter the key manually',
     'security.app_otp': '6-digit OTP shown in the app',
     'security.enable_confirm': 'Confirm Activation',
@@ -1059,18 +1166,21 @@ export const TRANSLATIONS: Record<SupportedLanguage, Record<string, string>> = {
     'user.status': 'Account Status',
     'user.current_balance': 'Current Available Balance',
     'user.balance_adjustment': 'Add / Deduct Balance',
-    'user.initial_balance_hint': 'The initial USD balance defaults to zero. You can adjust it after creating the account.',
+    'user.initial_balance_hint':
+      'The initial USD balance defaults to zero. You can adjust it after creating the account.',
     'user.two_factor': 'Two-Factor Authentication (2FA)',
     'user.2fa_active': '2FA security is enabled',
     'user.2fa_inactive': '2FA security is not enabled',
     'user.2fa_active_desc': 'The account is protected by Google Authenticator.',
-    'user.2fa_inactive_desc': 'Enabling 2FA protects the account from data loss and password attacks.',
+    'user.2fa_inactive_desc':
+      'Enabling 2FA protects the account from data loss and password attacks.',
     'user.authenticator_config': 'User Google Authenticator configuration:',
     'user.secret_key': 'Secret Key',
     'user.hide_secret': 'Hide secret key',
     'user.show_secret': 'Show secret key',
     'user.copy_secret': 'Copy secret key',
-    'user.qr_hint': 'The user can scan this QR code or enter the secret key manually in their authenticator app.',
+    'user.qr_hint':
+      'The user can scan this QR code or enter the secret key manually in their authenticator app.',
     'user.api_key': 'API Key',
     'user.generate_key': 'Generate New Key',
     'user.revoke_key': 'Revoke Key',
@@ -1080,12 +1190,15 @@ export const TRANSLATIONS: Record<SupportedLanguage, Record<string, string>> = {
     'user.update': 'Update',
     'user.create': 'Create',
     'notice.disclaimer_title': 'Disclaimer',
-    'notice.disclaimer_body': 'This website is intended only for lawful inventory management and business purposes.',
-    'notice.prohibited': 'Fraud, asset theft, or any use of the system that violates applicable law is strictly prohibited.',
+    'notice.disclaimer_body':
+      'This website is intended only for lawful inventory management and business purposes.',
+    'notice.prohibited':
+      'Fraud, asset theft, or any use of the system that violates applicable law is strictly prohibited.',
     'notice.remember': 'Do not ask again for 7 days',
     'notice.understood': 'I Understand',
     'maintenance.title': 'System Maintenance',
-    'maintenance.description': 'We are upgrading the system to provide a better experience. Please try again in a few minutes.',
+    'maintenance.description':
+      'We are upgrading the system to provide a better experience. Please try again in a few minutes.',
     'maintenance.processing': 'Processing...',
     'maintenance.retry': 'Try Again',
     'maintenance.views_cleared': 'Compiled views cleared successfully!',
@@ -1093,12 +1206,15 @@ export const TRANSLATIONS: Record<SupportedLanguage, Record<string, string>> = {
     'maintenance.routes_cleared': 'Route cache cleared successfully!',
     'maintenance.optimized': 'System optimization completed successfully!',
     'maintenance.optimization_cleared': 'Optimization cache cleared successfully!',
-    'maintenance.tokens_cleared': 'All active tokens were cleared and the application key was regenerated. All users have been signed out!',
-    'maintenance.expired_tokens_cleaned': 'Successfully removed {{count}} expired tokens from the database!',
+    'maintenance.tokens_cleared':
+      'All active tokens were cleared and the application key was regenerated. All users have been signed out!',
+    'maintenance.expired_tokens_cleaned':
+      'Successfully removed {{count}} expired tokens from the database!',
     'maintenance.task_success': 'Maintenance task completed successfully!',
     'maintenance.task_failed': 'Maintenance task failed!',
     'maintenance.profit_reset': 'Profit was reset to 0 successfully!',
-    'maintenance.profit_recalculated': 'Profit snapshots and dashboard statistics were recalculated successfully!',
+    'maintenance.profit_recalculated':
+      'Profit snapshots and dashboard statistics were recalculated successfully!',
     'error.invalid_credentials': 'Invalid email/username or password!',
     'error.unauthorized': 'Your session is invalid or has expired!',
     'error.too_many_attempts': 'Too many attempts. Please wait a few minutes and try again!',
@@ -1122,15 +1238,19 @@ export const TRANSLATIONS: Record<SupportedLanguage, Record<string, string>> = {
     'error.deposit_not_found': 'Deposit invoice was not found!',
     'error.transaction_id_required': 'A transaction ID or hash is required for manual approval!',
     'error.transaction_id_too_long': 'The transaction ID or hash is too long!',
-    'error.transaction_hash_used': 'This transaction hash has already been used for another deposit!',
+    'error.transaction_hash_used':
+      'This transaction hash has already been used for another deposit!',
     'error.deposit_completed_reject': 'A completed deposit invoice cannot be rejected!',
     'error.deposit_selection_required': 'Select at least one deposit invoice!',
     'error.deposit_not_completed': 'Only completed deposit invoices can be revoked!',
     'error.deposit_not_approvable': 'Only pending or expired deposit invoices can be approved!',
     'error.deposit_already_failed': 'This deposit invoice is already marked as failed!',
-    'error.deposit_pending_limit': 'Too many transactions for this amount are pending. Please try again in a few minutes!',
-    'error.deposit_revoke_balance': 'Cannot revoke invoice #{{code}} because the current balance ({{current}} USDT) is lower than the deposit amount ({{amount}} USDT).',
-    'error.active_deposit': 'You already have an active deposit invoice. Cancel or complete it before creating another one!',
+    'error.deposit_pending_limit':
+      'Too many transactions for this amount are pending. Please try again in a few minutes!',
+    'error.deposit_revoke_balance':
+      'Cannot revoke invoice #{{code}} because the current balance ({{current}} USDT) is lower than the deposit amount ({{amount}} USDT).',
+    'error.active_deposit':
+      'You already have an active deposit invoice. Cancel or complete it before creating another one!',
     'error.coupon_not_found': 'The coupon was not found!',
     'error.coupon_expired': 'This coupon has expired!',
     'error.coupon_usage_limit': 'This coupon has reached its usage limit!',
@@ -1141,9 +1261,12 @@ export const TRANSLATIONS: Record<SupportedLanguage, Record<string, string>> = {
     'error.forbidden': 'Access denied!',
     'error.product_unavailable': 'The product is unavailable or has been discontinued!',
     'error.quantity_positive': 'Quantity must be greater than 0!',
-    'error.inventory_conflict': 'This inventory batch was changed by another transaction. Close the dialog and reload the page!',
-    'error.insufficient_stock_detail': 'Product "{{product}}" does not have enough stock (requested: {{requested}}, available: {{available}}).',
-    'error.insufficient_balance_detail': 'Insufficient balance for this order (required: {{required}} USD, current: {{current}} USD).',
+    'error.inventory_conflict':
+      'This inventory batch was changed by another transaction. Close the dialog and reload the page!',
+    'error.insufficient_stock_detail':
+      'Product "{{product}}" does not have enough stock (requested: {{requested}}, available: {{available}}).',
+    'error.insufficient_balance_detail':
+      'Insufficient balance for this order (required: {{required}} USD, current: {{current}} USD).',
     'error.minimum_cart': 'The cart total must be at least {{amount}} USD!',
     'error.invalid_input': 'The submitted information is invalid. Please review it!',
     'error.server': 'Server error. Please try again later!',
@@ -1152,7 +1275,8 @@ export const TRANSLATIONS: Record<SupportedLanguage, Record<string, string>> = {
     'toast.stock_import_failed': 'Failed to import inventory batch!',
     'toast.stock_update_failed': 'Failed to update inventory batch!',
     'toast.stock_delete_failed': 'Failed to delete inventory!',
-    'toast.bulk_revoke_result': 'Revoked {{success}} deposit invoice(s); {{failed}} failed or were skipped.',
+    'toast.bulk_revoke_result':
+      'Revoked {{success}} deposit invoice(s); {{failed}} failed or were skipped.',
     'invoice.payment_confirmed': 'Payment detected successfully. Your balance has been updated!',
     'auth.token_refreshed': 'Session refreshed successfully.',
     'cart.coupon_invalid': 'Invalid coupon code!',
@@ -1161,21 +1285,33 @@ export const TRANSLATIONS: Record<SupportedLanguage, Record<string, string>> = {
     'balance.admin_subtract_reason': 'Admin balance deduction',
     'inventory.product_number': 'Product #{{number}}',
     'invoice.missing_id': 'Invoice ID was not found in the URL!',
-    'invoice.wallet_support': 'The system administrator has not configured a USDT receiving wallet. Please contact support!',
-    'invoice.binance_support': 'The system administrator has not configured a receiving Binance ID. Please contact support!',
-    'invoice.wallet_admin': 'The system administrator has not configured a deposit wallet. Please contact the administrator!',
-    'invoice.scanner_admin': 'The automated reconciliation scanner API Key is not configured. Please contact the administrator!',
-    'invoice.not_found_or_forbidden': 'The deposit invoice does not exist or you do not have permission to view it!',
+    'invoice.wallet_support':
+      'The system administrator has not configured a USDT receiving wallet. Please contact support!',
+    'invoice.binance_support':
+      'The system administrator has not configured a receiving Binance ID. Please contact support!',
+    'invoice.wallet_admin':
+      'The system administrator has not configured a deposit wallet. Please contact the administrator!',
+    'invoice.scanner_admin':
+      'The automated reconciliation scanner API Key is not configured. Please contact the administrator!',
+    'invoice.not_found_or_forbidden':
+      'The deposit invoice does not exist or you do not have permission to view it!',
     'invoice.login_required': 'Sign in to view the deposit invoice!',
     'invoice.detail_failed': 'Unable to load invoice details. Please try again!',
     'invoice.transaction_not_found': 'The BOT has not detected a valid USDT transaction yet!',
-    'invoice.reconcile_wallet_error': 'Reconciliation failed because the receiving wallet is not configured!',
-    'invoice.reconcile_scanner_error': 'Reconciliation failed because the Scanner API Key is not configured!',
-    'invoice.reconcile_binance_error': 'Reconciliation failed because the Binance API Key/Secret is not configured!',
-    'invoice.blockchain_api_error': 'Unable to connect to the blockchain scanner API. Please try again later!',
-    'invoice.binance_api_error': 'Unable to connect to the Binance Pay API. Please try again later!',
-    'invoice.binance_transaction_missing': 'No USDT transaction was detected through Binance Pay. Verify that you sent the exact amount, including decimals, to the correct Binance ID within 15 minutes.',
-    'invoice.bsc_transaction_missing': 'No USDT transaction was detected on BSC (BEP-20). Verify that you sent the exact amount, including decimals, to the correct receiving wallet within 15 minutes.',
+    'invoice.reconcile_wallet_error':
+      'Reconciliation failed because the receiving wallet is not configured!',
+    'invoice.reconcile_scanner_error':
+      'Reconciliation failed because the Scanner API Key is not configured!',
+    'invoice.reconcile_binance_error':
+      'Reconciliation failed because the Binance API Key/Secret is not configured!',
+    'invoice.blockchain_api_error':
+      'Unable to connect to the blockchain scanner API. Please try again later!',
+    'invoice.binance_api_error':
+      'Unable to connect to the Binance Pay API. Please try again later!',
+    'invoice.binance_transaction_missing':
+      'No USDT transaction was detected through Binance Pay. Verify that you sent the exact amount, including decimals, to the correct Binance ID within 15 minutes.',
+    'invoice.bsc_transaction_missing':
+      'No USDT transaction was detected on BSC (BEP-20). Verify that you sent the exact amount, including decimals, to the correct receiving wallet within 15 minutes.',
     'date.time_config': 'Time Configuration',
     'date.start_time': 'Start Time',
     'date.end_time': 'End Time',
@@ -1212,7 +1348,8 @@ export const TRANSLATIONS: Record<SupportedLanguage, Record<string, string>> = {
     'storefront.list_view': 'List',
     'storefront.no_products': 'No products found!',
     'product.dynamic_attributes': 'Dynamic attributes (Via/BM/Clone)',
-    'product.no_dynamic_attributes': 'No dynamic attributes yet. Use these attributes for filter badges, e.g. Country: US or Year: 2018.',
+    'product.no_dynamic_attributes':
+      'No dynamic attributes yet. Use these attributes for filter badges, e.g. Country: US or Year: 2018.',
     'admin.target_member': 'Target Member',
     'admin.current_balance': 'Current Balance',
     'admin.amount_usd_placeholder': 'Enter amount in USD (e.g. 10.5)',
@@ -1271,7 +1408,8 @@ export const TRANSLATIONS: Record<SupportedLanguage, Record<string, string>> = {
     'inventory.one_account_per_line': '1 account per line',
     'inventory.total': 'Total',
     'inventory.important_notice': 'Important Notice',
-    'inventory.import_notice': 'Each line will be stored as an individual inventory item. The price is inherited from the product settings.',
+    'inventory.import_notice':
+      'Each line will be stored as an individual inventory item. The price is inherited from the product settings.',
     'orders.date_range': 'Date Range',
     'orders.purchased_products': 'Purchased Products',
     'orders.quantity': 'Quantity',
@@ -1289,7 +1427,8 @@ export const TRANSLATIONS: Record<SupportedLanguage, Record<string, string>> = {
     'dash.completed_orders': 'Completed Orders',
     'dash.registered_badge': 'Registered',
     'dash.financial_report_title': 'Profit & Financial Analysis',
-    'dash.financial_report_description': 'Comparison of selling price (revenue), original cost (cost of goods), and net profit.',
+    'dash.financial_report_description':
+      'Comparison of selling price (revenue), original cost (cost of goods), and net profit.',
     'dash.revenue_structure': 'Revenue Structure',
     'dash.net_profit': 'Net Profit',
     'dash.capital': 'Capital',
@@ -1321,11 +1460,13 @@ export const TRANSLATIONS: Record<SupportedLanguage, Record<string, string>> = {
     'inventory.resource_data': 'Resource (User|Pass|2FA)',
     'inventory.edit_resource_title': 'Edit Resource',
     'inventory.delete_resource_title': 'Delete Resource',
-    'inventory.delete_resource_description': 'Are you sure you want to delete the resource "{{resource}}"?',
+    'inventory.delete_resource_description':
+      'Are you sure you want to delete the resource "{{resource}}"?',
     'inventory.resource_content': 'Resource Content (User|Pass|2FA...)',
     'inventory.resource_content_placeholder': 'Enter resource information (User|Pass|2FA...)',
     'toast.resource_copied': 'Resource copied successfully!',
-    'invoice.live_scanner_notice': 'The bot automatically scans and reconciles transactions every 15 seconds. Your balance will be credited after the transfer is received.',
+    'invoice.live_scanner_notice':
+      'The bot automatically scans and reconciles transactions every 15 seconds. Your balance will be credited after the transfer is received.',
     'date.hour': 'Hour',
     'usr.user_uid': 'User ID (UID)',
     'usr.copy_uid': 'Copy UID',
@@ -1364,10 +1505,12 @@ export const TRANSLATIONS: Record<SupportedLanguage, Record<string, string>> = {
     'nav.admin_api': 'Admin API',
     'nav.check_uid': 'Check Live UID',
     'check_uid.title': 'Check Live UID Facebook',
-    'check_uid.subtitle': 'Kiểm tra hàng loạt trạng thái UID Facebook Live (hoạt động) hay Die (bị khóa/xóa) siêu tốc, chính xác.',
+    'check_uid.subtitle':
+      'Kiểm tra hàng loạt trạng thái UID Facebook Live (hoạt động) hay Die (bị khóa/xóa) siêu tốc, chính xác.',
     'check_uid.badge_fast': 'Siêu tốc',
     'check_uid.input_label': 'Nhập danh sách UID (mỗi dòng một UID):',
-    'check_uid.input_placeholder': 'Dán danh sách UID Facebook vào đây...\nHỗ trợ định dạng: UID hoặc UID|PASS|2FA...',
+    'check_uid.input_placeholder':
+      'Dán danh sách UID Facebook vào đây...\nHỗ trợ định dạng: UID hoặc UID|PASS|2FA...',
     'check_uid.btn_check': 'Kiểm Tra Ngay',
     'check_uid.btn_checking': 'Đang kiểm tra...',
     'check_uid.btn_clear': 'Xóa Dữ Liệu',
@@ -1391,67 +1534,94 @@ export const TRANSLATIONS: Record<SupportedLanguage, Record<string, string>> = {
     'theme.dark': 'Tối',
     'theme.auto': 'Tự động',
 
-    'api.user_description': 'Tích hợp hệ thống B2B để đồng bộ danh sách sản phẩm, giá bán, tồn kho và tự động đặt hàng nhanh chóng.',
+    'api.user_description':
+      'Tích hợp hệ thống B2B để đồng bộ danh sách sản phẩm, giá bán, tồn kho và tự động đặt hàng nhanh chóng.',
     'api.switch_to_admin': 'Chuyển sang Admin API',
     'api.your_api_key': 'API Key của bạn',
-    'api.key_instruction': 'Sử dụng API Key này để xác thực khi gọi các B2B API bằng cách truyền trực tiếp trên URL (?api_key=...) hoặc truyền qua HTTP Header X-API-KEY.',
-    'api.security_warning': 'Tuyệt đối bảo mật và không chia sẻ khóa này cho người khác để tránh thất thoát tài sản!',
+    'api.key_instruction':
+      'Sử dụng API Key này để xác thực khi gọi các B2B API bằng cách truyền trực tiếp trên URL (?api_key=...) hoặc truyền qua HTTP Header X-API-KEY.',
+    'api.security_warning':
+      'Tuyệt đối bảo mật và không chia sẻ khóa này cho người khác để tránh thất thoát tài sản!',
     'api.not_configured': 'Chưa cấu hình API Key',
     'api.hide_key': 'Ẩn API Key',
     'api.show_key': 'Hiển thị API Key',
     'api.create_key': 'Tạo API Key',
     'api.regen_key': 'Tạo Key Mới',
-    'api.admin_description': 'Cổng kết nối đặc quyền dành cho Admin để tự động hóa quản lý đại lý, cập nhật số dư và đối soát hệ thống.',
+    'api.admin_description':
+      'Cổng kết nối đặc quyền dành cho Admin để tự động hóa quản lý đại lý, cập nhật số dư và đối soát hệ thống.',
     'api.switch_to_user': 'Chuyển sang User API',
     'api.admin_key_section': 'API Key của Admin & Cấu hình',
     'api.security_warning_title': 'Cảnh báo bảo mật cấp cao!',
-    'api.admin_security_warning_body': 'Các cổng API dưới đây cho phép can thiệp trực tiếp vào tài khoản người dùng và số dư hệ thống. Tuyệt đối không chia sẻ API Key của tài khoản Admin cho bất kỳ ai hoặc đẩy lên mã nguồn công khai (Github, Gitlab).',
-    'api.admin_key_instruction': 'Sử dụng API Key này để xác thực khi gọi các B2B Admin API bằng cách truyền trực tiếp trên URL (Query param',
+    'api.admin_security_warning_body':
+      'Các cổng API dưới đây cho phép can thiệp trực tiếp vào tài khoản người dùng và số dư hệ thống. Tuyệt đối không chia sẻ API Key của tài khoản Admin cho bất kỳ ai hoặc đẩy lên mã nguồn công khai (Github, Gitlab).',
+    'api.admin_key_instruction':
+      'Sử dụng API Key này để xác thực khi gọi các B2B Admin API bằng cách truyền trực tiếp trên URL (Query param',
     'api.or_header': 'hoặc truyền qua HTTP Header',
     'api.or': 'hoặc',
-    'api.admin_security_warning': 'Tuyệt đối bảo mật và không chia sẻ khóa này cho người khác để tránh thất thoát tài sản!',
+    'api.admin_security_warning':
+      'Tuyệt đối bảo mật và không chia sẻ khóa này cho người khác để tránh thất thoát tài sản!',
     'api.admin_docs_title': 'Tài liệu tích hợp B2B Admin API',
-    'api.admin_docs_subtitle': 'Cổng kết nối đặc quyền dành cho quản trị hệ thống và đối soát thành viên B2B',
+    'api.admin_docs_subtitle':
+      'Cổng kết nối đặc quyền dành cho quản trị hệ thống và đối soát thành viên B2B',
     'api.admin_ep1_title': '1. Lấy danh sách thành viên B2B',
-    'api.admin_ep1_desc': 'Trả về danh sách thành viên gồm hồ sơ, vai trò, số dư ví USD và trạng thái khóa API. Hỗ trợ phân trang (?page=1&limit=10), tìm kiếm (?search=...), lọc theo vai trò (?role=...) và trạng thái API Key (?has_api_key=yes/no).',
+    'api.admin_ep1_desc':
+      'Trả về danh sách thành viên gồm hồ sơ, vai trò, số dư ví USD và trạng thái khóa API. Hỗ trợ phân trang (?page=1&limit=10), tìm kiếm (?search=...), lọc theo vai trò (?role=...) và trạng thái API Key (?has_api_key=yes/no).',
     'api.admin_ep2_title': '2. Lấy danh sách đơn hàng B2B toàn hệ thống',
-    'api.admin_ep2_desc': 'Truy xuất thông tin tất cả đơn hàng đã mua qua kênh B2B của mọi thành viên. Hỗ trợ phân trang (?page=1&limit=10), tìm kiếm (?search=...), lọc theo trạng thái (?status=...) và đại lý (?user_id=...).',
+    'api.admin_ep2_desc':
+      'Truy xuất thông tin tất cả đơn hàng đã mua qua kênh B2B của mọi thành viên. Hỗ trợ phân trang (?page=1&limit=10), tìm kiếm (?search=...), lọc theo trạng thái (?status=...) và đại lý (?user_id=...).',
     'api.admin_ep3_title': '3. Thêm kho sản phẩm (Nhập lô tài nguyên mới)',
-    'api.admin_ep3_desc': 'Thêm dữ liệu kho hàng vào sản phẩm. Có thể gửi nội dung trực tiếp bằng JSON hoặc tải file TXT thông qua multipart/form-data.',
+    'api.admin_ep3_desc':
+      'Thêm dữ liệu kho hàng vào sản phẩm. Có thể gửi nội dung trực tiếp bằng JSON hoặc tải file TXT thông qua multipart/form-data.',
     'api.admin_ep4_title': '4. Lấy số liệu thống kê hệ thống B2B',
-    'api.admin_ep4_desc': 'Xem tổng quan số liệu hoạt động toàn hệ thống bao gồm: Doanh thu, Giá vốn (COGS), Lợi nhuận gộp, Tỷ suất lợi nhuận (%), Đơn hàng, Sản phẩm, Tồn kho khả dụng và Tổng số người dùng.',
-    'api.admin_api_key_desc': 'Khóa API Key của Admin để xác thực. Có thể truyền qua query parameter hoặc header X-API-KEY.',
+    'api.admin_ep4_desc':
+      'Xem tổng quan số liệu hoạt động toàn hệ thống bao gồm: Doanh thu, Giá vốn (COGS), Lợi nhuận gộp, Tỷ suất lợi nhuận (%), Đơn hàng, Sản phẩm, Tồn kho khả dụng và Tổng số người dùng.',
+    'api.admin_api_key_desc':
+      'Khóa API Key của Admin để xác thực. Có thể truyền qua query parameter hoặc header X-API-KEY.',
     'api.admin_users_limit_desc': 'Số lượng thành viên hiển thị trên mỗi trang. Mặc định là',
-    'api.admin_users_search_desc': 'Từ khóa tìm kiếm theo tên, email, sđt, username hoặc mã UID (8 ký tự).',
+    'api.admin_users_search_desc':
+      'Từ khóa tìm kiếm theo tên, email, sđt, username hoặc mã UID (8 ký tự).',
     'api.admin_users_role_desc': 'Lọc theo vai trò của thành viên. Nhận giá trị:',
-    'api.admin_users_has_api_key_desc': 'Lọc theo trạng thái đã sinh API Key B2B hay chưa. Nhận giá trị:',
+    'api.admin_users_has_api_key_desc':
+      'Lọc theo trạng thái đã sinh API Key B2B hay chưa. Nhận giá trị:',
     'api.admin_orders_limit_desc': 'Số lượng đơn hàng hiển thị trên mỗi trang. Mặc định là',
     'api.admin_orders_status_desc': 'Lọc đơn hàng theo trạng thái. Nhận các giá trị:',
-    'api.admin_orders_user_id_desc': 'Lọc đơn hàng của đại lý/thành viên cụ thể dựa trên mã ID tài khoản hoặc mã UID.',
-    'api.admin_orders_search_desc': 'Từ khóa tìm kiếm theo mã đơn hàng (order_code) hoặc thông tin đại lý (tên/email/username/UID).',
+    'api.admin_orders_user_id_desc':
+      'Lọc đơn hàng của đại lý/thành viên cụ thể dựa trên mã ID tài khoản hoặc mã UID.',
+    'api.admin_orders_search_desc':
+      'Từ khóa tìm kiếm theo mã đơn hàng (order_code) hoặc thông tin đại lý (tên/email/username/UID).',
     'api.admin_ep3_id_desc': 'ID sản phẩm trên URL. Sản phẩm phải thuộc quyền quản lý của bạn.',
-    'api.admin_ep3_batch_desc': 'Tên ký hiệu của lô hàng để dễ phân loại và đối soát (mặc định sẽ tự động sinh theo ngày giờ hiện tại).',
-    'api.admin_ep3_cost_price_desc': 'Giá gốc / Giá vốn nhập kho cho mỗi tài nguyên trong lô ($ / USD). Không bắt buộc, dùng để thống kê chi phí và lợi nhuận.',
-    'api.admin_ep3_content_desc': 'Dữ liệu kho hàng dạng chuỗi nhiều dòng (phân cách bằng dấu xuống dòng',
+    'api.admin_ep3_batch_desc':
+      'Tên ký hiệu của lô hàng để dễ phân loại và đối soát (mặc định sẽ tự động sinh theo ngày giờ hiện tại).',
+    'api.admin_ep3_cost_price_desc':
+      'Giá gốc / Giá vốn nhập kho cho mỗi tài nguyên trong lô ($ / USD). Không bắt buộc, dùng để thống kê chi phí và lợi nhuận.',
+    'api.admin_ep3_content_desc':
+      'Dữ liệu kho hàng dạng chuỗi nhiều dòng (phân cách bằng dấu xuống dòng',
     'api.admin_ep3_content_note': 'Bắt buộc nếu không gửi file.',
     'api.admin_ep3_file_desc': 'Tải file định dạng văn bản',
-    'api.admin_ep3_file_note': 'chứa dữ liệu sản phẩm qua multipart/form-data. Bắt buộc nếu không gửi content.',
+    'api.admin_ep3_file_note':
+      'chứa dữ liệu sản phẩm qua multipart/form-data. Bắt buộc nếu không gửi content.',
     'api.admin_stats_api_key_desc': 'Khóa API Key của Admin để xác thực quyền truy cập.',
     'api.stats_start_date_desc': 'Ngày bắt đầu để tính toán doanh thu và đơn hàng.',
     'api.stats_end_date_desc': 'Ngày kết thúc để tính toán doanh thu và đơn hàng.',
     'api.max': 'tối đa là',
     'api.docs_title': 'Tài liệu tích hợp API B2B',
-    'api.docs_subtitle': 'Kết nối trực tiếp qua URL, tự động đồng bộ kho hàng và thực hiện giao dịch',
+    'api.docs_subtitle':
+      'Kết nối trực tiếp qua URL, tự động đồng bộ kho hàng và thực hiện giao dịch',
     'api.ep1_title': '1. Lấy danh sách sản phẩm',
-    'api.ep1_desc': 'Lấy danh sách ID sản phẩm, tên, giá bán theo USD và số lượng có sẵn trong kho hàng. Hỗ trợ lọc theo danh mục (?category_id=...), tìm kiếm (?search=...), trang (?page=...) và giới hạn (?limit=...).',
+    'api.ep1_desc':
+      'Lấy danh sách ID sản phẩm, tên, giá bán theo USD và số lượng có sẵn trong kho hàng. Hỗ trợ lọc theo danh mục (?category_id=...), tìm kiếm (?search=...), trang (?page=...) và giới hạn (?limit=...).',
     'api.ep2_title': '2. Lấy thông tin chi tiết một sản phẩm',
-    'api.ep2_desc': 'Xem thông tin mô tả chi tiết sản phẩm kèm theo số lượng tồn kho khả dụng hiện tại.',
+    'api.ep2_desc':
+      'Xem thông tin mô tả chi tiết sản phẩm kèm theo số lượng tồn kho khả dụng hiện tại.',
     'api.ep3_title': '3. Mua tài khoản sản phẩm',
-    'api.ep3_desc': 'Tự động tạo đơn hàng, thực hiện trừ số dư tài khoản của người sở hữu API Key và trả về thông tin tài nguyên tài khoản (accounts) ngay lập tức.',
+    'api.ep3_desc':
+      'Tự động tạo đơn hàng, thực hiện trừ số dư tài khoản của người sở hữu API Key và trả về thông tin tài nguyên tài khoản (accounts) ngay lập tức.',
     'api.ep4_title': '4. Lấy thông tin tài khoản & Số dư',
-    'api.ep4_desc': 'Lấy thông tin cá nhân đại lý (bao gồm ID, mã UID 8 ký tự duy nhất, Username, Tên, Email, SĐT, Vai trò) và số dư ví USD hiện tại.',
+    'api.ep4_desc':
+      'Lấy thông tin cá nhân đại lý (bao gồm ID, mã UID 8 ký tự duy nhất, Username, Tên, Email, SĐT, Vai trò) và số dư ví USD hiện tại.',
     'api.ep5_title': '5. Tra cứu chi tiết đơn hàng',
-    'api.ep5_desc': 'Tra cứu trạng thái, giá tiền và danh sách tài nguyên tài khoản đã mua bằng mã đơn hàng (order_code).',
+    'api.ep5_desc':
+      'Tra cứu trạng thái, giá tiền và danh sách tài nguyên tài khoản đã mua bằng mã đơn hàng (order_code).',
     'api.curl_sample': 'Mẫu gọi API (CURL)',
     'api.direct_url': 'URL gọi trực tiếp',
     'api.query_params': 'Tham số URL (Query Parameters)',
@@ -1461,15 +1631,18 @@ export const TRANSLATIONS: Record<SupportedLanguage, Record<string, string>> = {
     'api.required': 'Bắt buộc',
     'api.required_cond': 'Bắt buộc*',
     'api.optional': 'Tùy chọn',
-    'api.api_key_desc': 'Khóa API Key của đại lý để xác thực quyền truy cập. Có thể truyền qua query parameter hoặc header',
+    'api.api_key_desc':
+      'Khóa API Key của đại lý để xác thực quyền truy cập. Có thể truyền qua query parameter hoặc header',
     'api.page_desc': 'Số thứ tự trang muốn lấy dữ liệu. Mặc định là',
     'api.limit_desc': 'Số lượng bản ghi tối đa trên một trang. Mặc định là',
-    'api.category_id_desc': 'Mã danh mục sản phẩm cần lọc. Nếu không truyền sẽ lấy sản phẩm từ tất cả danh mục.',
+    'api.category_id_desc':
+      'Mã danh mục sản phẩm cần lọc. Nếu không truyền sẽ lấy sản phẩm từ tất cả danh mục.',
     'api.search_product_desc': 'Từ khóa tìm kiếm theo tên sản phẩm.',
     'api.product_id_body_desc': 'Mã ID của sản phẩm bạn muốn đặt mua.',
     'api.quantity_desc': 'Số lượng sản phẩm muốn đặt mua.',
     'api.coupon_code_desc': 'Mã giảm giá muốn áp dụng cho đơn hàng (Ví dụ:',
-    'api.items_desc': 'Danh sách nhiều sản phẩm muốn mua cùng lúc (nếu truyền items thì hệ thống sẽ bỏ qua product_id và quantity ở trên). Mỗi object con gồm:',
+    'api.items_desc':
+      'Danh sách nhiều sản phẩm muốn mua cùng lúc (nếu truyền items thì hệ thống sẽ bỏ qua product_id và quantity ở trên). Mỗi object con gồm:',
     'api.buy_single_hint': '1. Mua 1 sản phẩm (Truyền product_id & quantity):',
     'api.buy_multi_hint': '2. Mua nhiều sản phẩm cùng lúc (Truyền mảng items):',
     'api.buy_single_cmd_hint': '1. Mua 1 sản phẩm (Windows CMD):',
@@ -1489,11 +1662,13 @@ export const TRANSLATIONS: Record<SupportedLanguage, Record<string, string>> = {
     'api.copy_stats_curl': 'Mẫu CURL thống kê B2B',
     'api.copy_stats_url': 'Đường dẫn thống kê B2B',
     'settings.title': 'Cấu hình hệ thống',
-    'settings.description': 'Quản lý địa chỉ ví nhận USDT nạp tiền và các khóa tích hợp với blockchain scanner',
+    'settings.description':
+      'Quản lý địa chỉ ví nhận USDT nạp tiền và các khóa tích hợp với blockchain scanner',
     'settings.tab_general': 'Cấu hình thông tin hệ thống',
     'settings.tab_maintenance': 'Bảo trì & Tối ưu',
     'supplier.title': 'Quản lý nhà cung cấp',
-    'supplier.page_description': 'Quản lý nhà cung cấp sản phẩm, đồng bộ danh mục, tồn kho và quy tắc giá.',
+    'supplier.page_description':
+      'Quản lý nhà cung cấp sản phẩm, đồng bộ danh mục, tồn kho và quy tắc giá.',
     'supplier.account_balance': 'Số dư tài khoản nhà cung cấp',
     'supplier.account_username': 'Tài khoản',
     'supplier.account_email': 'Email',
@@ -1523,7 +1698,11 @@ export const TRANSLATIONS: Record<SupportedLanguage, Record<string, string>> = {
     'supplier.minutes': 'phút',
     'supplier.enabled': 'Bật nhà cung cấp này',
     'supplier.products_enabled': 'Bật sản phẩm của nhà cung cấp',
-    'supplier.products_enabled_hint': 'Lưu cấu hình để bật hoặc chuyển toàn bộ sản phẩm của nhà cung cấp sang trạng thái ngưng hoạt động.',
+    'supplier.products_enabled_hint':
+      'Lưu cấu hình để bật hoặc chuyển toàn bộ sản phẩm của nhà cung cấp sang trạng thái ngưng hoạt động.',
+    'supplier.import_out_of_stock': 'Cho phép import sản phẩm hết hàng',
+    'supplier.import_out_of_stock_hint':
+      'Khi tắt, sản phẩm có tồn kho nhà cung cấp bằng 0 sẽ được bỏ qua hoặc ẩn cho đến khi có hàng trở lại.',
     'supplier.auto_sync': 'Bật tự động đồng bộ theo lịch',
     'supplier.price_example': 'Ví dụ quy đổi giá',
     'supplier.rate': 'tỷ giá',
@@ -1540,7 +1719,8 @@ export const TRANSLATIONS: Record<SupportedLanguage, Record<string, string>> = {
     'supplier.load_failed': 'Không thể tải cấu hình nhà cung cấp.',
     'supplier.percentage_invalid': 'Mức điều chỉnh phần trăm không được nhỏ hơn -100%.',
     'supplier.api_key_missing': 'API key của nhà cung cấp chưa được cấu hình.',
-    'supplier.url_invalid': 'URL nhà cung cấp phải là địa chỉ HTTPS thuần, không chứa thông tin đăng nhập, tham số truy vấn, fragment hoặc cổng tùy chỉnh.',
+    'supplier.url_invalid':
+      'URL nhà cung cấp phải là địa chỉ HTTPS thuần, không chứa thông tin đăng nhập, tham số truy vấn, fragment hoặc cổng tùy chỉnh.',
     'supplier.url_public_required': 'URL nhà cung cấp chỉ được trỏ đến địa chỉ Internet công khai.',
     'supplier.hostname_unresolved': 'Không thể phân giải tên miền của nhà cung cấp.',
     'supplier.category_id_missing': 'Một danh mục của nhà cung cấp đang thiếu ID.',
@@ -1551,20 +1731,26 @@ export const TRANSLATIONS: Record<SupportedLanguage, Record<string, string>> = {
     'supplier.api_key_rejected': 'Nhà cung cấp đã từ chối API key.',
     'supplier.schema_incompatible': 'Nhà cung cấp trả về cấu trúc danh mục không tương thích.',
     'supplier.catalog_invalid': 'Nhà cung cấp trả về dữ liệu danh mục không hợp lệ.',
-    'supplier.unsupported_api': 'Nhà cung cấp không hỗ trợ API tương thích hoặc API key không hợp lệ.',
+    'supplier.unsupported_api':
+      'Nhà cung cấp không hỗ trợ API tương thích hoặc API key không hợp lệ.',
     'supplier.unsupported_driver': 'Driver danh mục của nhà cung cấp không được hỗ trợ.',
     'supplier.exchange_rate_invalid': 'Tỷ giá VND/USD phải lớn hơn 0.',
     'supplier.synchronized_named': 'Đã đồng bộ danh mục của {{name}} thành công.',
     'settings.wallet_label': 'Địa chỉ ví nhận USDT của Admin (BEP20)',
     'settings.wallet_placeholder': 'Nhập địa chỉ ví USDT (ví dụ: 0xAB4a22a64bBC...)',
-    'settings.wallet_hint': 'Đây là địa chỉ ví BEP20 trên Binance Smart Chain sẽ nhận tiền nạp từ khách hàng. Hãy chắc chắn địa chỉ này là chính xác để tránh mất mát tài sản.',
+    'settings.wallet_hint':
+      'Đây là địa chỉ ví BEP20 trên Binance Smart Chain sẽ nhận tiền nạp từ khách hàng. Hãy chắc chắn địa chỉ này là chính xác để tránh mất mát tài sản.',
     'settings.exchange_rate_label': 'Tỷ giá quy đổi USDT sang VND cố định',
-    'settings.exchange_rate_placeholder': 'Nhập tỷ giá cố định (ví dụ: 26500, nhập 0 để tự động lấy từ CoinGecko)',
-    'settings.exchange_rate_hint': 'Thiết lập tỷ giá cố định (ví dụ: 26500) để quy đổi tiền nạp của khách hàng.',
-    'settings.exchange_rate_auto_hint': 'Nhập 0 để hệ thống tự động lấy tỷ giá thời gian thực từ CoinGecko (cache 10 phút để tránh spam API)',
+    'settings.exchange_rate_placeholder':
+      'Nhập tỷ giá cố định (ví dụ: 26500, nhập 0 để tự động lấy từ CoinGecko)',
+    'settings.exchange_rate_hint':
+      'Thiết lập tỷ giá cố định (ví dụ: 26500) để quy đổi tiền nạp của khách hàng.',
+    'settings.exchange_rate_auto_hint':
+      'Nhập 0 để hệ thống tự động lấy tỷ giá thời gian thực từ CoinGecko (cache 10 phút để tránh spam API)',
     'settings.moralis_placeholder': 'Nhập API Key Moralis (Token JWT)...',
     'settings.moralis_hint': 'Sử dụng',
-    'settings.moralis_hint2': '(định dạng JWT token dài) để tự động đối soát giao dịch nạp USDT trên BSC (BEP-20).',
+    'settings.moralis_hint2':
+      '(định dạng JWT token dài) để tự động đối soát giao dịch nạp USDT trên BSC (BEP-20).',
     'settings.moralis_link': 'Đến trang quản trị Moralis',
     'settings.moralis_guide_title': 'Hướng dẫn lấy API Key Moralis miễn phí:',
     'settings.moralis_guide_1': 'Đăng ký hoặc Đăng nhập tài khoản tại',
@@ -1575,53 +1761,72 @@ export const TRANSLATIONS: Record<SupportedLanguage, Record<string, string>> = {
     'settings.binance_id_placeholder': 'Nhập Binance ID (ví dụ: 12345678)',
     'settings.binance_id_hint': 'Binance ID của Admin sẽ nhận tiền nạp từ khách hàng.',
     'settings.binance_key_placeholder': 'Nhập Binance API Key...',
-    'settings.binance_key_hint': 'API Key của tài khoản Binance cá nhân dùng để đối soát. Đảm bảo API Key chỉ có quyền đọc.',
+    'settings.binance_key_hint':
+      'API Key của tài khoản Binance cá nhân dùng để đối soát. Đảm bảo API Key chỉ có quyền đọc.',
     'settings.binance_secret_placeholder': 'Nhập Binance API Secret...',
     'settings.binance_secret_hint': 'API Secret Key tương ứng của Binance API Key ở trên.',
     'settings.binance_guide_title': 'Hướng dẫn lấy Binance ID & Binance API Key:',
-    'settings.binance_guide_1': 'Đăng nhập tài khoản Binance, truy cập trang cá nhân hoặc mục Binance Pay ở ứng dụng di động để lấy số Pay ID / UID của bạn.',
+    'settings.binance_guide_1':
+      'Đăng nhập tài khoản Binance, truy cập trang cá nhân hoặc mục Binance Pay ở ứng dụng di động để lấy số Pay ID / UID của bạn.',
     'settings.binance_guide_2_prefix': 'Truy cập',
     'settings.binance_guide_2_link': 'Quản lý API (API Management) trên Binance',
-    'settings.binance_guide_3': 'Nhấp vào Tạo API (Create API) -> Chọn Khóa API do hệ thống tạo (System generated).',
-    'settings.binance_guide_4': 'Đặt tên cho API và thực hiện xác thực bảo mật để lấy API Key và API Secret.',
+    'settings.binance_guide_3':
+      'Nhấp vào Tạo API (Create API) -> Chọn Khóa API do hệ thống tạo (System generated).',
+    'settings.binance_guide_4':
+      'Đặt tên cho API và thực hiện xác thực bảo mật để lấy API Key và API Secret.',
     'settings.binance_guide_5_title': 'Lưu ý bảo mật quan trọng:',
-    'settings.binance_guide_5_body': 'Chỉ bật quyền Đọc dữ liệu (Enable Reading). Tuyệt đối KHÔNG kích hoạt các quyền giao dịch, rút tiền hoặc Future.',
+    'settings.binance_guide_5_body':
+      'Chỉ bật quyền Đọc dữ liệu (Enable Reading). Tuyệt đối KHÔNG kích hoạt các quyền giao dịch, rút tiền hoặc Future.',
     'settings.key_configured': '•••••••••••••••• (Đã lưu & bảo mật — để trống nếu giữ nguyên)',
     'settings.configured': 'Đã cấu hình',
-    'settings.key_saved_hint': 'Key/Secret đã được lưu & mã hóa an toàn trong hệ thống. Để trống nếu giữ nguyên.',
+    'settings.key_saved_hint':
+      'Key/Secret đã được lưu & mã hóa an toàn trong hệ thống. Để trống nếu giữ nguyên.',
     'settings.unlock': 'Mở khóa để sửa',
     'settings.lock': 'Khóa chỉnh sửa',
     'settings.save': 'Lưu cấu hình',
     'settings.quick_clean_title': 'Dọn dẹp nhanh hệ thống',
-    'settings.quick_clean_desc': 'Xóa toàn bộ các tệp cache (views, cấu hình, định tuyến, tệp tối ưu hóa) và thiết lập lại trạng thái tối ưu chỉ với 1 click.',
+    'settings.quick_clean_desc':
+      'Xóa toàn bộ các tệp cache (views, cấu hình, định tuyến, tệp tối ưu hóa) và thiết lập lại trạng thái tối ưu chỉ với 1 click.',
     'settings.clear_all_cache': 'Xóa tất cả cache',
     'settings.cache_section_title': 'BẢO TRÌ CACHE & VIEW',
-    'settings.cache_section_desc': 'Quản lý bộ nhớ đệm cấu hình, tệp biên dịch và hệ thống định tuyến.',
+    'settings.cache_section_desc':
+      'Quản lý bộ nhớ đệm cấu hình, tệp biên dịch và hệ thống định tuyến.',
     'settings.clear_views_title': 'Làm mới compiled views',
-    'settings.clear_views_desc': 'Xóa các Blade views đã biên dịch để bắt buộc cập nhật lại giao diện mới nhất.',
+    'settings.clear_views_desc':
+      'Xóa các Blade views đã biên dịch để bắt buộc cập nhật lại giao diện mới nhất.',
     'settings.clear_config_title': 'Xóa cấu hình cache',
-    'settings.clear_config_desc': 'Làm mới bộ nhớ đệm của cấu hình dự án, áp dụng khi thay đổi các biến môi trường .env.',
+    'settings.clear_config_desc':
+      'Làm mới bộ nhớ đệm của cấu hình dự án, áp dụng khi thay đổi các biến môi trường .env.',
     'settings.clear_routes_title': 'Xóa định tuyến cache',
-    'settings.clear_routes_desc': 'Xóa bộ nhớ đệm của hệ thống định tuyến Laravel API, cần thiết khi đăng ký thêm route mới.',
+    'settings.clear_routes_desc':
+      'Xóa bộ nhớ đệm của hệ thống định tuyến Laravel API, cần thiết khi đăng ký thêm route mới.',
     'settings.optimize_section_title': 'TỐI ƯU HÓA HIỆU NĂNG',
-    'settings.optimize_section_desc': 'Biên dịch và cache đồng loạt cấu hình, định tuyến và views để tăng tốc độ tải ứng dụng.',
+    'settings.optimize_section_desc':
+      'Biên dịch và cache đồng loạt cấu hình, định tuyến và views để tăng tốc độ tải ứng dụng.',
     'settings.optimize_title': 'Tối ưu hóa hiệu năng',
-    'settings.optimize_desc': 'Thực thi lệnh cache tối ưu hóa toàn diện cho dự án Laravel ở chế độ Production.',
+    'settings.optimize_desc':
+      'Thực thi lệnh cache tối ưu hóa toàn diện cho dự án Laravel ở chế độ Production.',
     'settings.optimize_btn': 'Tối ưu hóa',
     'settings.clear_optimize_title': 'Xóa cache tối ưu hóa',
-    'settings.clear_optimize_desc': 'Gỡ bỏ tất cả các tệp cache tối ưu hóa để cho phép các thay đổi mới trong code có hiệu lực.',
+    'settings.clear_optimize_desc':
+      'Gỡ bỏ tất cả các tệp cache tối ưu hóa để cho phép các thay đổi mới trong code có hiệu lực.',
     'settings.token_section_title': 'BẢO TRÌ SANCTUM TOKEN',
-    'settings.token_section_desc': 'Xóa bỏ các token đăng nhập cũ hoặc đã hết hạn trong database để giải phóng dung lượng.',
+    'settings.token_section_desc':
+      'Xóa bỏ các token đăng nhập cũ hoặc đã hết hạn trong database để giải phóng dung lượng.',
     'settings.profit_section_title': 'ĐỒNG BỘ & TÍNH TOÁN LẠI LỢI NHUẬN',
-    'settings.profit_section_desc': 'Tính toán lại snapshot giá gốc và tiền lãi cho toàn bộ đơn hàng trong quá khứ mà không ảnh hưởng tới giá bán hay kho hàng hiện tại.',
+    'settings.profit_section_desc':
+      'Tính toán lại snapshot giá gốc và tiền lãi cho toàn bộ đơn hàng trong quá khứ mà không ảnh hưởng tới giá bán hay kho hàng hiện tại.',
     'settings.recalculate_profit_title': 'Tính toán lại Lợi nhuận & Giá vốn',
-    'settings.recalculate_profit_desc': 'Đồng bộ lại snapshot giá gốc của đơn hàng đã bán và tính lại các chỉ số tài chính trên Dashboard (An toàn: Tuyệt đối KHÔNG làm mất hay thay đổi Giá bán, Giá gốc của kho).',
+    'settings.recalculate_profit_desc':
+      'Đồng bộ lại snapshot giá gốc của đơn hàng đã bán và tính lại các chỉ số tài chính trên Dashboard (An toàn: Tuyệt đối KHÔNG làm mất hay thay đổi Giá bán, Giá gốc của kho).',
     'settings.recalculate_profit_btn': 'Tính lại lợi nhuận',
     'settings.reset_profit_title': 'Thiết lập lại Lợi nhuận về 0',
-    'settings.reset_profit_desc': 'Đặt toàn bộ lợi nhuận gộp từ lịch sử đơn hàng quá khứ về 0 (An toàn: Tuyệt đối KHÔNG làm mất hay thay đổi giá gốc của kho hàng và sản phẩm hiện tại).',
+    'settings.reset_profit_desc':
+      'Đặt toàn bộ lợi nhuận gộp từ lịch sử đơn hàng quá khứ về 0 (An toàn: Tuyệt đối KHÔNG làm mất hay thay đổi giá gốc của kho hàng và sản phẩm hiện tại).',
     'settings.reset_profit_btn': 'Reset lợi nhuận',
     'modal.reset_profit_title': 'Xác nhận thiết lập lại lợi nhuận về 0?',
-    'modal.reset_profit_desc': 'Bạn có chắc chắn muốn thiết lập lại toàn bộ lợi nhuận lịch sử về 0? Giá vốn của các đơn hàng đã bán sẽ được đặt bằng với giá bán. Giá gốc của kho hàng và sản phẩm sẽ giữ nguyên 100%.',
+    'modal.reset_profit_desc':
+      'Bạn có chắc chắn muốn thiết lập lại toàn bộ lợi nhuận lịch sử về 0? Giá vốn của các đơn hàng đã bán sẽ được đặt bằng với giá bán. Giá gốc của kho hàng và sản phẩm sẽ giữ nguyên 100%.',
     'settings.token_days_label': 'Thời gian giữ lại token (Ngày)',
     'settings.token_days_placeholder': 'Ví dụ: 7',
     'settings.save_token_settings': 'Lưu thiết lập',
@@ -1706,7 +1911,8 @@ export const TRANSLATIONS: Record<SupportedLanguage, Record<string, string>> = {
     'orders.copy_otp': 'Copy OTP',
     'orders.resource_index': 'Tài nguyên',
     'orders.copy_raw_tooltip': 'Copy dữ liệu thô',
-    'orders.no_resources_warning': 'Đơn hàng chưa thanh toán hoặc đã bị hủy. Hệ thống không phân phối tài nguyên đối với đơn hàng này.',
+    'orders.no_resources_warning':
+      'Đơn hàng chưa thanh toán hoặc đã bị hủy. Hệ thống không phân phối tài nguyên đối với đơn hàng này.',
     'orders.back_to_history': 'Quay lại lịch sử đơn hàng',
     'orders.info': 'Thông tin đơn hàng',
 
@@ -1754,7 +1960,8 @@ export const TRANSLATIONS: Record<SupportedLanguage, Record<string, string>> = {
     'cat.search_placeholder': 'Tìm kiếm danh mục...',
 
     'prod.title': 'Danh Mục Sản Phẩm Số',
-    'prod.description': 'Quản lý danh sách các loại tài nguyên kỹ thuật số phân phối trên hệ thống.',
+    'prod.description':
+      'Quản lý danh sách các loại tài nguyên kỹ thuật số phân phối trên hệ thống.',
     'inv.title': 'Quản Lý Kho Hàng Số',
     'inv.description': 'Theo dõi tồn kho, nhập lô tài khoản mới và kiểm soát phân phối.',
     'inv.batch_name': 'Tên lô hàng',
@@ -1767,11 +1974,13 @@ export const TRANSLATIONS: Record<SupportedLanguage, Record<string, string>> = {
     'ord.admin_title': 'Quản Lý Đơn Hàng',
     'ord.admin_description': 'Quản lý danh sách đơn hàng đã mua và trạng thái tài nguyên.',
     'usr.title': 'Quản Lý Thành Viên',
-    'usr.description': 'Quản lý thông tin tài khoản người dùng, phân quyền quản trị, cập nhật số dư ví và cấu hình B2B API Key.',
+    'usr.description':
+      'Quản lý thông tin tài khoản người dùng, phân quyền quản trị, cập nhật số dư ví và cấu hình B2B API Key.',
     'dep.title': 'Quản Lý Nạp Tiền',
     'dep.description': 'Quản lý hóa đơn nạp USDT và xét duyệt nạp tiền thủ công.',
     'coup.title': 'Quản Lý Mã Giảm Giá',
-    'coup.description': 'Quản lý danh sách các chương trình khuyến mãi, mã giảm giá áp dụng cho khách hàng mua tài nguyên MMO.',
+    'coup.description':
+      'Quản lý danh sách các chương trình khuyến mãi, mã giảm giá áp dụng cho khách hàng mua tài nguyên MMO.',
 
     'common.reload': 'Tải lại',
     'common.filter_date': 'Bộ lọc khoảng thời gian',
@@ -1790,24 +1999,29 @@ export const TRANSLATIONS: Record<SupportedLanguage, Record<string, string>> = {
     'modal.confirm_title': 'Xác nhận hành động',
     'modal.confirm_desc': 'Bạn có chắc chắn muốn thực hiện hành động này không?',
     'modal.delete_product_title': 'Xóa Sản Phẩm',
-    'modal.delete_product_desc': 'Bạn có chắc chắn muốn xóa ẩn sản phẩm này không? Các đơn hàng đã mua sẽ không bị ảnh hưởng.',
+    'modal.delete_product_desc':
+      'Bạn có chắc chắn muốn xóa ẩn sản phẩm này không? Các đơn hàng đã mua sẽ không bị ảnh hưởng.',
     'modal.restore_product_title': 'Khôi Phục Sản Phẩm',
-    'modal.restore_product_desc': 'Bạn có chắc chắn muốn khôi phục sản phẩm này trở lại danh mục kinh doanh?',
+    'modal.restore_product_desc':
+      'Bạn có chắc chắn muốn khôi phục sản phẩm này trở lại danh mục kinh doanh?',
     'modal.add_product_title': 'Thêm Sản Phẩm Mới',
     'modal.delete_inventory_title': 'Xóa Tài Nguyên Kho',
     'modal.delete_inventory_desc': 'Bạn có chắc chắn muốn xóa tài khoản này khỏi kho hàng không?',
     'modal.delete_category_title': 'Xóa Danh Mục',
     'modal.delete_category_desc': 'Bạn có chắc chắn muốn xóa danh mục này không?',
     'modal.clear_cache_title': 'Dọn Dẹp Nhanh Hệ Thống',
-    'modal.clear_cache_desc': 'Bạn có chắc chắn muốn xóa toàn bộ tệp cache và tối ưu hóa lại hệ thống không?',
+    'modal.clear_cache_desc':
+      'Bạn có chắc chắn muốn xóa toàn bộ tệp cache và tối ưu hóa lại hệ thống không?',
     'modal.clean_all_tokens_title': 'Xóa Tất Cả Login Tokens',
-    'modal.clean_all_tokens_desc': 'Chú ý! Hành động này sẽ lập tức xóa sạch toàn bộ token đăng nhập của mọi thành viên hệ thống.',
+    'modal.clean_all_tokens_desc':
+      'Chú ý! Hành động này sẽ lập tức xóa sạch toàn bộ token đăng nhập của mọi thành viên hệ thống.',
     'modal.add_user_title': 'Thêm thành viên mới',
     'modal.edit_user_title': 'Cập nhật thông tin thành viên',
     'modal.delete_user_title': 'Xác nhận xóa thành viên',
     'modal.delete_user_desc': 'Bạn có chắc chắn muốn xóa thành viên',
     'modal.deposit_success_title': 'Nạp tiền thành công!',
-    'modal.deposit_success_desc': 'Hệ thống đã ghi nhận giao dịch nạp tiền thành công! Số dư tài khoản của bạn đã được cập nhật đầy đủ.',
+    'modal.deposit_success_desc':
+      'Hệ thống đã ghi nhận giao dịch nạp tiền thành công! Số dư tài khoản của bạn đã được cập nhật đầy đủ.',
     'modal.deposit_success_confirm': 'Xem lịch sử nạp',
     'modal.import_stock_title': 'Import Tài Nguyên Số',
     'modal.edit_stock_title': 'Chỉnh sửa tài nguyên',
@@ -1816,22 +2030,27 @@ export const TRANSLATIONS: Record<SupportedLanguage, Record<string, string>> = {
     'modal.reject_deposit_desc_prefix': 'Bạn có chắc chắn muốn từ chối lệnh nạp tiền',
     'modal.reject_deposit_desc_middle': 'của thành viên',
     'modal.disable_2fa_confirm_title': 'Xác nhận tắt 2FA',
-    'modal.disable_2fa_confirm_desc_prefix': 'Bạn có chắc muốn tắt xác thực 2 lớp (2FA) cho tài khoản',
-    'modal.disable_2fa_confirm_desc_suffix': 'User sẽ cần tự bật lại từ trang cài đặt bảo mật của họ.',
+    'modal.disable_2fa_confirm_desc_prefix':
+      'Bạn có chắc muốn tắt xác thực 2 lớp (2FA) cho tài khoản',
+    'modal.disable_2fa_confirm_desc_suffix':
+      'User sẽ cần tự bật lại từ trang cài đặt bảo mật của họ.',
     'modal.disable_2fa_confirm_btn': 'Tắt 2FA',
     'modal.enable_2fa_title': 'Xác nhận bật 2FA',
     'modal.disable_2fa_title': 'Hủy kích hoạt 2FA',
-    'modal.enable_2fa_desc_prefix': 'Bạn có chắc muốn kích hoạt 2FA (tạo secret key mới) cho tài khoản',
+    'modal.enable_2fa_desc_prefix':
+      'Bạn có chắc muốn kích hoạt 2FA (tạo secret key mới) cho tài khoản',
     'modal.enable_2fa_desc_suffix': 'Điều này sẽ ghi đè thiết bị 2FA cũ của user.',
     'modal.enable_2fa_confirm': 'Tạo khóa 2FA',
     'modal.add_coupon_title': 'Thêm Mã Giảm Giá Mới',
     'modal.lock_user_title': 'Xác nhận khóa tài khoản',
     'modal.lock_user_desc_prefix': 'Bạn có chắc chắn muốn khóa tài khoản',
-    'modal.lock_user_desc_suffix': '? Người dùng này sẽ không thể đăng nhập hoặc thực hiện thao tác trên hệ thống.',
+    'modal.lock_user_desc_suffix':
+      '? Người dùng này sẽ không thể đăng nhập hoặc thực hiện thao tác trên hệ thống.',
     'modal.lock_user_confirm': 'Khóa tài khoản',
     'modal.unlock_user_title': 'Xác nhận mở khóa tài khoản',
     'modal.unlock_user_desc_prefix': 'Bạn có chắc chắn muốn mở khóa cho tài khoản',
-    'modal.unlock_user_desc_suffix': '? Người dùng này sẽ có thể truy cập và sử dụng lại toàn bộ tính năng hệ thống.',
+    'modal.unlock_user_desc_suffix':
+      '? Người dùng này sẽ có thể truy cập và sử dụng lại toàn bộ tính năng hệ thống.',
     'modal.unlock_user_confirm': 'Mở khóa tài khoản',
     'user.status_active_desc': 'Tài khoản đang hoạt động bình thường',
     'user.status_blocked_desc': 'Tài khoản bị khóa / bị ban và không thể truy cập hệ thống',
@@ -1843,13 +2062,16 @@ export const TRANSLATIONS: Record<SupportedLanguage, Record<string, string>> = {
     'admin.bulk_unlock': 'Mở khóa đã chọn',
     'admin.bulk_delete': 'Xóa đã chọn',
     'modal.bulk_lock_title': 'Xác nhận khóa tài khoản hàng loạt',
-    'modal.bulk_lock_desc': 'Bạn có chắc chắn muốn khóa tất cả các tài khoản được chọn không? Những tài khoản này sẽ không thể đăng nhập hoặc thực hiện thao tác.',
+    'modal.bulk_lock_desc':
+      'Bạn có chắc chắn muốn khóa tất cả các tài khoản được chọn không? Những tài khoản này sẽ không thể đăng nhập hoặc thực hiện thao tác.',
     'modal.bulk_lock_confirm': 'Khóa tài khoản',
     'modal.bulk_unlock_title': 'Xác nhận mở khóa tài khoản hàng loạt',
-    'modal.bulk_unlock_desc': 'Bạn có chắc chắn muốn mở khóa cho tất cả các tài khoản được chọn không?',
+    'modal.bulk_unlock_desc':
+      'Bạn có chắc chắn muốn mở khóa cho tất cả các tài khoản được chọn không?',
     'modal.bulk_unlock_confirm': 'Mở khóa tài khoản',
     'modal.bulk_delete_user_title': 'Xác nhận xóa thành viên hàng loạt',
-    'modal.bulk_delete_user_desc': 'Bạn có chắc chắn muốn xóa vĩnh viễn tất cả các tài khoản thành viên được chọn không? Thao tác này không thể hoàn tác.',
+    'modal.bulk_delete_user_desc':
+      'Bạn có chắc chắn muốn xóa vĩnh viễn tất cả các tài khoản thành viên được chọn không? Thao tác này không thể hoàn tác.',
     'modal.bulk_delete_user_confirm': 'Xóa tài khoản',
     'toast.bulk_user_status_updated': 'Cập nhật trạng thái tài khoản hàng loạt thành công!',
     'toast.bulk_users_deleted': 'Đã xóa các tài khoản thành viên được chọn thành công!',
@@ -1869,8 +2091,10 @@ export const TRANSLATIONS: Record<SupportedLanguage, Record<string, string>> = {
     'toast.login_info_required': 'Vui lòng điền đầy đủ thông tin đăng nhập và mật khẩu!',
     'toast.terms_required': 'Vui lòng đồng ý với điều khoản sử dụng trước khi đăng nhập!',
     'toast.email_invalid_format': 'Địa chỉ email không đúng định dạng!',
-    'toast.username_invalid_format': 'Tên đăng nhập không đúng định dạng (3-50 ký tự, không dấu, không cách)!',
-    'toast.web2_mode_warning': 'Hệ thống hiện đang chạy chế độ Web2, vui lòng đăng nhập bằng tài khoản!',
+    'toast.username_invalid_format':
+      'Tên đăng nhập không đúng định dạng (3-50 ký tự, không dấu, không cách)!',
+    'toast.web2_mode_warning':
+      'Hệ thống hiện đang chạy chế độ Web2, vui lòng đăng nhập bằng tài khoản!',
     'toast.wallet_disconnected': 'Đã ngắt kết nối ví!',
     'toast.network_switched': 'Đã chuyển sang mạng',
     'toast.network_not_supported': 'Mạng hiện tại không được hỗ trợ!',
@@ -1892,7 +2116,8 @@ export const TRANSLATIONS: Record<SupportedLanguage, Record<string, string>> = {
     'toast.email_required': 'Vui lòng điền địa chỉ Email!',
     'toast.copied_secret': 'Đã sao chép mã bảo mật!',
     'profile.title': 'Tài Khoản Cá Nhân',
-    'profile.description': 'Quản lý thông tin cá nhân, cập nhật mật khẩu và thiết lập bảo mật hai lớp.',
+    'profile.description':
+      'Quản lý thông tin cá nhân, cập nhật mật khẩu và thiết lập bảo mật hai lớp.',
     'profile.basic_info': 'Thông tin cơ bản',
     'profile.change_password': 'Đổi mật khẩu',
     'profile.security_2fa': 'Bảo mật 2FA',
@@ -1907,9 +2132,11 @@ export const TRANSLATIONS: Record<SupportedLanguage, Record<string, string>> = {
     'profile.revoke_session': 'Đăng xuất thiết bị',
     'profile.revoke_all_others': 'Đăng xuất tất cả thiết bị',
     'modal.revoke_session_title': 'Xác nhận Đăng xuất Thiết bị',
-    'modal.revoke_session_desc': 'Bạn có chắc chắn muốn đăng xuất tài khoản khỏi thiết bị này không?',
+    'modal.revoke_session_desc':
+      'Bạn có chắc chắn muốn đăng xuất tài khoản khỏi thiết bị này không?',
     'modal.revoke_others_title': 'Xác nhận Đăng xuất Tất cả Thiết bị khác',
-    'modal.revoke_others_desc': 'Bạn có chắc chắn muốn đăng xuất tài khoản khỏi tất cả các thiết bị khác ngoại trừ thiết bị hiện tại không?',
+    'modal.revoke_others_desc':
+      'Bạn có chắc chắn muốn đăng xuất tài khoản khỏi tất cả các thiết bị khác ngoại trừ thiết bị hiện tại không?',
     'toast.session_revoked': 'Đã đăng xuất thiết bị thành công!',
     'toast.session_revoke_failed': 'Đăng xuất thiết bị thất bại!',
     'toast.all_other_sessions_revoked': 'Đã đăng xuất tất cả các thiết bị khác thành công!',
@@ -1945,7 +2172,8 @@ export const TRANSLATIONS: Record<SupportedLanguage, Record<string, string>> = {
     'toast.2fa_disable_failed': 'Hủy kích hoạt 2FA thất bại!',
     'toast.settings_load_failed': 'Không thể tải cấu hình hệ thống!',
     'toast.wallet_required': 'Địa chỉ ví Admin không được để trống!',
-    'toast.wallet_invalid': 'Địa chỉ ví nhận USDT BEP20 không hợp lệ! Ví phải bắt đầu bằng "0x" và có đúng 42 ký tự (a-f, 0-9).',
+    'toast.wallet_invalid':
+      'Địa chỉ ví nhận USDT BEP20 không hợp lệ! Ví phải bắt đầu bằng "0x" và có đúng 42 ký tự (a-f, 0-9).',
     'toast.scanner_key_required': 'API Key Scanner không được để trống!',
     'toast.binance_id_required': 'Binance ID nhận tiền không được để trống!',
     'toast.binance_key_required': 'Binance API Key không được để trống!',
@@ -1957,14 +2185,18 @@ export const TRANSLATIONS: Record<SupportedLanguage, Record<string, string>> = {
     'toast.coingecko_error': 'Không thể kết nối lấy tỷ giá từ CoinGecko!',
     'toast.deposit_max_limit': 'Số lượng USDT nạp tối đa là 100,000 USDT!',
     'toast.deposit_min_limit': 'Số lượng USDT nạp tối thiểu là 0.1 USDT!',
-    'toast.deposit_created_success': 'Tạo lệnh nạp tiền thành công! Đang chuyển đến hóa đơn thanh toán.',
+    'toast.deposit_created_success':
+      'Tạo lệnh nạp tiền thành công! Đang chuyển đến hóa đơn thanh toán.',
     'toast.deposit_invalid_expired': 'Lệnh nạp tiền đã bị hủy hoặc hết hạn.',
     'toast.deposit_auto_cancelled': 'Lệnh nạp tiền đã hết thời gian thanh toán và tự động hủy!',
-    'toast.admin_wallet_not_configured': 'Quản trị viên hệ thống chưa cấu hình địa chỉ ví nhận USDT nạp tiền! Vui lòng quay lại sau.',
-    'toast.scanner_key_not_configured': 'Hệ thống đối soát tự động chưa được cấu hình Scanner API Key! Vui lòng quay lại sau.',
+    'toast.admin_wallet_not_configured':
+      'Quản trị viên hệ thống chưa cấu hình địa chỉ ví nhận USDT nạp tiền! Vui lòng quay lại sau.',
+    'toast.scanner_key_not_configured':
+      'Hệ thống đối soát tự động chưa được cấu hình Scanner API Key! Vui lòng quay lại sau.',
     'toast.deposit_create_failed': 'Có lỗi xảy ra khi tạo lệnh nạp tiền!',
     'modal.pending_deposit_title': 'Lệnh nạp tiền chưa hoàn tất',
-    'modal.pending_deposit_desc': 'Bạn đang có một lệnh nạp tiền chưa thanh toán. Vui lòng kiểm tra hoặc hủy lệnh nạp cũ trước khi tạo lệnh mới',
+    'modal.pending_deposit_desc':
+      'Bạn đang có một lệnh nạp tiền chưa thanh toán. Vui lòng kiểm tra hoặc hủy lệnh nạp cũ trước khi tạo lệnh mới',
     'modal.pending_deposit_confirm': 'Xem lệnh nạp tiền',
     'modal.pending_deposit_cancel': 'Đóng modal',
     'toast.copied_text': 'Đã sao chép',
@@ -1987,16 +2219,20 @@ export const TRANSLATIONS: Record<SupportedLanguage, Record<string, string>> = {
     'deposit.revoke_tooltip': 'Thu hồi số tiền đã cộng từ số dư người dùng',
     'deposit.bulk_revoke': 'Thu hồi đã chọn',
     'deposit.revoke_confirm_title': 'Thu hồi hóa đơn nạp tiền',
-    'deposit.revoke_confirm_desc': 'Bạn có chắc chắn muốn thu hồi số tiền {{amount}} USDT từ hóa đơn nạp #{{code}} của người dùng "{{userName}}"? Số tiền này sẽ bị trừ khỏi số dư của người dùng.',
+    'deposit.revoke_confirm_desc':
+      'Bạn có chắc chắn muốn thu hồi số tiền {{amount}} USDT từ hóa đơn nạp #{{code}} của người dùng "{{userName}}"? Số tiền này sẽ bị trừ khỏi số dư của người dùng.',
     'deposit.bulk_revoke_confirm_title': 'Thu hồi nạp tiền hàng loạt',
-    'deposit.bulk_revoke_confirm_desc': 'Bạn có chắc chắn muốn thu hồi {{count}} hóa đơn nạp tiền đã chọn với tổng số tiền {{amount}} USDT? Hệ thống sẽ kiểm tra và trừ tiền từ số dư từng người dùng.',
+    'deposit.bulk_revoke_confirm_desc':
+      'Bạn có chắc chắn muốn thu hồi {{count}} hóa đơn nạp tiền đã chọn với tổng số tiền {{amount}} USDT? Hệ thống sẽ kiểm tra và trừ tiền từ số dư từng người dùng.',
     'toast.revoke_success': 'Thu hồi hóa đơn nạp tiền thành công!',
     'toast.revoke_failed': 'Không thể thu hồi hóa đơn nạp tiền!',
     'toast.bulk_revoke_success': 'Đã xử lý thu hồi thành công {{count}} hóa đơn nạp tiền.',
     'toast.bulk_revoke_failed': 'Không thể thu hồi các hóa đơn nạp tiền đã chọn!',
     'modal.cancel_deposit_title': 'Xác nhận hủy lệnh nạp tiền',
-    'modal.cancel_deposit_desc': 'Bạn có chắc chắn muốn hủy lệnh nạp tiền này không? Hành động này không thể hoàn tác.',
-    'modal.cancel_deposit_warning': 'Lưu ý quan trọng: Nếu bạn đã thực hiện chuyển khoản rồi, vui lòng KHÔNG hủy lệnh nạp này! BOT sẽ không thể tự động đối soát cộng tiền khi lệnh đã bị hủy.',
+    'modal.cancel_deposit_desc':
+      'Bạn có chắc chắn muốn hủy lệnh nạp tiền này không? Hành động này không thể hoàn tác.',
+    'modal.cancel_deposit_warning':
+      'Lưu ý quan trọng: Nếu bạn đã thực hiện chuyển khoản rồi, vui lòng KHÔNG hủy lệnh nạp này! BOT sẽ không thể tự động đối soát cộng tiền khi lệnh đã bị hủy.',
     'modal.cancel_deposit_confirm': 'Xác nhận hủy',
     'toast.deposit_cancelled_success': 'Đã hủy lệnh nạp tiền thành công!',
     'toast.deposit_cancel_failed': 'Không thể hủy lệnh nạp tiền!',
@@ -2007,8 +2243,10 @@ export const TRANSLATIONS: Record<SupportedLanguage, Record<string, string>> = {
     'toast.deposit_reject_failed': 'Không thể từ chối hóa đơn nạp tiền!',
     'toast.error_load_deposits': 'Không thể tải danh sách hóa đơn nạp tiền!',
     'modal.deposit_detail_title': 'Chi tiết lệnh nạp tiền',
-    'toast.bot_scanning_binance': 'Hệ thống BOT đang quét giao dịch tự động trên cổng Binance Pay...',
-    'toast.bot_scanning_bsc': 'Hệ thống BOT đang quét giao dịch tự động trên chuỗi BNB Smart Chain...',
+    'toast.bot_scanning_binance':
+      'Hệ thống BOT đang quét giao dịch tự động trên cổng Binance Pay...',
+    'toast.bot_scanning_bsc':
+      'Hệ thống BOT đang quét giao dịch tự động trên chuỗi BNB Smart Chain...',
     'toast.product_created': 'Tạo sản phẩm thành công!',
     'toast.product_create_failed': 'Tạo sản phẩm thất bại!',
     'toast.product_updated': 'Cập nhật sản phẩm thành công!',
@@ -2036,11 +2274,13 @@ export const TRANSLATIONS: Record<SupportedLanguage, Record<string, string>> = {
     'toast.category_update_failed': 'Cập nhật danh mục thất bại!',
     'toast.category_deleted': 'Xóa danh mục thành công!',
     'toast.category_delete_failed': 'Xóa danh mục thất bại!',
-    'toast.category_has_products': 'Không thể xóa danh mục này vì hiện đang có sản phẩm thuộc danh mục!',
+    'toast.category_has_products':
+      'Không thể xóa danh mục này vì hiện đang có sản phẩm thuộc danh mục!',
     'toast.stock_imported': 'Import lô hàng thành công!',
     'toast.stock_updated': 'Cập nhật lô hàng thành công!',
     'toast.stock_deleted': 'Xóa tài nguyên kho thành công!',
-    'toast.import_validation': 'Vui lòng điền đầy đủ tên lô hàng, chọn sản phẩm và nhập dữ liệu tài nguyên!',
+    'toast.import_validation':
+      'Vui lòng điền đầy đủ tên lô hàng, chọn sản phẩm và nhập dữ liệu tài nguyên!',
     'toast.edit_inventory_validation': 'Vui lòng chọn sản phẩm và nhập tên lô hàng!',
     'toast.error_load_stats': 'Không thể tải số liệu thống kê!',
     'toast.error_load_stock': 'Không thể tải dữ liệu kho!',
@@ -2080,24 +2320,30 @@ export const TRANSLATIONS: Record<SupportedLanguage, Record<string, string>> = {
     'auth.welcome_back_desc': 'Đăng nhập để tiếp tục sử dụng hệ thống.',
     'auth.remember_me': 'Nhớ mật khẩu',
     'auth.forgot_password': 'Quên mật khẩu?',
-    'auth.forgot_password_notice': 'Vui lòng liên hệ Quản trị viên hoặc bộ phận Hỗ trợ để khôi phục mật khẩu.',
-    'auth.terms_commitment': 'Tôi cam kết không sử dụng tài khoản để chạy quảng cáo cờ bạc, cá cược, lừa đảo, tín dụng đen hoặc bất kỳ hoạt động vi phạm pháp luật nào. Đồng ý với điều khoản sử dụng.',
+    'auth.forgot_password_notice':
+      'Vui lòng liên hệ Quản trị viên hoặc bộ phận Hỗ trợ để khôi phục mật khẩu.',
+    'auth.terms_commitment':
+      'Tôi cam kết không sử dụng tài khoản để chạy quảng cáo cờ bạc, cá cược, lừa đảo, tín dụng đen hoặc bất kỳ hoạt động vi phạm pháp luật nào. Đồng ý với điều khoản sử dụng.',
     'auth.marketing_kicker': 'Vận hành số · Tự động hoá',
     'auth.marketing_title_normal': 'Hệ thống xử lý ',
     'auth.marketing_title_highlight': 'ổn định',
     'auth.marketing_title_normal_2': ', tốc độ là cam kết',
-    'auth.marketing_desc': 'Isocalmarket cung cấp giải pháp dịch vụ số, công cụ hỗ trợ vận hành và hệ thống xử lý yêu cầu tự động - minh bạch ở từng bước hỗ trợ.',
+    'auth.marketing_desc':
+      'Isocalmarket cung cấp giải pháp dịch vụ số, công cụ hỗ trợ vận hành và hệ thống xử lý yêu cầu tự động - minh bạch ở từng bước hỗ trợ.',
     'User Info': 'Thông tin người dùng',
-    'Permissions': 'Quyền truy cập',
+    Permissions: 'Quyền truy cập',
     'Security & API': 'Bảo mật & API',
     'Deposit History': 'Lịch sử nạp tiền',
     'auth.feature_1_title': 'Xử lý tự động',
-    'auth.feature_1_desc': ' - yêu cầu được tiếp nhận và phản hồi theo quy trình hệ thống, không phụ thuộc giờ hành chính.',
+    'auth.feature_1_desc':
+      ' - yêu cầu được tiếp nhận và phản hồi theo quy trình hệ thống, không phụ thuộc giờ hành chính.',
     'auth.feature_2_title': 'Phân quyền rõ ràng',
     'auth.feature_2_desc': ' - quản lý hệ thống quảng cáo và tài khoản theo từng cấp vận hành.',
     'auth.feature_3_title': 'Tối ưu & an toàn',
-    'auth.feature_3_desc': ' - giảm thiểu rủi ro vận hành, tăng hiệu suất chiến dịch trên nền tảng số.',
-    'auth.legal_disclaimer': 'Phạm vi sử dụng hợp pháp: Dịch vụ phục vụ mục đích quảng cáo, marketing và quản lý chiến dịch hợp pháp. Nghiêm cấm sử dụng cho hành vi vi phạm pháp luật, gian lận, lừa đảo, xâm phạm quyền riêng tư hoặc vi phạm chính sách nền tảng liên quan.',
+    'auth.feature_3_desc':
+      ' - giảm thiểu rủi ro vận hành, tăng hiệu suất chiến dịch trên nền tảng số.',
+    'auth.legal_disclaimer':
+      'Phạm vi sử dụng hợp pháp: Dịch vụ phục vụ mục đích quảng cáo, marketing và quản lý chiến dịch hợp pháp. Nghiêm cấm sử dụng cho hành vi vi phạm pháp luật, gian lận, lừa đảo, xâm phạm quyền riêng tư hoặc vi phạm chính sách nền tảng liên quan.',
     'auth.ssl_encryption': 'Mã hoá SSL',
     'auth.operation_247': 'Vận hành 24/7',
     'auth.security_2fa': 'Bảo mật 2 lớp',
@@ -2111,7 +2357,8 @@ export const TRANSLATIONS: Record<SupportedLanguage, Record<string, string>> = {
     'common.optional': 'Tùy chọn',
     'common.required': 'Bắt buộc',
     'common.processed': 'Đã xử lý',
-    'common.results_summary': 'Hiển thị {{visible}} trên {{total}} kết quả. Cuộn xuống hoặc gõ từ khóa để tìm thêm...',
+    'common.results_summary':
+      'Hiển thị {{visible}} trên {{total}} kết quả. Cuộn xuống hoặc gõ từ khóa để tìm thêm...',
     'common.no_options': 'Không tìm thấy tùy chọn nào',
     'common.search_options': 'Tìm kiếm...',
     'common.clear_search': 'Xóa tìm kiếm',
@@ -2267,9 +2514,11 @@ export const TRANSLATIONS: Record<SupportedLanguage, Record<string, string>> = {
     'coupon.end_abbr': 'KT',
     'currency.vnd_symbol': 'VNĐ',
     'deposit.important_notice': 'Lưu ý quan trọng',
-    'deposit.network_warning': 'Hệ thống chỉ hỗ trợ nạp tiền qua mạng lưới USDT BEP-20. Gửi sai mạng lưới sẽ gây mất tiền vĩnh viễn và không thể khôi phục!',
+    'deposit.network_warning':
+      'Hệ thống chỉ hỗ trợ nạp tiền qua mạng lưới USDT BEP-20. Gửi sai mạng lưới sẽ gây mất tiền vĩnh viễn và không thể khôi phục!',
     'deposit.binance_notice': 'Lưu ý nạp Binance',
-    'deposit.binance_warning': 'Chuyển khoản USDT nội bộ Binance Pay hoàn toàn miễn phí. Vui lòng chuyển chính xác số tiền lẻ để hệ thống tự động đối soát và cộng tiền ngay lập tức.',
+    'deposit.binance_warning':
+      'Chuyển khoản USDT nội bộ Binance Pay hoàn toàn miễn phí. Vui lòng chuyển chính xác số tiền lẻ để hệ thống tự động đối soát và cộng tiền ngay lập tức.',
     'deposit.network': 'Mạng lưới nạp tiền',
     'deposit.gateway': 'Cổng thanh toán',
     'deposit.binance_gateway': 'Binance Pay (Chuyển khoản nội bộ miễn phí)',
@@ -2287,7 +2536,8 @@ export const TRANSLATIONS: Record<SupportedLanguage, Record<string, string>> = {
     'deposit.tx_hash_optional': 'Mã băm giao dịch TxHash',
     'deposit.binance_order_placeholder': 'Nhập mã đối soát tùy ý...',
     'deposit.tx_hash_placeholder': 'Nhập mã đối soát tùy ý...',
-    'deposit.reconciliation_hint': 'Backend sẽ lưu thành manual_approved_by_admin_<giá trị nhập>. Mã sau khi chuẩn hóa không thể sử dụng lại.',
+    'deposit.reconciliation_hint':
+      'Backend sẽ lưu thành manual_approved_by_admin_<giá trị nhập>. Mã sau khi chuẩn hóa không thể sử dụng lại.',
     'deposit.approve': 'Duyệt',
     'deposit.approve_confirm': 'Xác nhận duyệt',
     'deposit.reject': 'Từ chối',
@@ -2329,12 +2579,14 @@ export const TRANSLATIONS: Record<SupportedLanguage, Record<string, string>> = {
     'invoice.copy_amount': 'Click để copy số tiền',
     'invoice.binance_id': 'Binance ID nhận tiền',
     'invoice.binance_guide_title': 'HƯỚNG DẪN NẠP BINANCE PAY:',
-    'invoice.binance_guide': 'Vui lòng mở App Binance thực hiện chuyển đúng số tiền {{amount}} qua cổng Binance Pay/Binance ID đến tài khoản Admin {{id}}. BOT sẽ tự động quét và cộng tiền trong vòng 1–3 phút. Nếu chuyển sai số lẻ, BOT sẽ không thể nhận diện!',
+    'invoice.binance_guide':
+      'Vui lòng mở App Binance thực hiện chuyển đúng số tiền {{amount}} qua cổng Binance Pay/Binance ID đến tài khoản Admin {{id}}. BOT sẽ tự động quét và cộng tiền trong vòng 1–3 phút. Nếu chuyển sai số lẻ, BOT sẽ không thể nhận diện!',
     'invoice.wallet_address': 'Địa chỉ ví nhận tiền',
     'invoice.copy_wallet': 'Copy địa chỉ ví',
     'invoice.wallet_label': 'Địa chỉ ví nạp',
     'invoice.warning_title': 'LƯU Ý ĐẶC BIỆT QUAN TRỌNG:',
-    'invoice.wallet_warning': 'Vui lòng chuyển đúng từng số thập phân của số tiền {{amount}} (đã bao gồm phí mạng lưới). BOT sẽ tự động quét và cộng tiền trong vòng 1–3 phút. Nếu chuyển sai số lẻ, BOT sẽ không thể nhận diện!',
+    'invoice.wallet_warning':
+      'Vui lòng chuyển đúng từng số thập phân của số tiền {{amount}} (đã bao gồm phí mạng lưới). BOT sẽ tự động quét và cộng tiền trong vòng 1–3 phút. Nếu chuyển sai số lẻ, BOT sẽ không thể nhận diện!',
     'invoice.cancel': 'Hủy Lệnh Nạp',
     'invoice.transferred': 'Tôi đã chuyển khoản',
     'invoice.back': 'Quay lại Quản lý Nạp tiền',
@@ -2364,20 +2616,25 @@ export const TRANSLATIONS: Record<SupportedLanguage, Record<string, string>> = {
     'profile.confirm_new_password_placeholder': 'Nhập lại mật khẩu mới để xác nhận',
     'profile.update_password': 'Cập nhật mật khẩu',
     'security.title': 'Bảo mật hai lớp (2FA)',
-    'security.description': 'Tăng cường an toàn cho tài khoản bằng cách quét mã Google Authenticator.',
+    'security.description':
+      'Tăng cường an toàn cho tài khoản bằng cách quét mã Google Authenticator.',
     'security.status': 'Trạng thái bảo mật',
     'security.active_desc': 'Đang hoạt động. Tài khoản của bạn được bảo vệ 2 lớp.',
     'security.inactive_desc': 'Tài khoản chưa được kích hoạt bảo vệ 2 lớp.',
     'security.enabled': 'Đã bật',
     'security.disabled': 'Chưa bật',
-    'security.enable_desc': 'Kích hoạt bảo mật 2 lớp qua Google Authenticator giúp phòng tránh truy cập trái phép ngay cả khi mật khẩu đăng nhập bị lộ.',
+    'security.enable_desc':
+      'Kích hoạt bảo mật 2 lớp qua Google Authenticator giúp phòng tránh truy cập trái phép ngay cả khi mật khẩu đăng nhập bị lộ.',
     'security.enable': 'Kích hoạt bảo mật 2FA',
-    'security.enabled_desc': 'Tài khoản đang được bảo vệ bằng chế độ 2 lớp cực kỳ an toàn. Vui lòng không tắt chức năng này để bảo vệ tài sản của bạn.',
+    'security.enabled_desc':
+      'Tài khoản đang được bảo vệ bằng chế độ 2 lớp cực kỳ an toàn. Vui lòng không tắt chức năng này để bảo vệ tài sản của bạn.',
     'security.disable': 'Hủy kích hoạt 2FA',
-    'security.disable_instruction': 'Để bảo vệ tài khoản, vui lòng nhập mã xác thực 6 số từ ứng dụng Google Authenticator để tắt bảo mật hai lớp.',
+    'security.disable_instruction':
+      'Để bảo vệ tài khoản, vui lòng nhập mã xác thực 6 số từ ứng dụng Google Authenticator để tắt bảo mật hai lớp.',
     'security.otp_label': 'Mã xác thực 2FA',
     'security.disable_confirm': 'Xác nhận tắt 2FA',
-    'security.enable_instruction': 'Mở ứng dụng Google Authenticator (hoặc Authy) trên điện thoại và thực hiện quét mã QR dưới đây.',
+    'security.enable_instruction':
+      'Mở ứng dụng Google Authenticator (hoặc Authy) trên điện thoại và thực hiện quét mã QR dưới đây.',
     'security.manual_key': 'Hoặc nhập mã khóa thủ công',
     'security.app_otp': 'Mã OTP 6 số hiển thị trên app',
     'security.enable_confirm': 'Xác nhận kích hoạt',
@@ -2392,18 +2649,21 @@ export const TRANSLATIONS: Record<SupportedLanguage, Record<string, string>> = {
     'user.status': 'Trạng thái tài khoản',
     'user.current_balance': 'Số dư khả dụng hiện tại',
     'user.balance_adjustment': 'Cộng / Trừ Số Dư',
-    'user.initial_balance_hint': 'Số dư USD ban đầu mặc định bằng 0. Có thể điều chỉnh sau khi tạo tài khoản.',
+    'user.initial_balance_hint':
+      'Số dư USD ban đầu mặc định bằng 0. Có thể điều chỉnh sau khi tạo tài khoản.',
     'user.two_factor': 'Xác thực 2 lớp (2FA)',
     'user.2fa_active': 'Đã kích hoạt bảo mật 2FA',
     'user.2fa_inactive': 'Chưa kích hoạt bảo mật 2FA',
     'user.2fa_active_desc': 'Tài khoản đang được bảo vệ bởi mã xác thực Google Authenticator.',
-    'user.2fa_inactive_desc': 'Bật 2FA giúp bảo vệ tài khoản khỏi các rủi ro mất mát dữ liệu và tấn công mật khẩu.',
+    'user.2fa_inactive_desc':
+      'Bật 2FA giúp bảo vệ tài khoản khỏi các rủi ro mất mát dữ liệu và tấn công mật khẩu.',
     'user.authenticator_config': 'Thông tin cấu hình Google Authenticator của thành viên:',
     'user.secret_key': 'Khóa bí mật (Secret Key)',
     'user.hide_secret': 'Ẩn khóa bí mật',
     'user.show_secret': 'Hiển thị khóa bí mật',
     'user.copy_secret': 'Sao chép khóa bí mật',
-    'user.qr_hint': 'Thành viên có thể quét QR Code này hoặc tự nhập mã khóa bí mật thủ công trên ứng dụng Authenticator của họ.',
+    'user.qr_hint':
+      'Thành viên có thể quét QR Code này hoặc tự nhập mã khóa bí mật thủ công trên ứng dụng Authenticator của họ.',
     'user.api_key': 'Mã API Key',
     'user.generate_key': 'Sinh Key Mới',
     'user.revoke_key': 'Thu hồi Key',
@@ -2413,12 +2673,15 @@ export const TRANSLATIONS: Record<SupportedLanguage, Record<string, string>> = {
     'user.update': 'Cập nhật',
     'user.create': 'Tạo mới',
     'notice.disclaimer_title': 'Tuyên bố miễn trừ trách nhiệm',
-    'notice.disclaimer_body': 'Website này chỉ được sử dụng cho mục đích quản lý kho hàng và kinh doanh hợp pháp.',
-    'notice.prohibited': 'Nghiêm cấm tuyệt đối mọi hành vi gian lận, chiếm đoạt tài sản, hoặc sử dụng hệ thống trái với quy định pháp luật hiện hành.',
+    'notice.disclaimer_body':
+      'Website này chỉ được sử dụng cho mục đích quản lý kho hàng và kinh doanh hợp pháp.',
+    'notice.prohibited':
+      'Nghiêm cấm tuyệt đối mọi hành vi gian lận, chiếm đoạt tài sản, hoặc sử dụng hệ thống trái với quy định pháp luật hiện hành.',
     'notice.remember': 'Không hỏi lại trong 7 ngày',
     'notice.understood': 'Đã hiểu',
     'maintenance.title': 'Hệ thống đang bảo trì',
-    'maintenance.description': 'Chúng tôi đang nâng cấp hệ thống để mang đến trải nghiệm tốt hơn cho bạn. Vui lòng quay lại sau ít phút.',
+    'maintenance.description':
+      'Chúng tôi đang nâng cấp hệ thống để mang đến trải nghiệm tốt hơn cho bạn. Vui lòng quay lại sau ít phút.',
     'maintenance.processing': 'Đang xử lý...',
     'maintenance.retry': 'Thử lại',
     'maintenance.views_cleared': 'Xóa views đã biên dịch thành công!',
@@ -2426,12 +2689,15 @@ export const TRANSLATIONS: Record<SupportedLanguage, Record<string, string>> = {
     'maintenance.routes_cleared': 'Xóa bộ nhớ đệm định tuyến thành công!',
     'maintenance.optimized': 'Tối ưu hóa hiệu năng hệ thống thành công!',
     'maintenance.optimization_cleared': 'Xóa bộ nhớ đệm tối ưu hóa thành công!',
-    'maintenance.tokens_cleared': 'Đã xóa toàn bộ token đang hoạt động và làm mới khóa ứng dụng. Tất cả người dùng đã bị đăng xuất!',
-    'maintenance.expired_tokens_cleaned': 'Đã dọn dẹp thành công {{count}} token hết hạn từ cơ sở dữ liệu!',
+    'maintenance.tokens_cleared':
+      'Đã xóa toàn bộ token đang hoạt động và làm mới khóa ứng dụng. Tất cả người dùng đã bị đăng xuất!',
+    'maintenance.expired_tokens_cleaned':
+      'Đã dọn dẹp thành công {{count}} token hết hạn từ cơ sở dữ liệu!',
     'maintenance.task_success': 'Thực hiện tác vụ bảo trì thành công!',
     'maintenance.task_failed': 'Có lỗi xảy ra khi thực hiện bảo trì!',
     'maintenance.profit_reset': 'Đã đặt lại lợi nhuận về 0 thành công!',
-    'maintenance.profit_recalculated': 'Đã tính toán lại snapshot lợi nhuận và thống kê tổng quan thành công!',
+    'maintenance.profit_recalculated':
+      'Đã tính toán lại snapshot lợi nhuận và thống kê tổng quan thành công!',
     'error.invalid_credentials': 'Tài khoản hoặc mật khẩu không chính xác!',
     'error.unauthorized': 'Phiên đăng nhập không hợp lệ hoặc đã hết hạn!',
     'error.too_many_attempts': 'Bạn đã thử quá nhiều lần. Vui lòng chờ vài phút rồi thử lại!',
@@ -2461,9 +2727,12 @@ export const TRANSLATIONS: Record<SupportedLanguage, Record<string, string>> = {
     'error.deposit_not_completed': 'Chỉ có thể thu hồi hóa đơn nạp tiền đã hoàn tất!',
     'error.deposit_not_approvable': 'Chỉ có thể duyệt hóa đơn nạp tiền đang chờ hoặc đã hết hạn!',
     'error.deposit_already_failed': 'Hóa đơn nạp tiền này đã ở trạng thái thất bại!',
-    'error.deposit_pending_limit': 'Có quá nhiều giao dịch đang chờ cho số tiền này. Vui lòng thử lại sau vài phút!',
-    'error.deposit_revoke_balance': 'Không thể thu hồi hóa đơn #{{code}} vì số dư hiện tại ({{current}} USDT) thấp hơn số tiền nạp ({{amount}} USDT).',
-    'error.active_deposit': 'Bạn đang có một hóa đơn nạp tiền còn hiệu lực. Hãy hủy hoặc hoàn tất hóa đơn đó trước khi tạo hóa đơn mới!',
+    'error.deposit_pending_limit':
+      'Có quá nhiều giao dịch đang chờ cho số tiền này. Vui lòng thử lại sau vài phút!',
+    'error.deposit_revoke_balance':
+      'Không thể thu hồi hóa đơn #{{code}} vì số dư hiện tại ({{current}} USDT) thấp hơn số tiền nạp ({{amount}} USDT).',
+    'error.active_deposit':
+      'Bạn đang có một hóa đơn nạp tiền còn hiệu lực. Hãy hủy hoặc hoàn tất hóa đơn đó trước khi tạo hóa đơn mới!',
     'error.coupon_not_found': 'Không tìm thấy mã giảm giá!',
     'error.coupon_expired': 'Mã giảm giá này đã hết hạn!',
     'error.coupon_usage_limit': 'Mã giảm giá này đã hết lượt sử dụng!',
@@ -2474,9 +2743,12 @@ export const TRANSLATIONS: Record<SupportedLanguage, Record<string, string>> = {
     'error.forbidden': 'Bạn không có quyền truy cập!',
     'error.product_unavailable': 'Sản phẩm không khả dụng hoặc đã ngừng bán!',
     'error.quantity_positive': 'Số lượng phải lớn hơn 0!',
-    'error.inventory_conflict': 'Lô kho này đã được thay đổi bởi một giao dịch khác. Hãy đóng hộp thoại và tải lại trang!',
-    'error.insufficient_stock_detail': 'Sản phẩm "{{product}}" không đủ tồn kho (yêu cầu: {{requested}}, hiện có: {{available}}).',
-    'error.insufficient_balance_detail': 'Số dư không đủ để thanh toán đơn hàng (cần: {{required}} USD, hiện có: {{current}} USD).',
+    'error.inventory_conflict':
+      'Lô kho này đã được thay đổi bởi một giao dịch khác. Hãy đóng hộp thoại và tải lại trang!',
+    'error.insufficient_stock_detail':
+      'Sản phẩm "{{product}}" không đủ tồn kho (yêu cầu: {{requested}}, hiện có: {{available}}).',
+    'error.insufficient_balance_detail':
+      'Số dư không đủ để thanh toán đơn hàng (cần: {{required}} USD, hiện có: {{current}} USD).',
     'error.minimum_cart': 'Tổng giá trị giỏ hàng phải từ {{amount}} USD!',
     'error.invalid_input': 'Thông tin nhập vào không hợp lệ. Vui lòng kiểm tra lại!',
     'error.server': 'Lỗi máy chủ. Vui lòng thử lại sau!',
@@ -2485,8 +2757,10 @@ export const TRANSLATIONS: Record<SupportedLanguage, Record<string, string>> = {
     'toast.stock_import_failed': 'Import lô hàng thất bại!',
     'toast.stock_update_failed': 'Cập nhật lô hàng thất bại!',
     'toast.stock_delete_failed': 'Xóa kho thất bại!',
-    'toast.bulk_revoke_result': 'Đã thu hồi {{success}} hóa đơn nạp tiền; {{failed}} hóa đơn thất bại hoặc bị bỏ qua.',
-    'invoice.payment_confirmed': 'Đã phát hiện thanh toán thành công. Số dư của bạn đã được cập nhật!',
+    'toast.bulk_revoke_result':
+      'Đã thu hồi {{success}} hóa đơn nạp tiền; {{failed}} hóa đơn thất bại hoặc bị bỏ qua.',
+    'invoice.payment_confirmed':
+      'Đã phát hiện thanh toán thành công. Số dư của bạn đã được cập nhật!',
     'auth.token_refreshed': 'Đã làm mới phiên đăng nhập thành công.',
     'cart.coupon_invalid': 'Mã giảm giá không hợp lệ!',
     'cart.coupon_applied': 'Đã áp dụng mã "{{code}}".',
@@ -2494,21 +2768,31 @@ export const TRANSLATIONS: Record<SupportedLanguage, Record<string, string>> = {
     'balance.admin_subtract_reason': 'Admin trừ tiền',
     'inventory.product_number': 'Sản phẩm #{{number}}',
     'invoice.missing_id': 'Không tìm thấy mã hóa đơn trong URL!',
-    'invoice.wallet_support': 'Quản trị viên hệ thống chưa cấu hình địa chỉ ví nhận USDT. Vui lòng liên hệ hỗ trợ!',
-    'invoice.binance_support': 'Quản trị viên hệ thống chưa cấu hình Binance ID nhận tiền. Vui lòng liên hệ hỗ trợ!',
-    'invoice.wallet_admin': 'Quản trị viên hệ thống chưa cấu hình địa chỉ ví nhận USDT nạp tiền. Vui lòng liên hệ Admin!',
-    'invoice.scanner_admin': 'Hệ thống đối soát tự động chưa được cấu hình Scanner API Key. Vui lòng liên hệ Admin!',
+    'invoice.wallet_support':
+      'Quản trị viên hệ thống chưa cấu hình địa chỉ ví nhận USDT. Vui lòng liên hệ hỗ trợ!',
+    'invoice.binance_support':
+      'Quản trị viên hệ thống chưa cấu hình Binance ID nhận tiền. Vui lòng liên hệ hỗ trợ!',
+    'invoice.wallet_admin':
+      'Quản trị viên hệ thống chưa cấu hình địa chỉ ví nhận USDT nạp tiền. Vui lòng liên hệ Admin!',
+    'invoice.scanner_admin':
+      'Hệ thống đối soát tự động chưa được cấu hình Scanner API Key. Vui lòng liên hệ Admin!',
     'invoice.not_found_or_forbidden': 'Lệnh nạp tiền không tồn tại hoặc bạn không có quyền xem!',
     'invoice.login_required': 'Bạn cần đăng nhập để xem hóa đơn nạp tiền!',
     'invoice.detail_failed': 'Không thể tải chi tiết hóa đơn. Vui lòng thử lại!',
     'invoice.transaction_not_found': 'BOT chưa phát hiện giao dịch USDT hợp lệ của bạn!',
-    'invoice.reconcile_wallet_error': 'Hệ thống đối soát bị lỗi do Quản trị viên chưa cấu hình địa chỉ ví nhận tiền!',
-    'invoice.reconcile_scanner_error': 'Hệ thống đối soát bị lỗi do Quản trị viên chưa cấu hình Scanner API Key!',
-    'invoice.reconcile_binance_error': 'Hệ thống đối soát bị lỗi do Quản trị viên chưa cấu hình Binance API Key/Secret!',
-    'invoice.blockchain_api_error': 'Không thể kết nối với API quét blockchain. Vui lòng thử lại sau!',
+    'invoice.reconcile_wallet_error':
+      'Hệ thống đối soát bị lỗi do Quản trị viên chưa cấu hình địa chỉ ví nhận tiền!',
+    'invoice.reconcile_scanner_error':
+      'Hệ thống đối soát bị lỗi do Quản trị viên chưa cấu hình Scanner API Key!',
+    'invoice.reconcile_binance_error':
+      'Hệ thống đối soát bị lỗi do Quản trị viên chưa cấu hình Binance API Key/Secret!',
+    'invoice.blockchain_api_error':
+      'Không thể kết nối với API quét blockchain. Vui lòng thử lại sau!',
     'invoice.binance_api_error': 'Không thể kết nối với API Binance Pay. Vui lòng thử lại sau!',
-    'invoice.binance_transaction_missing': 'Hệ thống chưa phát hiện giao dịch USDT của bạn qua cổng Binance Pay. Vui lòng đảm bảo bạn đã chuyển chính xác số tiền (bao gồm cả phần số lẻ thập phân) vào đúng Binance ID nhận trong vòng 15 phút.',
-    'invoice.bsc_transaction_missing': 'Hệ thống chưa phát hiện giao dịch USDT của bạn trên mạng lưới BSC (BEP-20). Vui lòng đảm bảo bạn đã chuyển chính xác số tiền (bao gồm cả phần số lẻ thập phân) vào đúng địa chỉ ví nhận trong vòng 15 phút.',
+    'invoice.binance_transaction_missing':
+      'Hệ thống chưa phát hiện giao dịch USDT của bạn qua cổng Binance Pay. Vui lòng đảm bảo bạn đã chuyển chính xác số tiền (bao gồm cả phần số lẻ thập phân) vào đúng Binance ID nhận trong vòng 15 phút.',
+    'invoice.bsc_transaction_missing':
+      'Hệ thống chưa phát hiện giao dịch USDT của bạn trên mạng lưới BSC (BEP-20). Vui lòng đảm bảo bạn đã chuyển chính xác số tiền (bao gồm cả phần số lẻ thập phân) vào đúng địa chỉ ví nhận trong vòng 15 phút.',
     'date.time_config': 'Cấu hình giờ phút',
     'date.start_time': 'Giờ bắt đầu',
     'date.end_time': 'Giờ kết thúc',
@@ -2545,7 +2829,8 @@ export const TRANSLATIONS: Record<SupportedLanguage, Record<string, string>> = {
     'storefront.list_view': 'Danh sách',
     'storefront.no_products': 'Không tìm thấy sản phẩm!',
     'product.dynamic_attributes': 'Thuộc tính động (Via/BM/Clone)',
-    'product.no_dynamic_attributes': 'Chưa có thuộc tính động. Dùng thuộc tính để tạo nhãn lọc, ví dụ: Quốc gia: US hoặc Năm: 2018.',
+    'product.no_dynamic_attributes':
+      'Chưa có thuộc tính động. Dùng thuộc tính để tạo nhãn lọc, ví dụ: Quốc gia: US hoặc Năm: 2018.',
     'admin.target_member': 'Thành viên áp dụng',
     'admin.current_balance': 'Số dư hiện tại',
     'admin.amount_usd_placeholder': 'Nhập số tiền USD (ví dụ: 10.5)',
@@ -2591,7 +2876,8 @@ export const TRANSLATIONS: Record<SupportedLanguage, Record<string, string>> = {
     'admin.add_balance': 'Cộng số dư',
     'admin.deduct_balance': 'Trừ số dư',
     'admin.amount_usd': 'Số tiền (USD $)',
-    'admin.deduction_exceeds_balance': 'Số tiền trừ không được vượt quá số dư hiện tại của thành viên!',
+    'admin.deduction_exceeds_balance':
+      'Số tiền trừ không được vượt quá số dư hiện tại của thành viên!',
     'api.admin_key_label': 'Admin API Key',
     'api.key_label': 'API Key',
     'app.all_rights_reserved': 'Đã đăng ký bản quyền.',
@@ -2604,7 +2890,8 @@ export const TRANSLATIONS: Record<SupportedLanguage, Record<string, string>> = {
     'inventory.one_account_per_line': 'Mỗi dòng một tài khoản',
     'inventory.total': 'Tổng cộng',
     'inventory.important_notice': 'Lưu ý quan trọng',
-    'inventory.import_notice': 'Mỗi dòng sẽ được lưu thành một mục kho riêng biệt. Giá được kế thừa từ cấu hình sản phẩm.',
+    'inventory.import_notice':
+      'Mỗi dòng sẽ được lưu thành một mục kho riêng biệt. Giá được kế thừa từ cấu hình sản phẩm.',
     'orders.date_range': 'Khoảng ngày',
     'orders.purchased_products': 'Sản phẩm đã mua',
     'orders.quantity': 'Số lượng',
@@ -2622,7 +2909,8 @@ export const TRANSLATIONS: Record<SupportedLanguage, Record<string, string>> = {
     'dash.completed_orders': 'Đơn hoàn tất',
     'dash.registered_badge': 'Đã đăng ký',
     'dash.financial_report_title': 'Báo cáo phân tích lợi nhuận & tài chính',
-    'dash.financial_report_description': 'So sánh giữa giá bán (doanh thu), giá gốc (chi phí vốn) và tiền lãi (lợi nhuận ròng).',
+    'dash.financial_report_description':
+      'So sánh giữa giá bán (doanh thu), giá gốc (chi phí vốn) và tiền lãi (lợi nhuận ròng).',
     'dash.revenue_structure': 'Cơ cấu doanh thu',
     'dash.net_profit': 'Lãi ròng',
     'dash.capital': 'Vốn',
@@ -2658,7 +2946,8 @@ export const TRANSLATIONS: Record<SupportedLanguage, Record<string, string>> = {
     'inventory.resource_content': 'Nội dung tài nguyên (User|Pass|2FA...)',
     'inventory.resource_content_placeholder': 'Nhập thông tin tài nguyên (User|Pass|2FA...)',
     'toast.resource_copied': 'Đã sao chép tài nguyên!',
-    'invoice.live_scanner_notice': 'BOT tự động quét và đối soát giao dịch mỗi 15 giây. Số dư sẽ được cộng sau khi nhận chuyển khoản.',
+    'invoice.live_scanner_notice':
+      'BOT tự động quét và đối soát giao dịch mỗi 15 giây. Số dư sẽ được cộng sau khi nhận chuyển khoản.',
     'date.hour': 'Giờ',
     'usr.user_uid': 'Mã người dùng (UID)',
     'usr.copy_uid': 'Sao chép UID',
@@ -2669,17 +2958,17 @@ export const TRANSLATIONS: Record<SupportedLanguage, Record<string, string>> = {
     'admin.coupon_generate_random': 'Tạo mã giảm giá ngẫu nhiên',
     'toast.coupon_code_generated': 'Đã tạo mã ngẫu nhiên thành công!',
     'toast.coupon_generate_failed': 'Tạo mã ngẫu nhiên thất bại!',
-  }
+  },
 };
 
 @Injectable({
-  providedIn: 'root'
+  providedIn: 'root',
 })
 export class LanguageService {
   private readonly currencyService = inject(CurrencyService);
   public readonly currentLang = signal<SupportedLanguage>(this.getInitialLang());
 
-  constructor() { }
+  constructor() {}
 
   private getInitialLang(): SupportedLanguage {
     const saved = localStorage.getItem('app_lang');
@@ -2701,7 +2990,7 @@ export class LanguageService {
     let text = dictionary[key] ?? TRANSLATIONS.en[key] ?? key;
 
     if (params) {
-      Object.keys(params).forEach(param => {
+      Object.keys(params).forEach((param) => {
         text = text.replace(new RegExp(`{+\\s*${param}\\s*}+`, 'g'), params[param]);
       });
     }

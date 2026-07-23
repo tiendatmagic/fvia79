@@ -22,9 +22,9 @@ import { TranslatePipe } from '@shared/pipes/translate.pipe';
     ButtonComponent,
     CustomSwitchComponent,
     IconComponent,
-    TranslatePipe
+    TranslatePipe,
   ],
-  templateUrl: './admin-suppliers.component.html'
+  templateUrl: './admin-suppliers.component.html',
 })
 export class AdminSuppliersComponent implements OnInit {
   public readonly supplierStore = inject(SupplierStore);
@@ -40,19 +40,20 @@ export class AdminSuppliersComponent implements OnInit {
     api_key: '',
     enabled: true,
     products_enabled: true,
+    import_out_of_stock: true,
     auto_sync: false,
     sync_interval_minutes: 30,
     price_adjustment_type: 'fixed',
-    price_adjustment_value: 0
+    price_adjustment_value: 0,
   };
 
   ngOnInit(): void {
     this.supplierStore.fetchSuppliers().subscribe({
-      next: suppliers => {
-        const supplier = suppliers.find(item => item.code === 'ads7979') || suppliers[0];
+      next: (suppliers) => {
+        const supplier = suppliers.find((item) => item.code === 'ads7979') || suppliers[0];
         if (supplier) this.selectSupplier(supplier);
       },
-      error: () => this.toast.showToast(this.lang.translate('supplier.load_failed'), 'error')
+      error: () => this.toast.showToast(this.lang.translate('supplier.load_failed'), 'error'),
     });
   }
 
@@ -64,7 +65,10 @@ export class AdminSuppliersComponent implements OnInit {
     const payload = { ...this.supplierForm };
     if (!payload.api_key?.trim()) delete payload.api_key;
 
-    if (this.isCreatingSupplier() && (!payload.name?.trim() || !payload.base_url?.trim() || !payload.api_key?.trim())) {
+    if (
+      this.isCreatingSupplier() &&
+      (!payload.name?.trim() || !payload.base_url?.trim() || !payload.api_key?.trim())
+    ) {
       this.toast.showToast(this.lang.translate('supplier.required_fields'), 'warning');
       return;
     }
@@ -74,14 +78,18 @@ export class AdminSuppliersComponent implements OnInit {
       : this.supplierStore.update(this.selectedSupplierCode()!, payload);
 
     request.subscribe({
-      next: supplier => {
+      next: (supplier) => {
         this.selectedSupplierCode.set(supplier.code);
         this.isCreatingSupplier.set(false);
         this.supplierForm = { ...supplier, api_key: '' };
         this.loadSupplierBalance(true);
         this.toast.showToast(this.lang.translate('supplier.saved'), 'success');
       },
-      error: err => this.toast.showToast(err?.error?.message || this.lang.translate('supplier.save_failed'), 'error')
+      error: (err) =>
+        this.toast.showToast(
+          err?.error?.message || this.lang.translate('supplier.save_failed'),
+          'error',
+        ),
     });
   }
 
@@ -90,11 +98,15 @@ export class AdminSuppliersComponent implements OnInit {
     if (!code) return;
 
     this.supplierStore.sync(code).subscribe({
-      next: response => {
+      next: (response) => {
         this.supplierForm = { ...response.supplier, api_key: '' };
         this.toast.showToast(this.lang.translate('supplier.synced', response.result), 'success');
       },
-      error: err => this.toast.showToast(err?.error?.message || this.lang.translate('supplier.sync_failed'), 'error')
+      error: (err) =>
+        this.toast.showToast(
+          err?.error?.message || this.lang.translate('supplier.sync_failed'),
+          'error',
+        ),
     });
   }
 
@@ -118,19 +130,21 @@ export class AdminSuppliersComponent implements OnInit {
       api_key: '',
       enabled: true,
       products_enabled: true,
+      import_out_of_stock: true,
       auto_sync: false,
       sync_interval_minutes: 30,
       price_adjustment_type: 'fixed',
-      price_adjustment_value: 0
+      price_adjustment_value: 0,
     };
   }
 
   public supplierExamplePriceVnd(): number {
     const basePrice = 20000;
     const adjustment = Number(this.supplierForm.price_adjustment_value || 0);
-    const result = this.supplierForm.price_adjustment_type === 'percent'
-      ? basePrice * (1 + adjustment / 100)
-      : basePrice + adjustment;
+    const result =
+      this.supplierForm.price_adjustment_type === 'percent'
+        ? basePrice * (1 + adjustment / 100)
+        : basePrice + adjustment;
     return Math.max(0, result);
   }
 
@@ -149,7 +163,7 @@ export class AdminSuppliersComponent implements OnInit {
         if (this.selectedSupplierCode() === code) {
           this.balanceLoadFailed.set(true);
         }
-      }
+      },
     });
   }
 }

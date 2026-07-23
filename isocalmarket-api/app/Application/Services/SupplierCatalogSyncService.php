@@ -85,8 +85,20 @@ class SupplierCatalogSyncService
             $categoryCount++;
 
             foreach (($categoryData['children'] ?? []) as $productData) {
-                $this->upsertProduct($supplier, $category, $productData);
-                $externalProductIds[] = (string) $productData['id'];
+                $externalId = (string) ($productData['id'] ?? '');
+                if ($externalId === '') {
+                    throw new RuntimeException('Supplier product is missing its id.');
+                }
+
+                $externalProductIds[] = $externalId;
+                $stock = max(0, (int) ($productData['quantity'] ?? 0));
+                if (! $supplier->import_out_of_stock && $stock === 0) {
+                    $this->hideExistingOutOfStockProduct($supplier, $externalId);
+
+                    continue;
+                }
+
+                $this->upsertProduct($supplier, $category, $productData, $stock);
                 $productCount++;
             }
         }
@@ -113,8 +125,12 @@ class SupplierCatalogSyncService
         );
     }
 
-    private function upsertProduct(SupplierModel $supplier, CategoryModel $category, array $data): void
-    {
+    private function upsertProduct(
+        SupplierModel $supplier,
+        CategoryModel $category,
+        array $data,
+        int $stock,
+    ): void {
         $externalId = (string) ($data['id'] ?? '');
         if ($externalId === '') {
             throw new RuntimeException('Supplier product is missing its id.');
@@ -132,10 +148,17 @@ class SupplierCatalogSyncService
             'description' => $data['data']['description'] ?? null,
             'price' => $this->priceService->calculateUsd($priceVnd, $supplier),
             'supplier_price_vnd' => $priceVnd,
-            'supplier_stock' => max(0, (int) ($data['quantity'] ?? 0)),
+            'supplier_stock' => $stock,
             'supplier_synced_at' => now(),
             'attributes' => [],
         ]);
+
+        if ($product->exists && $product->supplier_out_of_stock_hidden) {
+            $product->supplier_out_of_stock_hidden = false;
+            if ($supplier->products_enabled) {
+                $product->status = 'active';
+            }
+        }
 
         if (! $supplier->products_enabled) {
             if ($product->supplier_previous_status === null) {
@@ -144,6 +167,25 @@ class SupplierCatalogSyncService
             $product->status = 'inactive';
         } elseif (! $product->exists) {
             $product->status = 'active';
+        }
+        $product->save();
+    }
+
+    private function hideExistingOutOfStockProduct(SupplierModel $supplier, string $externalId): void
+    {
+        $product = ProductModel::where('supplier_id', $supplier->id)
+            ->where('external_id', $externalId)
+            ->first();
+
+        if (! $product) {
+            return;
+        }
+
+        $product->supplier_stock = 0;
+        $product->supplier_synced_at = now();
+        if ($product->status === 'active') {
+            $product->status = 'inactive';
+            $product->supplier_out_of_stock_hidden = true;
         }
         $product->save();
     }
@@ -163,6 +205,7 @@ class SupplierCatalogSyncService
             'status' => 'inactive',
             'supplier_previous_status' => null,
             'supplier_stock' => 0,
+            'supplier_out_of_stock_hidden' => false,
         ]);
     }
 

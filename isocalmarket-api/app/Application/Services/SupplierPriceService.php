@@ -18,7 +18,7 @@ class SupplierPriceService
             throw new RuntimeException('VND/USD exchange rate must be greater than zero.');
         }
 
-        return round($adjustedVnd / $exchangeRate, 2);
+        return round($adjustedVnd / $exchangeRate, 8);
     }
 
     public function applyAdjustment(float $priceVnd, SupplierModel $supplier): float

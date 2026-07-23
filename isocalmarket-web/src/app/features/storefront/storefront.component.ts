@@ -1,4 +1,11 @@
-import { Component, OnInit, inject, signal, computed, ChangeDetectionStrategy } from '@angular/core';
+import {
+  Component,
+  OnInit,
+  inject,
+  signal,
+  computed,
+  ChangeDetectionStrategy,
+} from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { RouterModule, Router } from '@angular/router';
@@ -15,7 +22,11 @@ import { PaginationComponent } from '@shared/components/pagination/pagination.co
 import { CustomSelectComponent } from '@shared/components/custom-select/custom-select.component';
 import { ModalService } from '@core/services/modal.service';
 import { CartModalComponent } from './cart-modal/cart-modal.component';
-import { TableComponent, TableCellDirective, TableColumn } from '@shared/components/table/table.component';
+import {
+  TableComponent,
+  TableCellDirective,
+  TableColumn,
+} from '@shared/components/table/table.component';
 import { TooltipDirective } from '@shared/components/tooltip/tooltip.directive';
 import { TranslatePipe } from '@shared/pipes/translate.pipe';
 import { CurrencyPipe } from '@shared/pipes/currency.pipe';
@@ -40,14 +51,16 @@ import { CurrencyPipe } from '@shared/pipes/currency.pipe';
     TableCellDirective,
     TooltipDirective,
     TranslatePipe,
-    CurrencyPipe
+    CurrencyPipe,
   ],
   templateUrl: './storefront.component.html',
-  styles: [`
-    :host {
-      display: block;
-    }
-  `]
+  styles: [
+    `
+      :host {
+        display: block;
+      }
+    `,
+  ],
 })
 export class StorefrontComponent implements OnInit {
   public readonly state = inject(StateService);
@@ -60,9 +73,24 @@ export class StorefrontComponent implements OnInit {
     this.lang.currentLang();
     return [
       { key: 'name', label: this.lang.translate('product.name'), sortable: true },
-      { key: 'price', label: this.lang.translate('storefront.unit_price'), sortable: true, align: 'right' },
-      { key: 'available_count', label: this.lang.translate('product.available_stock'), sortable: true, align: 'center' },
-      { key: 'actions', label: this.lang.translate('common.actions'), sortable: false, align: 'right' }
+      {
+        key: 'price',
+        label: this.lang.translate('storefront.unit_price'),
+        sortable: true,
+        align: 'right',
+      },
+      {
+        key: 'available_count',
+        label: this.lang.translate('product.available_stock'),
+        sortable: true,
+        align: 'center',
+      },
+      {
+        key: 'actions',
+        label: this.lang.translate('common.actions'),
+        sortable: false,
+        align: 'right',
+      },
     ];
   });
 
@@ -73,19 +101,21 @@ export class StorefrontComponent implements OnInit {
       this.state.showToast(this.lang.translate('storefront.please_login_to_use_cart'), 'warning');
       return;
     }
-    this.modalService.open(CartModalComponent, {
-      title: this.lang.translate('cart.title'),
-      size: 'lg'
-    }).afterClosed$.subscribe((result) => {
-      if (result === 'login') {
-        this.router.navigate(['/login'], { queryParams: { returnUrl: '/storefront' } });
-      } else if (result === 'success') {
-        this.state.authStore.checkMe(true).subscribe();
-        this.router.navigate(['/orders']);
-      }
-    });
+    this.modalService
+      .open(CartModalComponent, {
+        title: this.lang.translate('cart.title'),
+        size: 'lg',
+      })
+      .afterClosed$.subscribe((result) => {
+        if (result === 'login') {
+          this.router.navigate(['/login'], { queryParams: { returnUrl: '/storefront' } });
+        } else if (result === 'success') {
+          this.state.authStore.checkMe(true).subscribe();
+          this.router.navigate(['/orders']);
+        }
+      });
   }
-  
+
   private getInitialViewMode(): 'card' | 'list' {
     try {
       const saved = localStorage.getItem('storefront_view_mode');
@@ -117,15 +147,15 @@ export class StorefrontComponent implements OnInit {
   public readonly sortOptions = computed(() => [
     { label: this.lang.translate('storefront.sort_az'), value: 'az' },
     { label: this.lang.translate('storefront.sort_za'), value: 'za' },
-    { label: this.lang.translate('storefront.sort_default'), value: 'default' }
+    { label: this.lang.translate('storefront.sort_default'), value: 'default' },
   ]);
 
   public readonly groupedProducts = computed(() => {
     const groups = this.groupedProductsState();
     const sortVal = this.categorySort();
-    
-    const otherGroup = groups.find(g => g.id === 'other');
-    const actualGroups = groups.filter(g => g.id !== 'other');
+
+    const otherGroup = groups.find((g) => g.id === 'other');
+    const actualGroups = groups.filter((g) => g.id !== 'other');
 
     if (sortVal === 'az') {
       actualGroups.sort((a, b) => a.name.localeCompare(b.name, 'vi', { sensitivity: 'base' }));
@@ -143,66 +173,67 @@ export class StorefrontComponent implements OnInit {
 
   public loadAllGroupedProducts() {
     this.state.productStore.loading.set(true);
-    this.state.productStore.fetchGroupedProducts(this.limit, this.searchQuery.trim() || undefined).subscribe({
-      next: (res: any[]) => {
-        const initialPages: { [catId: string]: number } = {};
-        const list = (res || []).map(group => {
-          initialPages[group.id] = 1;
-          return {
-            ...group,
-            loading: false
-          };
-        });
-        this.groupedProductsState.set(list);
-        this.categoryPages.set(initialPages);
-        this.state.productStore.loading.set(false);
-      },
-      error: () => {
-        this.groupedProductsState.set([]);
-        this.state.productStore.loading.set(false);
-      }
-    });
+    this.state.productStore
+      .fetchGroupedProducts(this.limit, this.searchQuery.trim() || undefined)
+      .subscribe({
+        next: (res: any[]) => {
+          const initialPages: { [catId: string]: number } = {};
+          const list = (res || []).map((group) => {
+            initialPages[group.id] = 1;
+            return {
+              ...group,
+              loading: false,
+            };
+          });
+          this.groupedProductsState.set(list);
+          this.categoryPages.set(initialPages);
+          this.state.productStore.loading.set(false);
+        },
+        error: () => {
+          this.groupedProductsState.set([]);
+          this.state.productStore.loading.set(false);
+        },
+      });
   }
 
   public loadProductsForCategory(catId: string, page: number) {
     const searchVal = this.searchQuery.trim() || undefined;
-    
-    this.groupedProductsState.update(list =>
-      list.map(group => group.id === catId ? { ...group, loading: true } : group)
+
+    this.groupedProductsState.update((list) =>
+      list.map((group) => (group.id === catId ? { ...group, loading: true } : group)),
     );
 
     const apiCategoryId = catId === 'other' ? 'other' : catId;
 
-    this.state.productStore.getProductsRaw(
-      page,
-      this.limit,
-      apiCategoryId,
-      searchVal,
-      'active'
-    ).subscribe({
-      next: (res: any) => {
-        const items = res?.data || [];
-        const total = res?.meta?.total || 0;
+    this.state.productStore
+      .getProductsRaw(page, this.limit, apiCategoryId, searchVal, 'active')
+      .subscribe({
+        next: (res: any) => {
+          const items = res?.data || [];
+          const total = res?.meta?.total || 0;
 
-        this.groupedProductsState.update(list =>
-          list.map(group => group.id === catId ? { ...group, products: items, total, loading: false } : group)
-        );
+          this.groupedProductsState.update((list) =>
+            list.map((group) =>
+              group.id === catId ? { ...group, products: items, total, loading: false } : group,
+            ),
+          );
 
-        this.categoryPages.update(prev => ({
-          ...prev,
-          [catId]: page
-        }));
-      },
-      error: () => {
-        this.groupedProductsState.update(list =>
-          list.map(group => group.id === catId ? { ...group, loading: false } : group)
-        );
-      }
-    });
+          this.categoryPages.update((prev) => ({
+            ...prev,
+            [catId]: page,
+          }));
+        },
+        error: () => {
+          this.groupedProductsState.update((list) =>
+            list.map((group) => (group.id === catId ? { ...group, loading: false } : group)),
+          );
+        },
+      });
   }
 
   ngOnInit() {
     this.state.authStore.checkMe(true).subscribe();
+    this.state.depositStore.fetchRate().subscribe({ error: () => undefined });
     this.state.productStore.clearCache();
     this.loadAllGroupedProducts();
   }
@@ -234,21 +265,22 @@ export class StorefrontComponent implements OnInit {
       return;
     }
     this.cart.setSingleProduct(product, 1);
-    this.modalService.open(CartModalComponent, {
-      title: this.lang.translate('cart.confirm_order_title'),
-      size: 'lg'
-    }).afterClosed$.subscribe((result) => {
-      if (result === 'login') {
-        this.router.navigate(['/login'], { queryParams: { returnUrl: '/storefront' } });
-      } else if (result === 'success') {
-        this.state.authStore.checkMe(true).subscribe();
-        this.router.navigate(['/orders']);
-      }
-    });
+    this.modalService
+      .open(CartModalComponent, {
+        title: this.lang.translate('cart.confirm_order_title'),
+        size: 'lg',
+      })
+      .afterClosed$.subscribe((result) => {
+        if (result === 'login') {
+          this.router.navigate(['/login'], { queryParams: { returnUrl: '/storefront' } });
+        } else if (result === 'success') {
+          this.state.authStore.checkMe(true).subscribe();
+          this.router.navigate(['/orders']);
+        }
+      });
   }
 
   public addToCart(product: any) {
     this.buyNow(product);
   }
 }
-

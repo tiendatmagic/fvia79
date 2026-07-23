@@ -100,7 +100,9 @@
                   class="col-span-2 mt-1 grid grid-cols-1 gap-x-6 gap-y-2 border-t border-emerald-200/70 pt-3 text-sm sm:grid-cols-2 dark:border-emerald-900/50"
                 >
                   <p>
-                    <span class="text-slate-500">{{ 'supplier.account_username' | translate }}:</span>
+                    <span class="text-slate-500"
+                      >{{ 'supplier.account_username' | translate }}:</span
+                    >
                     <strong class="ml-1 text-slate-800 dark:text-slate-200">{{
                       accountBalance.account.username || '—'
                     }}</strong>
@@ -124,7 +126,9 @@
                     }}</strong>
                   </p>
                   <p>
-                    <span class="text-slate-500">{{ 'supplier.account_discount' | translate }}:</span>
+                    <span class="text-slate-500"
+                      >{{ 'supplier.account_discount' | translate }}:</span
+                    >
                     <strong class="ml-1 text-slate-800 dark:text-slate-200">
                       {{
                         accountBalance.account.percent !== null
@@ -167,6 +171,16 @@
         (checkedChange)="supplierForm.products_enabled = $event"
         [label]="'supplier.products_enabled' | translate"
         [description]="'supplier.products_enabled_hint' | translate"
+      />
+    </div>
+
+    <div class="mb-5">
+      <app-custom-switch
+        type="full"
+        [checked]="supplierForm.import_out_of_stock ?? true"
+        (checkedChange)="supplierForm.import_out_of_stock = $event"
+        [label]="'supplier.import_out_of_stock' | translate"
+        [description]="'supplier.import_out_of_stock_hint' | translate"
       />
     </div>
 
