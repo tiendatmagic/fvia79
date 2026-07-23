@@ -63,46 +63,44 @@ export class AdminApiComponent {
     }
   }
 
-  // API 1: List Resellers
   public copyGetUsersCurl() {
-    const key = this.apiKey() || 'API_KEY_CUA_BAN';
+    const key = this.apiKey() || 'YOUR_API_KEY';
     const text = `curl -X GET "${this.siteUrl()}/api/v1/admin/b2b/users?api_key=${key}"`;
     this.copyToClipboard(text, this.lang.translate('api.copy_users_curl'));
   }
 
   public copyGetUsersUrl() {
-    const key = this.apiKey() || 'API_KEY_CUA_BAN';
+    const key = this.apiKey() || 'YOUR_API_KEY';
     const text = `${this.siteUrl()}/api/v1/admin/b2b/users?api_key=${key}`;
     this.copyToClipboard(text, this.lang.translate('api.copy_users_url'));
   }
 
-  // API 2: List B2B wholesale orders
   public copyGetOrdersCurl() {
-    const key = this.apiKey() || 'API_KEY_CUA_BAN';
+    const key = this.apiKey() || 'YOUR_API_KEY';
     const text = `curl -X GET "${this.siteUrl()}/api/v1/admin/b2b/orders?api_key=${key}&page=1&limit=10"`;
     this.copyToClipboard(text, this.lang.translate('api.copy_orders_curl'));
   }
 
   public copyGetOrdersUrl() {
-    const key = this.apiKey() || 'API_KEY_CUA_BAN';
+    const key = this.apiKey() || 'YOUR_API_KEY';
     const text = `${this.siteUrl()}/api/v1/admin/b2b/orders?api_key=${key}&page=1&limit=10`;
     this.copyToClipboard(text, this.lang.translate('api.copy_orders_url'));
   }
 
   public copyImportInventoryCurl() {
-    const key = this.apiKey() || 'API_KEY_CUA_BAN';
+    const key = this.apiKey() || 'YOUR_API_KEY';
     const text = `curl -X POST "${this.siteUrl()}/api/v1/admin/b2b/products/PRODUCT_UUID/inventory" -H "Content-Type: application/json" -H "X-API-KEY: ${key}" -d '{"batch_name": "New batch", "content": "account_1\\naccount_2"}'`;
     this.copyToClipboard(text, this.lang.translate('api.copy_inventory_curl'));
   }
 
   public copyImportInventoryWindowsCurl() {
-    const key = this.apiKey() || 'API_KEY_CUA_BAN';
+    const key = this.apiKey() || 'YOUR_API_KEY';
     const text = `curl -X POST "${this.siteUrl()}/api/v1/admin/b2b/products/PRODUCT_UUID/inventory" -H "Content-Type: application/json" -H "X-API-KEY: ${key}" -d "{\\"batch_name\\": \\"New batch\\", \\"content\\": \\"account_1\\\\naccount_2\\"}"`;
     this.copyToClipboard(text, this.lang.translate('api.copy_inventory_cmd'));
   }
 
   public copyImportInventoryFileCurl() {
-    const key = this.apiKey() || 'API_KEY_CUA_BAN';
+    const key = this.apiKey() || 'YOUR_API_KEY';
     const text = `curl -X POST "${this.siteUrl()}/api/v1/admin/b2b/products/PRODUCT_UUID/inventory" -H "X-API-KEY: ${key}" -F "batch_name=New batch" -F "file=@inventory.txt"`;
     this.copyToClipboard(text, this.lang.translate('api.copy_inventory_file'));
   }
@@ -112,15 +110,14 @@ export class AdminApiComponent {
     this.copyToClipboard(text, this.lang.translate('api.copy_inventory_url'));
   }
 
-  // API 4: Get Stats
   public copyGetStatsCurl() {
-    const key = this.apiKey() || 'API_KEY_CUA_BAN';
+    const key = this.apiKey() || 'YOUR_API_KEY';
     const text = `curl -X GET "${this.siteUrl()}/api/v1/admin/b2b/stats?api_key=${key}"`;
     this.copyToClipboard(text, this.lang.translate('api.copy_stats_curl'));
   }
 
   public copyGetStatsUrl() {
-    const key = this.apiKey() || 'API_KEY_CUA_BAN';
+    const key = this.apiKey() || 'YOUR_API_KEY';
     const text = `${this.siteUrl()}/api/v1/admin/b2b/stats?api_key=${key}`;
     this.copyToClipboard(text, this.lang.translate('api.copy_stats_url'));
   }

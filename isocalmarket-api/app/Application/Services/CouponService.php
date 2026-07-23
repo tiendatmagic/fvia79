@@ -43,14 +43,14 @@ class CouponService
     public function createCoupon(array $data): Coupon
     {
         if ($this->couponRepository->findByCode($data['code'])) {
-            throw new CouponException(__('messages.coupon_exists', ['code' => $data['code']]));
+            throw new CouponException("Coupon '{$data['code']}' already exists.");
         }
 
         $startDate = !empty($data['start_date']) ? new \DateTime($data['start_date']) : new \DateTime();
         $endDate = !empty($data['end_date']) ? new \DateTime($data['end_date']) : (new \DateTime())->modify('+7 days');
 
         if ($endDate <= $startDate) {
-            throw new CouponException(__('messages.end_after_start'));
+            throw new CouponException('End date must be after start date.');
         }
 
         $coupon = new Coupon(
@@ -72,19 +72,19 @@ class CouponService
     {
         $coupon = $this->couponRepository->findById($id);
         if (!$coupon) {
-            throw new CouponException(__('messages.coupon_not_found'));
+            throw new CouponException('Coupon not found.');
         }
 
         $existing = $this->couponRepository->findByCode($data['code']);
         if ($existing && $existing->getId() !== $id) {
-            throw new CouponException(__('messages.coupon_used_by_another', ['code' => $data['code']]));
+            throw new CouponException("Coupon code '{$data['code']}' is already used by another coupon.");
         }
 
         $startDate = !empty($data['start_date']) ? new \DateTime($data['start_date']) : $coupon->getStartDate();
         $endDate = !empty($data['end_date']) ? new \DateTime($data['end_date']) : $coupon->getEndDate();
 
         if ($endDate <= $startDate) {
-            throw new CouponException(__('messages.end_after_start'));
+            throw new CouponException('End date must be after start date.');
         }
 
         $updatedCoupon = new Coupon(
@@ -117,7 +117,7 @@ class CouponService
     {
         $coupon = $this->couponRepository->findByCode(strtoupper(trim($code)));
         if (!$coupon) {
-            throw new CouponException(__('messages.coupon_invalid'));
+            throw new CouponException('Coupon code is invalid or does not exist.');
         }
 
         $now = new \DateTime();
@@ -125,18 +125,18 @@ class CouponService
         $end = (clone $coupon->getEndDate())->setTime(23, 59, 59);
 
         if ($now < $start) {
-            throw new CouponException(__('messages.coupon_not_started'));
+            throw new CouponException('This coupon is not active yet.');
         }
         if ($now > $end) {
-            throw new CouponException(__('messages.coupon_expired'));
+            throw new CouponException('This coupon has expired.');
         }
 
         if ($coupon->getUsageLimit() > 0 && $coupon->getUsedCount() >= $coupon->getUsageLimit()) {
-            throw new CouponException(__('messages.coupon_usage_exhausted'));
+            throw new CouponException('This coupon has reached its usage limit.');
         }
 
         if ($cartTotal < $coupon->getMinSpend()) {
-            throw new CouponException(__('messages.minimum_cart', ['amount' => number_format($coupon->getMinSpend())]));
+            throw new CouponException('Cart total must be at least ' . number_format($coupon->getMinSpend()) . ' USD.');
         }
 
         $discount = $coupon->calculateDiscount($cartTotal);

@@ -151,7 +151,9 @@ export class CartModalComponent implements OnInit {
       },
       error: (err) => {
         const rawMsg = err.error?.message;
-        let msg = typeof rawMsg === 'string' ? rawMsg : 'Order creation failed!';
+        const msg = typeof rawMsg === 'string'
+          ? rawMsg
+          : this.lang.translate('toast.order_failed');
         this.state.showToast(msg, 'error');
         this.isSubmitting.set(false);
       }

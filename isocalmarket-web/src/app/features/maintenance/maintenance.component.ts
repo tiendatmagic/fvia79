@@ -4,6 +4,7 @@ import { LogoComponent } from '@shared/components/logo/logo.component';
 import { ThemeSwitcherComponent } from '@shared/components/theme-switcher/theme-switcher.component';
 import { StateService } from '@core/services/state.service';
 import { TranslatePipe } from '@shared/pipes/translate.pipe';
+import { IconComponent } from '@shared/components/icon/icon.component';
 
 @Component({
   selector: 'app-maintenance',
@@ -12,7 +13,8 @@ import { TranslatePipe } from '@shared/pipes/translate.pipe';
     CommonModule,
     LogoComponent,
     ThemeSwitcherComponent,
-    TranslatePipe
+    TranslatePipe,
+    IconComponent
   ],
   templateUrl: './maintenance.component.html',
   styleUrl: './maintenance.component.scss'

@@ -100,8 +100,8 @@ export class Web3Service {
         defaultNetwork: chains[0] as any,
         allowUnsupportedChain: true,
         metadata: {
-          name: 'Angular Web3 DApp',
-          description: 'Angular Web3 Application Framework',
+          name: 'Isocal Market',
+          description: this.lang.translate('app.tagline'),
           url: window.location.origin,
           icons: [window.location.origin + '/assets/logo-light.png']
         },

@@ -167,7 +167,6 @@ export class InventoryStore {
     );
   }
 
-  // --- Resource Items (Digital Account Records) ---
   public readonly resourceItems = signal<any[]>([]);
   public readonly resourceLoading = signal<boolean>(false);
   public readonly resourceTotalItems = signal<number>(0);

@@ -13,6 +13,21 @@
 > Khi cần seed dữ liệu cho một seeder cụ thể, chỉ dùng:
 > - `php artisan db:seed --class=TenSeederClass` — chạy đúng 1 seeder.
 
+- **[CHUẨN HÓA TOÀN BỘ BIỂU TƯỢNG GIAO DIỆN SANG COMPONENT APP-ICON (STANDARDIZE ALL SVG ICONS TO APP-ICON)]**:
+  - **Mô tả yêu cầu**: Rà soát toàn bộ source code Frontend (FE), phát hiện và thay thế tất cả các thẻ SVG thủ công / icon sai định dạng thành component dùng chung `<app-icon>`.
+  - **Nội dung thực hiện**:
+    - Rà soát các component: `CustomInputComponent`, `CustomSelectComponent`, `HeaderComponent`, `AuthLayoutComponent`, `LoginComponent`, `RegisterComponent`, `AdminUsersComponent`, `MaintenanceComponent`.
+    - Thay thế các inline `<svg>` thủ công (mắt ẩn/hiện mật khẩu, spinner loading, khóa/mở khóa tài khoản, khiên bảo mật, đồng hồ, cảnh báo, dấu cộng balance, icon refresh) thành `<app-icon name="...">`.
+    - Đảm bảo 100% icon trên hệ thống sử dụng thống nhất `<app-icon>`, dễ bảo trì, thích ứng mượt với Light/Dark Mode.
+
+- **[CHỈNH SỬA BIỂU TƯỢNG HÌNH TRÒN VÀ CHUẨN HÓA BACKGROUND TRẮNG CHO 6 THẺ ADMIN DASHBOARD]**:
+  - **Mô tả yêu cầu**:
+    - Sửa lại toàn bộ 6 icon (biểu tượng) trên các Thẻ thống kê Admin Dashboard thành dạng **hình tròn hoàn chỉnh** (`w-9 h-9 shrink-0 aspect-square rounded-full flex items-center justify-center`), ngăn chặn tình trạng icon bị nén méo làm vỡ layout khi co giãn màn hình.
+    - Chuẩn hóa nền của cả 6 thẻ thành **màu trắng thuần** ở Light Mode và `dark:bg-slate-900` ở Dark Mode (loại bỏ dải màu gradient xanh `bg-gradient-to-br from-emerald-500/5 to-transparent` ở thẻ Tiền Lãi).
+  - **Nội dung thực hiện**:
+    - `admin-dashboard.component.html`: Cập nhật icon container của Skeleton Loader và cả 6 thẻ thật (`Total Revenue`, `Gross Profit`, `Total COGS`, `Total Orders`, `Available Inventory`, `Total Users`) thêm các utility classes `shrink-0 aspect-square rounded-full` kết hợp `w-9 h-9`. Gỡ bỏ background gradient riêng ở thẻ `Gross Profit` để đồng bộ nền `bg-white dark:bg-slate-900`.
+    - `icon.component.html`: Bổ sung đường dẫn SVG `@case ('package')` trong `IconComponent` để hiển thị chính xác biểu tượng hộp hàng (thay vì bị fallback về dấu hỏi chấm `?`).
+
 - **[CHỈNH SỬA GIAO DIỆN GRID 6 CỘT CHO THẺ THỐNG KÊ ADMIN DASHBOARD (ADMIN DASHBOARD 6-COLUMN GRID FIX)]**:
   - **Mô tả yêu cầu**: Điều chỉnh giao diện các Thẻ chỉ số tổng quan ở trang Admin Dashboard (`AdminDashboardComponent`) trên các màn hình máy tính desktop / 1530px để hiển thị đồng bộ chuẩn **6 cột trong 1 hàng**.
   - **Nội dung thực hiện (`admin-dashboard.component.html`)**:

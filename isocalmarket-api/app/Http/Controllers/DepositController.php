@@ -17,9 +17,6 @@ class DepositController extends Controller
         $this->depositService = $depositService;
     }
 
-    /**
-     * Lấy tỷ giá USDT/VND động từ CoinGecko
-     */
     public function getRate(): JsonResponse
     {
         $rate = $this->depositService->getUsdtToVndRate();
@@ -28,9 +25,6 @@ class DepositController extends Controller
         ]);
     }
 
-    /**
-     * Tạo lệnh nạp tiền mới
-     */
     public function create(CreateDepositRequest $request): JsonResponse
     {
         $userId = Auth::id();
@@ -62,10 +56,6 @@ class DepositController extends Controller
         ], 201);
     }
 
-    /**
-     * Xem chi tiết hóa đơn
-     * Admin có thể xem bất kỳ invoice nào, user chỉ xem được invoice của mình
-     */
     public function showInvoice(string $id): JsonResponse
     {
         $user = Auth::user();
@@ -84,9 +74,6 @@ class DepositController extends Controller
         ]);
     }
 
-    /**
-     * Hủy lệnh nạp tiền
-     */
     public function cancelInvoice(string $id): JsonResponse
     {
         $userId = Auth::id();
@@ -103,9 +90,6 @@ class DepositController extends Controller
         ]);
     }
 
-    /**
-     * Lấy lịch sử nạp tiền có phân trang, lọc và tìm kiếm
-     */
     public function history(Request $request): JsonResponse
     {
         $request->validate([
@@ -141,9 +125,6 @@ class DepositController extends Controller
         return response()->json($historyData);
     }
 
-    /**
-     * BOT tự động kiểm tra giao dịch nạp tiền qua BscScan
-     */
     public function checkTransaction(string $id): JsonResponse
     {
         $userId = Auth::id();
@@ -175,9 +156,6 @@ class DepositController extends Controller
         ], 400);
     }
 
-    /**
-     * Format Domain Entity sang dạng JSON phản hồi đồng nhất
-     */
     private function formatDeposit($deposit): array
     {
         return [

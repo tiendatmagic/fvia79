@@ -39,7 +39,7 @@ export class AdminDepositStore {
     const cacheKey = JSON.stringify({ page, limit, search, status, paymentMethod, startDate, endDate });
     const cached = this.depositsCache.get(cacheKey);
 
-    if (cached && (Date.now() - cached.timestamp < 30000)) { // Cache 30s
+    if (cached && (Date.now() - cached.timestamp < 30000)) {
       const res = cached.data;
       if (res) {
         this.deposits.set(res.data || []);

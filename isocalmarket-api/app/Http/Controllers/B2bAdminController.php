@@ -11,10 +11,6 @@ use Illuminate\Support\Facades\Auth;
 
 class B2bAdminController extends Controller
 {
-    /**
-     * GET /api/v1/admin/b2b/users
-     * Lấy danh sách toàn bộ đại lý B2B
-     */
     public function indexUsers(Request $request)
     {
         try {
@@ -89,10 +85,6 @@ class B2bAdminController extends Controller
         }
     }
 
-    /**
-     * GET /api/v1/admin/b2b/orders
-     * Lấy danh sách toàn bộ đơn hàng B2B của tất cả đại lý
-     */
     public function indexOrders(Request $request)
     {
         try {
@@ -177,14 +169,9 @@ class B2bAdminController extends Controller
         }
     }
 
-    /**
-     * POST /api/v1/admin/b2b/products/{id}/inventory
-     * Thêm kho sản phẩm (nhập lô hàng)
-     */
     public function importInventory(Request $request, $id, \App\Application\Services\InventoryService $inventoryService)
     {
         try {
-            // Check if product exists
             $productExists = \App\Infrastructure\Persistence\Eloquent\ProductModel::where('id', $id)->exists();
             if (!$productExists) {
                 return response()->json(['message' => 'Product not found.'], 404);
@@ -242,10 +229,6 @@ class B2bAdminController extends Controller
         }
     }
 
-    /**
-     * GET /api/v1/admin/b2b/stats
-     * Lấy số liệu thống kê hệ thống (Doanh thu, Giá vốn, Lợi nhuận, Đơn hàng, Sản phẩm, Tồn kho, Người dùng)
-     */
     public function getStats(Request $request)
     {
         try {
@@ -271,7 +254,6 @@ class B2bAdminController extends Controller
             $totalProducts = ProductModel::where('status', 'active')->count();
             $totalUsers = UserModel::count();
 
-            // Tính tổng giá vốn (total_cogs) & lợi nhuận (total_profit)
             $cogsQuery = \App\Infrastructure\Persistence\Eloquent\OrderItemModel::whereHas('order', function ($q) use ($startDate, $endDate) {
                 $q->where('status', 'paid');
                 if ($startDate) {
@@ -288,7 +270,6 @@ class B2bAdminController extends Controller
             $totalProfit = $totalRevenue - $totalCogs;
             $profitMarginPercent = $totalRevenue > 0 ? round(($totalProfit / $totalRevenue) * 100, 2) : 0.0;
 
-            // Tổng số tài nguyên khả dụng trong kho
             $totalAvailableInventory = (int) InventoryBatchModel::where('status', 'active')
                 ->selectRaw('SUM(initial_count - sold_count) as total')
                 ->value('total') ?? 0;

@@ -13,6 +13,8 @@ import { LanguageService } from '@core/services/language.service';
 import { Subscription, interval, timer } from 'rxjs';
 import { finalize } from 'rxjs/operators';
 
+const DEPOSIT_EXPIRATION_MS = 15 * 60 * 1000;
+
 @Component({
   selector: 'app-deposit-invoice',
   standalone: true,
@@ -130,7 +132,7 @@ export class DepositInvoiceComponent implements OnInit, OnDestroy {
             createdTime = Date.now();
           }
 
-          this.expirationTime = createdTime + (900 * 1000); // 15 phút từ lúc tạo
+          this.expirationTime = createdTime + DEPOSIT_EXPIRATION_MS;
           const nowTime = Date.now();
           const remaining = Math.floor((this.expirationTime - nowTime) / 1000);
 

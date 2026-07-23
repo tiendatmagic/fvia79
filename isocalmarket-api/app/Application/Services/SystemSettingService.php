@@ -21,9 +21,6 @@ class SystemSettingService
         $this->settingRepository = $settingRepository;
     }
 
-    /**
-     * Lấy giá trị cấu hình theo Key, hỗ trợ Cache 1 giờ để tăng tốc độ và giảm tải DB
-     */
     public function getSetting(string $key, ?string $default = null): ?string
     {
         if (in_array($key, self::SENSITIVE_KEYS, true)) {
@@ -38,9 +35,6 @@ class SystemSettingService
         });
     }
 
-    /**
-     * Cập nhật hoặc thêm mới một cấu hình
-     */
     public function setSetting(string $key, ?string $value): void
     {
         $existing = $this->settingRepository->findByKey($key);
@@ -53,9 +47,6 @@ class SystemSettingService
         Cache::forget("system_settings_all");
     }
 
-    /**
-     * Lấy tất cả cấu hình dưới dạng key-value map
-     */
     public function getAllSettings(): array
     {
         $list = $this->settingRepository->findAll();
@@ -67,9 +58,6 @@ class SystemSettingService
         return $map;
     }
 
-    /**
-     * Cập nhật hàng loạt cấu hình hệ thống
-     */
     public function saveSettings(array $settings): void
     {
         foreach ($settings as $key => $value) {

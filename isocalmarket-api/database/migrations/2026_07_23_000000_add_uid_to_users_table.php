@@ -13,7 +13,6 @@ return new class extends Migration
             $table->string('uid', 32)->nullable()->unique()->after('id');
         });
 
-        // Backfill existing users with unique 8-character UIDs
         $users = UserModel::whereNull('uid')->get();
         foreach ($users as $user) {
             $user->uid = UserModel::generateUniqueUid();

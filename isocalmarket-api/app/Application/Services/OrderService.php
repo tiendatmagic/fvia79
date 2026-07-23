@@ -112,7 +112,7 @@ class OrderService
             if ($couponCode) {
                 $coupon = $this->couponRepository->findByCode(strtoupper(trim($couponCode)));
                 if (!$coupon) {
-                    throw new OrderException(__('messages.coupon_invalid_code', ['code' => $couponCode]));
+                    throw new OrderException("Coupon code '{$couponCode}' is invalid.");
                 }
 
                 $now = new \DateTime();
@@ -120,17 +120,17 @@ class OrderService
                 $end = (clone $coupon->getEndDate())->setTime(23, 59, 59);
 
                 if ($now < $start) {
-                    throw new OrderException(__('messages.coupon_not_started'));
+                    throw new OrderException('This coupon is not active yet.');
                 }
                 if ($now > $end) {
-                    throw new OrderException(__('messages.coupon_expired'));
+                    throw new OrderException('This coupon has expired.');
                 }
 
                 if ($coupon->getUsageLimit() > 0 && $coupon->getUsedCount() >= $coupon->getUsageLimit()) {
-                    throw new OrderException(__('messages.coupon_usage_exhausted'));
+                    throw new OrderException('This coupon has reached its usage limit.');
                 }
                 if ($totalPrice < $coupon->getMinSpend()) {
-                    throw new OrderException(__('messages.minimum_cart', ['amount' => number_format($coupon->getMinSpend())]));
+                    throw new OrderException('Cart total must be at least ' . number_format($coupon->getMinSpend()) . ' USD.');
                 }
 
                 $discountAmount = $coupon->calculateDiscount($totalPrice);

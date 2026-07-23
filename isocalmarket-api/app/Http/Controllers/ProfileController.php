@@ -19,9 +19,6 @@ class ProfileController extends Controller
         $this->authService = $authService;
     }
 
-    /**
-     * Cập nhật thông tin cơ bản (cho phép Họ tên và số điện thoại, KHÔNG cho phép đổi username/email)
-     */
     public function update(Request $request)
     {
         $request->validate([
@@ -44,9 +41,6 @@ class ProfileController extends Controller
         ]);
     }
 
-    /**
-     * Thay đổi mật khẩu (3 trường)
-     */
     public function changePassword(Request $request)
     {
         $request->validate([
@@ -67,7 +61,6 @@ class ProfileController extends Controller
         $userModel->token_version = ((int) $userModel->token_version) + 1;
         $userModel->save();
 
-        // Tạo access_token và refresh_token mới cho phiên hiện tại
         $user = UserMapper::toDomain($userModel);
         $accessToken = $this->authService->generateAccessToken($user);
         $refreshToken = $this->authService->generateRefreshToken($user);
@@ -105,9 +98,6 @@ class ProfileController extends Controller
         ])->withCookie($accessTokenCookie)->withCookie($refreshTokenCookie);
     }
 
-    /**
-     * Yêu cầu kích hoạt 2FA (Sinh secret key)
-     */
     public function enable2Fa(Request $request)
     {
         $userModel = Auth::user();
@@ -131,9 +121,6 @@ class ProfileController extends Controller
         ]);
     }
 
-    /**
-     * Xác nhận kích hoạt 2FA bằng mã OTP
-     */
     public function confirm2Fa(Request $request)
     {
         $request->validate([
@@ -194,10 +181,6 @@ class ProfileController extends Controller
         ]);
     }
 
-    /**
-     * POST /v1/profile/api-key
-     * Sinh/Làm mới API Key cho người dùng hiện tại
-     */
     public function generateApiKey(Request $request)
     {
         $userModel = Auth::user();

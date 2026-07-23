@@ -25,7 +25,6 @@ class RecalculateProfitCommand extends Command
             $orderItems = OrderItemModel::all();
 
             foreach ($orderItems as $item) {
-                // Find associated inventory items sold for this order item
                 $soldItems = InventoryItemModel::where('order_id', $item->order_id)
                     ->where('product_id', $item->product_id)
                     ->get();
@@ -64,7 +63,6 @@ class RecalculateProfitCommand extends Command
             }
         });
 
-        // Flush all dashboard caches
         Cache::flush();
 
         $this->info("Recalculated cost price snapshots for {$updatedCount} order items.");

@@ -25,7 +25,6 @@ class ResetProfitCommand extends Command
             ]);
         });
 
-        // Flush all dashboard caches
         Cache::flush();
 
         $this->info("Successfully set cost_price = price for {$updatedCount} order items. Profit is now 0.");

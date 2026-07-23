@@ -18,9 +18,6 @@ class SystemSettingController extends Controller
         $this->settingService = $settingService;
     }
 
-    /**
-     * Lấy tất cả cấu hình hệ thống
-     */
     public function index()
     {
         $settings = $this->settingService->getAllSettings();
@@ -33,9 +30,6 @@ class SystemSettingController extends Controller
         return response()->json($settings);
     }
 
-    /**
-     * Cập nhật cấu hình hệ thống
-     */
     public function update(Request $request)
     {
         $request->validate([
@@ -83,9 +77,6 @@ class SystemSettingController extends Controller
         ]);
     }
 
-    /**
-     * Xóa compiled Blade views
-     */
     public function clearViews()
     {
         Artisan::call('view:clear');
@@ -93,9 +84,6 @@ class SystemSettingController extends Controller
         return response()->json(['success' => true, 'message' => 'Compiled views cleared successfully.']);
     }
 
-    /**
-     * Xóa config cache
-     */
     public function clearConfig()
     {
         Artisan::call('config:clear');
@@ -103,9 +91,6 @@ class SystemSettingController extends Controller
         return response()->json(['success' => true, 'message' => 'Config cache cleared successfully.']);
     }
 
-    /**
-     * Xóa route cache
-     */
     public function clearRoutes()
     {
         Artisan::call('route:clear');
@@ -113,9 +98,6 @@ class SystemSettingController extends Controller
         return response()->json(['success' => true, 'message' => 'Route cache cleared successfully.']);
     }
 
-    /**
-     * Tối ưu hóa hiệu năng: cache config, routes, views
-     */
     public function optimize()
     {
         Artisan::call('optimize');
@@ -123,9 +105,6 @@ class SystemSettingController extends Controller
         return response()->json(['success' => true, 'message' => 'System optimization completed successfully.']);
     }
 
-    /**
-     * Xóa toàn bộ optimization cache
-     */
     public function clearOptimize()
     {
         Artisan::call('optimize:clear');
@@ -133,9 +112,6 @@ class SystemSettingController extends Controller
         return response()->json(['success' => true, 'message' => 'Optimization cache cleared successfully.']);
     }
 
-    /**
-     * Xóa toàn bộ và tối ưu hóa lại cache hệ thống
-     */
     public function clearAllCaches()
     {
         Artisan::call('optimize:clear');
@@ -143,22 +119,19 @@ class SystemSettingController extends Controller
         Artisan::call('optimize');
         Artisan::call('cache:clear');
 
-        // Xóa cứng thư mục cache data để tránh lỗi lock file hoặc cấu hình sai
+        // Remove stale cache files that Laravel's cache command may leave behind.
         $cacheDataPath = storage_path('framework/cache/data');
         try {
             if (File::isDirectory($cacheDataPath)) {
                 $this->recursiveCleanDirectory($cacheDataPath);
             }
         } catch (\Throwable $e) {
-            Log::error(__('messages.cache_cleanup_log_error', ['error' => $e->getMessage()]));
+            Log::error('Failed to force-clear the cache data directory: ' . $e->getMessage());
         }
 
-        return response()->json(['success' => true, 'message' => __('messages.cache_cleanup_success')]);
+        return response()->json(['success' => true, 'message' => 'All system caches were cleared and optimized successfully.']);
     }
 
-    /**
-     * Đồng bộ và tính toán lại tiền lãi & snapshot giá gốc toàn bộ đơn hàng
-     */
     public function recalculateProfit()
     {
         Artisan::call('profit:recalculate');
@@ -166,9 +139,6 @@ class SystemSettingController extends Controller
         return response()->json(['success' => true, 'message' => 'Profit snapshots and dashboard stats recalculated successfully.']);
     }
 
-    /**
-     * Thiết lập lại toàn bộ lợi nhuận đơn hàng quá khứ về 0
-     */
     public function resetProfit()
     {
         Artisan::call('profit:reset');
@@ -176,9 +146,6 @@ class SystemSettingController extends Controller
         return response()->json(['success' => true, 'message' => 'Profit reset to 0 successfully.']);
     }
 
-    /**
-     * Dọn dẹp đệ quy toàn bộ thư mục và tệp tin
-     */
     private function recursiveCleanDirectory($dirPath)
     {
         if (! is_dir($dirPath)) {
@@ -207,9 +174,6 @@ class SystemSettingController extends Controller
         }
     }
 
-    /**
-     * Dọn dẹp các Token hết hạn/cũ thủ công
-     */
     public function cleanTokens(Request $request)
     {
         $deletedCount = UserModel::where('refresh_token_expired_at', '<', now())->update([
@@ -223,9 +187,6 @@ class SystemSettingController extends Controller
         ]);
     }
 
-    /**
-     * Xóa toàn bộ tokens đăng nhập của mọi user (Force Logout All)
-     */
     public function cleanAllTokens()
     {
         Artisan::call('auth:force-logout-all');

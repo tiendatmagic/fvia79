@@ -161,7 +161,7 @@ class DepositService
             } while ($exists);
 
             $deposit = new Deposit(
-                id: null, // Sẽ tự sinh UUIDv7 ở Model
+                id: null,
                 userId: $userId,
                 code: $nextCode,
                 amountUsdt: $baseAmount,

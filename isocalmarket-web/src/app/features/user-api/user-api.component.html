@@ -144,7 +144,7 @@
                 class="overflow-x-auto p-3.5 pr-12 text-xs text-slate-700 dark:text-slate-300 leading-relaxed"
               >
                 <pre class="whitespace-pre">
-curl -X GET "{{ siteUrl() }}/api/v1/b2b/products?api_key={{ apiKey() || 'API_KEY_CUA_BAN' }}"</pre>
+curl -X GET "{{ siteUrl() }}/api/v1/b2b/products?api_key={{ apiKey() || 'YOUR_API_KEY' }}"</pre>
               </div>
               <button
                 (click)="copyGetProductsCurl()"
@@ -169,7 +169,7 @@ curl -X GET "{{ siteUrl() }}/api/v1/b2b/products?api_key={{ apiKey() || 'API_KEY
               >
                 <span class="text-[var(--color-primary)] font-semibold"
                   >{{ siteUrl() }}/api/v1/b2b/products?api_key={{
-                    apiKey() || 'API_KEY_CUA_BAN'
+                    apiKey() || 'YOUR_API_KEY'
                   }}</span
                 >
               </div>
@@ -375,7 +375,7 @@ curl -X GET "{{ siteUrl() }}/api/v1/b2b/products?api_key={{ apiKey() || 'API_KEY
               >
                 <pre class="whitespace-pre">
 curl -X GET "{{ siteUrl() }}/api/v1/b2b/products/PRODUCT_ID?api_key={{
-                    apiKey() || 'API_KEY_CUA_BAN'
+                    apiKey() || 'YOUR_API_KEY'
                   }}"</pre>
               </div>
               <button
@@ -401,7 +401,7 @@ curl -X GET "{{ siteUrl() }}/api/v1/b2b/products/PRODUCT_ID?api_key={{
               >
                 <span class="text-[var(--color-primary)] font-semibold"
                   >{{ siteUrl() }}/api/v1/b2b/products/PRODUCT_ID?api_key={{
-                    apiKey() || 'API_KEY_CUA_BAN'
+                    apiKey() || 'YOUR_API_KEY'
                   }}</span
                 >
               </div>
@@ -504,7 +504,7 @@ curl -X GET "{{ siteUrl() }}/api/v1/b2b/products/PRODUCT_ID?api_key={{
                   >
                     <pre class="whitespace-pre">
 curl -X POST "{{ siteUrl() }}/api/v1/b2b/buy" -H "Content-Type: application/json" -H "X-API-KEY: {{
-                        apiKey() || 'API_KEY_CUA_BAN'
+                        apiKey() || 'YOUR_API_KEY'
                       }}" -d '{{ '{' }}"product_id": "PRODUCT_ID", "quantity": 1, "coupon_code": "DISCOUNT10"{{ '}' }}'</pre>
                   </div>
                   <button
@@ -526,7 +526,7 @@ curl -X POST "{{ siteUrl() }}/api/v1/b2b/buy" -H "Content-Type: application/json
                   >
                     <pre class="whitespace-pre">
 curl -X POST "{{ siteUrl() }}/api/v1/b2b/buy" -H "Content-Type: application/json" -H "X-API-KEY: {{
-                        apiKey() || 'API_KEY_CUA_BAN'
+                        apiKey() || 'YOUR_API_KEY'
                       }}" -d "{{ '{' }}\"product_id\": \"PRODUCT_ID\", \"quantity\": 1, \"coupon_code\": \"DISCOUNT10\"{{ '}' }}"</pre>
                   </div>
                   <button
@@ -707,7 +707,7 @@ curl -X POST "{{ siteUrl() }}/api/v1/b2b/buy" -H "Content-Type: application/json
               >
                 <pre class="whitespace-pre">
 curl -X GET "{{ siteUrl() }}/api/v1/b2b/me" -H "X-API-KEY: {{
-                    apiKey() || 'API_KEY_CUA_BAN'
+                    apiKey() || 'YOUR_API_KEY'
                   }}"</pre>
               </div>
               <button
@@ -732,7 +732,7 @@ curl -X GET "{{ siteUrl() }}/api/v1/b2b/me" -H "X-API-KEY: {{
                 class="overflow-x-auto p-3.5 pr-12 text-xs text-slate-700 dark:text-slate-300 leading-relaxed"
               >
                 <span class="text-[var(--color-primary)] font-semibold"
-                  >{{ siteUrl() }}/api/v1/b2b/me?api_key={{ apiKey() || 'API_KEY_CUA_BAN' }}</span
+                  >{{ siteUrl() }}/api/v1/b2b/me?api_key={{ apiKey() || 'YOUR_API_KEY' }}</span
                 >
               </div>
               <button
@@ -813,7 +813,7 @@ curl -X GET "{{ siteUrl() }}/api/v1/b2b/me" -H "X-API-KEY: {{
               >
                 <pre class="whitespace-pre">
 curl -X GET "{{ siteUrl() }}/api/v1/b2b/orders/ORDER_CODE" -H "X-API-KEY: {{
-                    apiKey() || 'API_KEY_CUA_BAN'
+                    apiKey() || 'YOUR_API_KEY'
                   }}"</pre>
               </div>
               <button
@@ -839,7 +839,7 @@ curl -X GET "{{ siteUrl() }}/api/v1/b2b/orders/ORDER_CODE" -H "X-API-KEY: {{
               >
                 <span class="text-[var(--color-primary)] font-semibold"
                   >{{ siteUrl() }}/api/v1/b2b/orders/ORDER_CODE?api_key={{
-                    apiKey() || 'API_KEY_CUA_BAN'
+                    apiKey() || 'YOUR_API_KEY'
                   }}</span
                 >
               </div>

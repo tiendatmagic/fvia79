@@ -8,11 +8,12 @@ import { ThemeSwitcherComponent } from '@shared/components/theme-switcher/theme-
 import { CustomInputComponent } from '@shared/components/custom-input/custom-input.component';
 import { LanguageService } from '@core/services/language.service';
 import { TranslatePipe } from '@shared/pipes/translate.pipe';
+import { IconComponent } from '@shared/components/icon/icon.component';
 
 @Component({
   selector: 'app-login',
   standalone: true,
-  imports: [CommonModule, FormsModule, RouterModule, ButtonComponent, ThemeSwitcherComponent, CustomInputComponent, TranslatePipe],
+  imports: [CommonModule, FormsModule, RouterModule, ButtonComponent, ThemeSwitcherComponent, CustomInputComponent, TranslatePipe, IconComponent],
   templateUrl: './login.component.html',
   styles: [`
     :host {

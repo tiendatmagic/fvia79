@@ -163,7 +163,7 @@ class InventoryController extends Controller
                 ]
             ]);
         } catch (\Exception $e) {
-            if ($e->getMessage() === __('messages.inventory_conflict')) {
+            if ($e->getMessage() === 'This inventory batch was updated by another transaction. Close the modal and reload the page.') {
                 return response()->json(['message' => $e->getMessage()], 400);
             }
 

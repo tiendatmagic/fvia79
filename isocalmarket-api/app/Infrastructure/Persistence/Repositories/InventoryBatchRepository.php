@@ -53,7 +53,6 @@ class InventoryBatchRepository implements InventoryBatchRepositoryInterface
         $lines = preg_split('/\r\n|\r|\n/', $keysPool);
         $cleanLines = array_values(array_filter(array_map('trim', $lines), fn($k) => !empty($k)));
 
-        // Fetch currently available items for this batch
         $availableItems = \App\Infrastructure\Persistence\Eloquent\InventoryItemModel::where('batch_id', $model->id)
             ->where('status', 'available')
             ->get();

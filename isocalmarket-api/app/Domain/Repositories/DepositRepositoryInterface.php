@@ -12,24 +12,16 @@ interface DepositRepositoryInterface
 
     public function findByCode(string $code): ?Deposit;
 
-    /**
-     * Lấy danh sách lệnh nạp tiền của user có phân trang
-     */
+    /** Return a user's deposits with pagination. */
     public function findByUserIdPaginated(string $userId, int $page = 1, int $limit = 10): array;
 
-    /**
-     * Tìm lệnh nạp đang chờ thanh toán (pending_payment) khớp với số lẻ thực nhận
-     */
+    /** Find a pending deposit by its unique fractional amount. */
     public function findPendingByAmountToPay(float $amountToPay): ?Deposit;
 
-    /**
-     * Kiểm tra xem TxHash này đã được sử dụng đối soát chưa
-     */
+    /** Determine whether a transaction hash has already been reconciled. */
     public function isTxHashUsed(string $txHash): bool;
 
-    /**
-     * Lấy danh sách toàn bộ lệnh nạp tiền có phân trang, tìm kiếm và lọc dành cho admin
-     */
+    /** Return all deposits with admin filters and pagination. */
     public function findAllPaginated(
         int $page = 1,
         int $limit = 10,

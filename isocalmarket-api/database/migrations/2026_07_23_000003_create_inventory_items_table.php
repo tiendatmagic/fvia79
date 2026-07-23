@@ -58,7 +58,6 @@ return new class extends Migration
                 $count++;
             }
 
-            // Sync batch counts if needed
             DB::table('inventory_batches')->where('id', $batch->id)->update([
                 'initial_count' => DB::table('inventory_items')->where('batch_id', $batch->id)->count(),
                 'sold_count' => DB::table('inventory_items')->where('batch_id', $batch->id)->where('status', 'sold')->count(),

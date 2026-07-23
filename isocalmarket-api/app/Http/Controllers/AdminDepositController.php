@@ -16,10 +16,6 @@ class AdminDepositController extends Controller
         $this->depositService = $depositService;
     }
 
-    /**
-     * GET /api/v1/admin/deposits
-     * Lấy danh sách toàn bộ các hóa đơn nạp tiền trong hệ thống (phân trang, lọc, tìm kiếm)
-     */
     public function index(Request $request): JsonResponse
     {
         $request->validate([
@@ -67,10 +63,6 @@ class AdminDepositController extends Controller
         }
     }
 
-    /**
-     * POST /api/v1/admin/deposits/{id}/approve
-     * Duyệt thủ công một lệnh nạp tiền, tự động cập nhật trạng thái và cộng tiền cho người dùng
-     */
     public function approve(Request $request, string $id): JsonResponse
     {
         $request->validate([
@@ -102,10 +94,6 @@ class AdminDepositController extends Controller
         }
     }
 
-    /**
-     * POST /api/v1/admin/deposits/{id}/reject
-     * Từ chối/hủy một lệnh nạp tiền thủ công
-     */
     public function reject(Request $request, string $id): JsonResponse
     {
         try {
@@ -130,10 +118,6 @@ class AdminDepositController extends Controller
         }
     }
 
-    /**
-     * POST /api/v1/admin/deposits/{id}/revoke
-     * Thu hồi thủ công số tiền nạp từ một đơn nạp tiền đã duyệt (completed)
-     */
     public function revoke(Request $request, string $id): JsonResponse
     {
         $request->validate([
@@ -163,10 +147,6 @@ class AdminDepositController extends Controller
         }
     }
 
-    /**
-     * POST /api/v1/admin/deposits/bulk-revoke
-     * Thu hồi thủ công số tiền nạp hàng loạt cho nhiều đơn nạp tiền đã chọn
-     */
     public function bulkRevoke(Request $request): JsonResponse
     {
         $request->validate([
@@ -195,9 +175,6 @@ class AdminDepositController extends Controller
         }
     }
 
-    /**
-     * Format domain model sang JSON thống nhất
-     */
     private function formatDeposit($deposit): array
     {
         return [

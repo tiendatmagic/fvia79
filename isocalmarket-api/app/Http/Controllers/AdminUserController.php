@@ -19,10 +19,6 @@ class AdminUserController extends Controller
         $this->userRepository = $userRepository;
     }
 
-    /**
-     * GET /api/v1/admin/users
-     * Lấy danh sách thành viên phân trang & tìm kiếm
-     */
     public function index(Request $request)
     {
         try {
@@ -68,10 +64,6 @@ class AdminUserController extends Controller
         }
     }
 
-    /**
-     * POST /api/v1/admin/users
-     * Tạo thành viên mới
-     */
     public function store(Request $request)
     {
         $request->validate([
@@ -129,10 +121,6 @@ class AdminUserController extends Controller
         }
     }
 
-    /**
-     * PUT /api/v1/admin/users/{id}
-     * Cập nhật thành viên
-     */
     public function update(Request $request, $id)
     {
         $request->validate([
@@ -216,10 +204,6 @@ class AdminUserController extends Controller
         }
     }
 
-    /**
-     * POST /api/v1/admin/users/{id}/adjust-balance
-     * Điều chỉnh số dư thành viên (Cộng / Trừ) có ghi nhận lý do
-     */
     public function adjustBalance(Request $request, $id)
     {
         $request->validate([
@@ -272,10 +256,6 @@ class AdminUserController extends Controller
         }
     }
 
-    /**
-     * DELETE /api/v1/admin/users/{id}
-     * Xóa thành viên
-     */
     public function destroy($id)
     {
         try {
@@ -295,10 +275,6 @@ class AdminUserController extends Controller
         }
     }
 
-    /**
-     * POST /api/v1/admin/users/{id}/reset-2fa
-     * Admin tắt 2FA cho thành viên (khi user mất thiết bị xác thực)
-     */
     public function reset2fa($id)
     {
         try {
@@ -333,10 +309,6 @@ class AdminUserController extends Controller
         }
     }
 
-    /**
-     * POST /api/v1/admin/users/{id}/enable-2fa
-     * Admin bật 2FA giùm cho thành viên (sinh secret và kích hoạt luôn)
-     */
     public function enable2fa($id)
     {
         try {
@@ -379,10 +351,6 @@ class AdminUserController extends Controller
         }
     }
 
-    /**
-     * POST /api/v1/admin/users/bulk-status
-     * Cập nhật trạng thái (Khóa / Mở khóa) hàng loạt cho danh sách thành viên được chọn
-     */
     public function bulkStatus(Request $request)
     {
         $request->validate([
@@ -427,10 +395,6 @@ class AdminUserController extends Controller
         }
     }
 
-    /**
-     * POST /api/v1/admin/users/bulk-delete
-     * Xóa hàng loạt thành viên được chọn (loại trừ tài khoản Admin hiện tại)
-     */
     public function bulkDestroy(Request $request)
     {
         $request->validate([

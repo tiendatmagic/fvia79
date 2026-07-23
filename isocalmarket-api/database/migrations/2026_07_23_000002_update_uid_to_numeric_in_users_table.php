@@ -13,7 +13,6 @@ return new class extends Migration
             $table->string('uid', 32)->nullable()->change();
         });
 
-        // Update all existing users with new numeric UIDs
         $users = UserModel::all();
         foreach ($users as $user) {
             $user->uid = UserModel::generateUniqueUid();

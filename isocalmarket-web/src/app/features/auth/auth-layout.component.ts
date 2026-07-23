@@ -1,3 +1,4 @@
+
 import { Component, inject, signal, HostListener } from '@angular/core';
 import { CommonModule, Location } from '@angular/common';
 import { FormsModule } from '@angular/forms';
@@ -10,11 +11,12 @@ import { ThemeSwitcherComponent } from '@shared/components/theme-switcher/theme-
 import { CustomInputComponent } from '@shared/components/custom-input/custom-input.component';
 import { LanguageService, SupportedLanguage } from '@core/services/language.service';
 import { TranslatePipe } from '@shared/pipes/translate.pipe';
+import { IconComponent } from '@shared/components/icon/icon.component';
 
 @Component({
   selector: 'app-auth-layout',
   standalone: true,
-  imports: [CommonModule, FormsModule, RouterModule, ButtonComponent, LogoComponent, ThemeSwitcherComponent, CustomInputComponent, TranslatePipe],
+  imports: [CommonModule, FormsModule, RouterModule, ButtonComponent, LogoComponent, ThemeSwitcherComponent, CustomInputComponent, TranslatePipe, IconComponent],
   templateUrl: './auth-layout.component.html',
   styles: [`
     :host {
@@ -25,10 +27,9 @@ import { TranslatePipe } from '@shared/pipes/translate.pipe';
 export class AuthLayoutComponent {
   public readonly state = inject(StateService);
   public readonly lang = inject(LanguageService);
-  private readonly router = inject(Router);
+  public readonly router = inject(Router);
   private readonly route = inject(ActivatedRoute);
   private readonly location = inject(Location);
-
   public showLangDropdown = signal(false);
 
   public toggleLangDropdown(event: Event) {
@@ -46,7 +47,6 @@ export class AuthLayoutComponent {
     this.showLangDropdown.set(false);
   }
 
-  // Tab state - driven by URL, never triggers left panel re-render
   public readonly isLogin = signal(true);
   public loginEmail = '';
   public loginPassword = '';
@@ -63,11 +63,9 @@ export class AuthLayoutComponent {
   public showRegConfirmPassword = signal(false);
 
   constructor() {
-    // Detect initial tab from URL
     this.isLogin.set(!this.router.url.includes('register'));
     this.returnUrl = this.route.snapshot.queryParams['returnUrl'] || '/';
 
-    // Sync tab when browser back/forward is used
     this.router.events
       .pipe(filter(e => e instanceof NavigationEnd))
       .subscribe(e => {
@@ -77,7 +75,7 @@ export class AuthLayoutComponent {
 
   public switchTab(tab: 'login' | 'register') {
     const url = tab === 'login' ? '/login' : '/register';
-    // Update URL without triggering route change = zero component swap = zero flicker
+    // Keep one mounted layout while reflecting the active tab in the URL.
     this.location.replaceState(url);
     this.isLogin.set(tab === 'login');
     this.state.authStore.loginError.set('');

@@ -57,10 +57,6 @@ class B2bController extends Controller
         }
     }
 
-    /**
-     * GET /api/v1/b2b/products/{id}
-     * Xem thông tin chi tiết một sản phẩm
-     */
     public function show($id)
     {
         try {
@@ -83,10 +79,6 @@ class B2bController extends Controller
         }
     }
 
-    /**
-     * POST /api/v1/b2b/buy
-     * Mua tài khoản sản phẩm
-     */
     public function buy(Request $request)
     {
         try {
@@ -155,11 +147,6 @@ class B2bController extends Controller
         }
     }
 
-    /**
-     * GET /api/v1/b2b/me
-     * Lấy thông tin tài khoản B2B hiện tại (bao gồm số dư)
-     * Đảm bảo KHÔNG lộ password hay api_key
-     */
     public function me(Request $request)
     {
         try {
@@ -183,10 +170,6 @@ class B2bController extends Controller
         }
     }
 
-    /**
-     * GET /api/v1/b2b/orders/{order_code}
-     * Tra cứu chi tiết đơn hàng theo order_code hoặc UUID
-     */
     public function showOrder(Request $request, $orderCode)
     {
         try {

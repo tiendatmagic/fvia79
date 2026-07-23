@@ -223,8 +223,8 @@ class ProductRepository implements ProductRepositoryInterface
             $totalOther = (int) ($countsByCategory[''] ?? $countsByCategory[null] ?? count($otherModels));
             $grouped[] = [
                 'id' => 'other',
-                'name' => __('messages.other_products'),
-                'description' => __('messages.other_products_description'),
+                'name' => 'Other Products',
+                'description' => 'Products that have not been assigned to a specific category.',
                 'products' => $productsOther,
                 'total' => $totalOther,
             ];

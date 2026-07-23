@@ -54,11 +54,7 @@
 
         @if (state.authStore.registerError()) {
       <div class="flex items-start gap-3 p-3.5 rounded-xl bg-red-50 dark:bg-red-950/40 border border-red-200 dark:border-red-900/60 mb-6">
-        <svg class="w-4 h-4 text-red-500 shrink-0 mt-0.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-          <circle cx="12" cy="12" r="10"/>
-          <line x1="12" y1="8" x2="12" y2="12"/>
-          <line x1="12" y1="16" x2="12.01" y2="16"/>
-        </svg>
+        <app-icon name="warning" class="w-4 h-4 text-red-500 shrink-0 mt-0.5" />
         <p class="text-xs font-bold text-red-600 dark:text-red-400 leading-relaxed">
           {{ state.authStore.registerError() }}
         </p>
@@ -110,15 +106,9 @@
             class="absolute right-3 text-slate-400 hover:text-slate-600 dark:text-slate-500 dark:hover:text-slate-400 focus:outline-none cursor-pointer bg-transparent border-none p-0 z-10 flex items-center justify-center"
           >
             @if (showPassword()) {
-              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                <path d="M17.94 17.94A10.07 10.07 0 0 1 12 20c-7 0-11-8-11-8a18.45 18.45 0 0 1 5.06-5.94M9.9 4.24A9.12 9.12 0 0 1 12 4c7 0 11 8 11 8a18.5 18.5 0 0 1-2.16 3.19m-6.72-1.07a3 3 0 1 1-4.24-4.24"/>
-                <line x1="1" y1="1" x2="23" y2="23"/>
-              </svg>
+              <app-icon name="eye-slash" class="w-4 h-4" />
             } @else {
-              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/>
-                <circle cx="12" cy="12" r="3"/>
-              </svg>
+              <app-icon name="eye" class="w-4 h-4" />
             }
           </button>
         </div>
@@ -142,15 +132,9 @@
             class="absolute right-3 text-slate-400 hover:text-slate-600 dark:text-slate-500 dark:hover:text-slate-400 focus:outline-none cursor-pointer bg-transparent border-none p-0 z-10 flex items-center justify-center"
           >
             @if (showConfirmPassword()) {
-              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                <path d="M17.94 17.94A10.07 10.07 0 0 1 12 20c-7 0-11-8-11-8a18.45 18.45 0 0 1 5.06-5.94M9.9 4.24A9.12 9.12 0 0 1 12 4c7 0 11 8 11 8a18.5 18.5 0 0 1-2.16 3.19m-6.72-1.07a3 3 0 1 1-4.24-4.24"/>
-                <line x1="1" y1="1" x2="23" y2="23"/>
-              </svg>
+              <app-icon name="eye-slash" class="w-4 h-4" />
             } @else {
-              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/>
-                <circle cx="12" cy="12" r="3"/>
-              </svg>
+              <app-icon name="eye" class="w-4 h-4" />
             }
           </button>
         </div>
@@ -180,25 +164,17 @@
     <div class="mt-8">
     <div class="flex items-center justify-between px-4 py-3 bg-slate-100 dark:bg-slate-900 border border-slate-200/40 dark:border-slate-800/40 rounded-xl transition-colors duration-300">
       <div class="flex items-center gap-1.5 text-[10px] font-black uppercase tracking-wider text-slate-400 dark:text-slate-500">
-        <svg class="w-3.5 h-3.5 text-primary shrink-0" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-          <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/>
-        </svg>
+        <app-icon name="shield" class="w-3.5 h-3.5 text-primary shrink-0" />
         <span>{{ 'auth.ssl_encryption' | translate }}</span>
       </div>
       <div class="w-[1px] h-3 bg-slate-200 dark:bg-slate-800"></div>
       <div class="flex items-center gap-1.5 text-[10px] font-black uppercase tracking-wider text-slate-400 dark:text-slate-500">
-        <svg class="w-3.5 h-3.5 text-primary shrink-0" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-          <circle cx="12" cy="12" r="10"/>
-          <polyline points="12 6 12 12 16 14"/>
-        </svg>
+        <app-icon name="clock" class="w-3.5 h-3.5 text-primary shrink-0" />
         <span>{{ 'auth.operation_247' | translate }}</span>
       </div>
       <div class="w-[1px] h-3 bg-slate-200 dark:bg-slate-800"></div>
       <div class="flex items-center gap-1.5 text-[10px] font-black uppercase tracking-wider text-slate-400 dark:text-slate-500">
-        <svg class="w-3.5 h-3.5 text-primary shrink-0" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-          <path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/>
-          <polyline points="22 4 12 14.01 9 11.01"/>
-        </svg>
+        <app-icon name="check-circle" class="w-3.5 h-3.5 text-primary shrink-0" />
         <span>{{ 'auth.security_2fa' | translate }}</span>
       </div>
     </div>

@@ -42,7 +42,6 @@ class B2bAuthMiddleware
             return response()->json(['message' => 'Your account has been banned.'], 403);
         }
 
-        // Login the user into the Laravel context
         Auth::login($userModel);
 
         return $next($request);

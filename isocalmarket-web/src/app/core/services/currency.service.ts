@@ -16,7 +16,7 @@ export class CurrencyService {
     if (saved === 'VND' || saved === 'USD') {
       return saved;
     }
-    return 'USD'; // Mặc định là USD ($)
+    return 'USD';
   }
 
   public setCurrency(currency: SupportedCurrency): void {
@@ -47,7 +47,6 @@ export class CurrencyService {
         maximumFractionDigits: 2
       }).format(numericAmount);
     } else {
-      // VND
       const vndAmount = numericAmount * this.usdToVndRate();
       return new Intl.NumberFormat('vi-VN', {
         style: 'currency',

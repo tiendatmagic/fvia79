@@ -43,9 +43,9 @@
       *ngFor="let i of [1, 2, 3, 4, 5, 6]"
       class="flex flex-col justify-between min-h-[136px] h-auto p-4 md:p-5 overflow-hidden"
     >
-      <div class="flex items-center justify-between animate-pulse">
-        <div class="h-2.5 bg-slate-200 dark:bg-slate-800 rounded-md w-24"></div>
-        <div class="w-9 h-9 rounded-xl bg-slate-200 dark:bg-slate-800"></div>
+      <div class="flex items-center justify-between">
+        <div class="h-2.5 bg-slate-200 dark:bg-slate-800 rounded-md w-24 animate-pulse"></div>
+        <div class="w-9 h-9 shrink-0 aspect-square rounded-full bg-slate-200 dark:bg-slate-800 animate-pulse"></div>
       </div>
       <div class="space-y-2 mt-2 animate-pulse">
         <div class="h-6 bg-slate-200 dark:bg-slate-800 rounded-lg w-2/3"></div>
@@ -58,7 +58,6 @@
     *ngIf="!loading() && stats()"
     class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 2xl:grid-cols-6 gap-4"
   >
-    <!-- Doanh Thu -->
     <app-card
       class="flex flex-col justify-between min-h-[136px] h-auto p-4 md:p-5 overflow-hidden border-l-4 border-l-blue-500"
     >
@@ -67,7 +66,7 @@
           {{ 'dash.total_revenue' | translate }}
         </span>
         <div
-          class="w-9 h-9 rounded-xl bg-blue-50 dark:bg-blue-950/30 flex items-center justify-center text-blue-500"
+          class="w-9 h-9 shrink-0 aspect-square rounded-full bg-blue-50 dark:bg-blue-950/30 flex items-center justify-center text-blue-500"
         >
           <app-icon name="cash" class="w-4.5 h-4.5" />
         </div>
@@ -84,9 +83,8 @@
       </div>
     </app-card>
 
-    <!-- Tiền Lãi (Lợi Nhuận Gộp) -->
     <app-card
-      class="flex flex-col justify-between min-h-[136px] h-auto p-4 md:p-5 overflow-hidden border-l-4 border-l-emerald-500 bg-gradient-to-br from-emerald-500/5 to-transparent"
+      class="flex flex-col justify-between min-h-[136px] h-auto p-4 md:p-5 overflow-hidden border-l-4 border-l-emerald-500"
     >
       <div class="flex items-center justify-between">
         <span
@@ -95,7 +93,7 @@
           {{ 'dash.total_profit' | translate }}
         </span>
         <div
-          class="w-9 h-9 rounded-xl bg-emerald-50 dark:bg-emerald-950/40 flex items-center justify-center text-emerald-500 shadow-xs shadow-emerald-500/20"
+          class="w-9 h-9 shrink-0 aspect-square rounded-full bg-emerald-50 dark:bg-emerald-950/40 flex items-center justify-center text-emerald-500 shadow-xs shadow-emerald-500/20"
         >
           <app-icon name="check-circle" class="w-4.5 h-4.5" />
         </div>
@@ -112,7 +110,6 @@
       </div>
     </app-card>
 
-    <!-- Giá Vốn (COGS) -->
     <app-card
       class="flex flex-col justify-between min-h-[136px] h-auto p-4 md:p-5 overflow-hidden border-l-4 border-l-amber-500"
     >
@@ -121,7 +118,7 @@
           {{ 'dash.total_cogs' | translate }}
         </span>
         <div
-          class="w-9 h-9 rounded-xl bg-amber-50 dark:bg-amber-950/30 flex items-center justify-center text-amber-500"
+          class="w-9 h-9 shrink-0 aspect-square rounded-full bg-amber-50 dark:bg-amber-950/30 flex items-center justify-center text-amber-500"
         >
           <app-icon name="package" class="w-4.5 h-4.5" />
         </div>
@@ -138,7 +135,6 @@
       </div>
     </app-card>
 
-    <!-- Tổng Đơn Hàng -->
     <app-card
       class="flex flex-col justify-between min-h-[136px] h-auto p-4 md:p-5 overflow-hidden border-l-4 border-l-indigo-500"
     >
@@ -147,7 +143,7 @@
           {{ 'dash.total_orders' | translate }}
         </span>
         <div
-          class="w-9 h-9 rounded-xl bg-indigo-50 dark:bg-indigo-950/30 flex items-center justify-center text-indigo-500"
+          class="w-9 h-9 shrink-0 aspect-square rounded-full bg-indigo-50 dark:bg-indigo-950/30 flex items-center justify-center text-indigo-500"
         >
           <app-icon name="orders" class="w-4.5 h-4.5" />
         </div>
@@ -171,7 +167,6 @@
       </div>
     </app-card>
 
-    <!-- Tồn Kho Sẵn Sàng -->
     <app-card
       class="flex flex-col justify-between min-h-[136px] h-auto p-4 md:p-5 overflow-hidden border-l-4 border-l-teal-500"
     >
@@ -180,7 +175,7 @@
           {{ 'dash.available_inventory' | translate }}
         </span>
         <div
-          class="w-9 h-9 rounded-xl bg-teal-50 dark:bg-teal-950/30 flex items-center justify-center text-teal-500"
+          class="w-9 h-9 shrink-0 aspect-square rounded-full bg-teal-50 dark:bg-teal-950/30 flex items-center justify-center text-teal-500"
         >
           <app-icon name="inventory" class="w-4.5 h-4.5" />
         </div>
@@ -200,7 +195,6 @@
       </div>
     </app-card>
 
-    <!-- Thành Viên -->
     <app-card
       class="flex flex-col justify-between min-h-[136px] h-auto p-4 md:p-5 overflow-hidden border-l-4 border-l-purple-500"
     >
@@ -209,7 +203,7 @@
           {{ 'dash.total_users' | translate }}
         </span>
         <div
-          class="w-9 h-9 rounded-xl bg-purple-50 dark:bg-purple-950/30 flex items-center justify-center text-purple-500"
+          class="w-9 h-9 shrink-0 aspect-square rounded-full bg-purple-50 dark:bg-purple-950/30 flex items-center justify-center text-purple-500"
         >
           <app-icon name="customers" class="w-4.5 h-4.5" />
         </div>
@@ -234,7 +228,6 @@
     </app-card>
   </div>
 
-  <!-- Báo Cáo Phân Tích Lợi Nhuận & Tài Chính -->
   <app-card *ngIf="!loading() && stats()" class="p-6 space-y-6">
     <div
       class="flex flex-col sm:flex-row sm:items-center justify-between gap-4 border-b border-slate-100 dark:border-slate-800/80 pb-4"
@@ -243,7 +236,11 @@
         <h3
           class="text-base font-black text-slate-800 dark:text-white tracking-tight flex items-center gap-2"
         >
-          <span class="p-1.5 rounded-lg bg-emerald-500/10 text-emerald-500">💰</span>
+          <div
+            class="w-7 h-7 rounded-lg bg-emerald-500/10 text-emerald-500 flex items-center justify-center shrink-0"
+          >
+            <app-icon name="cash" class="w-4 h-4" />
+          </div>
           <span>{{ 'dash.financial_report_title' | translate }}</span>
         </h3>
         <p class="text-xs text-slate-400 font-medium mt-0.5">
@@ -260,7 +257,6 @@
       </div>
     </div>
 
-    <!-- Thanh Tỷ Lệ Doanh Thu - Giá Vốn - Lợi Nhuận -->
     <div class="space-y-2">
       <div
         class="flex items-center justify-between text-xs font-bold text-slate-600 dark:text-slate-400"
@@ -322,7 +318,6 @@
       </div>
     </div>
 
-    <!-- Daily profit timeline -->
     @if ((stats()?.financial_chart || []).length > 0) {
       <div class="border-t border-slate-100 dark:border-slate-800/80 pt-4 space-y-3">
         <h4 class="text-xs font-black uppercase text-slate-400 tracking-wider">

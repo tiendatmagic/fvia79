@@ -100,9 +100,15 @@ export class CustomDateTimeRangeComponent implements ControlValueAccessor, After
   public readonly showEndMinuteDropdown = signal<boolean>(false);
 
   public get weekdays(): string[] {
-    return this.lang.currentLang() === 'vi'
-      ? ['T2', 'T3', 'T4', 'T5', 'T6', 'T7', 'CN']
-      : ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'];
+    return [
+      'date.mon_short',
+      'date.tue_short',
+      'date.wed_short',
+      'date.thu_short',
+      'date.fri_short',
+      'date.sat_short',
+      'date.sun_short'
+    ].map(key => this.lang.translate(key));
   }
   public popoverStyle: { [key: string]: string } = {};
   public get presets() {

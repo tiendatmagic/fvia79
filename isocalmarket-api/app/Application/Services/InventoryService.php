@@ -75,7 +75,7 @@ class InventoryService
         if ($lastUpdatedAt) {
             $dbUpdatedAt = $batch->getUpdatedAt()?->format('Y-m-d H:i:s');
             if ($dbUpdatedAt && $dbUpdatedAt !== $lastUpdatedAt) {
-                throw new \Exception(__('messages.inventory_conflict'));
+                throw new \Exception('This inventory batch was updated by another transaction. Close the modal and reload the page.');
             }
         }
 
@@ -166,7 +166,6 @@ class InventoryService
 
         $saved = $this->inventoryItemRepository->save($item);
 
-        // Sync batch pool text & counts
         $batch = $this->inventoryRepository->findById($item->getBatchId());
         if ($batch) {
             $availableItems = \App\Infrastructure\Persistence\Eloquent\InventoryItemModel::where('batch_id', $batch->getId())
@@ -190,7 +189,7 @@ class InventoryService
                 $batch->getUpdatedAt()
             );
 
-            // Avoid infinite loop sync by saving model directly or repository save
+            // Update directly to avoid recursively synchronizing the batch.
             \App\Infrastructure\Persistence\Eloquent\InventoryBatchModel::where('id', $batch->getId())->update([
                 'keys_pool' => implode("\n", $availableItems),
                 'initial_count' => $initialCount,

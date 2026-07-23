@@ -87,7 +87,7 @@
               <app-icon [name]="showApiKey() ? 'eye-slash' : 'eye'" class="w-4 h-4" />
             </button>
             <button
-              (click)="copyToClipboard(apiKey()!, 'Admin API Key')"
+              (click)="copyToClipboard(apiKey()!, lang.translate('api.admin_key_label'))"
               class="text-slate-400 dark:text-slate-500 hover:text-[var(--color-primary)] dark:hover:text-white active:scale-95 transition-all p-1 cursor-pointer"
               [title]="'orders.copy' | translate"
             >
