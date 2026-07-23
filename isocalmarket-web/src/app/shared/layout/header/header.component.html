@@ -84,7 +84,7 @@
           >
             <button
               (click)="selectLang('en')"
-              class="w-full flex items-center justify-between gap-2.5 px-4 py-2.5 rounded-xl text-xs font-bold cursor-pointer"
+              class="w-full flex items-center justify-between gap-2.5 rounded-xl px-4 py-2.5 text-sm font-bold cursor-pointer"
               [ngClass]="
                 langService.currentLang() === 'en'
                   ? 'bg-[var(--color-primary)]/10 text-[var(--color-primary)]'
@@ -112,7 +112,7 @@
             </button>
             <button
               (click)="selectLang('vi')"
-              class="w-full flex items-center justify-between gap-2.5 px-4 py-2.5 rounded-xl text-xs font-bold cursor-pointer"
+              class="w-full flex items-center justify-between gap-2.5 rounded-xl px-4 py-2.5 text-sm font-bold cursor-pointer"
               [ngClass]="
                 langService.currentLang() === 'vi'
                   ? 'bg-[var(--color-primary)]/10 text-[var(--color-primary)]'
