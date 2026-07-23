@@ -13,6 +13,21 @@
 > Khi cần seed dữ liệu cho một seeder cụ thể, chỉ dùng:
 > - `php artisan db:seed --class=TenSeederClass` — chạy đúng 1 seeder.
 
+- **[ĐỔI TÊN MENU ITEM THÔNG TIN CÁ NHÂN SANG CÀI ĐẶT TÀI KHOẢN (PROFILE MENU ITEM RENAME TO ACCOUNT SETTINGS)]**:
+  - **Mô tả yêu cầu**: Sửa tên menu item "Thông tin cá nhân" (đường dẫn `/profile/information`) thành "Cài đặt tài khoản" áp dụng đồng bộ ở cả Sidebar Menu desktop, Mobile menu drawer và Header dropdown.
+  - **Nội dung thực hiện**:
+    - **Cập nhật từ điển đa ngôn ngữ (`LanguageService.ts`)**: Thay đổi từ `'nav.profile': 'Thông tin cá nhân'` sang `'nav.profile': 'Cài đặt tài khoản'` đối với Tiếng Việt và `'nav.profile': 'Account Settings'` đối với Tiếng Anh.
+    - **Áp dụng đồng bộ**: Toàn bộ các vị trí menu điều hướng bao gồm Sidebar Desktop (`sidebar.component.html`), Mobile Menu Drawer (`app.html`) và Header User Dropdown (`header.component.html`) sử dụng chung translation key `'nav.profile'` nên được cập nhật tự động mượt mà.
+
+- **[TỰ ĐỘNG TẠO MÃ GIẢM GIÁ NGẪU NHIÊN BẰNG NÚT VIÊN XÚC SẮC (DICE ICON RANDOM COUPON GENERATOR)]**:
+  - **Mô tả yêu cầu**: Thêm nút bấm icon viên xúc sắc (dice) tại ô nhập Mã giảm giá trong modal thêm mới mã. Khi nhấp vào, tự động sinh ngẫu nhiên mã giảm giá 8-10 ký tự (gồm số và chữ) trực tiếp trên Frontend nhanh chóng, không tốn tài nguyên server.
+  - **Nội dung thực hiện**:
+    - **IconComponent (`icon.component.html`)**: Bổ sung icon viên xúc sắc 5 chấm (`dice`).
+    - **CustomInputComponent (`custom-input.component.html` & `.ts`)**: Mở rộng hỗ trợ nút icon góc phải `@Input() rightIcon` và `@Output() rightIconClick`.
+    - **CouponFormModalComponent (`coupon-form-modal.component.html` & `.ts`)**: Gắn nút xúc sắc vào ô nhập mã giảm giá, sử dụng `crypto.getRandomValues()` để sinh mã 8-10 ký tự ngẫu nhiên thuần FE và hiển thị Toast thông báo.
+    - **Đa ngôn ngữ (`LanguageService.ts`)**: Bổ sung key dịch `admin.coupon_generate_random` và `toast.coupon_code_generated`.
+  - **Xác nhận**: Đã kiểm thử backend `php artisan test` đạt **61/61 test cases (100% PASSED)** và biên dịch Angular `npm run build` hoàn toàn thành công!
+
 - **[BẮT BUỘC TÍCH CHỌN CHECKBOX ĐỒNG Ý ĐIỀU KHOẢN MỚI CHO PHÉP ĐĂNG NHẬP (REQUIRE TERMS AGREEMENT CHECKBOX BEFORE SIGN IN)]**:
   - **Mô tả yêu cầu**: Bắt buộc người dùng phải tích chọn ô checkbox đồng ý với điều khoản dịch vụ / cam kết không sử dụng tài khoản vào các hoạt động vi phạm pháp luật trước khi thực hiện đăng nhập.
   - **Nội dung thực hiện**:
