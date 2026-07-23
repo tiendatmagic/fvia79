@@ -99,7 +99,12 @@ export const routes: Routes = [
         path: 'users',
         loadComponent: () => import('@features/admin-users/admin-users.component').then(m => m.AdminUsersComponent)
       },
+      {
+        path: 'suppliers',
+        loadComponent: () => import('@features/admin-suppliers/admin-suppliers.component').then(m => m.AdminSuppliersComponent)
+      },
       { path: 'settings', redirectTo: 'settings/general', pathMatch: 'full' },
+      { path: 'settings/suppliers', redirectTo: 'suppliers', pathMatch: 'full' },
       {
         path: 'settings/:tab',
         loadComponent: () => import('@features/admin-settings/admin-settings.component').then(m => m.AdminSettingsComponent)

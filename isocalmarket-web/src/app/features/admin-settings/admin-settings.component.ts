@@ -9,12 +9,10 @@ import { CardComponent } from '@shared/components/card/card.component';
 import { ButtonComponent } from '@shared/components/button/button.component';
 import { SkeletonLoaderComponent } from '@shared/components/skeleton-loader/skeleton-loader.component';
 import { IconComponent } from '@shared/components/icon/icon.component';
-import { CustomCheckboxComponent } from '@shared/components/custom-checkbox/custom-checkbox.component';
 import { ToastService } from '@core/services/toast.service';
 import { ModalService } from '@core/services/modal.service';
 import { LanguageService } from '@core/services/language.service';
 import { TranslatePipe } from '@shared/pipes/translate.pipe';
-import { SupplierSettings, SupplierStore } from './supplier.store';
 
 @Component({
   selector: 'app-admin-settings',
@@ -27,7 +25,6 @@ import { SupplierSettings, SupplierStore } from './supplier.store';
     ButtonComponent,
     SkeletonLoaderComponent,
     IconComponent,
-    CustomCheckboxComponent,
     TranslatePipe
   ],
   templateUrl: './admin-settings.component.html',
@@ -43,7 +40,6 @@ import { SupplierSettings, SupplierStore } from './supplier.store';
 })
 export class AdminSettingsComponent implements OnInit, OnDestroy {
   public readonly store = inject(SystemSettingStore);
-  public readonly supplierStore = inject(SupplierStore);
   private readonly toast = inject(ToastService);
   private readonly modalService = inject(ModalService);
   public readonly lang = inject(LanguageService);
@@ -57,11 +53,8 @@ export class AdminSettingsComponent implements OnInit, OnDestroy {
   public readonly showApiKey = signal<boolean>(false);
   public readonly showBinanceKey = signal<boolean>(false);
   public readonly showBinanceSecret = signal<boolean>(false);
-  public readonly showSupplierApiKey = signal<boolean>(false);
-  public readonly selectedSupplierCode = signal<string | null>(null);
-  public readonly isCreatingSupplier = signal<boolean>(false);
 
-  public readonly activeTab = signal<'general' | 'suppliers' | 'maintenance'>('general');
+  public readonly activeTab = signal<'general' | 'maintenance'>('general');
   public readonly tokenCleanupDays = signal<number>(7);
 
   public form: SystemSettingsPayload = {
@@ -74,31 +67,14 @@ export class AdminSettingsComponent implements OnInit, OnDestroy {
     binance_api_secret: ''
   };
 
-  public supplierForm: Partial<SupplierSettings> = {
-    api_key: '',
-    enabled: true,
-    auto_sync: false,
-    sync_interval_minutes: 30,
-    price_adjustment_type: 'fixed',
-    price_adjustment_value: 0
-  };
-
   ngOnInit(): void {
     this.routeSub = this.route.paramMap.subscribe(params => {
       const tab = params.get('tab');
-      if (tab === 'maintenance' || tab === 'suppliers') {
+      if (tab === 'maintenance') {
         this.activeTab.set(tab);
       } else {
         this.activeTab.set('general');
       }
-    });
-
-    this.supplierStore.fetchSuppliers().subscribe({
-      next: suppliers => {
-        const supplier = suppliers.find(item => item.code === 'ads7979') || suppliers[0];
-        if (supplier) this.selectSupplier(supplier);
-      },
-      error: () => this.toast.showToast(this.lang.translate('supplier.load_failed'), 'error')
     });
 
     this.store.fetchSettings().subscribe({
@@ -141,86 +117,8 @@ export class AdminSettingsComponent implements OnInit, OnDestroy {
     this.showBinanceSecret.set(!this.showBinanceSecret());
   }
 
-  public toggleSupplierApiKeyVisibility(): void {
-    this.showSupplierApiKey.set(!this.showSupplierApiKey());
-  }
-
-  public changeTab(tab: 'general' | 'suppliers' | 'maintenance'): void {
+  public changeTab(tab: 'general' | 'maintenance'): void {
     this.router.navigate(['/admin/settings', tab]);
-  }
-
-  public saveSupplier(): void {
-    const payload = { ...this.supplierForm };
-    if (!payload.api_key?.trim()) delete payload.api_key;
-
-    if (this.isCreatingSupplier() && (!payload.name?.trim() || !payload.base_url?.trim() || !payload.api_key?.trim())) {
-      this.toast.showToast(this.lang.translate('supplier.required_fields'), 'warning');
-      return;
-    }
-
-    const request = this.isCreatingSupplier()
-      ? this.supplierStore.create(payload)
-      : this.supplierStore.update(this.selectedSupplierCode()!, payload);
-
-    request.subscribe({
-      next: supplier => {
-        this.selectedSupplierCode.set(supplier.code);
-        this.isCreatingSupplier.set(false);
-        this.supplierForm = { ...supplier, api_key: '' };
-        this.toast.showToast(this.lang.translate('supplier.saved'), 'success');
-      },
-      error: err => this.toast.showToast(err?.error?.message || this.lang.translate('supplier.save_failed'), 'error')
-    });
-  }
-
-  public syncSupplier(): void {
-    const code = this.selectedSupplierCode();
-    if (!code) return;
-
-    this.supplierStore.sync(code).subscribe({
-      next: response => {
-        this.supplierForm = { ...response.supplier, api_key: '' };
-        this.toast.showToast(this.lang.translate('supplier.synced', response.result), 'success');
-      },
-      error: err => this.toast.showToast(err?.error?.message || this.lang.translate('supplier.sync_failed'), 'error')
-    });
-  }
-
-  public selectSupplier(supplier: SupplierSettings): void {
-    this.selectedSupplierCode.set(supplier.code);
-    this.isCreatingSupplier.set(false);
-    this.showSupplierApiKey.set(false);
-    this.supplierForm = { ...supplier, api_key: '' };
-  }
-
-  public startCreatingSupplier(): void {
-    this.selectedSupplierCode.set(null);
-    this.isCreatingSupplier.set(true);
-    this.showSupplierApiKey.set(false);
-    this.supplierForm = {
-      name: '',
-      base_url: 'https://',
-      api_key: '',
-      enabled: true,
-      auto_sync: false,
-      sync_interval_minutes: 30,
-      price_adjustment_type: 'fixed',
-      price_adjustment_value: 0
-    };
-  }
-
-  public supplierExamplePriceVnd(): number {
-    const basePrice = 20000;
-    const adjustment = Number(this.supplierForm.price_adjustment_value || 0);
-    const result = this.supplierForm.price_adjustment_type === 'percent'
-      ? basePrice * (1 + adjustment / 100)
-      : basePrice + adjustment;
-    return Math.max(0, result);
-  }
-
-  public supplierExampleUsd(): number {
-    const rate = this.supplierStore.exchangeRate();
-    return rate > 0 ? this.supplierExamplePriceVnd() / rate : 0;
   }
 
   public onSubmit(): void {
