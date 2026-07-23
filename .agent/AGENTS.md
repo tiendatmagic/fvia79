@@ -13,6 +13,14 @@
 > Khi cần seed dữ liệu cho một seeder cụ thể, chỉ dùng:
 > - `php artisan db:seed --class=TenSeederClass` — chạy đúng 1 seeder.
 
+- **[SỬA LỖI UI SỐ DƯ TÀI KHOẢN NHÀ CUNG CẤP (SUPPLIER BALANCE UI LAYOUT FIX)]**:
+  - **Mô tả yêu cầu**: Sửa lỗi giao diện hiển thị thẻ "Số dư tài khoản nhà cung cấp" tại trang Quản lý Nhà cung cấp (`/admin/suppliers`), trong đó thẻ bị áp nhầm class `w-8 h-8` dẫn đến toàn bộ chữ bị nén ép xuống dòng theo từng ký tự/từ đơn gây đè chèn văn bản.
+  - **Nội dung thực hiện**:
+    - **Cập nhật Template (`admin-suppliers.component.html`)**:
+      - Gỡ bỏ class nhầm `w-8 h-8` tại thẻ container `<div>` bọc thông tin số dư nhà cung cấp, giúp thẻ co giãn tự nhiên theo kích thước flexbox (`inline-flex items-center gap-3 rounded-xl border border-emerald-200/70 bg-emerald-50 px-4 py-2.5...`).
+      - Bổ sung `shrink-0 inline-flex items-center justify-center` cho nút refresh số dư (`<button>`) để icon `<app-icon name="sync">` luôn căn giữa mượt mà.
+  - **Xác nhận**: Biên dịch Angular `npm run build` thành công **100% SUCCESS, 0 ERRORS**, backend tests `php artisan test` đạt **72/72 test cases (100% PASSED)**!
+
 - **[BỔ SUNG MỤC CHECK LIVE UID FACEBOOK (CHECKUID.LIVE INTEGRATION)]**:
   - **Mô tả yêu cầu**: Bổ sung công cụ kiểm tra trạng thái Facebook UID Live (hoạt động) hay Die (bị khóa/xóa) hàng loạt siêu tốc (tương tự checkuid.live), áp dụng cho toàn bộ người dùng hệ thống (cả User và Admin).
   - **Nội dung thực hiện**:

@@ -28,6 +28,17 @@ class CloneStoreConnector implements SupplierCatalogConnector
         };
     }
 
+    public function fetchBalance(SupplierModel $supplier): float
+    {
+        $this->urlGuard->normalizeAndValidate($supplier->base_url, false);
+
+        return match ($supplier->catalog_driver) {
+            self::V1 => $this->fetchV1Balance($supplier),
+            self::V2 => $this->fetchV2Balance($supplier),
+            default => throw new RuntimeException("Unsupported supplier catalog driver: {$supplier->catalog_driver}"),
+        };
+    }
+
     public function detectDriver(SupplierModel $supplier): string
     {
         $this->urlGuard->normalizeAndValidate($supplier->base_url);
@@ -90,6 +101,35 @@ class CloneStoreConnector implements SupplierCatalogConnector
         ], $categories);
     }
 
+    private function fetchV1Balance(SupplierModel $supplier): float
+    {
+        $response = $this->baseClient($supplier)
+            ->asForm()
+            ->post('/api/v1/balance', ['api_key' => $this->apiKey($supplier)]);
+        $response->throw();
+        $payload = $response->json();
+
+        if (! is_array($payload) || ($payload['status'] ?? null) !== true || ! is_numeric($payload['balance'] ?? null)) {
+            throw new RuntimeException('Supplier returned an invalid V1 balance response.');
+        }
+
+        return (float) $payload['balance'];
+    }
+
+    private function fetchV2Balance(SupplierModel $supplier): float
+    {
+        $response = $this->authenticatedClient($supplier)->post('/api/v2/me');
+        $response->throw();
+        $payload = $response->json();
+
+        $balance = $this->findBalance($payload);
+        if ($balance === null) {
+            throw new RuntimeException('Supplier returned an invalid V2 account response.');
+        }
+
+        return $balance;
+    }
+
     private function validateV1Key(SupplierModel $supplier): void
     {
         $response = $this->baseClient($supplier)
@@ -100,6 +140,28 @@ class CloneStoreConnector implements SupplierCatalogConnector
         if ($response->json('status') !== true) {
             throw new RuntimeException('Supplier rejected the V1 API key.');
         }
+    }
+
+    private function findBalance(mixed $payload): ?float
+    {
+        if (! is_array($payload)) {
+            return null;
+        }
+
+        foreach (['balance', 'wallet_balance'] as $key) {
+            if (isset($payload[$key]) && is_numeric($payload[$key])) {
+                return (float) $payload[$key];
+            }
+        }
+
+        foreach (['data', 'user', 'account'] as $key) {
+            $balance = $this->findBalance($payload[$key] ?? null);
+            if ($balance !== null) {
+                return $balance;
+            }
+        }
+
+        return null;
     }
 
     private function normalizeV2(mixed $payload): array

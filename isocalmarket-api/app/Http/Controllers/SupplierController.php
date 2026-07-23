@@ -138,6 +138,34 @@ class SupplierController extends Controller
         }
     }
 
+    public function balance(string $code)
+    {
+        try {
+            $supplier = SupplierModel::where('code', $code)->firstOrFail();
+
+            return response()->json([
+                'balance' => $this->connector->fetchBalance($supplier),
+                'currency' => 'VND',
+            ]);
+        } catch (ModelNotFoundException) {
+            return response()->json(['message' => 'Supplier not found.'], 404);
+        } catch (ConnectionException|RequestException $exception) {
+            return $this->upstreamError(
+                $exception,
+                "Supplier balance request failed for [{$code}].",
+                'Supplier balance is temporarily unavailable.',
+            );
+        } catch (RuntimeException $exception) {
+            return $this->upstreamError(
+                $exception,
+                "Supplier balance response failed for [{$code}].",
+                'Could not retrieve the supplier balance.',
+            );
+        } catch (\Throwable $exception) {
+            return $this->serverError($exception, "Unexpected supplier balance failure for [{$code}].");
+        }
+    }
+
     private function serialize(SupplierModel $supplier): array
     {
         return [

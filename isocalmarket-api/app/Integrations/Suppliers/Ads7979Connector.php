@@ -16,17 +16,31 @@ class Ads7979Connector implements SupplierCatalogConnector
         $response->throw();
         $catalog = $response->json();
 
-        if (!is_array($catalog)) {
+        if (! is_array($catalog)) {
             throw new RuntimeException('ADS7979 returned an invalid catalog response.');
         }
 
         return $catalog;
     }
 
+    public function fetchBalance(SupplierModel $supplier): float
+    {
+        $response = $this->client($supplier)->post('/api/v2/me');
+        $response->throw();
+        $payload = $response->json();
+        $balance = is_array($payload) ? ($payload['balance'] ?? $payload['data']['balance'] ?? null) : null;
+
+        if (! is_numeric($balance)) {
+            throw new RuntimeException('ADS7979 returned an invalid account response.');
+        }
+
+        return (float) $balance;
+    }
+
     private function client(SupplierModel $supplier): PendingRequest
     {
         $apiKey = $supplier->api_key ?: config('services.ads7979.api_key');
-        if (!$apiKey) {
+        if (! $apiKey) {
             throw new RuntimeException('ADS7979 API key has not been configured.');
         }
 

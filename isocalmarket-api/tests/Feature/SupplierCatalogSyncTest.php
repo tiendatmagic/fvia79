@@ -161,6 +161,51 @@ class SupplierCatalogSyncTest extends TestCase
         $this->assertSame(7, $catalog[0]['children'][0]['quantity']);
     }
 
+    public function test_it_reads_balance_from_compatible_v2_supplier_account(): void
+    {
+        Http::fake([
+            'https://ads7979.com/api/v2/me' => Http::response([
+                'data' => ['balance' => 1250000.75],
+            ]),
+        ]);
+        $supplier = new SupplierModel([
+            'code' => 'ads7979',
+            'name' => 'ADS7979',
+            'base_url' => 'https://ads7979.com',
+            'api_key' => 'v2-test-key',
+            'catalog_driver' => CloneStoreConnector::V2,
+        ]);
+
+        $balance = app(CloneStoreConnector::class)->fetchBalance($supplier);
+
+        $this->assertSame(1250000.75, $balance);
+        Http::assertSent(fn ($request) => $request->url() === 'https://ads7979.com/api/v2/me'
+            && $request->hasHeader('Authorization', 'Bearer v2-test-key'));
+    }
+
+    public function test_it_reads_balance_from_compatible_v1_supplier_account(): void
+    {
+        Http::fake([
+            'https://vlclone.com/api/v1/balance' => Http::response([
+                'status' => true,
+                'balance' => 500000,
+            ]),
+        ]);
+        $supplier = new SupplierModel([
+            'code' => 'vlclone',
+            'name' => 'VLClone',
+            'base_url' => 'https://vlclone.com',
+            'api_key' => 'v1-test-key',
+            'catalog_driver' => CloneStoreConnector::V1,
+        ]);
+
+        $balance = app(CloneStoreConnector::class)->fetchBalance($supplier);
+
+        $this->assertSame(500000.0, $balance);
+        Http::assertSent(fn ($request) => $request->url() === 'https://vlclone.com/api/v1/balance'
+            && $request['api_key'] === 'v1-test-key');
+    }
+
     public function test_supplier_sync_returns_safe_bad_gateway_response_for_upstream_failure(): void
     {
         config()->set('services.ads7979.api_key', 'test-api-key');

@@ -34,6 +34,7 @@ export class AdminSuppliersComponent implements OnInit {
   public readonly showSupplierApiKey = signal(false);
   public readonly selectedSupplierCode = signal<string | null>(null);
   public readonly isCreatingSupplier = signal(false);
+  public readonly balanceLoadFailed = signal(false);
 
   public supplierForm: Partial<SupplierSettings> = {
     api_key: '',
@@ -76,6 +77,7 @@ export class AdminSuppliersComponent implements OnInit {
         this.selectedSupplierCode.set(supplier.code);
         this.isCreatingSupplier.set(false);
         this.supplierForm = { ...supplier, api_key: '' };
+        this.loadSupplierBalance(true);
         this.toast.showToast(this.lang.translate('supplier.saved'), 'success');
       },
       error: err => this.toast.showToast(err?.error?.message || this.lang.translate('supplier.save_failed'), 'error')
@@ -100,12 +102,15 @@ export class AdminSuppliersComponent implements OnInit {
     this.isCreatingSupplier.set(false);
     this.showSupplierApiKey.set(false);
     this.supplierForm = { ...supplier, api_key: '' };
+    this.loadSupplierBalance();
   }
 
   public startCreatingSupplier(): void {
     this.selectedSupplierCode.set(null);
     this.isCreatingSupplier.set(true);
     this.showSupplierApiKey.set(false);
+    this.balanceLoadFailed.set(false);
+    this.supplierStore.clearBalance();
     this.supplierForm = {
       name: '',
       base_url: 'https://',
@@ -130,5 +135,19 @@ export class AdminSuppliersComponent implements OnInit {
   public supplierExampleUsd(): number {
     const rate = this.supplierStore.exchangeRate();
     return rate > 0 ? this.supplierExamplePriceVnd() / rate : 0;
+  }
+
+  public loadSupplierBalance(forceRefresh = false): void {
+    const code = this.selectedSupplierCode();
+    if (!code || this.isCreatingSupplier()) return;
+
+    this.balanceLoadFailed.set(false);
+    this.supplierStore.fetchBalance(code, forceRefresh).subscribe({
+      error: () => {
+        if (this.selectedSupplierCode() === code) {
+          this.balanceLoadFailed.set(true);
+        }
+      }
+    });
   }
 }

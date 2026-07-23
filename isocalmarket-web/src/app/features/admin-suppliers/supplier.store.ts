@@ -1,6 +1,6 @@
 import { Injectable, inject, signal } from '@angular/core';
 import { ApiService } from '@core/services/api.service';
-import { finalize, forkJoin, map, Observable, tap } from 'rxjs';
+import { finalize, forkJoin, map, Observable, of, shareReplay, tap } from 'rxjs';
 
 export type PriceAdjustmentType = 'fixed' | 'percent';
 
@@ -22,14 +22,25 @@ export interface SupplierSettings {
   api_key?: string;
 }
 
+export interface SupplierBalance {
+  balance: number;
+  currency: string;
+}
+
 @Injectable({ providedIn: 'root' })
 export class SupplierStore {
   private readonly api = inject(ApiService);
+  private readonly balanceCacheTtlMs = 5 * 60 * 1000;
+  private readonly balanceCache = new Map<string, { data: SupplierBalance; fetchedAt: number }>();
+  private readonly balanceRequests = new Map<string, Observable<SupplierBalance>>();
+  private balanceRequestCode: string | null = null;
 
   public readonly suppliers = signal<SupplierSettings[]>([]);
   public readonly loading = signal(false);
   public readonly saving = signal(false);
   public readonly syncing = signal(false);
+  public readonly balanceLoading = signal(false);
+  public readonly balance = signal<SupplierBalance | null>(null);
   public readonly exchangeRate = signal(0);
 
   public fetchSuppliers(): Observable<SupplierSettings[]> {
@@ -69,5 +80,58 @@ export class SupplierStore {
       tap(response => this.suppliers.update(items => items.map(item => item.code === code ? response.supplier : item))),
       finalize(() => this.syncing.set(false))
     );
+  }
+
+  public fetchBalance(code: string, forceRefresh = false): Observable<SupplierBalance> {
+    const cached = this.balanceCache.get(code);
+    if (!forceRefresh && cached && Date.now() - cached.fetchedAt < this.balanceCacheTtlMs) {
+      this.balanceRequestCode = code;
+      this.balance.set(cached.data);
+      this.balanceLoading.set(false);
+
+      return of(cached.data);
+    }
+
+    this.balanceRequestCode = code;
+    this.balanceLoading.set(true);
+    this.balance.set(null);
+
+    const pendingRequest = this.balanceRequests.get(code);
+    if (pendingRequest) {
+      return pendingRequest;
+    }
+
+    const request = this.api.get<SupplierBalance>(`v1/admin/suppliers/${code}/balance`).pipe(
+      tap(balance => {
+        const normalizedBalance = {
+          balance: Number(balance.balance),
+          currency: balance.currency
+        };
+        this.balanceCache.set(code, {
+          data: normalizedBalance,
+          fetchedAt: Date.now()
+        });
+
+        if (this.balanceRequestCode === code) {
+          this.balance.set(normalizedBalance);
+        }
+      }),
+      finalize(() => {
+        this.balanceRequests.delete(code);
+        if (this.balanceRequestCode === code) {
+          this.balanceLoading.set(false);
+        }
+      }),
+      shareReplay({ bufferSize: 1, refCount: true })
+    );
+    this.balanceRequests.set(code, request);
+
+    return request;
+  }
+
+  public clearBalance(): void {
+    this.balanceRequestCode = null;
+    this.balance.set(null);
+    this.balanceLoading.set(false);
   }
 }
