@@ -25,6 +25,13 @@ export interface SupplierSettings {
 export interface SupplierBalance {
   balance: number;
   currency: string;
+  account: {
+    id: string | number | null;
+    username: string | null;
+    email: string | null;
+    level: number | null;
+    percent: number | null;
+  };
 }
 
 @Injectable({ providedIn: 'root' })
@@ -105,7 +112,8 @@ export class SupplierStore {
       tap(balance => {
         const normalizedBalance = {
           balance: Number(balance.balance),
-          currency: balance.currency
+          currency: balance.currency,
+          account: balance.account
         };
         this.balanceCache.set(code, {
           data: normalizedBalance,

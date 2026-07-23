@@ -9,4 +9,6 @@ interface SupplierCatalogConnector
     public function fetchCatalog(SupplierModel $supplier): array;
 
     public function fetchBalance(SupplierModel $supplier): float;
+
+    public function fetchAccount(SupplierModel $supplier): array;
 }

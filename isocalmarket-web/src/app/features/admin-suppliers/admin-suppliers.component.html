@@ -51,7 +51,7 @@
         </p>
         @if (!isCreatingSupplier()) {
           <div
-            class="mt-4 inline-flex items-center gap-3 rounded-xl border border-emerald-200/70 bg-emerald-50 px-4 py-2.5 dark:border-emerald-900/50 dark:bg-emerald-950/20"
+            class="mt-4 grid max-w-2xl grid-cols-[1fr_auto] items-center gap-3 rounded-xl border border-emerald-200/70 bg-emerald-50 px-4 py-3 dark:border-emerald-900/50 dark:bg-emerald-950/20"
           >
             <div>
               <p
@@ -88,6 +88,54 @@
                 [class.animate-spin]="supplierStore.balanceLoading()"
               />
             </button>
+            @if (supplierStore.balance(); as accountBalance) {
+              @if (
+                accountBalance.account.username ||
+                accountBalance.account.email ||
+                accountBalance.account.id !== null ||
+                accountBalance.account.level !== null ||
+                accountBalance.account.percent !== null
+              ) {
+                <div
+                  class="col-span-2 mt-1 grid grid-cols-1 gap-x-6 gap-y-2 border-t border-emerald-200/70 pt-3 text-sm sm:grid-cols-2 dark:border-emerald-900/50"
+                >
+                  <p>
+                    <span class="text-slate-500">{{ 'supplier.account_username' | translate }}:</span>
+                    <strong class="ml-1 text-slate-800 dark:text-slate-200">{{
+                      accountBalance.account.username || '—'
+                    }}</strong>
+                  </p>
+                  <p>
+                    <span class="text-slate-500">{{ 'supplier.account_email' | translate }}:</span>
+                    <strong class="ml-1 text-slate-800 dark:text-slate-200">{{
+                      accountBalance.account.email || '—'
+                    }}</strong>
+                  </p>
+                  <p>
+                    <span class="text-slate-500">{{ 'supplier.account_id' | translate }}:</span>
+                    <strong class="ml-1 text-slate-800 dark:text-slate-200"
+                      >#{{ accountBalance.account.id ?? '—' }}</strong
+                    >
+                  </p>
+                  <p>
+                    <span class="text-slate-500">{{ 'supplier.account_level' | translate }}:</span>
+                    <strong class="ml-1 text-slate-800 dark:text-slate-200">{{
+                      accountBalance.account.level ?? '—'
+                    }}</strong>
+                  </p>
+                  <p>
+                    <span class="text-slate-500">{{ 'supplier.account_discount' | translate }}:</span>
+                    <strong class="ml-1 text-slate-800 dark:text-slate-200">
+                      {{
+                        accountBalance.account.percent !== null
+                          ? (accountBalance.account.percent | number: '1.0-2') + '%'
+                          : '—'
+                      }}
+                    </strong>
+                  </p>
+                </div>
+              }
+            }
           </div>
         }
       </div>

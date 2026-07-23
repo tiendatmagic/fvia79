@@ -30,11 +30,16 @@ class CloneStoreConnector implements SupplierCatalogConnector
 
     public function fetchBalance(SupplierModel $supplier): float
     {
+        return $this->fetchAccount($supplier)['balance'];
+    }
+
+    public function fetchAccount(SupplierModel $supplier): array
+    {
         $this->urlGuard->normalizeAndValidate($supplier->base_url, false);
 
         return match ($supplier->catalog_driver) {
-            self::V1 => $this->fetchV1Balance($supplier),
-            self::V2 => $this->fetchV2Balance($supplier),
+            self::V1 => $this->fetchV1Account($supplier),
+            self::V2 => $this->fetchV2Account($supplier),
             default => throw new RuntimeException("Unsupported supplier catalog driver: {$supplier->catalog_driver}"),
         };
     }
@@ -101,7 +106,7 @@ class CloneStoreConnector implements SupplierCatalogConnector
         ], $categories);
     }
 
-    private function fetchV1Balance(SupplierModel $supplier): float
+    private function fetchV1Account(SupplierModel $supplier): array
     {
         $response = $this->baseClient($supplier)
             ->asForm()
@@ -113,21 +118,34 @@ class CloneStoreConnector implements SupplierCatalogConnector
             throw new RuntimeException('Supplier returned an invalid V1 balance response.');
         }
 
-        return (float) $payload['balance'];
+        return [
+            'id' => null,
+            'username' => null,
+            'email' => null,
+            'level' => null,
+            'percent' => null,
+            'balance' => (float) $payload['balance'],
+        ];
     }
 
-    private function fetchV2Balance(SupplierModel $supplier): float
+    private function fetchV2Account(SupplierModel $supplier): array
     {
         $response = $this->authenticatedClient($supplier)->post('/api/v2/me');
         $response->throw();
-        $payload = $response->json();
+        $account = $this->findAccount($response->json());
 
-        $balance = $this->findBalance($payload);
-        if ($balance === null) {
+        if ($account === null) {
             throw new RuntimeException('Supplier returned an invalid V2 account response.');
         }
 
-        return $balance;
+        return [
+            'id' => $account['id'] ?? null,
+            'username' => isset($account['username']) ? (string) $account['username'] : null,
+            'email' => isset($account['email']) ? (string) $account['email'] : null,
+            'level' => isset($account['level']) && is_numeric($account['level']) ? (int) $account['level'] : null,
+            'percent' => isset($account['percent']) && is_numeric($account['percent']) ? (float) $account['percent'] : null,
+            'balance' => (float) ($account['balance'] ?? $account['wallet_balance']),
+        ];
     }
 
     private function validateV1Key(SupplierModel $supplier): void
@@ -142,7 +160,7 @@ class CloneStoreConnector implements SupplierCatalogConnector
         }
     }
 
-    private function findBalance(mixed $payload): ?float
+    private function findAccount(mixed $payload): ?array
     {
         if (! is_array($payload)) {
             return null;
@@ -150,14 +168,14 @@ class CloneStoreConnector implements SupplierCatalogConnector
 
         foreach (['balance', 'wallet_balance'] as $key) {
             if (isset($payload[$key]) && is_numeric($payload[$key])) {
-                return (float) $payload[$key];
+                return $payload;
             }
         }
 
         foreach (['data', 'user', 'account'] as $key) {
-            $balance = $this->findBalance($payload[$key] ?? null);
-            if ($balance !== null) {
-                return $balance;
+            $account = $this->findAccount($payload[$key] ?? null);
+            if ($account !== null) {
+                return $account;
             }
         }
 

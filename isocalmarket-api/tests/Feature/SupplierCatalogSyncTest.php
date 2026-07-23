@@ -165,7 +165,15 @@ class SupplierCatalogSyncTest extends TestCase
     {
         Http::fake([
             'https://ads7979.com/api/v2/me' => Http::response([
-                'data' => ['balance' => 1250000.75],
+                'data' => [
+                    'id' => 43,
+                    'username' => 'supplier-user',
+                    'email' => 'supplier@example.com',
+                    'level' => 7,
+                    'percent' => 10,
+                    'balance' => 1250000.75,
+                    'api_key' => 'must-not-be-forwarded',
+                ],
             ]),
         ]);
         $supplier = new SupplierModel([
@@ -176,9 +184,13 @@ class SupplierCatalogSyncTest extends TestCase
             'catalog_driver' => CloneStoreConnector::V2,
         ]);
 
-        $balance = app(CloneStoreConnector::class)->fetchBalance($supplier);
+        $account = app(CloneStoreConnector::class)->fetchAccount($supplier);
 
-        $this->assertSame(1250000.75, $balance);
+        $this->assertSame(1250000.75, $account['balance']);
+        $this->assertSame('supplier-user', $account['username']);
+        $this->assertSame(7, $account['level']);
+        $this->assertSame(10.0, $account['percent']);
+        $this->assertArrayNotHasKey('api_key', $account);
         Http::assertSent(fn ($request) => $request->url() === 'https://ads7979.com/api/v2/me'
             && $request->hasHeader('Authorization', 'Bearer v2-test-key'));
     }

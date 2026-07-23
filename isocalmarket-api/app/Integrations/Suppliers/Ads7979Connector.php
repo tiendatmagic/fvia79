@@ -25,16 +25,29 @@ class Ads7979Connector implements SupplierCatalogConnector
 
     public function fetchBalance(SupplierModel $supplier): float
     {
+        return $this->fetchAccount($supplier)['balance'];
+    }
+
+    public function fetchAccount(SupplierModel $supplier): array
+    {
         $response = $this->client($supplier)->post('/api/v2/me');
         $response->throw();
         $payload = $response->json();
-        $balance = is_array($payload) ? ($payload['balance'] ?? $payload['data']['balance'] ?? null) : null;
+        $account = is_array($payload) && is_array($payload['data'] ?? null) ? $payload['data'] : $payload;
+        $balance = is_array($account) ? ($account['balance'] ?? null) : null;
 
         if (! is_numeric($balance)) {
             throw new RuntimeException('ADS7979 returned an invalid account response.');
         }
 
-        return (float) $balance;
+        return [
+            'id' => $account['id'] ?? null,
+            'username' => isset($account['username']) ? (string) $account['username'] : null,
+            'email' => isset($account['email']) ? (string) $account['email'] : null,
+            'level' => isset($account['level']) && is_numeric($account['level']) ? (int) $account['level'] : null,
+            'percent' => isset($account['percent']) && is_numeric($account['percent']) ? (float) $account['percent'] : null,
+            'balance' => (float) $balance,
+        ];
     }
 
     private function client(SupplierModel $supplier): PendingRequest

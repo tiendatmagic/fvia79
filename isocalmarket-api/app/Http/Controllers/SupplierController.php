@@ -142,10 +142,18 @@ class SupplierController extends Controller
     {
         try {
             $supplier = SupplierModel::where('code', $code)->firstOrFail();
+            $account = $this->connector->fetchAccount($supplier);
 
             return response()->json([
-                'balance' => $this->connector->fetchBalance($supplier),
+                'balance' => $account['balance'],
                 'currency' => 'VND',
+                'account' => [
+                    'id' => $account['id'],
+                    'username' => $account['username'],
+                    'email' => $account['email'],
+                    'level' => $account['level'],
+                    'percent' => $account['percent'],
+                ],
             ]);
         } catch (ModelNotFoundException) {
             return response()->json(['message' => 'Supplier not found.'], 404);
