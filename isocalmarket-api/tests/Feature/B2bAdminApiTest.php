@@ -166,6 +166,9 @@ class B2bAdminApiTest extends TestCase
             'success',
             'data' => [
                 'total_revenue',
+                'total_cogs',
+                'total_profit',
+                'profit_margin_percent',
                 'total_orders',
                 'total_products',
                 'total_available_inventory',

@@ -194,10 +194,12 @@ class B2bAdminController extends Controller
                 'batch_name' => 'nullable|string',
                 'content' => 'nullable|string',
                 'raw_data' => 'nullable|string',
+                'cost_price' => 'nullable|numeric|min:0',
                 'file' => 'nullable|file',
             ]);
 
             $batchName = $request->input('batch_name') ?: 'API Import - ' . now()->format('Y-m-d H:i:s');
+            $costPrice = $request->input('cost_price') !== null ? (float)$request->input('cost_price') : null;
             
             $rawData = '';
             if ($request->hasFile('file')) {
@@ -213,7 +215,8 @@ class B2bAdminController extends Controller
             $batch = $inventoryService->importBatch(
                 $id,
                 $batchName,
-                $rawData
+                $rawData,
+                $costPrice
             );
 
             return response()->json([
@@ -223,6 +226,7 @@ class B2bAdminController extends Controller
                     'id' => $batch->getId(),
                     'product_id' => $batch->getProductId(),
                     'batch_name' => $batch->getBatchName(),
+                    'cost_price' => $batch->getCostPrice(),
                     'initial_count' => $batch->getInitialCount(),
                     'sold_count' => $batch->getSoldCount(),
                     'available_count' => $batch->getAvailableCount(),
@@ -240,7 +244,7 @@ class B2bAdminController extends Controller
 
     /**
      * GET /api/v1/admin/b2b/stats
-     * Lấy số liệu thống kê hệ thống (Doanh thu, Đơn hàng, Sản phẩm, Tồn kho, Người dùng)
+     * Lấy số liệu thống kê hệ thống (Doanh thu, Giá vốn, Lợi nhuận, Đơn hàng, Sản phẩm, Tồn kho, Người dùng)
      */
     public function getStats(Request $request)
     {
@@ -267,6 +271,23 @@ class B2bAdminController extends Controller
             $totalProducts = ProductModel::where('status', 'active')->count();
             $totalUsers = UserModel::count();
 
+            // Tính tổng giá vốn (total_cogs) & lợi nhuận (total_profit)
+            $cogsQuery = \App\Infrastructure\Persistence\Eloquent\OrderItemModel::whereHas('order', function ($q) use ($startDate, $endDate) {
+                $q->where('status', 'paid');
+                if ($startDate) {
+                    $start = strlen($startDate) === 10 ? $startDate . ' 00:00:00' : $startDate;
+                    $q->where('created_at', '>=', $start);
+                }
+                if ($endDate) {
+                    $end = strlen($endDate) === 10 ? $endDate . ' 23:59:59' : $endDate;
+                    $q->where('created_at', '<=', $end);
+                }
+            });
+
+            $totalCogs = (float) ($cogsQuery->selectRaw('SUM(cost_price * quantity) as cogs')->value('cogs') ?? 0.0);
+            $totalProfit = $totalRevenue - $totalCogs;
+            $profitMarginPercent = $totalRevenue > 0 ? round(($totalProfit / $totalRevenue) * 100, 2) : 0.0;
+
             // Tổng số tài nguyên khả dụng trong kho
             $totalAvailableInventory = (int) InventoryBatchModel::where('status', 'active')
                 ->selectRaw('SUM(initial_count - sold_count) as total')
@@ -276,6 +297,9 @@ class B2bAdminController extends Controller
                 'success' => true,
                 'data' => [
                     'total_revenue' => $totalRevenue,
+                    'total_cogs' => $totalCogs,
+                    'total_profit' => $totalProfit,
+                    'profit_margin_percent' => $profitMarginPercent,
                     'total_orders' => $totalOrders,
                     'total_products' => $totalProducts,
                     'total_available_inventory' => $totalAvailableInventory,

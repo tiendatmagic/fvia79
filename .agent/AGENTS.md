@@ -13,6 +13,19 @@
 > Khi cần seed dữ liệu cho một seeder cụ thể, chỉ dùng:
 > - `php artisan db:seed --class=TenSeederClass` — chạy đúng 1 seeder.
 
+- **[BỔ SUNG CHỈ SỐ LỢI NHUẬN & GIÁ VỐN CHO B2B ADMIN STATS API (`GET /v1/admin/b2b/stats` & `POST /v1/admin/b2b/products/{id}/inventory`)]**:
+  - **B2B Admin Stats API (`GET /v1/admin/b2b/stats`)**: Bổ sung tự động 3 chỉ số tài chính vào response JSON data:
+    - `total_cogs`: Tổng Giá Vốn (Chi phí nhập).
+    - `total_profit`: Tổng Lợi Nhuận Gộp (`total_revenue - total_cogs`).
+    - `profit_margin_percent`: Tỷ Suất Lợi Nhuận Gộp (`(total_profit / total_revenue) * 100`).
+    - Hỗ trợ lọc theo mốc thời gian linh hoạt `?start_date=YYYY-MM-DD` & `?end_date=YYYY-MM-DD`.
+  - **B2B Admin Import Inventory API (`POST /v1/admin/b2b/products/{id}/inventory`)**: Bổ sung tham số `cost_price` (số thực `>= 0`, đại diện cho Giá gốc / giá vốn của lô nhập kho). Trả về field `cost_price` trong object `data.cost_price`.
+  - **Cập nhật Giao diện Tài liệu API (`AdminApiComponent` tại `/admin/api`)**:
+    - Cập nhật tài liệu Endpoint 3 (Import Inventory): Thêm mô tả tham số `cost_price` và cập nhật JSON response mẫu.
+    - Cập nhật tài liệu Endpoint 4 (Get B2B Stats): Thêm mô tả 3 chỉ số Lợi nhuận và cập nhật JSON response mẫu (`total_cogs`, `total_profit`, `profit_margin_percent`).
+    - Đồng bộ đa ngôn ngữ Tiếng Việt & Tiếng Anh trong `LanguageService.ts`.
+  - **Đã kiểm thử toàn diện**: Backend `php artisan test` vượt qua **58/58 test cases (100% PASSED)**.
+
 - **[TRIỂN KHẢI TÍNH NĂNG TÍNH TIỀN LÃI, GIÁ VỐN VÀ BÁO CÁO TÀI CHÍNH Ở TRANG TỔNG QUAN (ADMIN DASHBOARD PROFIT CALCULATION)]**:
   - **Database Migration (`2026_07_23_000005_add_cost_price_to_inventory_batches_and_order_items.php`)**: Bổ sung cột `cost_price` (`DECIMAL(15,2)`, `nullable`, `default null`) vào bảng Lô hàng (`inventory_batches`) và `order_items` (`default 0.00`).
   - **Phân Định Rõ Ràng Giá Gốc & Giá Bán**:

@@ -706,6 +706,28 @@ curl -X GET "{{ siteUrl() }}/api/v1/admin/b2b/orders?api_key={{
                 class="flex flex-col sm:flex-row items-start gap-2 sm:gap-4 text-xs font-semibold border-b border-slate-100 dark:border-slate-800/60 pb-3"
               >
                 <div class="min-w-[120px] text-[var(--color-primary)] font-bold">
+                  cost_price
+                </div>
+                <div class="flex-1 space-y-1">
+                  <div class="flex items-center gap-1.5">
+                    <span
+                      class="text-xs font-black uppercase bg-slate-100 dark:bg-slate-800 text-slate-500 px-1.5 py-0.5 rounded"
+                      >{{ 'api.optional' | translate }}</span
+                    >
+                    <span class="text-slate-400 dark:text-slate-500 text-xs"
+                      >{{ 'api.type_numeric' | translate }}</span
+                    >
+                  </div>
+                  <p class="text-slate-500 dark:text-slate-400 font-semibold leading-relaxed">
+                    {{ 'api.admin_ep3_cost_price_desc' | translate }}
+                  </p>
+                </div>
+              </div>
+
+              <div
+                class="flex flex-col sm:flex-row items-start gap-2 sm:gap-4 text-xs font-semibold border-b border-slate-100 dark:border-slate-800/60 pb-3"
+              >
+                <div class="min-w-[120px] text-[var(--color-primary)] font-bold">
                   content
                 </div>
                 <div class="flex-1 space-y-1">
@@ -864,6 +886,7 @@ curl -X POST "{{ siteUrl() }}/api/v1/admin/b2b/products/PRODUCT_UUID/inventory" 
     "id": "019f6699-e6d2-70f2-89bd-d3b93946a77d",
     "product_id": "PRODUCT_UUID",
     "batch_name": "New Batch",
+    "cost_price": 5.00,
     "initial_count": 2,
     "sold_count": 0,
     "available_count": 2,
@@ -1046,6 +1069,9 @@ curl -X GET "{{ siteUrl() }}/api/v1/admin/b2b/stats?api_key={{
   "success": true,
   "data": {{ '{' }}
     "total_revenue": 11868.80,
+    "total_cogs": 5200.00,
+    "total_profit": 6668.80,
+    "profit_margin_percent": 56.19,
     "total_orders": 55,
     "total_products": 52,
     "total_available_inventory": 680,
