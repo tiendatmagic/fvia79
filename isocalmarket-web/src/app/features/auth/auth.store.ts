@@ -99,6 +99,11 @@ export class AuthStore {
   }
 
   public checkMe(force = false) {
+    if (!this.hasLoggedInMarker()) {
+      this.currentUser.set(null);
+      return of(null);
+    }
+
     if (!force && this.currentUser()) {
       return of(this.currentUser());
     }
@@ -126,6 +131,16 @@ export class AuthStore {
     );
 
     return this.checkMeObservable$;
+  }
+
+  public hasLoggedInMarker(): boolean {
+    if (typeof document === 'undefined') {
+      return false;
+    }
+
+    return document.cookie
+      .split(';')
+      .some(cookie => cookie.trim() === 'auth_logged_in=true');
   }
 
   public logout() {

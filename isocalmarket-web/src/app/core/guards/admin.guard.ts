@@ -14,8 +14,7 @@ export const AdminGuard: CanActivateFn = (route, state) => {
     return true;
   }
 
-  const isLocalLoggedIn = typeof document !== 'undefined' && document.cookie.includes('auth_logged_in=true');
-  if (isLocalLoggedIn) {
+  if (stateService.authStore.hasLoggedInMarker()) {
     return stateService.authStore.checkMe().pipe(
       map(user => {
         if (user && user.role === 'admin') {

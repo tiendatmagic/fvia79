@@ -55,7 +55,13 @@ export const authInterceptor: HttpInterceptorFn = (
       const isAuthEndpoint = req.url.includes('/auth/login') || req.url.includes('/auth/register')
         || req.url.includes('/v1/auth/login') || req.url.includes('/v1/auth/register');
 
-      if (error.status === 401 && isApiRequest && !isRefreshRequest && !isAuthEndpoint) {
+      if (
+        error.status === 401 &&
+        isApiRequest &&
+        !isRefreshRequest &&
+        !isAuthEndpoint &&
+        authStore.hasLoggedInMarker()
+      ) {
         return handle401Error(protectedReq, next, http, router, authStore);
       }
 
