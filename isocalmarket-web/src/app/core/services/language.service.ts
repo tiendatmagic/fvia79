@@ -1663,8 +1663,8 @@ export const TRANSLATIONS: Record<SupportedLanguage, Record<string, string>> = {
     'inv.batch_name': 'Tên lô hàng',
     'inv.cost_price': 'Giá gốc / Giá vốn',
     'inv.resource_data': 'Dữ liệu tài nguyên (Định dạng: User|Pass|2FA...)',
-    'dash.total_cogs': 'Tổng Giá Vốn (Chi phí nhập)',
-    'dash.total_profit': 'Tổng Tiền Lãi (Lợi nhuận)',
+    'dash.total_cogs': 'Tổng Giá Vốn',
+    'dash.total_profit': 'Tổng Tiền Lãi',
     'dash.profit_margin': 'Tỷ Suất Lợi Nhuận',
 
     'ord.admin_title': 'Quản Lý Đơn Hàng',
