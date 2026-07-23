@@ -94,13 +94,13 @@ export class UserApiComponent {
 
   public copyBuyCurl() {
     const key = this.apiKey() || 'YOUR_API_KEY';
-    const text = `curl -X POST "${this.siteUrl()}/api/v1/b2b/buy" -H "Content-Type: application/json" -H "X-API-KEY: ${key}" -H "Idempotency-Key: 019f906d-a49e-7e91-9331-589e9942bf30" -d '{"product_id": "PRODUCT_ID", "quantity": 1, "coupon_code": "DISCOUNT10"}'`;
+    const text = `IDEMPOTENCY_KEY="$(uuidgen)"\ncurl -X POST "${this.siteUrl()}/api/v1/b2b/buy" -H "Content-Type: application/json" -H "X-API-KEY: ${key}" -H "Idempotency-Key: $IDEMPOTENCY_KEY" -d '{"product_id": "PRODUCT_ID", "quantity": 1, "coupon_code": "DISCOUNT10"}'`;
     this.copyToClipboard(text);
   }
 
   public copyBuyWindowsCurl() {
     const key = this.apiKey() || 'YOUR_API_KEY';
-    const text = `curl -X POST "${this.siteUrl()}/api/v1/b2b/buy" -H "Content-Type: application/json" -H "X-API-KEY: ${key}" -H "Idempotency-Key: 019f906d-a49e-7e91-9331-589e9942bf30" -d "{\\"product_id\\": \\"PRODUCT_ID\\", \\"quantity\\": 1, \\"coupon_code\\": \\"DISCOUNT10\\"}"`;
+    const text = `$idempotencyKey = [guid]::NewGuid().ToString()\ncurl.exe -X POST "${this.siteUrl()}/api/v1/b2b/buy" -H "Content-Type: application/json" -H "X-API-KEY: ${key}" -H "Idempotency-Key: $idempotencyKey" -d '{"product_id":"PRODUCT_ID","quantity":1,"coupon_code":"DISCOUNT10"}'`;
     this.copyToClipboard(text);
   }
 

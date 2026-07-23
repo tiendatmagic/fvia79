@@ -169,6 +169,16 @@ export const TRANSLATIONS: Record<SupportedLanguage, Record<string, string>> = {
     'api.quantity_desc': 'Number of products to purchase, defaults to 1 and allows up to 1,000 per item.',
     'api.idempotency_key_desc':
       'A unique UUID for this checkout attempt. Reuse it when retrying the same request; generate a new value for a new purchase.',
+    'api.idempotency_guide_title': 'How to use Idempotency-Key',
+    'api.idempotency_guide_intro':
+      'This is not your API Key and it is not a secret. Your application generates one UUID before each new purchase so a timeout, retry, or double click cannot charge the balance or consume inventory twice.',
+    'api.idempotency_guide_retry':
+      'Retrying the same purchase: keep the same UUID and the exact same request body. The API returns the original order without purchasing again.',
+    'api.idempotency_guide_new':
+      'Making a new purchase: generate a new UUID. Never use one fixed UUID for every order.',
+    'api.idempotency_guide_cancelled':
+      'If the previous order was cancelled, create a new UUID before trying to purchase again.',
+    'api.idempotency_generate_title': 'Generate a UUID on the client',
     'api.coupon_code_desc': 'Discount code to apply to the order (e.g.',
     'api.items_desc':
       'Up to 20 products per request. When items is provided, product_id and quantity above are ignored. Each object contains:',
@@ -1653,6 +1663,16 @@ export const TRANSLATIONS: Record<SupportedLanguage, Record<string, string>> = {
     'api.quantity_desc': 'Số lượng muốn mua, mặc định là 1 và tối đa 1.000 cho mỗi sản phẩm.',
     'api.idempotency_key_desc':
       'UUID duy nhất cho lần thanh toán này. Khi thử lại cùng yêu cầu phải dùng lại giá trị cũ; đơn mua mới phải tạo UUID mới.',
+    'api.idempotency_guide_title': 'Cách sử dụng Idempotency-Key',
+    'api.idempotency_guide_intro':
+      'Đây không phải API Key và không phải thông tin bí mật. Ứng dụng của bạn tạo một UUID trước mỗi lần mua mới để timeout, retry hoặc bấm hai lần không làm trừ số dư hay lấy kho hai lần.',
+    'api.idempotency_guide_retry':
+      'Retry cùng lần mua: giữ nguyên UUID và nội dung request. API trả lại đơn ban đầu mà không mua lại.',
+    'api.idempotency_guide_new':
+      'Mua một đơn mới: tạo UUID mới. Không dùng cố định một UUID cho tất cả đơn hàng.',
+    'api.idempotency_guide_cancelled':
+      'Nếu đơn trước đã bị hủy, hãy tạo UUID mới trước khi thử mua lại.',
+    'api.idempotency_generate_title': 'Tạo UUID ở phía ứng dụng gọi API',
     'api.coupon_code_desc': 'Mã giảm giá muốn áp dụng cho đơn hàng (Ví dụ:',
     'api.items_desc':
       'Tối đa 20 sản phẩm mỗi request. Khi truyền items, hệ thống bỏ qua product_id và quantity ở trên. Mỗi object gồm:',

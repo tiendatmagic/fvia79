@@ -491,7 +491,7 @@ curl -X GET "{{ siteUrl() }}/api/v1/b2b/products/PRODUCT_ID" -H "X-API-KEY: {{
                     : 'text-xs font-semibold text-slate-400 dark:text-slate-500 border-b-2 border-transparent pb-2 px-3 -mb-px hover:text-slate-600 dark:hover:text-slate-400 transition-all cursor-pointer'
                 "
               >
-                Windows CMD
+                Windows PowerShell
               </button>
             </div>
 
@@ -504,9 +504,10 @@ curl -X GET "{{ siteUrl() }}/api/v1/b2b/products/PRODUCT_ID" -H "X-API-KEY: {{
                     class="overflow-x-auto p-3.5 pr-12 text-xs text-slate-700 dark:text-slate-300 leading-relaxed"
                   >
                     <pre class="whitespace-pre">
+IDEMPOTENCY_KEY="$(uuidgen)"
 curl -X POST "{{ siteUrl() }}/api/v1/b2b/buy" -H "Content-Type: application/json" -H "X-API-KEY: {{
                         apiKey() || 'YOUR_API_KEY'
-                      }}" -H "Idempotency-Key: 019f906d-a49e-7e91-9331-589e9942bf30" -d '{{ '{' }}"product_id": "PRODUCT_ID", "quantity": 1, "coupon_code": "DISCOUNT10"{{ '}' }}'</pre>
+                      }}" -H "Idempotency-Key: $IDEMPOTENCY_KEY" -d '{{ '{' }}"product_id": "PRODUCT_ID", "quantity": 1, "coupon_code": "DISCOUNT10"{{ '}' }}'</pre>
                   </div>
                   <button
                     (click)="copyBuyCurl()"
@@ -526,9 +527,10 @@ curl -X POST "{{ siteUrl() }}/api/v1/b2b/buy" -H "Content-Type: application/json
                     class="overflow-x-auto p-3.5 pr-12 text-xs text-slate-700 dark:text-slate-300 leading-relaxed"
                   >
                     <pre class="whitespace-pre">
-curl -X POST "{{ siteUrl() }}/api/v1/b2b/buy" -H "Content-Type: application/json" -H "X-API-KEY: {{
+$idempotencyKey = [guid]::NewGuid().ToString()
+curl.exe -X POST "{{ siteUrl() }}/api/v1/b2b/buy" -H "Content-Type: application/json" -H "X-API-KEY: {{
                         apiKey() || 'YOUR_API_KEY'
-                      }}" -H "Idempotency-Key: 019f906d-a49e-7e91-9331-589e9942bf30" -d "{{ '{' }}\"product_id\": \"PRODUCT_ID\", \"quantity\": 1, \"coupon_code\": \"DISCOUNT10\"{{ '}' }}"</pre>
+                      }}" -H "Idempotency-Key: $idempotencyKey" -d '{{ '{' }}"product_id":"PRODUCT_ID","quantity":1,"coupon_code":"DISCOUNT10"{{ '}' }}'</pre>
                   </div>
                   <button
                     (click)="copyBuyWindowsCurl()"
@@ -704,6 +706,72 @@ curl -X POST "{{ siteUrl() }}/api/v1/b2b/buy" -H "Content-Type: application/json
     "10007203940192|pass123|2FA_CODE_KEY"
   ]
 {{ '}' }}</pre>
+            </div>
+          </div>
+
+          <div
+            class="rounded-xl border border-sky-200/70 bg-sky-50/70 p-4 dark:border-sky-900/60 dark:bg-sky-950/20 space-y-3"
+          >
+            <div class="flex items-start gap-3">
+              <app-icon
+                name="shield-check"
+                class="w-5 h-5 text-sky-600 dark:text-sky-400 shrink-0 mt-0.5"
+              />
+              <div class="min-w-0 space-y-2">
+                <h5 class="text-sm font-black text-sky-800 dark:text-sky-300">
+                  {{ 'api.idempotency_guide_title' | translate }}
+                </h5>
+                <p class="text-xs font-semibold leading-relaxed text-sky-800/80 dark:text-sky-300/80">
+                  {{ 'api.idempotency_guide_intro' | translate }}
+                </p>
+                <ul
+                  class="list-disc pl-4 space-y-1 text-xs font-semibold leading-relaxed text-slate-600 dark:text-slate-400"
+                >
+                  <li>{{ 'api.idempotency_guide_retry' | translate }}</li>
+                  <li>{{ 'api.idempotency_guide_new' | translate }}</li>
+                  <li>{{ 'api.idempotency_guide_cancelled' | translate }}</li>
+                </ul>
+              </div>
+            </div>
+
+            <div class="space-y-2">
+              <span
+                class="text-xs font-black uppercase tracking-wider text-sky-700 dark:text-sky-400"
+              >
+                {{ 'api.idempotency_generate_title' | translate }}
+              </span>
+              <div class="grid grid-cols-1 lg:grid-cols-3 gap-2">
+                <div
+                  class="rounded-lg border border-sky-200/70 bg-white/80 p-3 dark:border-sky-900/60 dark:bg-slate-950"
+                >
+                  <span class="block text-[10px] font-black uppercase text-slate-400 mb-1"
+                    >JavaScript</span
+                  >
+                  <code class="text-xs text-slate-700 dark:text-slate-300"
+                    >crypto.randomUUID()</code
+                  >
+                </div>
+                <div
+                  class="rounded-lg border border-sky-200/70 bg-white/80 p-3 dark:border-sky-900/60 dark:bg-slate-950"
+                >
+                  <span class="block text-[10px] font-black uppercase text-slate-400 mb-1"
+                    >PHP / Laravel</span
+                  >
+                  <code class="text-xs text-slate-700 dark:text-slate-300"
+                    >(string) Str::uuid()</code
+                  >
+                </div>
+                <div
+                  class="rounded-lg border border-sky-200/70 bg-white/80 p-3 dark:border-sky-900/60 dark:bg-slate-950"
+                >
+                  <span class="block text-[10px] font-black uppercase text-slate-400 mb-1"
+                    >Python</span
+                  >
+                  <code class="text-xs text-slate-700 dark:text-slate-300"
+                    >str(uuid.uuid4())</code
+                  >
+                </div>
+              </div>
             </div>
           </div>
 
