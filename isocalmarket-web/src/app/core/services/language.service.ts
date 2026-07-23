@@ -1277,6 +1277,9 @@ export const TRANSLATIONS: Record<SupportedLanguage, Record<string, string>> = {
     'invoice.live_scanner': 'Live Scanner',
     'action.done': 'Done',
     'status.cancelled': 'Cancelled',
+    'admin.coupon_generate_random': 'Generate Random Coupon Code',
+    'toast.coupon_code_generated': 'Random coupon code generated!',
+    'toast.coupon_generate_failed': 'Failed to generate random coupon code!',
   },
   vi: {
     'nav.home': 'Cửa hàng',
@@ -2551,6 +2554,9 @@ export const TRANSLATIONS: Record<SupportedLanguage, Record<string, string>> = {
     'invoice.live_scanner': 'Quét trực tiếp',
     'action.done': 'Xong',
     'status.cancelled': 'Đã hủy',
+    'admin.coupon_generate_random': 'Tạo mã giảm giá ngẫu nhiên',
+    'toast.coupon_code_generated': 'Đã tạo mã ngẫu nhiên thành công!',
+    'toast.coupon_generate_failed': 'Tạo mã ngẫu nhiên thất bại!',
   }
 };
 

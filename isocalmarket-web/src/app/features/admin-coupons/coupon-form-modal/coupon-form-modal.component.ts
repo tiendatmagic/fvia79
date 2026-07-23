@@ -52,6 +52,20 @@ export class CouponFormModalComponent implements OnInit {
   
   public readonly isSubmitting = signal(false);
 
+  public onGenerateCode(): void {
+    if (this.isEditMode) return;
+    const chars = '0123456789abcdefghijklmnopqrstuvwxyz';
+    const length = Math.floor(Math.random() * 3) + 8;
+    const array = new Uint32Array(length);
+    crypto.getRandomValues(array);
+    let randomCode = '';
+    for (let i = 0; i < length; i++) {
+      randomCode += chars[array[i] % chars.length];
+    }
+    this.code = randomCode;
+    this.toast.showToast(this.lang.translate('toast.coupon_code_generated'), 'success');
+  }
+
   public get typeOptions() {
     return [
       { label: this.lang.translate('admin.coupon_percentage'), value: 'percentage' },

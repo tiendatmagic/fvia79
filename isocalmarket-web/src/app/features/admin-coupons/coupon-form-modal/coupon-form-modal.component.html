@@ -10,6 +10,9 @@
         name="code"
         type="text"
         [disabled]="isEditMode"
+        [rightIcon]="!isEditMode ? 'dice' : ''"
+        [rightIconTitle]="'admin.coupon_generate_random' | translate"
+        (rightIconClick)="onGenerateCode()"
         customClass="uppercase tracking-wider font-extrabold text-sm"
         required
       />

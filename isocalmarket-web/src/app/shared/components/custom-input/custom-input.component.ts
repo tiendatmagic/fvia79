@@ -30,6 +30,9 @@ export class CustomInputComponent implements ControlValueAccessor, AfterViewInit
   @Input() step: number | string = '';
   @Input() name: string = '';
   @Input() customClass: string = '';
+  @Input() rightIcon?: string;
+  @Input() rightIconTitle?: string;
+  @Input() rightIconLoading?: boolean = false;
 
   public showPasswordToggle: boolean = false;
 
@@ -38,6 +41,15 @@ export class CustomInputComponent implements ControlValueAccessor, AfterViewInit
   }
 
   @Output() valueChange = new EventEmitter<any>();
+  @Output() rightIconClick = new EventEmitter<void>();
+
+  public onRightIconClick(event: MouseEvent): void {
+    event.preventDefault();
+    event.stopPropagation();
+    if (!this.disabled && !this.rightIconLoading) {
+      this.rightIconClick.emit();
+    }
+  }
 
   private onChange: (value: any) => void = () => {};
   private onTouched: () => void = () => {};
