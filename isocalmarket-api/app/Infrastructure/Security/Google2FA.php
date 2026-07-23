@@ -13,10 +13,19 @@ class Google2FA
         }
         return $secret;
     }
+
     public static function getQrCodeUrl(string $email, string $secret, string $issuer = 'Isocalmarket'): string
     {
-        return 'otpauth:
+        return 'otpauth://totp/'
+            .rawurlencode($issuer)
+            .':'
+            .rawurlencode($email)
+            .'?secret='
+            .rawurlencode($secret)
+            .'&issuer='
+            .rawurlencode($issuer);
     }
+
     public static function verifyCode(string $secret, string $code): bool
     {
         $key = self::base32Decode($secret);
@@ -48,6 +57,7 @@ class Google2FA
 
         return false;
     }
+
     private static function base32Decode(string $secret): ?string
     {
         $chars = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ234567';

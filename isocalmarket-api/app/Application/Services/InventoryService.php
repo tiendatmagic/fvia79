@@ -168,30 +168,16 @@ class InventoryService
 
         $batch = $this->inventoryRepository->findById($item->getBatchId());
         if ($batch) {
-            $availableItems = \App\Infrastructure\Persistence\Eloquent\InventoryItemModel::where('batch_id', $batch->getId())
+            $availableCount = \App\Infrastructure\Persistence\Eloquent\InventoryItemModel::where('batch_id', $batch->getId())
                 ->where('status', 'available')
-                ->pluck('secret_data')
-                ->toArray();
-            
-            $soldCount = $this->inventoryItemRepository->countSoldByBatchId($batch->getId());
-            $initialCount = count($availableItems) + $soldCount;
-            $status = count($availableItems) > 0 ? 'active' : 'completed';
+                ->count();
 
-            $updatedBatch = new InventoryBatch(
-                $batch->getId(),
-                $batch->getProductId(),
-                $batch->getBatchName(),
-                implode("\n", $availableItems),
-                $initialCount,
-                $soldCount,
-                $status,
-                $batch->getCreatedAt(),
-                $batch->getUpdatedAt()
-            );
+            $soldCount = $this->inventoryItemRepository->countSoldByBatchId($batch->getId());
+            $initialCount = $availableCount + $soldCount;
+            $status = $availableCount > 0 ? 'active' : 'completed';
 
             // Update directly to avoid recursively synchronizing the batch.
             \App\Infrastructure\Persistence\Eloquent\InventoryBatchModel::where('id', $batch->getId())->update([
-                'keys_pool' => implode("\n", $availableItems),
                 'initial_count' => $initialCount,
                 'sold_count' => $soldCount,
                 'status' => $status
@@ -213,17 +199,15 @@ class InventoryService
         $deleted = $this->inventoryItemRepository->delete($id);
 
         if ($deleted && $batchId) {
-            $availableItems = \App\Infrastructure\Persistence\Eloquent\InventoryItemModel::where('batch_id', $batchId)
+            $availableCount = \App\Infrastructure\Persistence\Eloquent\InventoryItemModel::where('batch_id', $batchId)
                 ->where('status', 'available')
-                ->pluck('secret_data')
-                ->toArray();
+                ->count();
 
             $soldCount = $this->inventoryItemRepository->countSoldByBatchId($batchId);
-            $initialCount = count($availableItems) + $soldCount;
-            $status = count($availableItems) > 0 ? 'active' : 'completed';
+            $initialCount = $availableCount + $soldCount;
+            $status = $availableCount > 0 ? 'active' : 'completed';
 
             \App\Infrastructure\Persistence\Eloquent\InventoryBatchModel::where('id', $batchId)->update([
-                'keys_pool' => implode("\n", $availableItems),
                 'initial_count' => $initialCount,
                 'sold_count' => $soldCount,
                 'status' => $status

@@ -142,7 +142,6 @@ export class AdminCouponsComponent implements OnInit {
     const now = new Date();
     const start = new Date(coupon.start_date);
     const end = new Date(coupon.end_date);
-    end.setHours(23, 59, 59, 999);
 
     const isUsedUp = coupon.usage_limit > 0 && coupon.used_count >= coupon.usage_limit;
 

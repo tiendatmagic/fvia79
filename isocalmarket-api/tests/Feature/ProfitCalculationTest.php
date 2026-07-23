@@ -4,6 +4,7 @@ namespace Tests\Feature;
 
 use App\Infrastructure\Persistence\Eloquent\CategoryModel;
 use App\Infrastructure\Persistence\Eloquent\InventoryBatchModel;
+use App\Infrastructure\Persistence\Eloquent\InventoryItemModel;
 use App\Infrastructure\Persistence\Eloquent\OrderModel;
 use App\Infrastructure\Persistence\Eloquent\OrderItemModel;
 use App\Infrastructure\Persistence\Eloquent\ProductModel;
@@ -105,6 +106,52 @@ class ProfitCalculationTest extends TestCase
             'product_id' => $product->id,
             'cost_price' => 20000.0,
             'initial_count' => 3
+        ]);
+    }
+
+    public function test_resource_update_and_delete_keep_batch_counts_without_legacy_keys_pool_column(): void
+    {
+        $product = ProductModel::create([
+            'id' => '019f6699-e6d2-70f2-89bd-d3b93946a779',
+            'category_id' => $this->category->id,
+            'name' => 'Resource API Product',
+            'slug' => 'resource-api-product',
+            'price' => 50000.0,
+            'status' => 'active'
+        ]);
+
+        $importResponse = $this->withHeaders($this->adminHeaders())
+            ->postJson('/api/v1/inventory/import', [
+                'product_id' => $product->id,
+                'batch_name' => 'Resource API Batch',
+                'raw_data' => "account1|password1\naccount2|password2"
+            ])
+            ->assertCreated();
+
+        $batchId = $importResponse->json('data.id');
+        $items = InventoryItemModel::where('batch_id', $batchId)
+            ->orderBy('created_at')
+            ->get();
+
+        $this->assertCount(2, $items);
+
+        $this->withHeaders($this->adminHeaders())
+            ->putJson("/api/v1/inventory/resource-items/{$items[0]->id}", [
+                'secret_data' => 'account1|updated-password',
+                'status' => 'available'
+            ])
+            ->assertOk()
+            ->assertJsonPath('data.secret_data', 'account1|updated-password');
+
+        $this->withHeaders($this->adminHeaders())
+            ->deleteJson("/api/v1/inventory/resource-items/{$items[1]->id}")
+            ->assertOk();
+
+        $this->assertDatabaseHas('inventory_batches', [
+            'id' => $batchId,
+            'initial_count' => 1,
+            'sold_count' => 0,
+            'status' => 'active'
         ]);
     }
 

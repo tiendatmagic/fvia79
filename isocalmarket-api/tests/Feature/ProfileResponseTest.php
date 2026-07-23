@@ -66,6 +66,30 @@ class ProfileResponseTest extends TestCase
         $this->assertNotEmpty($response->json('user.api_key'));
     }
 
+    public function test_two_factor_enable_returns_a_valid_otpauth_url(): void
+    {
+        $response = $this->withHeaders($this->authHeaders())
+            ->postJson('/api/v1/profile/2fa/enable');
+
+        $response->assertOk()
+            ->assertJsonStructure(['secret', 'qr_code_url']);
+
+        $secret = $response->json('secret');
+        $qrCodeUrl = $response->json('qr_code_url');
+
+        $this->assertMatchesRegularExpression('/^[A-Z2-7]{16}$/', $secret);
+        $this->assertStringStartsWith(
+            'otpauth://totp/Isocalmarket:profile-contract%40example.com?',
+            $qrCodeUrl
+        );
+        $this->assertStringContainsString('secret='.rawurlencode($secret), $qrCodeUrl);
+        $this->assertStringContainsString('issuer=Isocalmarket', $qrCodeUrl);
+
+        $this->user->refresh();
+        $this->assertSame($secret, $this->user->google2fa_secret);
+        $this->assertFalse((bool) $this->user->google2fa_enabled);
+    }
+
     private function authHeaders(): array
     {
         $token = resolve(JwtService::class)->generateToken([
