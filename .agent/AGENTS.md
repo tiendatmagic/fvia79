@@ -13,6 +13,14 @@
 > Khi cần seed dữ liệu cho một seeder cụ thể, chỉ dùng:
 > - `php artisan db:seed --class=TenSeederClass` — chạy đúng 1 seeder.
 
+- **[CHỈNH SỬA GIAO DIỆN GRID 6 CỘT CHO THẺ THỐNG KÊ ADMIN DASHBOARD (ADMIN DASHBOARD 6-COLUMN GRID FIX)]**:
+  - **Mô tả yêu cầu**: Điều chỉnh giao diện các Thẻ chỉ số tổng quan ở trang Admin Dashboard (`AdminDashboardComponent`) trên các màn hình máy tính desktop / 1530px để hiển thị đồng bộ chuẩn **6 cột trong 1 hàng**.
+  - **Nội dung thực hiện (`admin-dashboard.component.html`)**:
+    - **Đồng bộ Skeleton Loader**: Chuyển số lượng thẻ nhấp nháy skeleton từ 5 thẻ sang 6 thẻ (`*ngFor="let i of [1, 2, 3, 4, 5, 6]"`), xóa logic dư thừa `[class.sm:col-span-2]` để khớp chính xác với 6 thẻ chỉ số thật.
+    - **Đồng bộ Grid Responsive Class**: Cập nhật container của cả Skeleton Loader và Loaded State thành `grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-6 gap-4`.
+    - Đảm bảo trên các màn hình rộng desktop / 1530px, 6 thẻ chỉ số (Tổng Doanh Thu, Tiền Lãi, Giá Vốn, Tổng Đơn Hàng, Tồn Kho, Thành Viên) luôn hiển thị 1 hàng 6 cột liền mạch, hoàn toàn không bị nhảy dòng hay lệch CLS khi đang tải dữ liệu.
+  - **Kiểm thử & Xác minh**: Biên dịch Angular `npm run build` hoàn tất 100% không có lỗi, backend tests `php artisan test` đạt **58/58 test cases (100% PASSED)**.
+
 - **[DỌN DẸP DỮ LIỆU SẢN PHẨM MẪU, ĐƠN HÀNG VÀ KHO HÀNG (CLEANUP SAMPLE DATA)]**:
   - **Đã xóa hoàn toàn 5 sản phẩm mẫu**:
     1. `B2B Test Cost Product 1784777117`

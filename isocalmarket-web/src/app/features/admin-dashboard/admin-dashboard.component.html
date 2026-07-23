@@ -35,11 +35,12 @@
     </div>
   </div>
 
-  <div *ngIf="loading()" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 2xl:grid-cols-5 gap-4">
+  <div
+    *ngIf="loading()"
+    class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 2xl:grid-cols-6 gap-4"
+  >
     <app-card
-      *ngFor="let i of [1, 2, 3, 4, 5]; let idx = index"
-      [class.sm:col-span-2]="idx === 4"
-      [class.lg:col-span-1]="idx === 4"
+      *ngFor="let i of [1, 2, 3, 4, 5, 6]"
       class="flex flex-col justify-between min-h-[136px] h-auto p-4 md:p-5 overflow-hidden"
     >
       <div class="flex items-center justify-between animate-pulse">
@@ -53,19 +54,28 @@
     </app-card>
   </div>
 
-  <div *ngIf="!loading() && stats()" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-6 gap-4">
+  <div
+    *ngIf="!loading() && stats()"
+    class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 2xl:grid-cols-6 gap-4"
+  >
     <!-- Doanh Thu -->
-    <app-card class="flex flex-col justify-between min-h-[136px] h-auto p-4 md:p-5 overflow-hidden border-l-4 border-l-blue-500">
+    <app-card
+      class="flex flex-col justify-between min-h-[136px] h-auto p-4 md:p-5 overflow-hidden border-l-4 border-l-blue-500"
+    >
       <div class="flex items-center justify-between">
         <span class="text-xs font-bold text-slate-400 dark:text-slate-500 uppercase tracking-wider">
           {{ 'dash.total_revenue' | translate }}
         </span>
-        <div class="w-9 h-9 rounded-xl bg-blue-50 dark:bg-blue-950/30 flex items-center justify-center text-blue-500">
+        <div
+          class="w-9 h-9 rounded-xl bg-blue-50 dark:bg-blue-950/30 flex items-center justify-center text-blue-500"
+        >
           <app-icon name="cash" class="w-4.5 h-4.5" />
         </div>
       </div>
       <div class="space-y-1.5 mt-2">
-        <h2 class="text-lg md:text-xl font-black text-slate-800 dark:text-white tracking-tight leading-none whitespace-nowrap">
+        <h2
+          class="text-lg md:text-xl font-black text-slate-800 dark:text-white tracking-tight leading-none whitespace-nowrap"
+        >
           {{ stats()?.total_revenue | appCurrency }}
         </h2>
         <app-badge variant="primary" size="sm" rounded="md">Doanh Thu Bán</app-badge>
@@ -73,17 +83,25 @@
     </app-card>
 
     <!-- Tiền Lãi (Lợi Nhuận Gộp) -->
-    <app-card class="flex flex-col justify-between min-h-[136px] h-auto p-4 md:p-5 overflow-hidden border-l-4 border-l-emerald-500 bg-gradient-to-br from-emerald-500/5 to-transparent">
+    <app-card
+      class="flex flex-col justify-between min-h-[136px] h-auto p-4 md:p-5 overflow-hidden border-l-4 border-l-emerald-500 bg-gradient-to-br from-emerald-500/5 to-transparent"
+    >
       <div class="flex items-center justify-between">
-        <span class="text-xs font-bold text-emerald-600 dark:text-emerald-400 uppercase tracking-wider">
+        <span
+          class="text-xs font-bold text-emerald-600 dark:text-emerald-400 uppercase tracking-wider"
+        >
           {{ 'dash.total_profit' | translate }}
         </span>
-        <div class="w-9 h-9 rounded-xl bg-emerald-50 dark:bg-emerald-950/40 flex items-center justify-center text-emerald-500 shadow-xs shadow-emerald-500/20">
+        <div
+          class="w-9 h-9 rounded-xl bg-emerald-50 dark:bg-emerald-950/40 flex items-center justify-center text-emerald-500 shadow-xs shadow-emerald-500/20"
+        >
           <app-icon name="check-circle" class="w-4.5 h-4.5" />
         </div>
       </div>
       <div class="space-y-1.5 mt-2">
-        <h2 class="text-lg md:text-xl font-black text-emerald-600 dark:text-emerald-400 tracking-tight leading-none whitespace-nowrap">
+        <h2
+          class="text-lg md:text-xl font-black text-emerald-600 dark:text-emerald-400 tracking-tight leading-none whitespace-nowrap"
+        >
           +{{ stats()?.total_profit | appCurrency }}
         </h2>
         <app-badge variant="success" size="sm" rounded="md">
@@ -93,17 +111,23 @@
     </app-card>
 
     <!-- Giá Vốn (COGS) -->
-    <app-card class="flex flex-col justify-between min-h-[136px] h-auto p-4 md:p-5 overflow-hidden border-l-4 border-l-amber-500">
+    <app-card
+      class="flex flex-col justify-between min-h-[136px] h-auto p-4 md:p-5 overflow-hidden border-l-4 border-l-amber-500"
+    >
       <div class="flex items-center justify-between">
         <span class="text-xs font-bold text-slate-400 dark:text-slate-500 uppercase tracking-wider">
           {{ 'dash.total_cogs' | translate }}
         </span>
-        <div class="w-9 h-9 rounded-xl bg-amber-50 dark:bg-amber-950/30 flex items-center justify-center text-amber-500">
+        <div
+          class="w-9 h-9 rounded-xl bg-amber-50 dark:bg-amber-950/30 flex items-center justify-center text-amber-500"
+        >
           <app-icon name="package" class="w-4.5 h-4.5" />
         </div>
       </div>
       <div class="space-y-1.5 mt-2">
-        <h2 class="text-lg md:text-xl font-black text-slate-800 dark:text-white tracking-tight leading-none whitespace-nowrap">
+        <h2
+          class="text-lg md:text-xl font-black text-slate-800 dark:text-white tracking-tight leading-none whitespace-nowrap"
+        >
           {{ stats()?.total_cogs | appCurrency }}
         </h2>
         <app-badge variant="warning" size="sm" rounded="md">Chi Phí Vốn</app-badge>
@@ -111,68 +135,110 @@
     </app-card>
 
     <!-- Tổng Đơn Hàng -->
-    <app-card class="flex flex-col justify-between min-h-[136px] h-auto p-4 md:p-5 overflow-hidden border-l-4 border-l-indigo-500">
+    <app-card
+      class="flex flex-col justify-between min-h-[136px] h-auto p-4 md:p-5 overflow-hidden border-l-4 border-l-indigo-500"
+    >
       <div class="flex items-center justify-between">
         <span class="text-xs font-bold text-slate-400 dark:text-slate-500 uppercase tracking-wider">
           {{ 'dash.total_orders' | translate }}
         </span>
-        <div class="w-9 h-9 rounded-xl bg-indigo-50 dark:bg-indigo-950/30 flex items-center justify-center text-indigo-500">
+        <div
+          class="w-9 h-9 rounded-xl bg-indigo-50 dark:bg-indigo-950/30 flex items-center justify-center text-indigo-500"
+        >
           <app-icon name="orders" class="w-4.5 h-4.5" />
         </div>
       </div>
       <div class="space-y-1.5 mt-2">
-        <h2 class="text-lg md:text-xl font-black text-slate-800 dark:text-white tracking-tight leading-none whitespace-nowrap">
+        <h2
+          class="text-lg md:text-xl font-black text-slate-800 dark:text-white tracking-tight leading-none whitespace-nowrap"
+        >
           {{ stats()?.total_orders | number }}
-          <span class="text-xs font-extrabold text-slate-500 ml-0.5">{{ 'dash.unit_orders' | translate }}</span>
+          <span class="text-xs font-extrabold text-slate-500 ml-0.5">{{
+            'dash.unit_orders' | translate
+          }}</span>
         </h2>
-        <app-badge variant="primary" class="!bg-indigo-500/10 dark:!bg-indigo-500/20 !text-indigo-600 dark:!text-indigo-400" size="sm" rounded="md">Đơn Hoàn Tất</app-badge>
+        <app-badge
+          variant="primary"
+          class="!bg-indigo-500/10 dark:!bg-indigo-500/20 !text-indigo-600 dark:!text-indigo-400"
+          size="sm"
+          rounded="md"
+          >Đơn Hoàn Tất</app-badge
+        >
       </div>
     </app-card>
 
     <!-- Tồn Kho Sẵn Sàng -->
-    <app-card class="flex flex-col justify-between min-h-[136px] h-auto p-4 md:p-5 overflow-hidden border-l-4 border-l-teal-500">
+    <app-card
+      class="flex flex-col justify-between min-h-[136px] h-auto p-4 md:p-5 overflow-hidden border-l-4 border-l-teal-500"
+    >
       <div class="flex items-center justify-between">
         <span class="text-xs font-bold text-slate-400 dark:text-slate-500 uppercase tracking-wider">
           {{ 'dash.available_inventory' | translate }}
         </span>
-        <div class="w-9 h-9 rounded-xl bg-teal-50 dark:bg-teal-950/30 flex items-center justify-center text-teal-500">
+        <div
+          class="w-9 h-9 rounded-xl bg-teal-50 dark:bg-teal-950/30 flex items-center justify-center text-teal-500"
+        >
           <app-icon name="inventory" class="w-4.5 h-4.5" />
         </div>
       </div>
       <div class="space-y-1.5 mt-2">
-        <h2 class="text-lg md:text-xl font-black text-slate-800 dark:text-white tracking-tight leading-none whitespace-nowrap">
+        <h2
+          class="text-lg md:text-xl font-black text-slate-800 dark:text-white tracking-tight leading-none whitespace-nowrap"
+        >
           {{ stats()?.total_available_inventory | number }}
-          <span class="text-xs font-extrabold text-slate-500 ml-0.5">{{ 'dash.unit_resources' | translate }}</span>
+          <span class="text-xs font-extrabold text-slate-500 ml-0.5">{{
+            'dash.unit_resources' | translate
+          }}</span>
         </h2>
-        <app-badge variant="secondary" size="sm" rounded="md">{{ 'dash.ready_to_sell' | translate }}</app-badge>
+        <app-badge variant="secondary" size="sm" rounded="md">{{
+          'dash.ready_to_sell' | translate
+        }}</app-badge>
       </div>
     </app-card>
 
     <!-- Thành Viên -->
-    <app-card class="flex flex-col justify-between min-h-[136px] h-auto p-4 md:p-5 overflow-hidden border-l-4 border-l-purple-500">
+    <app-card
+      class="flex flex-col justify-between min-h-[136px] h-auto p-4 md:p-5 overflow-hidden border-l-4 border-l-purple-500"
+    >
       <div class="flex items-center justify-between">
         <span class="text-xs font-bold text-slate-400 dark:text-slate-500 uppercase tracking-wider">
           {{ 'dash.total_users' | translate }}
         </span>
-        <div class="w-9 h-9 rounded-xl bg-purple-50 dark:bg-purple-950/30 flex items-center justify-center text-purple-500">
+        <div
+          class="w-9 h-9 rounded-xl bg-purple-50 dark:bg-purple-950/30 flex items-center justify-center text-purple-500"
+        >
           <app-icon name="customers" class="w-4.5 h-4.5" />
         </div>
       </div>
       <div class="space-y-1.5 mt-2">
-        <h2 class="text-lg md:text-xl font-black text-slate-800 dark:text-white tracking-tight leading-none whitespace-nowrap">
+        <h2
+          class="text-lg md:text-xl font-black text-slate-800 dark:text-white tracking-tight leading-none whitespace-nowrap"
+        >
           {{ stats()?.total_users | number }}
-          <span class="text-xs font-extrabold text-slate-500 ml-0.5">{{ 'dash.unit_members' | translate }}</span>
+          <span class="text-xs font-extrabold text-slate-500 ml-0.5">{{
+            'dash.unit_members' | translate
+          }}</span>
         </h2>
-        <app-badge variant="primary" class="!bg-purple-500/10 dark:!bg-purple-500/20 !text-purple-600 dark:!text-purple-400" size="sm" rounded="md">Đã Đăng Ký</app-badge>
+        <app-badge
+          variant="primary"
+          class="!bg-purple-500/10 dark:!bg-purple-500/20 !text-purple-600 dark:!text-purple-400"
+          size="sm"
+          rounded="md"
+          >Đã Đăng Ký</app-badge
+        >
       </div>
     </app-card>
   </div>
 
   <!-- Báo Cáo Phân Tích Lợi Nhuận & Tài Chính -->
   <app-card *ngIf="!loading() && stats()" class="p-6 space-y-6">
-    <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4 border-b border-slate-100 dark:border-slate-800/80 pb-4">
+    <div
+      class="flex flex-col sm:flex-row sm:items-center justify-between gap-4 border-b border-slate-100 dark:border-slate-800/80 pb-4"
+    >
       <div>
-        <h3 class="text-base font-black text-slate-800 dark:text-white tracking-tight flex items-center gap-2">
+        <h3
+          class="text-base font-black text-slate-800 dark:text-white tracking-tight flex items-center gap-2"
+        >
           <span class="p-1.5 rounded-lg bg-emerald-500/10 text-emerald-500">💰</span>
           <span>Báo Cáo Phân Tích Lợi Nhuận & Tài Chính</span>
         </h3>
@@ -181,7 +247,9 @@
         </p>
       </div>
       <div class="flex items-center gap-3">
-        <div class="px-3 py-1.5 rounded-xl bg-emerald-500/10 border border-emerald-500/20 text-emerald-600 dark:text-emerald-400 text-xs font-extrabold flex items-center gap-1.5">
+        <div
+          class="px-3 py-1.5 rounded-xl bg-emerald-500/10 border border-emerald-500/20 text-emerald-600 dark:text-emerald-400 text-xs font-extrabold flex items-center gap-1.5"
+        >
           <span>Tỷ Suất Lợi Nhuận:</span>
           <span class="text-sm font-black">{{ stats()?.profit_margin_percent ?? 0 }}%</span>
         </div>
@@ -190,33 +258,54 @@
 
     <!-- Thanh Tỷ Lệ Doanh Thu - Giá Vốn - Lợi Nhuận -->
     <div class="space-y-2">
-      <div class="flex items-center justify-between text-xs font-bold text-slate-600 dark:text-slate-400">
+      <div
+        class="flex items-center justify-between text-xs font-bold text-slate-600 dark:text-slate-400"
+      >
         <span>Cơ cấu Doanh Thu (100%): {{ stats()?.total_revenue | appCurrency }}</span>
         <span>
-          Lãi Net: <strong class="text-emerald-500">{{ stats()?.total_profit | appCurrency }}</strong> 
-          | Vốn: <strong class="text-amber-500">{{ stats()?.total_cogs | appCurrency }}</strong>
+          Lãi Net:
+          <strong class="text-emerald-500">{{ stats()?.total_profit | appCurrency }}</strong> | Vốn:
+          <strong class="text-amber-500">{{ stats()?.total_cogs | appCurrency }}</strong>
         </span>
       </div>
-      <div class="w-full h-4 bg-slate-100 dark:bg-slate-900 rounded-full overflow-hidden flex p-0.5 gap-0.5 border border-slate-200/50 dark:border-slate-800">
+      <div
+        class="w-full h-4 bg-slate-100 dark:bg-slate-900 rounded-full overflow-hidden flex p-0.5 gap-0.5 border border-slate-200/50 dark:border-slate-800"
+      >
         <div
           class="h-full bg-gradient-to-r from-emerald-500 to-teal-400 rounded-l-full transition-all duration-500 flex items-center justify-center text-[10px] font-black text-white"
-          [style.width.%]="stats()?.total_revenue > 0 ? (stats()?.total_profit / stats()?.total_revenue) * 100 : 0"
+          [style.width.%]="
+            stats()?.total_revenue > 0 ? (stats()?.total_profit / stats()?.total_revenue) * 100 : 0
+          "
           [appTooltip]="'Tiền Lãi: ' + (stats()?.total_profit | appCurrency)"
         ></div>
         <div
           class="h-full bg-gradient-to-r from-amber-400 to-orange-500 rounded-r-full transition-all duration-500 flex items-center justify-center text-[10px] font-black text-white"
-          [style.width.%]="stats()?.total_revenue > 0 ? (stats()?.total_cogs / stats()?.total_revenue) * 100 : 100"
+          [style.width.%]="
+            stats()?.total_revenue > 0 ? (stats()?.total_cogs / stats()?.total_revenue) * 100 : 100
+          "
           [appTooltip]="'Giá Vốn: ' + (stats()?.total_cogs | appCurrency)"
         ></div>
       </div>
       <div class="flex items-center justify-between text-[11px] text-slate-400 font-medium pt-1">
         <span class="flex items-center gap-1.5">
           <span class="w-2.5 h-2.5 rounded-full bg-emerald-500 inline-block"></span>
-          <span>Tiền Lãi Gộp ({{ stats()?.total_revenue > 0 ? ((stats()?.total_profit / stats()?.total_revenue) * 100 | number: '1.0-1') : 0 }}%)</span>
+          <span
+            >Tiền Lãi Gộp ({{
+              stats()?.total_revenue > 0
+                ? ((stats()?.total_profit / stats()?.total_revenue) * 100 | number: '1.0-1')
+                : 0
+            }}%)</span
+          >
         </span>
         <span class="flex items-center gap-1.5">
           <span class="w-2.5 h-2.5 rounded-full bg-amber-500 inline-block"></span>
-          <span>Chi Phí Giá Vốn ({{ stats()?.total_revenue > 0 ? ((stats()?.total_cogs / stats()?.total_revenue) * 100 | number: '1.0-1') : 0 }}%)</span>
+          <span
+            >Chi Phí Giá Vốn ({{
+              stats()?.total_revenue > 0
+                ? ((stats()?.total_cogs / stats()?.total_revenue) * 100 | number: '1.0-1')
+                : 0
+            }}%)</span
+          >
         </span>
       </div>
     </div>
@@ -229,14 +318,22 @@
         </h4>
         <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3">
           @for (item of stats()?.financial_chart; track item.date) {
-            <div class="p-3 rounded-xl bg-slate-50 dark:bg-slate-900/50 border border-slate-200/40 dark:border-slate-800/50 flex items-center justify-between">
+            <div
+              class="p-3 rounded-xl bg-slate-50 dark:bg-slate-900/50 border border-slate-200/40 dark:border-slate-800/50 flex items-center justify-between"
+            >
               <div>
-                <span class="text-xs font-extrabold text-slate-800 dark:text-slate-200 block">{{ item.date }}</span>
+                <span class="text-xs font-extrabold text-slate-800 dark:text-slate-200 block">{{
+                  item.date
+                }}</span>
                 <span class="text-[11px] text-slate-400">Vốn: {{ item.cogs | appCurrency }}</span>
               </div>
               <div class="text-right">
-                <span class="text-xs font-black text-emerald-600 dark:text-emerald-400 block">+{{ item.profit | appCurrency }}</span>
-                <span class="text-[11px] text-slate-500 font-medium">Bán: {{ item.revenue | appCurrency }}</span>
+                <span class="text-xs font-black text-emerald-600 dark:text-emerald-400 block"
+                  >+{{ item.profit | appCurrency }}</span
+                >
+                <span class="text-[11px] text-slate-500 font-medium"
+                  >Bán: {{ item.revenue | appCurrency }}</span
+                >
               </div>
             </div>
           }
@@ -248,9 +345,17 @@
   <app-card class="p-6 space-y-6">
     <div class="flex items-center justify-between">
       <div class="flex items-center gap-2">
-        @if (!lowStockLoading() && stats()?.low_stock_products?.data?.length > 0 && selectedThreshold() === '5') {
+        @if (
+          !lowStockLoading() &&
+          stats()?.low_stock_products?.data?.length > 0 &&
+          selectedThreshold() === '5'
+        ) {
           <div class="w-2.5 h-2.5 rounded-full bg-red-500 animate-ping"></div>
-        } @else if (!lowStockLoading() && stats()?.low_stock_products?.data?.length > 0 && selectedThreshold() !== '5') {
+        } @else if (
+          !lowStockLoading() &&
+          stats()?.low_stock_products?.data?.length > 0 &&
+          selectedThreshold() !== '5'
+        ) {
           <div class="w-2.5 h-2.5 rounded-full bg-emerald-400"></div>
         } @else {
           <div class="w-2.5 h-2.5 rounded-full bg-emerald-400"></div>
@@ -258,31 +363,43 @@
         <h3 class="text-base font-black text-slate-800 dark:text-white tracking-tight">
           {{ 'dash.inventory_filter' | translate }}
           @if (stats()?.low_stock_threshold_label) {
-            <span class="text-slate-400 font-semibold text-sm ml-1">({{ stats()?.low_stock_threshold_label }})</span>
+            <span class="text-slate-400 font-semibold text-sm ml-1"
+              >({{ stats()?.low_stock_threshold_label }})</span
+            >
           } @else {
-            <span class="text-slate-400 font-semibold text-sm ml-1">({{ 'dash.less_than_items' | translate: { count: 5 } }})</span>
+            <span class="text-slate-400 font-semibold text-sm ml-1"
+              >({{ 'dash.less_than_items' | translate: { count: 5 } }})</span
+            >
           }
         </h3>
       </div>
-      @if (!lowStockLoading() && stats()?.low_stock_products?.data?.length > 0 && selectedThreshold() === '5') {
-        <app-badge variant="danger" size="sm" rounded="full" [pulse]="true"
-          >{{ 'dash.restock_urgent' | translate }}</app-badge
-        >
-      } @else if (!lowStockLoading() && stats()?.low_stock_products?.data?.length > 0 && selectedThreshold() !== '5') {
-        <app-badge variant="success" size="sm" rounded="full"
-          >{{ 'dash.good_stock' | translate }}</app-badge
-        >
+      @if (
+        !lowStockLoading() &&
+        stats()?.low_stock_products?.data?.length > 0 &&
+        selectedThreshold() === '5'
+      ) {
+        <app-badge variant="danger" size="sm" rounded="full" [pulse]="true">{{
+          'dash.restock_urgent' | translate
+        }}</app-badge>
+      } @else if (
+        !lowStockLoading() &&
+        stats()?.low_stock_products?.data?.length > 0 &&
+        selectedThreshold() !== '5'
+      ) {
+        <app-badge variant="success" size="sm" rounded="full">{{
+          'dash.good_stock' | translate
+        }}</app-badge>
       } @else if (!lowStockLoading() && stats() && selectedThreshold() === '5') {
-        <app-badge variant="success" size="sm" rounded="full"
-          >{{ 'dash.stock_full' | translate }}</app-badge
-        >
+        <app-badge variant="success" size="sm" rounded="full">{{
+          'dash.stock_full' | translate
+        }}</app-badge>
       }
     </div>
 
-        <div
+    <div
       class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 bg-slate-50/50 dark:bg-slate-950/20 border border-slate-200/30 dark:border-slate-800/30 rounded-2xl p-4 sm:p-5"
     >
-            <div class="form-field">
+      <div class="form-field">
         <label
           class="text-xs font-bold text-slate-400 dark:text-slate-500 uppercase tracking-wider block mb-1"
           >{{ 'dash.stock_threshold' | translate }}</label
@@ -296,7 +413,7 @@
         />
       </div>
 
-            <div class="form-field">
+      <div class="form-field">
         <label
           class="text-xs font-bold text-slate-400 dark:text-slate-500 uppercase tracking-wider block mb-1"
           >{{ 'prod.category' | translate }}</label
@@ -310,7 +427,7 @@
         />
       </div>
 
-            <div class="form-field sm:col-span-2">
+      <div class="form-field sm:col-span-2">
         <label
           class="text-xs font-bold text-slate-400 dark:text-slate-500 uppercase tracking-wider block mb-1"
           >{{ 'prod.search' | translate }}</label
@@ -326,7 +443,7 @@
       </div>
     </div>
 
-        <div *ngIf="lowStockLoading()" class="space-y-4">
+    <div *ngIf="lowStockLoading()" class="space-y-4">
       <div
         *ngFor="let i of [1, 2, 3]"
         class="flex items-center justify-between py-2 border-b border-slate-100 dark:border-slate-800/40 last:border-0"
@@ -338,7 +455,7 @@
       </div>
     </div>
 
-        <ng-container *ngIf="!lowStockLoading() && stats()">
+    <ng-container *ngIf="!lowStockLoading() && stats()">
       <div
         *ngIf="(stats()?.low_stock_products?.data || []).length === 0"
         class="flex flex-col items-center justify-center py-8 text-center space-y-2"
@@ -364,7 +481,10 @@
           [emptyText]="'dash.stock_full_desc' | translate"
         >
           <ng-template appTableCell="name" let-row="row">
-            <span class="truncate max-w-[200px] block font-bold text-slate-800 dark:text-slate-100" [appTooltip]="row.name">
+            <span
+              class="truncate max-w-[200px] block font-bold text-slate-800 dark:text-slate-100"
+              [appTooltip]="row.name"
+            >
               {{ row.name }}
             </span>
           </ng-template>
