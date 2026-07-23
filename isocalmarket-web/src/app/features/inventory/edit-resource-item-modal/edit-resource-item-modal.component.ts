@@ -24,13 +24,23 @@ import { TranslatePipe } from '@shared/pipes/translate.pipe';
   ],
   template: `
     <div class="space-y-6 pb-2 pt-2">
-      <div class="form-field">
-        <label class="text-xs font-black text-slate-400 uppercase tracking-wider block mb-2">
-          {{ 'modal.product_name' | translate }} / {{ 'inv.batch_name' | translate }}
-        </label>
-        <div class="px-4 py-3 rounded-xl bg-slate-50 dark:bg-slate-900 border border-slate-200/60 dark:border-slate-800 text-sm font-bold text-slate-700 dark:text-slate-200 flex items-center justify-between">
-          <span>{{ item?.product_name || 'N/A' }}</span>
-          <span class="text-[var(--color-primary)] font-extrabold">{{ item?.batch_name || 'N/A' }}</span>
+      <div class="grid grid-cols-1 sm:grid-cols-2 gap-6">
+        <div class="form-field">
+          <label class="text-xs font-black text-slate-400 uppercase tracking-wider block mb-2">
+            {{ 'common.product' | translate }}
+          </label>
+          <div class="px-4 py-3 rounded-xl bg-slate-50 dark:bg-slate-900 border border-slate-200/60 dark:border-slate-800 text-sm font-extrabold text-slate-800 dark:text-white truncate">
+            {{ item?.product_name || 'N/A' }}
+          </div>
+        </div>
+
+        <div class="form-field">
+          <label class="text-xs font-black text-slate-400 uppercase tracking-wider block mb-2">
+            {{ 'inv.batch_name' | translate }}
+          </label>
+          <div class="px-4 py-3 rounded-xl bg-slate-50 dark:bg-slate-900 border border-slate-200/60 dark:border-slate-800 text-sm font-extrabold text-[var(--color-primary)] truncate">
+            {{ item?.batch_name || 'N/A' }}
+          </div>
         </div>
       </div>
 
