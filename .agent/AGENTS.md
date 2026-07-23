@@ -30,7 +30,10 @@
   - **Giao diện Dashboard (`AdminDashboardComponent`)**:
     - Thiết kế 3 Thẻ chỉ số nổi bật: 💰 **Tổng Tiền Lãi (Lợi Nhuận)**, 📦 **Tổng Giá Vốn (Chi Phí Nhập)**, 📈 **Tỷ Suất Lợi Nhuận (%)**.
     - Thêm Card **Báo Cáo Phân Tích Lợi Nhuận & Tài Chính**: Thanh visual progress bar phân rã tỷ lệ Lãi Gộp vs Chi Phí Vốn trên Doanh thu, kèm danh sách chi tiết lợi nhuận theo từng ngày.
-  - **Đã kiểm thử toàn diện**: Backend `php artisan test` vượt qua **56/56 test cases (100% PASSED)**, biên dịch Angular `npm run build` hoàn tất thành công 100%!
+  - **Chức năng Đồng Bộ & Tính Toán Lại Lợi Nhuận (`POST /v1/admin/maintenance/recalculate-profit` & Command `php artisan profit:recalculate`)**:
+    - Thêm Card **Đồng Bộ & Tính Toán Lại Lợi Nhuận** tại trang Cấu hình Bảo trì ([http://localhost:4200/admin/settings](http://localhost:4200/admin/settings) tab Maintenance).
+    - Cho phép Admin tính toán lại toàn bộ snapshot giá vốn của các đơn hàng quá khứ theo giá vốn lô hàng mới nhất mà **tuyệt đối KHÔNG làm mất hay thay đổi Giá gốc, Giá bán hoặc dữ liệu Kho hàng hiện tại**.
+  - **Đã kiểm thử toàn diện**: Backend `php artisan test` vượt qua **58/58 test cases (100% PASSED)**, biên dịch Angular `npm run build` hoàn tất thành công 100%!
 
 - **[NÂNG CẤP DATETIME PICKER UI CHO QUẢN LÝ MÃ GIẢM GIÁ (COUPONS DATETIME UI)]**:
   - Nâng cấp component `CustomDatePickerComponent` (`custom-date-picker`): Bổ sung chế độ chọn Ngày + Giờ linh hoạt (`@Input() enableTime: boolean = false`), tích hợp bộ chọn Giờ (00-23) và Phút (00-59) mượt mà với hiệu ứng theme thích ứng Light/Dark mode.

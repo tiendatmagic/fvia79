@@ -69,6 +69,8 @@ Route::prefix('v1')->group(function () {
             Route::post('/admin/maintenance/optimize', ['App\Http\Controllers\SystemSettingController', 'optimize']);
             Route::post('/admin/maintenance/clear-optimize', ['App\Http\Controllers\SystemSettingController', 'clearOptimize']);
             Route::post('/admin/maintenance/clear-all', ['App\Http\Controllers\SystemSettingController', 'clearAllCaches']);
+            Route::post('/admin/maintenance/recalculate-profit', ['App\Http\Controllers\SystemSettingController', 'recalculateProfit']);
+            Route::post('/admin/maintenance/reset-profit', ['App\Http\Controllers\SystemSettingController', 'resetProfit']);
             Route::post('/admin/maintenance/clean-tokens', ['App\Http\Controllers\SystemSettingController', 'cleanTokens']);
             Route::post('/admin/maintenance/clean-all-tokens', ['App\Http\Controllers\SystemSettingController', 'cleanAllTokens']);
 

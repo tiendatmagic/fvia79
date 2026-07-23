@@ -157,6 +157,26 @@ class SystemSettingController extends Controller
     }
 
     /**
+     * Đồng bộ và tính toán lại tiền lãi & snapshot giá gốc toàn bộ đơn hàng
+     */
+    public function recalculateProfit()
+    {
+        Artisan::call('profit:recalculate');
+
+        return response()->json(['success' => true, 'message' => 'Profit snapshots and dashboard stats recalculated successfully.']);
+    }
+
+    /**
+     * Thiết lập lại toàn bộ lợi nhuận đơn hàng quá khứ về 0
+     */
+    public function resetProfit()
+    {
+        Artisan::call('profit:reset');
+
+        return response()->json(['success' => true, 'message' => 'Profit reset to 0 successfully.']);
+    }
+
+    /**
      * Dọn dẹp đệ quy toàn bộ thư mục và tệp tin
      */
     private function recursiveCleanDirectory($dirPath)

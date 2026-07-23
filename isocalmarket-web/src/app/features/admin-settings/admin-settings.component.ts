@@ -309,6 +309,16 @@ export class AdminSettingsComponent implements OnInit, OnDestroy {
       }).afterClosed$.subscribe((confirmed?: boolean) => {
         if (confirmed) run();
       });
+    } else if (action === 'reset-profit') {
+      this.modalService.confirm({
+        title: this.lang.translate('modal.reset_profit_title'),
+        description: this.lang.translate('modal.reset_profit_desc'),
+        confirmText: this.lang.translate('action.confirm'),
+        cancelText: this.lang.translate('action.cancel'),
+        confirmButtonClass: '!bg-rose-600 hover:!bg-rose-700'
+      }).afterClosed$.subscribe((confirmed?: boolean) => {
+        if (confirmed) run();
+      });
     } else {
       run();
     }

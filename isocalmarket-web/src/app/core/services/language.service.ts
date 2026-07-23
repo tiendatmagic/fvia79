@@ -224,6 +224,16 @@ export const TRANSLATIONS: Record<SupportedLanguage, Record<string, string>> = {
     'settings.clear_optimize_desc': 'Remove all optimization cache files to allow new code changes to take effect.',
     'settings.token_section_title': 'Sanctum Token Maintenance',
     'settings.token_section_desc': 'Remove old or expired login tokens from database to free up storage.',
+    'settings.profit_section_title': 'Financial & Profit Synchronization',
+    'settings.profit_section_desc': 'Recalculate cost price snapshots and profit metrics across past order history without affecting current inventory batch prices.',
+    'settings.recalculate_profit_title': 'Recalculate Profit & COGS',
+    'settings.recalculate_profit_desc': 'Resynchronize cost prices for completed orders and rebuild dashboard financial stats (Safe: does NOT alter existing selling prices or inventory stock).',
+    'settings.recalculate_profit_btn': 'Recalculate Profit',
+    'settings.reset_profit_title': 'Reset Historical Profit to 0',
+    'settings.reset_profit_desc': 'Reset gross profit metrics across past order history back to 0 (Safe: does NOT alter existing selling prices or inventory batch cost prices).',
+    'settings.reset_profit_btn': 'Reset Profit to 0',
+    'modal.reset_profit_title': 'Confirm Reset Profit to 0?',
+    'modal.reset_profit_desc': 'Are you sure you want to reset all historical order profit to 0? Cost prices for past orders will match selling prices. Inventory batch cost prices and product prices will remain untouched.',
     'settings.token_days_label': 'Token Retention Period (Days)',
     'settings.token_days_placeholder': 'E.g.: 7',
     'settings.save_token_settings': 'Save Settings',
@@ -1378,6 +1388,16 @@ export const TRANSLATIONS: Record<SupportedLanguage, Record<string, string>> = {
     'settings.clear_optimize_desc': 'Gỡ bỏ tất cả các tệp cache tối ưu hóa để cho phép các thay đổi mới trong code có hiệu lực.',
     'settings.token_section_title': 'BẢO TRÌ SANCTUM TOKEN',
     'settings.token_section_desc': 'Xóa bỏ các token đăng nhập cũ hoặc đã hết hạn trong database để giải phóng dung lượng.',
+    'settings.profit_section_title': 'ĐỒNG BỘ & TÍNH TOÁN LẠI LỢI NHUẬN',
+    'settings.profit_section_desc': 'Tính toán lại snapshot giá gốc và tiền lãi cho toàn bộ đơn hàng trong quá khứ mà không ảnh hưởng tới giá bán hay kho hàng hiện tại.',
+    'settings.recalculate_profit_title': 'Tính toán lại Lợi nhuận & Giá vốn',
+    'settings.recalculate_profit_desc': 'Đồng bộ lại snapshot giá gốc của đơn hàng đã bán và tính lại các chỉ số tài chính trên Dashboard (An toàn: Tuyệt đối KHÔNG làm mất hay thay đổi Giá bán, Giá gốc của kho).',
+    'settings.recalculate_profit_btn': 'Tính lại lợi nhuận',
+    'settings.reset_profit_title': 'Thiết lập lại Lợi nhuận về 0',
+    'settings.reset_profit_desc': 'Đặt toàn bộ lợi nhuận gộp từ lịch sử đơn hàng quá khứ về 0 (An toàn: Tuyệt đối KHÔNG làm mất hay thay đổi giá gốc của kho hàng và sản phẩm hiện tại).',
+    'settings.reset_profit_btn': 'Reset lợi nhuận',
+    'modal.reset_profit_title': 'Xác nhận thiết lập lại lợi nhuận về 0?',
+    'modal.reset_profit_desc': 'Bạn có chắc chắn muốn thiết lập lại toàn bộ lợi nhuận lịch sử về 0? Giá vốn của các đơn hàng đã bán sẽ được đặt bằng với giá bán. Giá gốc của kho hàng và sản phẩm sẽ giữ nguyên 100%.',
     'settings.token_days_label': 'Thời gian giữ lại token (Ngày)',
     'settings.token_days_placeholder': 'Ví dụ: 7',
     'settings.save_token_settings': 'Lưu thiết lập',
@@ -2321,7 +2341,7 @@ export class LanguageService {
   private readonly currencyService = inject(CurrencyService);
   public readonly currentLang = signal<SupportedLanguage>(this.getInitialLang());
 
-  constructor() {}
+  constructor() { }
 
   private getInitialLang(): SupportedLanguage {
     const saved = localStorage.getItem('app_lang');
