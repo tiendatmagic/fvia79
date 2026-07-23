@@ -28,6 +28,9 @@ trait AccentInsensitiveSearchTrait
         if ($column === 'batch_name') {
             return 'normalized_batch_name';
         }
+        if ($column === 'secret_data') {
+            return 'normalized_secret_data';
+        }
         return $column;
     }
 

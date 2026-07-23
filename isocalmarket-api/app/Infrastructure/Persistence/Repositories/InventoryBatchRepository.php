@@ -74,12 +74,14 @@ class InventoryBatchRepository implements InventoryBatchRepositoryInterface
         $itemsToInsert = [];
         foreach ($cleanLines as $line) {
             if (!in_array($line, $existingAvailableSecrets, true)) {
-                $normalized = \Illuminate\Support\Str::slug($line, '');
+                $parts = explode('|', $line);
+                $identity = trim($parts[0] ?? '');
+                $normalized = \Illuminate\Support\Str::slug($identity, '');
                 $itemsToInsert[] = [
                     'id' => (string) \Illuminate\Support\Str::uuid7(),
                     'batch_id' => $model->id,
                     'product_id' => $model->product_id,
-                    'secret_data' => $line,
+                    'secret_data' => \Illuminate\Support\Facades\Crypt::encryptString($line),
                     'normalized_secret_data' => substr($normalized, 0, 255),
                     'status' => 'available',
                     'order_id' => null,
@@ -112,6 +114,9 @@ class InventoryBatchRepository implements InventoryBatchRepositoryInterface
                 $q->orWhereHas('product', function ($pq) use ($search) {
                     $this->applyAccentInsensitiveSearch($pq, 'name', $search);
                 });
+                $q->orWhereHas('items', function ($iq) use ($search) {
+                    $this->applyAccentInsensitiveSearch($iq, 'secret_data', $search);
+                });
             });
         }
 
@@ -135,6 +140,9 @@ class InventoryBatchRepository implements InventoryBatchRepositoryInterface
                 $this->applyAccentInsensitiveSearch($q, 'batch_name', $search);
                 $q->orWhereHas('product', function ($pq) use ($search) {
                     $this->applyAccentInsensitiveSearch($pq, 'name', $search);
+                });
+                $q->orWhereHas('items', function ($iq) use ($search) {
+                    $this->applyAccentInsensitiveSearch($iq, 'secret_data', $search);
                 });
             });
         }

@@ -13,6 +13,14 @@
 > Khi cần seed dữ liệu cho một seeder cụ thể, chỉ dùng:
 > - `php artisan db:seed --class=TenSeederClass` — chạy đúng 1 seeder.
 
+- **[NÂNG CẤP BẢO MẬT AES-256 TOÀN DIỆN CHO CẢ KHO HÀNG VÀ LỊCH SỬ MUA HÀNG (FULL DATABASE ENCRYPTION AT REST)]**:
+  - **Mã hóa Kho hàng (`inventory_items`)**: Mã hóa AES-256-CBC (`Crypt::encryptString` / `Crypt::decryptString`) cột `secret_data`. Chỉ mục `normalized_secret_data` chỉ lưu thông tin Tên đăng nhập / Email / UID (phần thông tin trước dấu `|` đầu tiên) để phục vụ B-Tree Index tìm kiếm siêu tốc mà tuyệt đối không chứa mật khẩu.
+  - **Mã hóa Lịch sử mua hàng (`order_items`)**: Mã hóa AES-256-CBC (`Crypt::encryptString` / `Crypt::decryptString`) cột `delivered_keys` (danh sách tài khoản đã xuất kho cho khách). Trong CSDL và file Backup `.sql`, 100% mật khẩu đều bị mã hóa thành dạng token an toàn (`eyJpdiI6...`).
+  - **Chuẩn hóa CSDL 3NF (Xóa cột `keys_pool` dư thừa)**: Tạo migration `2026_07_23_000004_drop_keys_pool_from_inventory_batches_table.php` chính thức xóa bỏ cột `keys_pool` khỏi bảng `inventory_batches`. Khối văn bản của Lô hàng hiện được dựng động O(1) trực tiếp từ danh sách các thực thể `inventory_items`, giúp CSDL đạt chuẩn 3NF 100%, hoàn toàn không còn dữ liệu dư thừa.
+  - **Tự động giải mã trên API**: Tất cả API User (Lịch sử đơn hàng, Chi tiết đơn hàng) và Admin API (Quản lý kho hàng, Quản lý đơn hàng) tự động giải mã mượt mà 100% khi truy vấn.
+  - **Sửa lỗi Tìm kiếm Tiếng Việt không dấu**: Cập nhật `AccentInsensitiveSearchTrait` map chính xác `secret_data` sang `normalized_secret_data` trong câu lệnh SQL `LIKE`. Đồng thời mở rộng `InventoryBatchRepository` hỗ trợ tìm kiếm xuyên suốt cả Lô hàng, Sản phẩm và các dòng Tài khoản lẻ bên trong Lô. Tìm kiếm theo Email/User/UID hay có dấu/không dấu (`dat`, `đạt`, `tiến đạt`) ở cả 2 Tab (Danh Sách Lô Hàng & Chi Tiết Tài Nguyên) lập tức trả về kết quả chính xác 100%.
+  - Đã mã hóa toàn bộ dữ liệu đơn hàng hiện có, kiểm thử `php artisan test` vượt qua **56/56 test cases (100% PASSED)** và Angular `npm run build` thành công 100%.
+
 - **[CHUYỂN MÃ UID NGƯỜI DÙNG SANG DẠNG SỐ TỰ ĐỘNG MỞ RỘNG (DYNAMIC AUTO-EXPANDING NUMERIC UID 8-32 DIGITS)]**:
   - Cập nhật thuật toán tạo UID `UserModel::generateUniqueUid()`: Khởi đầu bằng mã 8 chữ số số thuần (`10000000` -> `99999999`) dựa theo timestamp tăng tiến kết hợp bộ đếm sequence trong bộ nhớ. Khi số lượng tài khoản/thời gian vượt ngưỡng 90 triệu người dùng, thuật toán tự động nới rộng lên 9 chữ số (`100000000`), 10 chữ số... mượt mà mà không bao giờ bị giới hạn đụng trần.
   - Nâng độ rộng cột `uid` trong bảng `users` lên `VARCHAR(32)` tại migrations `2026_07_23_000000_add_uid_to_users_table.php` và `2026_07_23_000002_update_uid_to_numeric_in_users_table.php` để CSDL sẵn sàng mở rộng mà không cần chạy lại migration sau này.

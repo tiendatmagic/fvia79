@@ -7,6 +7,7 @@ use Illuminate\Database\Eloquent\Concerns\HasUuids;
 use Illuminate\Database\Eloquent\Attributes\Fillable;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Support\Str;
+use Illuminate\Support\Facades\Crypt;
 
 #[Fillable(['batch_id', 'product_id', 'secret_data', 'normalized_secret_data', 'status', 'order_id', 'sold_at'])]
 class InventoryItemModel extends Model
@@ -19,9 +20,39 @@ class InventoryItemModel extends Model
     {
         static::saving(function ($model) {
             if ($model->isDirty('secret_data')) {
-                $model->normalized_secret_data = substr(self::normalizeText($model->secret_data), 0, 255);
+                $plainText = $model->secret_data;
+                $parts = explode('|', $plainText);
+                $identity = trim($parts[0] ?? '');
+                $model->normalized_secret_data = substr(self::normalizeText($identity), 0, 255);
             }
         });
+    }
+
+    public function getSecretDataAttribute($value): string
+    {
+        if (empty($value)) {
+            return '';
+        }
+        try {
+            return Crypt::decryptString($value);
+        } catch (\Throwable $e) {
+            return (string) $value;
+        }
+    }
+
+    public function setSecretDataAttribute($value): void
+    {
+        if (empty($value)) {
+            $this->attributes['secret_data'] = '';
+            return;
+        }
+
+        try {
+            Crypt::decryptString($value);
+            $this->attributes['secret_data'] = (string) $value;
+        } catch (\Throwable $e) {
+            $this->attributes['secret_data'] = Crypt::encryptString((string) $value);
+        }
     }
 
     public function newUniqueId(): string

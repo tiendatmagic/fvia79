@@ -31,7 +31,6 @@ class InventoryBatchMapper
 
         $model->product_id = $entity->getProductId();
         $model->batch_name = $entity->getBatchName();
-        $model->keys_pool = $entity->getKeysPool();
         $model->initial_count = $entity->getInitialCount();
         $model->sold_count = $entity->getSoldCount();
         $model->status = $entity->getStatus();

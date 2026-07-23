@@ -6,9 +6,10 @@ use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Concerns\HasUuids;
 use Illuminate\Database\Eloquent\Attributes\Fillable;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Support\Str;
 
-#[Fillable(['product_id', 'batch_name', 'keys_pool', 'initial_count', 'sold_count', 'status'])]
+#[Fillable(['product_id', 'batch_name', 'initial_count', 'sold_count', 'status'])]
 class InventoryBatchModel extends Model
 {
     use HasUuids, NormalizeTextTrait;
@@ -24,6 +25,14 @@ class InventoryBatchModel extends Model
         });
     }
 
+    public function getKeysPoolAttribute(): string
+    {
+        if ($this->relationLoaded('items')) {
+            return implode("\n", $this->items->pluck('secret_data')->toArray());
+        }
+        return implode("\n", $this->items()->pluck('secret_data')->toArray());
+    }
+
     public function newUniqueId(): string
     {
         return (string) Str::uuid7();
@@ -32,5 +41,10 @@ class InventoryBatchModel extends Model
     public function product(): BelongsTo
     {
         return $this->belongsTo(ProductModel::class, 'product_id');
+    }
+
+    public function items(): HasMany
+    {
+        return $this->hasMany(InventoryItemModel::class, 'batch_id');
     }
 }

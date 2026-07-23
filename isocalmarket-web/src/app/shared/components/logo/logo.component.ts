@@ -2,7 +2,7 @@ import { Component } from '@angular/core';
 
 @Component({
   selector: 'app-logo',
-  
+
   template: `
     <div class="relative w-full h-full flex items-center justify-center group overflow-hidden">
       <img
@@ -23,5 +23,6 @@ import { Component } from '@angular/core';
         display: block;
       }
     `
-  ]})
-export class LogoComponent {}
+  ]
+})
+export class LogoComponent { }
