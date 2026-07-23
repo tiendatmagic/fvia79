@@ -18,7 +18,19 @@ class UserSessionController extends Controller
         $perPage = (int) $request->query('per_page', 10);
         $perPage = max(1, min(100, $perPage));
 
+        $userModel = Auth::user();
         $currentSessionId = $request->attributes->get('current_session_id');
+
+        $existingCount = UserSessionModel::where('user_id', $userId)->count();
+        if ($userModel && ($existingCount === 0 || ! $currentSessionId || ! UserSessionModel::where('id', $currentSessionId)->exists())) {
+            $user = \App\Infrastructure\Persistence\Mappers\UserMapper::toDomain($userModel);
+            $newSession = app(\App\Application\Services\AuthService::class)->createSession(
+                $user,
+                $request->ip(),
+                $request->header('User-Agent')
+            );
+            $currentSessionId = $newSession->id;
+        }
 
         $paginator = UserSessionModel::where('user_id', $userId)
             ->orderByDesc('last_activity_at')
@@ -72,5 +84,27 @@ class UserSessionController extends Controller
         $session->delete();
 
         return response()->json(['message' => 'Session revoked successfully.']);
+    }
+
+    public function destroyOthers(Request $request)
+    {
+        $userId = Auth::id();
+        if (! $userId) {
+            return response()->json(['message' => 'Unauthorized.'], 401);
+        }
+
+        $currentSessionId = $request->attributes->get('current_session_id');
+
+        $query = UserSessionModel::where('user_id', $userId);
+        if ($currentSessionId) {
+            $query->where('id', '!=', $currentSessionId);
+        }
+
+        $deletedCount = $query->delete();
+
+        return response()->json([
+            'message' => "Successfully revoked {$deletedCount} other active sessions.",
+            'deleted_count' => $deletedCount,
+        ]);
     }
 }

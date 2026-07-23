@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Application\Services\SystemSettingService;
 use App\Infrastructure\Persistence\Eloquent\UserModel;
+use App\Infrastructure\Persistence\Eloquent\UserSessionModel;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Artisan;
 use Illuminate\Support\Facades\File;
@@ -181,19 +182,22 @@ class SystemSettingController extends Controller
             'refresh_token_expired_at' => null,
         ]);
 
+        $deletedSessions = UserSessionModel::where('last_activity_at', '<', now()->subDays(30))->delete();
+
         return response()->json([
             'success' => true,
-            'message' => "Successfully cleaned up {$deletedCount} expired refresh tokens from database.",
+            'message' => "Successfully cleaned up {$deletedCount} expired refresh tokens and {$deletedSessions} old sessions from database.",
         ]);
     }
 
     public function cleanAllTokens()
     {
         Artisan::call('auth:force-logout-all');
+        UserSessionModel::query()->delete();
 
         return response()->json([
             'success' => true,
-            'message' => 'Successfully revoked all active tokens. All users logged out.',
+            'message' => 'Successfully revoked all active tokens and sessions. All users logged out.',
         ]);
     }
 }

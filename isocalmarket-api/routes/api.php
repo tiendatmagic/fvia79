@@ -42,6 +42,7 @@ Route::prefix('v1')->group(function () {
         Route::post('/profile/2fa/disable', ['App\Http\Controllers\ProfileController', 'disable2Fa']);
         Route::post('/profile/api-key', ['App\Http\Controllers\ProfileController', 'generateApiKey']);
         Route::get('/user/sessions', ['App\Http\Controllers\UserSessionController', 'index']);
+        Route::delete('/user/sessions/others', ['App\Http\Controllers\UserSessionController', 'destroyOthers']);
         Route::delete('/user/sessions/{id}', ['App\Http\Controllers\UserSessionController', 'destroy']);
 
         Route::post('/orders', ['App\Http\Controllers\OrderController', 'store']);

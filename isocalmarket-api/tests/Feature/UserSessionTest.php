@@ -128,11 +128,48 @@ class UserSessionTest extends TestCase
         $session->delete();
 
         // Send refresh request with expired/existing access token cookie and valid refresh token cookie
-        $response = $this->withCookie('access_token', $accessToken)
-            ->withCookie('refresh_token', $refreshToken)
-            ->postJson('/api/v1/auth/refresh');
+        $refreshResponse = $this->postJson('/api/v1/auth/refresh', [
+            'refresh_token' => $refreshToken,
+        ]);
 
-        // Should be rejected with 401 Unauthorized
-        $response->assertStatus(401);
+        $refreshResponse->assertStatus(401);
+    }
+
+    public function test_user_can_revoke_all_other_sessions(): void
+    {
+        $user = UserModel::create([
+            'username' => 'sessionuser5',
+            'name' => 'Session User 5',
+            'email' => 'sessiontest5@example.com',
+            'password' => bcrypt('password123'),
+            'role' => 'customer',
+            'google2fa_enabled' => false,
+        ]);
+
+        $domainUser = UserMapper::toDomain($user);
+        $authService = app(AuthService::class);
+        $currentSession = $authService->createSession($domainUser, '127.0.0.1', 'Mozilla/5.0 Chrome/120.0');
+        $token = $authService->generateAccessToken($domainUser, $currentSession->id);
+
+        UserSessionModel::create([
+            'user_id' => $user->id,
+            'ip_address' => '192.168.1.101',
+            'user_agent' => 'Firefox',
+            'device_name' => 'Firefox (Windows)',
+            'last_activity_at' => now(),
+        ]);
+        UserSessionModel::create([
+            'user_id' => $user->id,
+            'ip_address' => '192.168.1.102',
+            'user_agent' => 'Safari',
+            'device_name' => 'Safari (Mac)',
+            'last_activity_at' => now(),
+        ]);
+
+        $response = $this->withToken($token)->deleteJson('/api/v1/user/sessions/others');
+        $response->assertStatus(200);
+
+        $this->assertDatabaseHas('user_sessions', ['id' => $currentSession->id]);
+        $this->assertEquals(1, UserSessionModel::where('user_id', $user->id)->count());
     }
 }

@@ -21,14 +21,15 @@
       - Eloquent Model `UserSessionModel.php` tự động parse User-Agent thành tên trình duyệt & hệ điều hành thân thiện.
       - Cập nhật `AuthService.php` đính kèm `sid` claim vào JWT token và kiểm tra tính hợp lệ khi làm mới token.
       - Cập nhật `JwtAuthMiddleware.php` tự động từ chối `401 Unauthorized` nếu phiên đã bị xóa/đăng xuất từ xa.
-      - Tạo `UserSessionController.php` hỗ trợ `GET /v1/user/sessions` (phân trang & đánh dấu `is_current: true`) và `DELETE /v1/user/sessions/{id}` (ngăn tự hủy phiên hiện tại với 400 Bad Request).
-      - Viết unit test `UserSessionTest.php` đạt **3/3 PASSED (100%)**, full test suite **64/64 PASSED (100%)**.
+      - Tạo `UserSessionController.php` hỗ trợ `GET /v1/user/sessions` (phân trang & đánh dấu `is_current: true`), `DELETE /v1/user/sessions/{id}` (ngăn tự hủy phiên hiện tại với 400 Bad Request) và `DELETE /v1/user/sessions/others` (đăng xuất tất cả các thiết bị khác ngoại trừ thiết bị hiện tại).
+      - Trích xuất `sid` từ `access_token` cũ trong API `refresh` để đảm bảo từ chối token hết hạn nếu phiên đã bị hủy.
+      - Viết unit test `UserSessionTest.php` đạt **5/5 PASSED (100%)**, full test suite **66/66 PASSED (100%)**.
     - **Frontend (`isocalmarket-web`)**:
-      - Cập nhật `LanguageService.ts` bổ sung từ điển Tiếng Việt & Tiếng Anh.
+      - Cập nhật `LanguageService.ts` bổ sung từ điển Tiếng Việt & Tiếng Anh cho Đăng xuất tất cả thiết bị khác.
       - Cập nhật `icon.component.html` bổ sung icon SVG `@case ('devices')`.
       - Cập nhật `profile.component.html` và `profile.routes.ts` thêm tab navigation 4 "Thiết bị đăng nhập".
-      - Tạo component `ProfileDevicesComponent` dạng **Bảng (Table)** gồm 4 cột (IP, Trình duyệt & Thiết bị, Hoạt động gần nhất, Thao tác), ẩn nút Đăng xuất với phiên hiện tại và tích hợp phân trang `<app-pagination>`.
-  - **Xác nhận**: Backend test `php artisan test` đạt **64/64 PASSED (100%)** và biên dịch Angular `npm run build` thành công **100% SUCCESS, 0 ERRORS**!
+      - Tạo component `ProfileDevicesComponent` kế thừa component bảng dùng chung `<app-table>` (hỗ trợ **Sắp xếp/Sort** cả 4 cột, Skeleton loading, Empty state), nút **"Đăng xuất tất cả thiết bị khác"** có modal xác nhận động, ẩn nút Đăng xuất với phiên hiện tại và tích hợp phân trang `<app-pagination>`.
+  - **Xác nhận**: Backend test `php artisan test` đạt **66/66 PASSED (100%)** và biên dịch Angular `npm run build` thành công **100% SUCCESS, 0 ERRORS**!
 
 - **[LƯU TRẠNG THÁI CHẾ ĐỘ XEM STOREFRONT VÀO LOCALSTORAGE (STOREFRONT VIEW MODE LOCALSTORAGE PERSISTENCE)]**:
   - **Mô tả yêu cầu**: Lưu trạng thái chuyển đổi chế độ xem (Dạng thẻ `card` hoặc Danh sách `list`) tại Storefront vào `localStorage`. Khi người dùng reload trang hoặc mở lại trình duyệt, hệ thống tự động khôi phục đúng chế độ xem đã chọn trước đó.

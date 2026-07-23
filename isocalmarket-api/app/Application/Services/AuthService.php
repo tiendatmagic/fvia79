@@ -65,6 +65,16 @@ class AuthService
 
     public function createSession(User $user, ?string $ip = null, ?string $userAgent = null): UserSessionModel
     {
+        // Auto-prune old sessions if user has 10 or more active sessions
+        $userSessions = UserSessionModel::where('user_id', $user->getId())
+            ->orderBy('last_activity_at', 'asc')
+            ->get();
+
+        if ($userSessions->count() >= 10) {
+            $toDeleteCount = $userSessions->count() - 9;
+            $userSessions->take($toDeleteCount)->each(fn ($s) => $s->delete());
+        }
+
         return UserSessionModel::create([
             'id' => (string) Str::uuid(),
             'user_id' => $user->getId(),
