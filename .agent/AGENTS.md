@@ -13,10 +13,11 @@
 > Khi cần seed dữ liệu cho một seeder cụ thể, chỉ dùng:
 > - `php artisan db:seed --class=TenSeederClass` — chạy đúng 1 seeder.
 
-- **[THÊM BORDER & CONTAINER STYLING CHO LOGO WEBSITE TRÊN HEADER VÀ SIDEBAR MENU]**:
-  - Cập nhật `LogoComponent` (`logo.component.ts`): Thêm container bo góc `rounded-xl`, lớp viền `border border-slate-200/80 dark:border-slate-800/80`, nền mờ nhẹ `bg-slate-50/50 dark:bg-slate-900/50`, đổ bóng subtle và hiệu ứng `hover:border-primary/40` giúp logo nổi bật và sang trọng.
+- **[THÊM BORDER & ĐỊNH TUYẾN ROUTERLINK CHO LOGO WEBSITE TRÊN HEADER VÀ SIDEBAR MENU]**:
+  - Cập nhật `LogoComponent` (`logo.component.ts`): Thêm container bo góc `rounded-xl`, viền thích ứng `border-slate-300/70` ở Light Mode và `dark:border-slate-800` ở Dark Mode, hỗ trợ `@Input() link = '/'` mặc định để bất kỳ khi nào nhấp vào logo đều tự động chuyển hướng về trang chủ (`/`).
   - Thêm `@Input() showBorder: boolean = true` linh hoạt tùy chọn bật/tắt viền khi tái sử dụng.
-  - Cập nhật kích thước hiển thị logo (`w-10 h-10`) đồng bộ với nút hamburger menu trên mobile header (`header.component.html`) và mobile sidebar drawer (`app.html`).
+  - Cập nhật `SidebarComponent` (`sidebar.component.html`): Bọc khu vực logo + tên thương hiệu sidebar desktop thành liên kết `<a routerLink="/">` tương tác chuyển hướng mượt mà.
+  - Đồng bộ kích thước hiển thị logo (`w-10 h-10`) khớp với nút hamburger menu trên mobile header (`header.component.html`) và mobile sidebar drawer (`app.html`).
 
 - **[NÂNG CẤP BẢO MẬT AES-256 TOÀN DIỆN CHO CẢ KHO HÀNG VÀ LỊCH SỬ MUA HÀNG (FULL DATABASE ENCRYPTION AT REST)]**:
   - **Mã hóa Kho hàng (`inventory_items`)**: Mã hóa AES-256-CBC (`Crypt::encryptString` / `Crypt::decryptString`) cột `secret_data`. Chỉ mục `normalized_secret_data` chỉ lưu thông tin Tên đăng nhập / Email / UID (phần thông tin trước dấu `|` đầu tiên) để phục vụ B-Tree Index tìm kiếm siêu tốc mà tuyệt đối không chứa mật khẩu.
