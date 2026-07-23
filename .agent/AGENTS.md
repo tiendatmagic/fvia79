@@ -13,6 +13,21 @@
 > Khi cần seed dữ liệu cho một seeder cụ thể, chỉ dùng:
 > - `php artisan db:seed --class=TenSeederClass` — chạy đúng 1 seeder.
 
+- **[DỌN DẸP DỮ LIỆU SẢN PHẨM MẪU, ĐƠN HÀNG VÀ KHO HÀNG (CLEANUP SAMPLE DATA)]**:
+  - **Đã xóa hoàn toàn 5 sản phẩm mẫu**:
+    1. `B2B Test Cost Product 1784777117`
+    2. `Audit Product 1784776531`
+    3. `Audit Product 1784776519`
+    4. `Sản Phẩm Test Lợi Nhuận 03:01:21`
+    5. `BM50$ Special (USD) 03:03:26`
+  - **Đã xóa triệt để các dữ liệu liên quan trong CSDL**:
+    - **Tài khoản lẻ kho (`inventory_items`)**: Đã xóa 16 tài khoản kho liên quan.
+    - **Lô hàng (`inventory_batches`)**: Đã xóa 6 lô hàng liên quan.
+    - **Chi tiết đơn hàng (`order_items`)**: Đã xóa 5 chi tiết đơn hàng liên quan.
+    - **Đơn hàng (`orders`)**: Đã xóa 5 đơn hàng thử nghiệm tương ứng.
+    - **Sản phẩm (`products`)**: Đã xóa vĩnh viễn (forceDelete) 5 sản phẩm mẫu khỏi CSDL.
+  - **Đã kiểm thử toàn diện**: Backend `php artisan test` đạt **58/58 test cases (100% PASSED)**.
+
 - **[BỔ SUNG CHỈ SỐ LỢI NHUẬN & GIÁ VỐN CHO B2B ADMIN STATS API (`GET /v1/admin/b2b/stats` & `POST /v1/admin/b2b/products/{id}/inventory`)]**:
   - **B2B Admin Stats API (`GET /v1/admin/b2b/stats`)**: Bổ sung tự động 3 chỉ số tài chính vào response JSON data:
     - `total_cogs`: Tổng Giá Vốn (Chi phí nhập).
