@@ -106,7 +106,7 @@ body.dark ::-webkit-scrollbar-thumb {
 }
 
 .btn {
-  @apply inline-flex items-center justify-center gap-1.5 font-bold text-sm rounded-xl transition-all duration-200 cursor-pointer active:scale-[0.98] disabled:opacity-50 disabled:pointer-events-none disabled:cursor-not-allowed px-4 py-2.5;
+  @apply inline-flex items-center justify-center gap-1.5 font-bold text-sm rounded-xl whitespace-nowrap transition-all duration-200 cursor-pointer active:scale-[0.98] disabled:opacity-50 disabled:pointer-events-none disabled:cursor-not-allowed px-4 py-2.5;
 }
 
 .btn-primary {
