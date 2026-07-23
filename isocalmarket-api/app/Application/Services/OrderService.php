@@ -20,6 +20,7 @@ use App\Integrations\Suppliers\SupplierConnectorFactory;
 use App\Integrations\Suppliers\SupplierOrderPendingException;
 use App\Integrations\Suppliers\SupplierOutOfStockException;
 use App\Integrations\Suppliers\SupplierPurchaseRejectedException;
+use Illuminate\Database\QueryException;
 use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Str;
@@ -60,132 +61,152 @@ class OrderService
         ?string $idempotencyKey = null,
     ): Order {
         if ($idempotencyKey !== null) {
-            $existingId = OrderModel::where('user_id', $userId)
+            $existing = OrderModel::with('items')
+                ->where('user_id', $userId)
                 ->where('idempotency_key', $idempotencyKey)
-                ->value('id');
-            if ($existingId) {
-                return $this->orderRepository->findById($existingId);
+                ->first();
+            if ($existing) {
+                $this->assertIdempotentRequestMatches($existing, $itemsInput, $couponCode);
+                $this->assertIdempotentOrderCanBeReturned($existing);
+
+                return $this->orderRepository->findById($existing->id);
             }
         }
 
-        $preparedOrder = DB::transaction(function () use ($userId, $itemsInput, $couponCode, $idempotencyKey) {
-            $orderCode = 'ORD-'.date('Ymd').'-'.strtoupper(Str::random(6));
-            $totalPrice = 0.0;
-            $orderItems = [];
+        try {
+            $preparedOrder = DB::transaction(function () use ($userId, $itemsInput, $couponCode, $idempotencyKey) {
+                $orderCode = 'ORD-'.date('Ymd').'-'.strtoupper(Str::random(6));
+                $totalPrice = 0.0;
+                $orderItems = [];
 
-            foreach ($itemsInput as $input) {
-                $productId = $input['product_id'];
-                $quantity = $input['quantity'];
+                foreach ($itemsInput as $input) {
+                    $productId = $input['product_id'];
+                    $quantity = $input['quantity'];
 
-                if ($quantity <= 0) {
-                    throw new OrderException('Quantity must be greater than 0.');
+                    if ($quantity <= 0) {
+                        throw new OrderException('Quantity must be greater than 0.');
+                    }
+                    $product = $this->productRepository->findById($productId);
+                    if (! $product || $product->isDeleted() || ! $product->isActive()) {
+                        throw new OrderException('Product is not available or has been discontinued.');
+                    }
+
+                    $availableCount = $product->getAvailableCount();
+                    if ($availableCount < $quantity) {
+                        throw new OrderException("Product '{$product->getName()}' does not have enough stock available (Requested: {$quantity}, Available: {$availableCount}).");
+                    }
+
+                    $itemPrice = $product->getPrice();
+                    $totalPrice += $itemPrice * $quantity;
+
+                    $orderItems[] = new OrderItem(
+                        null,
+                        null,
+                        $productId,
+                        $product->getName(),
+                        $itemPrice,
+                        $quantity,
+                        [],
+                        0.0
+                    );
                 }
-                $product = $this->productRepository->findById($productId);
-                if (! $product || $product->isDeleted() || ! $product->isActive()) {
-                    throw new OrderException('Product is not available or has been discontinued.');
+
+                $discountAmount = 0.0;
+                $couponId = null;
+                $appliedCouponCode = null;
+
+                if ($couponCode) {
+                    $coupon = $this->couponRepository->findByCode(strtoupper(trim($couponCode)));
+                    if (! $coupon) {
+                        throw new OrderException("Coupon code '{$couponCode}' is invalid.");
+                    }
+
+                    $now = new \DateTime;
+                    $start = (clone $coupon->getStartDate())->setTime(0, 0, 0);
+                    $end = (clone $coupon->getEndDate())->setTime(23, 59, 59);
+
+                    if ($now < $start) {
+                        throw new OrderException('This coupon is not active yet.');
+                    }
+                    if ($now > $end) {
+                        throw new OrderException('This coupon has expired.');
+                    }
+
+                    if ($coupon->getUsageLimit() > 0 && $coupon->getUsedCount() >= $coupon->getUsageLimit()) {
+                        throw new OrderException('This coupon has reached its usage limit.');
+                    }
+                    if ($totalPrice < $coupon->getMinSpend()) {
+                        throw new OrderException('Cart total must be at least '.number_format($coupon->getMinSpend()).' USD.');
+                    }
+
+                    $discountAmount = $coupon->calculateDiscount($totalPrice);
+                    $couponId = $coupon->getId();
+                    $appliedCouponCode = $coupon->getCode();
+
+                    $updatedCoupon = new Coupon(
+                        $coupon->getId(),
+                        $coupon->getCode(),
+                        $coupon->getType(),
+                        $coupon->getValue(),
+                        $coupon->getMinSpend(),
+                        $coupon->getStartDate(),
+                        $coupon->getEndDate(),
+                        $coupon->getUsageLimit(),
+                        $coupon->getUsedCount() + 1,
+                        $coupon->getCreatedAt()
+                    );
+                    $this->couponRepository->save($updatedCoupon);
                 }
 
-                $availableCount = $product->getAvailableCount();
-                if ($availableCount < $quantity) {
-                    throw new OrderException("Product '{$product->getName()}' does not have enough stock available (Requested: {$quantity}, Available: {$availableCount}).");
+                $finalPrice = max(0.0, $totalPrice - $discountAmount);
+
+                $user = $this->userRepository->findByIdForUpdate($userId);
+                if (! $user) {
+                    throw new OrderException('User account not found.');
                 }
 
-                $itemPrice = $product->getPrice();
-                $totalPrice += $itemPrice * $quantity;
+                if ($user->getBalance() < $finalPrice) {
+                    throw new OrderException('Insufficient balance to pay for the order (Required: '.number_format($finalPrice, 4).' USD, Current: '.number_format($user->getBalance(), 4).' USD).');
+                }
 
-                $orderItems[] = new OrderItem(
+                $user->setBalance($user->getBalance() - $finalPrice);
+                $this->userRepository->save($user);
+
+                $order = new Order(
+                    null,
+                    $userId,
+                    $orderCode,
+                    $finalPrice,
+                    'pending',
+                    $orderItems,
                     null,
                     null,
-                    $productId,
-                    $product->getName(),
-                    $itemPrice,
-                    $quantity,
-                    [],
-                    0.0
+                    $appliedCouponCode,
+                    $discountAmount,
+                    $couponId
                 );
-            }
-
-            $discountAmount = 0.0;
-            $couponId = null;
-            $appliedCouponCode = null;
-
-            if ($couponCode) {
-                $coupon = $this->couponRepository->findByCode(strtoupper(trim($couponCode)));
-                if (! $coupon) {
-                    throw new OrderException("Coupon code '{$couponCode}' is invalid.");
+                $savedOrder = $this->orderRepository->save($order);
+                if ($idempotencyKey !== null) {
+                    OrderModel::whereKey($savedOrder->getId())->update(['idempotency_key' => $idempotencyKey]);
                 }
 
-                $now = new \DateTime;
-                $start = (clone $coupon->getStartDate())->setTime(0, 0, 0);
-                $end = (clone $coupon->getEndDate())->setTime(23, 59, 59);
-
-                if ($now < $start) {
-                    throw new OrderException('This coupon is not active yet.');
-                }
-                if ($now > $end) {
-                    throw new OrderException('This coupon has expired.');
-                }
-
-                if ($coupon->getUsageLimit() > 0 && $coupon->getUsedCount() >= $coupon->getUsageLimit()) {
-                    throw new OrderException('This coupon has reached its usage limit.');
-                }
-                if ($totalPrice < $coupon->getMinSpend()) {
-                    throw new OrderException('Cart total must be at least '.number_format($coupon->getMinSpend()).' USD.');
-                }
-
-                $discountAmount = $coupon->calculateDiscount($totalPrice);
-                $couponId = $coupon->getId();
-                $appliedCouponCode = $coupon->getCode();
-
-                $updatedCoupon = new Coupon(
-                    $coupon->getId(),
-                    $coupon->getCode(),
-                    $coupon->getType(),
-                    $coupon->getValue(),
-                    $coupon->getMinSpend(),
-                    $coupon->getStartDate(),
-                    $coupon->getEndDate(),
-                    $coupon->getUsageLimit(),
-                    $coupon->getUsedCount() + 1,
-                    $coupon->getCreatedAt()
-                );
-                $this->couponRepository->save($updatedCoupon);
+                return $savedOrder;
+            });
+        } catch (QueryException $exception) {
+            $existing = $idempotencyKey === null
+                ? null
+                : OrderModel::with('items')
+                    ->where('user_id', $userId)
+                    ->where('idempotency_key', $idempotencyKey)
+                    ->first();
+            if (! $existing) {
+                throw $exception;
             }
+            $this->assertIdempotentRequestMatches($existing, $itemsInput, $couponCode);
+            $this->assertIdempotentOrderCanBeReturned($existing);
 
-            $finalPrice = max(0.0, $totalPrice - $discountAmount);
-
-            $user = $this->userRepository->findByIdForUpdate($userId);
-            if (! $user) {
-                throw new OrderException('User account not found.');
-            }
-
-            if ($user->getBalance() < $finalPrice) {
-                throw new OrderException('Insufficient balance to pay for the order (Required: '.number_format($finalPrice, 4).' USD, Current: '.number_format($user->getBalance(), 4).' USD).');
-            }
-
-            $user->setBalance($user->getBalance() - $finalPrice);
-            $this->userRepository->save($user);
-
-            $order = new Order(
-                null,
-                $userId,
-                $orderCode,
-                $finalPrice,
-                'pending',
-                $orderItems,
-                null,
-                null,
-                $appliedCouponCode,
-                $discountAmount,
-                $couponId
-            );
-            $savedOrder = $this->orderRepository->save($order);
-            if ($idempotencyKey !== null) {
-                OrderModel::whereKey($savedOrder->getId())->update(['idempotency_key' => $idempotencyKey]);
-            }
-
-            return $savedOrder;
-        });
+            return $this->orderRepository->findById($existing->id);
+        }
 
         try {
             return $this->fulfillPreparedOrder($preparedOrder);
@@ -198,6 +219,58 @@ class OrderService
             }
 
             throw $exception;
+        }
+    }
+
+    private function assertIdempotentRequestMatches(
+        OrderModel $existing,
+        array $itemsInput,
+        ?string $couponCode,
+    ): void {
+        $requestedItems = array_map(
+            fn (array $item): array => [
+                'product_id' => (string) $item['product_id'],
+                'quantity' => (int) $item['quantity'],
+            ],
+            $itemsInput,
+        );
+        $existingItems = $existing->items
+            ->map(fn (OrderItemModel $item): array => [
+                'product_id' => (string) $item->product_id,
+                'quantity' => (int) $item->quantity,
+            ])
+            ->all();
+        $sortItems = static function (array &$items): void {
+            usort($items, static fn (array $left, array $right): int => [
+                $left['product_id'],
+                $left['quantity'],
+            ] <=> [
+                $right['product_id'],
+                $right['quantity'],
+            ]);
+        };
+        $sortItems($requestedItems);
+        $sortItems($existingItems);
+        $requestedCoupon = $couponCode === null || trim($couponCode) === ''
+            ? null
+            : strtoupper(trim($couponCode));
+        $existingCoupon = $existing->coupon_code === null || trim($existing->coupon_code) === ''
+            ? null
+            : strtoupper(trim($existing->coupon_code));
+
+        if ($requestedItems !== $existingItems || $requestedCoupon !== $existingCoupon) {
+            throw new OrderException(
+                'The idempotency key has already been used for a different order request.',
+            );
+        }
+    }
+
+    private function assertIdempotentOrderCanBeReturned(OrderModel $existing): void
+    {
+        if ($existing->status === 'cancelled') {
+            throw new OrderException(
+                'The previous order for this idempotency key was cancelled. Use a new key for a new purchase attempt.',
+            );
         }
     }
 

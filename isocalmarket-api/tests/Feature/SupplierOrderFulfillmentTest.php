@@ -162,13 +162,24 @@ class SupplierOrderFulfillmentTest extends TestCase
             ], 400),
         ]);
         $balanceBefore = $this->customer->balance;
+        $idempotencyKey = '019f906d-a49e-7e91-9331-589e9942bf05';
 
-        $this->checkout($product, 2, '019f906d-a49e-7e91-9331-589e9942bf05')
+        $this->checkout($product, 2, $idempotencyKey)
             ->assertBadRequest();
 
         $this->assertSame($balanceBefore, $this->customer->fresh()->balance);
         $this->assertDatabaseHas('orders', ['status' => 'cancelled']);
         $this->assertSame('failed', SupplierPurchaseModel::firstOrFail()->status);
+
+        $this->checkout($product, 2, $idempotencyKey)
+            ->assertBadRequest()
+            ->assertJsonPath(
+                'message',
+                'The previous order for this idempotency key was cancelled. Use a new key for a new purchase attempt.',
+            );
+        $this->assertSame($balanceBefore, $this->customer->fresh()->balance);
+        $this->assertDatabaseCount('orders', 1);
+        Http::assertSentCount(1);
     }
 
     public function test_uncertain_supplier_response_stays_pending_and_is_not_retried(): void

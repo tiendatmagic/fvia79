@@ -4,7 +4,11 @@ namespace App\Application\Services;
 
 use App\Domain\Entities\Deposit;
 use App\Domain\Repositories\DepositRepositoryInterface;
+use App\Infrastructure\Persistence\Eloquent\DepositModel;
+use App\Infrastructure\Persistence\Eloquent\UserModel;
+use App\Infrastructure\Persistence\Mappers\DepositMapper;
 use Illuminate\Support\Facades\Cache;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Http;
 use Illuminate\Support\Facades\Log;
 
@@ -13,13 +17,17 @@ class DepositService
     private DepositRepositoryInterface $depositRepository;
 
     private string $adminWalletAddress;
+
     private string $scannerApiKey;
+
     private string $tokenContractAddress;
+
     private int $tokenDecimals;
 
     private SystemSettingService $settingService;
 
     private array $cachedBep20TransactionsByWallet = [];
+
     private ?array $cachedBinanceTransactions = null;
 
     public function __construct(
@@ -35,18 +43,21 @@ class DepositService
         $this->tokenContractAddress = env('TOKEN_CONTRACT_ADDRESS', '0x55d398326f99059ff775485246999027b3197955');
         $this->tokenDecimals = (int) env('TOKEN_DECIMALS', 18);
     }
+
     public function getAdminWalletAddress(): string
     {
         return $this->settingService->getSetting('admin_wallet_address', '');
     }
+
     public function getAdminBinanceIdSetting(): string
     {
         return $this->settingService->getSetting('admin_binance_id', '');
     }
+
     public function getUsdtToVndRate(): float
     {
         $fixedRate = $this->settingService->getSetting('usdt_exchange_rate', '0');
-        if (!empty($fixedRate) && (float) $fixedRate > 0) {
+        if (! empty($fixedRate) && (float) $fixedRate > 0) {
             return (float) $fixedRate;
         }
 
@@ -56,7 +67,7 @@ class DepositService
                     ->withHeaders(['accept' => 'application/json'])
                     ->get('https://api.coingecko.com/api/v3/simple/price', [
                         'ids' => 'tether',
-                        'vs_currencies' => 'vnd'
+                        'vs_currencies' => 'vnd',
                     ]);
 
                 if ($response->successful()) {
@@ -64,18 +75,20 @@ class DepositService
                     if (isset($data['tether']['vnd'])) {
                         $rate = (float) $data['tether']['vnd'];
                         Log::info("CoinGecko USDT/VND rate fetched successfully: {$rate}");
+
                         return $rate;
                     }
                 }
 
-                Log::warning("CoinGecko API call succeeded but response format was invalid: " . $response->body());
+                Log::warning('CoinGecko API call succeeded but response format was invalid: '.$response->body());
             } catch (\Exception $e) {
-                Log::error("Failed to fetch USDT rate from CoinGecko: " . $e->getMessage());
+                Log::error('Failed to fetch USDT rate from CoinGecko: '.$e->getMessage());
             }
 
             return 26500.0;
         });
     }
+
     public function createDeposit(string $userId, float $amountUsdt, string $paymentMethod = 'bep20', ?string $payerBinanceId = null): Deposit
     {
         $this->adminWalletAddress = $this->settingService->getSetting('admin_wallet_address', '');
@@ -86,38 +99,38 @@ class DepositService
 
         if ($paymentMethod === 'bep20') {
             if (empty($this->adminWalletAddress)) {
-                throw new \RuntimeException("The administrator has not configured the receiving USDT wallet address yet.");
+                throw new \RuntimeException('The administrator has not configured the receiving USDT wallet address yet.');
             }
             if (empty($this->scannerApiKey)) {
-                throw new \RuntimeException("The administrator has not configured the scanner API key yet.");
+                throw new \RuntimeException('The administrator has not configured the scanner API key yet.');
             }
-        } else if ($paymentMethod === 'binance') {
+        } elseif ($paymentMethod === 'binance') {
             if (empty($adminBinanceIdSetting)) {
-                throw new \RuntimeException("The administrator has not configured the receiving Binance ID yet.");
+                throw new \RuntimeException('The administrator has not configured the receiving Binance ID yet.');
             }
             if (empty($binanceApiKeySetting) || empty($binanceApiSecretSetting)) {
-                throw new \RuntimeException("The administrator has not configured the Binance API Key/Secret yet.");
+                throw new \RuntimeException('The administrator has not configured the Binance API Key/Secret yet.');
             }
         }
 
         if ($amountUsdt < 0.1) {
-            throw new \RuntimeException("The deposit amount must be at least 0.1 USDT.");
+            throw new \RuntimeException('The deposit amount must be at least 0.1 USDT.');
         }
 
-        return \Illuminate\Support\Facades\DB::transaction(function () use ($userId, $amountUsdt, $paymentMethod, $payerBinanceId, $adminBinanceIdSetting) {
-            $hasPending = \App\Infrastructure\Persistence\Eloquent\DepositModel::where('user_id', $userId)
+        return DB::transaction(function () use ($userId, $amountUsdt, $paymentMethod, $payerBinanceId, $adminBinanceIdSetting) {
+            $hasPending = DepositModel::where('user_id', $userId)
                 ->where('status', 'pending_payment')
                 ->lockForUpdate()
                 ->exists();
 
             if ($hasPending) {
-                throw new \RuntimeException("You already have an active deposit order. Please cancel the previous order before creating a new one.");
+                throw new \RuntimeException('You already have an active deposit order. Please cancel the previous order before creating a new one.');
             }
 
             $rate = $this->getUsdtToVndRate();
             $baseAmount = round($amountUsdt, 2);
 
-            $activeAmounts = \App\Infrastructure\Persistence\Eloquent\DepositModel::where(function ($q) {
+            $activeAmounts = DepositModel::where(function ($q) {
                 $q->where('status', 'pending_payment')
                     ->orWhere(function ($sub) {
                         $sub->whereIn('status', ['failed', 'expired'])
@@ -135,7 +148,7 @@ class DepositService
             while (true) {
                 $candidateAmount = round($baseAmount + $suffix, 4);
 
-                if (!in_array($candidateAmount, $activeAmounts)) {
+                if (! in_array($candidateAmount, $activeAmounts)) {
                     $amountToPay = $candidateAmount;
                     break;
                 }
@@ -143,7 +156,7 @@ class DepositService
                 $suffix += $step;
 
                 if ($suffix > $maxSuffix) {
-                    throw new \RuntimeException("Too many pending transactions for this amount. Please try again in a few minutes.");
+                    throw new \RuntimeException('Too many pending transactions for this amount. Please try again in a few minutes.');
                 }
             }
 
@@ -155,7 +168,7 @@ class DepositService
                 for ($i = 0; $i < 6; $i++) {
                     $nextCode .= $chars[random_int(0, strlen($chars) - 1)];
                 }
-                $exists = \App\Infrastructure\Persistence\Eloquent\DepositModel::where('code', $nextCode)
+                $exists = DepositModel::where('code', $nextCode)
                     ->lockForUpdate()
                     ->exists();
             } while ($exists);
@@ -178,21 +191,23 @@ class DepositService
             return $this->depositRepository->save($deposit);
         });
     }
+
     public function getInvoice(string $id): ?Deposit
     {
         return $this->depositRepository->find($id);
     }
+
     public function cancelInvoice(string $id, string $userId): bool
     {
         $deposit = $this->depositRepository->find($id);
-        if (!$deposit || $deposit->getStatus() !== 'pending_payment') {
+        if (! $deposit || $deposit->getStatus() !== 'pending_payment') {
             return false;
         }
 
-        $user = \App\Infrastructure\Persistence\Eloquent\UserModel::find($userId);
+        $user = UserModel::find($userId);
         $isAdmin = $user && $user->role === 'admin';
 
-        if ($deposit->getUserId() !== $userId && !$isAdmin) {
+        if ($deposit->getUserId() !== $userId && ! $isAdmin) {
             return false;
         }
 
@@ -202,30 +217,32 @@ class DepositService
                 return true;
             }
         } catch (\Exception $e) {
-            Log::error("Failed to check blockchain before canceling deposit ID {$id}: " . $e->getMessage());
-            throw new \RuntimeException("Unable to verify payment status on blockchain right now. Please try again later.");
+            Log::error("Failed to check blockchain before canceling deposit ID {$id}: ".$e->getMessage());
+            throw new \RuntimeException('Unable to verify payment status on blockchain right now. Please try again later.');
         }
 
-        return \Illuminate\Support\Facades\DB::transaction(function () use ($id, $userId) {
-            $depositModel = \App\Infrastructure\Persistence\Eloquent\DepositModel::where('id', $id)
+        return DB::transaction(function () use ($id, $userId) {
+            $depositModel = DepositModel::where('id', $id)
                 ->lockForUpdate()
                 ->first();
 
-            if (!$depositModel || $depositModel->status !== 'pending_payment') {
+            if (! $depositModel || $depositModel->status !== 'pending_payment') {
                 return false;
             }
 
-            $user = \App\Infrastructure\Persistence\Eloquent\UserModel::find($userId);
+            $user = UserModel::find($userId);
             $isAdmin = $user && $user->role === 'admin';
-            if ($depositModel->user_id !== $userId && !$isAdmin) {
+            if ($depositModel->user_id !== $userId && ! $isAdmin) {
                 return false;
             }
 
             $depositModel->status = 'expired';
             $depositModel->save();
+
             return true;
         });
     }
+
     public function getHistoryPaginated(
         string $userId,
         int $page = 1,
@@ -235,17 +252,17 @@ class DepositService
         ?string $startDate = null,
         ?string $endDate = null
     ): array {
-        $query = \App\Infrastructure\Persistence\Eloquent\DepositModel::where('user_id', $userId);
+        $query = DepositModel::where('user_id', $userId);
 
         if ($status) {
             $query->where('status', $status);
         }
 
         if ($startDate) {
-            $query->where('created_at', '>=', $startDate . ' 00:00:00');
+            $query->where('created_at', '>=', $startDate.' 00:00:00');
         }
         if ($endDate) {
-            $query->where('created_at', '<=', $endDate . ' 23:59:59');
+            $query->where('created_at', '<=', $endDate.' 23:59:59');
         }
 
         if ($search) {
@@ -261,17 +278,18 @@ class DepositService
             ->paginate($limit, ['*'], 'page', $page);
 
         return [
-            'items' => array_map(fn($m) => \App\Infrastructure\Persistence\Mappers\DepositMapper::toDomain($m), $paginator->items()),
+            'items' => array_map(fn ($m) => DepositMapper::toDomain($m), $paginator->items()),
             'total' => $paginator->total(),
             'current_page' => $paginator->currentPage(),
             'last_page' => $paginator->lastPage(),
-            'limit' => $limit
+            'limit' => $limit,
         ];
     }
+
     public function checkTransaction(string $id, string $userId): bool
     {
-        $depositModel = \App\Infrastructure\Persistence\Eloquent\DepositModel::where('id', $id)->first();
-        if (!$depositModel) {
+        $depositModel = DepositModel::where('id', $id)->first();
+        if (! $depositModel) {
             return false;
         }
 
@@ -283,10 +301,10 @@ class DepositService
             $this->scannerApiKey = $this->settingService->getSetting('scanner_api_key', '');
 
             if (empty($this->adminWalletAddress)) {
-                throw new \RuntimeException("The administrator has not configured the receiving USDT wallet address yet.");
+                throw new \RuntimeException('The administrator has not configured the receiving USDT wallet address yet.');
             }
             if (empty($this->scannerApiKey)) {
-                throw new \RuntimeException("The administrator has not configured the scanner API key yet.");
+                throw new \RuntimeException('The administrator has not configured the scanner API key yet.');
             }
 
             $adminWallet = strtolower($this->adminWalletAddress);
@@ -296,34 +314,36 @@ class DepositService
                 $response = Http::timeout(10)
                     ->withHeader('X-API-Key', $this->scannerApiKey)
                     ->get("https://deep-index.moralis.io/api/v2.2/{$adminWallet}/erc20/transfers", [
-                        'chain'               => 'bsc',
-                        'contract_addresses'  => [$this->tokenContractAddress],
-                        'order'               => 'DESC',
-                        'limit'               => 100,
+                        'chain' => 'bsc',
+                        'contract_addresses' => [$this->tokenContractAddress],
+                        'order' => 'DESC',
+                        'limit' => 100,
                     ]);
 
                 if ($response->successful()) {
                     $result = $response->json();
+
                     return $result['result'] ?? [];
                 }
 
-                Log::error("Moralis API HTTP error: " . $response->status() . " - " . $response->body());
-                throw new \RuntimeException("Unable to connect to blockchain scanner API. Please try again later.");
+                Log::error('Moralis API HTTP error: '.$response->status().' - '.$response->body());
+                throw new \RuntimeException('Unable to connect to blockchain scanner API. Please try again later.');
             });
 
-            return \Illuminate\Support\Facades\DB::transaction(function () use ($id, $userId, $adminWallet, $tokenContract, $transactions) {
-                $depositModel = \App\Infrastructure\Persistence\Eloquent\DepositModel::where('id', $id)
+            return DB::transaction(function () use ($id, $userId, $adminWallet, $tokenContract, $transactions) {
+                $depositModel = DepositModel::where('id', $id)
                     ->lockForUpdate()
                     ->first();
 
-                if (!$depositModel) {
+                if (! $depositModel) {
                     return false;
                 }
 
-                $deposit = \App\Infrastructure\Persistence\Mappers\DepositMapper::toDomain($depositModel);
+                $deposit = DepositMapper::toDomain($depositModel);
 
                 if ($deposit->getUserId() !== $userId || $deposit->getStatus() !== 'pending_payment') {
                     Log::warning("Deposit check request invalid or already processed for invoice ID: {$id}");
+
                     return false;
                 }
 
@@ -364,56 +384,59 @@ class DepositService
                     $this->creditDepositToUser($deposit);
 
                     Log::info("Deposit successfully matched and processed: Invoice #{$deposit->getCode()}, Amount: {$deposit->getAmountUsdt()} USDT, TxHash: {$txHash}");
+
                     return true;
                 }
 
                 return false;
             });
-        } else if ($paymentMethod === 'binance') {
+        } elseif ($paymentMethod === 'binance') {
             $binanceApiKey = $this->settingService->getSetting('binance_api_key', '');
             $binanceApiSecret = $this->settingService->getSetting('binance_api_secret', '');
 
             if (empty($binanceApiKey) || empty($binanceApiSecret)) {
-                throw new \RuntimeException("The administrator has not configured the Binance API Key/Secret yet.");
+                throw new \RuntimeException('The administrator has not configured the Binance API Key/Secret yet.');
             }
 
-            $transactions = Cache::remember("binance_pay_txs", 15, function () use ($binanceApiKey, $binanceApiSecret) {
+            $transactions = Cache::remember('binance_pay_txs', 15, function () use ($binanceApiKey, $binanceApiSecret) {
                 $timestamp = round(microtime(true) * 1000);
-                $queryString = "timestamp=" . $timestamp . "&recvWindow=60000";
+                $queryString = 'timestamp='.$timestamp.'&recvWindow=60000';
                 $signature = hash_hmac('sha256', $queryString, $binanceApiSecret);
 
                 $response = Http::timeout(10)
                     ->withHeaders([
-                        'X-MBX-APIKEY' => $binanceApiKey
+                        'X-MBX-APIKEY' => $binanceApiKey,
                     ])
-                    ->get("https://api.binance.com/sapi/v1/pay/transactions?" . $queryString . "&signature=" . $signature);
+                    ->get('https://api.binance.com/sapi/v1/pay/transactions?'.$queryString.'&signature='.$signature);
 
                 if ($response->successful()) {
                     $result = $response->json();
                     if (($result['success'] ?? false) !== true || ($result['code'] ?? '') !== '000000') {
-                        Log::error('Binance Pay API returned an unsuccessful payload: ' . $response->body());
+                        Log::error('Binance Pay API returned an unsuccessful payload: '.$response->body());
                         throw new \RuntimeException('Binance Pay API rejected the transaction history request.');
                     }
+
                     return $result['data'] ?? [];
                 }
 
-                Log::error("Binance Pay API HTTP error: " . $response->status() . " - " . $response->body());
-                throw new \RuntimeException("Unable to connect to Binance Pay API. Please try again later.");
+                Log::error('Binance Pay API HTTP error: '.$response->status().' - '.$response->body());
+                throw new \RuntimeException('Unable to connect to Binance Pay API. Please try again later.');
             });
 
-            return \Illuminate\Support\Facades\DB::transaction(function () use ($id, $userId, $transactions) {
-                $depositModel = \App\Infrastructure\Persistence\Eloquent\DepositModel::where('id', $id)
+            return DB::transaction(function () use ($id, $userId, $transactions) {
+                $depositModel = DepositModel::where('id', $id)
                     ->lockForUpdate()
                     ->first();
 
-                if (!$depositModel) {
+                if (! $depositModel) {
                     return false;
                 }
 
-                $deposit = \App\Infrastructure\Persistence\Mappers\DepositMapper::toDomain($depositModel);
+                $deposit = DepositMapper::toDomain($depositModel);
 
                 if ($deposit->getUserId() !== $userId || $deposit->getStatus() !== 'pending_payment') {
                     Log::warning("Binance Pay check request invalid or already processed for invoice ID: {$id}");
+
                     return false;
                 }
 
@@ -430,7 +453,6 @@ class DepositService
                         continue;
                     }
 
-
                     $transactionId = $tx['transactionId'] ?? '';
                     if (empty($transactionId) || $this->depositRepository->isTxHashUsed($transactionId)) {
                         continue;
@@ -438,7 +460,7 @@ class DepositService
 
                     $invoiceCreatedEpoch = $deposit->getCreatedAt()->getTimestamp();
                     $txEpoch = isset($tx['transactionTime'])
-                        ? round((float)$tx['transactionTime'] / 1000)
+                        ? round((float) $tx['transactionTime'] / 1000)
                         : 0;
                     $timeDiff = $txEpoch - $invoiceCreatedEpoch;
                     if ($timeDiff < -60 || $timeDiff > 900) {
@@ -452,6 +474,7 @@ class DepositService
                     $this->creditDepositToUser($deposit);
 
                     Log::info("Binance Pay Deposit successfully matched and processed: Invoice #{$deposit->getCode()}, Amount: {$deposit->getAmountUsdt()} USDT, Binance Transaction ID: {$transactionId}");
+
                     return true;
                 }
 
@@ -459,12 +482,16 @@ class DepositService
             });
         }
     }
+
     public function checkAllPendingDeposits(?\Closure $logCallback = null): void
     {
-        $pendingDeposits = \App\Infrastructure\Persistence\Eloquent\DepositModel::where('status', 'pending_payment')->get();
+        $pendingDeposits = DepositModel::where('status', 'pending_payment')->get();
 
         if ($pendingDeposits->isEmpty()) {
-            if ($logCallback) $logCallback('info', 'No pending deposits found.');
+            if ($logCallback) {
+                $logCallback('info', 'No pending deposits found.');
+            }
+
             return;
         }
 
@@ -473,32 +500,41 @@ class DepositService
 
         foreach ($pendingDeposits as $deposit) {
             try {
-                if ($logCallback) $logCallback('info', "Checking deposit code: {$deposit->code} (ID: {$deposit->id})");
+                if ($logCallback) {
+                    $logCallback('info', "Checking deposit code: {$deposit->code} (ID: {$deposit->id})");
+                }
 
                 $matched = $this->checkTransaction($deposit->id, $deposit->user_id);
 
                 if ($matched) {
-                    if ($logCallback) $logCallback('info', "Successfully matched and completed deposit code: {$deposit->code}");
+                    if ($logCallback) {
+                        $logCallback('info', "Successfully matched and completed deposit code: {$deposit->code}");
+                    }
                 } else {
                     $createdTime = $deposit->created_at->getTimestamp();
                     $now = time();
                     if (($now - $createdTime) > 960) {
-                        $expired = \App\Infrastructure\Persistence\Eloquent\DepositModel::where('id', $deposit->id)
+                        $expired = DepositModel::where('id', $deposit->id)
                             ->where('status', 'pending_payment')
                             ->update(['status' => 'expired']);
                         if ($expired && $logCallback) {
                             $logCallback('info', "Deposit code {$deposit->code} has expired (exceeded 15 minutes window + 1 minute grace period).");
                         }
                     } else {
-                        if ($logCallback) $logCallback('info', "Deposit code {$deposit->code} is still pending within the payment window.");
+                        if ($logCallback) {
+                            $logCallback('info', "Deposit code {$deposit->code} is still pending within the payment window.");
+                        }
                     }
                 }
             } catch (\Exception $e) {
-                Log::error("Failed to check pending deposit ID {$deposit->id}: " . $e->getMessage());
-                if ($logCallback) $logCallback('error', "Error checking deposit ID {$deposit->id}: " . $e->getMessage());
+                Log::error("Failed to check pending deposit ID {$deposit->id}: ".$e->getMessage());
+                if ($logCallback) {
+                    $logCallback('error', "Error checking deposit ID {$deposit->id}: ".$e->getMessage());
+                }
             }
         }
     }
+
     public function getDepositsPaginatedForAdmin(
         int $page = 1,
         int $limit = 10,
@@ -510,35 +546,36 @@ class DepositService
     ): array {
         return $this->depositRepository->findAllPaginated($page, $limit, $search, $status, $paymentMethod, $startDate, $endDate);
     }
+
     public function approveDepositManually(string $id, string $txHash, string $adminId): bool
     {
-        return \Illuminate\Support\Facades\DB::transaction(function () use ($id, $txHash, $adminId) {
-            $depositModel = \App\Infrastructure\Persistence\Eloquent\DepositModel::where('id', $id)
+        return DB::transaction(function () use ($id, $txHash, $adminId) {
+            $depositModel = DepositModel::where('id', $id)
                 ->lockForUpdate()
                 ->first();
 
-            if (!$depositModel) {
-                throw new \RuntimeException("Deposit invoice not found.");
+            if (! $depositModel) {
+                throw new \RuntimeException('Deposit invoice not found.');
             }
 
-            $deposit = \App\Infrastructure\Persistence\Mappers\DepositMapper::toDomain($depositModel);
+            $deposit = DepositMapper::toDomain($depositModel);
 
-            if (!in_array($deposit->getStatus(), ['pending_payment', 'expired'], true)) {
-                throw new \RuntimeException("Only pending or expired deposit invoices can be approved.");
+            if (! in_array($deposit->getStatus(), ['pending_payment', 'expired'], true)) {
+                throw new \RuntimeException('Only pending or expired deposit invoices can be approved.');
             }
 
             $manualReference = trim($txHash);
             if ($manualReference === '') {
-                throw new \RuntimeException("A transaction ID/hash is required for manual approval.");
+                throw new \RuntimeException('A transaction ID/hash is required for manual approval.');
             }
 
-            $finalTxHash = 'manual_approved_by_admin_' . $manualReference;
+            $finalTxHash = 'manual_approved_by_admin_'.$manualReference;
             if (mb_strlen($finalTxHash) > 255) {
-                throw new \RuntimeException("Transaction ID/hash is too long.");
+                throw new \RuntimeException('Transaction ID/hash is too long.');
             }
 
             if ($this->depositRepository->isTxHashUsed($finalTxHash)) {
-                throw new \RuntimeException("This transaction hash has already been used for another deposit.");
+                throw new \RuntimeException('This transaction hash has already been used for another deposit.');
             }
 
             $deposit->setStatus('completed');
@@ -547,30 +584,31 @@ class DepositService
 
             $this->creditDepositToUser($deposit);
 
-            Log::info("Admin [{$adminId}] manually approved Deposit ID [{$id}]: Code={$deposit->getCode()}, Amount={$deposit->getAmountUsdt()} USDT ({$deposit->getAmountVnd()} VND), Payer ID/Wallet=" . ($deposit->getPayerBinanceId() ?: $deposit->getAdminWalletAddress()) . ", TxHash={$finalTxHash}");
+            Log::info("Admin [{$adminId}] manually approved Deposit ID [{$id}]: Code={$deposit->getCode()}, Amount={$deposit->getAmountUsdt()} USDT ({$deposit->getAmountVnd()} VND), Payer ID/Wallet=".($deposit->getPayerBinanceId() ?: $deposit->getAdminWalletAddress()).", TxHash={$finalTxHash}");
 
             return true;
         });
     }
+
     public function rejectDepositManually(string $id, string $adminId): bool
     {
-        return \Illuminate\Support\Facades\DB::transaction(function () use ($id, $adminId) {
-            $depositModel = \App\Infrastructure\Persistence\Eloquent\DepositModel::where('id', $id)
+        return DB::transaction(function () use ($id, $adminId) {
+            $depositModel = DepositModel::where('id', $id)
                 ->lockForUpdate()
                 ->first();
 
-            if (!$depositModel) {
-                throw new \RuntimeException("Deposit invoice not found.");
+            if (! $depositModel) {
+                throw new \RuntimeException('Deposit invoice not found.');
             }
 
-            $deposit = \App\Infrastructure\Persistence\Mappers\DepositMapper::toDomain($depositModel);
+            $deposit = DepositMapper::toDomain($depositModel);
 
             if ($deposit->getStatus() === 'completed') {
-                throw new \RuntimeException("Cannot reject a completed deposit invoice.");
+                throw new \RuntimeException('Cannot reject a completed deposit invoice.');
             }
 
             if ($deposit->getStatus() === 'failed') {
-                throw new \RuntimeException("This deposit invoice is already in failed status.");
+                throw new \RuntimeException('This deposit invoice is already in failed status.');
             }
 
             $deposit->setStatus('failed');
@@ -584,25 +622,25 @@ class DepositService
 
     public function revokeDepositManually(string $id, string $adminId, ?string $reason = null): bool
     {
-        return \Illuminate\Support\Facades\DB::transaction(function () use ($id, $adminId, $reason) {
-            $depositModel = \App\Infrastructure\Persistence\Eloquent\DepositModel::where('id', $id)
+        return DB::transaction(function () use ($id, $adminId, $reason) {
+            $depositModel = DepositModel::where('id', $id)
                 ->lockForUpdate()
                 ->first();
 
-            if (!$depositModel) {
-                throw new \RuntimeException("Deposit invoice not found.");
+            if (! $depositModel) {
+                throw new \RuntimeException('Deposit invoice not found.');
             }
 
             if ($depositModel->status !== 'completed') {
-                throw new \RuntimeException("Only completed deposit invoices can be revoked.");
+                throw new \RuntimeException('Only completed deposit invoices can be revoked.');
             }
 
-            $userModel = \App\Infrastructure\Persistence\Eloquent\UserModel::where('id', $depositModel->user_id)
+            $userModel = UserModel::where('id', $depositModel->user_id)
                 ->lockForUpdate()
                 ->first();
 
-            if (!$userModel) {
-                throw new \RuntimeException("User not found for this deposit.");
+            if (! $userModel) {
+                throw new \RuntimeException('User not found for this deposit.');
             }
 
             $amountToRevoke = (float) $depositModel->amount_usdt;
@@ -612,13 +650,13 @@ class DepositService
                 throw new \RuntimeException("Cannot revoke deposit invoice #{$depositModel->code}. User current balance ({$currentBalance} USDT) is less than the deposit amount ({$amountToRevoke} USDT).");
             }
 
-            $userModel->balance = round($currentBalance - $amountToRevoke, 4);
+            $userModel->balance = round($currentBalance - $amountToRevoke, 8);
             $userModel->save();
 
             $depositModel->status = 'revoked';
             $depositModel->save();
 
-            Log::info("Admin [{$adminId}] manually revoked Deposit ID [{$id}]: Code={$depositModel->code}, Amount={$amountToRevoke} USDT from User ID [{$userModel->id}]. Reason: " . ($reason ?: 'N/A'));
+            Log::info("Admin [{$adminId}] manually revoked Deposit ID [{$id}]: Code={$depositModel->code}, Amount={$amountToRevoke} USDT from User ID [{$userModel->id}]. Reason: ".($reason ?: 'N/A'));
 
             return true;
         });
@@ -627,11 +665,11 @@ class DepositService
     public function bulkRevokeDepositsManually(array $ids, string $adminId, ?string $reason = null): array
     {
         if (empty($ids)) {
-            throw new \RuntimeException("No deposit invoice IDs selected for bulk revocation.");
+            throw new \RuntimeException('No deposit invoice IDs selected for bulk revocation.');
         }
 
-        return \Illuminate\Support\Facades\DB::transaction(function () use ($ids, $adminId, $reason) {
-            $depositModels = \App\Infrastructure\Persistence\Eloquent\DepositModel::whereIn('id', $ids)
+        return DB::transaction(function () use ($ids, $adminId, $reason) {
+            $depositModels = DepositModel::whereIn('id', $ids)
                 ->lockForUpdate()
                 ->get();
 
@@ -639,33 +677,34 @@ class DepositService
             $failedCount = 0;
             $failedDetails = [];
 
-            $completedDeposits = $depositModels->filter(fn($d) => $d->status === 'completed');
+            $completedDeposits = $depositModels->filter(fn ($d) => $d->status === 'completed');
 
             $unmatchedOrInvalid = array_diff($ids, $completedDeposits->pluck('id')->toArray());
             foreach ($unmatchedOrInvalid as $invalidId) {
                 $failedCount++;
                 $failedDetails[] = [
                     'id' => $invalidId,
-                    'reason' => 'Deposit invoice not found or not in completed status.'
+                    'reason' => 'Deposit invoice not found or not in completed status.',
                 ];
             }
 
             $groupedByUser = $completedDeposits->groupBy('user_id');
 
             foreach ($groupedByUser as $userId => $userDeposits) {
-                $userModel = \App\Infrastructure\Persistence\Eloquent\UserModel::where('id', $userId)
+                $userModel = UserModel::where('id', $userId)
                     ->lockForUpdate()
                     ->first();
 
-                if (!$userModel) {
+                if (! $userModel) {
                     foreach ($userDeposits as $d) {
                         $failedCount++;
                         $failedDetails[] = [
                             'id' => $d->id,
                             'code' => $d->code,
-                            'reason' => 'User account not found.'
+                            'reason' => 'User account not found.',
                         ];
                     }
+
                     continue;
                 }
 
@@ -678,13 +717,14 @@ class DepositService
                         $failedDetails[] = [
                             'id' => $d->id,
                             'code' => $d->code,
-                            'reason' => "User current balance ({$currentBalance} USDT) is insufficient to revoke selected total ({$totalRevokeAmount} USDT)."
+                            'reason' => "User current balance ({$currentBalance} USDT) is insufficient to revoke selected total ({$totalRevokeAmount} USDT).",
                         ];
                     }
+
                     continue;
                 }
 
-                $userModel->balance = round($currentBalance - $totalRevokeAmount, 4);
+                $userModel->balance = round($currentBalance - $totalRevokeAmount, 8);
                 $userModel->save();
 
                 foreach ($userDeposits as $d) {
@@ -692,7 +732,7 @@ class DepositService
                     $d->save();
                     $successCount++;
 
-                    Log::info("Admin [{$adminId}] bulk revoked Deposit ID [{$d->id}]: Code={$d->code}, Amount={$d->amount_usdt} USDT from User ID [{$userId}]. Reason: " . ($reason ?: 'Bulk action'));
+                    Log::info("Admin [{$adminId}] bulk revoked Deposit ID [{$d->id}]: Code={$d->code}, Amount={$d->amount_usdt} USDT from User ID [{$userId}]. Reason: ".($reason ?: 'Bulk action'));
                 }
             }
 
@@ -700,21 +740,22 @@ class DepositService
                 'success_count' => $successCount,
                 'failed_count' => $failedCount,
                 'failed_details' => $failedDetails,
-                'message' => "Successfully revoked {$successCount} deposit(s)." . ($failedCount > 0 ? " {$failedCount} deposit(s) failed or skipped due to insufficient balance or invalid status." : "")
+                'message' => "Successfully revoked {$successCount} deposit(s).".($failedCount > 0 ? " {$failedCount} deposit(s) failed or skipped due to insufficient balance or invalid status." : ''),
             ];
         });
     }
+
     private function creditDepositToUser(Deposit $deposit): void
     {
-        $userModel = \App\Infrastructure\Persistence\Eloquent\UserModel::where('id', $deposit->getUserId())
+        $userModel = UserModel::where('id', $deposit->getUserId())
             ->lockForUpdate()
             ->first();
 
-        if (!$userModel) {
+        if (! $userModel) {
             throw new \RuntimeException('User not found for this deposit.');
         }
 
-        $userModel->balance = round((float) $userModel->balance + $deposit->getAmountUsdt(), 4);
+        $userModel->balance = round((float) $userModel->balance + $deposit->getAmountUsdt(), 8);
         $userModel->save();
     }
 }

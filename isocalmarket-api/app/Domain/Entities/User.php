@@ -5,21 +5,35 @@ namespace App\Domain\Entities;
 class User
 {
     private ?string $id;
+
     private ?string $uid;
+
     private string $username;
+
     private string $name;
+
     private string $email;
+
     private string $password;
+
     private string $role;
+
     private float $balance;
+
     private ?string $refreshTokenHash;
+
     private ?\DateTime $refreshTokenExpiredAt;
+
     private ?string $phone;
+
     private ?string $google2faSecret;
+
     private bool $google2faEnabled;
+
     private ?string $apiKey;
+
     private string $status;
- 
+
     public function __construct(
         ?string $id,
         string $username,
@@ -53,7 +67,7 @@ class User
         $this->apiKey = $apiKey;
         $this->status = $status;
     }
- 
+
     public function getId(): ?string
     {
         return $this->id;
@@ -63,17 +77,17 @@ class User
     {
         return $this->uid;
     }
- 
+
     public function getUsername(): string
     {
         return $this->username;
     }
- 
+
     public function setUsername(string $username): void
     {
         $this->username = $username;
     }
- 
+
     public function getName(): string
     {
         return $this->name;
@@ -157,17 +171,17 @@ class User
 
     public function setBalance(float $balance): void
     {
-        $this->balance = round($balance, 4);
+        $this->balance = round($balance, 8);
     }
 
     public function addBalance(float $amount): void
     {
-        $this->balance = round($this->balance + $amount, 4);
+        $this->balance = round($this->balance + $amount, 8);
     }
 
     public function deductBalance(float $amount): void
     {
-        $this->balance = round($this->balance - $amount, 4);
+        $this->balance = round($this->balance - $amount, 8);
     }
 
     public function getApiKey(): ?string

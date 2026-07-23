@@ -47,11 +47,13 @@
       <code
         class="bg-blue-100 dark:bg-slate-800 px-1 py-0.5 rounded font-bold text-blue-800 dark:text-blue-300"
         >?api_key=...</code
-      >) {{ 'api.or_header' | translate }}
+      >
+      {{ 'api.or_header' | translate }}
       <code
         class="bg-blue-100 dark:bg-slate-800 px-1 py-0.5 rounded font-bold text-blue-800 dark:text-blue-300"
         >X-API-KEY</code
       >.
+      <span class="block mt-1">{{ 'api.post_header_only' | translate }}</span>
       <strong class="text-rose-600 dark:text-rose-400 block mt-1"
         >{{ 'api.admin_security_warning' | translate }}</strong
       >
@@ -158,7 +160,7 @@
                 class="overflow-x-auto p-3.5 pr-12 text-xs text-slate-700 dark:text-slate-300 leading-relaxed"
               >
                 <pre class="whitespace-pre">
-curl -X GET "{{ siteUrl() }}/api/v1/admin/b2b/users?api_key={{
+curl -X GET "{{ siteUrl() }}/api/v1/admin/b2b/users" -H "X-API-KEY: {{
                     apiKey() || 'YOUR_API_KEY'
                   }}"</pre>
               </div>
@@ -211,7 +213,7 @@ curl -X GET "{{ siteUrl() }}/api/v1/admin/b2b/users?api_key={{
                 class="flex flex-col sm:flex-row items-start gap-2 sm:gap-4 text-xs font-semibold border-b border-slate-100 dark:border-slate-800/60 pb-3"
               >
                 <div class="min-w-[120px] text-[var(--color-primary)] font-bold">
-                  api_key
+                  api_key / X-API-KEY
                 </div>
                 <div class="flex-1 space-y-1">
                   <div class="flex items-center gap-1.5">
@@ -268,7 +270,8 @@ curl -X GET "{{ siteUrl() }}/api/v1/admin/b2b/users?api_key={{
                   </div>
                   <p class="text-slate-500 dark:text-slate-400 font-semibold leading-relaxed">
                     {{ 'api.admin_users_limit_desc' | translate }}
-                    <code class="text-xs">10</code>.
+                    <code class="text-xs">10</code>, {{ 'api.max' | translate }}
+                    <code class="text-xs">20</code>.
                   </p>
                 </div>
               </div>
@@ -368,7 +371,13 @@ curl -X GET "{{ siteUrl() }}/api/v1/admin/b2b/users?api_key={{
       "balance": 1500.50,
       "has_api_key": true
     {{ '}' }}
-  ]
+  ],
+  "pagination": {{ '{' }}
+    "total": 6,
+    "page": 1,
+    "limit": 10,
+    "last_page": 1
+  {{ '}' }}
 {{ '}' }}</pre>
             </div>
           </div>
@@ -418,9 +427,9 @@ curl -X GET "{{ siteUrl() }}/api/v1/admin/b2b/users?api_key={{
                 class="overflow-x-auto p-3.5 pr-12 text-xs text-slate-700 dark:text-slate-300 leading-relaxed"
               >
                 <pre class="whitespace-pre">
-curl -X GET "{{ siteUrl() }}/api/v1/admin/b2b/orders?api_key={{
+curl -X GET "{{ siteUrl() }}/api/v1/admin/b2b/orders?page=1&limit=10" -H "X-API-KEY: {{
                     apiKey() || 'YOUR_API_KEY'
-                  }}&page=1&limit=10"</pre>
+                  }}"</pre>
               </div>
               <button
                 (click)="copyGetOrdersCurl()"
@@ -598,6 +607,8 @@ curl -X GET "{{ siteUrl() }}/api/v1/admin/b2b/orders?api_key={{
       "order_code": "ORD-20260718-A7F9D2",
       "user": {{ '{' }}
         "id": "019f6699-e6d2-70f2-89bd-d3b93946a77d",
+        "uid": "25205582",
+        "username": "reseller_partner",
         "name": "reseller_partner",
         "email": "partner&#64;gmail.com"
       {{ '}' }},
@@ -766,6 +777,7 @@ curl -X GET "{{ siteUrl() }}/api/v1/admin/b2b/orders?api_key={{
                   <p class="text-slate-500 dark:text-slate-400 font-semibold leading-relaxed">
                     {{ 'api.admin_ep3_file_desc' | translate }}
                     <code class="text-xs">.txt</code> {{ 'api.admin_ep3_file_note' | translate }}
+                    <code class="text-xs">(max 5 MB)</code>.
                   </p>
                 </div>
               </div>
@@ -941,7 +953,7 @@ curl -X POST "{{ siteUrl() }}/api/v1/admin/b2b/products/PRODUCT_UUID/inventory" 
                 class="overflow-x-auto p-3.5 pr-12 text-xs text-slate-700 dark:text-slate-300 leading-relaxed"
               >
                 <pre class="whitespace-pre">
-curl -X GET "{{ siteUrl() }}/api/v1/admin/b2b/stats?api_key={{
+curl -X GET "{{ siteUrl() }}/api/v1/admin/b2b/stats" -H "X-API-KEY: {{
                     apiKey() || 'YOUR_API_KEY'
                   }}"</pre>
               </div>
@@ -994,7 +1006,7 @@ curl -X GET "{{ siteUrl() }}/api/v1/admin/b2b/stats?api_key={{
                 class="flex flex-col sm:flex-row items-start gap-2 sm:gap-4 text-xs font-semibold border-b border-slate-100 dark:border-slate-800/60 pb-3"
               >
                 <div class="min-w-[120px] text-[var(--color-primary)] font-bold">
-                  api_key
+                  api_key / X-API-KEY
                 </div>
                 <div class="flex-1 space-y-1">
                   <div class="flex items-center gap-1.5">

@@ -65,7 +65,7 @@ export class AdminApiComponent {
 
   public copyGetUsersCurl() {
     const key = this.apiKey() || 'YOUR_API_KEY';
-    const text = `curl -X GET "${this.siteUrl()}/api/v1/admin/b2b/users?api_key=${key}"`;
+    const text = `curl -X GET "${this.siteUrl()}/api/v1/admin/b2b/users" -H "X-API-KEY: ${key}"`;
     this.copyToClipboard(text, this.lang.translate('api.copy_users_curl'));
   }
 
@@ -77,7 +77,7 @@ export class AdminApiComponent {
 
   public copyGetOrdersCurl() {
     const key = this.apiKey() || 'YOUR_API_KEY';
-    const text = `curl -X GET "${this.siteUrl()}/api/v1/admin/b2b/orders?api_key=${key}&page=1&limit=10"`;
+    const text = `curl -X GET "${this.siteUrl()}/api/v1/admin/b2b/orders?page=1&limit=10" -H "X-API-KEY: ${key}"`;
     this.copyToClipboard(text, this.lang.translate('api.copy_orders_curl'));
   }
 
@@ -112,7 +112,7 @@ export class AdminApiComponent {
 
   public copyGetStatsCurl() {
     const key = this.apiKey() || 'YOUR_API_KEY';
-    const text = `curl -X GET "${this.siteUrl()}/api/v1/admin/b2b/stats?api_key=${key}"`;
+    const text = `curl -X GET "${this.siteUrl()}/api/v1/admin/b2b/stats" -H "X-API-KEY: ${key}"`;
     this.copyToClipboard(text, this.lang.translate('api.copy_stats_curl'));
   }
 

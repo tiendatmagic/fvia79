@@ -2,20 +2,22 @@
 
 namespace App\Http\Controllers;
 
-use Illuminate\Http\Request;
-use App\Infrastructure\Persistence\Eloquent\UserModel;
+use App\Application\Services\InventoryService;
+use App\Infrastructure\Persistence\Eloquent\InventoryBatchModel;
+use App\Infrastructure\Persistence\Eloquent\OrderItemModel;
 use App\Infrastructure\Persistence\Eloquent\OrderModel;
 use App\Infrastructure\Persistence\Eloquent\ProductModel;
-use App\Infrastructure\Persistence\Eloquent\InventoryBatchModel;
-use Illuminate\Support\Facades\Auth;
+use App\Infrastructure\Persistence\Eloquent\UserModel;
+use Illuminate\Http\Request;
+use Illuminate\Validation\ValidationException;
 
 class B2bAdminController extends Controller
 {
     public function indexUsers(Request $request)
     {
         try {
-            $page = (int)$request->query('page', 1);
-            $limit = (int)$request->query('limit', 10);
+            $page = max(1, (int) $request->query('page', 1));
+            $limit = min(100, max(1, (int) $request->query('limit', 10)));
             $search = $request->query('search');
             $role = $request->query('role');
             $hasApiKey = $request->query('has_api_key');
@@ -25,15 +27,15 @@ class B2bAdminController extends Controller
             if ($search) {
                 $query->where(function ($q) use ($search) {
                     $q->where('id', $search)
-                      ->orWhere('uid', $search)
-                      ->orWhere('username', $search)
-                      ->orWhere('email', $search)
-                      ->orWhere('name', 'like', "%{$search}%")
-                      ->orWhere('email', 'like', "%{$search}%")
-                      ->orWhere('phone', 'like', "%{$search}%")
-                      ->orWhere('uid', 'like', "%{$search}%")
-                      ->orWhere('username', 'like', "%{$search}%")
-                      ->orWhere('id', 'like', "%{$search}%");
+                        ->orWhere('uid', $search)
+                        ->orWhere('username', $search)
+                        ->orWhere('email', $search)
+                        ->orWhere('name', 'like', "%{$search}%")
+                        ->orWhere('email', 'like', "%{$search}%")
+                        ->orWhere('phone', 'like', "%{$search}%")
+                        ->orWhere('uid', 'like', "%{$search}%")
+                        ->orWhere('username', 'like', "%{$search}%")
+                        ->orWhere('id', 'like', "%{$search}%");
                 });
             }
 
@@ -65,8 +67,8 @@ class B2bAdminController extends Controller
                         'email' => $u->email,
                         'phone' => $u->phone,
                         'role' => $u->role,
-                        'balance' => (float)$u->balance,
-                        'has_api_key' => !empty($u->api_key)
+                        'balance' => (float) $u->balance,
+                        'has_api_key' => ! empty($u->api_key),
                     ];
                 });
 
@@ -77,8 +79,8 @@ class B2bAdminController extends Controller
                     'total' => $total,
                     'page' => $page,
                     'limit' => $limit,
-                    'last_page' => (int)ceil($total / $limit)
-                ]
+                    'last_page' => (int) ceil($total / $limit),
+                ],
             ]);
         } catch (\Throwable $e) {
             return $this->serverError($e, 'Failed to fetch B2B users.');
@@ -88,8 +90,8 @@ class B2bAdminController extends Controller
     public function indexOrders(Request $request)
     {
         try {
-            $page = (int)$request->query('page', 1);
-            $limit = (int)$request->query('limit', 10);
+            $page = max(1, (int) $request->query('page', 1));
+            $limit = min(100, max(1, (int) $request->query('limit', 10)));
             $status = $request->query('status');
             $userId = $request->query('user_id');
             $search = $request->query('search');
@@ -103,22 +105,22 @@ class B2bAdminController extends Controller
             if ($userId) {
                 $query->where(function ($q) use ($userId) {
                     $q->where('user_id', $userId)
-                      ->orWhereHas('user', function ($uq) use ($userId) {
-                          $uq->where('uid', $userId);
-                      });
+                        ->orWhereHas('user', function ($uq) use ($userId) {
+                            $uq->where('uid', $userId);
+                        });
                 });
             }
 
             if ($search) {
                 $query->where(function ($q) use ($search) {
                     $q->where('order_code', 'like', "%{$search}%")
-                      ->orWhereHas('user', function ($uq) use ($search) {
-                          $uq->where('name', 'like', "%{$search}%")
-                             ->orWhere('email', 'like', "%{$search}%")
-                             ->orWhere('username', 'like', "%{$search}%")
-                             ->orWhere('uid', 'like', "%{$search}%")
-                             ->orWhere('id', 'like', "%{$search}%");
-                      });
+                        ->orWhereHas('user', function ($uq) use ($search) {
+                            $uq->where('name', 'like', "%{$search}%")
+                                ->orWhere('email', 'like', "%{$search}%")
+                                ->orWhere('username', 'like', "%{$search}%")
+                                ->orWhere('uid', 'like', "%{$search}%")
+                                ->orWhere('id', 'like', "%{$search}%");
+                        });
                 });
             }
 
@@ -135,6 +137,7 @@ class B2bAdminController extends Controller
                             $accounts = array_merge($accounts, $item->delivered_keys);
                         }
                     }
+
                     return [
                         'id' => $order->id,
                         'order_code' => $order->order_code,
@@ -145,12 +148,12 @@ class B2bAdminController extends Controller
                             'name' => $order->user->name,
                             'email' => $order->user->email,
                         ],
-                        'total_price' => (float)$order->total_price,
-                        'discount_amount' => (float)$order->discount_amount,
+                        'total_price' => (float) $order->total_price,
+                        'discount_amount' => (float) $order->discount_amount,
                         'coupon_code' => $order->coupon_code,
                         'status' => $order->status,
                         'created_at' => $order->created_at->toIso8601String(),
-                        'accounts_count' => count($accounts)
+                        'accounts_count' => count($accounts),
                     ];
                 });
 
@@ -161,33 +164,33 @@ class B2bAdminController extends Controller
                     'total' => $total,
                     'page' => $page,
                     'limit' => $limit,
-                    'last_page' => (int)ceil($total / $limit)
-                ]
+                    'last_page' => (int) ceil($total / $limit),
+                ],
             ]);
         } catch (\Throwable $e) {
             return $this->serverError($e, 'Failed to fetch B2B orders.');
         }
     }
 
-    public function importInventory(Request $request, $id, \App\Application\Services\InventoryService $inventoryService)
+    public function importInventory(Request $request, $id, InventoryService $inventoryService)
     {
         try {
-            $productExists = \App\Infrastructure\Persistence\Eloquent\ProductModel::where('id', $id)->exists();
-            if (!$productExists) {
+            $productExists = ProductModel::where('id', $id)->exists();
+            if (! $productExists) {
                 return response()->json(['message' => 'Product not found.'], 404);
             }
 
             $request->validate([
-                'batch_name' => 'nullable|string',
-                'content' => 'nullable|string',
-                'raw_data' => 'nullable|string',
+                'batch_name' => 'nullable|string|max:255',
+                'content' => 'nullable|string|max:5242880',
+                'raw_data' => 'nullable|string|max:5242880',
                 'cost_price' => 'nullable|numeric|min:0',
-                'file' => 'nullable|file',
+                'file' => 'nullable|file|max:5120',
             ]);
 
-            $batchName = $request->input('batch_name') ?: 'API Import - ' . now()->format('Y-m-d H:i:s');
-            $costPrice = $request->input('cost_price') !== null ? (float)$request->input('cost_price') : null;
-            
+            $batchName = $request->input('batch_name') ?: 'API Import - '.now()->format('Y-m-d H:i:s');
+            $costPrice = $request->input('cost_price') !== null ? (float) $request->input('cost_price') : null;
+
             $rawData = '';
             if ($request->hasFile('file')) {
                 $rawData = $request->file('file')->get();
@@ -217,9 +220,11 @@ class B2bAdminController extends Controller
                     'initial_count' => $batch->getInitialCount(),
                     'sold_count' => $batch->getSoldCount(),
                     'available_count' => $batch->getAvailableCount(),
-                    'status' => $batch->getStatus()
-                ]
+                    'status' => $batch->getStatus(),
+                ],
             ], 201);
+        } catch (ValidationException $e) {
+            throw $e;
         } catch (\Exception $e) {
             if (in_array($e->getMessage(), ['Product not found.', 'No resource keys found in raw data.'], true)) {
                 return response()->json(['message' => $e->getMessage()], 400);
@@ -239,12 +244,12 @@ class B2bAdminController extends Controller
             $ordersQuery = OrderModel::query();
 
             if ($startDate) {
-                $start = strlen($startDate) === 10 ? $startDate . ' 00:00:00' : $startDate;
+                $start = strlen($startDate) === 10 ? $startDate.' 00:00:00' : $startDate;
                 $revenueQuery->where('created_at', '>=', $start);
                 $ordersQuery->where('created_at', '>=', $start);
             }
             if ($endDate) {
-                $end = strlen($endDate) === 10 ? $endDate . ' 23:59:59' : $endDate;
+                $end = strlen($endDate) === 10 ? $endDate.' 23:59:59' : $endDate;
                 $revenueQuery->where('created_at', '<=', $end);
                 $ordersQuery->where('created_at', '<=', $end);
             }
@@ -254,14 +259,14 @@ class B2bAdminController extends Controller
             $totalProducts = ProductModel::where('status', 'active')->count();
             $totalUsers = UserModel::count();
 
-            $cogsQuery = \App\Infrastructure\Persistence\Eloquent\OrderItemModel::whereHas('order', function ($q) use ($startDate, $endDate) {
+            $cogsQuery = OrderItemModel::whereHas('order', function ($q) use ($startDate, $endDate) {
                 $q->where('status', 'paid');
                 if ($startDate) {
-                    $start = strlen($startDate) === 10 ? $startDate . ' 00:00:00' : $startDate;
+                    $start = strlen($startDate) === 10 ? $startDate.' 00:00:00' : $startDate;
                     $q->where('created_at', '>=', $start);
                 }
                 if ($endDate) {
-                    $end = strlen($endDate) === 10 ? $endDate . ' 23:59:59' : $endDate;
+                    $end = strlen($endDate) === 10 ? $endDate.' 23:59:59' : $endDate;
                     $q->where('created_at', '<=', $end);
                 }
             });
@@ -270,9 +275,17 @@ class B2bAdminController extends Controller
             $totalProfit = $totalRevenue - $totalCogs;
             $profitMarginPercent = $totalRevenue > 0 ? round(($totalProfit / $totalRevenue) * 100, 2) : 0.0;
 
-            $totalAvailableInventory = (int) InventoryBatchModel::where('status', 'active')
+            $localAvailableInventory = (int) InventoryBatchModel::where('status', 'active')
                 ->selectRaw('SUM(initial_count - sold_count) as total')
                 ->value('total') ?? 0;
+            $supplierAvailableInventory = (int) ProductModel::where('status', 'active')
+                ->whereNotNull('supplier_id')
+                ->whereHas('supplier', function ($query) {
+                    $query->where('enabled', true)
+                        ->where('products_enabled', true);
+                })
+                ->sum('supplier_stock');
+            $totalAvailableInventory = $localAvailableInventory + $supplierAvailableInventory;
 
             return response()->json([
                 'success' => true,
@@ -284,8 +297,8 @@ class B2bAdminController extends Controller
                     'total_orders' => $totalOrders,
                     'total_products' => $totalProducts,
                     'total_available_inventory' => $totalAvailableInventory,
-                    'total_users' => $totalUsers
-                ]
+                    'total_users' => $totalUsers,
+                ],
             ]);
         } catch (\Throwable $e) {
             return $this->serverError($e, 'Failed to fetch B2B dashboard stats.');

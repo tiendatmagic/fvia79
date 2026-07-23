@@ -2,39 +2,37 @@
 
 namespace App\Http\Middleware;
 
+use App\Infrastructure\Persistence\Eloquent\UserModel;
 use Closure;
 use Illuminate\Http\Request;
-use Symfony\Component\HttpFoundation\Response;
-use App\Infrastructure\Persistence\Eloquent\UserModel;
 use Illuminate\Support\Facades\Auth;
+use Symfony\Component\HttpFoundation\Response;
 
 class B2bAuthMiddleware
 {
     public function handle(Request $request, Closure $next): Response
     {
-        $apiKey = $request->query('api_key');
+        $apiKey = trim((string) $request->header('X-API-KEY', ''));
 
-        if (!$apiKey) {
-            $apiKey = $request->header('X-API-KEY');
+        if ($apiKey === '' && in_array($request->method(), ['GET', 'HEAD'], true)) {
+            $apiKey = trim((string) $request->query('api_key', ''));
         }
 
-        if (!$apiKey) {
-            $authHeader = $request->header('Authorization');
-            if ($authHeader) {
-                if (preg_match('/Bearer\s(\S+)/', $authHeader, $matches)) {
+        if ($apiKey === '') {
+            $authHeader = trim((string) $request->header('Authorization', ''));
+            if ($authHeader !== '') {
+                if (preg_match('/^Bearer\s+(\S+)$/i', $authHeader, $matches)) {
                     $apiKey = $matches[1];
-                } else {
-                    $apiKey = $authHeader;
                 }
             }
         }
 
-        if (!$apiKey) {
+        if ($apiKey === '') {
             return response()->json(['message' => 'Unauthorized. API Key is missing.'], 401);
         }
 
         $userModel = UserModel::where('api_key_hash', hash('sha256', $apiKey))->first();
-        if (!$userModel) {
+        if (! $userModel) {
             return response()->json(['message' => 'Unauthorized. Invalid API Key.'], 401);
         }
 

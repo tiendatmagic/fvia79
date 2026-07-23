@@ -2,15 +2,19 @@
 
 namespace App\Http\Controllers;
 
-use App\Application\Services\ProductService;
 use App\Application\Services\OrderService;
+use App\Application\Services\ProductService;
 use App\Domain\Exceptions\OrderException;
+use App\Http\Requests\B2bBuyRequest;
+use App\Infrastructure\Persistence\Eloquent\CategoryModel;
+use App\Infrastructure\Persistence\Eloquent\OrderModel;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 
 class B2bController extends Controller
 {
     private ProductService $productService;
+
     private OrderService $orderService;
 
     public function __construct(ProductService $productService, OrderService $orderService)
@@ -22,8 +26,8 @@ class B2bController extends Controller
     public function index(Request $request)
     {
         try {
-            $page = (int)$request->query('page', 1);
-            $limit = (int)$request->query('limit', 10);
+            $page = max(1, (int) $request->query('page', 1));
+            $limit = min(100, max(1, (int) $request->query('limit', 10)));
             $categoryId = $request->query('category_id');
             $search = $request->query('search');
 
@@ -32,13 +36,14 @@ class B2bController extends Controller
             $total = $result['total'];
 
             $data = array_map(function ($product) {
-                $category = $product->getCategoryId() ? \App\Infrastructure\Persistence\Eloquent\CategoryModel::find($product->getCategoryId()) : null;
+                $category = $product->getCategoryId() ? CategoryModel::find($product->getCategoryId()) : null;
+
                 return [
                     'id' => $product->getId(),
                     'title' => $product->getName(),
                     'category' => $category ? $category->name : 'Uncategorized',
-                    'price' => (float)$product->getPrice(),
-                    'stock' => $product->getAvailableCount()
+                    'price' => (float) $product->getPrice(),
+                    'stock' => $product->getAvailableCount(),
                 ];
             }, $products);
 
@@ -49,8 +54,8 @@ class B2bController extends Controller
                     'total' => $total,
                     'page' => $page,
                     'limit' => $limit,
-                    'last_page' => (int)ceil($total / $limit)
-                ]
+                    'last_page' => (int) ceil($total / $limit),
+                ],
             ]);
         } catch (\Throwable $e) {
             return $this->serverError($e, 'Failed to fetch B2B products.');
@@ -61,69 +66,55 @@ class B2bController extends Controller
     {
         try {
             $product = $this->productService->getProductById($id);
-            if (!$product || $product->isDeleted() || $product->getStatus() !== 'active') {
+            if (! $product || $product->isDeleted() || $product->getStatus() !== 'active') {
                 return response()->json(['message' => 'Product not found.'], 404);
             }
 
-            $category = $product->getCategoryId() ? \App\Infrastructure\Persistence\Eloquent\CategoryModel::find($product->getCategoryId()) : null;
+            $category = $product->getCategoryId() ? CategoryModel::find($product->getCategoryId()) : null;
+
             return response()->json([
                 'id' => $product->getId(),
                 'title' => $product->getName(),
                 'description' => $product->getDescription(),
-                'price' => (float)$product->getPrice(),
+                'price' => (float) $product->getPrice(),
                 'stock' => $product->getAvailableCount(),
-                'category' => $category ? $category->name : 'Uncategorized'
+                'category' => $category ? $category->name : 'Uncategorized',
             ]);
         } catch (\Throwable $e) {
             return $this->serverError($e, 'Failed to fetch B2B product.');
         }
     }
 
-    public function buy(Request $request)
+    public function buy(B2bBuyRequest $request)
     {
         try {
             $userId = Auth::id();
-            $couponCode = $request->input('coupon_code');
+            $validated = $request->validated();
+            $couponCode = $validated['coupon_code'] ?? null;
+            $idempotencyKey = $validated['idempotency_key'];
 
             $itemsInput = [];
 
-            if ($request->has('items') && is_array($request->input('items'))) {
-                $items = $request->input('items');
-                if (count($items) === 0) {
-                    return response()->json(['message' => 'The items array must contain at least one item.'], 400);
-                }
-                foreach ($items as $index => $item) {
-                    if (empty($item['product_id'])) {
-                        return response()->json(['message' => "The items.{$index}.product_id field is required."], 400);
-                    }
-                    $qty = isset($item['quantity']) ? (int)$item['quantity'] : 1;
-                    if ($qty <= 0) {
-                        return response()->json(['message' => "The items.{$index}.quantity must be greater than 0."], 400);
-                    }
+            if (isset($validated['items'])) {
+                foreach ($validated['items'] as $item) {
                     $itemsInput[] = [
                         'product_id' => $item['product_id'],
-                        'quantity' => $qty
+                        'quantity' => $item['quantity'] ?? 1,
                     ];
                 }
             } else {
-                $productId = $request->input('product_id');
-                $quantity = (int)$request->input('quantity', 1);
-
-                if (!$productId) {
-                    return response()->json(['message' => 'The product_id field is required (or provide an items array).'], 400);
-                }
-
-                if ($quantity <= 0) {
-                    return response()->json(['message' => 'Quantity must be greater than 0.'], 400);
-                }
-
                 $itemsInput[] = [
-                    'product_id' => $productId,
-                    'quantity' => $quantity
+                    'product_id' => $validated['product_id'],
+                    'quantity' => $validated['quantity'] ?? 1,
                 ];
             }
 
-            $order = $this->orderService->createOrder($userId, $itemsInput, $couponCode);
+            $order = $this->orderService->createOrder(
+                $userId,
+                $itemsInput,
+                $couponCode,
+                $idempotencyKey,
+            );
 
             $accounts = [];
             foreach ($order->getItems() as $item) {
@@ -133,13 +124,19 @@ class B2bController extends Controller
                 }
             }
 
+            $isPending = $order->isPending();
+
             return response()->json([
-                'success' => true,
+                'success' => ! $isPending,
+                'status' => $order->getStatus(),
+                'message' => $isPending
+                    ? 'Order is pending supplier reconciliation.'
+                    : 'Order created successfully.',
                 'order_code' => $order->getOrderCode(),
-                'total_price' => (float)$order->getTotalPrice(),
-                'discount_amount' => (float)$order->getDiscountAmount(),
-                'accounts' => $accounts
-            ]);
+                'total_price' => (float) $order->getTotalPrice(),
+                'discount_amount' => (float) $order->getDiscountAmount(),
+                'accounts' => $accounts,
+            ], $isPending ? 202 : 200);
         } catch (OrderException $e) {
             return response()->json(['success' => false, 'message' => $e->getMessage()], 400);
         } catch (\Throwable $e) {
@@ -151,7 +148,7 @@ class B2bController extends Controller
     {
         try {
             $userModel = Auth::user();
-            if (!$userModel) {
+            if (! $userModel) {
                 return response()->json(['message' => 'Unauthorized.'], 401);
             }
 
@@ -163,7 +160,7 @@ class B2bController extends Controller
                 'email' => $userModel->email,
                 'phone' => $userModel->phone,
                 'role' => $userModel->role,
-                'balance' => (float)$userModel->balance
+                'balance' => (float) $userModel->balance,
             ]);
         } catch (\Throwable $e) {
             return $this->serverError($e, 'Failed to fetch B2B profile.');
@@ -175,21 +172,21 @@ class B2bController extends Controller
         try {
             $userId = Auth::id();
 
-            $orderModel = \App\Infrastructure\Persistence\Eloquent\OrderModel::where('user_id', $userId)
+            $orderModel = OrderModel::where('user_id', $userId)
                 ->where(function ($q) use ($orderCode) {
                     $q->where('order_code', $orderCode)
                         ->orWhere('id', $orderCode);
                 })
                 ->first();
 
-            if (!$orderModel && str_starts_with($orderCode, 'API-')) {
+            if (! $orderModel && str_starts_with($orderCode, 'API-')) {
                 $hex = strtolower(substr($orderCode, 4));
-                $orderModel = \App\Infrastructure\Persistence\Eloquent\OrderModel::where('user_id', $userId)
-                    ->where('id', 'like', $hex . '-%')
+                $orderModel = OrderModel::where('user_id', $userId)
+                    ->where('id', 'like', $hex.'-%')
                     ->first();
             }
 
-            if (!$orderModel) {
+            if (! $orderModel) {
                 return response()->json(['message' => 'Order not found.'], 404);
             }
 
@@ -203,11 +200,11 @@ class B2bController extends Controller
             return response()->json([
                 'success' => true,
                 'order_code' => $orderModel->order_code,
-                'total_price' => (float)$orderModel->total_price,
-                'discount_amount' => (float)$orderModel->discount_amount,
+                'total_price' => (float) $orderModel->total_price,
+                'discount_amount' => (float) $orderModel->discount_amount,
                 'status' => $orderModel->status,
                 'created_at' => $orderModel->created_at->toIso8601String(),
-                'accounts' => $accounts
+                'accounts' => $accounts,
             ]);
         } catch (\Throwable $e) {
             return $this->serverError($e, 'Failed to fetch B2B order.');

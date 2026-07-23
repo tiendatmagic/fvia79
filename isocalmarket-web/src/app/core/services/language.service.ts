@@ -65,9 +65,9 @@ export const TRANSLATIONS: Record<SupportedLanguage, Record<string, string>> = {
     'api.switch_to_admin': 'Switch to Admin API',
     'api.your_api_key': 'Your B2B API Key',
     'api.key_instruction':
-      'Use this API Key to authenticate when calling B2B APIs via URL query parameter (?api_key=...) or HTTP Header X-API-KEY.',
+      'GET APIs accept API Key via ?api_key=... in the URL or the X-API-KEY header. POST APIs accept only X-API-KEY or Bearer authentication.',
     'api.security_warning':
-      'Keep this key secure and never share it publicly to avoid asset losses!',
+      'Keep this key secure. URL query keys may appear in browser, proxy, or server logs; prefer the header when possible.',
     'api.not_configured': 'API Key not generated yet',
     'api.hide_key': 'Hide API Key',
     'api.show_key': 'Show API Key',
@@ -81,8 +81,9 @@ export const TRANSLATIONS: Record<SupportedLanguage, Record<string, string>> = {
     'api.admin_security_warning_body':
       'The API endpoints below allow direct intervention on user accounts and system balances. Never share the Admin account API Key with anyone or push it to public source repositories (Github, Gitlab).',
     'api.admin_key_instruction':
-      'Use this API Key to authenticate when calling B2B Admin APIs by passing it directly on URL (Query param',
+      'GET endpoints accept Admin API Key through',
     'api.or_header': 'or via HTTP Header',
+    'api.post_header_only': 'POST endpoints accept API Key only through X-API-KEY or Bearer authentication.',
     'api.or': 'or',
     'api.admin_security_warning':
       'Keep this key absolutely secure and never share it with anyone to avoid asset losses!',
@@ -100,9 +101,9 @@ export const TRANSLATIONS: Record<SupportedLanguage, Record<string, string>> = {
       'Add stock data to a product. Can send content directly as JSON or upload a TXT file via multipart/form-data.',
     'api.admin_ep4_title': '4. Get B2B System Statistics',
     'api.admin_ep4_desc':
-      'View overall system activity metrics including: Revenue, Cost of Goods Sold (COGS), Gross Profit, Profit Margin (%), Orders, Products, Available Inventory and Total Users.',
+      'View revenue, COGS, gross profit, profit margin, orders, products, total available inventory (supplier plus local stock), and users.',
     'api.admin_api_key_desc':
-      'Admin API Key to authenticate. Can be passed via query parameter or header X-API-KEY.',
+      'For GET requests, send Admin API Key via api_key query parameter or X-API-KEY header.',
     'api.admin_users_limit_desc': 'Number of members per page. Default is',
     'api.admin_users_search_desc':
       'Search keyword by name, email, phone number, username, or UID (8-digit numeric UID).',
@@ -140,34 +141,37 @@ export const TRANSLATIONS: Record<SupportedLanguage, Record<string, string>> = {
       'View detailed product description along with current available stock quantity.',
     'api.ep3_title': '3. Purchase Product Account',
     'api.ep3_desc':
-      'Automatically creates an order, deducts the API Key owner account balance, and returns the purchased account resource (accounts) immediately.',
+      'Creates an idempotent order and deducts the API Key owner balance. A completed order returns accounts; supplier reconciliation returns HTTP 202 with status pending.',
     'api.ep4_title': '4. Get Account Info & Balance',
     'api.ep4_desc':
       'Get agent personal info and current USD wallet balance (safely without exposing sensitive information).',
     'api.ep5_title': '5. Lookup Order Details',
     'api.ep5_desc':
-      'Look up status, price, and list of purchased account resources by order code (order_code).',
+      'Look up status, price, and purchased accounts by order_code. This GET endpoint accepts API Key in the URL or X-API-KEY header.',
     'api.curl_sample': 'API Call Sample (CURL)',
     'api.direct_url': 'Direct URL',
-    'api.query_params': 'URL Parameters (Query Parameters)',
+    'api.query_params': 'Request Headers & URL Parameters',
     'api.body_params': 'Body Parameters (JSON Payload)',
     'api.parameters': 'Request Parameters',
     'api.response_sample': 'SAMPLE RESPONSE (JSON)',
+    'api.pending_response': 'HTTP 202 — Pending supplier reconciliation',
     'api.required': 'Required',
     'api.required_cond': 'Required*',
     'api.optional': 'Optional',
     'api.api_key_desc':
-      'Agent API Key to authenticate access. Can be passed via query parameter or header',
+      'For GET requests, send API Key via api_key query parameter or X-API-KEY header.',
     'api.page_desc': 'Page number to retrieve data. Default is',
     'api.limit_desc': 'Maximum records per page. Default is',
     'api.category_id_desc':
       'Category ID to filter by. If not provided, products from all categories are returned.',
     'api.search_product_desc': 'Search keyword by product name.',
     'api.product_id_body_desc': 'ID of the product you want to purchase.',
-    'api.quantity_desc': 'Number of products to purchase.',
+    'api.quantity_desc': 'Number of products to purchase, defaults to 1 and allows up to 1,000 per item.',
+    'api.idempotency_key_desc':
+      'A unique UUID for this checkout attempt. Reuse it when retrying the same request; generate a new value for a new purchase.',
     'api.coupon_code_desc': 'Discount code to apply to the order (e.g.',
     'api.items_desc':
-      'List of multiple products to buy at once (if items is passed, system ignores product_id and quantity above). Each object contains:',
+      'Up to 20 products per request. When items is provided, product_id and quantity above are ignored. Each object contains:',
     'api.buy_single_hint': '1. Buy 1 product (Pass product_id & quantity):',
     'api.buy_multi_hint': '2. Buy multiple products at once (Pass items array):',
     'api.buy_single_cmd_hint': '1. Buy 1 product (Windows CMD):',
@@ -1544,9 +1548,9 @@ export const TRANSLATIONS: Record<SupportedLanguage, Record<string, string>> = {
     'api.switch_to_admin': 'Chuyển sang Admin API',
     'api.your_api_key': 'API Key của bạn',
     'api.key_instruction':
-      'Sử dụng API Key này để xác thực khi gọi các B2B API bằng cách truyền trực tiếp trên URL (?api_key=...) hoặc truyền qua HTTP Header X-API-KEY.',
+      'API GET cho phép truyền API Key qua ?api_key=... trên URL hoặc header X-API-KEY. API POST chỉ nhận X-API-KEY hoặc Bearer.',
     'api.security_warning':
-      'Tuyệt đối bảo mật và không chia sẻ khóa này cho người khác để tránh thất thoát tài sản!',
+      'Phải bảo mật khóa. API Key trên URL có thể xuất hiện trong lịch sử trình duyệt, proxy hoặc log máy chủ; nên ưu tiên header khi có thể.',
     'api.not_configured': 'Chưa cấu hình API Key',
     'api.hide_key': 'Ẩn API Key',
     'api.show_key': 'Hiển thị API Key',
@@ -1560,8 +1564,9 @@ export const TRANSLATIONS: Record<SupportedLanguage, Record<string, string>> = {
     'api.admin_security_warning_body':
       'Các cổng API dưới đây cho phép can thiệp trực tiếp vào tài khoản người dùng và số dư hệ thống. Tuyệt đối không chia sẻ API Key của tài khoản Admin cho bất kỳ ai hoặc đẩy lên mã nguồn công khai (Github, Gitlab).',
     'api.admin_key_instruction':
-      'Sử dụng API Key này để xác thực khi gọi các B2B Admin API bằng cách truyền trực tiếp trên URL (Query param',
+      'Các endpoint GET cho phép truyền Admin API Key qua',
     'api.or_header': 'hoặc truyền qua HTTP Header',
+    'api.post_header_only': 'Các endpoint POST chỉ nhận API Key qua X-API-KEY hoặc Bearer.',
     'api.or': 'hoặc',
     'api.admin_security_warning':
       'Tuyệt đối bảo mật và không chia sẻ khóa này cho người khác để tránh thất thoát tài sản!',
@@ -1579,9 +1584,9 @@ export const TRANSLATIONS: Record<SupportedLanguage, Record<string, string>> = {
       'Thêm dữ liệu kho hàng vào sản phẩm. Có thể gửi nội dung trực tiếp bằng JSON hoặc tải file TXT thông qua multipart/form-data.',
     'api.admin_ep4_title': '4. Lấy số liệu thống kê hệ thống B2B',
     'api.admin_ep4_desc':
-      'Xem tổng quan số liệu hoạt động toàn hệ thống bao gồm: Doanh thu, Giá vốn (COGS), Lợi nhuận gộp, Tỷ suất lợi nhuận (%), Đơn hàng, Sản phẩm, Tồn kho khả dụng và Tổng số người dùng.',
+      'Xem doanh thu, giá vốn, lợi nhuận gộp, tỷ suất lợi nhuận, đơn hàng, sản phẩm, tổng tồn kho khả dụng (nhà cung cấp cộng kho nội bộ) và người dùng.',
     'api.admin_api_key_desc':
-      'Khóa API Key của Admin để xác thực. Có thể truyền qua query parameter hoặc header X-API-KEY.',
+      'Với API GET, truyền Admin API Key qua query parameter api_key hoặc header X-API-KEY.',
     'api.admin_users_limit_desc': 'Số lượng thành viên hiển thị trên mỗi trang. Mặc định là',
     'api.admin_users_search_desc':
       'Từ khóa tìm kiếm theo tên, email, sđt, username hoặc mã UID (8 ký tự).',
@@ -1620,34 +1625,37 @@ export const TRANSLATIONS: Record<SupportedLanguage, Record<string, string>> = {
       'Xem thông tin mô tả chi tiết sản phẩm kèm theo số lượng tồn kho khả dụng hiện tại.',
     'api.ep3_title': '3. Mua tài khoản sản phẩm',
     'api.ep3_desc':
-      'Tự động tạo đơn hàng, thực hiện trừ số dư tài khoản của người sở hữu API Key và trả về thông tin tài nguyên tài khoản (accounts) ngay lập tức.',
+      'Tạo đơn chống trùng và trừ số dư chủ API Key. Đơn hoàn tất trả về accounts; đơn cần đối soát nhà cung cấp trả HTTP 202 với trạng thái pending.',
     'api.ep4_title': '4. Lấy thông tin tài khoản & Số dư',
     'api.ep4_desc':
       'Lấy thông tin cá nhân đại lý (bao gồm ID, mã UID 8 ký tự duy nhất, Username, Tên, Email, SĐT, Vai trò) và số dư ví USD hiện tại.',
     'api.ep5_title': '5. Tra cứu chi tiết đơn hàng',
     'api.ep5_desc':
-      'Tra cứu trạng thái, giá tiền và danh sách tài nguyên tài khoản đã mua bằng mã đơn hàng (order_code).',
+      'Tra cứu trạng thái, giá và tài khoản đã mua bằng order_code. API GET này nhận API Key trên URL hoặc qua header X-API-KEY.',
     'api.curl_sample': 'Mẫu gọi API (CURL)',
     'api.direct_url': 'URL gọi trực tiếp',
-    'api.query_params': 'Tham số URL (Query Parameters)',
+    'api.query_params': 'HTTP Header và tham số URL',
     'api.body_params': 'Tham số Body (JSON Payload)',
     'api.parameters': 'Tham số yêu cầu (Parameters)',
     'api.response_sample': 'RESPONSE MẪU (JSON)',
+    'api.pending_response': 'HTTP 202 — Đơn đang chờ đối soát nhà cung cấp',
     'api.required': 'Bắt buộc',
     'api.required_cond': 'Bắt buộc*',
     'api.optional': 'Tùy chọn',
     'api.api_key_desc':
-      'Khóa API Key của đại lý để xác thực quyền truy cập. Có thể truyền qua query parameter hoặc header',
+      'Với API GET, truyền API Key qua query parameter api_key hoặc header X-API-KEY.',
     'api.page_desc': 'Số thứ tự trang muốn lấy dữ liệu. Mặc định là',
     'api.limit_desc': 'Số lượng bản ghi tối đa trên một trang. Mặc định là',
     'api.category_id_desc':
       'Mã danh mục sản phẩm cần lọc. Nếu không truyền sẽ lấy sản phẩm từ tất cả danh mục.',
     'api.search_product_desc': 'Từ khóa tìm kiếm theo tên sản phẩm.',
     'api.product_id_body_desc': 'Mã ID của sản phẩm bạn muốn đặt mua.',
-    'api.quantity_desc': 'Số lượng sản phẩm muốn đặt mua.',
+    'api.quantity_desc': 'Số lượng muốn mua, mặc định là 1 và tối đa 1.000 cho mỗi sản phẩm.',
+    'api.idempotency_key_desc':
+      'UUID duy nhất cho lần thanh toán này. Khi thử lại cùng yêu cầu phải dùng lại giá trị cũ; đơn mua mới phải tạo UUID mới.',
     'api.coupon_code_desc': 'Mã giảm giá muốn áp dụng cho đơn hàng (Ví dụ:',
     'api.items_desc':
-      'Danh sách nhiều sản phẩm muốn mua cùng lúc (nếu truyền items thì hệ thống sẽ bỏ qua product_id và quantity ở trên). Mỗi object con gồm:',
+      'Tối đa 20 sản phẩm mỗi request. Khi truyền items, hệ thống bỏ qua product_id và quantity ở trên. Mỗi object gồm:',
     'api.buy_single_hint': '1. Mua 1 sản phẩm (Truyền product_id & quantity):',
     'api.buy_multi_hint': '2. Mua nhiều sản phẩm cùng lúc (Truyền mảng items):',
     'api.buy_single_cmd_hint': '1. Mua 1 sản phẩm (Windows CMD):',

@@ -20,7 +20,8 @@ Route::prefix('v1')->group(function () {
     Route::middleware(['b2b.auth'])->group(function () {
         Route::get('/b2b/products', ['App\Http\Controllers\B2bController', 'index']);
         Route::get('/b2b/products/{id}', ['App\Http\Controllers\B2bController', 'show']);
-        Route::post('/b2b/buy', ['App\Http\Controllers\B2bController', 'buy']);
+        Route::post('/b2b/buy', ['App\Http\Controllers\B2bController', 'buy'])
+            ->middleware('throttle:20,1');
         Route::get('/b2b/me', ['App\Http\Controllers\B2bController', 'me']);
         Route::get('/b2b/orders/{orderCode}', ['App\Http\Controllers\B2bController', 'showOrder']);
     });
@@ -28,7 +29,8 @@ Route::prefix('v1')->group(function () {
     Route::middleware(['b2b.auth', 'admin'])->group(function () {
         Route::get('/admin/b2b/users', ['App\Http\Controllers\B2bAdminController', 'indexUsers']);
         Route::get('/admin/b2b/orders', ['App\Http\Controllers\B2bAdminController', 'indexOrders']);
-        Route::post('/admin/b2b/products/{id}/inventory', ['App\Http\Controllers\B2bAdminController', 'importInventory']);
+        Route::post('/admin/b2b/products/{id}/inventory', ['App\Http\Controllers\B2bAdminController', 'importInventory'])
+            ->middleware('throttle:10,1');
         Route::get('/admin/b2b/stats', ['App\Http\Controllers\B2bAdminController', 'getStats']);
     });
 

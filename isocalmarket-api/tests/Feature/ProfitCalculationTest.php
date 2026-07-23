@@ -3,10 +3,7 @@
 namespace Tests\Feature;
 
 use App\Infrastructure\Persistence\Eloquent\CategoryModel;
-use App\Infrastructure\Persistence\Eloquent\InventoryBatchModel;
 use App\Infrastructure\Persistence\Eloquent\InventoryItemModel;
-use App\Infrastructure\Persistence\Eloquent\OrderModel;
-use App\Infrastructure\Persistence\Eloquent\OrderItemModel;
 use App\Infrastructure\Persistence\Eloquent\ProductModel;
 use App\Infrastructure\Persistence\Eloquent\UserModel;
 use App\Infrastructure\Security\JwtService;
@@ -18,7 +15,9 @@ class ProfitCalculationTest extends TestCase
     use RefreshDatabase;
 
     private UserModel $adminUser;
+
     private UserModel $customerUser;
+
     private CategoryModel $category;
 
     protected function setUp(): void
@@ -48,7 +47,7 @@ class ProfitCalculationTest extends TestCase
         $this->category = CategoryModel::create([
             'id' => '019f6699-e6d2-70f2-89bd-d3b93946a773',
             'name' => 'Facebook Via',
-            'slug' => 'facebook-via'
+            'slug' => 'facebook-via',
         ]);
     }
 
@@ -62,7 +61,7 @@ class ProfitCalculationTest extends TestCase
 
         return [
             'Authorization' => "Bearer {$token}",
-            'Accept' => 'application/json'
+            'Accept' => 'application/json',
         ];
     }
 
@@ -76,7 +75,7 @@ class ProfitCalculationTest extends TestCase
 
         return [
             'Authorization' => "Bearer {$token}",
-            'Accept' => 'application/json'
+            'Accept' => 'application/json',
         ];
     }
 
@@ -88,7 +87,7 @@ class ProfitCalculationTest extends TestCase
             'name' => 'Via Viet 902',
             'slug' => 'via-viet-902',
             'price' => 50000.0,
-            'status' => 'active'
+            'status' => 'active',
         ]);
 
         $response = $this->withHeaders($this->adminHeaders())
@@ -96,7 +95,7 @@ class ProfitCalculationTest extends TestCase
                 'product_id' => $product->id,
                 'batch_name' => 'Lô Nhập Via 902 Giá Vốn 20k',
                 'cost_price' => 20000.0,
-                'raw_data' => "via1|pass1|2fa1\nvia2|pass2|2fa2\nvia3|pass3|2fa3"
+                'raw_data' => "via1|pass1|2fa1\nvia2|pass2|2fa2\nvia3|pass3|2fa3",
             ]);
 
         $response->assertStatus(201)
@@ -105,7 +104,7 @@ class ProfitCalculationTest extends TestCase
         $this->assertDatabaseHas('inventory_batches', [
             'product_id' => $product->id,
             'cost_price' => 20000.0,
-            'initial_count' => 3
+            'initial_count' => 3,
         ]);
     }
 
@@ -117,14 +116,14 @@ class ProfitCalculationTest extends TestCase
             'name' => 'Resource API Product',
             'slug' => 'resource-api-product',
             'price' => 50000.0,
-            'status' => 'active'
+            'status' => 'active',
         ]);
 
         $importResponse = $this->withHeaders($this->adminHeaders())
             ->postJson('/api/v1/inventory/import', [
                 'product_id' => $product->id,
                 'batch_name' => 'Resource API Batch',
-                'raw_data' => "account1|password1\naccount2|password2"
+                'raw_data' => "account1|password1\naccount2|password2",
             ])
             ->assertCreated();
 
@@ -138,7 +137,7 @@ class ProfitCalculationTest extends TestCase
         $this->withHeaders($this->adminHeaders())
             ->putJson("/api/v1/inventory/resource-items/{$items[0]->id}", [
                 'secret_data' => 'account1|updated-password',
-                'status' => 'available'
+                'status' => 'available',
             ])
             ->assertOk()
             ->assertJsonPath('data.secret_data', 'account1|updated-password');
@@ -151,7 +150,7 @@ class ProfitCalculationTest extends TestCase
             'id' => $batchId,
             'initial_count' => 1,
             'sold_count' => 0,
-            'status' => 'active'
+            'status' => 'active',
         ]);
     }
 
@@ -164,7 +163,7 @@ class ProfitCalculationTest extends TestCase
             'name' => 'Clone Via Kháng',
             'slug' => 'clone-via-khang',
             'price' => 50000.0,
-            'status' => 'active'
+            'status' => 'active',
         ]);
 
         // 2. Nhập kho lô hàng với Giá vốn 20k
@@ -173,19 +172,20 @@ class ProfitCalculationTest extends TestCase
                 'product_id' => $product->id,
                 'batch_name' => 'Lô 10 Via Kháng',
                 'cost_price' => 20000.0,
-                'raw_data' => "nick1|pass1|2fa1\nnick2|pass2|2fa2\nnick3|pass3|2fa3"
+                'raw_data' => "nick1|pass1|2fa1\nnick2|pass2|2fa2\nnick3|pass3|2fa3",
             ]);
         $importResponse->assertStatus(201);
 
         // 3. Khách mua 2 cái -> Tổng Giá bán = 100k, Tổng Giá vốn = 40k, Lợi nhuận = 60k
         $checkoutResponse = $this->withHeaders($this->customerHeaders())
             ->postJson('/api/v1/orders', [
+                'idempotency_key' => '019f906d-a49e-7e91-9331-589e9942bf20',
                 'items' => [
                     [
                         'product_id' => $product->id,
-                        'quantity' => 2
-                    ]
-                ]
+                        'quantity' => 2,
+                    ],
+                ],
             ]);
 
         $checkoutResponse->assertStatus(201);
@@ -195,7 +195,7 @@ class ProfitCalculationTest extends TestCase
             'product_id' => $product->id,
             'price' => 50000.0,
             'cost_price' => 20000.0,
-            'quantity' => 2
+            'quantity' => 2,
         ]);
 
         // 4. Kiểm tra API Dashboard Stats

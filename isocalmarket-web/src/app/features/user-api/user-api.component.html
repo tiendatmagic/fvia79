@@ -144,7 +144,7 @@
                 class="overflow-x-auto p-3.5 pr-12 text-xs text-slate-700 dark:text-slate-300 leading-relaxed"
               >
                 <pre class="whitespace-pre">
-curl -X GET "{{ siteUrl() }}/api/v1/b2b/products?api_key={{ apiKey() || 'YOUR_API_KEY' }}"</pre>
+curl -X GET "{{ siteUrl() }}/api/v1/b2b/products" -H "X-API-KEY: {{ apiKey() || 'YOUR_API_KEY' }}"</pre>
               </div>
               <button
                 (click)="copyGetProductsCurl()"
@@ -195,7 +195,7 @@ curl -X GET "{{ siteUrl() }}/api/v1/b2b/products?api_key={{ apiKey() || 'YOUR_AP
                 class="flex items-start gap-4 text-xs font-semibold border-b border-slate-100 dark:border-slate-800/60 pb-3"
               >
                 <div class="min-w-[120px] text-[var(--color-primary)] font-bold">
-                  api_key
+                  api_key / X-API-KEY
                 </div>
                 <div class="flex-1 space-y-1">
                   <div class="flex items-center gap-1.5">
@@ -206,7 +206,7 @@ curl -X GET "{{ siteUrl() }}/api/v1/b2b/products?api_key={{ apiKey() || 'YOUR_AP
                     <span class="text-slate-400 dark:text-slate-500 text-xs">{{ 'api.type_string' | translate }}</span>
                   </div>
                   <p class="text-slate-500 dark:text-slate-400 font-semibold leading-relaxed">
-                    {{ 'api.api_key_desc' | translate }} <code class="text-xs">X-API-KEY</code>.
+                    {{ 'api.api_key_desc' | translate }}
                   </p>
                 </div>
               </div>
@@ -252,7 +252,8 @@ curl -X GET "{{ siteUrl() }}/api/v1/b2b/products?api_key={{ apiKey() || 'YOUR_AP
                   </div>
                   <p class="text-slate-500 dark:text-slate-400 font-semibold leading-relaxed">
                     {{ 'api.limit_desc' | translate }}
-                    <code class="text-xs">10</code>.
+                    <code class="text-xs">10</code>, {{ 'api.max' | translate }}
+                    <code class="text-xs">20</code>.
                   </p>
                 </div>
               </div>
@@ -374,7 +375,7 @@ curl -X GET "{{ siteUrl() }}/api/v1/b2b/products?api_key={{ apiKey() || 'YOUR_AP
                 class="overflow-x-auto p-3.5 pr-12 text-xs text-slate-700 dark:text-slate-300 leading-relaxed"
               >
                 <pre class="whitespace-pre">
-curl -X GET "{{ siteUrl() }}/api/v1/b2b/products/PRODUCT_ID?api_key={{
+curl -X GET "{{ siteUrl() }}/api/v1/b2b/products/PRODUCT_ID" -H "X-API-KEY: {{
                     apiKey() || 'YOUR_API_KEY'
                   }}"</pre>
               </div>
@@ -505,7 +506,7 @@ curl -X GET "{{ siteUrl() }}/api/v1/b2b/products/PRODUCT_ID?api_key={{
                     <pre class="whitespace-pre">
 curl -X POST "{{ siteUrl() }}/api/v1/b2b/buy" -H "Content-Type: application/json" -H "X-API-KEY: {{
                         apiKey() || 'YOUR_API_KEY'
-                      }}" -d '{{ '{' }}"product_id": "PRODUCT_ID", "quantity": 1, "coupon_code": "DISCOUNT10"{{ '}' }}'</pre>
+                      }}" -H "Idempotency-Key: 019f906d-a49e-7e91-9331-589e9942bf30" -d '{{ '{' }}"product_id": "PRODUCT_ID", "quantity": 1, "coupon_code": "DISCOUNT10"{{ '}' }}'</pre>
                   </div>
                   <button
                     (click)="copyBuyCurl()"
@@ -527,7 +528,7 @@ curl -X POST "{{ siteUrl() }}/api/v1/b2b/buy" -H "Content-Type: application/json
                     <pre class="whitespace-pre">
 curl -X POST "{{ siteUrl() }}/api/v1/b2b/buy" -H "Content-Type: application/json" -H "X-API-KEY: {{
                         apiKey() || 'YOUR_API_KEY'
-                      }}" -d "{{ '{' }}\"product_id\": \"PRODUCT_ID\", \"quantity\": 1, \"coupon_code\": \"DISCOUNT10\"{{ '}' }}"</pre>
+                      }}" -H "Idempotency-Key: 019f906d-a49e-7e91-9331-589e9942bf30" -d "{{ '{' }}\"product_id\": \"PRODUCT_ID\", \"quantity\": 1, \"coupon_code\": \"DISCOUNT10\"{{ '}' }}"</pre>
                   </div>
                   <button
                     (click)="copyBuyWindowsCurl()"
@@ -569,11 +570,33 @@ curl -X POST "{{ siteUrl() }}/api/v1/b2b/buy" -H "Content-Type: application/json
           <div class="space-y-1.5">
             <span
               class="text-xs font-bold text-slate-400 dark:text-slate-500 uppercase tracking-wider block"
-              >{{ 'api.body_params' | translate }}</span
+              >{{ 'api.parameters' | translate }}</span
             >
             <div
               class="bg-slate-50 dark:bg-slate-950 border border-slate-200/60 dark:border-slate-900 rounded-xl p-4 space-y-3"
             >
+              <div class="flex items-start gap-4 text-xs">
+                <div class="min-w-[120px] text-[var(--color-primary)] font-bold">
+                  Idempotency-Key
+                </div>
+                <div class="flex-1 space-y-1">
+                  <div class="flex items-center gap-1.5">
+                    <span
+                      class="text-xs font-black uppercase bg-rose-500/10 text-rose-500 px-1.5 py-0.5 rounded"
+                      >{{ 'api.required' | translate }}</span
+                    >
+                    <span class="text-slate-400 dark:text-slate-500 text-xs"
+                      >{{ 'api.type_string_uuid' | translate }}</span
+                    >
+                  </div>
+                  <p class="text-slate-500 dark:text-slate-400 font-semibold">
+                    {{ 'api.idempotency_key_desc' | translate }}
+                  </p>
+                </div>
+              </div>
+
+              <div class="h-px bg-slate-200/50 dark:bg-slate-800/40"></div>
+
               <div class="flex items-start gap-4 text-xs">
                 <div class="min-w-[120px] text-[var(--color-primary)] font-bold">
                   product_id
@@ -581,8 +604,8 @@ curl -X POST "{{ siteUrl() }}/api/v1/b2b/buy" -H "Content-Type: application/json
                 <div class="flex-1 space-y-1">
                   <div class="flex items-center gap-1.5">
                     <span
-                      class="text-xs font-black uppercase bg-rose-500/10 text-rose-500 px-1.5 py-0.5 rounded"
-                      >{{ 'api.required' | translate }}</span
+                      class="text-xs font-black uppercase bg-amber-500/10 text-amber-600 px-1.5 py-0.5 rounded"
+                      >{{ 'api.required_cond' | translate }}</span
                     >
                     <span class="text-slate-400 dark:text-slate-500 text-xs"
                       >{{ 'api.type_string_uuid' | translate }}</span
@@ -598,13 +621,34 @@ curl -X POST "{{ siteUrl() }}/api/v1/b2b/buy" -H "Content-Type: application/json
 
               <div class="flex items-start gap-4 text-xs">
                 <div class="min-w-[120px] text-[var(--color-primary)] font-bold">
+                  items
+                </div>
+                <div class="flex-1 space-y-1">
+                  <div class="flex items-center gap-1.5">
+                    <span
+                      class="text-xs font-black uppercase bg-amber-500/10 text-amber-600 px-1.5 py-0.5 rounded"
+                      >{{ 'api.required_cond' | translate }}</span
+                    >
+                    <span class="text-slate-400 dark:text-slate-500 text-xs">array (max 20)</span>
+                  </div>
+                  <p class="text-slate-500 dark:text-slate-400 font-semibold">
+                    {{ 'api.items_desc' | translate }}
+                    <code>{{ '{' }}"product_id": "UUID", "quantity": 1{{ '}' }}</code>
+                  </p>
+                </div>
+              </div>
+
+              <div class="h-px bg-slate-200/50 dark:bg-slate-800/40"></div>
+
+              <div class="flex items-start gap-4 text-xs">
+                <div class="min-w-[120px] text-[var(--color-primary)] font-bold">
                   quantity
                 </div>
                 <div class="flex-1 space-y-1">
                   <div class="flex items-center gap-1.5">
                     <span
-                      class="text-xs font-black uppercase bg-rose-500/10 text-rose-500 px-1.5 py-0.5 rounded"
-                      >{{ 'api.required' | translate }}</span
+                      class="text-xs font-black uppercase bg-slate-500/10 text-slate-500 px-1.5 py-0.5 rounded"
+                      >{{ 'api.optional' | translate }}</span
                     >
                     <span class="text-slate-400 dark:text-slate-500 text-xs"
                       >{{ 'api.type_integer_min_one' | translate }}</span
@@ -651,12 +695,35 @@ curl -X POST "{{ siteUrl() }}/api/v1/b2b/buy" -H "Content-Type: application/json
               <pre class="whitespace-pre"
                 >{{ '{' }}
   "success": true,
+  "status": "paid",
+  "message": "Order created successfully.",
   "order_code": "ORD-20260718-A7F9D2",
   "total_price": 70.00,
   "discount_amount": 10000,
   "accounts": [
     "10007203940192|pass123|2FA_CODE_KEY"
   ]
+{{ '}' }}</pre>
+            </div>
+          </div>
+
+          <div class="space-y-1.5">
+            <span
+              class="text-xs font-bold text-amber-600 dark:text-amber-400 uppercase tracking-wider block"
+              >{{ 'api.pending_response' | translate }}</span
+            >
+            <div
+              class="bg-amber-50/50 dark:bg-amber-950/20 rounded-xl p-4 text-xs text-slate-700 dark:text-slate-300 overflow-x-auto leading-relaxed border border-amber-200/60 dark:border-amber-900/50"
+            >
+              <pre class="whitespace-pre"
+                >{{ '{' }}
+  "success": false,
+  "status": "pending",
+  "message": "Order is pending supplier reconciliation.",
+  "order_code": "ORD-20260718-A7F9D2",
+  "total_price": 70.00,
+  "discount_amount": 0,
+  "accounts": []
 {{ '}' }}</pre>
             </div>
           </div>
