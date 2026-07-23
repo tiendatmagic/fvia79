@@ -17,6 +17,10 @@ export const PROFILE_ROUTES: Routes = [
       {
         path: 'security',
         loadComponent: () => import('./security/profile-security.component').then(m => m.ProfileSecurityComponent)
+      },
+      {
+        path: 'devices',
+        loadComponent: () => import('./devices/profile-devices.component').then(m => m.ProfileDevicesComponent)
       }
     ]
   }

@@ -54,6 +54,22 @@ class JwtService
         return $payload;
     }
 
+    public function extractPayload(string $token): ?array
+    {
+        $parts = explode('.', $token);
+        if (count($parts) !== 3) {
+            return null;
+        }
+
+        [$base64UrlHeader, $base64UrlPayload, $base64UrlSignature] = $parts;
+        $decoded = $this->base64UrlDecode($base64UrlPayload);
+        if (! $decoded) {
+            return null;
+        }
+
+        return json_decode($decoded, true);
+    }
+
     private function base64UrlEncode(string $data): string
     {
         return str_replace(['+', '/', '='], ['-', '_', ''], base64_encode($data));

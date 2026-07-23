@@ -48,6 +48,22 @@ class JwtAuthMiddleware
             return response()->json(['message' => 'Unauthorized. Token has been revoked.'], 401);
         }
 
+        if (! empty($payload['sid'])) {
+            $session = \App\Infrastructure\Persistence\Eloquent\UserSessionModel::where('id', $payload['sid'])
+                ->where('user_id', $userModel->id)
+                ->first();
+
+            if (! $session) {
+                return response()->json(['message' => 'Unauthorized. Session has been revoked.'], 401);
+            }
+
+            if (! $session->last_activity_at || $session->last_activity_at->diffInSeconds(now()) > 60) {
+                $session->update(['last_activity_at' => now()]);
+            }
+
+            $request->attributes->set('current_session_id', $payload['sid']);
+        }
+
         Auth::login($userModel);
 
         return $next($request);

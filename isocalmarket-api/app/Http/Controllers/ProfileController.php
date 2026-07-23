@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Application\Services\AuthService;
 use App\Infrastructure\Persistence\Eloquent\UserModel;
+use App\Infrastructure\Persistence\Eloquent\UserSessionModel;
 use App\Infrastructure\Persistence\Mappers\UserMapper;
 use App\Infrastructure\Security\Google2FA;
 use Illuminate\Http\Request;
@@ -62,7 +63,19 @@ class ProfileController extends Controller
         $userModel->save();
 
         $user = UserMapper::toDomain($userModel);
-        $accessToken = $this->authService->generateAccessToken($user);
+
+        $currentSessionId = $request->attributes->get('current_session_id');
+        if ($currentSessionId) {
+            UserSessionModel::where('user_id', $userModel->id)
+                ->where('id', '!=', $currentSessionId)
+                ->delete();
+        } else {
+            UserSessionModel::where('user_id', $userModel->id)->delete();
+            $session = $this->authService->createSession($user, $request->ip(), $request->header('User-Agent'));
+            $currentSessionId = $session->id;
+        }
+
+        $accessToken = $this->authService->generateAccessToken($user, $currentSessionId);
         $refreshToken = $this->authService->generateRefreshToken($user);
 
         $isProduction = config('app.env') === 'production';

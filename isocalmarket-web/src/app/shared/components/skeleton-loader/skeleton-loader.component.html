@@ -44,13 +44,28 @@
   }
 
     @if (type === 'card-grid') {
-    <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 xl:grid-cols-4 gap-5">
+    <div class="grid grid-cols-1 sm:grid-cols-[repeat(auto-fill,minmax(265px,1fr))] gap-6">
       @for (i of getArray(cards); track i) {
-        <div class="bg-white dark:bg-slate-900 rounded-2xl border border-slate-200 dark:border-slate-800 p-4 space-y-3">
-          <div class="h-32 bg-slate-200 dark:bg-slate-800 rounded-xl"></div>
-          <div class="h-4 bg-slate-200 dark:bg-slate-800 rounded-md w-3/4"></div>
-          <div class="h-3 bg-slate-100 dark:bg-slate-800/60 rounded-md w-1/2"></div>
-          <div class="h-8 bg-slate-200 dark:bg-slate-800 rounded-xl w-full mt-2"></div>
+        <div class="bg-white dark:bg-slate-900 rounded-2xl border border-slate-200 dark:border-slate-800 p-5 space-y-4 flex flex-col justify-between">
+          <div class="space-y-3">
+            @if (showImage) {
+              <div class="h-32 bg-slate-200 dark:bg-slate-800 rounded-xl"></div>
+            }
+            <div class="flex items-start justify-between gap-4">
+              <div class="h-5 bg-slate-200 dark:bg-slate-800 rounded-md w-3/4"></div>
+              <div class="h-5 w-16 bg-slate-200 dark:bg-slate-800 rounded-md shrink-0"></div>
+            </div>
+            <div class="h-3.5 bg-slate-100 dark:bg-slate-800/60 rounded-md w-full"></div>
+            <div class="h-3.5 bg-slate-100 dark:bg-slate-800/60 rounded-md w-2/3"></div>
+            <div class="h-3.5 bg-slate-100 dark:bg-slate-800/60 rounded-md w-1/2"></div>
+          </div>
+          <div class="pt-2 space-y-3">
+            <div class="flex items-center justify-between">
+              <div class="h-3 bg-slate-200 dark:bg-slate-800 rounded w-16"></div>
+              <div class="h-5 bg-slate-200 dark:bg-slate-800 rounded w-20"></div>
+            </div>
+            <div class="h-9 bg-slate-200 dark:bg-slate-800 rounded-xl w-full"></div>
+          </div>
         </div>
       }
     </div>

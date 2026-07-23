@@ -5,6 +5,7 @@ namespace App\Application\Services;
 use App\Domain\Entities\User;
 use App\Domain\Repositories\UserRepositoryInterface;
 use App\Infrastructure\Persistence\Eloquent\UserModel;
+use App\Infrastructure\Persistence\Eloquent\UserSessionModel;
 use App\Infrastructure\Persistence\Mappers\UserMapper;
 use App\Infrastructure\Security\JwtService;
 use Illuminate\Support\Facades\Hash;
@@ -62,7 +63,19 @@ class AuthService
         return $user;
     }
 
-    public function generateAccessToken(User $user): string
+    public function createSession(User $user, ?string $ip = null, ?string $userAgent = null): UserSessionModel
+    {
+        return UserSessionModel::create([
+            'id' => (string) Str::uuid(),
+            'user_id' => $user->getId(),
+            'ip_address' => $ip,
+            'user_agent' => $userAgent,
+            'device_name' => UserSessionModel::parseDeviceName($userAgent),
+            'last_activity_at' => now(),
+        ]);
+    }
+
+    public function generateAccessToken(User $user, ?string $sessionId = null): string
     {
         $tokenVersion = (int) UserModel::query()
             ->whereKey($user->getId())
@@ -74,6 +87,10 @@ class AuthService
             'role' => $user->getRole(),
             'ver' => $tokenVersion,
         ];
+
+        if ($sessionId) {
+            $payload['sid'] = $sessionId;
+        }
 
         return $this->jwtService->generateToken($payload, 1800);
     }
@@ -90,7 +107,7 @@ class AuthService
         return $rawToken;
     }
 
-    public function refresh(string $refreshToken): ?array
+    public function refresh(string $refreshToken, ?string $sessionId = null): ?array
     {
         $hash = hash('sha256', $refreshToken);
 
@@ -102,9 +119,22 @@ class AuthService
             return null;
         }
 
+        // If session ID is provided, verify session still exists
+        if ($sessionId) {
+            $session = UserSessionModel::where('id', $sessionId)
+                ->where('user_id', $userModel->id)
+                ->first();
+
+            if (! $session) {
+                return null;
+            }
+
+            $session->update(['last_activity_at' => now()]);
+        }
+
         $user = UserMapper::toDomain($userModel);
 
-        $newAccessToken = $this->generateAccessToken($user);
+        $newAccessToken = $this->generateAccessToken($user, $sessionId);
         $newRefreshToken = $this->generateRefreshToken($user);
 
         return [

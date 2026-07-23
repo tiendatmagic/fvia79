@@ -62,7 +62,8 @@ class AuthController extends Controller
                 ]);
             }
 
-            $accessToken = $this->authService->generateAccessToken($user);
+            $session = $this->authService->createSession($user, $request->ip(), $request->header('User-Agent'));
+            $accessToken = $this->authService->generateAccessToken($user, $session->id);
             $refreshToken = $this->authService->generateRefreshToken($user);
 
             $isProduction = config('app.env') === 'production';
@@ -145,7 +146,8 @@ class AuthController extends Controller
                 return response()->json(['message' => 'Invalid OTP code. Please try again.'], 400);
             }
 
-            $accessToken = $this->authService->generateAccessToken($user);
+            $session = $this->authService->createSession($user, $request->ip(), $request->header('User-Agent'));
+            $accessToken = $this->authService->generateAccessToken($user, $session->id);
             $refreshToken = $this->authService->generateRefreshToken($user);
 
             $isProduction = config('app.env') === 'production';
@@ -203,7 +205,25 @@ class AuthController extends Controller
             return response()->json(['message' => 'Unauthorized. Refresh token missing.'], 401);
         }
 
-        $result = $this->authService->refresh($refreshToken);
+        $currentSessionId = $request->attributes->get('current_session_id');
+
+        if (! $currentSessionId) {
+            $token = $request->cookie('access_token');
+            if (! $token) {
+                $authHeader = $request->header('Authorization');
+                if ($authHeader && preg_match('/Bearer\s(\S+)/', $authHeader, $matches)) {
+                    $token = $matches[1];
+                }
+            }
+            if ($token) {
+                $payload = app(\App\Infrastructure\Security\JwtService::class)->extractPayload($token);
+                if (! empty($payload['sid'])) {
+                    $currentSessionId = $payload['sid'];
+                }
+            }
+        }
+
+        $result = $this->authService->refresh($refreshToken, $currentSessionId);
 
         if (!$result) {
             return response()->json(['message' => 'Unauthorized.'], 401);

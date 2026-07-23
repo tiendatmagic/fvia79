@@ -86,10 +86,31 @@ export class StorefrontComponent implements OnInit {
     });
   }
   
+  private getInitialViewMode(): 'card' | 'list' {
+    try {
+      const saved = localStorage.getItem('storefront_view_mode');
+      if (saved === 'card' || saved === 'list') {
+        return saved;
+      }
+    } catch {
+      // Ignore reading error
+    }
+    return 'card';
+  }
+
   public readonly limit = 8;
   public readonly categoryPages = signal<{ [catId: string]: number }>({});
-  public readonly viewMode = signal<'card' | 'list'>('card');
+  public readonly viewMode = signal<'card' | 'list'>(this.getInitialViewMode());
   public readonly categorySort = signal<'az' | 'za' | 'default'>('az');
+
+  public setViewMode(mode: 'card' | 'list') {
+    this.viewMode.set(mode);
+    try {
+      localStorage.setItem('storefront_view_mode', mode);
+    } catch {
+      // Ignore writing error
+    }
+  }
 
   public readonly groupedProductsState = signal<any[]>([]);
 

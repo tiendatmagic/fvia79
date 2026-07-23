@@ -13,6 +13,32 @@
 > Khi cần seed dữ liệu cho một seeder cụ thể, chỉ dùng:
 > - `php artisan db:seed --class=TenSeederClass` — chạy đúng 1 seeder.
 
+- **[BỔ SUNG THIẾT BỊ ĐĂNG NHẬP VÀ QUẢN LÝ PHIÊN LÀM VIỆC TRÊN TRANG CÀI ĐẶT TÀI KHOẢN (ACTIVE SESSION & DEVICE MANAGEMENT)]**:
+  - **Mô tả yêu cầu**: Bổ sung tab "Thiết bị đăng nhập" (`/profile/devices`) giúp người dùng theo dõi danh sách các thiết bị/trình duyệt đang đăng nhập tài khoản và hỗ trợ đăng xuất thiết bị từ xa. Dòng phiên làm việc hiện tại phải ẩn nút Đăng xuất và hiển thị badge "Thiết bị hiện tại".
+  - **Nội dung thực hiện**:
+    - **Backend (`isocalmarket-api`)**:
+      - Tạo migration `user_sessions` lưu thông tin session (`id`, `user_id`, `ip_address`, `user_agent`, `device_name`, `last_activity_at`).
+      - Eloquent Model `UserSessionModel.php` tự động parse User-Agent thành tên trình duyệt & hệ điều hành thân thiện.
+      - Cập nhật `AuthService.php` đính kèm `sid` claim vào JWT token và kiểm tra tính hợp lệ khi làm mới token.
+      - Cập nhật `JwtAuthMiddleware.php` tự động từ chối `401 Unauthorized` nếu phiên đã bị xóa/đăng xuất từ xa.
+      - Tạo `UserSessionController.php` hỗ trợ `GET /v1/user/sessions` (phân trang & đánh dấu `is_current: true`) và `DELETE /v1/user/sessions/{id}` (ngăn tự hủy phiên hiện tại với 400 Bad Request).
+      - Viết unit test `UserSessionTest.php` đạt **3/3 PASSED (100%)**, full test suite **64/64 PASSED (100%)**.
+    - **Frontend (`isocalmarket-web`)**:
+      - Cập nhật `LanguageService.ts` bổ sung từ điển Tiếng Việt & Tiếng Anh.
+      - Cập nhật `icon.component.html` bổ sung icon SVG `@case ('devices')`.
+      - Cập nhật `profile.component.html` và `profile.routes.ts` thêm tab navigation 4 "Thiết bị đăng nhập".
+      - Tạo component `ProfileDevicesComponent` dạng **Bảng (Table)** gồm 4 cột (IP, Trình duyệt & Thiết bị, Hoạt động gần nhất, Thao tác), ẩn nút Đăng xuất với phiên hiện tại và tích hợp phân trang `<app-pagination>`.
+  - **Xác nhận**: Backend test `php artisan test` đạt **64/64 PASSED (100%)** và biên dịch Angular `npm run build` thành công **100% SUCCESS, 0 ERRORS**!
+
+- **[LƯU TRẠNG THÁI CHẾ ĐỘ XEM STOREFRONT VÀO LOCALSTORAGE (STOREFRONT VIEW MODE LOCALSTORAGE PERSISTENCE)]**:
+  - **Mô tả yêu cầu**: Lưu trạng thái chuyển đổi chế độ xem (Dạng thẻ `card` hoặc Danh sách `list`) tại Storefront vào `localStorage`. Khi người dùng reload trang hoặc mở lại trình duyệt, hệ thống tự động khôi phục đúng chế độ xem đã chọn trước đó.
+  - **Nội dung thực hiện**:
+    - **Cập nhật Component (`storefront.component.ts`)**:
+      - Khởi tạo giá trị ban đầu cho `viewMode` signal bằng hàm `getInitialViewMode()` để đọc giá trị `'card'` hoặc `'list'` đã lưu từ `localStorage.getItem('storefront_view_mode')`.
+      - Bổ sung hàm `setViewMode(mode: 'card' | 'list')` tự động lưu giá trị mới vào `localStorage.setItem('storefront_view_mode', mode)` và cập nhật signal `viewMode`.
+    - **Cập nhật Template (`storefront.component.html`)**: Chuyển sự kiện `(click)` của nút chọn Dạng thẻ và Danh sách sang sử dụng hàm `setViewMode('card')` và `setViewMode('list')`.
+  - **Xác nhận**: Đã kiểm thử backend `php artisan test` đạt **64/64 test cases (100% PASSED)** và biên dịch Angular `npm run build` hoàn toàn thành công!
+
 - **[ĐỔI TÊN MENU ITEM THÔNG TIN CÁ NHÂN SANG CÀI ĐẶT TÀI KHOẢN (PROFILE MENU ITEM RENAME TO ACCOUNT SETTINGS)]**:
   - **Mô tả yêu cầu**: Sửa tên menu item "Thông tin cá nhân" (đường dẫn `/profile/information`) thành "Cài đặt tài khoản" áp dụng đồng bộ ở cả Sidebar Menu desktop, Mobile menu drawer và Header dropdown.
   - **Nội dung thực hiện**:

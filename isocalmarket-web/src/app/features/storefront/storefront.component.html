@@ -41,7 +41,7 @@
         class="flex bg-slate-100 dark:bg-slate-950/60 p-1 rounded-xl border border-slate-200/40 dark:border-slate-800/40"
       >
         <button
-          (click)="viewMode.set('card')"
+          (click)="setViewMode('card')"
           class="flex items-center gap-1.5 px-2 xl:px-3 py-1.5 rounded-lg text-xs font-extrabold transition-all duration-200 cursor-pointer"
           [ngClass]="
             viewMode() === 'card'
@@ -53,7 +53,7 @@
           <span class="hidden xl:inline">{{ 'storefront.card_view' | translate }}</span>
         </button>
         <button
-          (click)="viewMode.set('list')"
+          (click)="setViewMode('list')"
           class="flex items-center gap-1.5 px-2 xl:px-3 py-1.5 rounded-lg text-xs font-extrabold transition-all duration-200 cursor-pointer"
           [ngClass]="
             viewMode() === 'list'
@@ -87,8 +87,10 @@
   <div class="space-y-10">
     <app-skeleton-loader
       *ngIf="state.productStore.loading() && groupedProducts().length === 0"
-      [type]="'card-grid'"
+      [type]="viewMode() === 'card' ? 'card-grid' : 'table'"
       [cards]="8"
+      [cols]="4"
+      [showImage]="false"
     />
 
     <div
@@ -137,7 +139,9 @@
           <app-skeleton-loader
             [type]="viewMode() === 'card' ? 'card-grid' : 'table'"
             [cards]="8"
+            [cols]="4"
             [showHeader]="false"
+            [showImage]="false"
           />
         } @else {
           @if (viewMode() === 'card') {
