@@ -1,6 +1,6 @@
 import { Injectable, inject, signal } from '@angular/core';
 import { ApiService } from '@core/services/api.service';
-import { finalize, forkJoin, map, Observable, of, shareReplay, tap } from 'rxjs';
+import { catchError, finalize, forkJoin, map, Observable, of, shareReplay, tap } from 'rxjs';
 
 export type PriceAdjustmentType = 'fixed' | 'percent';
 
@@ -55,7 +55,9 @@ export class SupplierStore {
     this.loading.set(true);
     return forkJoin({
       suppliers: this.api.get<SupplierSettings[]>('v1/admin/suppliers'),
-      rate: this.api.get<{ rate: number }>('v1/deposit/rate')
+      rate: this.api.get<{ rate: number }>('v1/deposit/rate').pipe(
+        catchError(() => of({ rate: 0 }))
+      )
     }).pipe(
       map(({ suppliers, rate }) => {
         this.exchangeRate.set(Number(rate.rate));
@@ -109,7 +111,7 @@ export class SupplierStore {
       return pendingRequest;
     }
 
-    const request = this.api.get<SupplierBalance>(`v1/admin/suppliers/${code}/balance`).pipe(
+    const request = this.api.post<SupplierBalance>(`v1/admin/suppliers/${code}/balance`, {}).pipe(
       tap(balance => {
         const normalizedBalance = {
           balance: Number(balance.balance),

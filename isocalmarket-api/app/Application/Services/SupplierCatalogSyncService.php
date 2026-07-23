@@ -6,6 +6,7 @@ use App\Infrastructure\Persistence\Eloquent\CategoryModel;
 use App\Infrastructure\Persistence\Eloquent\ProductModel;
 use App\Infrastructure\Persistence\Eloquent\SupplierModel;
 use App\Integrations\Suppliers\SupplierConnectorFactory;
+use App\Integrations\Suppliers\SupplierOperationLock;
 use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Str;
@@ -17,6 +18,7 @@ class SupplierCatalogSyncService
     public function __construct(
         private readonly SupplierConnectorFactory $connectorFactory,
         private readonly SupplierPriceService $priceService,
+        private readonly SupplierOperationLock $operationLock,
     ) {}
 
     public function syncByCode(string $code): array
@@ -27,6 +29,15 @@ class SupplierCatalogSyncService
     }
 
     public function sync(SupplierModel $supplier): array
+    {
+        return $this->operationLock->run($supplier, function () use ($supplier): array {
+            $supplier->refresh();
+
+            return $this->syncUnlocked($supplier);
+        });
+    }
+
+    private function syncUnlocked(SupplierModel $supplier): array
     {
         if (! $supplier->enabled) {
             throw new RuntimeException("Supplier {$supplier->name} is disabled.");
@@ -127,6 +138,9 @@ class SupplierCatalogSyncService
         ]);
 
         if (! $supplier->products_enabled) {
+            if ($product->supplier_previous_status === null) {
+                $product->supplier_previous_status = 'active';
+            }
             $product->status = 'inactive';
         } elseif (! $product->exists) {
             $product->status = 'active';
@@ -145,7 +159,11 @@ class SupplierCatalogSyncService
         if ($externalIds !== []) {
             $query->whereNotIn('external_id', $externalIds);
         }
-        $query->update(['status' => 'inactive', 'supplier_stock' => 0]);
+        $query->update([
+            'status' => 'inactive',
+            'supplier_previous_status' => null,
+            'supplier_stock' => 0,
+        ]);
     }
 
     private function isDue(SupplierModel $supplier): bool

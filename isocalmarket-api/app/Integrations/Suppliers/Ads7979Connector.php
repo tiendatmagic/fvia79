@@ -10,6 +10,8 @@ use RuntimeException;
 
 class Ads7979Connector implements SupplierCatalogConnector
 {
+    public function __construct(private readonly SupplierUrlGuard $urlGuard) {}
+
     public function fetchCatalog(SupplierModel $supplier): array
     {
         $response = $this->client($supplier)->post('/api/v2/categories');
@@ -57,7 +59,21 @@ class Ads7979Connector implements SupplierCatalogConnector
             throw new RuntimeException('ADS7979 API key has not been configured.');
         }
 
-        return Http::baseUrl(rtrim($supplier->base_url, '/'))
+        $target = $this->urlGuard->validatedConnection($supplier->base_url);
+        if (! defined('CURLOPT_RESOLVE')) {
+            throw new RuntimeException('The cURL extension is required for secure supplier connections.');
+        }
+        $address = $target['addresses'][0];
+        $curlAddress = str_contains($address, ':') ? "[{$address}]" : $address;
+
+        return Http::baseUrl($target['url'])
+            ->withOptions([
+                'allow_redirects' => false,
+                'protocols' => ['https'],
+                'curl' => [
+                    CURLOPT_RESOLVE => ["{$target['host']}:443:{$curlAddress}"],
+                ],
+            ])
             ->acceptJson()
             ->withToken($apiKey)
             ->timeout(30)

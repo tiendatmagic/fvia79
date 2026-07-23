@@ -12,7 +12,8 @@ use Illuminate\Support\Str;
 
 #[Fillable([
     'supplier_id', 'external_id', 'category_id', 'name', 'slug', 'description',
-    'price', 'supplier_price_vnd', 'supplier_stock', 'supplier_synced_at', 'status', 'attributes',
+    'price', 'supplier_price_vnd', 'supplier_stock', 'supplier_synced_at', 'status',
+    'supplier_previous_status', 'attributes',
 ])]
 class ProductModel extends Model
 {

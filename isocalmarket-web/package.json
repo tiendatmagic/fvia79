@@ -37,6 +37,7 @@
     "vitest": "^4.0.8"
   },
   "overrides": {
+    "@hono/node-server": "^2.0.11",
     "axios": "^1.18.0",
     "esbuild": "^0.28.1"
   }

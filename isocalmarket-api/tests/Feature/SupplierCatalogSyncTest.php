@@ -84,19 +84,38 @@ class SupplierCatalogSyncTest extends TestCase
             'status' => 'active',
             'attributes' => [],
         ]);
+        ProductModel::create([
+            'supplier_id' => $supplier->id,
+            'external_id' => 'manually-disabled-product',
+            'name' => 'Manually disabled product',
+            'slug' => 'manually-disabled-product',
+            'price' => 1,
+            'status' => 'inactive',
+            'attributes' => [],
+        ]);
         $token = $this->adminToken('supplier_bulk_status');
 
         $this->withToken($token)
             ->putJson('/api/v1/admin/suppliers/ads7979', ['products_enabled' => false])
             ->assertOk()
             ->assertJsonPath('products_enabled', false);
-        $this->assertSame('inactive', ProductModel::where('supplier_id', $supplier->id)->value('status'));
+        $this->assertSame(
+            2,
+            ProductModel::where('supplier_id', $supplier->id)->where('status', 'inactive')->count(),
+        );
 
         $this->withToken($token)
             ->putJson('/api/v1/admin/suppliers/ads7979', ['products_enabled' => true])
             ->assertOk()
             ->assertJsonPath('products_enabled', true);
-        $this->assertSame('active', ProductModel::where('supplier_id', $supplier->id)->value('status'));
+        $this->assertSame(
+            'active',
+            ProductModel::where('external_id', 'bulk-status-product')->value('status'),
+        );
+        $this->assertSame(
+            'inactive',
+            ProductModel::where('external_id', 'manually-disabled-product')->value('status'),
+        );
     }
 
     public function test_supplier_stock_is_returned_as_available_count(): void
@@ -257,6 +276,37 @@ class SupplierCatalogSyncTest extends TestCase
         $this->assertSame(500000.0, $balance);
         Http::assertSent(fn ($request) => $request->url() === 'https://vlclone.com/api/v1/balance'
             && $request['api_key'] === 'v1-test-key');
+    }
+
+    public function test_supplier_account_endpoint_requires_post_and_returns_allowlisted_data(): void
+    {
+        Http::fake([
+            'https://ads7979.com/api/v2/me' => Http::response([
+                'id' => 43,
+                'username' => 'supplier-user',
+                'email' => 'supplier@example.com',
+                'level' => 7,
+                'percent' => 10,
+                'balance' => 1250000,
+                'api_key' => 'must-not-be-forwarded',
+            ]),
+        ]);
+        SupplierModel::where('code', 'ads7979')->firstOrFail()->update([
+            'api_key' => 'v2-test-key',
+            'catalog_driver' => CloneStoreConnector::V2,
+        ]);
+        $token = $this->adminToken('supplier_account_admin');
+
+        $this->withToken($token)
+            ->getJson('/api/v1/admin/suppliers/ads7979/balance')
+            ->assertStatus(405);
+
+        $this->withToken($token)
+            ->postJson('/api/v1/admin/suppliers/ads7979/balance')
+            ->assertOk()
+            ->assertJsonPath('balance', 1250000)
+            ->assertJsonPath('account.username', 'supplier-user')
+            ->assertJsonMissingPath('account.api_key');
     }
 
     public function test_supplier_sync_returns_safe_bad_gateway_response_for_upstream_failure(): void

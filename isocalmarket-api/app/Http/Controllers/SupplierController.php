@@ -5,6 +5,8 @@ namespace App\Http\Controllers;
 use App\Application\Services\SupplierCatalogSyncService;
 use App\Infrastructure\Persistence\Eloquent\SupplierModel;
 use App\Integrations\Suppliers\CloneStoreConnector;
+use App\Integrations\Suppliers\SupplierOperationInProgressException;
+use App\Integrations\Suppliers\SupplierOperationLock;
 use App\Integrations\Suppliers\SupplierUrlGuard;
 use Illuminate\Database\Eloquent\ModelNotFoundException;
 use Illuminate\Http\Client\ConnectionException;
@@ -22,6 +24,7 @@ class SupplierController extends Controller
     public function __construct(
         private readonly CloneStoreConnector $connector,
         private readonly SupplierUrlGuard $urlGuard,
+        private readonly SupplierOperationLock $operationLock,
     ) {}
 
     public function index()
@@ -105,14 +108,34 @@ class SupplierController extends Controller
                 return response()->json(['message' => $exception->getMessage()], 422);
             }
         }
-        DB::transaction(function () use ($supplier, $productsEnabledChanged): void {
-            $supplier->save();
-            if ($productsEnabledChanged) {
-                $supplier->products()->update([
-                    'status' => $supplier->products_enabled ? 'active' : 'inactive',
-                ]);
-            }
-        });
+        try {
+            $this->operationLock->run($supplier, function () use ($supplier, $productsEnabledChanged): void {
+                DB::transaction(function () use ($supplier, $productsEnabledChanged): void {
+                    $supplier->save();
+                    if (! $productsEnabledChanged) {
+                        return;
+                    }
+
+                    if ($supplier->products_enabled) {
+                        $supplier->products()
+                            ->whereNotNull('supplier_previous_status')
+                            ->update([
+                                'status' => DB::raw('supplier_previous_status'),
+                                'supplier_previous_status' => null,
+                            ]);
+                    } else {
+                        $supplier->products()
+                            ->whereNull('supplier_previous_status')
+                            ->update([
+                                'supplier_previous_status' => DB::raw('status'),
+                                'status' => 'inactive',
+                            ]);
+                    }
+                });
+            });
+        } catch (SupplierOperationInProgressException $exception) {
+            return response()->json(['message' => $exception->getMessage()], 409);
+        }
         if ($productsEnabledChanged) {
             Cache::forget('products_active_storefront');
             Cache::forget('categories_active_storefront');
@@ -134,6 +157,8 @@ class SupplierController extends Controller
             ]);
         } catch (ModelNotFoundException) {
             return response()->json(['message' => 'Supplier not found.'], 404);
+        } catch (SupplierOperationInProgressException $exception) {
+            return response()->json(['message' => $exception->getMessage()], 409);
         } catch (ConnectionException|RequestException $exception) {
             return $this->upstreamError(
                 $exception,

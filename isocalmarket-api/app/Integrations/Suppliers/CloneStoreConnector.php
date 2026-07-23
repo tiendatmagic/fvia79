@@ -19,8 +19,6 @@ class CloneStoreConnector implements SupplierCatalogConnector
 
     public function fetchCatalog(SupplierModel $supplier): array
     {
-        $this->urlGuard->normalizeAndValidate($supplier->base_url, false);
-
         return match ($supplier->catalog_driver) {
             self::V1 => $this->fetchV1($supplier),
             self::V2 => $this->fetchV2($supplier),
@@ -35,8 +33,6 @@ class CloneStoreConnector implements SupplierCatalogConnector
 
     public function fetchAccount(SupplierModel $supplier): array
     {
-        $this->urlGuard->normalizeAndValidate($supplier->base_url, false);
-
         return match ($supplier->catalog_driver) {
             self::V1 => $this->fetchV1Account($supplier),
             self::V2 => $this->fetchV2Account($supplier),
@@ -208,7 +204,21 @@ class CloneStoreConnector implements SupplierCatalogConnector
 
     private function baseClient(SupplierModel $supplier): PendingRequest
     {
-        return Http::baseUrl(rtrim($supplier->base_url, '/'))
+        $target = $this->urlGuard->validatedConnection($supplier->base_url);
+        if (! defined('CURLOPT_RESOLVE')) {
+            throw new RuntimeException('The cURL extension is required for secure supplier connections.');
+        }
+        $address = $target['addresses'][0];
+        $curlAddress = str_contains($address, ':') ? "[{$address}]" : $address;
+
+        return Http::baseUrl($target['url'])
+            ->withOptions([
+                'allow_redirects' => false,
+                'protocols' => ['https'],
+                'curl' => [
+                    CURLOPT_RESOLVE => ["{$target['host']}:443:{$curlAddress}"],
+                ],
+            ])
             ->acceptJson()
             ->timeout(30)
             ->retry(2, 250);

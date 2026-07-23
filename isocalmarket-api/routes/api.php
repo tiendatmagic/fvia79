@@ -66,7 +66,8 @@ Route::prefix('v1')->group(function () {
             Route::get('/admin/suppliers', ['App\Http\Controllers\SupplierController', 'index']);
             Route::post('/admin/suppliers', ['App\Http\Controllers\SupplierController', 'store']);
             Route::put('/admin/suppliers/{code}', ['App\Http\Controllers\SupplierController', 'update']);
-            Route::get('/admin/suppliers/{code}/balance', ['App\Http\Controllers\SupplierController', 'balance']);
+            Route::post('/admin/suppliers/{code}/balance', ['App\Http\Controllers\SupplierController', 'balance'])
+                ->middleware('throttle:10,1');
             Route::post('/admin/suppliers/{code}/sync', ['App\Http\Controllers\SupplierController', 'sync']);
             Route::post('/admin/maintenance/clear-views', ['App\Http\Controllers\SystemSettingController', 'clearViews']);
             Route::post('/admin/maintenance/clear-config', ['App\Http\Controllers\SystemSettingController', 'clearConfig']);
