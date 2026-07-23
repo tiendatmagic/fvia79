@@ -199,7 +199,7 @@ class AuthController extends Controller
 
     public function refresh(Request $request)
     {
-        $refreshToken = $request->cookie('refresh_token');
+        $refreshToken = $request->cookie('refresh_token') ?? $request->input('refresh_token');
 
         if (!$refreshToken) {
             return response()->json(['message' => 'Unauthorized. Refresh token missing.'], 401);
@@ -223,7 +223,12 @@ class AuthController extends Controller
             }
         }
 
-        $result = $this->authService->refresh($refreshToken, $currentSessionId);
+        $result = $this->authService->refresh(
+            $refreshToken,
+            $currentSessionId,
+            $request->ip(),
+            $request->header('User-Agent')
+        );
 
         if (!$result) {
             return response()->json(['message' => 'Unauthorized.'], 401);

@@ -128,9 +128,9 @@ class UserSessionTest extends TestCase
         $session->delete();
 
         // Send refresh request with expired/existing access token cookie and valid refresh token cookie
-        $refreshResponse = $this->postJson('/api/v1/auth/refresh', [
-            'refresh_token' => $refreshToken,
-        ]);
+        $refreshResponse = $this->withCookie('access_token', $accessToken)
+            ->withCookie('refresh_token', $refreshToken)
+            ->postJson('/api/v1/auth/refresh');
 
         $refreshResponse->assertStatus(401);
     }
@@ -171,5 +171,34 @@ class UserSessionTest extends TestCase
 
         $this->assertDatabaseHas('user_sessions', ['id' => $currentSession->id]);
         $this->assertEquals(1, UserSessionModel::where('user_id', $user->id)->count());
+    }
+
+    public function test_refresh_token_reuses_existing_session_when_access_token_is_missing(): void
+    {
+        $user = UserModel::create([
+            'username' => 'sessionuser6',
+            'name' => 'Session User 6',
+            'email' => 'sessiontest6@example.com',
+            'password' => bcrypt('password123'),
+            'role' => 'customer',
+            'google2fa_enabled' => false,
+        ]);
+
+        $domainUser = UserMapper::toDomain($user);
+        $authService = app(AuthService::class);
+        $existingSession = $authService->createSession($domainUser, '127.0.0.1', 'Mozilla/5.0 Chrome/120.0');
+        $refreshToken = $authService->generateRefreshToken($domainUser);
+
+        // Call refresh API with refresh token but WITHOUT access token / authorization header
+        $refreshResponse = $this->withCookie('refresh_token', $refreshToken)
+            ->postJson('/api/v1/auth/refresh', [
+                'refresh_token' => $refreshToken,
+            ]);
+
+        $refreshResponse->assertStatus(200);
+
+        // Ensure session count remains exactly 1 and no duplicate session was created
+        $this->assertEquals(1, UserSessionModel::where('user_id', $user->id)->count());
+        $this->assertDatabaseHas('user_sessions', ['id' => $existingSession->id]);
     }
 }

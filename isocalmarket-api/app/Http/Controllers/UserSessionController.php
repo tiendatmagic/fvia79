@@ -18,19 +18,7 @@ class UserSessionController extends Controller
         $perPage = (int) $request->query('per_page', 10);
         $perPage = max(1, min(100, $perPage));
 
-        $userModel = Auth::user();
         $currentSessionId = $request->attributes->get('current_session_id');
-
-        $existingCount = UserSessionModel::where('user_id', $userId)->count();
-        if ($userModel && ($existingCount === 0 || ! $currentSessionId || ! UserSessionModel::where('id', $currentSessionId)->exists())) {
-            $user = \App\Infrastructure\Persistence\Mappers\UserMapper::toDomain($userModel);
-            $newSession = app(\App\Application\Services\AuthService::class)->createSession(
-                $user,
-                $request->ip(),
-                $request->header('User-Agent')
-            );
-            $currentSessionId = $newSession->id;
-        }
 
         $paginator = UserSessionModel::where('user_id', $userId)
             ->orderByDesc('last_activity_at')

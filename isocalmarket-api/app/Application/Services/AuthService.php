@@ -117,7 +117,7 @@ class AuthService
         return $rawToken;
     }
 
-    public function refresh(string $refreshToken, ?string $sessionId = null): ?array
+    public function refresh(string $refreshToken, ?string $sessionId = null, ?string $ip = null, ?string $userAgent = null): ?array
     {
         $hash = hash('sha256', $refreshToken);
 
@@ -140,6 +140,19 @@ class AuthService
             }
 
             $session->update(['last_activity_at' => now()]);
+        } else {
+            // Re-use existing session for this user to prevent duplicate record creation
+            $user = UserMapper::toDomain($userModel);
+            $session = UserSessionModel::where('user_id', $userModel->id)
+                ->orderByDesc('last_activity_at')
+                ->first();
+
+            if (! $session) {
+                $session = $this->createSession($user, $ip, $userAgent);
+            } else {
+                $session->update(['last_activity_at' => now()]);
+            }
+            $sessionId = $session->id;
         }
 
         $user = UserMapper::toDomain($userModel);
