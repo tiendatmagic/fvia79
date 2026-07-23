@@ -242,7 +242,7 @@
                         <span
                           class="text-[11px] font-mono font-extrabold text-[var(--color-primary)] bg-[var(--color-primary)]/10 dark:bg-[var(--color-primary)]/20 px-1.5 py-0.5 rounded border border-[var(--color-primary)]/20"
                         >
-                          UID: {{ stateService.currentUser()?.uid }}
+                          {{ 'usr.uid_short' | translate }}: {{ stateService.currentUser()?.uid }}
                         </span>
                       </div>
                     }

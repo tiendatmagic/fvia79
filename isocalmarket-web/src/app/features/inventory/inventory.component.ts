@@ -63,9 +63,18 @@ export class InventoryComponent implements OnInit {
       { key: 'id', label: this.lang.translate('common.id'), sortable: true },
       { key: 'product_name', label: this.lang.translate('modal.product_name'), sortable: true },
       { key: 'batch_name', label: this.lang.translate('inv.batch_name'), sortable: true },
-      { key: 'secret_data', label: 'Tài nguyên (User|Pass|2FA)', sortable: false },
+      {
+        key: 'secret_data',
+        label: this.lang.translate('inventory.resource_data'),
+        sortable: false,
+      },
       { key: 'status', label: this.lang.translate('common.status'), sortable: true, align: 'center' },
-      { key: 'created_at', label: 'Ngày tạo', sortable: true, align: 'center' },
+      {
+        key: 'created_at',
+        label: this.lang.translate('common.created_at'),
+        sortable: true,
+        align: 'center',
+      },
       { key: 'actions', label: this.lang.translate('common.actions'), sortable: false, align: 'right' }
     ];
   });
@@ -96,8 +105,8 @@ export class InventoryComponent implements OnInit {
   public get resourceStatusOptions() {
     return [
       { label: this.lang.translate('common.all_status'), value: '' },
-      { label: this.lang.translate('common.active') + ' (Còn hàng)', value: 'available' },
-      { label: this.lang.translate('common.completed') + ' (Đã bán)', value: 'sold' }
+      { label: this.lang.translate('inventory.resource_available'), value: 'available' },
+      { label: this.lang.translate('inventory.resource_sold'), value: 'sold' },
     ];
   }
 
@@ -241,7 +250,7 @@ export class InventoryComponent implements OnInit {
 
   public openEditResourceModal(item: any) {
     this.modalService.open(EditResourceItemModalComponent, {
-      title: 'Sửa tài nguyên',
+      title: this.lang.translate('inventory.edit_resource_title'),
       size: 'lg',
       data: { item }
     }).afterClosed$.subscribe((success) => {
@@ -253,8 +262,10 @@ export class InventoryComponent implements OnInit {
 
   public confirmDeleteResourceItem(item: any) {
     this.modalService.confirm({
-      title: 'Xóa tài nguyên',
-      description: `Bạn có chắc chắn muốn xóa dòng tài nguyên "${item.secret_data}"?`,
+      title: this.lang.translate('inventory.delete_resource_title'),
+      description: this.lang.translate('inventory.delete_resource_description', {
+        resource: item.secret_data,
+      }),
       confirmText: this.lang.translate('action.delete'),
       cancelText: this.lang.translate('action.cancel'),
       confirmButtonClass: 'btn-danger'
@@ -322,8 +333,8 @@ export class InventoryComponent implements OnInit {
     });
   }
 
-  public copyToClipboard(text: string, message?: string) {
-    const successMsg = message || this.lang.translate('toast.copied');
+  public copyToClipboard(text: string, messageKey = 'toast.copied') {
+    const successMsg = this.lang.translate(messageKey);
     navigator.clipboard.writeText(text).then(
       () => this.state.showToast(successMsg, 'success'),
       () => this.state.showToast(this.lang.translate('toast.copy_error'), 'error')

@@ -22,7 +22,7 @@
     </ng-container>
   </app-page-header>
 
-  <!-- Navigation Tabs (Danh Sách Lô Hàng bên trái | Chi Tiết Tài Nguyên bên phải) -->
+  <!-- Inventory navigation tabs -->
   <div
     class="flex items-center border-b border-slate-200 dark:border-slate-800 space-x-2 overflow-x-auto scrollbar-none pb-1"
   >
@@ -33,10 +33,10 @@
       [class.text-[var(--color-primary)]]="activeTab() === 'batches'"
       [class.border-transparent]="activeTab() !== 'batches'"
       [class.text-slate-500]="activeTab() !== 'batches'"
-      [appTooltip]="'Quản lý theo từng Lô nhập kho'"
+      [appTooltip]="'inventory.batch_tab_tooltip' | translate"
     >
       <app-icon name="package" class="w-4 h-4 shrink-0" />
-      <span class="whitespace-nowrap">Danh Sách Lô Hàng</span>
+      <span class="whitespace-nowrap">{{ 'inventory.batch_tab' | translate }}</span>
     </button>
 
     <button
@@ -46,10 +46,10 @@
       [class.text-[var(--color-primary)]]="activeTab() === 'resources'"
       [class.border-transparent]="activeTab() !== 'resources'"
       [class.text-slate-500]="activeTab() !== 'resources'"
-      [appTooltip]="'Quản lý chi tiết từng dòng tài khoản'"
+      [appTooltip]="'inventory.resource_tab_tooltip' | translate"
     >
       <app-icon name="key" class="w-4 h-4 shrink-0" />
-      <span class="whitespace-nowrap">Chi Tiết Tài Nguyên</span>
+      <span class="whitespace-nowrap">{{ 'inventory.resource_tab' | translate }}</span>
       @if (state.inventoryStore.resourceTotalItems() > 0) {
         <span
           class="px-2 py-0.5 text-xs rounded-full bg-[var(--color-primary)]/10 text-[var(--color-primary)] font-bold shrink-0"
@@ -102,7 +102,7 @@
         [placeholder]="
           activeTab() === 'batches'
             ? ('common.search_placeholder' | translate)
-            : 'Tìm theo User, Pass, 2FA, Lô...'
+            : ('inventory.resource_search_placeholder' | translate)
         "
         [(ngModel)]="searchQuery"
         name="searchQuery"
@@ -211,7 +211,7 @@
               (click)="openEditBatchModal(row)"
               [disabled]="loadingItemId() !== null"
               class="text-xs font-bold px-3 py-1.5 rounded-lg border border-[var(--color-primary)]/20 hover:bg-[var(--color-primary)]/10 text-[var(--color-primary)] bg-[var(--color-primary)]/5 dark:bg-[var(--color-primary)]/10 hover:scale-105 active:scale-95 transition-all cursor-pointer flex items-center gap-1"
-              [appTooltip]="'Sửa khối văn bản lô hàng'"
+              [appTooltip]="'inventory.edit_batch_tooltip' | translate"
             >
               @if (loadingItemId() === row.id) {
                 <div
@@ -220,15 +220,15 @@
               } @else {
                 <app-icon name="edit" class="w-3.5 h-3.5" />
               }
-              <span>Sửa Lô</span>
+              <span>{{ 'inventory.edit_batch' | translate }}</span>
             </button>
             <button
               (click)="confirmDeleteBatch(row)"
               class="text-xs font-bold px-3 py-1.5 rounded-lg border border-rose-500/20 hover:bg-rose-100 dark:hover:bg-rose-950/40 text-rose-600 dark:text-rose-400 bg-rose-50 dark:bg-rose-950/20 hover:scale-105 active:scale-95 transition-all cursor-pointer flex items-center gap-1"
-              [appTooltip]="'Xóa toàn bộ lô hàng'"
+              [appTooltip]="'inventory.delete_batch_tooltip' | translate"
             >
               <app-icon name="trash" class="w-3.5 h-3.5" />
-              <span>Xóa Lô</span>
+              <span>{{ 'inventory.delete_batch' | translate }}</span>
             </button>
           </div>
         </ng-template>
@@ -239,7 +239,7 @@
         [totalPages]="state.inventoryStore.lastPage()"
         [totalItems]="state.inventoryStore.totalItems()"
         [itemsPerPage]="limit"
-        [itemName]="'Lô hàng'"
+        [itemName]="'inventory.batch_item' | translate"
         (pageChange)="fetchPage($event)"
       />
     </div>
@@ -251,7 +251,7 @@
         [columns]="resourceColumns()"
         [data]="state.inventoryStore.resourceItems()"
         [loading]="state.inventoryStore.resourceLoading()"
-        [emptyText]="'Chưa có tài nguyên nào.'"
+        [emptyText]="'inventory.no_resources' | translate"
       >
         <ng-template appTableCell="id" let-row="row">
           <div class="flex items-center gap-1.5">
@@ -299,14 +299,19 @@
             <button
               (click)="toggleSecretVisibility(row.id)"
               class="p-1 hover:bg-slate-100 dark:hover:bg-slate-800 rounded transition-colors text-slate-400 hover:text-slate-600 shrink-0 cursor-pointer"
-              [appTooltip]="visibleSecrets().has(row.id) ? 'Ẩn mật khẩu' : 'Xem mật khẩu'"
+              [appTooltip]="
+                (visibleSecrets().has(row.id)
+                  ? 'inventory.hide_secret'
+                  : 'inventory.show_secret'
+                ) | translate
+              "
             >
               <app-icon [name]="visibleSecrets().has(row.id) ? 'eye-off' : 'eye'" class="w-4 h-4" />
             </button>
             <button
-              (click)="copyToClipboard(row.secret_data, 'Đã sao chép tài nguyên!')"
+              (click)="copyToClipboard(row.secret_data, 'toast.resource_copied')"
               class="p-1 hover:bg-slate-100 dark:hover:bg-slate-800 rounded transition-colors text-slate-400 hover:text-slate-600 shrink-0 cursor-pointer"
-              [appTooltip]="'Sao chép nội dung tài nguyên'"
+              [appTooltip]="'inventory.copy_resource_tooltip' | translate"
             >
               <app-icon name="copy" class="w-3.5 h-3.5" />
             </button>
@@ -318,9 +323,19 @@
             [variant]="row.status === 'available' ? 'success' : 'neutral'"
             size="sm"
             rounded="md"
-            [appTooltip]="row.status === 'available' ? 'Sẵn sàng bán' : 'Đã bán cho đơn hàng'"
+            [appTooltip]="
+              (row.status === 'available'
+                ? 'inventory.resource_available_tooltip'
+                : 'inventory.resource_sold_tooltip'
+              ) | translate
+            "
           >
-            {{ row.status === 'available' ? 'Còn hàng' : 'Đã bán' }}
+            {{
+              (row.status === 'available'
+                ? 'inventory.resource_available'
+                : 'inventory.resource_sold'
+              ) | translate
+            }}
           </app-badge>
         </ng-template>
 
@@ -335,18 +350,18 @@
             <button
               (click)="openEditResourceModal(row)"
               class="text-xs font-bold px-3 py-1.5 rounded-lg border border-[var(--color-primary)]/20 hover:bg-[var(--color-primary)]/10 text-[var(--color-primary)] bg-[var(--color-primary)]/5 dark:bg-[var(--color-primary)]/10 hover:scale-105 active:scale-95 transition-all cursor-pointer flex items-center gap-1"
-              [appTooltip]="'Sửa tài nguyên đơn lẻ'"
+              [appTooltip]="'inventory.edit_resource_tooltip' | translate"
             >
               <app-icon name="edit" class="w-3.5 h-3.5" />
-              <span>Sửa</span>
+              <span>{{ 'action.edit' | translate }}</span>
             </button>
             <button
               (click)="confirmDeleteResourceItem(row)"
               class="text-xs font-bold px-3 py-1.5 rounded-lg border border-rose-500/20 hover:bg-rose-100 dark:hover:bg-rose-950/40 text-rose-600 dark:text-rose-400 bg-rose-50 dark:bg-rose-950/20 hover:scale-105 active:scale-95 transition-all cursor-pointer flex items-center gap-1"
-              [appTooltip]="'Xóa tài nguyên này'"
+              [appTooltip]="'inventory.delete_resource_tooltip' | translate"
             >
               <app-icon name="trash" class="w-3.5 h-3.5" />
-              <span>Xóa</span>
+              <span>{{ 'action.delete' | translate }}</span>
             </button>
           </div>
         </ng-template>
@@ -357,7 +372,7 @@
         [totalPages]="state.inventoryStore.resourceLastPage()"
         [totalItems]="state.inventoryStore.resourceTotalItems()"
         [itemsPerPage]="limit"
-        [itemName]="'Tài nguyên'"
+        [itemName]="'inventory.resource_item' | translate"
         (pageChange)="fetchPage($event)"
       />
     </div>

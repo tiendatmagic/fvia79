@@ -115,10 +115,13 @@
             <span class="relative inline-flex rounded-full h-3 w-3 bg-blue-500"></span>
           </span>
           <span class="text-xs font-extrabold leading-tight">
-            BOT đang tự động quét và đối soát giao dịch mỗi 15 giây. Tiền sẽ tự động cộng khi nhận chuyển khoản!
+            {{ 'invoice.live_scanner_notice' | translate }}
           </span>
         </div>
-        <span class="text-[10px] uppercase tracking-widest font-black px-2 py-0.5 rounded-md bg-blue-500/20 text-blue-600 dark:text-blue-300 shrink-0">Live Scanner</span>
+        <span
+          class="text-[10px] uppercase tracking-widest font-black px-2 py-0.5 rounded-md bg-blue-500/20 text-blue-600 dark:text-blue-300 shrink-0"
+          >{{ 'invoice.live_scanner' | translate }}</span
+        >
       </div>
     }
 

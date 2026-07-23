@@ -78,7 +78,9 @@
         >
           {{ stats()?.total_revenue | appCurrency }}
         </h2>
-        <app-badge variant="primary" size="sm" rounded="md">Doanh Thu Bán</app-badge>
+        <app-badge variant="primary" size="sm" rounded="md">{{
+          'dash.sales_revenue' | translate
+        }}</app-badge>
       </div>
     </app-card>
 
@@ -105,7 +107,7 @@
           +{{ stats()?.total_profit | appCurrency }}
         </h2>
         <app-badge variant="success" size="sm" rounded="md">
-          Lãi: {{ stats()?.profit_margin_percent ?? 0 }}%
+          {{ 'dash.profit_short' | translate: { value: stats()?.profit_margin_percent ?? 0 } }}
         </app-badge>
       </div>
     </app-card>
@@ -130,7 +132,9 @@
         >
           {{ stats()?.total_cogs | appCurrency }}
         </h2>
-        <app-badge variant="warning" size="sm" rounded="md">Chi Phí Vốn</app-badge>
+        <app-badge variant="warning" size="sm" rounded="md">{{
+          'dash.capital_cost' | translate
+        }}</app-badge>
       </div>
     </app-card>
 
@@ -162,7 +166,7 @@
           class="!bg-indigo-500/10 dark:!bg-indigo-500/20 !text-indigo-600 dark:!text-indigo-400"
           size="sm"
           rounded="md"
-          >Đơn Hoàn Tất</app-badge
+          >{{ 'dash.completed_orders' | translate }}</app-badge
         >
       </div>
     </app-card>
@@ -224,7 +228,7 @@
           class="!bg-purple-500/10 dark:!bg-purple-500/20 !text-purple-600 dark:!text-purple-400"
           size="sm"
           rounded="md"
-          >Đã Đăng Ký</app-badge
+          >{{ 'dash.registered_badge' | translate }}</app-badge
         >
       </div>
     </app-card>
@@ -240,17 +244,17 @@
           class="text-base font-black text-slate-800 dark:text-white tracking-tight flex items-center gap-2"
         >
           <span class="p-1.5 rounded-lg bg-emerald-500/10 text-emerald-500">💰</span>
-          <span>Báo Cáo Phân Tích Lợi Nhuận & Tài Chính</span>
+          <span>{{ 'dash.financial_report_title' | translate }}</span>
         </h3>
         <p class="text-xs text-slate-400 font-medium mt-0.5">
-          So sánh giữa Giá Bán (Doanh thu), Giá Gốc (Chi phí vốn) và Tiền Lãi (Lợi nhuận ròng)
+          {{ 'dash.financial_report_description' | translate }}
         </p>
       </div>
       <div class="flex items-center gap-3">
         <div
           class="px-3 py-1.5 rounded-xl bg-emerald-500/10 border border-emerald-500/20 text-emerald-600 dark:text-emerald-400 text-xs font-extrabold flex items-center gap-1.5"
         >
-          <span>Tỷ Suất Lợi Nhuận:</span>
+          <span>{{ 'dash.profit_margin' | translate }}:</span>
           <span class="text-sm font-black">{{ stats()?.profit_margin_percent ?? 0 }}%</span>
         </div>
       </div>
@@ -261,10 +265,14 @@
       <div
         class="flex items-center justify-between text-xs font-bold text-slate-600 dark:text-slate-400"
       >
-        <span>Cơ cấu Doanh Thu (100%): {{ stats()?.total_revenue | appCurrency }}</span>
+        <span
+          >{{ 'dash.revenue_structure' | translate }} (100%):
+          {{ stats()?.total_revenue | appCurrency }}</span
+        >
         <span>
-          Lãi Net:
-          <strong class="text-emerald-500">{{ stats()?.total_profit | appCurrency }}</strong> | Vốn:
+          {{ 'dash.net_profit' | translate }}:
+          <strong class="text-emerald-500">{{ stats()?.total_profit | appCurrency }}</strong> |
+          {{ 'dash.capital' | translate }}:
           <strong class="text-amber-500">{{ stats()?.total_cogs | appCurrency }}</strong>
         </span>
       </div>
@@ -276,21 +284,25 @@
           [style.width.%]="
             stats()?.total_revenue > 0 ? (stats()?.total_profit / stats()?.total_revenue) * 100 : 0
           "
-          [appTooltip]="'Tiền Lãi: ' + (stats()?.total_profit | appCurrency)"
+          [appTooltip]="
+            ('dash.gross_profit' | translate) + ': ' + (stats()?.total_profit | appCurrency)
+          "
         ></div>
         <div
           class="h-full bg-gradient-to-r from-amber-400 to-orange-500 rounded-r-full transition-all duration-500 flex items-center justify-center text-[10px] font-black text-white"
           [style.width.%]="
             stats()?.total_revenue > 0 ? (stats()?.total_cogs / stats()?.total_revenue) * 100 : 100
           "
-          [appTooltip]="'Giá Vốn: ' + (stats()?.total_cogs | appCurrency)"
+          [appTooltip]="
+            ('dash.cost_of_goods' | translate) + ': ' + (stats()?.total_cogs | appCurrency)
+          "
         ></div>
       </div>
       <div class="flex items-center justify-between text-[11px] text-slate-400 font-medium pt-1">
         <span class="flex items-center gap-1.5">
           <span class="w-2.5 h-2.5 rounded-full bg-emerald-500 inline-block"></span>
           <span
-            >Tiền Lãi Gộp ({{
+            >{{ 'dash.gross_profit' | translate }} ({{
               stats()?.total_revenue > 0
                 ? ((stats()?.total_profit / stats()?.total_revenue) * 100 | number: '1.0-1')
                 : 0
@@ -300,7 +312,7 @@
         <span class="flex items-center gap-1.5">
           <span class="w-2.5 h-2.5 rounded-full bg-amber-500 inline-block"></span>
           <span
-            >Chi Phí Giá Vốn ({{
+            >{{ 'dash.cost_of_goods' | translate }} ({{
               stats()?.total_revenue > 0
                 ? ((stats()?.total_cogs / stats()?.total_revenue) * 100 | number: '1.0-1')
                 : 0
@@ -310,11 +322,11 @@
       </div>
     </div>
 
-    <!-- Timeline Tiền Lãi Theo Ngày (nếu có dữ liệu) -->
+    <!-- Daily profit timeline -->
     @if ((stats()?.financial_chart || []).length > 0) {
       <div class="border-t border-slate-100 dark:border-slate-800/80 pt-4 space-y-3">
         <h4 class="text-xs font-black uppercase text-slate-400 tracking-wider">
-          Chi Tiết Lợi Nhuận Theo Ngày
+          {{ 'dash.daily_profit_detail' | translate }}
         </h4>
         <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3">
           @for (item of stats()?.financial_chart; track item.date) {
@@ -325,14 +337,16 @@
                 <span class="text-xs font-extrabold text-slate-800 dark:text-slate-200 block">{{
                   item.date
                 }}</span>
-                <span class="text-[11px] text-slate-400">Vốn: {{ item.cogs | appCurrency }}</span>
+                <span class="text-[11px] text-slate-400"
+                  >{{ 'dash.capital' | translate }}: {{ item.cogs | appCurrency }}</span
+                >
               </div>
               <div class="text-right">
                 <span class="text-xs font-black text-emerald-600 dark:text-emerald-400 block"
                   >+{{ item.profit | appCurrency }}</span
                 >
                 <span class="text-[11px] text-slate-500 font-medium"
-                  >Bán: {{ item.revenue | appCurrency }}</span
+                  >{{ 'dash.sales' | translate }}: {{ item.revenue | appCurrency }}</span
                 >
               </div>
             </div>

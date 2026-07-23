@@ -11,7 +11,7 @@
   <form (ngSubmit)="onSave()" class="space-y-5">
     <div class="form-field" *ngIf="uid">
       <label class="text-xs font-bold text-slate-400 dark:text-slate-500 uppercase tracking-wider block mb-1.5"
-        >Mã User (UID)</label
+        >{{ 'usr.user_uid' | translate }}</label
       >
       <app-custom-input [(ngModel)]="uid" name="uid" [disabled]="true" />
     </div>

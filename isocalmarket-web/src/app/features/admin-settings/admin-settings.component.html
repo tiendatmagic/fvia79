@@ -451,7 +451,7 @@
           <div class="rounded-xl border border-slate-200 bg-slate-50 p-4 text-sm dark:border-slate-800 dark:bg-slate-900/50">
             <p class="font-bold text-slate-700 dark:text-slate-200">{{ 'supplier.price_example' | translate }}</p>
             <p class="mt-1 text-slate-500">
-              20.000đ → {{ supplierExamplePriceVnd() | number: '1.0-0' }}đ → ${{ supplierExampleUsd() | number: '1.2-2' }}
+              20.000₫ → {{ supplierExamplePriceVnd() | number: '1.0-0' }}₫ → ${{ supplierExampleUsd() | number: '1.2-2' }}
               ({{ 'supplier.rate' | translate }} CoinGecko: {{ supplierStore.exchangeRate() | number: '1.0-0' }} VND/USD)
             </p>
           </div>

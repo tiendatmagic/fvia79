@@ -58,10 +58,11 @@ import { TranslatePipe } from '@shared/pipes/translate.pipe';
 
       <div class="form-field">
         <label class="text-xs font-black text-slate-400 uppercase tracking-wider block mb-2">
-          Nội dung Tài nguyên (User|Pass|2FA...) <span class="text-red-500">*</span>
+          {{ 'inventory.resource_content' | translate }}
+          <span class="text-red-500">*</span>
         </label>
         <app-custom-input
-          [placeholder]="'Nhập thông tin tài nguyên (User|Pass|2FA...)'"
+          [placeholder]="'inventory.resource_content_placeholder' | translate"
           [(ngModel)]="secretData"
           name="secretData"
           type="textarea"
@@ -110,8 +111,8 @@ export class EditResourceItemModalComponent implements OnInit {
 
   public get statusOptions() {
     return [
-      { label: this.lang.translate('common.active') + ' (Còn hàng)', value: 'available' },
-      { label: this.lang.translate('common.completed') + ' (Đã bán)', value: 'sold' }
+      { label: this.lang.translate('inventory.resource_available'), value: 'available' },
+      { label: this.lang.translate('inventory.resource_sold'), value: 'sold' },
     ];
   }
 

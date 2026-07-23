@@ -19,13 +19,14 @@ import { CommonModule } from '@angular/common';
 import { FormsModule, NG_VALUE_ACCESSOR, ControlValueAccessor } from '@angular/forms';
 import { IconComponent } from '../icon/icon.component';
 import { LanguageService } from '@core/services/language.service';
+import { TranslatePipe } from '@shared/pipes/translate.pipe';
 
 @Component({
   selector: 'app-custom-date-picker',
   host: {
     '(document:click)': 'onClickOutside($event)'
   },
-  imports: [CommonModule, FormsModule, IconComponent],
+  imports: [CommonModule, FormsModule, IconComponent, TranslatePipe],
   templateUrl: './custom-date-picker.component.html',
   providers: [
     {
