@@ -22,8 +22,18 @@ class VerifyCookieRequestOrigin
             static fn (string $allowedOrigin): string => rtrim($allowedOrigin, '/'),
             array_filter(config('cors.allowed_origins', []), 'is_string')
         );
-        $isTrustedOrigin = $origin !== '' && in_array($origin, $allowedOrigins, true);
-        $isAjaxRequest = $request->headers->get('X-Requested-With') === 'XMLHttpRequest';
+
+        $appUrl = rtrim((string) config('app.url'), '/');
+
+        $isTrustedOrigin = $origin === ''
+            || $origin === $appUrl
+            || in_array($origin, $allowedOrigins, true);
+
+        $isAjaxRequest = $request->ajax()
+            || $request->headers->get('X-Requested-With') === 'XMLHttpRequest'
+            || $request->expectsJson()
+            || $request->isJson()
+            || str_contains((string) $request->header('Accept'), 'application/json');
 
         if (! $isTrustedOrigin || ! $isAjaxRequest) {
             return response()->json(['message' => 'CSRF validation failed.'], 419);

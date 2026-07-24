@@ -17,6 +17,7 @@ export class ApiService {
       headers: new HttpHeaders({
         'Accept': 'application/json',
         'Content-Type': 'application/json',
+        'X-Requested-With': 'XMLHttpRequest',
         'Accept-Language': this.languageService.currentLang()
       }),
       params,
@@ -37,6 +38,7 @@ export class ApiService {
       headers: new HttpHeaders({
         'Accept': 'application/sql, application/json',
         'Content-Type': 'application/json',
+        'X-Requested-With': 'XMLHttpRequest',
         'Accept-Language': this.languageService.currentLang()
       }),
       withCredentials: true,
@@ -49,6 +51,7 @@ export class ApiService {
     return this.http.post<T>(`${this.baseUrl}/${path}`, body, {
       headers: new HttpHeaders({
         'Accept': 'application/json',
+        'X-Requested-With': 'XMLHttpRequest',
         'Accept-Language': this.languageService.currentLang()
       }),
       withCredentials: true
