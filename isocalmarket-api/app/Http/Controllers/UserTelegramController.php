@@ -65,7 +65,7 @@ class UserTelegramController extends Controller
     public function sendTestMessage(Request $request): JsonResponse
     {
         /** @var UserModel $user */
-        $user = $request->user();
+        $user = UserModel::find($request->user()->id) ?? $request->user();
 
         if (empty($user->telegram_chat_id)) {
             return response()->json([
@@ -97,7 +97,7 @@ class UserTelegramController extends Controller
     public function disconnect(Request $request): JsonResponse
     {
         /** @var UserModel $user */
-        $user = $request->user();
+        $user = UserModel::find($request->user()->id) ?? $request->user();
         $user->telegram_chat_id = null;
         $user->save();
 
