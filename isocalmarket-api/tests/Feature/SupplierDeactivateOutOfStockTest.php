@@ -84,6 +84,7 @@ class SupplierDeactivateOutOfStockTest extends TestCase
             ]);
 
         $this->assertSame('inactive', $productOutOfStock->fresh()->status);
+        $this->assertTrue((bool) $productOutOfStock->fresh()->supplier_out_of_stock_hidden);
         $this->assertSame('active', $productInStock->fresh()->status);
         $this->assertSame('inactive', $productAlreadyInactive->fresh()->status);
     }

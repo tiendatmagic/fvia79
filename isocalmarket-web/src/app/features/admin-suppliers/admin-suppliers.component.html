@@ -282,16 +282,15 @@
         </div>
 
         <div class="form-field">
-          <label for="supplier_adjustment_type">{{ 'supplier.adjustment_type' | translate }}</label>
-          <select
-            id="supplier_adjustment_type"
-            name="price_adjustment_type"
-            class="form-input mt-1 w-full"
+          <label>{{ 'supplier.adjustment_type' | translate }}</label>
+          <app-custom-select
+            class="mt-1 w-full"
+            [options]="adjustmentTypeOptions"
+            valueKey="value"
+            labelKey="label"
             [(ngModel)]="supplierForm.price_adjustment_type"
-          >
-            <option value="fixed">{{ 'supplier.fixed_vnd' | translate }}</option>
-            <option value="percent">{{ 'supplier.percent' | translate }}</option>
-          </select>
+            name="price_adjustment_type"
+          />
         </div>
         <div class="form-field">
           <label for="supplier_adjustment_value">{{
@@ -307,16 +306,15 @@
           />
         </div>
         <div class="form-field">
-          <label for="supplier_sync_interval">{{ 'supplier.interval' | translate }}</label>
-          <select
-            id="supplier_sync_interval"
-            name="sync_interval_minutes"
-            class="form-input mt-1 w-full"
+          <label>{{ 'supplier.interval' | translate }}</label>
+          <app-custom-select
+            class="mt-1 w-full"
+            [options]="syncIntervalOptions"
+            valueKey="value"
+            labelKey="label"
             [(ngModel)]="supplierForm.sync_interval_minutes"
-          >
-            <option [ngValue]="10">10 {{ 'supplier.minutes' | translate }}</option>
-            <option [ngValue]="30">30 {{ 'supplier.minutes' | translate }}</option>
-          </select>
+            name="sync_interval_minutes"
+          />
         </div>
         <div class="flex items-end">
           <app-custom-switch

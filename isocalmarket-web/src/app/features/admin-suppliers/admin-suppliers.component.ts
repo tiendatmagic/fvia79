@@ -6,6 +6,7 @@ import { ToastService } from '@core/services/toast.service';
 import { SupplierSettings, SupplierStore } from './supplier.store';
 import { ButtonComponent } from '@shared/components/button/button.component';
 import { CardComponent } from '@shared/components/card/card.component';
+import { CustomSelectComponent } from '@shared/components/custom-select/custom-select.component';
 import { CustomSwitchComponent } from '@shared/components/custom-switch/custom-switch.component';
 import { IconComponent } from '@shared/components/icon/icon.component';
 import { PageHeaderComponent } from '@shared/components/page-header/page-header.component';
@@ -21,6 +22,7 @@ import { TranslatePipe } from '@shared/pipes/translate.pipe';
     CardComponent,
     ButtonComponent,
     CustomSwitchComponent,
+    CustomSelectComponent,
     IconComponent,
     TranslatePipe,
   ],
@@ -37,6 +39,24 @@ export class AdminSuppliersComponent implements OnInit {
   public readonly balanceLoadFailed = signal(false);
   public readonly isDeactivateModalOpen = signal(false);
   public readonly isDeactivating = signal(false);
+
+  public get adjustmentTypeOptions() {
+    return [
+      { label: this.lang.translate('supplier.fixed_vnd'), value: 'fixed' },
+      { label: this.lang.translate('supplier.percent'), value: 'percent' },
+    ];
+  }
+
+  public get syncIntervalOptions() {
+    const minUnit = this.lang.translate('supplier.minutes');
+    return [
+      { label: `1 ${minUnit}`, value: 1 },
+      { label: `2 ${minUnit}`, value: 2 },
+      { label: `5 ${minUnit}`, value: 5 },
+      { label: `10 ${minUnit}`, value: 10 },
+      { label: `30 ${minUnit}`, value: 30 },
+    ];
+  }
 
   public supplierForm: Partial<SupplierSettings> = {
     api_key: '',

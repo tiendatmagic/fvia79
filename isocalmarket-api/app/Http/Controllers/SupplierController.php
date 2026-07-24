@@ -45,7 +45,7 @@ class SupplierController extends Controller
             'products_enabled' => ['sometimes', 'boolean'],
             'import_out_of_stock' => ['sometimes', 'boolean'],
             'auto_sync' => ['sometimes', 'boolean'],
-            'sync_interval_minutes' => ['sometimes', 'integer', Rule::in([10, 30])],
+            'sync_interval_minutes' => ['sometimes', 'integer', Rule::in([1, 2, 5, 10, 30])],
             'price_adjustment_type' => ['sometimes', Rule::in(['fixed', 'percent'])],
             'price_adjustment_value' => ['sometimes', 'numeric', 'min:-1000000000', 'max:1000000000'],
         ]);
@@ -79,7 +79,7 @@ class SupplierController extends Controller
             'products_enabled' => ['sometimes', 'boolean'],
             'import_out_of_stock' => ['sometimes', 'boolean'],
             'auto_sync' => ['sometimes', 'boolean'],
-            'sync_interval_minutes' => ['sometimes', 'integer', Rule::in([10, 30])],
+            'sync_interval_minutes' => ['sometimes', 'integer', Rule::in([1, 2, 5, 10, 30])],
             'price_adjustment_type' => ['sometimes', Rule::in(['fixed', 'percent'])],
             'price_adjustment_value' => ['sometimes', 'numeric', 'min:-1000000000', 'max:1000000000'],
         ]);
@@ -250,6 +250,7 @@ class SupplierController extends Controller
 
             if (($supplierStock + $localStock) <= 0) {
                 $product->status = 'inactive';
+                $product->supplier_out_of_stock_hidden = true;
                 $product->save();
                 $deactivatedCount++;
             }

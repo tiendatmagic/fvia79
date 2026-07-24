@@ -13,6 +13,30 @@
 > Khi cần seed dữ liệu cho một seeder cụ thể, chỉ dùng:
 > - `php artisan db:seed --class=TenSeederClass` — chạy đúng 1 seeder.
 
+- **[NÂNG CẤP GIAO DIỆN SELECT CHUẨN VÀ BỔ SUNG CHU KỲ ĐỒNG BỘ 1, 2, 5 PHÚT (SUPPLIER CUSTOM SELECT UI & SYNC INTERVAL OPTIONS)]**:
+  - **Mô tả yêu cầu**:
+    - Thay thế các ô chọn dạng `<select>` mặc định của trình duyệt tại trang Quản lý Nhà cung cấp (`/admin/suppliers`) sang component giao diện chuẩn `<app-custom-select>`.
+    - Bổ sung thêm các tùy chọn chu kỳ đồng bộ tự động ngắn: **1 phút**, **2 phút**, **5 phút** (bên cạnh **10 phút** và **30 phút**).
+  - **Nội dung thực hiện**:
+    - **Backend (`isocalmarket-api`)**:
+      - Cập nhật `SupplierController.php`: nới rộng luật kiểm tra validation `sync_interval_minutes` hỗ trợ `Rule::in([1, 2, 5, 10, 30])`.
+    - **Frontend (`isocalmarket-web`)**:
+      - Cập nhật `supplier.store.ts`: nới rộng kiểu dữ liệu `sync_interval_minutes: 1 | 2 | 5 | 10 | 30`.
+      - Cập nhật `AdminSuppliersComponent` (`admin-suppliers.component.ts` & `.html`):
+        - Import `CustomSelectComponent`.
+        - Khai báo getters `adjustmentTypeOptions` và `syncIntervalOptions` đa ngôn ngữ mượt mà.
+        - Thay thế thẻ `<select>` bằng `<app-custom-select>` cho cả **Cách điều chỉnh giá** và **Chu kỳ tự động đồng bộ**.
+  - **Xác nhận**: Unit tests backend `php artisan test` đạt **120/120 PASSED (100%)**, biên dịch Angular `npm run build` thành công **100% SUCCESS, 0 ERRORS**!
+
+- **[CẢI TIẾN TỰ ĐỘNG BẬT LẠI SẢN PHẨM KHI CÓ HÀNG TRỞ LẠI TRONG ĐỒNG BỘ DANH MỤC (AUTO-RECOVER PRODUCT STATUS ON CATALOG SYNC)]**:
+  - **Mô tả yêu cầu**: Đảm bảo khi bấm nút "Ẩn sản phẩm hết hàng (0 tồn kho)", nếu sau này hệ thống đồng bộ danh mục sản phẩm từ nhà cung cấp và phát hiện sản phẩm A đã có hàng trở lại (ví dụ tồn kho = 10), hệ thống sẽ tự động bật lại trạng thái Hoạt động (`status = 'active'`) cho sản phẩm A.
+  - **Nội dung thực hiện**:
+    - **Backend (`isocalmarket-api`)**:
+      - Cập nhật `SupplierController.php` (phương thức `deactivateOutOfStockProducts`): Bổ sung đánh dấu cờ `$product->supplier_out_of_stock_hidden = true;` khi ẩn sản phẩm có tồn kho = 0.
+      - Nhờ cờ này, ở lần đồng bộ danh mục tiếp theo (`SupplierCatalogSyncService.php`), khi API nhà cung cấp trả về số lượng tồn kho > 0, service đồng bộ sẽ tự động gỡ cờ ẩn và chuyển trạng thái sản phẩm sang `status = 'active'` trở lại.
+      - Cập nhật unit test `SupplierDeactivateOutOfStockTest.php` bổ sung kiểm tra cờ `supplier_out_of_stock_hidden` đạt **120/120 PASSED (100%)**.
+  - **Xác nhận**: Unit tests backend `php artisan test` đạt **120/120 PASSED (100%)**!
+
 - **[SỬA LỖI MẤT ICON SVG TẠI MENU THIẾT BỊ ĐĂNG NHẬP TRANG PROFILE (FIX MISSING PROFILE DEVICES TAB SVG ICON)]**:
   - **Mô tả yêu cầu**: Sửa lỗi mất icon SVG (hiển thị khoảng trắng rỗng) ở mục menu tab "Thiết bị đăng nhập" (`/profile/devices`) tại trang Cài đặt tài khoản.
   - **Nội dung thực hiện**:

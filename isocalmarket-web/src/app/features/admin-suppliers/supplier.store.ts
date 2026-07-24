@@ -14,7 +14,7 @@ export interface SupplierSettings {
   products_enabled: boolean;
   import_out_of_stock: boolean;
   auto_sync: boolean;
-  sync_interval_minutes: 10 | 30;
+  sync_interval_minutes: 1 | 2 | 5 | 10 | 30;
   price_adjustment_type: PriceAdjustmentType;
   price_adjustment_value: number;
   last_synced_at: string | null;
