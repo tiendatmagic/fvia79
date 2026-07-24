@@ -13,6 +13,22 @@
 > Khi cần seed dữ liệu cho một seeder cụ thể, chỉ dùng:
 > - `php artisan db:seed --class=TenSeederClass` — chạy đúng 1 seeder.
 
+- **[TRIỂN KHẢI TRANG FAQ, CHÍNH SÁCH BẢO HÀNH & TỪ CHỐI BẢO HÀNH ĐA NGÔN NGỮ 100% (FULL I18N WARRANTY POLICY & FAQ PAGE)]**:
+  - **Mô tả yêu cầu**:
+    - Thêm một mục mới "Chính sách bảo hành / FAQ" trên menu người dùng (`/faq`), cho phép bất kỳ ai (khách hàng, khách vãng lai không đăng nhập hay quản trị viên) đều truy cập được.
+    - Bổ sung menu item vào Sidebar Desktop và Mobile Menu Drawer.
+    - Nhúng toàn bộ 2 khối quy định: **Chấp nhận bảo hành** và **Từ chối bảo hành** đối với cả Business Manager (BM) và Via / Clone Facebook từ mẫu HTML ads7979.com/warranty_policy.
+    - Đảm bảo 100% đa ngôn ngữ (chuyển đổi mượt mà giữa Tiếng Việt & Tiếng Anh qua `TranslatePipe`), 100% sử dụng icon SVG (hoàn toàn KHÔNG dùng emoji), giao diện responsive mượt mà trên mọi thiết bị và tương thích với cả Light Mode & Dark Mode.
+  - **Nội dung thực hiện**:
+    - **Frontend (`isocalmarket-web`)**:
+      - Bổ sung các icon SVG `@case ('faq')` và `@case ('zap')` trong `IconComponent` (`icon.component.html`).
+      - Đăng ký đầy đủ từ điển đa ngôn ngữ (50+ translation keys) trong `LanguageService.ts` cho cả Tiếng Việt và Tiếng Anh (tất cả các nhãn, thẻ header, tab BM vs Via, bộ lọc Chấp nhận vs Từ chối bảo hành, danh sách lý do và thời gian bảo hành).
+      - Cập nhật `FaqComponent` tại `src/app/features/faq/` (`faq.component.ts`, `faq.component.html`, `faq.component.scss`) với cấu hình Angular Signal quản lý chuyển tab (`bm` / `via`) và bộ lọc quy định (`all` / `accepted` / `rejected`).
+      - 100% giao diện được gắn pipe `| translate` chuẩn nét, sử dụng component `<app-icon>` biểu diễn toàn bộ trạng thái (khiên bảo vệ, đồng hồ thời hạn, lịch 7 ngày, chìa khóa đăng nhập lần đầu, cảnh báo, tia sét không dùng, dấu x từ chối,...).
+      - Khai báo public route `{ path: 'faq', loadComponent: ... }` trong `app.routes.ts` (không bọc AuthGuard để người dùng chưa đăng nhập vẫn xem được).
+      - Bổ sung menu item "Chính sách bảo hành / FAQ" vào Desktop Sidebar (`sidebar.component.html`) và Mobile Drawer (`app.html`).
+  - **Xác nhận**: Biên dịch Angular `npm run build` thành công **100% SUCCESS, 0 ERRORS**, backend unit tests `php artisan test` đạt **111/111 test cases (100% PASSED)**!
+
 - **[ĐẶT MẶC ĐỊNH TẮT CHECKBOX "KHÔNG HỎI LẠI TRONG 7 NGÀY" Ở MODAL THÔNG BÁO HỆ THỐNG (DEFAULT DISABLE 7-DAY SUPPRESSION CHECKBOX)]**:
   - **Mô tả yêu cầu**: Thay đổi trạng thái mặc định của ô checkbox "Không hỏi lại trong 7 ngày" tại Modal Thông Báo Hệ Thống (`WelcomeNoticeModalComponent`) từ Bật (checked) sang Tắt (unchecked).
   - **Nội dung thực hiện**:

@@ -53,6 +53,10 @@ export const routes: Routes = [
     loadComponent: () => import('@features/check-uid/check-uid.component').then(m => m.CheckUidComponent)
   },
   {
+    path: 'faq',
+    loadComponent: () => import('@features/faq/faq.component').then(m => m.FaqComponent)
+  },
+  {
     path: 'deposit',
     canActivate: [AuthGuard],
     children: [

@@ -86,6 +86,15 @@
       <span>{{ 'nav.check_uid' | translate }}</span>
     </a>
 
+    <a
+      routerLink="/faq"
+      routerLinkActive="!bg-primary/10 !text-primary !font-extrabold"
+      class="flex items-center gap-3.5 px-4 py-3 rounded-xl hover:bg-slate-100 dark:hover:bg-slate-800/50 text-slate-600 dark:text-slate-400 font-semibold text-sm transition-colors duration-200 cursor-pointer"
+    >
+      <app-icon name="faq" class="w-5 h-5 flex-shrink-0" />
+      <span>{{ 'nav.faq' | translate }}</span>
+    </a>
+
     <div *ngIf="stateService.isAdmin()" class="pt-4 pb-2">
       <span class="px-4 text-xs font-bold text-slate-500 dark:text-slate-400 uppercase tracking-wider">
         {{ 'nav.admin_section' | translate }}

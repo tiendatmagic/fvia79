@@ -1,0 +1,514 @@
+<div class="max-w-[1530px] mx-auto w-full px-4 sm:px-6 py-6 space-y-6">
+  <!-- Page Header matching all system pages -->
+  <app-page-header
+    [title]="'faq.title' | translate"
+    [description]="'faq.subtitle' | translate"
+  >
+    <ng-container actions>
+      <div class="flex items-center gap-1.5 p-1 bg-slate-100 dark:bg-slate-800/80 rounded-xl text-xs font-semibold">
+        <button
+          type="button"
+          (click)="setPolicyType('all')"
+          [class.bg-white]="policyType() === 'all'"
+          [class.dark:bg-slate-700]="policyType() === 'all'"
+          [class.text-primary]="policyType() === 'all'"
+          [class.dark:text-white]="policyType() === 'all'"
+          [class.shadow-2xs]="policyType() === 'all'"
+          [class.text-slate-600]="policyType() !== 'all'"
+          [class.dark:text-slate-400]="policyType() !== 'all'"
+          class="px-3 py-1.5 rounded-lg transition-all cursor-pointer"
+        >
+          {{ 'faq.filter_all' | translate }}
+        </button>
+        <button
+          type="button"
+          (click)="setPolicyType('accepted')"
+          [class.bg-emerald-600]="policyType() === 'accepted'"
+          [class.text-white]="policyType() === 'accepted'"
+          [class.text-slate-600]="policyType() !== 'accepted'"
+          [class.dark:text-slate-400]="policyType() !== 'accepted'"
+          class="px-3 py-1.5 rounded-lg transition-all cursor-pointer"
+        >
+          {{ 'faq.filter_accepted' | translate }}
+        </button>
+        <button
+          type="button"
+          (click)="setPolicyType('rejected')"
+          [class.bg-rose-600]="policyType() === 'rejected'"
+          [class.text-white]="policyType() === 'rejected'"
+          [class.text-slate-600]="policyType() !== 'rejected'"
+          [class.dark:text-slate-400]="policyType() !== 'rejected'"
+          class="px-3 py-1.5 rounded-lg transition-all cursor-pointer"
+        >
+          {{ 'faq.filter_rejected' | translate }}
+        </button>
+      </div>
+    </ng-container>
+  </app-page-header>
+
+  <!-- Warranty Policies Container -->
+  <div class="bg-white dark:bg-slate-900 rounded-2xl border border-slate-200/80 dark:border-slate-800 shadow-xs overflow-hidden">
+    
+    <!-- Banner Header -->
+    <div class="px-6 py-4 bg-gradient-to-r from-blue-600 to-indigo-600 text-white flex items-center gap-3">
+      <div class="w-9 h-9 rounded-xl bg-white/20 flex items-center justify-center shrink-0">
+        <app-icon name="shield" class="w-5 h-5 text-white" />
+      </div>
+      <div class="flex flex-col">
+        <span class="text-xs font-bold uppercase tracking-wider text-blue-100">
+          {{ 'faq.system_policy' | translate }}
+        </span>
+        <h2 class="text-base sm:text-lg font-bold tracking-tight text-white leading-tight">
+          {{ 'faq.accepted_title' | translate }} & {{ 'faq.rejected_title' | translate }}
+        </h2>
+      </div>
+    </div>
+
+    <!-- Category Switcher Tabs (BM vs Via/Clone) -->
+    <div class="flex border-b border-slate-200 dark:border-slate-800 bg-slate-50/80 dark:bg-slate-950/60 p-1.5 gap-2">
+      <button
+        type="button"
+        (click)="setTab('bm')"
+        [class.active]="activeTab() === 'bm'"
+        [class.bg-white]="activeTab() === 'bm'"
+        [class.dark:bg-slate-800]="activeTab() === 'bm'"
+        [class.text-blue-600]="activeTab() === 'bm'"
+        [class.dark:text-blue-400]="activeTab() === 'bm'"
+        [class.shadow-xs]="activeTab() === 'bm'"
+        [class.text-slate-600]="activeTab() !== 'bm'"
+        [class.dark:text-slate-400]="activeTab() !== 'bm'"
+        class="warranty-tab-btn flex-1 py-3 px-4 rounded-xl font-bold text-xs sm:text-sm tracking-wide uppercase flex items-center justify-center gap-2.5 transition-all cursor-pointer hover:text-blue-600 dark:hover:text-blue-400"
+      >
+        <app-icon name="package" class="w-4 h-4 shrink-0" />
+        <span>{{ 'faq.tab_bm' | translate }}</span>
+      </button>
+
+      <button
+        type="button"
+        (click)="setTab('via')"
+        [class.active]="activeTab() === 'via'"
+        [class.bg-white]="activeTab() === 'via'"
+        [class.dark:bg-slate-800]="activeTab() === 'via'"
+        [class.text-blue-600]="activeTab() === 'via'"
+        [class.dark:text-blue-400]="activeTab() === 'via'"
+        [class.shadow-xs]="activeTab() === 'via'"
+        [class.text-slate-600]="activeTab() !== 'via'"
+        [class.dark:text-slate-400]="activeTab() !== 'via'"
+        class="warranty-tab-btn flex-1 py-3 px-4 rounded-xl font-bold text-xs sm:text-sm tracking-wide uppercase flex items-center justify-center gap-2.5 transition-all cursor-pointer hover:text-blue-600 dark:hover:text-blue-400"
+      >
+        <app-icon name="customers" class="w-4 h-4 shrink-0" />
+        <span>{{ 'faq.tab_via' | translate }}</span>
+      </button>
+    </div>
+
+    <div class="p-6 sm:p-8 space-y-8">
+      
+      <!-- BM PANEL -->
+      @if (activeTab() === 'bm') {
+        
+        <!-- SECTION 1: CHẤP NHẬN BẢO HÀNH BM -->
+        @if (policyType() === 'all' || policyType() === 'accepted') {
+          <div class="space-y-4">
+            <div class="flex items-center gap-2.5 pb-3 border-b border-slate-100 dark:border-slate-800">
+              <div class="w-6 h-6 rounded-full bg-emerald-100 dark:bg-emerald-950/80 text-emerald-600 dark:text-emerald-400 flex items-center justify-center shrink-0">
+                <app-icon name="check" class="w-4 h-4 stroke-[3]" />
+              </div>
+              <h3 class="text-sm font-extrabold uppercase tracking-wide text-emerald-700 dark:text-emerald-400">
+                {{ 'faq.bm_accepted_title' | translate }}
+              </h3>
+            </div>
+
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-3.5">
+              
+              <div class="item-hover-effect p-4 rounded-xl bg-slate-50/80 dark:bg-slate-800/40 border border-slate-200/60 dark:border-slate-800/80 flex items-center justify-between gap-3">
+                <div class="flex items-start gap-3 flex-1">
+                  <div class="w-6 h-6 rounded-lg bg-emerald-600 text-white font-bold text-xs flex items-center justify-center shrink-0 mt-0.5">
+                    <app-icon name="check" class="w-3.5 h-3.5 stroke-[3]" />
+                  </div>
+                  <span class="text-sm font-medium text-slate-700 dark:text-slate-200 leading-relaxed">
+                    {{ 'faq.bm_acc_1' | translate }}
+                  </span>
+                </div>
+                <div class="shrink-0">
+                  <span class="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-blue-100 dark:bg-blue-950/80 text-blue-700 dark:text-blue-300 font-bold text-xs">
+                    <app-icon name="clock" class="w-3.5 h-3.5" />
+                    <span>{{ 'faq.tag_24h' | translate }}</span>
+                  </span>
+                </div>
+              </div>
+
+              <div class="item-hover-effect p-4 rounded-xl bg-slate-50/80 dark:bg-slate-800/40 border border-slate-200/60 dark:border-slate-800/80 flex items-center justify-between gap-3">
+                <div class="flex items-start gap-3 flex-1">
+                  <div class="w-6 h-6 rounded-lg bg-emerald-600 text-white font-bold text-xs flex items-center justify-center shrink-0 mt-0.5">
+                    <app-icon name="check" class="w-3.5 h-3.5 stroke-[3]" />
+                  </div>
+                  <span class="text-sm font-medium text-slate-700 dark:text-slate-200 leading-relaxed">
+                    {{ 'faq.bm_acc_2' | translate }}
+                  </span>
+                </div>
+                <div class="shrink-0">
+                  <span class="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-blue-100 dark:bg-blue-950/80 text-blue-700 dark:text-blue-300 font-bold text-xs">
+                    <app-icon name="clock" class="w-3.5 h-3.5" />
+                    <span>{{ 'faq.tag_24h' | translate }}</span>
+                  </span>
+                </div>
+              </div>
+
+              <div class="item-hover-effect p-4 rounded-xl bg-slate-50/80 dark:bg-slate-800/40 border border-slate-200/60 dark:border-slate-800/80 flex items-center justify-between gap-3">
+                <div class="flex items-start gap-3 flex-1">
+                  <div class="w-6 h-6 rounded-lg bg-emerald-600 text-white font-bold text-xs flex items-center justify-center shrink-0 mt-0.5">
+                    <app-icon name="check" class="w-3.5 h-3.5 stroke-[3]" />
+                  </div>
+                  <span class="text-sm font-medium text-slate-700 dark:text-slate-200 leading-relaxed">
+                    {{ 'faq.bm_acc_3' | translate }}
+                  </span>
+                </div>
+                <div class="shrink-0">
+                  <span class="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-emerald-100 dark:bg-emerald-950/80 text-emerald-700 dark:text-emerald-300 font-bold text-xs">
+                    <app-icon name="calendar" class="w-3.5 h-3.5" />
+                    <span>{{ 'faq.tag_7d' | translate }}</span>
+                  </span>
+                </div>
+              </div>
+
+              <div class="item-hover-effect p-4 rounded-xl bg-slate-50/80 dark:bg-slate-800/40 border border-slate-200/60 dark:border-slate-800/80 flex items-center justify-between gap-3">
+                <div class="flex items-start gap-3 flex-1">
+                  <div class="w-6 h-6 rounded-lg bg-emerald-600 text-white font-bold text-xs flex items-center justify-center shrink-0 mt-0.5">
+                    <app-icon name="check" class="w-3.5 h-3.5 stroke-[3]" />
+                  </div>
+                  <span class="text-sm font-medium text-slate-700 dark:text-slate-200 leading-relaxed">
+                    {{ 'faq.bm_acc_4' | translate }}
+                  </span>
+                </div>
+                <div class="shrink-0">
+                  <span class="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-emerald-100 dark:bg-emerald-950/80 text-emerald-700 dark:text-emerald-300 font-bold text-xs">
+                    <app-icon name="calendar" class="w-3.5 h-3.5" />
+                    <span>{{ 'faq.tag_7d' | translate }}</span>
+                  </span>
+                </div>
+              </div>
+
+            </div>
+          </div>
+        }
+
+        <!-- SECTION 2: TỪ CHỐI BẢO HÀNH BM -->
+        @if (policyType() === 'all' || policyType() === 'rejected') {
+          <div class="space-y-4">
+            <div class="flex items-center gap-2.5 pb-3 border-b border-slate-100 dark:border-slate-800">
+              <div class="w-6 h-6 rounded-full bg-rose-100 dark:bg-rose-950/80 text-rose-600 dark:text-rose-400 flex items-center justify-center shrink-0">
+                <app-icon name="close" class="w-4 h-4 stroke-[3]" />
+              </div>
+              <h3 class="text-sm font-extrabold uppercase tracking-wide text-rose-700 dark:text-rose-400">
+                {{ 'faq.bm_rejected_title' | translate }}
+              </h3>
+            </div>
+
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-3.5">
+              
+              <div class="item-hover-effect p-4 rounded-xl bg-rose-50/40 dark:bg-rose-950/20 border border-rose-200/50 dark:border-rose-900/40 flex items-center justify-between gap-3">
+                <div class="flex items-start gap-3 flex-1">
+                  <div class="w-6 h-6 rounded-lg bg-rose-600 text-white font-bold text-xs flex items-center justify-center shrink-0 mt-0.5">
+                    <app-icon name="close" class="w-3.5 h-3.5 stroke-[3]" />
+                  </div>
+                  <span class="text-sm font-medium text-slate-700 dark:text-slate-200 leading-relaxed">
+                    {{ 'faq.bm_rej_1' | translate }}
+                  </span>
+                </div>
+                <div class="shrink-0">
+                  <span class="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-rose-100 dark:bg-rose-950/80 text-rose-700 dark:text-rose-300 font-bold text-xs">
+                    <app-icon name="zap" class="w-3.5 h-3.5" />
+                    <span>{{ 'faq.tag_rejected' | translate }}</span>
+                  </span>
+                </div>
+              </div>
+
+              <div class="item-hover-effect p-4 rounded-xl bg-rose-50/40 dark:bg-rose-950/20 border border-rose-200/50 dark:border-rose-900/40 flex items-center justify-between gap-3">
+                <div class="flex items-start gap-3 flex-1">
+                  <div class="w-6 h-6 rounded-lg bg-rose-600 text-white font-bold text-xs flex items-center justify-center shrink-0 mt-0.5">
+                    <app-icon name="close" class="w-3.5 h-3.5 stroke-[3]" />
+                  </div>
+                  <span class="text-sm font-medium text-slate-700 dark:text-slate-200 leading-relaxed">
+                    {{ 'faq.bm_rej_2' | translate }}
+                  </span>
+                </div>
+                <div class="shrink-0">
+                  <span class="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-amber-100 dark:bg-amber-950/80 text-amber-800 dark:text-amber-300 font-bold text-xs">
+                    <app-icon name="clock" class="w-3.5 h-3.5" />
+                    <span>{{ 'faq.tag_expired' | translate }}</span>
+                  </span>
+                </div>
+              </div>
+
+              <div class="item-hover-effect p-4 rounded-xl bg-rose-50/40 dark:bg-rose-950/20 border border-rose-200/50 dark:border-rose-900/40 flex items-center justify-between gap-3">
+                <div class="flex items-start gap-3 flex-1">
+                  <div class="w-6 h-6 rounded-lg bg-rose-600 text-white font-bold text-xs flex items-center justify-center shrink-0 mt-0.5">
+                    <app-icon name="close" class="w-3.5 h-3.5 stroke-[3]" />
+                  </div>
+                  <span class="text-sm font-medium text-slate-700 dark:text-slate-200 leading-relaxed">
+                    {{ 'faq.bm_rej_3' | translate }}
+                  </span>
+                </div>
+                <div class="shrink-0">
+                  <span class="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-rose-100 dark:bg-rose-950/80 text-rose-700 dark:text-rose-300 font-bold text-xs">
+                    <app-icon name="warning" class="w-3.5 h-3.5" />
+                    <span>{{ 'faq.tag_rejected' | translate }}</span>
+                  </span>
+                </div>
+              </div>
+
+              <div class="item-hover-effect p-4 rounded-xl bg-rose-50/40 dark:bg-rose-950/20 border border-rose-200/50 dark:border-rose-900/40 flex items-center justify-between gap-3">
+                <div class="flex items-start gap-3 flex-1">
+                  <div class="w-6 h-6 rounded-lg bg-rose-600 text-white font-bold text-xs flex items-center justify-center shrink-0 mt-0.5">
+                    <app-icon name="close" class="w-3.5 h-3.5 stroke-[3]" />
+                  </div>
+                  <span class="text-sm font-medium text-slate-700 dark:text-slate-200 leading-relaxed">
+                    {{ 'faq.bm_rej_4' | translate }}
+                  </span>
+                </div>
+                <div class="shrink-0">
+                  <span class="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-rose-100 dark:bg-rose-950/80 text-rose-700 dark:text-rose-300 font-bold text-xs">
+                    <app-icon name="warning" class="w-3.5 h-3.5" />
+                    <span>{{ 'faq.tag_violation' | translate }}</span>
+                  </span>
+                </div>
+              </div>
+
+            </div>
+          </div>
+        }
+
+      }
+
+      <!-- VIA / CLONE PANEL -->
+      @if (activeTab() === 'via') {
+        
+        <div class="p-4 rounded-xl bg-amber-50 dark:bg-amber-950/40 border border-amber-200/80 dark:border-amber-900/60 flex items-start gap-3 text-amber-800 dark:text-amber-300">
+          <app-icon name="warning" class="w-5 h-5 text-amber-600 dark:text-amber-400 shrink-0 mt-0.5" />
+          <p class="text-xs sm:text-sm font-medium leading-relaxed">
+            {{ 'faq.via_alert' | translate }}
+          </p>
+        </div>
+
+        <!-- SECTION 1: CHẤP NHẬN BẢO HÀNH VIA -->
+        @if (policyType() === 'all' || policyType() === 'accepted') {
+          <div class="space-y-4">
+            <div class="flex items-center gap-2.5 pb-3 border-b border-slate-100 dark:border-slate-800">
+              <div class="w-6 h-6 rounded-full bg-emerald-100 dark:bg-emerald-950/80 text-emerald-600 dark:text-emerald-400 flex items-center justify-center shrink-0">
+                <app-icon name="check" class="w-4 h-4 stroke-[3]" />
+              </div>
+              <h3 class="text-sm font-extrabold uppercase tracking-wide text-emerald-700 dark:text-emerald-400">
+                {{ 'faq.via_accepted_title' | translate }}
+              </h3>
+            </div>
+
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-3.5">
+              
+              <div class="item-hover-effect p-4 rounded-xl bg-slate-50/80 dark:bg-slate-800/40 border border-slate-200/60 dark:border-slate-800/80 flex items-center justify-between gap-3">
+                <div class="flex items-start gap-3 flex-1">
+                  <div class="w-6 h-6 rounded-lg bg-emerald-600 text-white font-bold text-xs flex items-center justify-center shrink-0 mt-0.5">
+                    <app-icon name="check" class="w-3.5 h-3.5 stroke-[3]" />
+                  </div>
+                  <span class="text-sm font-medium text-slate-700 dark:text-slate-200 leading-relaxed">
+                    {{ 'faq.via_acc_1' | translate }}
+                  </span>
+                </div>
+                <div class="shrink-0">
+                  <span class="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-amber-100 dark:bg-amber-950/80 text-amber-800 dark:text-amber-300 font-bold text-xs">
+                    <app-icon name="key" class="w-3.5 h-3.5" />
+                    <span>{{ 'faq.tag_first' | translate }}</span>
+                  </span>
+                </div>
+              </div>
+
+              <div class="item-hover-effect p-4 rounded-xl bg-slate-50/80 dark:bg-slate-800/40 border border-slate-200/60 dark:border-slate-800/80 flex items-center justify-between gap-3">
+                <div class="flex items-start gap-3 flex-1">
+                  <div class="w-6 h-6 rounded-lg bg-emerald-600 text-white font-bold text-xs flex items-center justify-center shrink-0 mt-0.5">
+                    <app-icon name="check" class="w-3.5 h-3.5 stroke-[3]" />
+                  </div>
+                  <div class="flex flex-col">
+                    <span class="text-sm font-medium text-slate-700 dark:text-slate-200 leading-relaxed">
+                      {{ 'faq.via_acc_2' | translate }}
+                    </span>
+                    <span class="text-xs font-medium text-slate-500 dark:text-slate-400 mt-1">
+                      {{ 'faq.via_acc_2_sub' | translate }}
+                    </span>
+                  </div>
+                </div>
+                <div class="shrink-0">
+                  <span class="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-emerald-100 dark:bg-emerald-950/80 text-emerald-700 dark:text-emerald-300 font-bold text-xs">
+                    <app-icon name="calendar" class="w-3.5 h-3.5" />
+                    <span>{{ 'faq.tag_7d' | translate }}</span>
+                  </span>
+                </div>
+              </div>
+
+              <div class="item-hover-effect p-4 rounded-xl bg-slate-50/80 dark:bg-slate-800/40 border border-slate-200/60 dark:border-slate-800/80 flex items-center justify-between gap-3">
+                <div class="flex items-start gap-3 flex-1">
+                  <div class="w-6 h-6 rounded-lg bg-emerald-600 text-white font-bold text-xs flex items-center justify-center shrink-0 mt-0.5">
+                    <app-icon name="check" class="w-3.5 h-3.5 stroke-[3]" />
+                  </div>
+                  <span class="text-sm font-medium text-slate-700 dark:text-slate-200 leading-relaxed">
+                    {{ 'faq.via_acc_3' | translate }}
+                  </span>
+                </div>
+                <div class="shrink-0">
+                  <span class="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-amber-100 dark:bg-amber-950/80 text-amber-800 dark:text-amber-300 font-bold text-xs">
+                    <app-icon name="clock" class="w-3.5 h-3.5" />
+                    <span>{{ 'faq.tag_pre' | translate }}</span>
+                  </span>
+                </div>
+              </div>
+
+              <div class="item-hover-effect p-4 rounded-xl bg-slate-50/80 dark:bg-slate-800/40 border border-slate-200/60 dark:border-slate-800/80 flex items-center justify-between gap-3">
+                <div class="flex items-start gap-3 flex-1">
+                  <div class="w-6 h-6 rounded-lg bg-emerald-600 text-white font-bold text-xs flex items-center justify-center shrink-0 mt-0.5">
+                    <app-icon name="check" class="w-3.5 h-3.5 stroke-[3]" />
+                  </div>
+                  <span class="text-sm font-medium text-slate-700 dark:text-slate-200 leading-relaxed">
+                    {{ 'faq.via_acc_4' | translate }}
+                  </span>
+                </div>
+                <div class="shrink-0">
+                  <span class="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-rose-100 dark:bg-rose-950/80 text-rose-700 dark:text-rose-300 font-bold text-xs">
+                    <app-icon name="zap" class="w-3.5 h-3.5" />
+                    <span>{{ 'faq.tag_no_use' | translate }}</span>
+                  </span>
+                </div>
+              </div>
+
+            </div>
+          </div>
+        }
+
+        <!-- SECTION 2: TỪ CHỐI BẢO HÀNH VIA -->
+        @if (policyType() === 'all' || policyType() === 'rejected') {
+          <div class="space-y-4">
+            <div class="flex items-center gap-2.5 pb-3 border-b border-slate-100 dark:border-slate-800">
+              <div class="w-6 h-6 rounded-full bg-rose-100 dark:bg-rose-950/80 text-rose-600 dark:text-rose-400 flex items-center justify-center shrink-0">
+                <app-icon name="close" class="w-4 h-4 stroke-[3]" />
+              </div>
+              <h3 class="text-sm font-extrabold uppercase tracking-wide text-rose-700 dark:text-rose-400">
+                {{ 'faq.via_rejected_title' | translate }}
+              </h3>
+            </div>
+
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-3.5">
+              
+              <div class="item-hover-effect p-4 rounded-xl bg-rose-50/40 dark:bg-rose-950/20 border border-rose-200/50 dark:border-rose-900/40 flex items-center justify-between gap-3">
+                <div class="flex items-start gap-3 flex-1">
+                  <div class="w-6 h-6 rounded-lg bg-rose-600 text-white font-bold text-xs flex items-center justify-center shrink-0 mt-0.5">
+                    <app-icon name="close" class="w-3.5 h-3.5 stroke-[3]" />
+                  </div>
+                  <span class="text-sm font-medium text-slate-700 dark:text-slate-200 leading-relaxed">
+                    {{ 'faq.via_rej_1' | translate }}
+                  </span>
+                </div>
+                <div class="shrink-0">
+                  <span class="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-rose-100 dark:bg-rose-950/80 text-rose-700 dark:text-rose-300 font-bold text-xs">
+                    <app-icon name="zap" class="w-3.5 h-3.5" />
+                    <span>{{ 'faq.tag_rejected' | translate }}</span>
+                  </span>
+                </div>
+              </div>
+
+              <div class="item-hover-effect p-4 rounded-xl bg-rose-50/40 dark:bg-rose-950/20 border border-rose-200/50 dark:border-rose-900/40 flex items-center justify-between gap-3">
+                <div class="flex items-start gap-3 flex-1">
+                  <div class="w-6 h-6 rounded-lg bg-rose-600 text-white font-bold text-xs flex items-center justify-center shrink-0 mt-0.5">
+                    <app-icon name="close" class="w-3.5 h-3.5 stroke-[3]" />
+                  </div>
+                  <span class="text-sm font-medium text-slate-700 dark:text-slate-200 leading-relaxed">
+                    {{ 'faq.via_rej_2' | translate }}
+                  </span>
+                </div>
+                <div class="shrink-0">
+                  <span class="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-amber-100 dark:bg-amber-950/80 text-amber-800 dark:text-amber-300 font-bold text-xs">
+                    <app-icon name="clock" class="w-3.5 h-3.5" />
+                    <span>{{ 'faq.tag_expired' | translate }}</span>
+                  </span>
+                </div>
+              </div>
+
+              <div class="item-hover-effect p-4 rounded-xl bg-rose-50/40 dark:bg-rose-950/20 border border-rose-200/50 dark:border-rose-900/40 flex items-center justify-between gap-3">
+                <div class="flex items-start gap-3 flex-1">
+                  <div class="w-6 h-6 rounded-lg bg-rose-600 text-white font-bold text-xs flex items-center justify-center shrink-0 mt-0.5">
+                    <app-icon name="close" class="w-3.5 h-3.5 stroke-[3]" />
+                  </div>
+                  <span class="text-sm font-medium text-slate-700 dark:text-slate-200 leading-relaxed">
+                    {{ 'faq.via_rej_3' | translate }}
+                  </span>
+                </div>
+                <div class="shrink-0">
+                  <span class="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-rose-100 dark:bg-rose-950/80 text-rose-700 dark:text-rose-300 font-bold text-xs">
+                    <app-icon name="warning" class="w-3.5 h-3.5" />
+                    <span>{{ 'faq.tag_rejected' | translate }}</span>
+                  </span>
+                </div>
+              </div>
+
+              <div class="item-hover-effect p-4 rounded-xl bg-rose-50/40 dark:bg-rose-950/20 border border-rose-200/50 dark:border-rose-900/40 flex items-center justify-between gap-3">
+                <div class="flex items-start gap-3 flex-1">
+                  <div class="w-6 h-6 rounded-lg bg-rose-600 text-white font-bold text-xs flex items-center justify-center shrink-0 mt-0.5">
+                    <app-icon name="close" class="w-3.5 h-3.5 stroke-[3]" />
+                  </div>
+                  <span class="text-sm font-medium text-slate-700 dark:text-slate-200 leading-relaxed">
+                    {{ 'faq.via_rej_4' | translate }}
+                  </span>
+                </div>
+                <div class="shrink-0">
+                  <span class="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-rose-100 dark:bg-rose-950/80 text-rose-700 dark:text-rose-300 font-bold text-xs">
+                    <app-icon name="warning" class="w-3.5 h-3.5" />
+                    <span>{{ 'faq.tag_violation' | translate }}</span>
+                  </span>
+                </div>
+              </div>
+
+            </div>
+          </div>
+        }
+
+      }
+
+    </div>
+  </div>
+
+  <!-- FAQ Accordion Section -->
+  <div class="space-y-4 pt-2">
+    <div class="flex items-center gap-3">
+      <div class="w-8 h-8 rounded-xl bg-primary/10 text-primary flex items-center justify-center shrink-0">
+        <app-icon name="faq" class="w-5 h-5" />
+      </div>
+      <h3 class="text-base sm:text-lg font-bold text-slate-800 dark:text-white">
+        {{ 'faq.faq_section_title' | translate }}
+      </h3>
+    </div>
+
+    <div class="space-y-3">
+      @for (item of faqItems(); track item.id) {
+        <div class="bg-white dark:bg-slate-900 rounded-xl border border-slate-200/80 dark:border-slate-800 overflow-hidden transition-all">
+          <button
+            type="button"
+            (click)="toggleFaq(item.id)"
+            class="w-full px-5 py-4 text-left flex items-center justify-between gap-4 cursor-pointer hover:bg-slate-50/50 dark:hover:bg-slate-800/30 transition-colors"
+          >
+            <span class="font-semibold text-sm text-slate-800 dark:text-slate-200">
+              {{ item.questionKey | translate }}
+            </span>
+            <app-icon
+              name="close"
+              [class.rotate-45]="!item.isOpen"
+              class="w-4 h-4 text-slate-400 transition-transform duration-200 shrink-0"
+            />
+          </button>
+
+          @if (item.isOpen) {
+            <div class="px-5 pb-4 text-sm font-medium text-slate-600 dark:text-slate-400 border-t border-slate-100 dark:border-slate-800/60 pt-3 leading-relaxed">
+              {{ item.answerKey | translate }}
+            </div>
+          }
+        </div>
+      }
+    </div>
+  </div>
+
+</div>
