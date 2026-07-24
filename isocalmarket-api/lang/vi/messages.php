@@ -17,4 +17,12 @@ return [
     'deleted_product' => 'Sản phẩm đã bị xóa',
     'other_products' => 'Sản phẩm khác',
     'other_products_description' => 'Các sản phẩm chưa được xếp vào danh mục cụ thể.',
+    'invalid_password' => 'Mật khẩu hiện tại không chính xác.',
+    'invalid_otp' => 'Mã xác thực hai lớp không hợp lệ.',
+    'database_restore_success' => 'Khôi phục cơ sở dữ liệu thành công. Bản sao lưu an toàn đã được giữ lại trên máy chủ.',
+    'database_restore_failed_rolled_back' => 'Nhập file SQL thất bại. Cơ sở dữ liệu đã tự động trở về trạng thái trước đó.',
+    'database_restore_failed_manual_recovery' => 'Nhập file SQL thất bại và không thể tự động phục hồi. Cần phục hồi thủ công.',
+    'database_safety_backup_failed' => 'Đã hủy khôi phục vì không thể tạo bản sao lưu an toàn. Cơ sở dữ liệu hiện tại chưa bị thay đổi.',
+    'database_backup_busy' => 'Một tác vụ sao lưu hoặc khôi phục cơ sở dữ liệu khác đang chạy.',
+    'database_backup_unavailable' => 'Dịch vụ sao lưu cơ sở dữ liệu hiện không khả dụng. Vui lòng kiểm tra MySQL client trên máy chủ.',
 ];

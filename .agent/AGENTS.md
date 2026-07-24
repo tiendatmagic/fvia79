@@ -13,6 +13,14 @@
 > Khi cần seed dữ liệu cho một seeder cụ thể, chỉ dùng:
 > - `php artisan db:seed --class=TenSeederClass` — chạy đúng 1 seeder.
 
+- **[SỬA LỖI MẤT ICON SVG TẠI MENU THIẾT BỊ ĐĂNG NHẬP TRANG PROFILE (FIX MISSING PROFILE DEVICES TAB SVG ICON)]**:
+  - **Mô tả yêu cầu**: Sửa lỗi mất icon SVG (hiển thị khoảng trắng rỗng) ở mục menu tab "Thiết bị đăng nhập" (`/profile/devices`) tại trang Cài đặt tài khoản.
+  - **Nội dung thực hiện**:
+    - **Frontend (`isocalmarket-web`)**:
+      - Cập nhật `icon.component.html`: Cải tiến SVG path của `@case ('devices')` sang dạng chuẩn Heroicons/Lucide 24x24 hiển thị 2 thiết bị (Màn hình máy tính + Điện thoại di động) sắc nét, 100% hợp lệ về cú pháp SVG.
+      - Cập nhật `profile.component.html`: Bổ sung class `shrink-0` cho thẻ `<app-icon name="devices">` và tất cả các tab navigation trong trang Profile để tránh icon bị co rút/ẩn mất do flexbox layout.
+  - **Xác nhận**: Biên dịch Angular `npm run build` thành công **100% SUCCESS, 0 ERRORS**!
+
 - **[PHÂN TÍCH VÀ XỬ LÝ LỖI KHÔNG XÓA ĐƯỢC NGƯỜI DÙNG CÓ GIAO DỊCH (USER DELETE FOREIGN KEY CONSTRAINT FIX)]**:
   - **Mô tả yêu cầu**: Kiểm tra nguyên nhân vì sao tài khoản user `@tiendatmagic8` (`tiendatmagic88@gmail.com`) không thể xóa đơn hoặc xóa hàng loạt tại `/admin/users` (trả về lỗi HTTP 500 `Internal Server Error`).
   - **Phân tích nguyên nhân**:

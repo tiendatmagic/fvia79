@@ -1,0 +1,88 @@
+<form (ngSubmit)="submit()" class="space-y-5">
+  @if (data.mode === 'restore') {
+    <div class="rounded-xl bg-rose-50 dark:bg-rose-950/25 p-4 text-sm text-rose-700 dark:text-rose-300">
+      <div class="flex items-start gap-3">
+        <app-icon name="warning" class="mt-0.5 h-5 w-5 shrink-0" />
+        <p class="font-semibold">{{ 'database_backup.restore_warning' | translate }}</p>
+      </div>
+    </div>
+
+    <div class="form-field">
+      <label>{{ 'database_backup.sql_file' | translate }}</label>
+      <input
+        type="file"
+        accept=".sql,application/sql,text/plain"
+        class="form-input w-full"
+        (change)="onFileSelected($event)"
+        required
+      />
+      <p class="mt-1.5 text-xs text-slate-400">
+        {{ 'database_backup.max_file_size' | translate }}: {{ data.maxUploadMegabytes }} MB
+      </p>
+      @if (fileError) {
+        <p class="mt-1.5 text-xs font-bold text-rose-600">{{ fileError | translate }}</p>
+      }
+    </div>
+  }
+
+  <div class="form-field">
+    <label>{{ 'database_backup.current_password' | translate }}</label>
+    <input
+      type="password"
+      name="password"
+      class="form-input w-full"
+      autocomplete="current-password"
+      [(ngModel)]="password"
+      required
+    />
+  </div>
+
+  @if (data.requiresOtp) {
+    <div class="form-field">
+      <label>{{ 'database_backup.otp_code' | translate }}</label>
+      <input
+        type="text"
+        name="otp_code"
+        class="form-input w-full font-mono tracking-[0.3em]"
+        inputmode="numeric"
+        autocomplete="one-time-code"
+        maxlength="6"
+        pattern="[0-9]{6}"
+        [(ngModel)]="otpCode"
+        required
+      />
+    </div>
+  }
+
+  @if (data.mode === 'restore') {
+    <div class="form-field">
+      <label>{{ 'database_backup.confirmation_label' | translate }}</label>
+      <input
+        type="text"
+        name="confirmation"
+        class="form-input w-full font-mono"
+        placeholder="RESTORE"
+        autocomplete="off"
+        [(ngModel)]="confirmation"
+        required
+      />
+      <p class="mt-1.5 text-xs text-slate-400">
+        {{ 'database_backup.confirmation_hint' | translate }}
+      </p>
+    </div>
+  }
+
+  <div class="flex justify-end gap-3 pt-2">
+    <button type="button" app-button variant="cancel" (click)="modalRef.close()">
+      {{ 'action.cancel' | translate }}
+    </button>
+    <button
+      type="submit"
+      app-button
+      [variant]="data.mode === 'restore' ? 'danger' : 'primary'"
+      [disabled]="!canSubmit()"
+    >
+      {{ (data.mode === 'restore' ? 'database_backup.restore_confirm' : 'database_backup.export_confirm') | translate }}
+    </button>
+  </div>
+</form>

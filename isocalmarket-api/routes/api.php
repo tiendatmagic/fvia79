@@ -66,6 +66,11 @@ Route::prefix('v1')->group(function () {
 
             Route::get('/admin/settings', ['App\Http\Controllers\SystemSettingController', 'index']);
             Route::put('/admin/settings', ['App\Http\Controllers\SystemSettingController', 'update']);
+            Route::get('/admin/database-backup/status', ['App\Http\Controllers\DatabaseBackupController', 'status']);
+            Route::post('/admin/database-backup/export', ['App\Http\Controllers\DatabaseBackupController', 'export'])
+                ->middleware('throttle:3,60');
+            Route::post('/admin/database-backup/restore', ['App\Http\Controllers\DatabaseBackupController', 'restore'])
+                ->middleware('throttle:2,60');
             Route::get('/admin/suppliers', ['App\Http\Controllers\SupplierController', 'index']);
             Route::post('/admin/suppliers', ['App\Http\Controllers\SupplierController', 'store']);
             Route::put('/admin/suppliers/{code}', ['App\Http\Controllers\SupplierController', 'update']);

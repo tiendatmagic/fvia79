@@ -31,6 +31,19 @@
       <app-icon name="clock" class="w-4 h-4" />
       {{ 'settings.tab_maintenance' | translate }}
     </button>
+    <button
+      (click)="changeTab('backup')"
+      class="px-5 py-3 border-b-2 font-bold text-sm transition-colors flex items-center gap-2 cursor-pointer -mb-px whitespace-nowrap"
+      [class.border-primary]="activeTab() === 'backup'"
+      [class.text-primary]="activeTab() === 'backup'"
+      [class.border-transparent]="activeTab() !== 'backup'"
+      [class.text-slate-500]="activeTab() !== 'backup'"
+      [class.hover:text-slate-800]="activeTab() !== 'backup'"
+      [class.dark:hover:text-slate-200]="activeTab() !== 'backup'"
+    >
+      <app-icon name="database" class="w-4 h-4" />
+      {{ 'settings.tab_backup' | translate }}
+    </button>
   </div>
 
   @if (loading()) {
@@ -38,7 +51,9 @@
       <app-skeleton-loader type="form" [showHeader]="false" [rows]="2" buttonLayout="end" />
     </app-card>
   } @else {
-        @if (activeTab() === 'general') {
+    @if (activeTab() === 'backup') {
+      <app-database-backup-panel />
+    } @else if (activeTab() === 'general') {
       <app-card>
         <form (ngSubmit)="onSubmit()" #settingsForm="ngForm" class="space-y-6">
           <div class="grid grid-cols-1 md:grid-cols-2 gap-6">

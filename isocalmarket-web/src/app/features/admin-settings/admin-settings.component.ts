@@ -13,6 +13,7 @@ import { ToastService } from '@core/services/toast.service';
 import { ModalService } from '@core/services/modal.service';
 import { LanguageService } from '@core/services/language.service';
 import { TranslatePipe } from '@shared/pipes/translate.pipe';
+import { DatabaseBackupPanelComponent } from './database-backup-panel/database-backup-panel.component';
 
 @Component({
   selector: 'app-admin-settings',
@@ -25,7 +26,8 @@ import { TranslatePipe } from '@shared/pipes/translate.pipe';
     ButtonComponent,
     SkeletonLoaderComponent,
     IconComponent,
-    TranslatePipe
+    TranslatePipe,
+    DatabaseBackupPanelComponent
   ],
   templateUrl: './admin-settings.component.html',
   styles: [`
@@ -54,7 +56,7 @@ export class AdminSettingsComponent implements OnInit, OnDestroy {
   public readonly showBinanceKey = signal<boolean>(false);
   public readonly showBinanceSecret = signal<boolean>(false);
 
-  public readonly activeTab = signal<'general' | 'maintenance'>('general');
+  public readonly activeTab = signal<'general' | 'maintenance' | 'backup'>('general');
   public readonly tokenCleanupDays = signal<number>(7);
 
   public form: SystemSettingsPayload = {
@@ -70,7 +72,7 @@ export class AdminSettingsComponent implements OnInit, OnDestroy {
   ngOnInit(): void {
     this.routeSub = this.route.paramMap.subscribe(params => {
       const tab = params.get('tab');
-      if (tab === 'maintenance') {
+      if (tab === 'maintenance' || tab === 'backup') {
         this.activeTab.set(tab);
       } else {
         this.activeTab.set('general');
@@ -117,7 +119,7 @@ export class AdminSettingsComponent implements OnInit, OnDestroy {
     this.showBinanceSecret.set(!this.showBinanceSecret());
   }
 
-  public changeTab(tab: 'general' | 'maintenance'): void {
+  public changeTab(tab: 'general' | 'maintenance' | 'backup'): void {
     this.router.navigate(['/admin/settings', tab]);
   }
 

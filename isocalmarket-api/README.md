@@ -46,3 +46,24 @@ Hệ thống sử dụng cơ chế tự động quét lịch sử nhận USDT qu
     ```bash
     php artisan auth:force-logout-all
     ```
+
+### 4. Sao lưu và khôi phục MySQL
+
+Tab **Sao lưu & Khôi phục** trong trang Cấu hình hệ thống sử dụng trực tiếp
+MySQL client, không thực thi file tải lên qua PHP hoặc `DB::unprepared()`.
+
+Máy chủ API phải có hai executable `mysql` và `mysqldump`. Trên Debian/Ubuntu
+có thể cài package `default-mysql-client`. Nếu executable không nằm trong
+`PATH`, cấu hình đường dẫn tuyệt đối:
+
+```dotenv
+MYSQLDUMP_BINARY=/usr/bin/mysqldump
+MYSQL_BINARY=/usr/bin/mysql
+DATABASE_BACKUP_MAX_UPLOAD_KB=102400
+DATABASE_BACKUP_TIMEOUT=900
+DATABASE_BACKUP_RETENTION_DAYS=30
+```
+
+Bản sao lưu an toàn trước mỗi lần khôi phục được giữ trong
+`storage/app/private/database-backups`. Thư mục này không được public qua web
+server và cần được bảo vệ trong chính sách sao lưu hạ tầng.

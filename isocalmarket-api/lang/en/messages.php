@@ -17,4 +17,12 @@ return [
     'deleted_product' => 'Deleted product',
     'other_products' => 'Other Products',
     'other_products_description' => 'Products that have not been assigned to a specific category.',
+    'invalid_password' => 'The current password is incorrect.',
+    'invalid_otp' => 'The two-factor authentication code is invalid.',
+    'database_restore_success' => 'Database restored successfully. A safety backup was retained on the server.',
+    'database_restore_failed_rolled_back' => 'The SQL import failed. The database was automatically restored to its previous state.',
+    'database_restore_failed_manual_recovery' => 'The SQL import failed and automatic recovery was unsuccessful. Manual recovery is required.',
+    'database_safety_backup_failed' => 'Restore was cancelled because the safety backup could not be created. The current database was not changed.',
+    'database_backup_busy' => 'Another database backup or restore operation is already running.',
+    'database_backup_unavailable' => 'The database backup service is currently unavailable. Check the MySQL client configuration on the server.',
 ];
