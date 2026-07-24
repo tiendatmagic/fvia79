@@ -15,15 +15,15 @@
 
 - **[CẢI TIẾN GIAO DIỆN VÀ THAY THẾ ẢNH BẢN BANNER SOCIAL (REDESIGN SOCIAL PREVIEW BANNER IMAGE)]**:
   - **Mô tả yêu cầu**:
-    - Thiết kế lại ảnh social banner `isocalmarket-web/public/assets/image/social_image.png` với giao diện siêu rộng hiện đại, sang trọng, loại bỏ hoàn toàn logo thương hiệu/chữ logo website theo yêu cầu người dùng, giữ đúng kích thước chuẩn 574x240 px không bị biến dạng/bị dẹt.
+    - Thiết kế lại ảnh social banner `isocalmarket-web/public/assets/image/social_image.png` với giao diện siêu rộng hiện đại, sang trọng, tích hợp tên website **ISOCALMARKET** nổi bật và giữ đúng kích thước chuẩn 574x240 px không bị biến dạng/bị dẹt.
   - **Nội dung thực hiện**:
     - **Frontend (`isocalmarket-web`)**:
-      - Tạo mới banner 3D nghệ thuật siêu rộng cho mạng xã hội với thiết kế UI kho hàng kỹ thuật số, hiệu ứng neon glow xanh neon & tím mượt, hoàn toàn **không chứa logo chữ website**.
+      - Tạo mới banner 3D nghệ thuật siêu rộng cho mạng xã hội với thiết kế UI kho hàng kỹ thuật số, hiệu ứng neon glow xanh cyan & tím mượt, hiển thị tên thương hiệu **ISOCALMARKET** nổi bật ở trung tâm.
       - Áp dụng thuật toán Cắt ảnh thông minh (Aspect-Fill / Cover Crop) chuẩn tỷ lệ **574x240 px**, giữ trọn vẹn đường nét sắc nét, không bị co giãn hay bóp dẹt hình ảnh.
       - Ghi đè file ảnh mới vào `public/assets/image/social_image.png`.
       - Giữ chuẩn thẻ Open Graph `og:image:width` (574px) và `og:image:height` (240px) trong `src/index.html`.
       - Biên dịch Angular Frontend (`npm run build`) thành công **100% SUCCESS, 0 ERRORS**.
-  - **Xác nhận**: Biên dịch thành công, ảnh banner social mới sắc nét 574x240 px, không có logo website và không bị bóp dẹt!
+  - **Xác nhận**: Biên dịch thành công, ảnh banner social mới sắc nét 574x240 px, có tên website ISOCALMARKET sang trọng và không bị bóp dẹt!
 
 - **[BỔ SUNG THẺ SEO META OPEN GRAPH VÀ TẠO ẢNH SOCIAL IMAGE (SEO META TAGS & SOCIAL IMAGE INTEGRATION)]**:
   - **Mô tả yêu cầu**:
