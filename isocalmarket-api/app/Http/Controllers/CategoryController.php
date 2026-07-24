@@ -5,6 +5,8 @@ namespace App\Http\Controllers;
 use App\Domain\Repositories\CategoryRepositoryInterface;
 use App\Http\Requests\CreateCategoryRequest;
 use App\Application\Services\CategoryService;
+use App\Infrastructure\Persistence\Eloquent\CategoryModel;
+use App\Infrastructure\Persistence\Eloquent\ProductModel;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Cache;
 
@@ -165,6 +167,46 @@ class CategoryController extends Controller
             }
 
             return $this->serverError($e, 'Failed to delete category.');
+        }
+    }
+
+    public function deactivateOutOfStockCategories()
+    {
+        try {
+            $categories = CategoryModel::where('is_active', true)->get();
+            $deactivatedCount = 0;
+
+            foreach ($categories as $category) {
+                $products = ProductModel::where('category_id', $category->id)->get();
+
+                $totalStock = 0;
+                foreach ($products as $product) {
+                    if ($product->status !== 'active') {
+                        continue;
+                    }
+                    $supplierStock = max(0, (int) ($product->supplier_stock ?? 0));
+                    $localStock = (int) $product->inventoryItems()->where('status', 'available')->count();
+                    $totalStock += ($supplierStock + $localStock);
+                }
+
+                if ($totalStock <= 0) {
+                    $category->is_active = false;
+                    $category->save();
+                    $deactivatedCount++;
+                }
+            }
+
+            if ($deactivatedCount > 0) {
+                Cache::forget('categories_active_storefront');
+                Cache::forget('products_active_storefront');
+            }
+
+            return response()->json([
+                'message' => "Deactivated {$deactivatedCount} out-of-stock categories.",
+                'count' => $deactivatedCount,
+            ]);
+        } catch (\Throwable $e) {
+            return $this->serverError($e, 'Failed to deactivate out of stock categories.');
         }
     }
 }

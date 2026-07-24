@@ -43,4 +43,4 @@ Artisan::command('suppliers:reconcile-orders', function (OrderService $orderServ
 
 Schedule::command('deposit:check-pending')->everyMinute();
 Schedule::command('suppliers:reconcile-orders')->everyMinute()->withoutOverlapping();
-Schedule::command('suppliers:sync --due')->everyTenMinutes()->withoutOverlapping();
+Schedule::command('suppliers:sync --due')->everyMinute()->withoutOverlapping();

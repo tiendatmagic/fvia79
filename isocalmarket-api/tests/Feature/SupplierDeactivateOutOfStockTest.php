@@ -88,4 +88,85 @@ class SupplierDeactivateOutOfStockTest extends TestCase
         $this->assertSame('active', $productInStock->fresh()->status);
         $this->assertSame('inactive', $productAlreadyInactive->fresh()->status);
     }
+
+    public function test_deactivate_out_of_stock_categories_updates_categories_with_all_zero_stock_products(): void
+    {
+        $admin = UserModel::create([
+            'username' => 'admin_test_cat',
+            'name' => 'Admin Cat Tester',
+            'email' => 'admin_test_cat@example.com',
+            'password' => Hash::make('Password123!@#'),
+            'role' => 'admin',
+            'balance' => 0,
+            'google2fa_enabled' => false,
+        ]);
+
+        $domainUser = UserMapper::toDomain($admin);
+        $authService = app(AuthService::class);
+        $session = $authService->createSession($domainUser, '127.0.0.1', 'TestAgent');
+        $token = $authService->generateAccessToken($domainUser, $session->id);
+
+        $catOutOfStock = \App\Infrastructure\Persistence\Eloquent\CategoryModel::create([
+            'name' => 'Cat Out Of Stock',
+            'slug' => 'cat-out-of-stock',
+            'is_active' => true,
+        ]);
+
+        $catInStock = \App\Infrastructure\Persistence\Eloquent\CategoryModel::create([
+            'name' => 'Cat In Stock',
+            'slug' => 'cat-in-stock',
+            'is_active' => true,
+        ]);
+
+        $supplier = SupplierModel::create([
+            'code' => 'test-supplier-cat',
+            'name' => 'Test Supplier Cat',
+            'base_url' => 'https://test-supplier-cat.com',
+            'catalog_driver' => 'clone_store_v1',
+            'api_key' => 'secret_key',
+            'enabled' => true,
+            'products_enabled' => true,
+        ]);
+
+        ProductModel::create([
+            'supplier_id' => $supplier->id,
+            'category_id' => $catOutOfStock->id,
+            'external_id' => 'p_cat_1',
+            'name' => 'Zero Stock Prod',
+            'slug' => 'zero-stock-prod',
+            'price' => 10,
+            'supplier_price_vnd' => 10000,
+            'supplier_stock' => 0,
+            'status' => 'active',
+        ]);
+
+        ProductModel::create([
+            'supplier_id' => $supplier->id,
+            'category_id' => $catInStock->id,
+            'external_id' => 'p_cat_2',
+            'name' => 'Has Stock Prod',
+            'slug' => 'has-stock-prod',
+            'price' => 10,
+            'supplier_price_vnd' => 10000,
+            'supplier_stock' => 5,
+            'status' => 'active',
+        ]);
+
+        $res1 = $this->withToken($token)
+            ->postJson("/api/v1/categories/deactivate-out-of-stock");
+
+        $res1->assertStatus(200)->assertJson(['count' => 1]);
+        $this->assertFalse((bool) $catOutOfStock->fresh()->is_active);
+        $this->assertTrue((bool) $catInStock->fresh()->is_active);
+
+        $catOutOfStock = $catOutOfStock->fresh();
+        $catOutOfStock->is_active = true;
+        $catOutOfStock->save();
+
+        $res2 = $this->withToken($token)
+            ->postJson("/api/v1/admin/suppliers/{$supplier->code}/deactivate-out-of-stock-categories");
+
+        $res2->assertStatus(200)->assertJson(['count' => 1]);
+        $this->assertFalse((bool) $catOutOfStock->fresh()->is_active);
+    }
 }

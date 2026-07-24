@@ -173,6 +173,50 @@ export class AdminSuppliersComponent implements OnInit {
     });
   }
 
+  public readonly isDeactivateCatModalOpen = signal(false);
+  public readonly isDeactivatingCat = signal(false);
+
+  public openDeactivateCatModal(): void {
+    if (this.isDeactivatingCat()) return;
+    this.isDeactivateCatModalOpen.set(true);
+  }
+
+  public closeDeactivateCatModal(): void {
+    if (this.isDeactivatingCat()) return;
+    this.isDeactivateCatModalOpen.set(false);
+  }
+
+  public confirmDeactivateOutOfStockCategories(): void {
+    const code = this.selectedSupplierCode();
+    if (!code || this.isDeactivatingCat()) return;
+
+    this.isDeactivatingCat.set(true);
+    this.supplierStore.deactivateOutOfStockCategories(code).subscribe({
+      next: (res) => {
+        this.isDeactivatingCat.set(false);
+        this.isDeactivateCatModalOpen.set(false);
+        if (res.supplier) {
+          this.supplierForm = { ...res.supplier, api_key: '' };
+        }
+        if (res.count > 0) {
+          this.toast.showToast(
+            this.lang.translate('supplier.deactivate_cat_success', { count: res.count }),
+            'success',
+          );
+        } else {
+          this.toast.showToast(this.lang.translate('supplier.deactivate_cat_none'), 'warning');
+        }
+      },
+      error: (err) => {
+        this.isDeactivatingCat.set(false);
+        this.toast.showToast(
+          err?.error?.message || this.lang.translate('supplier.deactivate_cat_failed'),
+          'error',
+        );
+      },
+    });
+  }
+
   public selectSupplier(supplier: SupplierSettings): void {
     this.selectedSupplierCode.set(supplier.code);
     this.isCreatingSupplier.set(false);

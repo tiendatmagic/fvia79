@@ -78,6 +78,7 @@ Route::prefix('v1')->group(function () {
                 ->middleware('throttle:10,1');
             Route::post('/admin/suppliers/{code}/sync', ['App\Http\Controllers\SupplierController', 'sync']);
             Route::post('/admin/suppliers/{code}/deactivate-out-of-stock-products', ['App\Http\Controllers\SupplierController', 'deactivateOutOfStockProducts']);
+            Route::post('/admin/suppliers/{code}/deactivate-out-of-stock-categories', ['App\Http\Controllers\SupplierController', 'deactivateOutOfStockCategories']);
             Route::post('/admin/maintenance/clear-views', ['App\Http\Controllers\SystemSettingController', 'clearViews']);
             Route::post('/admin/maintenance/clear-config', ['App\Http\Controllers\SystemSettingController', 'clearConfig']);
             Route::post('/admin/maintenance/clear-routes', ['App\Http\Controllers\SystemSettingController', 'clearRoutes']);
@@ -112,6 +113,7 @@ Route::prefix('v1')->group(function () {
             Route::post('/products/{id}/restore', ['App\Http\Controllers\ProductController', 'restore']);
 
             Route::post('/categories', ['App\Http\Controllers\CategoryController', 'store']);
+            Route::post('/categories/deactivate-out-of-stock', ['App\Http\Controllers\CategoryController', 'deactivateOutOfStockCategories']);
             Route::put('/categories/{id}', ['App\Http\Controllers\CategoryController', 'update']);
             Route::delete('/categories/{id}', ['App\Http\Controllers\CategoryController', 'destroy']);
 

@@ -1,6 +1,7 @@
 import { Component, OnInit, inject, signal, computed } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
+import { ApiService } from '@core/services/api.service';
 import { StateService } from '@core/services/state.service';
 import { ButtonComponent } from '@shared/components/button/button.component';
 import { CardComponent } from '@shared/components/card/card.component';
@@ -52,6 +53,10 @@ export class AdminCategoriesComponent implements OnInit {
   public readonly state = inject(StateService);
   public readonly lang = inject(LanguageService);
   private readonly modalService = inject(ModalService);
+  private readonly api = inject(ApiService);
+
+  public readonly isDeactivateModalOpen = signal(false);
+  public readonly isDeactivating = signal(false);
 
   public readonly columns = computed<TableColumn[]>(() => {
     this.lang.currentLang();
@@ -200,6 +205,42 @@ export class AdminCategoriesComponent implements OnInit {
         this.state.showToast(this.lang.translate('toast.category_status_updated'), 'success');
         this.fetchCategories();
       }
+    });
+  }
+
+  public openDeactivateOutOfStockModal() {
+    if (this.isDeactivating()) return;
+    this.isDeactivateModalOpen.set(true);
+  }
+
+  public closeDeactivateOutOfStockModal() {
+    if (this.isDeactivating()) return;
+    this.isDeactivateModalOpen.set(false);
+  }
+
+  public confirmDeactivateOutOfStock() {
+    if (this.isDeactivating()) return;
+    this.isDeactivating.set(true);
+
+    this.api.post<{ message: string; count: number }>('v1/categories/deactivate-out-of-stock', {}).subscribe({
+      next: (res) => {
+        this.isDeactivating.set(false);
+        this.isDeactivateModalOpen.set(false);
+        if (res.count > 0) {
+          const msg = this.lang.translate('cat.deactivate_success').replace('{{count}}', String(res.count));
+          this.state.showToast(msg, 'success');
+          this.fetchCategories();
+        } else {
+          this.state.showToast(this.lang.translate('cat.deactivate_none'), 'warning');
+        }
+      },
+      error: (err) => {
+        this.isDeactivating.set(false);
+        this.state.showToast(
+          err?.error?.message || this.lang.translate('cat.deactivate_failed'),
+          'error',
+        );
+      },
     });
   }
 }

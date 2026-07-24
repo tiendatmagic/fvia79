@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Application\Services\SupplierCatalogSyncService;
+use App\Infrastructure\Persistence\Eloquent\CategoryModel;
 use App\Infrastructure\Persistence\Eloquent\ProductModel;
 use App\Infrastructure\Persistence\Eloquent\SupplierModel;
 use App\Integrations\Suppliers\CloneStoreConnector;
@@ -263,6 +264,59 @@ class SupplierController extends Controller
 
         return response()->json([
             'message' => "Deactivated {$deactivatedCount} out-of-stock products for supplier {$supplier->name}.",
+            'count' => $deactivatedCount,
+            'supplier' => $this->serialize($supplier->fresh()),
+        ]);
+    }
+
+    public function deactivateOutOfStockCategories(string $code)
+    {
+        $supplier = SupplierModel::where('code', $code)->firstOrFail();
+
+        $categoryIdsFromProducts = ProductModel::where('supplier_id', $supplier->id)
+            ->whereNotNull('category_id')
+            ->pluck('category_id');
+
+        $categoryIdsFromCategories = CategoryModel::where('supplier_id', $supplier->id)
+            ->pluck('id');
+
+        $categoryIds = $categoryIdsFromProducts->concat($categoryIdsFromCategories)->unique();
+
+        $deactivatedCount = 0;
+        foreach ($categoryIds as $catId) {
+            $category = CategoryModel::find($catId);
+            if (! $category || ! $category->is_active) {
+                continue;
+            }
+
+            $products = ProductModel::where('category_id', $catId)
+                ->where('supplier_id', $supplier->id)
+                ->get();
+
+            $totalStock = 0;
+            foreach ($products as $product) {
+                if ($product->status !== 'active') {
+                    continue;
+                }
+                $supplierStock = max(0, (int) ($product->supplier_stock ?? 0));
+                $localStock = (int) $product->inventoryItems()->where('status', 'available')->count();
+                $totalStock += ($supplierStock + $localStock);
+            }
+
+            if ($totalStock <= 0) {
+                $category->is_active = false;
+                $category->save();
+                $deactivatedCount++;
+            }
+        }
+
+        if ($deactivatedCount > 0) {
+            Cache::forget('categories_active_storefront');
+            Cache::forget('products_active_storefront');
+        }
+
+        return response()->json([
+            'message' => "Deactivated {$deactivatedCount} out-of-stock categories for supplier {$supplier->name}.",
             'count' => $deactivatedCount,
             'supplier' => $this->serialize($supplier->fresh()),
         ]);

@@ -13,6 +13,14 @@
 > Khi cần seed dữ liệu cho một seeder cụ thể, chỉ dùng:
 > - `php artisan db:seed --class=TenSeederClass` — chạy đúng 1 seeder.
 
+- **[NÂNG CẤP XỬ LÝ ẨN DANH MỤC 0 SẢN PHẨM HOẶC HẾT HÀNG TỒN KHO (DEACTIVATE EMPTY AND ZERO-STOCK CATEGORIES FIX)]**:
+  - **Mô tả yêu cầu**:
+    - Giải quyết vấn đề khi bấm nút "Ẩn danh mục hết hàng", danh mục chưa có sản phẩm nào (0 sản phẩm) hoặc toàn bộ sản phẩm ngưng hoạt động vẫn xuất hiện tại Cửa hàng (`Storefront`).
+  - **Nội dung thực hiện**:
+    - **Backend (`isocalmarket-api`)**:
+      - Cập nhật `CategoryController.php` và `SupplierController.php`: gỡ bỏ điều kiện giới hạn `$products->count() > 0`. Tính toán tổng tồn kho khả dụng từ các sản phẩm đang ở trạng thái Hoạt động (`status = 'active'`). Nếu một danh mục không chứa bất kỳ sản phẩm khả dụng nào (`totalStock <= 0`), hệ thống sẽ lập tức chuyển trạng thái sang `is_active = false` và xóa cache Storefront.
+  - **Xác nhận**: Unit tests backend `php artisan test` đạt **121/121 PASSED (100%)**!
+
 - **[NÂNG CẤP GIAO DIỆN SELECT CHUẨN VÀ BỔ SUNG CHU KỲ ĐỒNG BỘ 1, 2, 5 PHÚT (SUPPLIER CUSTOM SELECT UI & SYNC INTERVAL OPTIONS)]**:
   - **Mô tả yêu cầu**:
     - Thay thế các ô chọn dạng `<select>` mặc định của trình duyệt tại trang Quản lý Nhà cung cấp (`/admin/suppliers`) sang component giao diện chuẩn `<app-custom-select>`.
@@ -20,6 +28,7 @@
   - **Nội dung thực hiện**:
     - **Backend (`isocalmarket-api`)**:
       - Cập nhật `SupplierController.php`: nới rộng luật kiểm tra validation `sync_interval_minutes` hỗ trợ `Rule::in([1, 2, 5, 10, 30])`.
+      - Cập nhật `routes/console.php`: chuyển Cron schedule của lệnh `suppliers:sync --due` từ `everyTenMinutes()` sang `everyMinute()->withoutOverlapping()`. Nhờ đó, Laravel Scheduler quét mỗi phút 1 lần và kiểm tra tính toán thời gian `last_synced_at` chính xác cho các mốc 1, 2, 5, 10, 30 phút.
     - **Frontend (`isocalmarket-web`)**:
       - Cập nhật `supplier.store.ts`: nới rộng kiểu dữ liệu `sync_interval_minutes: 1 | 2 | 5 | 10 | 30`.
       - Cập nhật `AdminSuppliersComponent` (`admin-suppliers.component.ts` & `.html`):
