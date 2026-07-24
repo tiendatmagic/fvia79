@@ -13,6 +13,21 @@
 > Khi cần seed dữ liệu cho một seeder cụ thể, chỉ dùng:
 > - `php artisan db:seed --class=TenSeederClass` — chạy đúng 1 seeder.
 
+- **[BỔ SUNG 3 LỚP BẢO VỆ TỶ GIÁ VÀ HIỂN THỊ TỶ GIÁ TẠI TRANG NHÀ CUNG CẤP (3-TIER EXCHANGE RATE FALLBACK & SUPPLIER UI RATE DISPLAY)]**:
+  - **Mô tả yêu cầu**:
+    - Triển khai cơ chế dự phòng 3 lớp cho Tỷ giá quy đổi USDT/VND khi đồng bộ sản phẩm từ Nhà cung cấp.
+    - Hiển thị thông tin **Tỷ giá hiện tại** trực quan tại thanh công cụ trang Quản lý Nhà cung cấp (`/admin/suppliers`).
+  - **Nội dung thực hiện**:
+    - **Backend (`isocalmarket-api`)**:
+      - Cập nhật `DepositService.php` (`getUsdtToVndRate`):
+        1. **Ưu tiên 1 (Cache 10 phút & CoinGecko API)**: Thử gọi CoinGecko API, nếu thành công lưu vào Cache 10 phút (`usdt_to_vnd_rate`) và tự động lưu bền vững vào bảng cài đặt hệ thống (`usdt_last_known_rate`).
+        2. **Dự phòng 2 (Lấy tỷ giá cũ thành công gần nhất)**: Nếu CoinGecko API gặp sự cố (lỗi mạng/rate limit/timeout), hệ thống tự động lấy tỷ giá gần nhất đã lưu trước đó (`usdt_last_known_rate`).
+        3. **Dự phòng 3 (Tỷ giá cố định mặc định)**: Nếu là lần đầu hoặc hệ thống bị xóa cache hoàn toàn, tự động dùng tỷ giá cố định `26500.0` VNĐ/USDT.
+    - **Frontend (`isocalmarket-web`)**:
+      - Cập nhật `admin-suppliers.component.html`: Bổ sung Badge hiển thị nổi bật **Tỷ giá hiện tại (VNĐ/USDT)** ở góc trên trang Quản lý Nhà cung cấp.
+      - Bổ sung translation keys đa ngôn ngữ `supplier.current_rate` trong `LanguageService.ts`.
+  - **Xác nhận**: Unit tests backend `php artisan test` đạt **122/122 PASSED (100%)**, biên dịch Angular `npm run build` thành công **100% SUCCESS, 0 ERRORS**!
+
 - **[NÂNG CẤP TỰ ĐỘNG BẬT LẠI CẢ DANH MỤC VÀ SẢN PHẨM KHI CÓ HÀNG TRỞ LẠI TRONG ĐỒNG BỘ DANH MỤC (CATEGORY & PRODUCT AUTO-RECOVERY ON CATALOG SYNC)]**:
   - **Mô tả yêu cầu**: Kiểm tra kỹ lưỡng trường hợp khi Danh mục và Sản phẩm bị ẩn do 0 tồn kho, nếu sau này đồng bộ lại từ Nhà cung cấp mà phát hiện sản phẩm có hàng tồn kho trở lại (tồn kho > 0), hệ thống phải tự động bật lại cả Sản phẩm (`status = 'active'`) và Danh mục chứa sản phẩm đó (`is_active = true`).
   - **Nội dung thực hiện**:

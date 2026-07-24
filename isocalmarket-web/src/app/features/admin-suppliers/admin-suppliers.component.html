@@ -2,7 +2,14 @@
   <app-page-header
     [title]="'supplier.title' | translate"
     [description]="'supplier.page_description' | translate"
-  />
+  >
+    <ng-container actions>
+      <div class="flex items-center gap-2 rounded-xl border border-blue-200/80 bg-blue-50/70 dark:border-blue-900/50 dark:bg-blue-950/40 px-3.5 py-2 text-xs font-extrabold text-blue-700 dark:text-blue-300 shadow-xs">
+        <app-icon name="dollar-sign" class="w-4 h-4 text-blue-500" />
+        <span>{{ 'supplier.current_rate' | translate: { rate: (supplierStore.exchangeRate() | number: '1.0-0') } }}</span>
+      </div>
+    </ng-container>
+  </app-page-header>
 
   <div class="flex flex-wrap items-center gap-2">
     @for (supplier of supplierStore.suppliers(); track supplier.code) {

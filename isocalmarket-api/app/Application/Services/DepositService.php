@@ -61,32 +61,52 @@ class DepositService
             return (float) $fixedRate;
         }
 
-        return Cache::remember('usdt_to_vnd_rate', 600, function () {
-            try {
-                $response = Http::timeout(5)
-                    ->withHeaders(['accept' => 'application/json'])
-                    ->get('https://api.coingecko.com/api/v3/simple/price', [
-                        'ids' => 'tether',
-                        'vs_currencies' => 'vnd',
-                    ]);
+        if (Cache::has('usdt_to_vnd_rate')) {
+            $cachedRate = (float) Cache::get('usdt_to_vnd_rate');
+            if ($cachedRate > 0) {
+                return $cachedRate;
+            }
+        }
 
-                if ($response->successful()) {
-                    $data = $response->json();
-                    if (isset($data['tether']['vnd'])) {
-                        $rate = (float) $data['tether']['vnd'];
+        try {
+            $response = Http::timeout(5)
+                ->withHeaders(['accept' => 'application/json'])
+                ->get('https://api.coingecko.com/api/v3/simple/price', [
+                    'ids' => 'tether',
+                    'vs_currencies' => 'vnd',
+                ]);
+
+            if ($response->successful()) {
+                $data = $response->json();
+                if (isset($data['tether']['vnd'])) {
+                    $rate = (float) $data['tether']['vnd'];
+                    if ($rate > 0) {
                         Log::info("CoinGecko USDT/VND rate fetched successfully: {$rate}");
+                        Cache::put('usdt_to_vnd_rate', $rate, 600);
+                        $this->settingService->setSetting('usdt_last_known_rate', (string) $rate);
 
                         return $rate;
                     }
                 }
-
-                Log::warning('CoinGecko API call succeeded but response format was invalid: '.$response->body());
-            } catch (\Exception $e) {
-                Log::error('Failed to fetch USDT rate from CoinGecko: '.$e->getMessage());
             }
 
-            return 26500.0;
-        });
+            Log::warning('CoinGecko API call failed or invalid response: '.$response->body());
+        } catch (\Exception $e) {
+            Log::error('Failed to fetch USDT rate from CoinGecko: '.$e->getMessage());
+        }
+
+        $lastKnownRate = $this->settingService->getSetting('usdt_last_known_rate', '0');
+        if (! empty($lastKnownRate) && (float) $lastKnownRate > 0) {
+            $rate = (float) $lastKnownRate;
+            Log::info("Using last known saved USDT/VND rate: {$rate}");
+            Cache::put('usdt_to_vnd_rate', $rate, 600);
+
+            return $rate;
+        }
+
+        Log::info('Using default fixed USDT/VND rate: 26500.0');
+
+        return 26500.0;
     }
 
     public function createDeposit(string $userId, float $amountUsdt, string $paymentMethod = 'bep20', ?string $payerBinanceId = null): Deposit
