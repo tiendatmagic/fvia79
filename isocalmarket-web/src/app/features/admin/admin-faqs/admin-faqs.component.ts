@@ -6,6 +6,7 @@ import { IconComponent } from '@shared/components/icon/icon.component';
 import { TableComponent, TableColumn, TableCellDirective } from '@shared/components/table/table.component';
 import { CardComponent } from '@shared/components/card/card.component';
 import { ButtonComponent } from '@shared/components/button/button.component';
+import { BadgeComponent } from '@shared/components/badge/badge.component';
 import { CustomSwitchComponent } from '@shared/components/custom-switch/custom-switch.component';
 import { CustomSelectComponent } from '@shared/components/custom-select/custom-select.component';
 import { TooltipDirective } from '@shared/components/tooltip/tooltip.directive';
@@ -26,6 +27,7 @@ import { LanguageService } from '@core/services/language.service';
     TableCellDirective,
     CardComponent,
     ButtonComponent,
+    BadgeComponent,
     CustomSwitchComponent,
     CustomSelectComponent,
     TooltipDirective,
@@ -123,7 +125,7 @@ export class AdminFaqsComponent implements OnInit {
     { key: 'tag', label: 'Nhãn (Tag)', sortable: false },
     { key: 'sort_order', label: 'Thứ tự', sortable: true, align: 'center' },
     { key: 'is_active', label: 'Trạng thái', sortable: true, align: 'center' },
-    { key: 'actions', label: 'Thao tác', sortable: false, align: 'center' }
+    { key: 'actions', label: 'Thao tác', sortable: false, align: 'right' }
   ];
 
   public faqColumns: TableColumn[] = [
@@ -131,7 +133,7 @@ export class AdminFaqsComponent implements OnInit {
     { key: 'question_en', label: 'Câu hỏi (EN)', sortable: false },
     { key: 'sort_order', label: 'Thứ tự', sortable: true, align: 'center' },
     { key: 'is_active', label: 'Trạng thái', sortable: true, align: 'center' },
-    { key: 'actions', label: 'Thao tác', sortable: false, align: 'center' }
+    { key: 'actions', label: 'Thao tác', sortable: false, align: 'right' }
   ];
 
   public ngOnInit(): void {

@@ -11,7 +11,7 @@
           app-button
           variant="primary"
           (click)="openCreatePolicyModal()"
-          class="flex items-center gap-2 py-2.5 px-4 rounded-xl bg-gradient-to-r from-[var(--color-primary)] to-[var(--color-secondary)] text-white font-extrabold shadow-md shadow-[var(--color-primary)]/15 active:scale-95 transition-all text-sm cursor-pointer"
+          class="flex items-center gap-2 py-2.5 px-4 rounded-xl bg-gradient-to-r from-[var(--color-primary)] to-[var(--color-secondary)] text-white font-extrabold shadow-md shadow-[var(--color-primary)]/15 active:scale-95 transition-all text-xs sm:text-sm cursor-pointer"
           [appTooltip]="'faq.add_policy' | translate"
         >
           <app-icon name="plus" class="w-4 h-4 shrink-0" />
@@ -23,7 +23,7 @@
           app-button
           variant="primary"
           (click)="openCreateFaqModal()"
-          class="flex items-center gap-2 py-2.5 px-4 rounded-xl bg-gradient-to-r from-[var(--color-primary)] to-[var(--color-secondary)] text-white font-extrabold shadow-md shadow-[var(--color-primary)]/15 active:scale-95 transition-all text-sm cursor-pointer"
+          class="flex items-center gap-2 py-2.5 px-4 rounded-xl bg-gradient-to-r from-[var(--color-primary)] to-[var(--color-secondary)] text-white font-extrabold shadow-md shadow-[var(--color-primary)]/15 active:scale-95 transition-all text-xs sm:text-sm cursor-pointer"
           [appTooltip]="'faq.add_faq' | translate"
         >
           <app-icon name="plus" class="w-4 h-4 shrink-0" />
@@ -152,32 +152,39 @@
 
       <!-- Active Status Switch -->
       <ng-template appTableCell="is_active" let-row="row">
-        <div class="flex items-center justify-center" [appTooltip]="row.is_active ? 'Đang hiển thị ở Cửa hàng' : 'Đã ẩn khỏi Cửa hàng'">
+        <div class="flex items-center justify-center gap-2">
+          <app-badge
+            [variant]="row.is_active ? 'success' : 'danger'"
+            size="md"
+            rounded="md"
+          >
+            {{ (row.is_active ? 'cat.status_active' : 'cat.status_inactive') | translate }}
+          </app-badge>
           <app-custom-switch
-            [checked]="row.is_active"
-            (checkedChange)="togglePolicyStatus(row)"
+            [ngModel]="row.is_active"
+            (ngModelChange)="togglePolicyStatus(row)"
           />
         </div>
       </ng-template>
 
       <!-- Actions -->
       <ng-template appTableCell="actions" let-row="row">
-        <div class="flex items-center justify-center gap-1.5">
+        <div class="flex items-center justify-end gap-2 whitespace-nowrap">
           <button
-            type="button"
             (click)="openEditPolicyModal(row)"
-            class="p-1.5 rounded-lg text-slate-500 hover:text-primary hover:bg-primary/10 transition-colors cursor-pointer"
-            [appTooltip]="'Chỉnh sửa quy định'"
+            class="text-xs font-bold px-3 py-1.5 rounded-lg border border-[var(--color-primary)]/20 hover:bg-[var(--color-primary)]/10 text-[var(--color-primary)] bg-[var(--color-primary)]/5 dark:bg-[var(--color-primary)]/10 dark:border-[var(--color-primary)]/30 dark:hover:bg-[var(--color-primary)]/20 hover:scale-105 active:scale-95 transition-all cursor-pointer flex items-center gap-1 shrink-0"
+            [appTooltip]="'action.edit' | translate"
           >
-            <app-icon name="edit" class="w-4 h-4" />
+            <app-icon name="edit" class="w-3.5 h-3.5" />
+            <span>{{ 'action.edit' | translate }}</span>
           </button>
           <button
-            type="button"
             (click)="confirmDelete('policy', row.id, row.content_vi)"
-            class="p-1.5 rounded-lg text-slate-500 hover:text-rose-600 hover:bg-rose-50 dark:hover:bg-rose-950/40 transition-colors cursor-pointer"
-            [appTooltip]="'Xóa quy định này'"
+            class="text-xs font-bold px-3 py-1.5 rounded-lg border border-rose-500/20 dark:border-rose-500/30 hover:bg-rose-100 dark:hover:bg-rose-950/40 text-rose-600 dark:text-rose-400 bg-rose-50 dark:bg-rose-950/20 hover:scale-105 active:scale-95 transition-all cursor-pointer flex items-center gap-1 shrink-0"
+            [appTooltip]="'action.delete' | translate"
           >
-            <app-icon name="trash" class="w-4 h-4" />
+            <app-icon name="trash" class="w-3.5 h-3.5" />
+            <span>{{ 'action.delete' | translate }}</span>
           </button>
         </div>
       </ng-template>
@@ -239,32 +246,39 @@
 
       <!-- Active Status Switch -->
       <ng-template appTableCell="is_active" let-row="row">
-        <div class="flex items-center justify-center" [appTooltip]="row.is_active ? 'Đang hiển thị ở Cửa hàng' : 'Đã ẩn khỏi Cửa hàng'">
+        <div class="flex items-center justify-center gap-2">
+          <app-badge
+            [variant]="row.is_active ? 'success' : 'danger'"
+            size="md"
+            rounded="md"
+          >
+            {{ (row.is_active ? 'cat.status_active' : 'cat.status_inactive') | translate }}
+          </app-badge>
           <app-custom-switch
-            [checked]="row.is_active"
-            (checkedChange)="toggleFaqStatus(row)"
+            [ngModel]="row.is_active"
+            (ngModelChange)="toggleFaqStatus(row)"
           />
         </div>
       </ng-template>
 
       <!-- Actions -->
       <ng-template appTableCell="actions" let-row="row">
-        <div class="flex items-center justify-center gap-1.5">
+        <div class="flex items-center justify-end gap-2 whitespace-nowrap">
           <button
-            type="button"
             (click)="openEditFaqModal(row)"
-            class="p-1.5 rounded-lg text-slate-500 hover:text-primary hover:bg-primary/10 transition-colors cursor-pointer"
-            [appTooltip]="'Chỉnh sửa câu hỏi'"
+            class="text-xs font-bold px-3 py-1.5 rounded-lg border border-[var(--color-primary)]/20 hover:bg-[var(--color-primary)]/10 text-[var(--color-primary)] bg-[var(--color-primary)]/5 dark:bg-[var(--color-primary)]/10 dark:border-[var(--color-primary)]/30 dark:hover:bg-[var(--color-primary)]/20 hover:scale-105 active:scale-95 transition-all cursor-pointer flex items-center gap-1 shrink-0"
+            [appTooltip]="'action.edit' | translate"
           >
-            <app-icon name="edit" class="w-4 h-4" />
+            <app-icon name="edit" class="w-3.5 h-3.5" />
+            <span>{{ 'action.edit' | translate }}</span>
           </button>
           <button
-            type="button"
             (click)="confirmDelete('faq', row.id, row.question_vi)"
-            class="p-1.5 rounded-lg text-slate-500 hover:text-rose-600 hover:bg-rose-50 dark:hover:bg-rose-950/40 transition-colors cursor-pointer"
-            [appTooltip]="'Xóa câu hỏi này'"
+            class="text-xs font-bold px-3 py-1.5 rounded-lg border border-rose-500/20 dark:border-rose-500/30 hover:bg-rose-100 dark:hover:bg-rose-950/40 text-rose-600 dark:text-rose-400 bg-rose-50 dark:bg-rose-950/20 hover:scale-105 active:scale-95 transition-all cursor-pointer flex items-center gap-1 shrink-0"
+            [appTooltip]="'action.delete' | translate"
           >
-            <app-icon name="trash" class="w-4 h-4" />
+            <app-icon name="trash" class="w-3.5 h-3.5" />
+            <span>{{ 'action.delete' | translate }}</span>
           </button>
         </div>
       </ng-template>
@@ -272,8 +286,15 @@
   </div>
 
   <!-- POLICY EDIT / CREATE MODAL -->
-  <div *ngIf="isPolicyModalOpen()" class="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-900/60 backdrop-blur-xs">
-    <div class="bg-white dark:bg-slate-900 rounded-2xl border border-slate-200 dark:border-slate-800 w-full max-w-2xl overflow-hidden shadow-2xl animate-in fade-in zoom-in duration-200">
+  <div
+    *ngIf="isPolicyModalOpen()"
+    (click)="isPolicyModalOpen.set(false)"
+    class="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/50 cursor-pointer"
+  >
+    <div
+      (click)="$event.stopPropagation()"
+      class="bg-white dark:bg-slate-900 rounded-2xl border border-slate-200 dark:border-slate-800 w-full max-w-2xl overflow-hidden shadow-2xl animate-in fade-in zoom-in duration-200 cursor-default"
+    >
       <!-- Modal Header -->
       <div class="px-6 py-4 border-b border-slate-100 dark:border-slate-800 flex items-center justify-between bg-slate-50/50 dark:bg-slate-950/30">
         <h3 class="text-base font-extrabold text-slate-800 dark:text-slate-100 flex items-center gap-2">
@@ -448,28 +469,36 @@
       <!-- Modal Footer -->
       <div class="px-6 py-4 border-t border-slate-100 dark:border-slate-800 flex items-center justify-end gap-3 bg-slate-50/50 dark:bg-slate-950/30">
         <button
-          type="button"
+          app-button
+          [variant]="'cancel'"
           (click)="isPolicyModalOpen.set(false)"
-          class="px-4 py-2.5 text-xs sm:text-sm font-bold text-slate-600 dark:text-slate-400 hover:bg-slate-100 dark:hover:bg-slate-800 rounded-xl transition-all cursor-pointer"
+          class="py-2.5 px-4 rounded-xl text-xs font-bold"
         >
-          Hủy bỏ
+          {{ 'action.cancel' | translate }}
         </button>
         <button
           app-button
-          variant="primary"
+          [variant]="'primary'"
           (click)="savePolicy()"
           [loading]="isSubmitting()"
-          class="px-5 py-2.5 text-xs sm:text-sm font-extrabold text-white bg-primary hover:bg-primary-hover rounded-xl shadow-md transition-all cursor-pointer flex items-center gap-2"
+          class="py-2.5 px-4 rounded-xl bg-gradient-to-r from-[var(--color-primary)] to-[var(--color-secondary)] text-white text-xs font-extrabold active:scale-95 shadow-sm shadow-[var(--color-primary)]/10 cursor-pointer"
         >
-          <span>Lưu thông tin</span>
+          {{ 'action.save' | translate }}
         </button>
       </div>
     </div>
   </div>
 
   <!-- FAQ EDIT / CREATE MODAL -->
-  <div *ngIf="isFaqModalOpen()" class="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-900/60 backdrop-blur-xs">
-    <div class="bg-white dark:bg-slate-900 rounded-2xl border border-slate-200 dark:border-slate-800 w-full max-w-2xl overflow-hidden shadow-2xl animate-in fade-in zoom-in duration-200">
+  <div
+    *ngIf="isFaqModalOpen()"
+    (click)="isFaqModalOpen.set(false)"
+    class="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/50 cursor-pointer"
+  >
+    <div
+      (click)="$event.stopPropagation()"
+      class="bg-white dark:bg-slate-900 rounded-2xl border border-slate-200 dark:border-slate-800 w-full max-w-2xl overflow-hidden shadow-2xl animate-in fade-in zoom-in duration-200 cursor-default"
+    >
       <!-- Modal Header -->
       <div class="px-6 py-4 border-b border-slate-100 dark:border-slate-800 flex items-center justify-between bg-slate-50/50 dark:bg-slate-950/30">
         <h3 class="text-base font-extrabold text-slate-800 dark:text-slate-100 flex items-center gap-2">
@@ -572,28 +601,36 @@
       <!-- Modal Footer -->
       <div class="px-6 py-4 border-t border-slate-100 dark:border-slate-800 flex items-center justify-end gap-3 bg-slate-50/50 dark:bg-slate-950/30">
         <button
-          type="button"
+          app-button
+          [variant]="'cancel'"
           (click)="isFaqModalOpen.set(false)"
-          class="px-4 py-2.5 text-xs sm:text-sm font-bold text-slate-600 dark:text-slate-400 hover:bg-slate-100 dark:hover:bg-slate-800 rounded-xl transition-all cursor-pointer"
+          class="py-2.5 px-4 rounded-xl text-xs font-bold"
         >
-          Hủy bỏ
+          {{ 'action.cancel' | translate }}
         </button>
         <button
           app-button
-          variant="primary"
+          [variant]="'primary'"
           (click)="saveFaq()"
           [loading]="isSubmitting()"
-          class="px-5 py-2.5 text-xs sm:text-sm font-extrabold text-white bg-primary hover:bg-primary-hover rounded-xl shadow-md transition-all cursor-pointer flex items-center gap-2"
+          class="py-2.5 px-4 rounded-xl bg-gradient-to-r from-[var(--color-primary)] to-[var(--color-secondary)] text-white text-xs font-extrabold active:scale-95 shadow-sm shadow-[var(--color-primary)]/10 cursor-pointer"
         >
-          <span>Lưu thông tin</span>
+          {{ 'action.save' | translate }}
         </button>
       </div>
     </div>
   </div>
 
   <!-- DELETE CONFIRMATION MODAL -->
-  <div *ngIf="isDeleteModalOpen()" class="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-900/60 backdrop-blur-xs">
-    <div class="bg-white dark:bg-slate-900 rounded-2xl border border-slate-200 dark:border-slate-800 w-full max-w-md p-6 space-y-4 shadow-2xl animate-in fade-in zoom-in duration-200">
+  <div
+    *ngIf="isDeleteModalOpen()"
+    (click)="isDeleteModalOpen.set(false)"
+    class="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/50 cursor-pointer"
+  >
+    <div
+      (click)="$event.stopPropagation()"
+      class="bg-white dark:bg-slate-900 rounded-2xl border border-slate-200 dark:border-slate-800 w-full max-w-md p-6 space-y-4 shadow-2xl animate-in fade-in zoom-in duration-200 cursor-default"
+    >
       <div class="w-12 h-12 rounded-2xl bg-rose-100 dark:bg-rose-950/80 text-rose-600 dark:text-rose-400 flex items-center justify-center mx-auto">
         <app-icon name="trash" class="w-6 h-6" />
       </div>
@@ -610,18 +647,19 @@
       </div>
       <div class="flex items-center justify-center gap-3 pt-2">
         <button
-          type="button"
+          app-button
+          [variant]="'cancel'"
           (click)="isDeleteModalOpen.set(false)"
-          class="flex-1 py-2.5 px-4 text-xs sm:text-sm font-bold text-slate-600 dark:text-slate-400 hover:bg-slate-100 dark:hover:bg-slate-800 rounded-xl transition-all cursor-pointer"
+          class="flex-1 py-2.5 px-4 text-xs font-bold"
         >
-          Hủy bỏ
+          {{ 'action.cancel' | translate }}
         </button>
         <button
           app-button
-          variant="danger"
+          [variant]="'danger'"
           (click)="executeDelete()"
           [loading]="isSubmitting()"
-          class="flex-1 py-2.5 px-4 text-xs sm:text-sm font-extrabold text-white bg-rose-600 hover:bg-rose-700 rounded-xl shadow-md transition-all cursor-pointer flex items-center justify-center gap-2"
+          class="flex-1 py-2.5 px-4 text-xs font-extrabold text-white bg-rose-600 hover:bg-rose-700 rounded-xl shadow-md transition-all cursor-pointer flex items-center justify-center"
         >
           <span>Xóa vĩnh viễn</span>
         </button>

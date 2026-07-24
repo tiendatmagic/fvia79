@@ -13,6 +13,22 @@
 > Khi cần seed dữ liệu cho một seeder cụ thể, chỉ dùng:
 > - `php artisan db:seed --class=TenSeederClass` — chạy đúng 1 seeder.
 
+- **[ĐỒNG BỘ UI MODAL BACKDROP, CLICK OUTSIDE VÀ ACTION BUTTONS BẢNG ADMIN FAQ (ADMIN FAQ MODAL BACKDROP, CLICK OUTSIDE & TABLE BUTTON SYNCHRONIZATION)]**:
+  - **Mô tả yêu cầu**:
+    - Đồng bộ tất cả modal trang Admin FAQ (`/admin/faqs`) cho phép đóng modal khi click ra ngoài backdrop (`click outside`), chuyển background backdrop sang đen mượt `bg-black/50` và **gỡ bỏ hoàn toàn hiệu ứng blur** (`backdrop-blur`).
+    - Đồng bộ thiết kế nút bấm modal footer (`app-button` với variant `cancel`, `primary`, `danger` và gradient màu nền chuẩn).
+    - Đồng bộ các nút thao tác Sửa/Xóa trong bảng (`actions`) và badge trạng thái (`status`) chuẩn 100% với các bảng Admin khác (Danh mục, Sản phẩm, Mã giảm giá,...).
+  - **Nội dung thực hiện**:
+    - **Frontend (`isocalmarket-web`)**:
+      - Cập nhật `admin-faqs.component.html`:
+        - Lớp bọc ngoài backdrop Modal: Thay `bg-slate-900/60 backdrop-blur-xs` thành `bg-black/50 cursor-pointer` và gắn sự kiện click đóng modal `(click)="isModalOpen.set(false)"`.
+        - Khối nội dung Modal container: Gắn sự kiện `(click)="$event.stopPropagation()"` để chặn hiện tượng click nhầm trong modal gây đóng ngoài ý muốn.
+        - Chuyển đổi nút Sửa & Xóa trong cột `actions` của cả 2 bảng sang dạng thẻ `<button>` viền mỏng kèm icon `edit` / `trash` chuẩn thiết kế hệ thống.
+        - Thêm `<app-badge>` hiển thị `Hiện cửa hàng` / `Ẩn cửa hàng` trước công tắc `<app-custom-switch>`.
+        - Đồng bộ nút bấm Hủy bỏ & Lưu thông tin / Xóa vĩnh viễn ở footer modal.
+      - Cập nhật `admin-faqs.component.ts`: Import `BadgeComponent` từ `@shared/components/badge/badge.component`.
+  - **Xác nhận**: Biên dịch Angular `npm run build` thành công **100% SUCCESS, 0 ERRORS**, backend tests `php artisan test` đạt **115/115 test cases (100% PASSED)**!
+
 - **[THAY THẾ ICON SVG CHÍNH SÁCH BẢO HÀNH SANG KHIÊN BẢO VỆ SHIELD-CHECK (WARRANTY POLICY SVG ICON REPLACEMENT)]**:
   - **Mô tả yêu cầu**: Thay thế icon hỏi chấm `(?)` (`name="faq"`) hiện tại của mục menu "Chính sách bảo hành" (`/faq`) sang biểu tượng icon khiên bảo vệ `shield-check` trực quan, phù hợp và chuyên nghiệp.
   - **Nội dung thực hiện**:
