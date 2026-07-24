@@ -14,6 +14,7 @@ class CategoryMapper
             $model->name,
             $model->slug,
             $model->description,
+            (bool) ($model->is_active ?? true),
             $model->created_at,
             $model->products_count ?? null
         );
@@ -29,6 +30,7 @@ class CategoryMapper
         $model->name = $entity->getName();
         $model->slug = $entity->getSlug();
         $model->description = $entity->getDescription();
+        $model->is_active = $entity->getIsActive();
 
         return $model;
     }

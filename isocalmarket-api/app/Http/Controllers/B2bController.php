@@ -71,6 +71,9 @@ class B2bController extends Controller
             }
 
             $category = $product->getCategoryId() ? CategoryModel::find($product->getCategoryId()) : null;
+            if ($category && ! $category->is_active) {
+                return response()->json(['message' => 'Product not found.'], 404);
+            }
 
             return response()->json([
                 'id' => $product->getId(),

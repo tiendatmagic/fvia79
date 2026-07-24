@@ -18,6 +18,8 @@ import { BadgeComponent } from '@shared/components/badge/badge.component';
 import { TableComponent, TableCellDirective, TableColumn } from '@shared/components/table/table.component';
 import { TranslatePipe } from '@shared/pipes/translate.pipe';
 
+import { CustomSwitchComponent } from '@shared/components/custom-switch/custom-switch.component';
+
 @Component({
   selector: 'app-admin-categories',
   standalone: true,
@@ -34,6 +36,7 @@ import { TranslatePipe } from '@shared/pipes/translate.pipe';
     CustomDateTimeRangeComponent,
     PaginationComponent,
     BadgeComponent,
+    CustomSwitchComponent,
     TableComponent,
     TableCellDirective,
     TranslatePipe
@@ -58,6 +61,7 @@ export class AdminCategoriesComponent implements OnInit {
       { key: 'slug', label: this.lang.translate('cat.slug'), sortable: true },
       { key: 'description', label: this.lang.translate('common.description'), sortable: true },
       { key: 'products_count', label: this.lang.translate('category.product_count'), sortable: true, align: 'center' },
+      { key: 'status', label: this.lang.translate('cat.status'), sortable: true, align: 'center' },
       { key: 'created_at', label: this.lang.translate('common.created_at'), sortable: true },
       { key: 'actions', label: this.lang.translate('common.actions'), sortable: false, align: 'right' }
     ];
@@ -180,6 +184,21 @@ export class AdminCategoriesComponent implements OnInit {
             this.fetchCategories();
           }
         });
+      }
+    });
+  }
+
+  public toggleStatus(category: any) {
+    const data = {
+      name: category.name,
+      slug: category.slug,
+      description: category.description,
+      is_active: !category.is_active
+    };
+    this.state.productStore.updateCategory(category.id, data).subscribe((res) => {
+      if (res !== null) {
+        this.state.showToast(this.lang.translate('toast.category_status_updated'), 'success');
+        this.fetchCategories();
       }
     });
   }

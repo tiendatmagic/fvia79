@@ -144,7 +144,13 @@
             [showImage]="false"
           />
         } @else {
-          @if (viewMode() === 'card') {
+          @if (!group.products || group.products.length === 0) {
+            <div class="py-8 px-4 text-center rounded-xl bg-slate-50/50 dark:bg-slate-900/30 border border-dashed border-slate-200/60 dark:border-slate-800/60">
+              <p class="text-xs sm:text-sm font-semibold text-slate-400 dark:text-slate-500">
+                {{ 'storefront.no_products_in_category' | translate }}
+              </p>
+            </div>
+          } @else if (viewMode() === 'card') {
             <div class="grid grid-cols-1 sm:grid-cols-[repeat(auto-fill,minmax(265px,1fr))] gap-6">
               <div
                 app-card

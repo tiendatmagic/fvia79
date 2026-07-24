@@ -117,6 +117,22 @@
         </app-badge>
       </ng-template>
 
+      <ng-template appTableCell="status" let-row="row">
+        <div class="flex items-center justify-center gap-2">
+          <app-badge
+            [variant]="row.is_active ? 'success' : 'danger'"
+            size="md"
+            rounded="md"
+          >
+            {{ (row.is_active ? 'cat.status_active' : 'cat.status_inactive') | translate }}
+          </app-badge>
+          <app-custom-switch
+            [ngModel]="row.is_active"
+            (ngModelChange)="toggleStatus(row)"
+          />
+        </div>
+      </ng-template>
+
       <ng-template appTableCell="created_at" let-row="row">
         <span
           [appTooltip]="

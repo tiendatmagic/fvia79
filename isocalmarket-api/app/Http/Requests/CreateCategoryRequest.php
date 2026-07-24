@@ -17,6 +17,7 @@ class CreateCategoryRequest extends FormRequest
             'name' => 'required|string|max:255',
             'slug' => 'nullable|string|max:255|unique:categories,slug,' . $this->route('id'),
             'description' => 'nullable|string',
+            'is_active' => 'nullable|boolean',
         ];
     }
 }

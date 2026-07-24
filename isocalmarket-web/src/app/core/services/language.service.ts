@@ -499,7 +499,12 @@ export const TRANSLATIONS: Record<SupportedLanguage, Record<string, string>> = {
     'cat.name': 'Category Name',
     'cat.slug': 'Slug Path',
     'cat.status': 'Status',
+    'cat.is_active': 'Display on Storefront',
+    'cat.status_active': 'Shown',
+    'cat.status_inactive': 'Hidden',
     'cat.search_placeholder': 'Search category name...',
+    'storefront.no_products_in_category': 'No products available in this category.',
+    'toast.category_status_updated': 'Category display status updated successfully!',
 
     'prod.title': 'Digital Product Catalog',
     'prod.description': 'Manage digital account resource catalog distributed on system.',
@@ -2996,6 +3001,11 @@ export const TRANSLATIONS: Record<SupportedLanguage, Record<string, string>> = {
     'admin.coupon_generate_random': 'Tạo mã giảm giá ngẫu nhiên',
     'toast.coupon_code_generated': 'Đã tạo mã ngẫu nhiên thành công!',
     'toast.coupon_generate_failed': 'Tạo mã ngẫu nhiên thất bại!',
+    'cat.is_active': 'Hiển thị ở cửa hàng',
+    'cat.status_active': 'Hiện cửa hàng',
+    'cat.status_inactive': 'Ẩn cửa hàng',
+    'storefront.no_products_in_category': 'Chưa có sản phẩm nào trong danh mục này.',
+    'toast.category_status_updated': 'Đã cập nhật trạng thái hiển thị danh mục!',
   },
 };
 

@@ -9,6 +9,8 @@ import { TranslatePipe } from '@shared/pipes/translate.pipe';
 import { LanguageService } from '@core/services/language.service';
 import { finalize } from 'rxjs/operators';
 
+import { CustomCheckboxComponent } from '@shared/components/custom-checkbox/custom-checkbox.component';
+
 @Component({
   selector: 'app-category-form-modal',
   standalone: true,
@@ -16,6 +18,7 @@ import { finalize } from 'rxjs/operators';
     CommonModule,
     FormsModule,
     CustomInputComponent,
+    CustomCheckboxComponent,
     ButtonComponent,
     TranslatePipe
   ],
@@ -37,6 +40,7 @@ export class CategoryFormModalComponent implements OnInit {
   public name = '';
   public slug = '';
   public description = '';
+  public isActive = true;
   public readonly isSubmitting = signal(false);
 
   ngOnInit() {
@@ -46,6 +50,7 @@ export class CategoryFormModalComponent implements OnInit {
       this.name = this.modalData.name;
       this.slug = this.modalData.slug;
       this.description = this.modalData.description || '';
+      this.isActive = this.modalData.is_active ?? true;
     }
   }
 
@@ -63,7 +68,8 @@ export class CategoryFormModalComponent implements OnInit {
     const data = {
       name: this.name,
       slug: this.slug || undefined,
-      description: this.description || null
+      description: this.description || null,
+      is_active: this.isActive
     };
 
     this.isSubmitting.set(true);

@@ -16,16 +16,16 @@ class CategoryService
         $this->categoryRepository = $categoryRepository;
     }
 
-    public function createCategory(string $name, ?string $slug, ?string $description): Category
+    public function createCategory(string $name, ?string $slug, ?string $description, bool $isActive = true): Category
     {
         $baseSlug = $slug ? Str::slug($slug) : Str::slug($name);
         $finalSlug = $this->generateUniqueSlug($baseSlug);
 
-        $category = new Category(null, $name, $finalSlug, $description);
+        $category = new Category(null, $name, $finalSlug, $description, $isActive);
         return $this->categoryRepository->save($category);
     }
 
-    public function updateCategory(string $id, string $name, ?string $slug, ?string $description): Category
+    public function updateCategory(string $id, string $name, ?string $slug, ?string $description, bool $isActive = true): Category
     {
         $category = $this->categoryRepository->findById($id);
         if (!$category) {
@@ -35,7 +35,7 @@ class CategoryService
         $baseSlug = $slug ? Str::slug($slug) : Str::slug($name);
         $finalSlug = $this->generateUniqueSlug($baseSlug, $id);
 
-        $updatedCategory = new Category($id, $name, $finalSlug, $description);
+        $updatedCategory = new Category($id, $name, $finalSlug, $description, $isActive);
         return $this->categoryRepository->save($updatedCategory);
     }
 

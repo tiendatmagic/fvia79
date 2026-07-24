@@ -39,6 +39,7 @@ class CategoryController extends Controller
                         'name' => $cat->getName(),
                         'slug' => $cat->getSlug(),
                         'description' => $cat->getDescription(),
+                        'is_active' => $cat->getIsActive(),
                         'products_count' => $cat->getProductsCount() ?? 0,
                         'created_at' => $cat->getCreatedAt() ? $cat->getCreatedAt()->format('Y-m-d H:i:s') : null
                     ];
@@ -64,6 +65,7 @@ class CategoryController extends Controller
                             'name' => $cat->getName(),
                             'slug' => $cat->getSlug(),
                             'description' => $cat->getDescription(),
+                            'is_active' => $cat->getIsActive(),
                             'products_count' => $cat->getProductsCount() ?? 0,
                             'created_at' => $cat->getCreatedAt() ? $cat->getCreatedAt()->format('Y-m-d H:i:s') : null
                         ];
@@ -79,6 +81,7 @@ class CategoryController extends Controller
                     'name' => $cat->getName(),
                     'slug' => $cat->getSlug(),
                     'description' => $cat->getDescription(),
+                    'is_active' => $cat->getIsActive(),
                     'products_count' => $cat->getProductsCount() ?? 0,
                     'created_at' => $cat->getCreatedAt() ? $cat->getCreatedAt()->format('Y-m-d H:i:s') : null
                 ];
@@ -93,10 +96,12 @@ class CategoryController extends Controller
     public function store(CreateCategoryRequest $request)
     {
         try {
+            $isActive = $request->has('is_active') ? $request->boolean('is_active') : true;
             $category = $this->categoryService->createCategory(
                 $request->name,
                 $request->slug,
-                $request->description
+                $request->description,
+                $isActive
             );
 
             Cache::forget('categories_active_storefront');
@@ -107,6 +112,7 @@ class CategoryController extends Controller
                     'name' => $category->getName(),
                     'slug' => $category->getSlug(),
                     'description' => $category->getDescription(),
+                    'is_active' => $category->getIsActive(),
                     'created_at' => $category->getCreatedAt() ? $category->getCreatedAt()->format('Y-m-d H:i:s') : null
                 ]
             ], 201);
@@ -118,11 +124,13 @@ class CategoryController extends Controller
     public function update(CreateCategoryRequest $request, $id)
     {
         try {
+            $isActive = $request->has('is_active') ? $request->boolean('is_active') : true;
             $category = $this->categoryService->updateCategory(
                 $id,
                 $request->name,
                 $request->slug,
-                $request->description
+                $request->description,
+                $isActive
             );
 
             Cache::forget('categories_active_storefront');
@@ -133,6 +141,7 @@ class CategoryController extends Controller
                     'name' => $category->getName(),
                     'slug' => $category->getSlug(),
                     'description' => $category->getDescription(),
+                    'is_active' => $category->getIsActive(),
                     'created_at' => $category->getCreatedAt() ? $category->getCreatedAt()->format('Y-m-d H:i:s') : null
                 ]
             ]);

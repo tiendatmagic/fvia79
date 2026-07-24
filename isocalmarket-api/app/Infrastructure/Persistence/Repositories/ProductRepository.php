@@ -85,6 +85,15 @@ class ProductRepository implements ProductRepositoryInterface
             $query->where('status', 'active');
         }
 
+        if ($status === 'active') {
+            $query->where(function ($q) {
+                $q->whereNull('category_id')
+                  ->orWhereHas('category', function ($catQ) {
+                      $catQ->where('is_active', true);
+                  });
+            });
+        }
+
         if ($categoryId) {
             if ($categoryId === 'null' || $categoryId === 'none' || $categoryId === 'other') {
                 $query->whereNull('category_id');
@@ -171,9 +180,17 @@ class ProductRepository implements ProductRepositoryInterface
 
     public function findGroupedActiveProducts(int $limit, ?string $search = null): array
     {
-        $categories = CategoryModel::orderBy('name', 'asc')->get();
+        $categories = CategoryModel::where('is_active', true)->orderBy('name', 'asc')->get();
 
-        $productQuery = ProductModel::query()->where('status', 'active');
+        $productQuery = ProductModel::query()
+            ->where('status', 'active')
+            ->where(function ($q) {
+                $q->whereNull('category_id')
+                  ->orWhereHas('category', function ($catQ) {
+                      $catQ->where('is_active', true);
+                  });
+            });
+
         if ($search) {
             $productQuery->where(function ($q) use ($search) {
                 $this->applyAccentInsensitiveSearch($q, 'name', $search);
@@ -185,10 +202,6 @@ class ProductRepository implements ProductRepositoryInterface
             ->groupBy('category_id')
             ->pluck('aggregate', 'category_id');
 
-        if ($countsByCategory->isEmpty()) {
-            return [];
-        }
-
         $allActiveProducts = (clone $productQuery)
             ->with(['supplier:id,code,name,enabled,products_enabled', 'activeBatches:id,product_id,initial_count,sold_count,status,created_at'])
             ->orderBy('created_at', 'desc')
@@ -199,22 +212,20 @@ class ProductRepository implements ProductRepositoryInterface
 
         foreach ($categories as $cat) {
             $catId = (string) $cat->id;
-            if (isset($productsByCat[$catId])) {
-                $catProductsModels = $productsByCat[$catId]->take($limit);
-                $products = [];
-                foreach ($catProductsModels as $model) {
-                    $availableCount = $this->getAvailableCount($model);
-                    $products[] = ProductMapper::toDomain($model, $availableCount);
-                }
-
-                $grouped[] = [
-                    'id' => $cat->id,
-                    'name' => $cat->name,
-                    'description' => $cat->description,
-                    'products' => $products,
-                    'total' => (int) ($countsByCategory[$catId] ?? count($catProductsModels)),
-                ];
+            $catProductsModels = isset($productsByCat[$catId]) ? $productsByCat[$catId]->take($limit) : collect();
+            $products = [];
+            foreach ($catProductsModels as $model) {
+                $availableCount = $this->getAvailableCount($model);
+                $products[] = ProductMapper::toDomain($model, $availableCount);
             }
+
+            $grouped[] = [
+                'id' => $cat->id,
+                'name' => $cat->name,
+                'description' => $cat->description,
+                'products' => $products,
+                'total' => (int) ($countsByCategory[$catId] ?? 0),
+            ];
         }
 
         if (isset($productsByCat['other'])) {

@@ -8,6 +8,7 @@ class Category
     private string $name;
     private string $slug;
     private ?string $description;
+    private bool $isActive;
     private ?\DateTimeInterface $createdAt;
     private ?int $productsCount;
 
@@ -16,6 +17,7 @@ class Category
         string $name,
         string $slug,
         ?string $description = null,
+        bool $isActive = true,
         ?\DateTimeInterface $createdAt = null,
         ?int $productsCount = null
     ) {
@@ -23,6 +25,7 @@ class Category
         $this->name = $name;
         $this->slug = $slug;
         $this->description = $description;
+        $this->isActive = $isActive;
         $this->createdAt = $createdAt;
         $this->productsCount = $productsCount;
     }
@@ -45,6 +48,11 @@ class Category
     public function getDescription(): ?string
     {
         return $this->description;
+    }
+
+    public function getIsActive(): bool
+    {
+        return $this->isActive;
     }
 
     public function getCreatedAt(): ?\DateTimeInterface

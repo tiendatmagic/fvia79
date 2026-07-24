@@ -13,6 +13,27 @@
 > Khi cần seed dữ liệu cho một seeder cụ thể, chỉ dùng:
 > - `php artisan db:seed --class=TenSeederClass` — chạy đúng 1 seeder.
 
+- **[TRIỂN KHẢI BẬT/TẮT HIỂN THỊ DANH MỤC VÀ HỖ TRỢ DANH MỤC 0 SẢN PHẨM (CATEGORY DISPLAY STATUS & EMPTY CATEGORY SUPPORT)]**:
+  - **Mô tả yêu cầu**:
+    - Bổ sung thuộc tính Bật/Tắt hiển thị danh mục (`is_active`) khi Admin tạo hoặc sửa danh mục.
+    - Cửa hàng (`Storefront`): Danh mục ở trạng thái **Bật** (`is_active = true`) luôn hiển thị ở Cửa hàng, **kể cả khi chưa có sản phẩm nào** (0 sản phẩm). Danh mục ở trạng thái **Tắt** (`is_active = false`) sẽ bị ẩn hoàn toàn khỏi Cửa hàng.
+    - API B2B: Các sản phẩm thuộc danh mục bị Tắt sẽ bị ẩn khỏi danh sách sản phẩm API B2B.
+  - **Nội dung thực hiện**:
+    - **Backend (`isocalmarket-api`)**:
+      - Tạo migration `2026_07_24_130000_add_is_active_to_categories_table.php` bổ sung cột `is_active` (`boolean`, default `true`).
+      - Cập nhật `CategoryModel.php` (`is_active` in `$fillable` & `$casts`), `Category.php` (Entity `$isActive`), `CategoryMapper.php` và `CreateCategoryRequest.php`.
+      - Cập nhật `CategoryService.php` và `CategoryController.php` xử lý `is_active`, trả `is_active` trong JSON response, tự động xóa cache `categories_active_storefront`.
+      - Cập nhật `ProductRepository.php`:
+        - Hàm `findGroupedActiveProducts`: Chỉ lấy danh mục `is_active = true`, tạo khối danh mục ngay cả khi chưa có sản phẩm nào (`products = []`, `total = 0`).
+        - Hàm `findAllActivePaginated`: Ẩn các sản phẩm thuộc danh mục bị tắt (`is_active = false`).
+      - Cập nhật `B2bController.php`: Kiểm tra và trả về `404 Product not found` cho sản phẩm thuộc danh mục bị tắt.
+    - **Frontend (`isocalmarket-web`)**:
+      - Cập nhật `LanguageService.ts`: Bổ sung từ điển Tiếng Việt & Tiếng Anh (`cat.is_active`, `cat.status_active`, `cat.status_inactive`, `storefront.no_products_in_category`, `toast.category_status_updated`).
+      - Cập nhật `CategoryFormModalComponent`: Bổ sung ô checkbox `<app-custom-checkbox [(ngModel)]="isActive">` ("Hiển thị ở cửa hàng").
+      - Cập nhật `AdminCategoriesComponent`: Bổ sung cột **Trạng thái** trong bảng quản lý danh mục với Badge trạng thái (`Hiện cửa hàng` / `Ẩn cửa hàng`) và công tắc chuyển trạng thái nhanh `<app-custom-switch>`.
+      - Cập nhật `StorefrontComponent`: Thêm thông báo "Chưa có sản phẩm nào trong danh mục này." khi danh mục rỗng.
+  - **Xác nhận**: Backend unit tests `php artisan test` đạt **111/111 test cases (100% PASSED)**, biên dịch Angular `npm run build` thành công **100% SUCCESS, 0 ERRORS**!
+
 - **[SỬA LỖI UI SỐ DƯ TÀI KHOẢN NHÀ CUNG CẤP (SUPPLIER BALANCE UI LAYOUT FIX)]**:
   - **Mô tả yêu cầu**: Sửa lỗi giao diện hiển thị thẻ "Số dư tài khoản nhà cung cấp" tại trang Quản lý Nhà cung cấp (`/admin/suppliers`), trong đó thẻ bị áp nhầm class `w-8 h-8` dẫn đến toàn bộ chữ bị nén ép xuống dòng theo từng ký tự/từ đơn gây đè chèn văn bản.
   - **Nội dung thực hiện**:
