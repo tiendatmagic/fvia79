@@ -13,6 +13,16 @@
 > Khi cần seed dữ liệu cho một seeder cụ thể, chỉ dùng:
 > - `php artisan db:seed --class=TenSeederClass` — chạy đúng 1 seeder.
 
+- **[SỬA LỖI RESPONSIVE VÀ TRÀN CHỮ TRONG THẺ SỐ DƯ TÀI KHOẢN NHÀ CUNG CẤP (SUPPLIER BALANCE CARD RESPONSIVE FIX)]**:
+  - **Mô tả yêu cầu**: Sửa lỗi văn bản (đặc biệt là Email và Tên tài khoản dài không có dấu cách) bị tràn ra ngoài viền thẻ "Số dư tài khoản nhà cung cấp" tại trang Quản lý Nhà cung cấp (`/admin/suppliers`).
+  - **Nội dung thực hiện**:
+    - **Frontend (`isocalmarket-web`)**:
+      - Cập nhật `admin-suppliers.component.html`:
+        - Bổ sung `w-full min-w-0` cho container thẻ bọc ngoài `<div>` và khối grid con `col-span-2`.
+        - Bổ sung `min-w-0 break-words` cho thẻ `<p>` và `break-all` cho thẻ `<strong>` hiển thị Email, Username, ID, Level, Discount và Số dư.
+        - Đảm bảo các chuỗi ký tự dài (như `zteamno1mmo@gmail.com`) tự động xuống dòng mượt mà khi vượt quá chiều rộng thẻ.
+  - **Xác nhận**: Biên dịch Angular `npm run build` thành công **100% SUCCESS, 0 ERRORS**!
+
 - **[SẮP XẾP LẠI THỨ TỰ MENU ĐIỀU HƯỚNG NGƯỜI DÙNG VÀ ADMIN (RE-ORDER NAVIGATION MENU ITEMS)]**:
   - **Mô tả yêu cầu**:
     - Sắp xếp lại trình tự các mục menu cho cả Người dùng (User) và Quản trị viên (Admin) theo đúng thứ tự logic nghiệp vụ hệ thống.
