@@ -2,6 +2,24 @@
 
 namespace App\Providers;
 
+use App\Domain\Repositories\CategoryRepositoryInterface;
+use App\Domain\Repositories\CouponRepositoryInterface;
+use App\Domain\Repositories\DepositRepositoryInterface;
+use App\Domain\Repositories\InventoryBatchRepositoryInterface;
+use App\Domain\Repositories\InventoryItemRepositoryInterface;
+use App\Domain\Repositories\OrderRepositoryInterface;
+use App\Domain\Repositories\ProductRepositoryInterface;
+use App\Domain\Repositories\SystemSettingRepositoryInterface;
+use App\Domain\Repositories\UserRepositoryInterface;
+use App\Infrastructure\Persistence\Repositories\CategoryRepository;
+use App\Infrastructure\Persistence\Repositories\CouponRepository;
+use App\Infrastructure\Persistence\Repositories\DepositRepository;
+use App\Infrastructure\Persistence\Repositories\InventoryBatchRepository;
+use App\Infrastructure\Persistence\Repositories\InventoryItemRepository;
+use App\Infrastructure\Persistence\Repositories\OrderRepository;
+use App\Infrastructure\Persistence\Repositories\ProductRepository;
+use App\Infrastructure\Persistence\Repositories\SystemSettingRepository;
+use App\Infrastructure\Persistence\Repositories\UserRepository;
 use Illuminate\Cache\RateLimiting\Limit;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\RateLimiter;
@@ -12,54 +30,70 @@ class AppServiceProvider extends ServiceProvider
     public function register(): void
     {
         $this->app->bind(
-            \App\Domain\Repositories\UserRepositoryInterface::class,
-            \App\Infrastructure\Persistence\Repositories\UserRepository::class
+            UserRepositoryInterface::class,
+            UserRepository::class
         );
         $this->app->bind(
-            \App\Domain\Repositories\ProductRepositoryInterface::class,
-            \App\Infrastructure\Persistence\Repositories\ProductRepository::class
+            ProductRepositoryInterface::class,
+            ProductRepository::class
         );
         $this->app->bind(
-            \App\Domain\Repositories\CategoryRepositoryInterface::class,
-            \App\Infrastructure\Persistence\Repositories\CategoryRepository::class
+            CategoryRepositoryInterface::class,
+            CategoryRepository::class
         );
         $this->app->bind(
-            \App\Domain\Repositories\InventoryBatchRepositoryInterface::class,
-            \App\Infrastructure\Persistence\Repositories\InventoryBatchRepository::class
+            InventoryBatchRepositoryInterface::class,
+            InventoryBatchRepository::class
         );
         $this->app->bind(
-            \App\Domain\Repositories\OrderRepositoryInterface::class,
-            \App\Infrastructure\Persistence\Repositories\OrderRepository::class
+            OrderRepositoryInterface::class,
+            OrderRepository::class
         );
         $this->app->bind(
-            \App\Domain\Repositories\DepositRepositoryInterface::class,
-            \App\Infrastructure\Persistence\Repositories\DepositRepository::class
+            DepositRepositoryInterface::class,
+            DepositRepository::class
         );
         $this->app->bind(
-            \App\Domain\Repositories\SystemSettingRepositoryInterface::class,
-            \App\Infrastructure\Persistence\Repositories\SystemSettingRepository::class
+            SystemSettingRepositoryInterface::class,
+            SystemSettingRepository::class
         );
         $this->app->bind(
-            \App\Domain\Repositories\CouponRepositoryInterface::class,
-            \App\Infrastructure\Persistence\Repositories\CouponRepository::class
+            CouponRepositoryInterface::class,
+            CouponRepository::class
         );
         $this->app->bind(
-            \App\Domain\Repositories\InventoryItemRepositoryInterface::class,
-            \App\Infrastructure\Persistence\Repositories\InventoryItemRepository::class
+            InventoryItemRepositoryInterface::class,
+            InventoryItemRepository::class
         );
     }
+
     public function boot(): void
     {
         RateLimiter::for('api', function (Request $request) {
             return Limit::perMinute(40)->by($request->ip());
         });
         RateLimiter::for('auth', function (Request $request) {
-            $key = $request->ip() . '|' . strtolower((string) $request->input('email', ''));
+            $key = $request->ip().'|'.strtolower((string) $request->input('email', ''));
+
             return Limit::perMinute(10)->by($key)->response(function () {
                 return response()->json([
-                    'message' => 'Too many login attempts. Please try again in 1 minute.'
+                    'message' => 'Too many login attempts. Please try again in 1 minute.',
                 ], 429);
             });
+        });
+        RateLimiter::for('database-backup-export', function (Request $request) {
+            return Limit::perMinute(10)
+                ->by((string) ($request->user()?->id ?? $request->ip()))
+                ->response(fn () => response()->json([
+                    'message' => __('messages.database_backup_rate_limited'),
+                ], 429));
+        });
+        RateLimiter::for('database-backup-restore', function (Request $request) {
+            return Limit::perMinutes(10, 3)
+                ->by((string) ($request->user()?->id ?? $request->ip()))
+                ->response(fn () => response()->json([
+                    'message' => __('messages.database_restore_rate_limited'),
+                ], 429));
         });
     }
 }

@@ -25,4 +25,6 @@ return [
     'database_safety_backup_failed' => 'Restore was cancelled because the safety backup could not be created. The current database was not changed.',
     'database_backup_busy' => 'Another database backup or restore operation is already running.',
     'database_backup_unavailable' => 'The database backup service is currently unavailable. Check the MySQL client configuration on the server.',
+    'database_backup_rate_limited' => 'Too many database export attempts. Please wait one minute and try again.',
+    'database_restore_rate_limited' => 'Too many database restore attempts. Please wait ten minutes and try again.',
 ];

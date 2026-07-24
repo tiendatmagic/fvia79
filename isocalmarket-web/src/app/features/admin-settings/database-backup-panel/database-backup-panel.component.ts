@@ -129,6 +129,9 @@ export class DatabaseBackupPanelComponent implements OnInit {
   }
 
   private async showExportError(error: any): Promise<void> {
+    // The global interceptor owns rate-limit notifications.
+    if (error?.status === 429) return;
+
     let message = this.lang.translate('database_backup.export_failed');
 
     if (error?.error instanceof Blob) {

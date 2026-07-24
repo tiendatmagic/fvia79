@@ -25,4 +25,6 @@ return [
     'database_safety_backup_failed' => 'Đã hủy khôi phục vì không thể tạo bản sao lưu an toàn. Cơ sở dữ liệu hiện tại chưa bị thay đổi.',
     'database_backup_busy' => 'Một tác vụ sao lưu hoặc khôi phục cơ sở dữ liệu khác đang chạy.',
     'database_backup_unavailable' => 'Dịch vụ sao lưu cơ sở dữ liệu hiện không khả dụng. Vui lòng kiểm tra MySQL client trên máy chủ.',
+    'database_backup_rate_limited' => 'Bạn đã xuất cơ sở dữ liệu quá nhiều lần. Vui lòng chờ một phút rồi thử lại.',
+    'database_restore_rate_limited' => 'Bạn đã khôi phục cơ sở dữ liệu quá nhiều lần. Vui lòng chờ mười phút rồi thử lại.',
 ];
