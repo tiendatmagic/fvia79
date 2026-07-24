@@ -46,6 +46,7 @@ class SupplierCatalogSyncService
 
         try {
             $catalog = $this->connectorFactory->make($supplier)->fetchCatalog($supplier);
+            $this->warmTranslationCache($supplier, $catalog);
             $result = DB::transaction(fn () => $this->persistCatalog($supplier, $catalog));
             $this->markSucceeded($supplier);
             $this->clearStorefrontCache();
@@ -109,6 +110,67 @@ class SupplierCatalogSyncService
         return ['categories' => $categoryCount, 'products' => $productCount];
     }
 
+    private function warmTranslationCache(SupplierModel $supplier, array $catalog): void
+    {
+        if (! $supplier->auto_translate) {
+            return;
+        }
+
+        $existingCategories = CategoryModel::where('supplier_id', $supplier->id)
+            ->get(['external_id', 'name_vi', 'attributes'])
+            ->keyBy(fn (CategoryModel $category) => (string) $category->external_id);
+        $existingProducts = ProductModel::where('supplier_id', $supplier->id)
+            ->get(['external_id', 'name_vi', 'description_vi', 'attributes'])
+            ->keyBy(fn (ProductModel $product) => (string) $product->external_id);
+        $texts = [];
+
+        foreach ($catalog as $categoryData) {
+            $categoryId = (string) ($categoryData['id'] ?? '');
+            if ($categoryId !== '') {
+                $rawName = (string) ($categoryData['name'] ?? "Category {$categoryId}");
+                $existing = $existingCategories->get($categoryId);
+                $savedRawName = data_get($existing?->attributes, 'raw_name');
+
+                if (! $existing || $savedRawName !== $rawName || empty($existing->name_vi)) {
+                    $texts[] = $rawName;
+                }
+            }
+
+            foreach (($categoryData['children'] ?? []) as $productData) {
+                $productId = (string) ($productData['id'] ?? '');
+                if ($productId === '') {
+                    continue;
+                }
+
+                $stock = max(0, (int) ($productData['quantity'] ?? 0));
+                if (! $supplier->import_out_of_stock && $stock === 0) {
+                    continue;
+                }
+
+                $rawName = (string) ($productData['name'] ?? "Product {$productId}");
+                $rawDescription = $this->normalizeDescription($productData['data']['description'] ?? null);
+                $existing = $existingProducts->get($productId);
+                $savedRawName = data_get($existing?->attributes, 'raw_name');
+                $savedRawDescription = data_get($existing?->attributes, 'raw_desc');
+
+                if (! $existing || $savedRawName !== $rawName || empty($existing->name_vi)) {
+                    $texts[] = $rawName;
+                }
+                if (
+                    $rawDescription !== null
+                    && $rawDescription !== ''
+                    && (! $existing
+                        || $savedRawDescription !== $rawDescription
+                        || empty($existing->description_vi))
+                ) {
+                    $texts[] = $rawDescription;
+                }
+            }
+        }
+
+        $this->translator->translateMany($texts, 'vi');
+    }
+
     private function upsertCategory(SupplierModel $supplier, array $data): CategoryModel
     {
         $externalId = (string) ($data['id'] ?? '');
@@ -168,7 +230,7 @@ class SupplierCatalogSyncService
         $priceVnd = (float) ($data['price'] ?? 0);
 
         $rawName = (string) ($data['name'] ?? "Product {$externalId}");
-        $rawDesc = $data['data']['description'] ?? null;
+        $rawDesc = $this->normalizeDescription($data['data']['description'] ?? null);
 
         $attributes = $product->attributes ?? [];
         $savedRawName = $attributes['raw_name'] ?? null;
@@ -262,6 +324,15 @@ class SupplierCatalogSyncService
     private function sourceSlug(SupplierModel $supplier, string $externalId, string $name): string
     {
         return Str::limit(Str::slug("{$supplier->code}-{$externalId}-{$name}"), 240, '');
+    }
+
+    private function normalizeDescription(mixed $description): ?string
+    {
+        if ($description === null) {
+            return null;
+        }
+
+        return is_scalar($description) ? trim((string) $description) : null;
     }
 
     private function deactivateMissingProducts(SupplierModel $supplier, array $externalIds): void

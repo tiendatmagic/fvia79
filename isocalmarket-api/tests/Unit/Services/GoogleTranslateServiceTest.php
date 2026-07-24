@@ -11,7 +11,7 @@ class GoogleTranslateServiceTest extends TestCase
 {
     public function test_translate_returns_null_or_empty_when_text_is_empty(): void
     {
-        $service = new GoogleTranslateService();
+        $service = new GoogleTranslateService;
         $this->assertNull($service->translate(null));
         $this->assertSame('', $service->translate('   '));
     }
@@ -27,7 +27,7 @@ class GoogleTranslateServiceTest extends TestCase
             ], 200),
         ]);
 
-        $service = new GoogleTranslateService();
+        $service = new GoogleTranslateService;
         $result = $service->translate('Unlimited Storage Account', 'vi');
 
         $this->assertEquals('Tài khoản lưu trữ không giới hạn', $result);
@@ -43,12 +43,42 @@ class GoogleTranslateServiceTest extends TestCase
     {
         Cache::flush();
         Http::fake([
-            'translate.googleapis.com/*' => Http::response(null, 500),
+            'translate.googleapis.com/*' => Http::sequence()
+                ->push(null, 500)
+                ->push([
+                    [
+                        ['Translated sample', 'Sample product text', null, null, 1],
+                    ],
+                ], 200),
         ]);
 
-        $service = new GoogleTranslateService();
+        $service = new GoogleTranslateService;
         $result = $service->translate('Sample product text', 'vi');
 
         $this->assertEquals('Sample product text', $result);
+
+        // A transient failure must not poison the persistent cache for 30 days.
+        $retried = (new GoogleTranslateService)->translate('Sample product text', 'vi');
+        $this->assertEquals('Translated sample', $retried);
+    }
+
+    public function test_translate_many_deduplicates_requests_and_reuses_persistent_cache(): void
+    {
+        Cache::flush();
+        Http::fake([
+            'translate.googleapis.com/*' => Http::response([
+                [
+                    ['Translated', 'Original', null, null, 1],
+                ],
+            ], 200),
+        ]);
+
+        $service = new GoogleTranslateService;
+        $service->translateMany(['First text', 'Second text', 'First text'], 'vi');
+
+        Http::assertSentCount(2);
+
+        (new GoogleTranslateService)->translateMany(['First text', 'Second text'], 'vi');
+        Http::assertSentCount(2);
     }
 }

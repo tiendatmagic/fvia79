@@ -2,6 +2,7 @@
 
 namespace Tests\Feature;
 
+use App\Application\Services\GoogleTranslateService;
 use App\Application\Services\SupplierCatalogSyncService;
 use App\Infrastructure\Persistence\Eloquent\CategoryModel;
 use App\Infrastructure\Persistence\Eloquent\ProductModel;
@@ -497,10 +498,11 @@ class SupplierCatalogSyncTest extends TestCase
     {
         $this->fakeSupplierAndRateApis();
         Cache::flush();
+        app(GoogleTranslateService::class)->clearMemoryCache();
         Http::fake([
             'https://api.coingecko.com/*' => Http::response(['tether' => ['vnd' => 26000]], 200),
-            'https://sub.ads7979.com/api/categories' => Http::response($this->catalog(), 200),
-            'translate.googleapis.com/*' => Http::response([
+            'https://ads7979.com/api/v2/categories' => Http::response($this->catalog(), 200),
+            'https://translate.googleapis.com/*' => Http::response([
                 [
                     ['Danh mục BM50$', 'BM50$', null, null, 1],
                 ],
@@ -508,12 +510,31 @@ class SupplierCatalogSyncTest extends TestCase
         ]);
 
         $supplier = SupplierModel::where('code', 'ads7979')->firstOrFail();
+        ProductModel::where('supplier_id', $supplier->id)->forceDelete();
+        CategoryModel::where('supplier_id', $supplier->id)->forceDelete();
+
         $supplier->update([
             'auto_translate' => true,
             'target_language' => 'vi',
         ]);
 
-        app(SupplierCatalogSyncService::class)->sync($supplier);
+        $service = app(SupplierCatalogSyncService::class);
+        $service->sync($supplier);
+
+        $translationRequestsAfterFirstSync = Http::recorded(
+            fn ($request) => str_contains($request->url(), 'translate.googleapis.com')
+        )->count();
+        $this->assertSame(3, $translationRequestsAfterFirstSync);
+
+        $service->sync($supplier->fresh());
+        $translationRequestsAfterSecondSync = Http::recorded(
+            fn ($request) => str_contains($request->url(), 'translate.googleapis.com')
+        )->count();
+        $this->assertSame(
+            $translationRequestsAfterFirstSync,
+            $translationRequestsAfterSecondSync,
+            'An unchanged catalog must not trigger any new translation request.'
+        );
 
         $category = CategoryModel::where('supplier_id', $supplier->id)->firstOrFail();
         $this->assertEquals('BM50$', $category->name);

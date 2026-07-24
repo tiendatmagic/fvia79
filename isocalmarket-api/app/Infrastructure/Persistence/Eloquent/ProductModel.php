@@ -22,6 +22,12 @@ class ProductModel extends Model
 
     protected $table = 'products';
 
+    protected $casts = [
+        'attributes' => 'array',
+        'supplier_out_of_stock_hidden' => 'boolean',
+        'supplier_synced_at' => 'datetime',
+    ];
+
     protected static function booted()
     {
         static::saving(function ($model) {

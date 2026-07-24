@@ -2,6 +2,7 @@
 
 namespace App\Providers;
 
+use App\Application\Services\GoogleTranslateService;
 use App\Domain\Repositories\CategoryRepositoryInterface;
 use App\Domain\Repositories\CouponRepositoryInterface;
 use App\Domain\Repositories\DepositRepositoryInterface;
@@ -65,6 +66,7 @@ class AppServiceProvider extends ServiceProvider
             InventoryItemRepositoryInterface::class,
             InventoryItemRepository::class
         );
+        $this->app->singleton(GoogleTranslateService::class);
     }
 
     public function boot(): void

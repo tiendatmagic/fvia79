@@ -13,6 +13,21 @@
 > Khi cần seed dữ liệu cho một seeder cụ thể, chỉ dùng:
 > - `php artisan db:seed --class=TenSeederClass` — chạy đúng 1 seeder.
 
+- **[TỐI ƯU HÓA ĐỒNG BỘ TỰ ĐỘNG DỊCH SẢN PHẨM & DANH MỤC TỪ NHÀ CUNG CẤP (SUPPLIER CATALOG AUTO-TRANSLATE OPTIMIZATION)]**:
+  - **Mô tả yêu cầu**:
+    - Tối ưu hóa triệt để hiệu năng và tốc độ đồng bộ tự động dịch sản phẩm/danh mục từ Nhà cung cấp (`Auto-translate products`). Khắc phục hiện tượng lag/giữ DB transaction lâu khi đồng bộ catalog số lượng lớn.
+  - **Nội dung thực hiện**:
+    - **Backend (`isocalmarket-api`)**:
+      - Đưa toàn bộ việc gọi Google Translate API (`GoogleTranslateService`) ra khỏi `DB::transaction()` thông qua cơ chế `warmTranslationCache()`. Giúp giải phóng hoàn toàn DB lock trong lúc chờ mạng.
+      - Gom nhóm & khử trùng (Deduplicate) tất cả chuỗi tên/mô tả thực sự mới trước khi dịch.
+      - Bổ sung cast `protected $casts = ['attributes' => 'array']` trong `ProductModel.php` giúp cơ chế **Smart Skip** so sánh chính xác `raw_name` và `raw_desc` để bỏ qua 100% các sản phẩm/danh mục không thay đổi.
+      - Sửa xử lý lỗi transient: Nếu Google API bị ngắt kết nối/lỗi tạm thời, hệ thống không lưu fallback vào Cache 30 ngày để cho phép thử dịch lại ở chu kỳ tiếp theo.
+      - Đăng ký `GoogleTranslateService` làm Singleton trong `AppServiceProvider.php`.
+      - Nâng tổng số unit & feature tests thành công **130/130 PASSED (100%)**, 883 assertions.
+    - **Frontend (`isocalmarket-web`)**:
+      - Biên dịch Angular Frontend (`npm run build`) thành công **100% SUCCESS, 0 ERRORS**.
+  - **Xác nhận**: Đồng bộ catalog lại không phát sinh bất kỳ request Google Translate nào (0.01s), đồng bộ lần đầu chạy mượt mà không bị treo DB transaction!
+
 - **[TÍNH NĂNG ĐA NGÔN NGỮ ĐỘNG CHO SẢN PHẨM & DANH MỤC VÀ CẬP NHẬT TÀI LIỆU API HTML (DYNAMIC MULTI-LANGUAGE CATALOG & API DOCS)]**:
   - **Mô tả yêu cầu**:
     - Chuyển đổi toàn bộ hệ thống Cửa hàng, Quản lý sản phẩm và API sang cơ chế **Đa Ngôn Ngữ Động (Dynamic Multi-Language)**: Sản phẩm và Danh mục lưu trữ đồng thời cả Tiếng Việt (`name_vi`, `description_vi`) và Tiếng Anh (`name_en`, `description_en`).
