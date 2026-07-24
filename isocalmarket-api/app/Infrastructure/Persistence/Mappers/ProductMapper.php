@@ -26,7 +26,11 @@ class ProductMapper
             $model->external_id,
             $model->supplier_price_vnd,
             $model->supplier_stock,
-            $model->supplier_synced_at
+            $model->supplier_synced_at,
+            $model->name_vi,
+            $model->name_en,
+            $model->description_vi,
+            $model->description_en
         );
     }
 
@@ -39,8 +43,12 @@ class ProductMapper
 
         $model->category_id = $entity->getCategoryId();
         $model->name = $entity->getName();
+        $model->name_vi = $entity->getNameVi();
+        $model->name_en = $entity->getNameEn();
         $model->slug = $entity->getSlug();
         $model->description = $entity->getDescription();
+        $model->description_vi = $entity->getDescriptionVi();
+        $model->description_en = $entity->getDescriptionEn();
         $model->price = $entity->getPrice();
         $model->status = $entity->getStatus();
         $model->attributes = $entity->getAttributes();

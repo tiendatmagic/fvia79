@@ -15,8 +15,12 @@ class CreateProductRequest extends FormRequest
     {
         return [
             'name' => 'required|string|max:255',
+            'name_vi' => 'nullable|string|max:255',
+            'name_en' => 'nullable|string|max:255',
             'slug' => 'nullable|string|max:255|unique:products,slug,' . $this->route('id'),
             'description' => 'nullable|string',
+            'description_vi' => 'nullable|string',
+            'description_en' => 'nullable|string',
             'price' => 'required|numeric|min:0',
             'category_id' => 'nullable|uuid|exists:categories,id',
             'status' => 'required|in:active,inactive',

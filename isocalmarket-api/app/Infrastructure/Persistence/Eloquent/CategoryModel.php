@@ -9,7 +9,7 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Support\Str;
 
-#[Fillable(['supplier_id', 'external_id', 'name', 'slug', 'description', 'is_active'])]
+#[Fillable(['supplier_id', 'external_id', 'name', 'name_vi', 'name_en', 'slug', 'description', 'description_vi', 'description_en', 'is_active'])]
 class CategoryModel extends Model
 {
     use HasUuids, NormalizeTextTrait;
@@ -27,6 +27,26 @@ class CategoryModel extends Model
                 $model->normalized_name = self::normalizeText($model->name);
             }
         });
+    }
+
+    public function getLocalizedName(string $lang = 'en'): string
+    {
+        $lang = strtolower(trim($lang));
+        if ($lang === 'vi') {
+            return $this->name_vi ?: ($this->name_en ?: ($this->name ?: ''));
+        }
+
+        return $this->name_en ?: ($this->name_vi ?: ($this->name ?: ''));
+    }
+
+    public function getLocalizedDescription(string $lang = 'en'): ?string
+    {
+        $lang = strtolower(trim($lang));
+        if ($lang === 'vi') {
+            return $this->description_vi ?? ($this->description_en ?? $this->description);
+        }
+
+        return $this->description_en ?? ($this->description_vi ?? $this->description);
     }
 
     public function newUniqueId(): string

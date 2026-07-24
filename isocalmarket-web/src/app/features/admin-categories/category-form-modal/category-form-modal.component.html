@@ -1,13 +1,25 @@
 <div class="space-y-6 pb-2">
-  <div class="form-field">
-    <label class="text-xs font-black text-slate-400 uppercase tracking-wider block mb-2">{{ 'cat.name' | translate }} <span class="text-red-500">*</span></label>
-    <app-custom-input
-      [placeholder]="'cat.name' | translate"
-      [(ngModel)]="name"
-      name="name"
-      type="text"
-      required
-    />
+  <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+    <div class="form-field">
+      <label class="text-xs font-black text-slate-400 uppercase tracking-wider block mb-2">Tên Danh Mục (EN - Mặc định) <span class="text-red-500">*</span></label>
+      <app-custom-input
+        placeholder="e.g. Digital Accounts (Default EN)"
+        [(ngModel)]="nameEn"
+        name="nameEn"
+        type="text"
+        required
+      />
+    </div>
+
+    <div class="form-field">
+      <label class="text-xs font-black text-slate-400 uppercase tracking-wider block mb-2">Tên Danh Mục (VI - Tiếng Việt)</label>
+      <app-custom-input
+        placeholder="Ví dụ: Tài khoản Kỹ thuật số (Để trống tự dùng EN)"
+        [(ngModel)]="nameVi"
+        name="nameVi"
+        type="text"
+      />
+    </div>
   </div>
 
   <div class="form-field">
@@ -20,15 +32,28 @@
     />
   </div>
 
-  <div class="form-field">
-    <label class="text-xs font-black text-slate-400 uppercase tracking-wider block mb-2">{{ 'modal.product_description' | translate }}</label>
-    <app-custom-input
-      [placeholder]="'modal.product_description' | translate"
-      [(ngModel)]="description"
-      name="description"
-      type="textarea"
-      customClass="min-h-[100px]"
-    />
+  <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+    <div class="form-field">
+      <label class="text-xs font-black text-slate-400 uppercase tracking-wider block mb-2">Mô tả (EN - Mặc định)</label>
+      <app-custom-input
+        placeholder="Category description in English..."
+        [(ngModel)]="descriptionEn"
+        name="descriptionEn"
+        type="textarea"
+        customClass="min-h-[100px]"
+      />
+    </div>
+
+    <div class="form-field">
+      <label class="text-xs font-black text-slate-400 uppercase tracking-wider block mb-2">Mô tả (VI - Tiếng Việt)</label>
+      <app-custom-input
+        placeholder="Mô tả danh mục bằng Tiếng Việt (Để trống tự dùng EN)..."
+        [(ngModel)]="descriptionVi"
+        name="descriptionVi"
+        type="textarea"
+        customClass="min-h-[100px]"
+      />
+    </div>
   </div>
 
   <div class="pt-1">

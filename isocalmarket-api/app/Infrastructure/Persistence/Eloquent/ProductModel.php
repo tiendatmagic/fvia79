@@ -11,7 +11,7 @@ use Illuminate\Database\Eloquent\SoftDeletes;
 use Illuminate\Support\Str;
 
 #[Fillable([
-    'supplier_id', 'external_id', 'category_id', 'name', 'slug', 'description',
+    'supplier_id', 'external_id', 'category_id', 'name', 'name_vi', 'name_en', 'slug', 'description', 'description_vi', 'description_en',
     'price', 'supplier_price_vnd', 'supplier_stock', 'supplier_out_of_stock_hidden',
     'supplier_synced_at', 'status',
     'supplier_previous_status', 'attributes',
@@ -29,6 +29,26 @@ class ProductModel extends Model
                 $model->normalized_name = self::normalizeText($model->name);
             }
         });
+    }
+
+    public function getLocalizedName(string $lang = 'en'): string
+    {
+        $lang = strtolower(trim($lang));
+        if ($lang === 'vi') {
+            return $this->name_vi ?: ($this->name_en ?: ($this->name ?: ''));
+        }
+
+        return $this->name_en ?: ($this->name_vi ?: ($this->name ?: ''));
+    }
+
+    public function getLocalizedDescription(string $lang = 'en'): ?string
+    {
+        $lang = strtolower(trim($lang));
+        if ($lang === 'vi') {
+            return $this->description_vi ?? ($this->description_en ?? $this->description);
+        }
+
+        return $this->description_en ?? ($this->description_vi ?? $this->description);
     }
 
     public function newUniqueId(): string

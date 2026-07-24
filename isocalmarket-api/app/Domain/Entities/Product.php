@@ -38,6 +38,14 @@ class Product
 
     private ?\DateTimeInterface $supplierSyncedAt;
 
+    private ?string $nameVi;
+
+    private ?string $nameEn;
+
+    private ?string $descriptionVi;
+
+    private ?string $descriptionEn;
+
     public function __construct(
         ?string $id,
         string $name,
@@ -55,13 +63,21 @@ class Product
         ?string $externalId = null,
         ?float $supplierPriceVnd = null,
         ?int $supplierStock = null,
-        ?\DateTimeInterface $supplierSyncedAt = null
+        ?\DateTimeInterface $supplierSyncedAt = null,
+        ?string $nameVi = null,
+        ?string $nameEn = null,
+        ?string $descriptionVi = null,
+        ?string $descriptionEn = null
     ) {
         $this->id = $id;
         $this->categoryId = $categoryId;
         $this->name = $name;
+        $this->nameVi = $nameVi;
+        $this->nameEn = $nameEn;
         $this->slug = $slug;
         $this->description = $description;
+        $this->descriptionVi = $descriptionVi;
+        $this->descriptionEn = $descriptionEn;
         $this->price = $price;
         $this->status = $status;
         $this->availableCount = $availableCount;
@@ -74,6 +90,46 @@ class Product
         $this->supplierPriceVnd = $supplierPriceVnd;
         $this->supplierStock = $supplierStock;
         $this->supplierSyncedAt = $supplierSyncedAt;
+    }
+
+    public function getNameVi(): ?string
+    {
+        return $this->nameVi;
+    }
+
+    public function getNameEn(): ?string
+    {
+        return $this->nameEn;
+    }
+
+    public function getDescriptionVi(): ?string
+    {
+        return $this->descriptionVi;
+    }
+
+    public function getDescriptionEn(): ?string
+    {
+        return $this->descriptionEn;
+    }
+
+    public function getLocalizedName(string $lang = 'en'): string
+    {
+        $lang = strtolower(trim($lang));
+        if ($lang === 'vi') {
+            return $this->nameVi ?: ($this->nameEn ?: ($this->name ?: ''));
+        }
+
+        return $this->nameEn ?: ($this->nameVi ?: ($this->name ?: ''));
+    }
+
+    public function getLocalizedDescription(string $lang = 'en'): ?string
+    {
+        $lang = strtolower(trim($lang));
+        if ($lang === 'vi') {
+            return $this->descriptionVi ?? ($this->descriptionEn ?? $this->description);
+        }
+
+        return $this->descriptionEn ?? ($this->descriptionVi ?? $this->description);
     }
 
     public function getId(): ?string

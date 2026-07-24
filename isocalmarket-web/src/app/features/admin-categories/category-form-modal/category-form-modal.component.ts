@@ -38,8 +38,12 @@ export class CategoryFormModalComponent implements OnInit {
   public isEditMode = false;
   public editingId: any = null;
   public name = '';
+  public nameVi = '';
+  public nameEn = '';
   public slug = '';
   public description = '';
+  public descriptionVi = '';
+  public descriptionEn = '';
   public isActive = true;
   public readonly isSubmitting = signal(false);
 
@@ -48,8 +52,12 @@ export class CategoryFormModalComponent implements OnInit {
       this.isEditMode = true;
       this.editingId = this.modalData.id;
       this.name = this.modalData.name;
+      this.nameVi = this.modalData.name_vi || this.modalData.name || '';
+      this.nameEn = this.modalData.name_en || this.modalData.name || '';
       this.slug = this.modalData.slug;
       this.description = this.modalData.description || '';
+      this.descriptionVi = this.modalData.description_vi || this.modalData.description || '';
+      this.descriptionEn = this.modalData.description_en || this.modalData.description || '';
       this.isActive = this.modalData.is_active ?? true;
     }
   }
@@ -60,15 +68,24 @@ export class CategoryFormModalComponent implements OnInit {
 
   public onSubmit() {
     if (this.isSubmitting()) return;
-    if (!this.name) {
+    const finalNameEn = this.nameEn.trim() || this.nameVi.trim() || this.name.trim();
+    if (!finalNameEn) {
       this.state.showToast(this.lang.translate('toast.category_name_required'), 'error');
       return;
     }
 
+    const finalNameVi = this.nameVi.trim() || finalNameEn;
+    const finalDescEn = this.descriptionEn.trim() || this.descriptionVi.trim() || this.description.trim() || null;
+    const finalDescVi = this.descriptionVi.trim() || (finalDescEn ?? null);
+
     const data = {
-      name: this.name,
+      name: finalNameEn,
+      name_en: finalNameEn,
+      name_vi: finalNameVi,
       slug: this.slug || undefined,
-      description: this.description || null,
+      description: finalDescEn,
+      description_en: finalDescEn,
+      description_vi: finalDescVi,
       is_active: this.isActive
     };
 

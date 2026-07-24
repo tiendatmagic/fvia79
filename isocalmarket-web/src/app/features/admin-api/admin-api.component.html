@@ -300,6 +300,26 @@ curl -X GET "{{ siteUrl() }}/api/v1/admin/b2b/users" -H "X-API-KEY: {{
                 class="flex flex-col sm:flex-row items-start gap-2 sm:gap-4 text-xs font-semibold border-b border-slate-100 dark:border-slate-800/60 pb-3"
               >
                 <div class="min-w-[120px] text-[var(--color-primary)] font-bold">
+                  lang
+                </div>
+                <div class="flex-1 space-y-1">
+                  <div class="flex items-center gap-1.5">
+                    <span
+                      class="text-xs font-black uppercase bg-slate-100 dark:bg-slate-800 text-slate-500 px-1.5 py-0.5 rounded"
+                      >{{ 'api.optional' | translate }}</span
+                    >
+                    <span class="text-slate-400 dark:text-slate-500 text-xs">string (en | vi)</span>
+                  </div>
+                  <p class="text-slate-500 dark:text-slate-400 font-semibold leading-relaxed">
+                    {{ 'api.lang_desc' | translate }}
+                  </p>
+                </div>
+              </div>
+
+              <div
+                class="flex flex-col sm:flex-row items-start gap-2 sm:gap-4 text-xs font-semibold border-b border-slate-100 dark:border-slate-800/60 pb-3"
+              >
+                <div class="min-w-[120px] text-[var(--color-primary)] font-bold">
                   role
                 </div>
                 <div class="flex-1 space-y-1">

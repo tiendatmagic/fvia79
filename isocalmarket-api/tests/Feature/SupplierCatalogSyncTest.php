@@ -39,7 +39,7 @@ class SupplierCatalogSyncTest extends TestCase
         $this->assertSame(20000.0, $product->supplier_price_vnd);
         $this->assertSame(1.53846154, $product->price);
         $this->assertSame(17, $product->supplier_stock);
-        $this->assertSame([], $product->attributes);
+        $this->assertEquals(['raw_name' => 'BM50$ Ngâm', 'raw_desc' => 'Test description'], $product->attributes);
         $this->assertSame('success', $supplier->fresh()->last_sync_status);
         Http::assertSentCount(3);
         Http::assertSent(fn ($request) => str_starts_with($request->url(), 'https://api.coingecko.com/api/v3/simple/price'));
@@ -491,6 +491,58 @@ class SupplierCatalogSyncTest extends TestCase
                 'tether' => ['vnd' => 26000],
             ]),
         ]);
+    }
+
+    public function test_sync_translates_category_and_product_when_auto_translate_is_enabled(): void
+    {
+        $this->fakeSupplierAndRateApis();
+        Cache::flush();
+        Http::fake([
+            'https://api.coingecko.com/*' => Http::response(['tether' => ['vnd' => 26000]], 200),
+            'https://sub.ads7979.com/api/categories' => Http::response($this->catalog(), 200),
+            'translate.googleapis.com/*' => Http::response([
+                [
+                    ['Danh mục BM50$', 'BM50$', null, null, 1],
+                ],
+            ], 200),
+        ]);
+
+        $supplier = SupplierModel::where('code', 'ads7979')->firstOrFail();
+        $supplier->update([
+            'auto_translate' => true,
+            'target_language' => 'vi',
+        ]);
+
+        app(SupplierCatalogSyncService::class)->sync($supplier);
+
+        $category = CategoryModel::where('supplier_id', $supplier->id)->firstOrFail();
+        $this->assertEquals('BM50$', $category->name);
+        $this->assertEquals('Danh mục BM50$', $category->name_vi);
+
+        $product = ProductModel::where('supplier_id', $supplier->id)->firstOrFail();
+        $this->assertEquals('BM50$ Ngâm', $product->name);
+        $this->assertEquals('Danh mục BM50$', $product->name_vi);
+    }
+
+    private function createAdminToken(string $username): string
+    {
+        $admin = UserModel::create([
+            'username' => $username,
+            'name' => 'Supplier Admin',
+            'email' => "{$username}@example.com",
+            'password' => 'password123',
+            'role' => 'admin',
+            'balance' => 0,
+            'google2fa_enabled' => false,
+            'status' => 'active',
+        ]);
+
+        return app(JwtService::class)->generateToken([
+            'sub' => $admin->id,
+            'email' => $admin->email,
+            'role' => 'admin',
+            'ver' => 0,
+        ], 1800);
     }
 
     private function adminToken(string $username): string

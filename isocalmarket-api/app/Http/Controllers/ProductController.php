@@ -38,12 +38,14 @@ class ProductController extends Controller
                 }
             }
 
+            $lang = $this->resolveLanguage($request);
+
             if ($page) {
                 $result = $this->productService->getActiveProductsPaginated((int) $page, (int) $limit, $categoryId, $status, $search, $filterDeleted);
                 $products = $result['items'];
                 $total = $result['total'];
 
-                $data = array_map(fn (Product $product) => $this->serializeProduct($product), $products);
+                $data = array_map(fn (Product $product) => $this->serializeProduct($product, true, $lang), $products);
 
                 return response()->json([
                     'data' => $data,
@@ -58,7 +60,7 @@ class ProductController extends Controller
 
             $products = $this->productService->getAllActiveProducts($categoryId, $status, $search, $filterDeleted);
 
-            $data = array_map(fn (Product $product) => $this->serializeProduct($product), $products);
+            $data = array_map(fn (Product $product) => $this->serializeProduct($product, true, $lang), $products);
 
             return response()->json($data);
         } catch (\Throwable $e) {
@@ -71,16 +73,25 @@ class ProductController extends Controller
         try {
             $limit = (int) $request->query('limit', 8);
             $search = $request->query('search');
+            $lang = $this->resolveLanguage($request);
 
             $groupedData = $this->productService->getGroupedActiveProducts($limit, $search);
 
-            $result = array_map(function ($group) {
-                $mappedProducts = array_map(fn (Product $product) => $this->serializeProduct($product, false), $group['products']);
+            $result = array_map(function ($group) use ($lang) {
+                $mappedProducts = array_map(fn (Product $product) => $this->serializeProduct($product, false, $lang), $group['products']);
+
+                $catModel = CategoryModel::find($group['id']);
+                $groupName = $catModel ? $catModel->getLocalizedName($lang) : $group['name'];
+                $groupDesc = $catModel ? $catModel->getLocalizedDescription($lang) : $group['description'];
 
                 return [
                     'id' => $group['id'],
-                    'name' => $group['name'],
-                    'description' => $group['description'],
+                    'name' => $groupName,
+                    'name_vi' => $catModel?->name_vi,
+                    'name_en' => $catModel?->name_en,
+                    'description' => $groupDesc,
+                    'description_vi' => $catModel?->description_vi,
+                    'description_en' => $catModel?->description_en,
                     'products' => $mappedProducts,
                     'total' => $group['total'],
                 ];
@@ -106,7 +117,9 @@ class ProductController extends Controller
                 return response()->json(['message' => 'Product not found.'], 404);
             }
 
-            return response()->json($this->serializeProduct($product));
+            $lang = $this->resolveLanguage($request);
+
+            return response()->json($this->serializeProduct($product, true, $lang));
         } catch (\Throwable $e) {
             return $this->serverError($e, 'Failed to fetch product.');
         }
@@ -125,14 +138,33 @@ class ProductController extends Controller
                 $request->category_id
             );
 
+            $nameVi = $request->name_vi ?: ($request->name_en ?: $request->name);
+            $nameEn = $request->name_en ?: ($request->name_vi ?: $request->name);
+            $descVi = $request->description_vi ?? ($request->description_en ?? $request->description);
+            $descEn = $request->description_en ?? ($request->description_vi ?? $request->description);
+
+            $model = ProductModel::find($product->getId());
+            if ($model) {
+                $model->update([
+                    'name_vi' => $nameVi,
+                    'name_en' => $nameEn,
+                    'description_vi' => $descVi,
+                    'description_en' => $descEn,
+                ]);
+            }
+
             return response()->json([
                 'message' => 'Product created successfully.',
                 'product' => [
                     'id' => $product->getId(),
                     'category_id' => $product->getCategoryId(),
                     'name' => $product->getName(),
+                    'name_vi' => $nameVi,
+                    'name_en' => $nameEn,
                     'slug' => $product->getSlug(),
                     'description' => $product->getDescription(),
+                    'description_vi' => $descVi,
+                    'description_en' => $descEn,
                     'price' => $product->getPrice(),
                     'status' => $product->getStatus(),
                     'attributes' => $product->getAttributes(),
@@ -165,14 +197,33 @@ class ProductController extends Controller
                 $request->category_id
             );
 
+            $nameVi = $request->name_vi ?: ($request->name_en ?: $request->name);
+            $nameEn = $request->name_en ?: ($request->name_vi ?: $request->name);
+            $descVi = $request->description_vi ?? ($request->description_en ?? $request->description);
+            $descEn = $request->description_en ?? ($request->description_vi ?? $request->description);
+
+            $model = ProductModel::find($product->getId());
+            if ($model) {
+                $model->update([
+                    'name_vi' => $nameVi,
+                    'name_en' => $nameEn,
+                    'description_vi' => $descVi,
+                    'description_en' => $descEn,
+                ]);
+            }
+
             return response()->json([
                 'message' => 'Product updated successfully.',
                 'product' => [
                     'id' => $product->getId(),
                     'category_id' => $product->getCategoryId(),
                     'name' => $product->getName(),
+                    'name_vi' => $nameVi,
+                    'name_en' => $nameEn,
                     'slug' => $product->getSlug(),
                     'description' => $product->getDescription(),
+                    'description_vi' => $descVi,
+                    'description_en' => $descEn,
                     'price' => $product->getPrice(),
                     'status' => $product->getStatus(),
                     'attributes' => $product->getAttributes(),
@@ -237,14 +288,25 @@ class ProductController extends Controller
         return null;
     }
 
-    private function serializeProduct(Product $product, bool $includeDeleted = true): array
+    private function resolveLanguage(Request $request): string
+    {
+        $lang = strtolower(trim($request->query('lang') ?? $request->header('Accept-Language') ?? 'en'));
+
+        return in_array($lang, ['en', 'vi'], true) ? $lang : 'en';
+    }
+
+    private function serializeProduct(Product $product, bool $includeDeleted = true, string $lang = 'en'): array
     {
         $data = [
             'id' => $product->getId(),
             'category_id' => $product->getCategoryId(),
-            'name' => $product->getName(),
+            'name' => $product->getLocalizedName($lang),
+            'name_vi' => $product->getNameVi(),
+            'name_en' => $product->getNameEn(),
             'slug' => $product->getSlug(),
-            'description' => $product->getDescription(),
+            'description' => $product->getLocalizedDescription($lang),
+            'description_vi' => $product->getDescriptionVi(),
+            'description_en' => $product->getDescriptionEn(),
             'price' => $product->getPrice(),
             'status' => $product->getStatus(),
             'available_count' => $product->getAvailableCount(),

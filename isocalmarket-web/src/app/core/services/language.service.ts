@@ -163,6 +163,8 @@ export const TRANSLATIONS: Record<SupportedLanguage, Record<string, string>> = {
       'View revenue, COGS, gross profit, profit margin, orders, products, total available inventory (supplier plus local stock), and users.',
     'api.admin_api_key_desc':
       'For GET requests, send Admin API Key via api_key query parameter or X-API-KEY header.',
+    'api.lang_desc':
+      'Target language for product name and description (en or vi). Default is en (English) if omitted.',
     'api.admin_users_limit_desc': 'Number of members per page. Default is',
     'api.admin_users_search_desc':
       'Search keyword by name, email, phone number, username, or UID (8-digit numeric UID).',
@@ -328,6 +330,9 @@ export const TRANSLATIONS: Record<SupportedLanguage, Record<string, string>> = {
     'supplier.interval': 'Automatic sync interval',
     'supplier.minutes': 'minutes',
     'supplier.enabled': 'Enable this supplier',
+    'supplier.auto_translate': 'Auto-translate products',
+    'supplier.auto_translate_desc': 'Automatically translate product titles and descriptions using Google Translate when syncing.',
+    'supplier.target_language': 'Target translation language',
     'supplier.products_enabled': 'Enable this supplier’s products',
     'supplier.products_enabled_hint':
       'Save the configuration to activate or deactivate all products from this supplier.',
@@ -630,7 +635,7 @@ export const TRANSLATIONS: Record<SupportedLanguage, Record<string, string>> = {
     'storefront.no_products_in_category': 'No products currently available in this category.',
     'toast.category_status_updated': 'Category display status updated successfully!',
 
-    'nav.admin_faqs': 'FAQ & Warranty Management',
+    'nav.admin_faqs': 'FAQ & Warranty',
     'faq.admin_manage_btn': 'Manage FAQ Content',
     'faq.admin_title': 'Dynamic FAQ & Warranty Policy Management',
     'faq.admin_subtitle': 'Add, edit, delete, sort and manage active visibility for multi-language FAQ page.',
@@ -2008,6 +2013,9 @@ export const TRANSLATIONS: Record<SupportedLanguage, Record<string, string>> = {
     'supplier.detected_standard': 'Chuẩn API đã nhận diện',
     'supplier.required_fields': 'Vui lòng nhập tên, địa chỉ HTTPS và API key của nhà cung cấp.',
     'supplier.api_key': 'API key nhà cung cấp',
+    'supplier.auto_translate': 'Tự động dịch sản phẩm',
+    'supplier.auto_translate_desc': 'Tự động dịch tên và mô tả sản phẩm bằng Google Translate khi đồng bộ từ nhà cung cấp.',
+    'supplier.target_language': 'Ngôn ngữ dịch đích',
     'supplier.key_configured': 'Đã cấu hình key — để trống nếu muốn giữ nguyên…',
     'supplier.key_placeholder': 'Nhập API key của nhà cung cấp…',
     'supplier.show_key': 'Hiện API key nhà cung cấp',

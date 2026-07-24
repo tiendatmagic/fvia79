@@ -355,6 +355,29 @@
             [label]="'supplier.auto_sync' | translate"
           />
         </div>
+        <div class="flex items-end">
+          <app-custom-switch
+            class="w-full"
+            type="full"
+            [checked]="supplierForm.auto_translate ?? false"
+            (checkedChange)="supplierForm.auto_translate = $event"
+            [label]="'supplier.auto_translate' | translate"
+            [description]="'supplier.auto_translate_desc' | translate"
+          />
+        </div>
+        @if (supplierForm.auto_translate) {
+          <div class="form-field">
+            <label>{{ 'supplier.target_language' | translate }}</label>
+            <app-custom-select
+              class="mt-1 w-full"
+              [options]="targetLanguageOptions"
+              valueKey="value"
+              labelKey="label"
+              [(ngModel)]="supplierForm.target_language"
+              name="target_language"
+            />
+          </div>
+        }
       </div>
 
       <div

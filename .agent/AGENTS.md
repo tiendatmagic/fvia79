@@ -13,6 +13,43 @@
 > Khi cần seed dữ liệu cho một seeder cụ thể, chỉ dùng:
 > - `php artisan db:seed --class=TenSeederClass` — chạy đúng 1 seeder.
 
+- **[TÍNH NĂNG ĐA NGÔN NGỮ ĐỘNG CHO SẢN PHẨM & DANH MỤC VÀ CẬP NHẬT TÀI LIỆU API HTML (DYNAMIC MULTI-LANGUAGE CATALOG & API DOCS)]**:
+  - **Mô tả yêu cầu**:
+    - Chuyển đổi toàn bộ hệ thống Cửa hàng, Quản lý sản phẩm và API sang cơ chế **Đa Ngôn Ngữ Động (Dynamic Multi-Language)**: Sản phẩm và Danh mục lưu trữ đồng thời cả Tiếng Việt (`name_vi`, `description_vi`) và Tiếng Anh (`name_en`, `description_en`).
+    - **Quy tắc mặc định**: Nếu người dùng / API client không truyền tham số ngôn ngữ `lang`, hệ thống **LUÔN MẶC ĐỊNH LÀ TIẾNG ANH (`en`)**. Khi người dùng tạo/sửa Sản phẩm hoặc Danh mục thủ công trong Quản trị (`/admin/products`, `/admin/categories`), nếu không nhập thông tin Tiếng Việt (`name_vi`, `description_vi`), hệ thống **TỰ ĐỘNG LẤY NỘI DUNG TIẾNG ANH ĐỂ ĐIỀN VÀO CỘT TIẾNG VIỆT**. Do đó, toàn bộ dữ liệu luôn đảm bảo có sẵn Tiếng Anh chuẩn và không bao giờ bị rỗng. Khi người dùng chọn giao diện Tiếng Việt (`lang=vi`), API tự động chuyển tên và mô tả sang Tiếng Việt mượt mà theo nút bấm `VI/EN` ở Topbar.
+    - Cập nhật file tài liệu HTML API cho cả User API (`user-api.component.html`) và Admin API (`admin-api.component.html`).
+  - **Nội dung thực hiện**:
+    - **Backend (`isocalmarket-api`)**:
+      - Tạo migration `2026_07_24_200000_add_multilang_fields_to_products_and_categories_table.php` bổ sung `name_vi`, `name_en`, `description_vi`, `description_en` cho bảng `categories` và `products`. Chạy `php artisan migrate` thành công.
+      - Cập nhật `CategoryModel` và `ProductModel`: Thêm helper methods `getLocalizedName($lang = 'en')` và `getLocalizedDescription($lang = 'en')` (fallback mặc định luôn là Tiếng Anh `'en'`).
+      - Cập nhật `ProductMapper` và `Product` domain entity hỗ trợ đầy đủ các trường đa ngôn ngữ.
+      - Cập nhật `SupplierCatalogSyncService`: Khi đồng bộ sản phẩm từ nhà cung cấp, lưu giữ tên gốc Tiếng Anh (`name_en`) và tự động dịch lưu `name_vi`, `description_vi`.
+      - Cập nhật `CategoryController` & `ProductController`: Đã tích hợp hàm nhận diện `$lang = $request->query('lang') ?? $request->header('Accept-Language') ?? 'en'`. Tên & mô tả sản phẩm tự động phản hồi khớp với nút bấm `VI / EN` trên giao diện!
+      - Nâng tổng số unit test backend thành công **126/126 PASSED (100%)**.
+    - **Frontend (`isocalmarket-web`)**:
+      - Cập nhật `ApiService` tự động gửi HTTP Header `Accept-Language` theo `LanguageService.currentLang()`.
+      - Cập nhật file tài liệu API HTML `user-api.component.html` và `admin-api.component.html` bổ sung chi tiết tham số `lang` (hỗ trợ `en` hoặc `vi`, mặc định `en`).
+      - Biên dịch Angular Frontend (`npm run build`) thành công **100% SUCCESS, 0 ERRORS**.
+  - **Xác nhận**: Tên và mô tả sản phẩm tự động đổi ngôn ngữ mượt mà theo nút bấm `VI/EN` ở Topbar, tài liệu API được cập nhật đầy đủ!
+
+- **[TỰ ĐỘNG DỊCH TÊN VÀ MÔ TẢ SẢN PHẨM BẰNG GOOGLE TRANSLATE API MIỄN PHÍ KHỦNG KHI IMPORT NHÀ CUNG CẤP (SUPPLIER AUTO TRANSLATE FEATURE)]**:
+  - **Mô tả yêu cầu**:
+    - Khi import / đồng bộ danh mục & sản phẩm từ Nhà cung cấp (`/admin/suppliers`), tự động dịch tên sản phẩm (`name`) và mô tả (`description`) từ ngôn ngữ nguồn sang ngôn ngữ người dùng lựa chọn (mặc định Tiếng Việt `vi`) bằng Google Translate API miễn phí.
+  - **Nội dung thực hiện**:
+    - **Backend (`isocalmarket-api`)**:
+      - Tạo migration `2026_07_24_190000_add_auto_translate_to_suppliers_table.php` bổ sung 2 cột: `auto_translate` (boolean) và `target_language` (varchar).
+      - Chạy `php artisan migrate` thành công.
+      - Tạo service `GoogleTranslateService` (`app/Application/Services/GoogleTranslateService.php`): Gọi API Google GTX miễn phí (`translate.googleapis.com/translate_a/single`), tự động lưu Cache 30 ngày để tối ưu và tránh rate-limit, fallback an toàn nếu gặp sự cố kết nối.
+      - Cập nhật `SupplierModel`, `SupplierController` (validation & serialize) và `SupplierCatalogSyncService` (tự động dịch tên sản phẩm, danh mục, mô tả và tạo đường dẫn tĩnh `slug` mượt mà khi `auto_translate` bật).
+      - Bổ sung cơ chế **Smart Skip (Bỏ qua dịch sản phẩm không thay đổi)** và **In-Memory Cache (30 ngày Cache vĩnh viễn)**: Nếu sản phẩm đã tồn tại và nhà cung cấp không sửa tên/mô tả gốc, Backend tự động bỏ qua gọi Google Translate API, giúp chu kỳ tự động đồng bộ (1 phút, 2 phút, 5 phút...) chạy **SIÊU TỐC (dưới 0.05s)** mà không tốn tài nguyên.
+      - Viết unit tests `GoogleTranslateServiceTest` & `SupplierCatalogSyncTest` đạt **126/126 PASSED (100%)**.
+    - **Frontend (`isocalmarket-web`)**:
+      - Cập nhật `SupplierSettings` interface trong `supplier.store.ts`.
+      - Đăng ký từ điển đa ngôn ngữ EN/VI trong `language.service.ts`.
+      - Cập nhật `AdminSuppliersComponent` (`admin-suppliers.component.ts` & `.html`): Bổ sung công tắc Switch "Tự động dịch sản phẩm" (`auto_translate`) và custom select chọn "Ngôn ngữ dịch đích" (`target_language` : `vi`, `en`, `zh-CN`, `ja`, `ko`,...).
+      - Biên dịch Angular Frontend (`npm run build`) thành công **100% SUCCESS, 0 ERRORS**.
+  - **Xác nhận**: Tích hợp hoàn hảo, tự động dịch tên & mô tả mượt mà khi đồng bộ catalog!
+
 - **[CẢI TIẾN GIAO DIỆN VÀ THAY THẾ ẢNH BẢN BANNER SOCIAL (REDESIGN SOCIAL PREVIEW BANNER IMAGE)]**:
   - **Mô tả yêu cầu**:
     - Thiết kế lại ảnh social banner `isocalmarket-web/public/assets/image/social_image.png` với giao diện siêu rộng hiện đại, sang trọng, tích hợp tên website **ISOCALMARKET** nổi bật và giữ đúng kích thước chuẩn 574x240 px không bị biến dạng/bị dẹt.

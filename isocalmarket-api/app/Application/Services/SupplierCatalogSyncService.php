@@ -19,6 +19,7 @@ class SupplierCatalogSyncService
         private readonly SupplierConnectorFactory $connectorFactory,
         private readonly SupplierPriceService $priceService,
         private readonly SupplierOperationLock $operationLock,
+        private readonly GoogleTranslateService $translator,
     ) {}
 
     public function syncByCode(string $code): array
@@ -115,14 +116,38 @@ class SupplierCatalogSyncService
             throw new RuntimeException('Supplier category is missing its id.');
         }
 
-        return CategoryModel::updateOrCreate(
-            ['supplier_id' => $supplier->id, 'external_id' => $externalId],
-            [
-                'name' => (string) ($data['name'] ?? "Category {$externalId}"),
-                'slug' => $this->sourceSlug($supplier, $externalId, (string) ($data['name'] ?? 'category')),
-                'description' => null,
-            ],
-        );
+        $rawName = (string) ($data['name'] ?? "Category {$externalId}");
+        $category = CategoryModel::firstOrNew([
+            'supplier_id' => $supplier->id,
+            'external_id' => $externalId,
+        ]);
+
+        $attributes = $category->attributes ?? [];
+        $savedRawName = $attributes['raw_name'] ?? null;
+
+        $nameEn = $rawName;
+        $nameVi = $rawName;
+
+        if ($supplier->auto_translate) {
+            $nameVi = $category->name_vi;
+            if (! $category->exists || $savedRawName !== $rawName || empty($nameVi)) {
+                $nameVi = $this->translator->translate($rawName, 'vi') ?? $rawName;
+            }
+        }
+
+        $attributes['raw_name'] = $rawName;
+
+        $category->fill([
+            'name' => $rawName,
+            'name_en' => $nameEn,
+            'name_vi' => $nameVi,
+            'slug' => $this->sourceSlug($supplier, $externalId, $rawName),
+            'description' => null,
+            'attributes' => $attributes,
+        ]);
+        $category->save();
+
+        return $category;
     }
 
     private function upsertProduct(
@@ -141,16 +166,55 @@ class SupplierCatalogSyncService
             'external_id' => $externalId,
         ]);
         $priceVnd = (float) ($data['price'] ?? 0);
+
+        $rawName = (string) ($data['name'] ?? "Product {$externalId}");
+        $rawDesc = $data['data']['description'] ?? null;
+
+        $attributes = $product->attributes ?? [];
+        $savedRawName = $attributes['raw_name'] ?? null;
+        $savedRawDesc = $attributes['raw_desc'] ?? null;
+
+        $nameEn = $rawName;
+        $nameVi = $rawName;
+
+        if ($supplier->auto_translate) {
+            $nameVi = $product->name_vi;
+            if (! $product->exists || $savedRawName !== $rawName || empty($nameVi)) {
+                $nameVi = $this->translator->translate($rawName, 'vi') ?? $rawName;
+            }
+        }
+
+        $descEn = $rawDesc;
+        $descVi = $rawDesc;
+
+        if ($supplier->auto_translate) {
+            $descVi = $product->description_vi;
+            if (! $product->exists || $savedRawDesc !== $rawDesc || ($rawDesc !== null && empty($descVi))) {
+                if ($rawDesc !== null && trim($rawDesc) !== '') {
+                    $descVi = $this->translator->translate($rawDesc, 'vi') ?? $rawDesc;
+                } else {
+                    $descVi = null;
+                }
+            }
+        }
+
+        $attributes['raw_name'] = $rawName;
+        $attributes['raw_desc'] = $rawDesc;
+
         $product->fill([
             'category_id' => $category->id,
-            'name' => (string) ($data['name'] ?? "Product {$externalId}"),
-            'slug' => $this->sourceSlug($supplier, $externalId, (string) ($data['name'] ?? 'product')),
-            'description' => $data['data']['description'] ?? null,
+            'name' => $rawName,
+            'name_en' => $nameEn,
+            'name_vi' => $nameVi,
+            'slug' => $this->sourceSlug($supplier, $externalId, $rawName),
+            'description' => $rawDesc,
+            'description_en' => $descEn,
+            'description_vi' => $descVi,
             'price' => $this->priceService->calculateUsd($priceVnd, $supplier),
             'supplier_price_vnd' => $priceVnd,
             'supplier_stock' => $stock,
             'supplier_synced_at' => now(),
-            'attributes' => [],
+            'attributes' => $attributes,
         ]);
 
         if ($product->exists && $product->supplier_out_of_stock_hidden) {

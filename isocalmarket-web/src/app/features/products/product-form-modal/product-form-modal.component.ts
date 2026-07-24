@@ -40,8 +40,12 @@ export class ProductFormModalComponent implements OnInit {
   public editingId: any = null;
   public categoryId = '';
   public name = '';
+  public nameVi = '';
+  public nameEn = '';
   public slug = '';
   public description = '';
+  public descriptionVi = '';
+  public descriptionEn = '';
   public price = 0;
   public status = 'active';
   public readonly isSubmitting = signal(false);
@@ -74,8 +78,12 @@ export class ProductFormModalComponent implements OnInit {
       this.editingId = this.modalData.id;
       this.categoryId = this.modalData.category_id || '';
       this.name = this.modalData.name || '';
+      this.nameVi = this.modalData.name_vi || this.modalData.name || '';
+      this.nameEn = this.modalData.name_en || this.modalData.name || '';
       this.slug = this.modalData.slug || '';
       this.description = this.modalData.description || '';
+      this.descriptionVi = this.modalData.description_vi || this.modalData.description || '';
+      this.descriptionEn = this.modalData.description_en || this.modalData.description || '';
       this.price = this.modalData.price || 0;
       this.status = this.modalData.status || 'active';
       this.attributes = this.modalData.attributes ? [...this.modalData.attributes] : [];
@@ -96,15 +104,24 @@ export class ProductFormModalComponent implements OnInit {
 
   public onSubmit() {
     if (this.isSubmitting()) return;
-    if (!this.name || this.price < 0) {
+    const finalNameEn = this.nameEn.trim() || this.nameVi.trim() || this.name.trim();
+    if (!finalNameEn || this.price < 0) {
       this.state.showToast(this.lang.translate('toast.invalid_info'), 'error');
       return;
     }
 
+    const finalNameVi = this.nameVi.trim() || finalNameEn;
+    const finalDescEn = this.descriptionEn.trim() || this.descriptionVi.trim() || this.description.trim() || null;
+    const finalDescVi = this.descriptionVi.trim() || (finalDescEn ?? null);
+
     const data = {
-      name: this.name,
+      name: finalNameEn,
+      name_en: finalNameEn,
+      name_vi: finalNameVi,
       slug: this.slug || undefined,
-      description: this.description,
+      description: finalDescEn,
+      description_en: finalDescEn,
+      description_vi: finalDescVi,
       price: this.price,
       status: this.status,
       category_id: this.categoryId || null,

@@ -29,18 +29,27 @@ class CategoryController extends Controller
             $page = $request->query('page');
             $limit = $request->query('limit', 10);
             $search = $request->query('search');
+            $lang = strtolower(trim($request->query('lang') ?? $request->header('Accept-Language') ?? 'en'));
+            if (! in_array($lang, ['en', 'vi'], true)) {
+                $lang = 'en';
+            }
 
             if ($page) {
                 $result = $this->categoryService->getCategoriesPaginated((int)$page, (int)$limit, $search);
                 $categories = $result['items'];
                 $total = $result['total'];
 
-                $data = array_map(function ($cat) {
+                $data = array_map(function ($cat) use ($lang) {
+                    $catModel = CategoryModel::find($cat->getId());
                     return [
                         'id' => $cat->getId(),
-                        'name' => $cat->getName(),
+                        'name' => $catModel ? $catModel->getLocalizedName($lang) : $cat->getName(),
+                        'name_vi' => $catModel?->name_vi,
+                        'name_en' => $catModel?->name_en,
                         'slug' => $cat->getSlug(),
-                        'description' => $cat->getDescription(),
+                        'description' => $catModel ? $catModel->getLocalizedDescription($lang) : $cat->getDescription(),
+                        'description_vi' => $catModel?->description_vi,
+                        'description_en' => $catModel?->description_en,
                         'is_active' => $cat->getIsActive(),
                         'products_count' => $cat->getProductsCount() ?? 0,
                         'created_at' => $cat->getCreatedAt() ? $cat->getCreatedAt()->format('Y-m-d H:i:s') : null
@@ -58,15 +67,21 @@ class CategoryController extends Controller
                 ]);
             }
 
+            $cacheKey = "categories_active_storefront_{$lang}";
             if (empty($search)) {
-                $data = Cache::remember('categories_active_storefront', 600, function () use ($search) {
+                $data = Cache::remember($cacheKey, 600, function () use ($search, $lang) {
                     $categories = $this->categoryRepo->findAll($search);
-                    return array_map(function ($cat) {
+                    return array_map(function ($cat) use ($lang) {
+                        $catModel = CategoryModel::find($cat->getId());
                         return [
                             'id' => $cat->getId(),
-                            'name' => $cat->getName(),
+                            'name' => $catModel ? $catModel->getLocalizedName($lang) : $cat->getName(),
+                            'name_vi' => $catModel?->name_vi,
+                            'name_en' => $catModel?->name_en,
                             'slug' => $cat->getSlug(),
-                            'description' => $cat->getDescription(),
+                            'description' => $catModel ? $catModel->getLocalizedDescription($lang) : $cat->getDescription(),
+                            'description_vi' => $catModel?->description_vi,
+                            'description_en' => $catModel?->description_en,
                             'is_active' => $cat->getIsActive(),
                             'products_count' => $cat->getProductsCount() ?? 0,
                             'created_at' => $cat->getCreatedAt() ? $cat->getCreatedAt()->format('Y-m-d H:i:s') : null
@@ -77,12 +92,17 @@ class CategoryController extends Controller
             }
 
             $categories = $this->categoryRepo->findAll($search);
-            $data = array_map(function ($cat) {
+            $data = array_map(function ($cat) use ($lang) {
+                $catModel = CategoryModel::find($cat->getId());
                 return [
                     'id' => $cat->getId(),
-                    'name' => $cat->getName(),
+                    'name' => $catModel ? $catModel->getLocalizedName($lang) : $cat->getName(),
+                    'name_vi' => $catModel?->name_vi,
+                    'name_en' => $catModel?->name_en,
                     'slug' => $cat->getSlug(),
-                    'description' => $cat->getDescription(),
+                    'description' => $catModel ? $catModel->getLocalizedDescription($lang) : $cat->getDescription(),
+                    'description_vi' => $catModel?->description_vi,
+                    'description_en' => $catModel?->description_en,
                     'is_active' => $cat->getIsActive(),
                     'products_count' => $cat->getProductsCount() ?? 0,
                     'created_at' => $cat->getCreatedAt() ? $cat->getCreatedAt()->format('Y-m-d H:i:s') : null
@@ -106,14 +126,34 @@ class CategoryController extends Controller
                 $isActive
             );
 
-            Cache::forget('categories_active_storefront');
+            $nameVi = $request->name_vi ?: ($request->name_en ?: $request->name);
+            $nameEn = $request->name_en ?: ($request->name_vi ?: $request->name);
+            $descVi = $request->description_vi ?? ($request->description_en ?? $request->description);
+            $descEn = $request->description_en ?? ($request->description_vi ?? $request->description);
+
+            $model = CategoryModel::find($category->getId());
+            if ($model) {
+                $model->update([
+                    'name_vi' => $nameVi,
+                    'name_en' => $nameEn,
+                    'description_vi' => $descVi,
+                    'description_en' => $descEn,
+                ]);
+            }
+
+            Cache::forget('categories_active_storefront_en');
+            Cache::forget('categories_active_storefront_vi');
             return response()->json([
                 'message' => 'Category created successfully.',
                 'category' => [
                     'id' => $category->getId(),
                     'name' => $category->getName(),
+                    'name_vi' => $nameVi,
+                    'name_en' => $nameEn,
                     'slug' => $category->getSlug(),
                     'description' => $category->getDescription(),
+                    'description_vi' => $descVi,
+                    'description_en' => $descEn,
                     'is_active' => $category->getIsActive(),
                     'created_at' => $category->getCreatedAt() ? $category->getCreatedAt()->format('Y-m-d H:i:s') : null
                 ]
@@ -135,14 +175,34 @@ class CategoryController extends Controller
                 $isActive
             );
 
-            Cache::forget('categories_active_storefront');
+            $nameVi = $request->name_vi ?: ($request->name_en ?: $request->name);
+            $nameEn = $request->name_en ?: ($request->name_vi ?: $request->name);
+            $descVi = $request->description_vi ?? ($request->description_en ?? $request->description);
+            $descEn = $request->description_en ?? ($request->description_vi ?? $request->description);
+
+            $model = CategoryModel::find($category->getId());
+            if ($model) {
+                $model->update([
+                    'name_vi' => $nameVi,
+                    'name_en' => $nameEn,
+                    'description_vi' => $descVi,
+                    'description_en' => $descEn,
+                ]);
+            }
+
+            Cache::forget('categories_active_storefront_en');
+            Cache::forget('categories_active_storefront_vi');
             return response()->json([
                 'message' => 'Category updated successfully.',
                 'category' => [
                     'id' => $category->getId(),
                     'name' => $category->getName(),
+                    'name_vi' => $nameVi,
+                    'name_en' => $nameEn,
                     'slug' => $category->getSlug(),
                     'description' => $category->getDescription(),
+                    'description_vi' => $descVi,
+                    'description_en' => $descEn,
                     'is_active' => $category->getIsActive(),
                     'created_at' => $category->getCreatedAt() ? $category->getCreatedAt()->format('Y-m-d H:i:s') : null
                 ]

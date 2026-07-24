@@ -58,12 +58,24 @@ export class AdminSuppliersComponent implements OnInit {
     ];
   }
 
+  public get targetLanguageOptions() {
+    return [
+      { label: 'Tiếng Việt (vi)', value: 'vi' },
+      { label: 'Tiếng Anh (en)', value: 'en' },
+      { label: 'Tiếng Trung (zh-CN)', value: 'zh-CN' },
+      { label: 'Tiếng Nhật (ja)', value: 'ja' },
+      { label: 'Tiếng Hàn (ko)', value: 'ko' },
+    ];
+  }
+
   public supplierForm: Partial<SupplierSettings> = {
     api_key: '',
     enabled: true,
     products_enabled: true,
     import_out_of_stock: true,
     auto_sync: false,
+    auto_translate: false,
+    target_language: 'vi',
     sync_interval_minutes: 30,
     price_adjustment_type: 'fixed',
     price_adjustment_value: 0,
@@ -239,6 +251,8 @@ export class AdminSuppliersComponent implements OnInit {
       products_enabled: true,
       import_out_of_stock: true,
       auto_sync: false,
+      auto_translate: false,
+      target_language: 'vi',
       sync_interval_minutes: 30,
       price_adjustment_type: 'fixed',
       price_adjustment_value: 0,
