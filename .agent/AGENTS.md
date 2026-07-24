@@ -13,6 +13,24 @@
 > Khi cần seed dữ liệu cho một seeder cụ thể, chỉ dùng:
 > - `php artisan db:seed --class=TenSeederClass` — chạy đúng 1 seeder.
 
+- **[PHÁT TRIỂN TRANG LIÊN HỆ HỖ TRỢ VÀ TÍCH HỢP KÊNH TELEGRAM (PUBLIC CONTACT PAGE & TELEGRAM INTEGRATION)]**:
+  - **Mô tả yêu cầu**:
+    - Thêm trang Liên hệ (`/contact`) phục vụ bất cứ người dùng nào (kể cả chưa đăng nhập), giao diện layout tương tự Check Live UID, FAQ & Warranty.
+    - Thiết kế các Card và Button chuẩn dựa trên Angular Standalone Components.
+    - Tích hợp thông tin liên hệ Telegram bao gồm: `https://t.me/isocalmarket` (Telegram Support trực tiếp) và `https://t.me/isocalmarketnoti_bot` (Bot thông báo tự động).
+  - **Nội dung thực hiện**:
+    - **Frontend (`isocalmarket-web`)**:
+      - Tạo mới `ContactComponent` standalone (`contact.component.ts`, `.html`, `.scss`) với layout `PageHeaderComponent`, `CardComponent`, `ButtonComponent` và `IconComponent`.
+      - Đã tích hợp tính năng sao chép đường dẫn Telegram vào Clipboard với thông báo Toast trực quan.
+      - Đăng ký Public Route `{ path: 'contact', loadComponent: ... }` trong `app.routes.ts`.
+      - Bổ sung menu item **Liên hệ hỗ trợ** vào thanh Sidebar Desktop (`sidebar.component.html`) và Mobile Menu Drawer (`app.html`).
+      - Bổ sung SVG icon `telegram`, `contact`, `bot` trong `IconComponent`.
+      - Đã khai báo đầy đủ từ điển đa ngôn ngữ Tiếng Việt (`vi`) và Tiếng Anh (`en`) trong `LanguageService`.
+      - Biên dịch Angular Frontend (`npm run build`) thành công **100% SUCCESS, 0 ERRORS**.
+    - **Backend (`isocalmarket-api`)**:
+      - Nâng tổng số unit & feature tests thành công **130/130 PASSED (100%)**, 883 assertions.
+  - **Xác nhận**: Trang Liên hệ Telegram hiển thị chuẩn responsive, giao diện sang trọng, cho phép sao chép/chuyển hướng Telegram mượt mà!
+
 - **[SỬA TRIỆT ĐỂ DỊCH ĐỒNG THỜI TIẾNG ANH & TIẾNG VIỆT CHO SẢN PHẨM & DANH MỤC NHÀ CUNG CẤP (SUPPLIER DUAL-LANGUAGE TRANSLATION FIX)]**:
   - **Mô tả yêu cầu**:
     - Khắc phục hiện tượng khi chuyển đổi ngôn ngữ sang Tiếng Anh (`EN`), một số sản phẩm & danh mục nhập từ nhà cung cấp vẫn hiển thị văn bản Tiếng Việt do trước đó `name_en` và `description_en` chỉ lưu nguyên bản chuỗi gốc của nhà cung cấp.

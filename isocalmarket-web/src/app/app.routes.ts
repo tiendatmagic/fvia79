@@ -57,6 +57,10 @@ export const routes: Routes = [
     loadComponent: () => import('@features/faq/faq.component').then(m => m.FaqComponent)
   },
   {
+    path: 'contact',
+    loadComponent: () => import('@features/contact/contact.component').then(m => m.ContactComponent)
+  },
+  {
     path: 'deposit',
     canActivate: [AuthGuard],
     children: [
