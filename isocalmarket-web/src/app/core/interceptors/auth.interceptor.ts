@@ -38,7 +38,12 @@ export const authInterceptor: HttpInterceptorFn = (
 
   return requestStream$.pipe(
     catchError((error: HttpErrorResponse) => {
-      if (error.status === 503) {
+      const isMaintenanceResponse = error.status === 503 && (
+        error.error?.message === 'Service Unavailable'
+        || (typeof error.error === 'string' && error.error.includes('Service Unavailable'))
+      );
+
+      if (isMaintenanceResponse) {
         cancelPending$.next();
         uiStateService.isMaintenance.set(true);
       } else if (error.status === 429) {

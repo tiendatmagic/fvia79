@@ -235,7 +235,25 @@ class MySqlDatabaseBackupService
 
     private function processEnvironment(): array
     {
-        return ['MYSQL_PWD' => (string) ($this->connectionConfig()['password'] ?? '')];
+        $environment = [
+            'MYSQL_PWD' => (string) ($this->connectionConfig()['password'] ?? ''),
+        ];
+
+        if (PHP_OS_FAMILY !== 'Windows') {
+            return $environment;
+        }
+
+        // MySQL CLI needs the Windows runtime and Winsock provider paths.
+        // Explicitly propagate them because PHP's built-in web server may not
+        // include all parent environment variables in spawned processes.
+        foreach (['SystemRoot', 'WINDIR', 'COMSPEC', 'PATH', 'PATHEXT', 'TEMP', 'TMP'] as $key) {
+            $value = getenv($key);
+            if (is_string($value) && $value !== '') {
+                $environment[$key] = $value;
+            }
+        }
+
+        return $environment;
     }
 
     private function connectionConfig(): array

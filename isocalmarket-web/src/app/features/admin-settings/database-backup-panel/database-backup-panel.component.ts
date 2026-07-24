@@ -108,10 +108,7 @@ export class DatabaseBackupPanelComponent implements OnInit {
         URL.revokeObjectURL(url);
         this.toast.showToast(this.lang.translate('database_backup.export_success'), 'success');
       },
-      error: () => this.toast.showToast(
-        this.lang.translate('database_backup.export_failed'),
-        'error'
-      )
+      error: error => void this.showExportError(error)
     });
   }
 
@@ -129,5 +126,23 @@ export class DatabaseBackupPanelComponent implements OnInit {
         'error'
       )
     });
+  }
+
+  private async showExportError(error: any): Promise<void> {
+    let message = this.lang.translate('database_backup.export_failed');
+
+    if (error?.error instanceof Blob) {
+      try {
+        const payload = JSON.parse(await error.error.text());
+        const firstValidationError = Object.values(payload?.errors || {})
+          .flat()
+          .find(value => typeof value === 'string');
+        message = firstValidationError || payload?.message || message;
+      } catch {
+        // Keep the translated fallback for non-JSON download errors.
+      }
+    }
+
+    this.toast.showToast(message, 'error');
   }
 }
