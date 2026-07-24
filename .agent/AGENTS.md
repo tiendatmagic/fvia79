@@ -13,6 +13,13 @@
 > Khi cần seed dữ liệu cho một seeder cụ thể, chỉ dùng:
 > - `php artisan db:seed --class=TenSeederClass` — chạy đúng 1 seeder.
 
+- **[ĐẶT MẶC ĐỊNH TẮT CHECKBOX "KHÔNG HỎI LẠI TRONG 7 NGÀY" Ở MODAL THÔNG BÁO HỆ THỐNG (DEFAULT DISABLE 7-DAY SUPPRESSION CHECKBOX)]**:
+  - **Mô tả yêu cầu**: Thay đổi trạng thái mặc định của ô checkbox "Không hỏi lại trong 7 ngày" tại Modal Thông Báo Hệ Thống (`WelcomeNoticeModalComponent`) từ Bật (checked) sang Tắt (unchecked).
+  - **Nội dung thực hiện**:
+    - **Frontend (`isocalmarket-web`)**:
+      - Cập nhật `WelcomeNoticeModalComponent` (`welcome-notice-modal.component.ts`): Thay đổi giá trị khởi tạo signal `public suppressFor7Days = signal<boolean>(false);` (mặc định false / tắt).
+  - **Xác nhận**: Biên dịch Angular `npm run build` thành công **100% SUCCESS, 0 ERRORS**, backend tests `php artisan test` đạt **111/111 test cases (100% PASSED)**!
+
 - **[TRIỂN KHẢI BẬT/TẮT HIỂN THỊ DANH MỤC VÀ HỖ TRỢ DANH MỤC 0 SẢN PHẨM (CATEGORY DISPLAY STATUS & EMPTY CATEGORY SUPPORT)]**:
   - **Mô tả yêu cầu**:
     - Bổ sung thuộc tính Bật/Tắt hiển thị danh mục (`is_active`) khi Admin tạo hoặc sửa danh mục.

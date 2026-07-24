@@ -36,7 +36,7 @@ export function shouldShowWelcomeNotice(): boolean {
 export class WelcomeNoticeModalComponent {
   private readonly modalRef = inject(ModalRef);
 
-    public suppressFor7Days = signal<boolean>(true);
+    public suppressFor7Days = signal<boolean>(false);
 
   public onClose(): void {
     this.savePreference();
