@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Application\Services\ProductService;
 use App\Domain\Entities\Product;
 use App\Http\Requests\CreateProductRequest;
+use App\Infrastructure\Persistence\Eloquent\CategoryModel;
 use App\Infrastructure\Persistence\Eloquent\UserModel;
 use App\Infrastructure\Security\JwtService;
 use Illuminate\Http\Request;
@@ -135,40 +136,16 @@ class ProductController extends Controller
                 (float) $request->price,
                 $request->status,
                 $request->input('attributes'),
-                $request->category_id
+                $request->category_id,
+                $request->name_vi,
+                $request->name_en,
+                $request->description_vi,
+                $request->description_en,
             );
-
-            $nameVi = $request->name_vi ?: ($request->name_en ?: $request->name);
-            $nameEn = $request->name_en ?: ($request->name_vi ?: $request->name);
-            $descVi = $request->description_vi ?? ($request->description_en ?? $request->description);
-            $descEn = $request->description_en ?? ($request->description_vi ?? $request->description);
-
-            $model = ProductModel::find($product->getId());
-            if ($model) {
-                $model->update([
-                    'name_vi' => $nameVi,
-                    'name_en' => $nameEn,
-                    'description_vi' => $descVi,
-                    'description_en' => $descEn,
-                ]);
-            }
 
             return response()->json([
                 'message' => 'Product created successfully.',
-                'product' => [
-                    'id' => $product->getId(),
-                    'category_id' => $product->getCategoryId(),
-                    'name' => $product->getName(),
-                    'name_vi' => $nameVi,
-                    'name_en' => $nameEn,
-                    'slug' => $product->getSlug(),
-                    'description' => $product->getDescription(),
-                    'description_vi' => $descVi,
-                    'description_en' => $descEn,
-                    'price' => $product->getPrice(),
-                    'status' => $product->getStatus(),
-                    'attributes' => $product->getAttributes(),
-                ],
+                'product' => $this->serializeProduct($product, false, $this->resolveLanguage($request)),
             ], 201);
         } catch (\Throwable $e) {
             return $this->serverError($e, 'Failed to create product.');
@@ -194,40 +171,16 @@ class ProductController extends Controller
                 (float) $request->price,
                 $request->status,
                 $request->input('attributes'),
-                $request->category_id
+                $request->category_id,
+                $request->name_vi,
+                $request->name_en,
+                $request->description_vi,
+                $request->description_en,
             );
-
-            $nameVi = $request->name_vi ?: ($request->name_en ?: $request->name);
-            $nameEn = $request->name_en ?: ($request->name_vi ?: $request->name);
-            $descVi = $request->description_vi ?? ($request->description_en ?? $request->description);
-            $descEn = $request->description_en ?? ($request->description_vi ?? $request->description);
-
-            $model = ProductModel::find($product->getId());
-            if ($model) {
-                $model->update([
-                    'name_vi' => $nameVi,
-                    'name_en' => $nameEn,
-                    'description_vi' => $descVi,
-                    'description_en' => $descEn,
-                ]);
-            }
 
             return response()->json([
                 'message' => 'Product updated successfully.',
-                'product' => [
-                    'id' => $product->getId(),
-                    'category_id' => $product->getCategoryId(),
-                    'name' => $product->getName(),
-                    'name_vi' => $nameVi,
-                    'name_en' => $nameEn,
-                    'slug' => $product->getSlug(),
-                    'description' => $product->getDescription(),
-                    'description_vi' => $descVi,
-                    'description_en' => $descEn,
-                    'price' => $product->getPrice(),
-                    'status' => $product->getStatus(),
-                    'attributes' => $product->getAttributes(),
-                ],
+                'product' => $this->serializeProduct($product, false, $this->resolveLanguage($request)),
             ]);
         } catch (\Throwable $e) {
             return $this->serverError($e, 'Failed to update product.');
@@ -290,7 +243,8 @@ class ProductController extends Controller
 
     private function resolveLanguage(Request $request): string
     {
-        $lang = strtolower(trim($request->query('lang') ?? $request->header('Accept-Language') ?? 'en'));
+        $lang = strtolower(trim((string) ($request->query('lang') ?? $request->header('Accept-Language') ?? 'en')));
+        $lang = preg_split('/[-_,;]/', $lang, 2)[0] ?? 'en';
 
         return in_array($lang, ['en', 'vi'], true) ? $lang : 'en';
     }

@@ -17,6 +17,8 @@ class CategoryRepository implements CategoryRepositoryInterface
         if ($search) {
             $query->where(function ($q) use ($search) {
                 $this->applyAccentInsensitiveSearch($q, 'name', $search);
+                $q->orWhere('name_en', 'like', "%{$search}%")
+                    ->orWhere('name_vi', 'like', "%{$search}%");
             });
         }
         $models = $query->orderBy('name', 'asc')->get();
@@ -24,6 +26,7 @@ class CategoryRepository implements CategoryRepositoryInterface
         foreach ($models as $model) {
             $categories[] = CategoryMapper::toDomain($model);
         }
+
         return $categories;
     }
 
@@ -33,6 +36,8 @@ class CategoryRepository implements CategoryRepositoryInterface
         if ($search) {
             $query->where(function ($q) use ($search) {
                 $this->applyAccentInsensitiveSearch($q, 'name', $search);
+                $q->orWhere('name_en', 'like', "%{$search}%")
+                    ->orWhere('name_vi', 'like', "%{$search}%");
             });
         }
         $total = $query->count();
@@ -48,21 +53,27 @@ class CategoryRepository implements CategoryRepositoryInterface
 
         return [
             'items' => $categories,
-            'total' => $total
+            'total' => $total,
         ];
     }
 
     public function findById(string $id): ?Category
     {
         $model = CategoryModel::find($id);
-        if (!$model) return null;
+        if (! $model) {
+            return null;
+        }
+
         return CategoryMapper::toDomain($model);
     }
 
     public function findBySlug(string $slug): ?Category
     {
         $model = CategoryModel::where('slug', $slug)->first();
-        if (!$model) return null;
+        if (! $model) {
+            return null;
+        }
+
         return CategoryMapper::toDomain($model);
     }
 
@@ -70,6 +81,7 @@ class CategoryRepository implements CategoryRepositoryInterface
     {
         $model = CategoryMapper::toPersistence($category);
         $model->save();
+
         return CategoryMapper::toDomain($model);
     }
 
@@ -79,6 +91,7 @@ class CategoryRepository implements CategoryRepositoryInterface
         if ($model) {
             return (bool) $model->delete();
         }
+
         return false;
     }
 }

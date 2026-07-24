@@ -16,20 +16,28 @@ class CategoryMapper
             $model->description,
             (bool) ($model->is_active ?? true),
             $model->created_at,
-            $model->products_count ?? null
+            $model->products_count ?? null,
+            $model->name_vi,
+            $model->name_en,
+            $model->description_vi,
+            $model->description_en
         );
     }
 
     public static function toPersistence(Category $entity): CategoryModel
     {
-        $model = new CategoryModel();
+        $model = new CategoryModel;
         if ($entity->getId()) {
             $model = CategoryModel::find($entity->getId()) ?: $model;
         }
 
         $model->name = $entity->getName();
+        $model->name_vi = $entity->getNameVi();
+        $model->name_en = $entity->getNameEn();
         $model->slug = $entity->getSlug();
         $model->description = $entity->getDescription();
+        $model->description_vi = $entity->getDescriptionVi();
+        $model->description_en = $entity->getDescriptionEn();
         $model->is_active = $entity->getIsActive();
 
         return $model;

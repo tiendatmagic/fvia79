@@ -305,5 +305,7 @@ class SupplierCatalogSyncService
     {
         Cache::forget('products_active_storefront');
         Cache::forget('categories_active_storefront');
+        Cache::forget('categories_active_storefront_en');
+        Cache::forget('categories_active_storefront_vi');
     }
 }

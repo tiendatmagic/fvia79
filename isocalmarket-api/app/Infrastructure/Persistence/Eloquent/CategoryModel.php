@@ -9,7 +9,7 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Support\Str;
 
-#[Fillable(['supplier_id', 'external_id', 'name', 'name_vi', 'name_en', 'slug', 'description', 'description_vi', 'description_en', 'is_active'])]
+#[Fillable(['supplier_id', 'external_id', 'name', 'name_vi', 'name_en', 'slug', 'description', 'description_vi', 'description_en', 'is_active', 'attributes'])]
 class CategoryModel extends Model
 {
     use HasUuids, NormalizeTextTrait;
@@ -18,6 +18,7 @@ class CategoryModel extends Model
 
     protected $casts = [
         'is_active' => 'boolean',
+        'attributes' => 'array',
     ];
 
     protected static function booted()

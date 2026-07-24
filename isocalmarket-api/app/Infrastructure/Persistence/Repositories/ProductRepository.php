@@ -48,6 +48,13 @@ class ProductRepository implements ProductRepositoryInterface
             $query->where('status', 'active');
         }
 
+        if ($status === 'active') {
+            $query->where(function ($q) {
+                $q->whereNull('category_id')
+                    ->orWhereHas('category', fn ($catQ) => $catQ->where('is_active', true));
+            });
+        }
+
         if ($categoryId) {
             if ($categoryId === 'null' || $categoryId === 'none' || $categoryId === 'other') {
                 $query->whereNull('category_id');
@@ -58,6 +65,8 @@ class ProductRepository implements ProductRepositoryInterface
         if ($search) {
             $query->where(function ($q) use ($search) {
                 $this->applyAccentInsensitiveSearch($q, 'name', $search);
+                $q->orWhere('name_en', 'like', "%{$search}%")
+                    ->orWhere('name_vi', 'like', "%{$search}%");
             });
         }
         $models = $query->with(['supplier:id,code,name,enabled,products_enabled', 'activeBatches:id,product_id,initial_count,sold_count,status,created_at'])->orderBy('created_at', 'desc')->get();
@@ -88,9 +97,9 @@ class ProductRepository implements ProductRepositoryInterface
         if ($status === 'active') {
             $query->where(function ($q) {
                 $q->whereNull('category_id')
-                  ->orWhereHas('category', function ($catQ) {
-                      $catQ->where('is_active', true);
-                  });
+                    ->orWhereHas('category', function ($catQ) {
+                        $catQ->where('is_active', true);
+                    });
             });
         }
 
@@ -104,6 +113,8 @@ class ProductRepository implements ProductRepositoryInterface
         if ($search) {
             $query->where(function ($q) use ($search) {
                 $this->applyAccentInsensitiveSearch($q, 'name', $search);
+                $q->orWhere('name_en', 'like', "%{$search}%")
+                    ->orWhere('name_vi', 'like', "%{$search}%");
             });
         }
         $total = $query->count();
@@ -186,14 +197,16 @@ class ProductRepository implements ProductRepositoryInterface
             ->where('status', 'active')
             ->where(function ($q) {
                 $q->whereNull('category_id')
-                  ->orWhereHas('category', function ($catQ) {
-                      $catQ->where('is_active', true);
-                  });
+                    ->orWhereHas('category', function ($catQ) {
+                        $catQ->where('is_active', true);
+                    });
             });
 
         if ($search) {
             $productQuery->where(function ($q) use ($search) {
                 $this->applyAccentInsensitiveSearch($q, 'name', $search);
+                $q->orWhere('name_en', 'like', "%{$search}%")
+                    ->orWhere('name_vi', 'like', "%{$search}%");
             });
         }
 

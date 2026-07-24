@@ -163,6 +163,8 @@ class SupplierController extends Controller
         if ($productsEnabledChanged) {
             Cache::forget('products_active_storefront');
             Cache::forget('categories_active_storefront');
+            Cache::forget('categories_active_storefront_en');
+            Cache::forget('categories_active_storefront_vi');
         }
 
         return response()->json($this->serialize($supplier->fresh()));
@@ -264,6 +266,8 @@ class SupplierController extends Controller
         if ($deactivatedCount > 0) {
             Cache::forget('products_active_storefront');
             Cache::forget('categories_active_storefront');
+            Cache::forget('categories_active_storefront_en');
+            Cache::forget('categories_active_storefront_vi');
         }
 
         return response()->json([
@@ -317,6 +321,8 @@ class SupplierController extends Controller
         if ($deactivatedCount > 0) {
             Cache::forget('categories_active_storefront');
             Cache::forget('products_active_storefront');
+            Cache::forget('categories_active_storefront_en');
+            Cache::forget('categories_active_storefront_vi');
         }
 
         return response()->json([

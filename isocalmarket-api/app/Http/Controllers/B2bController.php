@@ -30,18 +30,23 @@ class B2bController extends Controller
             $limit = min(100, max(1, (int) $request->query('limit', 10)));
             $categoryId = $request->query('category_id');
             $search = $request->query('search');
+            $lang = $this->resolveLanguage($request);
 
             $result = $this->productService->getActiveProductsPaginated($page, $limit, $categoryId, 'active', $search, 'active');
             $products = $result['items'];
             $total = $result['total'];
 
-            $data = array_map(function ($product) {
+            $data = array_map(function ($product) use ($lang) {
                 $category = $product->getCategoryId() ? CategoryModel::find($product->getCategoryId()) : null;
 
                 return [
                     'id' => $product->getId(),
-                    'title' => $product->getName(),
-                    'category' => $category ? $category->name : 'Uncategorized',
+                    'title' => $product->getLocalizedName($lang),
+                    'name_en' => $product->getNameEn(),
+                    'name_vi' => $product->getNameVi(),
+                    'category' => $category ? $category->getLocalizedName($lang) : 'Uncategorized',
+                    'category_en' => $category?->name_en,
+                    'category_vi' => $category?->name_vi,
                     'price' => (float) $product->getPrice(),
                     'stock' => $product->getAvailableCount(),
                 ];
@@ -62,7 +67,7 @@ class B2bController extends Controller
         }
     }
 
-    public function show($id)
+    public function show(Request $request, $id)
     {
         try {
             $product = $this->productService->getProductById($id);
@@ -74,14 +79,21 @@ class B2bController extends Controller
             if ($category && ! $category->is_active) {
                 return response()->json(['message' => 'Product not found.'], 404);
             }
+            $lang = $this->resolveLanguage($request);
 
             return response()->json([
                 'id' => $product->getId(),
-                'title' => $product->getName(),
-                'description' => $product->getDescription(),
+                'title' => $product->getLocalizedName($lang),
+                'name_en' => $product->getNameEn(),
+                'name_vi' => $product->getNameVi(),
+                'description' => $product->getLocalizedDescription($lang),
+                'description_en' => $product->getDescriptionEn(),
+                'description_vi' => $product->getDescriptionVi(),
                 'price' => (float) $product->getPrice(),
                 'stock' => $product->getAvailableCount(),
-                'category' => $category ? $category->name : 'Uncategorized',
+                'category' => $category ? $category->getLocalizedName($lang) : 'Uncategorized',
+                'category_en' => $category?->name_en,
+                'category_vi' => $category?->name_vi,
             ]);
         } catch (\Throwable $e) {
             return $this->serverError($e, 'Failed to fetch B2B product.');
@@ -212,5 +224,13 @@ class B2bController extends Controller
         } catch (\Throwable $e) {
             return $this->serverError($e, 'Failed to fetch B2B order.');
         }
+    }
+
+    private function resolveLanguage(Request $request): string
+    {
+        $lang = strtolower(trim((string) ($request->query('lang') ?? $request->header('Accept-Language') ?? 'en')));
+        $lang = preg_split('/[-_,;]/', $lang, 2)[0] ?? 'en';
+
+        return in_array($lang, ['en', 'vi'], true) ? $lang : 'en';
     }
 }

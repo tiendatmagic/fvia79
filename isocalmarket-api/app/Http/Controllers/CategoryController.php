@@ -2,9 +2,9 @@
 
 namespace App\Http\Controllers;
 
+use App\Application\Services\CategoryService;
 use App\Domain\Repositories\CategoryRepositoryInterface;
 use App\Http\Requests\CreateCategoryRequest;
-use App\Application\Services\CategoryService;
 use App\Infrastructure\Persistence\Eloquent\CategoryModel;
 use App\Infrastructure\Persistence\Eloquent\ProductModel;
 use Illuminate\Http\Request;
@@ -13,6 +13,7 @@ use Illuminate\Support\Facades\Cache;
 class CategoryController extends Controller
 {
     private CategoryRepositoryInterface $categoryRepo;
+
     private CategoryService $categoryService;
 
     public function __construct(
@@ -29,41 +30,23 @@ class CategoryController extends Controller
             $page = $request->query('page');
             $limit = $request->query('limit', 10);
             $search = $request->query('search');
-            $lang = strtolower(trim($request->query('lang') ?? $request->header('Accept-Language') ?? 'en'));
-            if (! in_array($lang, ['en', 'vi'], true)) {
-                $lang = 'en';
-            }
+            $lang = $this->resolveLanguage($request);
 
             if ($page) {
-                $result = $this->categoryService->getCategoriesPaginated((int)$page, (int)$limit, $search);
+                $result = $this->categoryService->getCategoriesPaginated((int) $page, (int) $limit, $search);
                 $categories = $result['items'];
                 $total = $result['total'];
 
-                $data = array_map(function ($cat) use ($lang) {
-                    $catModel = CategoryModel::find($cat->getId());
-                    return [
-                        'id' => $cat->getId(),
-                        'name' => $catModel ? $catModel->getLocalizedName($lang) : $cat->getName(),
-                        'name_vi' => $catModel?->name_vi,
-                        'name_en' => $catModel?->name_en,
-                        'slug' => $cat->getSlug(),
-                        'description' => $catModel ? $catModel->getLocalizedDescription($lang) : $cat->getDescription(),
-                        'description_vi' => $catModel?->description_vi,
-                        'description_en' => $catModel?->description_en,
-                        'is_active' => $cat->getIsActive(),
-                        'products_count' => $cat->getProductsCount() ?? 0,
-                        'created_at' => $cat->getCreatedAt() ? $cat->getCreatedAt()->format('Y-m-d H:i:s') : null
-                    ];
-                }, $categories);
+                $data = array_map(fn ($cat) => $this->serializeCategory($cat, $lang), $categories);
 
                 return response()->json([
                     'data' => $data,
                     'meta' => [
                         'total' => $total,
-                        'page' => (int)$page,
-                        'limit' => (int)$limit,
-                        'last_page' => (int)ceil($total / $limit)
-                    ]
+                        'page' => (int) $page,
+                        'limit' => (int) $limit,
+                        'last_page' => (int) ceil($total / $limit),
+                    ],
                 ]);
             }
 
@@ -71,43 +54,15 @@ class CategoryController extends Controller
             if (empty($search)) {
                 $data = Cache::remember($cacheKey, 600, function () use ($search, $lang) {
                     $categories = $this->categoryRepo->findAll($search);
-                    return array_map(function ($cat) use ($lang) {
-                        $catModel = CategoryModel::find($cat->getId());
-                        return [
-                            'id' => $cat->getId(),
-                            'name' => $catModel ? $catModel->getLocalizedName($lang) : $cat->getName(),
-                            'name_vi' => $catModel?->name_vi,
-                            'name_en' => $catModel?->name_en,
-                            'slug' => $cat->getSlug(),
-                            'description' => $catModel ? $catModel->getLocalizedDescription($lang) : $cat->getDescription(),
-                            'description_vi' => $catModel?->description_vi,
-                            'description_en' => $catModel?->description_en,
-                            'is_active' => $cat->getIsActive(),
-                            'products_count' => $cat->getProductsCount() ?? 0,
-                            'created_at' => $cat->getCreatedAt() ? $cat->getCreatedAt()->format('Y-m-d H:i:s') : null
-                        ];
-                    }, $categories);
+
+                    return array_map(fn ($cat) => $this->serializeCategory($cat, $lang), $categories);
                 });
+
                 return response()->json($data);
             }
 
             $categories = $this->categoryRepo->findAll($search);
-            $data = array_map(function ($cat) use ($lang) {
-                $catModel = CategoryModel::find($cat->getId());
-                return [
-                    'id' => $cat->getId(),
-                    'name' => $catModel ? $catModel->getLocalizedName($lang) : $cat->getName(),
-                    'name_vi' => $catModel?->name_vi,
-                    'name_en' => $catModel?->name_en,
-                    'slug' => $cat->getSlug(),
-                    'description' => $catModel ? $catModel->getLocalizedDescription($lang) : $cat->getDescription(),
-                    'description_vi' => $catModel?->description_vi,
-                    'description_en' => $catModel?->description_en,
-                    'is_active' => $cat->getIsActive(),
-                    'products_count' => $cat->getProductsCount() ?? 0,
-                    'created_at' => $cat->getCreatedAt() ? $cat->getCreatedAt()->format('Y-m-d H:i:s') : null
-                ];
-            }, $categories);
+            $data = array_map(fn ($cat) => $this->serializeCategory($cat, $lang), $categories);
 
             return response()->json($data);
         } catch (\Throwable $e) {
@@ -123,40 +78,18 @@ class CategoryController extends Controller
                 $request->name,
                 $request->slug,
                 $request->description,
-                $isActive
+                $isActive,
+                $request->name_vi,
+                $request->name_en,
+                $request->description_vi,
+                $request->description_en,
             );
 
-            $nameVi = $request->name_vi ?: ($request->name_en ?: $request->name);
-            $nameEn = $request->name_en ?: ($request->name_vi ?: $request->name);
-            $descVi = $request->description_vi ?? ($request->description_en ?? $request->description);
-            $descEn = $request->description_en ?? ($request->description_vi ?? $request->description);
+            $this->forgetCategoryCaches();
 
-            $model = CategoryModel::find($category->getId());
-            if ($model) {
-                $model->update([
-                    'name_vi' => $nameVi,
-                    'name_en' => $nameEn,
-                    'description_vi' => $descVi,
-                    'description_en' => $descEn,
-                ]);
-            }
-
-            Cache::forget('categories_active_storefront_en');
-            Cache::forget('categories_active_storefront_vi');
             return response()->json([
                 'message' => 'Category created successfully.',
-                'category' => [
-                    'id' => $category->getId(),
-                    'name' => $category->getName(),
-                    'name_vi' => $nameVi,
-                    'name_en' => $nameEn,
-                    'slug' => $category->getSlug(),
-                    'description' => $category->getDescription(),
-                    'description_vi' => $descVi,
-                    'description_en' => $descEn,
-                    'is_active' => $category->getIsActive(),
-                    'created_at' => $category->getCreatedAt() ? $category->getCreatedAt()->format('Y-m-d H:i:s') : null
-                ]
+                'category' => $this->serializeCategory($category, $this->resolveLanguage($request)),
             ], 201);
         } catch (\Throwable $e) {
             return $this->serverError($e, 'Failed to create category.');
@@ -172,40 +105,18 @@ class CategoryController extends Controller
                 $request->name,
                 $request->slug,
                 $request->description,
-                $isActive
+                $isActive,
+                $request->name_vi,
+                $request->name_en,
+                $request->description_vi,
+                $request->description_en,
             );
 
-            $nameVi = $request->name_vi ?: ($request->name_en ?: $request->name);
-            $nameEn = $request->name_en ?: ($request->name_vi ?: $request->name);
-            $descVi = $request->description_vi ?? ($request->description_en ?? $request->description);
-            $descEn = $request->description_en ?? ($request->description_vi ?? $request->description);
+            $this->forgetCategoryCaches();
 
-            $model = CategoryModel::find($category->getId());
-            if ($model) {
-                $model->update([
-                    'name_vi' => $nameVi,
-                    'name_en' => $nameEn,
-                    'description_vi' => $descVi,
-                    'description_en' => $descEn,
-                ]);
-            }
-
-            Cache::forget('categories_active_storefront_en');
-            Cache::forget('categories_active_storefront_vi');
             return response()->json([
                 'message' => 'Category updated successfully.',
-                'category' => [
-                    'id' => $category->getId(),
-                    'name' => $category->getName(),
-                    'name_vi' => $nameVi,
-                    'name_en' => $nameEn,
-                    'slug' => $category->getSlug(),
-                    'description' => $category->getDescription(),
-                    'description_vi' => $descVi,
-                    'description_en' => $descEn,
-                    'is_active' => $category->getIsActive(),
-                    'created_at' => $category->getCreatedAt() ? $category->getCreatedAt()->format('Y-m-d H:i:s') : null
-                ]
+                'category' => $this->serializeCategory($category, $this->resolveLanguage($request)),
             ]);
         } catch (\Throwable $e) {
             return $this->serverError($e, 'Failed to update category.');
@@ -216,7 +127,8 @@ class CategoryController extends Controller
     {
         try {
             $this->categoryService->deleteCategory($id);
-            Cache::forget('categories_active_storefront');
+            $this->forgetCategoryCaches();
+
             return response()->json(['message' => 'Category deleted successfully.']);
         } catch (\Exception $e) {
             if (in_array($e->getMessage(), [
@@ -257,7 +169,7 @@ class CategoryController extends Controller
             }
 
             if ($deactivatedCount > 0) {
-                Cache::forget('categories_active_storefront');
+                $this->forgetCategoryCaches();
                 Cache::forget('products_active_storefront');
             }
 
@@ -268,5 +180,37 @@ class CategoryController extends Controller
         } catch (\Throwable $e) {
             return $this->serverError($e, 'Failed to deactivate out of stock categories.');
         }
+    }
+
+    private function resolveLanguage(Request $request): string
+    {
+        $lang = strtolower(trim((string) ($request->query('lang') ?? $request->header('Accept-Language') ?? 'en')));
+        $lang = preg_split('/[-_,;]/', $lang, 2)[0] ?? 'en';
+
+        return in_array($lang, ['en', 'vi'], true) ? $lang : 'en';
+    }
+
+    private function serializeCategory($category, string $lang): array
+    {
+        return [
+            'id' => $category->getId(),
+            'name' => $category->getLocalizedName($lang),
+            'name_vi' => $category->getNameVi(),
+            'name_en' => $category->getNameEn(),
+            'slug' => $category->getSlug(),
+            'description' => $category->getLocalizedDescription($lang),
+            'description_vi' => $category->getDescriptionVi(),
+            'description_en' => $category->getDescriptionEn(),
+            'is_active' => $category->getIsActive(),
+            'products_count' => $category->getProductsCount() ?? 0,
+            'created_at' => $category->getCreatedAt()?->format('Y-m-d H:i:s'),
+        ];
+    }
+
+    private function forgetCategoryCaches(): void
+    {
+        Cache::forget('categories_active_storefront');
+        Cache::forget('categories_active_storefront_en');
+        Cache::forget('categories_active_storefront_vi');
     }
 }

@@ -151,7 +151,25 @@ export class StorefrontComponent implements OnInit {
   ]);
 
   public readonly groupedProducts = computed(() => {
-    const groups = this.groupedProductsState();
+    const language = this.lang.currentLang();
+    const groups = this.groupedProductsState().map((group) => ({
+      ...group,
+      name: language === 'vi'
+        ? (group.name_vi || group.name_en || group.name)
+        : (group.name_en || group.name_vi || group.name),
+      description: language === 'vi'
+        ? (group.description_vi ?? group.description_en ?? group.description)
+        : (group.description_en ?? group.description_vi ?? group.description),
+      products: (group.products || []).map((product: any) => ({
+        ...product,
+        name: language === 'vi'
+          ? (product.name_vi || product.name_en || product.name)
+          : (product.name_en || product.name_vi || product.name),
+        description: language === 'vi'
+          ? (product.description_vi ?? product.description_en ?? product.description)
+          : (product.description_en ?? product.description_vi ?? product.description),
+      })),
+    }));
     const sortVal = this.categorySort();
 
     const otherGroup = groups.find((g) => g.id === 'other');

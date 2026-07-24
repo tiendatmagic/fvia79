@@ -1,4 +1,4 @@
-import { Injectable, inject, signal } from '@angular/core';
+import { Injectable, effect, inject, signal, untracked } from '@angular/core';
 import { HttpParams } from '@angular/common/http';
 import { ApiService } from '@core/services/api.service';
 import { ToastService } from '@core/services/toast.service';
@@ -19,10 +19,34 @@ export class ProductStore {
  
   private readonly productsCache = new Map<string, { data: any; timestamp: number }>();
   private readonly categoriesPaginatedCache = new Map<string, { data: any; timestamp: number }>();
+
+  constructor() {
+    effect(() => {
+      const language = this.lang.currentLang();
+      untracked(() => {
+        this.products.update((items) => this.localizeItems(items, language));
+        this.categories.update((items) => this.localizeItems(items, language));
+        this.paginatedCategories.update((items) => this.localizeItems(items, language));
+        this.clearCache();
+      });
+    });
+  }
  
   public clearCache() {
     this.productsCache.clear();
     this.categoriesPaginatedCache.clear();
+  }
+
+  private localizeItems(items: any[], language = this.lang.currentLang()): any[] {
+    return (items || []).map((item) => ({
+      ...item,
+      name: language === 'vi'
+        ? (item.name_vi || item.name_en || item.name)
+        : (item.name_en || item.name_vi || item.name),
+      description: language === 'vi'
+        ? (item.description_vi ?? item.description_en ?? item.description)
+        : (item.description_en ?? item.description_vi ?? item.description),
+    }));
   }
 
   public readonly products = signal<any[]>([]);

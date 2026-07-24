@@ -26,8 +26,12 @@ class ProductService
                 return array_map(fn ($p) => [
                     'id' => $p->getId(),
                     'name' => $p->getName(),
+                    'nameVi' => $p->getNameVi(),
+                    'nameEn' => $p->getNameEn(),
                     'slug' => $p->getSlug(),
                     'description' => $p->getDescription(),
+                    'descriptionVi' => $p->getDescriptionVi(),
+                    'descriptionEn' => $p->getDescriptionEn(),
                     'price' => $p->getPrice(),
                     'status' => $p->getStatus(),
                     'available_count' => $p->getAvailableCount(),
@@ -61,7 +65,11 @@ class ProductService
                 $p['externalId'],
                 $p['supplierPriceVnd'],
                 $p['supplierStock'],
-                $p['supplierSyncedAt'] ? new \DateTime($p['supplierSyncedAt']) : null
+                $p['supplierSyncedAt'] ? new \DateTime($p['supplierSyncedAt']) : null,
+                $p['nameVi'] ?? null,
+                $p['nameEn'] ?? null,
+                $p['descriptionVi'] ?? null,
+                $p['descriptionEn'] ?? null
             ), $cached);
         }
 
@@ -83,21 +91,47 @@ class ProductService
         return $this->productRepository->findById($id);
     }
 
-    public function createProduct(string $name, ?string $slug, ?string $description, float $price, string $status = 'active', ?array $attributes = null, ?string $categoryId = null): Product
-    {
+    public function createProduct(
+        string $name,
+        ?string $slug,
+        ?string $description,
+        float $price,
+        string $status = 'active',
+        ?array $attributes = null,
+        ?string $categoryId = null,
+        ?string $nameVi = null,
+        ?string $nameEn = null,
+        ?string $descriptionVi = null,
+        ?string $descriptionEn = null,
+    ): Product {
         $baseSlug = $slug ?: Str::slug($name);
         $finalSlug = $this->generateUniqueSlug($baseSlug);
 
-        $product = new Product(null, $name, $finalSlug, $description, $price, $status, 0, $attributes, $categoryId);
+        $product = new Product(
+            null, $name, $finalSlug, $description, $price, $status, 0, $attributes, $categoryId,
+            null, null, null, null, null, null, null, null,
+            $nameVi, $nameEn, $descriptionVi, $descriptionEn
+        );
         $saved = $this->productRepository->save($product);
-        Cache::forget('products_active_storefront');
-        Cache::forget('categories_active_storefront');
+        $this->forgetCatalogCaches();
 
         return $saved;
     }
 
-    public function updateProduct(string $id, string $name, ?string $slug, ?string $description, float $price, string $status, ?array $attributes = null, ?string $categoryId = null): Product
-    {
+    public function updateProduct(
+        string $id,
+        string $name,
+        ?string $slug,
+        ?string $description,
+        float $price,
+        string $status,
+        ?array $attributes = null,
+        ?string $categoryId = null,
+        ?string $nameVi = null,
+        ?string $nameEn = null,
+        ?string $descriptionVi = null,
+        ?string $descriptionEn = null,
+    ): Product {
         $product = $this->productRepository->findById($id);
         if (! $product) {
             throw new \Exception('Product not found.');
@@ -114,11 +148,11 @@ class ProductService
             $id, $name, $finalSlug, $description, $price, $status, $product->getAvailableCount(),
             $attributes, $categoryId, $product->getDeletedAt(), $product->getSupplierId(),
             $product->getSupplierCode(), $product->getSupplierName(), $product->getExternalId(),
-            $product->getSupplierPriceVnd(), $product->getSupplierStock(), $product->getSupplierSyncedAt()
+            $product->getSupplierPriceVnd(), $product->getSupplierStock(), $product->getSupplierSyncedAt(),
+            $nameVi, $nameEn, $descriptionVi, $descriptionEn
         );
         $saved = $this->productRepository->save($updatedProduct);
-        Cache::forget('products_active_storefront');
-        Cache::forget('categories_active_storefront');
+        $this->forgetCatalogCaches();
 
         return $saved;
     }
@@ -141,8 +175,7 @@ class ProductService
     {
         $deleted = $this->productRepository->delete($id);
         if ($deleted) {
-            Cache::forget('products_active_storefront');
-            Cache::forget('categories_active_storefront');
+            $this->forgetCatalogCaches();
         }
 
         return $deleted;
@@ -152,10 +185,17 @@ class ProductService
     {
         $restored = $this->productRepository->restore($id);
         if ($restored) {
-            Cache::forget('products_active_storefront');
-            Cache::forget('categories_active_storefront');
+            $this->forgetCatalogCaches();
         }
 
         return $restored;
+    }
+
+    private function forgetCatalogCaches(): void
+    {
+        Cache::forget('products_active_storefront');
+        Cache::forget('categories_active_storefront');
+        Cache::forget('categories_active_storefront_en');
+        Cache::forget('categories_active_storefront_vi');
     }
 }

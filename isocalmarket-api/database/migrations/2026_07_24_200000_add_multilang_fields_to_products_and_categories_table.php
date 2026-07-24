@@ -2,6 +2,7 @@
 
 use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Schema;
 
 return new class extends Migration
@@ -21,6 +22,19 @@ return new class extends Migration
             $table->text('description_vi')->nullable()->after('description');
             $table->text('description_en')->nullable()->after('description_vi');
         });
+
+        DB::table('categories')->update([
+            'name_en' => DB::raw('name'),
+            'name_vi' => DB::raw('name'),
+            'description_en' => DB::raw('description'),
+            'description_vi' => DB::raw('description'),
+        ]);
+        DB::table('products')->update([
+            'name_en' => DB::raw('name'),
+            'name_vi' => DB::raw('name'),
+            'description_en' => DB::raw('description'),
+            'description_vi' => DB::raw('description'),
+        ]);
     }
 
     public function down(): void
