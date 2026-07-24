@@ -301,6 +301,18 @@ export const TRANSLATIONS: Record<SupportedLanguage, Record<string, string>> = {
     'supplier.import_out_of_stock': 'Import out-of-stock products',
     'supplier.import_out_of_stock_hint':
       'When disabled, products with zero supplier inventory are skipped or hidden until they are back in stock.',
+    'supplier.deactivate_out_of_stock': 'Hide out-of-stock products (0 stock)',
+    'supplier.deactivate_out_of_stock_desc':
+      'Deactivate all active products belonging to this supplier that currently have 0 stock.',
+    'supplier.deactivate_modal_title': 'Confirm hiding 0 stock products',
+    'supplier.deactivate_modal_confirm_msg':
+      'This action will deactivate all products from this supplier that currently have 0 available stock.',
+    'supplier.deactivate_modal_warning':
+      'Note: This action cannot be undone automatically. If you want to re-enable products, you must go to Product Management to turn them back on manually.',
+    'supplier.deactivate_modal_confirm_btn': 'Hide out-of-stock products',
+    'supplier.deactivate_success': 'Successfully deactivated {{count}} out-of-stock products.',
+    'supplier.deactivate_none': 'No active products with 0 stock found for this supplier.',
+    'supplier.deactivate_failed': 'Could not deactivate out-of-stock products.',
     'supplier.auto_sync': 'Enable scheduled synchronization',
     'supplier.price_example': 'Price conversion example',
     'supplier.rate': 'rate',
@@ -1926,6 +1938,18 @@ export const TRANSLATIONS: Record<SupportedLanguage, Record<string, string>> = {
     'supplier.import_out_of_stock': 'Cho phép import sản phẩm hết hàng',
     'supplier.import_out_of_stock_hint':
       'Khi tắt, sản phẩm có tồn kho nhà cung cấp bằng 0 sẽ được bỏ qua hoặc ẩn cho đến khi có hàng trở lại.',
+    'supplier.deactivate_out_of_stock': 'Ẩn sản phẩm hết hàng (0 tồn kho)',
+    'supplier.deactivate_out_of_stock_desc':
+      'Tự động chuyển tất cả các sản phẩm đang ở trạng thái Hoạt động thuộc nhà cung cấp này có tồn kho bằng 0 sang Ngưng hoạt động.',
+    'supplier.deactivate_modal_title': 'Xác nhận ẩn sản phẩm 0 tồn kho',
+    'supplier.deactivate_modal_confirm_msg':
+      'Hành động này sẽ ngưng hoạt động tất cả sản phẩm đang có tồn kho bằng 0 từ nhà cung cấp này.',
+    'supplier.deactivate_modal_warning':
+      'Lưu ý: Hành động này không thể hoàn tác tự động. Nếu muốn mở lại sản phẩm, bạn phải vào trang Quản lý sản phẩm để bật lại trạng thái thủ công.',
+    'supplier.deactivate_modal_confirm_btn': 'Ẩn sản phẩm hết hàng',
+    'supplier.deactivate_success': 'Đã ngưng hoạt động {{count}} sản phẩm hết hàng.',
+    'supplier.deactivate_none': 'Không tìm thấy sản phẩm hết hàng nào đang ở trạng thái Hoạt động.',
+    'supplier.deactivate_failed': 'Không thể ngưng hoạt động sản phẩm hết hàng.',
     'supplier.auto_sync': 'Bật tự động đồng bộ theo lịch',
     'supplier.price_example': 'Ví dụ quy đổi giá',
     'supplier.rate': 'tỷ giá',

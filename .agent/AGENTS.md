@@ -13,6 +13,22 @@
 > Khi cần seed dữ liệu cho một seeder cụ thể, chỉ dùng:
 > - `php artisan db:seed --class=TenSeederClass` — chạy đúng 1 seeder.
 
+- **[BỔ SUNG NÚT VÀ MODAL XÁC NHẬN ẨN SẢN PHẨM 0 TỒN KHO TỪ NHÀ CUNG CẤP (SUPPLIER DEACTIVATE OUT OF STOCK PRODUCTS FEATURE)]**:
+  - **Mô tả yêu cầu**: Bổ sung nút "Ẩn các sản phẩm (ngưng hoạt động) từ nhà cung cấp có tồn kho là 0" kèm mục mô tả tính năng. Khi bấm vào hiển thị Modal xác nhận với cảnh báo không thể hoàn tác tự động và hướng dẫn người dùng vào Quản lý sản phẩm để bật lại thủ công.
+  - **Nội dung thực hiện**:
+    - **Backend (`isocalmarket-api`)**:
+      - Đăng ký API Route `POST /v1/admin/suppliers/{code}/deactivate-out-of-stock-products` bọc trong middleware auth & admin.
+      - Thêm phương thức `deactivateOutOfStockProducts` trong `SupplierController.php`: tự động tìm và chuyển trạng thái `status` từ `'active'` sang `'inactive'` đối với tất cả sản phẩm của nhà cung cấp có tổng tồn kho khả dụng `= 0`. Xóa cache danh mục và trả về số lượng sản phẩm đã bị ẩn.
+      - Viết unit test `SupplierDeactivateOutOfStockTest.php` đạt **1/1 PASSED (100%)**, nâng tổng số test suite backend lên **116/116 PASSED (100%)**.
+    - **Frontend (`isocalmarket-web`)**:
+      - Cập nhật `LanguageService.ts`: Bổ sung từ điển Tiếng Việt & Tiếng Anh cho tiêu đề, mô tả, nội dung cảnh báo Modal và thông báo Toast.
+      - Cập nhật `SupplierStore` (`supplier.store.ts`): Bổ sung phương thức `deactivateOutOfStock(code)`.
+      - Cập nhật `AdminSuppliersComponent` (`admin-suppliers.component.ts` & `.html`):
+        - Bổ sung khối tính năng "Ẩn sản phẩm hết hàng (0 tồn kho)" gồm tiêu đề, mô tả chi tiết và nút thao tác đỏ (`variant="danger"`).
+        - Bổ sung Modal xác nhận hiển thị cảnh báo đỏ mượt với Backdrop `bg-black/50` (hỗ trợ click outside đóng modal), kèm 2 nút "Hủy bỏ" & "Xác nhận ẩn" (có hiệu ứng loading và chống click đúp spam).
+      - Bổ sung SVG icon `eye-slash`, `close` và `alert-triangle` trong `icon.component.html`.
+  - **Xác nhận**: Unit tests backend `php artisan test` đạt **116/116 PASSED (100%)**, biên dịch Angular `npm run build` thành công **100% SUCCESS, 0 ERRORS**!
+
 - **[SỬA LỖI RESPONSIVE VÀ TRÀN CHỮ TRONG THẺ SỐ DƯ TÀI KHOẢN NHÀ CUNG CẤP (SUPPLIER BALANCE CARD RESPONSIVE FIX)]**:
   - **Mô tả yêu cầu**: Sửa lỗi văn bản (đặc biệt là Email và Tên tài khoản dài không có dấu cách) bị tràn ra ngoài viền thẻ "Số dư tài khoản nhà cung cấp" tại trang Quản lý Nhà cung cấp (`/admin/suppliers`).
   - **Nội dung thực hiện**:

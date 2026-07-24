@@ -35,6 +35,8 @@ export class AdminSuppliersComponent implements OnInit {
   public readonly selectedSupplierCode = signal<string | null>(null);
   public readonly isCreatingSupplier = signal(false);
   public readonly balanceLoadFailed = signal(false);
+  public readonly isDeactivateModalOpen = signal(false);
+  public readonly isDeactivating = signal(false);
 
   public supplierForm: Partial<SupplierSettings> = {
     api_key: '',
@@ -107,6 +109,47 @@ export class AdminSuppliersComponent implements OnInit {
           err?.error?.message || this.lang.translate('supplier.sync_failed'),
           'error',
         ),
+    });
+  }
+
+  public openDeactivateModal(): void {
+    if (this.isDeactivating()) return;
+    this.isDeactivateModalOpen.set(true);
+  }
+
+  public closeDeactivateModal(): void {
+    if (this.isDeactivating()) return;
+    this.isDeactivateModalOpen.set(false);
+  }
+
+  public confirmDeactivateOutOfStock(): void {
+    const code = this.selectedSupplierCode();
+    if (!code || this.isDeactivating()) return;
+
+    this.isDeactivating.set(true);
+    this.supplierStore.deactivateOutOfStock(code).subscribe({
+      next: (res) => {
+        this.isDeactivating.set(false);
+        this.isDeactivateModalOpen.set(false);
+        if (res.supplier) {
+          this.supplierForm = { ...res.supplier, api_key: '' };
+        }
+        if (res.count > 0) {
+          this.toast.showToast(
+            this.lang.translate('supplier.deactivate_success', { count: res.count }),
+            'success',
+          );
+        } else {
+          this.toast.showToast(this.lang.translate('supplier.deactivate_none'), 'warning');
+        }
+      },
+      error: (err) => {
+        this.isDeactivating.set(false);
+        this.toast.showToast(
+          err?.error?.message || this.lang.translate('supplier.deactivate_failed'),
+          'error',
+        );
+      },
     });
   }
 

@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Application\Services\SupplierCatalogSyncService;
+use App\Infrastructure\Persistence\Eloquent\ProductModel;
 use App\Infrastructure\Persistence\Eloquent\SupplierModel;
 use App\Integrations\Suppliers\CloneStoreConnector;
 use App\Integrations\Suppliers\SupplierOperationInProgressException;
@@ -232,6 +233,38 @@ class SupplierController extends Controller
         } catch (\Throwable $exception) {
             return $this->serverError($exception, "Unexpected supplier balance failure for [{$code}].");
         }
+    }
+
+    public function deactivateOutOfStockProducts(string $code)
+    {
+        $supplier = SupplierModel::where('code', $code)->firstOrFail();
+
+        $activeProducts = ProductModel::where('supplier_id', $supplier->id)
+            ->where('status', 'active')
+            ->get();
+
+        $deactivatedCount = 0;
+        foreach ($activeProducts as $product) {
+            $supplierStock = max(0, (int) ($product->supplier_stock ?? 0));
+            $localStock = (int) $product->inventoryItems()->where('status', 'available')->count();
+
+            if (($supplierStock + $localStock) <= 0) {
+                $product->status = 'inactive';
+                $product->save();
+                $deactivatedCount++;
+            }
+        }
+
+        if ($deactivatedCount > 0) {
+            Cache::forget('products_active_storefront');
+            Cache::forget('categories_active_storefront');
+        }
+
+        return response()->json([
+            'message' => "Deactivated {$deactivatedCount} out-of-stock products for supplier {$supplier->name}.",
+            'count' => $deactivatedCount,
+            'supplier' => $this->serialize($supplier->fresh()),
+        ]);
     }
 
     private function serialize(SupplierModel $supplier): array
