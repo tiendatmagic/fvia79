@@ -169,6 +169,11 @@ class SupplierCatalogSyncService
             $product->status = 'active';
         }
         $product->save();
+
+        if ($product->status === 'active' && $stock > 0 && ! $category->is_active) {
+            $category->is_active = true;
+            $category->save();
+        }
     }
 
     private function hideExistingOutOfStockProduct(SupplierModel $supplier, string $externalId): void

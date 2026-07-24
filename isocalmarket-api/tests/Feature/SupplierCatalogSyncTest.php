@@ -448,6 +448,39 @@ class SupplierCatalogSyncTest extends TestCase
         $this->assertSame('failed', SupplierModel::where('code', 'ads7979')->value('last_sync_status'));
     }
 
+    public function test_sync_reactivates_hidden_category_and_product_when_stock_becomes_available(): void
+    {
+        $this->fakeSupplierAndRateApis();
+        $supplier = SupplierModel::where('code', 'ads7979')->firstOrFail();
+
+        $category = CategoryModel::create([
+            'supplier_id' => $supplier->id,
+            'external_id' => '1',
+            'name' => 'BM50$',
+            'slug' => 'ads7979-1-bm50',
+            'is_active' => false,
+        ]);
+
+        $product = ProductModel::create([
+            'supplier_id' => $supplier->id,
+            'category_id' => $category->id,
+            'external_id' => '2',
+            'name' => 'BM50$ Ngâm',
+            'slug' => 'ads7979-2-bm50-ngam',
+            'price' => 1.0,
+            'supplier_price_vnd' => 20000,
+            'supplier_stock' => 0,
+            'status' => 'inactive',
+            'supplier_out_of_stock_hidden' => true,
+        ]);
+
+        app(SupplierCatalogSyncService::class)->sync($supplier);
+
+        $this->assertSame('active', $product->fresh()->status);
+        $this->assertFalse((bool) $product->fresh()->supplier_out_of_stock_hidden);
+        $this->assertTrue((bool) $category->fresh()->is_active);
+    }
+
     private function fakeSupplierAndRateApis(): void
     {
         Cache::forget('usdt_to_vnd_rate');

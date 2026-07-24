@@ -13,6 +13,14 @@
 > Khi cần seed dữ liệu cho một seeder cụ thể, chỉ dùng:
 > - `php artisan db:seed --class=TenSeederClass` — chạy đúng 1 seeder.
 
+- **[NÂNG CẤP TỰ ĐỘNG BẬT LẠI CẢ DANH MỤC VÀ SẢN PHẨM KHI CÓ HÀNG TRỞ LẠI TRONG ĐỒNG BỘ DANH MỤC (CATEGORY & PRODUCT AUTO-RECOVERY ON CATALOG SYNC)]**:
+  - **Mô tả yêu cầu**: Kiểm tra kỹ lưỡng trường hợp khi Danh mục và Sản phẩm bị ẩn do 0 tồn kho, nếu sau này đồng bộ lại từ Nhà cung cấp mà phát hiện sản phẩm có hàng tồn kho trở lại (tồn kho > 0), hệ thống phải tự động bật lại cả Sản phẩm (`status = 'active'`) và Danh mục chứa sản phẩm đó (`is_active = true`).
+  - **Nội dung thực hiện**:
+    - **Backend (`isocalmarket-api`)**:
+      - Cập nhật `SupplierCatalogSyncService.php` (`upsertProduct`): Khi phát hiện sản phẩm ở trạng thái Hoạt động (`status = 'active'`) và có tồn kho `stock > 0`, nếu Danh mục cha đang bị ẩn (`is_active = false`), hệ thống sẽ **tự động chuyển trạng thái Danh mục sang `is_active = true`** và xóa cache Storefront.
+      - Bổ sung unit test `test_sync_reactivates_hidden_category_and_product_when_stock_becomes_available` trong `SupplierCatalogSyncTest.php` đạt **15/15 PASSED**.
+  - **Xác nhận**: Unit tests backend `php artisan test` đạt **122/122 PASSED (100%)**!
+
 - **[NÂNG CẤP XỬ LÝ ẨN DANH MỤC 0 SẢN PHẨM HOẶC HẾT HÀNG TỒN KHO (DEACTIVATE EMPTY AND ZERO-STOCK CATEGORIES FIX)]**:
   - **Mô tả yêu cầu**:
     - Giải quyết vấn đề khi bấm nút "Ẩn danh mục hết hàng", danh mục chưa có sản phẩm nào (0 sản phẩm) hoặc toàn bộ sản phẩm ngưng hoạt động vẫn xuất hiện tại Cửa hàng (`Storefront`).
