@@ -2,9 +2,19 @@ import { Injectable, inject } from '@angular/core';
 import { Observable } from 'rxjs';
 import { ApiService } from './api.service';
 
+export interface PolicyCategoryItem {
+  id: number;
+  key: string;
+  name_vi: string;
+  name_en: string;
+  icon?: string;
+  sort_order: number;
+  is_active: boolean;
+}
+
 export interface WarrantyPolicyItem {
   id: number;
-  category: 'bm' | 'via';
+  category: string;
   type: 'accepted' | 'rejected';
   content_vi: string;
   content_en: string;
@@ -30,6 +40,7 @@ export interface FaqItem {
 
 export interface FaqPublicResponse {
   success: boolean;
+  categories?: PolicyCategoryItem[];
   policies: WarrantyPolicyItem[];
   faqs: FaqItem[];
 }
@@ -46,6 +57,18 @@ export class FaqService {
 
   public getAdminFaqs(): Observable<FaqPublicResponse> {
     return this.apiService.get<FaqPublicResponse>('v1/admin/faqs');
+  }
+
+  public createPolicyCategory(data: Partial<PolicyCategoryItem>): Observable<any> {
+    return this.apiService.post('v1/admin/policy-categories', data);
+  }
+
+  public updatePolicyCategory(id: number, data: Partial<PolicyCategoryItem>): Observable<any> {
+    return this.apiService.put(`v1/admin/policy-categories/${id}`, data);
+  }
+
+  public deletePolicyCategory(id: number): Observable<any> {
+    return this.apiService.delete(`v1/admin/policy-categories/${id}`);
   }
 
   public createPolicy(data: Partial<WarrantyPolicyItem>): Observable<any> {

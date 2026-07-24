@@ -141,6 +141,9 @@ Route::prefix('v1')->group(function () {
 
             // Admin FAQ & Warranty Management Routes
             Route::get('/admin/faqs', ['App\Http\Controllers\FaqController', 'indexAdmin']);
+            Route::post('/admin/policy-categories', ['App\Http\Controllers\FaqController', 'storePolicyCategory']);
+            Route::put('/admin/policy-categories/{id}', ['App\Http\Controllers\FaqController', 'updatePolicyCategory']);
+            Route::delete('/admin/policy-categories/{id}', ['App\Http\Controllers\FaqController', 'destroyPolicyCategory']);
             Route::post('/admin/warranty-policies', ['App\Http\Controllers\FaqController', 'storePolicy']);
             Route::put('/admin/warranty-policies/{id}', ['App\Http\Controllers\FaqController', 'updatePolicy']);
             Route::delete('/admin/warranty-policies/{id}', ['App\Http\Controllers\FaqController', 'destroyPolicy']);

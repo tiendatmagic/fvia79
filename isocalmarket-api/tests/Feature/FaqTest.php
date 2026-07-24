@@ -35,6 +35,16 @@ class FaqTest extends TestCase
         $response->assertStatus(200)
             ->assertJsonStructure([
                 'success',
+                'categories' => [
+                    '*' => [
+                        'id',
+                        'key',
+                        'name_vi',
+                        'name_en',
+                        'icon',
+                        'is_active',
+                    ],
+                ],
                 'policies' => [
                     '*' => [
                         'id',
@@ -56,6 +66,51 @@ class FaqTest extends TestCase
                     ],
                 ],
             ]);
+    }
+
+    public function test_admin_can_create_update_and_delete_policy_category(): void
+    {
+        $admin = UserModel::create([
+            'username' => 'admin_test_cat',
+            'name' => 'Admin Cat Tester',
+            'email' => 'admin_test_cat@example.com',
+            'password' => Hash::make('Password123!@#'),
+            'role' => 'admin',
+            'balance' => 0,
+            'google2fa_enabled' => false,
+        ]);
+
+        $token = $this->createTokenForUser($admin);
+
+        // Store Category
+        $response = $this->withToken($token)
+            ->postJson('/api/v1/admin/policy-categories', [
+                'name_vi' => 'Tài khoản Gmail',
+                'name_en' => 'Gmail Accounts',
+                'icon' => 'mail',
+                'sort_order' => 30,
+            ]);
+
+        $response->assertStatus(201)
+            ->assertJsonPath('success', true)
+            ->assertJsonPath('data.key', 'gmail_accounts');
+
+        $catId = $response->json('data.id');
+
+        // Update Category
+        $this->withToken($token)
+            ->putJson("/api/v1/admin/policy-categories/{$catId}", [
+                'name_vi' => 'Tài khoản Mail Premium',
+            ])
+            ->assertStatus(200)
+            ->assertJsonPath('data.name_vi', 'Tài khoản Mail Premium');
+
+        // Delete Category
+        $this->withToken($token)
+            ->deleteJson("/api/v1/admin/policy-categories/{$catId}")
+            ->assertStatus(200);
+
+        $this->assertDatabaseMissing('policy_categories', ['id' => $catId]);
     }
 
     public function test_admin_can_create_update_and_delete_warranty_policy(): void

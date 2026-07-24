@@ -85,41 +85,26 @@
       </div>
     </div>
 
-    <!-- Category Switcher Tabs (BM vs Via/Clone) -->
-    <div class="flex border-b border-slate-200 dark:border-slate-800 bg-slate-50/80 dark:bg-slate-950/60 p-1.5 gap-2">
-      <button
-        type="button"
-        (click)="setTab('bm')"
-        [class.active]="activeTab() === 'bm'"
-        [class.bg-white]="activeTab() === 'bm'"
-        [class.dark:bg-slate-800]="activeTab() === 'bm'"
-        [class.text-blue-600]="activeTab() === 'bm'"
-        [class.dark:text-blue-400]="activeTab() === 'bm'"
-        [class.shadow-xs]="activeTab() === 'bm'"
-        [class.text-slate-600]="activeTab() !== 'bm'"
-        [class.dark:text-slate-400]="activeTab() !== 'bm'"
-        class="warranty-tab-btn flex-1 py-3 px-4 rounded-xl font-bold text-xs sm:text-sm tracking-wide uppercase flex items-center justify-center gap-2.5 transition-all cursor-pointer hover:text-blue-600 dark:hover:text-blue-400"
-      >
-        <app-icon name="package" class="w-4 h-4 shrink-0" />
-        <span>{{ 'faq.tab_bm' | translate }}</span>
-      </button>
-
-      <button
-        type="button"
-        (click)="setTab('via')"
-        [class.active]="activeTab() === 'via'"
-        [class.bg-white]="activeTab() === 'via'"
-        [class.dark:bg-slate-800]="activeTab() === 'via'"
-        [class.text-blue-600]="activeTab() === 'via'"
-        [class.dark:text-blue-400]="activeTab() === 'via'"
-        [class.shadow-xs]="activeTab() === 'via'"
-        [class.text-slate-600]="activeTab() !== 'via'"
-        [class.dark:text-slate-400]="activeTab() !== 'via'"
-        class="warranty-tab-btn flex-1 py-3 px-4 rounded-xl font-bold text-xs sm:text-sm tracking-wide uppercase flex items-center justify-center gap-2.5 transition-all cursor-pointer hover:text-blue-600 dark:hover:text-blue-400"
-      >
-        <app-icon name="customers" class="w-4 h-4 shrink-0" />
-        <span>{{ 'faq.tab_via' | translate }}</span>
-      </button>
+    <!-- Dynamic Category Switcher Tabs -->
+    <div class="flex border-b border-slate-200 dark:border-slate-800 bg-slate-50/80 dark:bg-slate-950/60 p-1.5 gap-2 overflow-x-auto">
+      @for (cat of activeCategories(); track cat.id) {
+        <button
+          type="button"
+          (click)="setTab(cat.key)"
+          [class.active]="activeTab() === cat.key"
+          [class.bg-white]="activeTab() === cat.key"
+          [class.dark:bg-slate-800]="activeTab() === cat.key"
+          [class.text-blue-600]="activeTab() === cat.key"
+          [class.dark:text-blue-400]="activeTab() === cat.key"
+          [class.shadow-xs]="activeTab() === cat.key"
+          [class.text-slate-600]="activeTab() !== cat.key"
+          [class.dark:text-slate-400]="activeTab() !== cat.key"
+          class="warranty-tab-btn flex-1 min-w-[140px] py-3 px-4 rounded-xl font-bold text-xs sm:text-sm tracking-wide uppercase flex items-center justify-center gap-2.5 transition-all cursor-pointer hover:text-blue-600 dark:hover:text-blue-400 whitespace-nowrap"
+        >
+          <app-icon [name]="cat.icon || 'package'" class="w-4 h-4 shrink-0" />
+          <span>{{ lang.currentLang() === 'en' ? cat.name_en : cat.name_vi }}</span>
+        </button>
+      }
     </div>
 
     <div class="p-6 sm:p-8 space-y-8">
@@ -139,7 +124,7 @@
               <app-icon name="check" class="w-4 h-4 stroke-[3]" />
             </div>
             <h3 class="text-sm font-extrabold uppercase tracking-wide text-emerald-700 dark:text-emerald-400">
-              {{ (activeTab() === 'bm' ? 'faq.bm_accepted_title' : 'faq.via_accepted_title') | translate }}
+              Quy định Chấp nhận bảo hành cho {{ currentCategoryName() }}
             </h3>
           </div>
 
@@ -179,7 +164,7 @@
               <app-icon name="close" class="w-4 h-4 stroke-[3]" />
             </div>
             <h3 class="text-sm font-extrabold uppercase tracking-wide text-rose-700 dark:text-rose-400">
-              {{ (activeTab() === 'bm' ? 'faq.bm_rejected_title' : 'faq.via_rejected_title') | translate }}
+              Quy định Từ chối bảo hành cho {{ currentCategoryName() }}
             </h3>
           </div>
 
@@ -208,6 +193,18 @@
               </div>
             }
           </div>
+        </div>
+      }
+
+      <!-- EMPTY STATE IF NO POLICIES FOUND FOR SELECTED CATEGORY -->
+      @if (acceptedPolicies().length === 0 && rejectedPolicies().length === 0) {
+        <div class="py-12 px-4 text-center space-y-3">
+          <div class="w-12 h-12 rounded-2xl bg-slate-100 dark:bg-slate-800 text-slate-400 flex items-center justify-center mx-auto">
+            <app-icon name="shield" class="w-6 h-6" />
+          </div>
+          <p class="text-sm font-semibold text-slate-500 dark:text-slate-400">
+            Chưa có quy định bảo hành nào cho danh mục <strong>{{ currentCategoryName() }}</strong>.
+          </p>
         </div>
       }
 

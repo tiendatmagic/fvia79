@@ -3,6 +3,7 @@
 namespace Database\Seeders;
 
 use App\Models\FaqModel;
+use App\Models\PolicyCategoryModel;
 use App\Models\WarrantyPolicyModel;
 use Illuminate\Database\Seeder;
 
@@ -13,6 +14,25 @@ class WarrantyPolicyAndFaqSeeder extends Seeder
      */
     public function run(): void
     {
+        if (PolicyCategoryModel::count() === 0) {
+            PolicyCategoryModel::create([
+                'key' => 'bm',
+                'name_vi' => 'Business Manager (BM)',
+                'name_en' => 'Business Manager (BM)',
+                'icon' => 'package',
+                'sort_order' => 10,
+                'is_active' => true,
+            ]);
+
+            PolicyCategoryModel::create([
+                'key' => 'via',
+                'name_vi' => 'Via / Clone Facebook',
+                'name_en' => 'Via / Clone Facebook',
+                'icon' => 'customers',
+                'sort_order' => 20,
+                'is_active' => true,
+            ]);
+        }
         if (WarrantyPolicyModel::count() === 0) {
             $policies = [
                 // BM Accepted

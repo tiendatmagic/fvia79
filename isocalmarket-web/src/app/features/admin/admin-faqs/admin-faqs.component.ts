@@ -1,4 +1,4 @@
-import { Component, OnInit, inject, signal } from '@angular/core';
+import { Component, OnInit, inject, signal, computed } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { PageHeaderComponent } from '@shared/components/page-header/page-header.component';
@@ -11,7 +11,7 @@ import { CustomSwitchComponent } from '@shared/components/custom-switch/custom-s
 import { CustomSelectComponent } from '@shared/components/custom-select/custom-select.component';
 import { TooltipDirective } from '@shared/components/tooltip/tooltip.directive';
 import { TranslatePipe } from '@shared/pipes/translate.pipe';
-import { FaqService, WarrantyPolicyItem, FaqItem } from '@core/services/faq.service';
+import { FaqService, WarrantyPolicyItem, FaqItem, PolicyCategoryItem } from '@core/services/faq.service';
 import { ToastService } from '@core/services/toast.service';
 import { LanguageService } from '@core/services/language.service';
 
@@ -41,18 +41,38 @@ export class AdminFaqsComponent implements OnInit {
   private readonly toast = inject(ToastService);
   public readonly lang = inject(LanguageService);
 
-  public activeTab = signal<'policies' | 'faqs'>('policies');
+  public activeTab = signal<'policies' | 'categories' | 'faqs'>('policies');
   public isLoading = signal<boolean>(true);
   public isSubmitting = signal<boolean>(false);
 
+  public categories = signal<PolicyCategoryItem[]>([]);
   public policies = signal<WarrantyPolicyItem[]>([]);
   public faqs = signal<FaqItem[]>([]);
+
+  // Policy Category Modal State
+  public isCategoryModalOpen = signal<boolean>(false);
+  public editingCategory = signal<PolicyCategoryItem | null>(null);
+  public categoryForm = signal<{
+    key: string;
+    name_vi: string;
+    name_en: string;
+    icon: string;
+    sort_order: number;
+    is_active: boolean;
+  }>({
+    key: '',
+    name_vi: '',
+    name_en: '',
+    icon: 'package',
+    sort_order: 0,
+    is_active: true,
+  });
 
   // Policy Modal state
   public isPolicyModalOpen = signal<boolean>(false);
   public editingPolicy = signal<WarrantyPolicyItem | null>(null);
   public policyForm = signal<{
-    category: 'bm' | 'via';
+    category: string;
     type: 'accepted' | 'rejected';
     content_vi: string;
     content_en: string;
@@ -98,12 +118,21 @@ export class AdminFaqsComponent implements OnInit {
 
   // Delete modal state
   public isDeleteModalOpen = signal<boolean>(false);
-  public itemToDelete = signal<{ type: 'policy' | 'faq'; id: number; title: string } | null>(null);
+  public itemToDelete = signal<{ type: 'policy' | 'faq' | 'category'; id: number; title: string } | null>(null);
 
-  public policyCategoryOptions = [
-    { label: 'Business Manager (BM)', value: 'bm' },
-    { label: 'Via / Clone Facebook', value: 'via' }
-  ];
+  public readonly policyCategoryOptions = computed(() => {
+    const list = this.categories();
+    if (!list || list.length === 0) {
+      return [
+        { label: 'Business Manager (BM)', value: 'bm' },
+        { label: 'Via / Clone Facebook', value: 'via' }
+      ];
+    }
+    return list.map(c => ({
+      label: `${this.lang.currentLang() === 'en' ? c.name_en : c.name_vi} (${c.key})`,
+      value: c.key
+    }));
+  });
 
   public policyTypeOptions = [
     { label: 'Chấp nhận bảo hành (Accepted)', value: 'accepted' },
@@ -115,6 +144,16 @@ export class AdminFaqsComponent implements OnInit {
     { label: 'Xanh lá (Emerald)', value: 'emerald' },
     { label: 'Hổ phách (Amber)', value: 'amber' },
     { label: 'Đỏ (Rose)', value: 'rose' }
+  ];
+
+  public categoryColumns: TableColumn[] = [
+    { key: 'key', label: 'Mã Key (Slug)', sortable: true },
+    { key: 'name_vi', label: 'Tên Danh mục (VI)', sortable: true },
+    { key: 'name_en', label: 'Tên Danh mục (EN)', sortable: true },
+    { key: 'icon', label: 'Icon', sortable: false, align: 'center' },
+    { key: 'sort_order', label: 'Thứ tự', sortable: true, align: 'center' },
+    { key: 'is_active', label: 'Trạng thái', sortable: true, align: 'center' },
+    { key: 'actions', label: 'Thao tác', sortable: false, align: 'right' }
   ];
 
   public policyColumns: TableColumn[] = [
@@ -145,6 +184,7 @@ export class AdminFaqsComponent implements OnInit {
     this.faqService.getAdminFaqs().subscribe({
       next: (res) => {
         if (res && res.success) {
+          this.categories.set(res.categories || []);
           this.policies.set(res.policies || []);
           this.faqs.set(res.faqs || []);
         }
@@ -157,11 +197,99 @@ export class AdminFaqsComponent implements OnInit {
     });
   }
 
+  public getCategoryLabel(key: string): string {
+    const cat = this.categories().find(c => c.key === key);
+    if (cat) {
+      return this.lang.currentLang() === 'en' ? cat.name_en : cat.name_vi;
+    }
+    if (key === 'bm') return 'Business Manager (BM)';
+    if (key === 'via') return 'Via / Clone';
+    return key;
+  }
+
+  // --- Category Handlers ---
+  public openCreateCategoryModal(): void {
+    this.editingCategory.set(null);
+    this.categoryForm.set({
+      key: '',
+      name_vi: '',
+      name_en: '',
+      icon: 'package',
+      sort_order: (this.categories().length + 1) * 10,
+      is_active: true,
+    });
+    this.isCategoryModalOpen.set(true);
+  }
+
+  public openEditCategoryModal(cat: PolicyCategoryItem): void {
+    this.editingCategory.set(cat);
+    this.categoryForm.set({
+      key: cat.key,
+      name_vi: cat.name_vi || '',
+      name_en: cat.name_en || '',
+      icon: cat.icon || 'package',
+      sort_order: cat.sort_order,
+      is_active: cat.is_active,
+    });
+    this.isCategoryModalOpen.set(true);
+  }
+
+  public saveCategory(): void {
+    if (this.isSubmitting()) return;
+    const form = this.categoryForm();
+    if (!form.name_vi.trim() || !form.name_en.trim()) {
+      this.toast.showError('Vui lòng nhập tên danh mục cả Tiếng Việt và Tiếng Anh!');
+      return;
+    }
+
+    this.isSubmitting.set(true);
+    const editing = this.editingCategory();
+
+    if (editing) {
+      this.faqService.updatePolicyCategory(editing.id, form).subscribe({
+        next: () => {
+          this.toast.showSuccess(this.lang.translate('toast.policy_cat_updated'));
+          this.isSubmitting.set(false);
+          this.isCategoryModalOpen.set(false);
+          this.loadData();
+        },
+        error: (err) => {
+          this.toast.showError(err?.error?.message || 'Cập nhật danh mục thất bại!');
+          this.isSubmitting.set(false);
+        }
+      });
+    } else {
+      this.faqService.createPolicyCategory(form).subscribe({
+        next: () => {
+          this.toast.showSuccess(this.lang.translate('toast.policy_cat_created'));
+          this.isSubmitting.set(false);
+          this.isCategoryModalOpen.set(false);
+          this.loadData();
+        },
+        error: (err) => {
+          this.toast.showError(err?.error?.message || 'Tạo danh mục thất bại!');
+          this.isSubmitting.set(false);
+        }
+      });
+    }
+  }
+
+  public toggleCategoryStatus(cat: PolicyCategoryItem): void {
+    this.faqService.updatePolicyCategory(cat.id, { is_active: !cat.is_active }).subscribe({
+      next: () => {
+        this.toast.showSuccess(this.lang.translate('toast.policy_cat_updated'));
+        this.loadData();
+      },
+      error: () => this.toast.showError('Cập nhật trạng thái thất bại!')
+    });
+  }
+
   // --- Policy Handlers ---
   public openCreatePolicyModal(): void {
     this.editingPolicy.set(null);
+    const defaultCatKey = this.categories().length > 0 ? this.categories()[0].key : 'bm';
     this.policyForm.set({
-      category: 'bm',
+      category: defaultCatKey,
       type: 'accepted',
       content_vi: '',
       content_en: '',
@@ -322,7 +450,7 @@ export class AdminFaqsComponent implements OnInit {
   }
 
   // --- Delete Handler ---
-  public confirmDelete(type: 'policy' | 'faq', id: number, title: string): void {
+  public confirmDelete(type: 'policy' | 'faq' | 'category', id: number, title: string): void {
     this.itemToDelete.set({ type, id, title });
     this.isDeleteModalOpen.set(true);
   }
@@ -333,7 +461,20 @@ export class AdminFaqsComponent implements OnInit {
 
     this.isSubmitting.set(true);
 
-    if (item.type === 'policy') {
+    if (item.type === 'category') {
+      this.faqService.deletePolicyCategory(item.id).subscribe({
+        next: () => {
+          this.toast.showSuccess(this.lang.translate('toast.policy_cat_deleted'));
+          this.isSubmitting.set(false);
+          this.isDeleteModalOpen.set(false);
+          this.loadData();
+        },
+        error: (err) => {
+          this.toast.showError(err?.error?.message || 'Xóa danh mục thất bại! Danh mục có thể đang được sử dụng.');
+          this.isSubmitting.set(false);
+        }
+      });
+    } else if (item.type === 'policy') {
       this.faqService.deletePolicy(item.id).subscribe({
         next: () => {
           this.toast.showSuccess(this.lang.translate('toast.policy_deleted'));

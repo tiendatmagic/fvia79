@@ -5,7 +5,7 @@ import { PageHeaderComponent } from '@shared/components/page-header/page-header.
 import { IconComponent } from '@shared/components/icon/icon.component';
 import { LanguageService } from '@core/services/language.service';
 import { TranslatePipe } from '@shared/pipes/translate.pipe';
-import { FaqService, WarrantyPolicyItem, FaqItem } from '@core/services/faq.service';
+import { FaqService, WarrantyPolicyItem, FaqItem, PolicyCategoryItem } from '@core/services/faq.service';
 import { StateService } from '@core/services/state.service';
 
 const DEFAULT_FALLBACK_POLICIES: WarrantyPolicyItem[] = [
@@ -252,6 +252,11 @@ const DEFAULT_FALLBACK_FAQS: FaqItem[] = [
   }
 ];
 
+const DEFAULT_FALLBACK_CATEGORIES: PolicyCategoryItem[] = [
+  { id: 1, key: 'bm', name_vi: 'Business Manager (BM)', name_en: 'Business Manager (BM)', icon: 'package', sort_order: 10, is_active: true },
+  { id: 2, key: 'via', name_vi: 'Via / Clone Facebook', name_en: 'Via / Clone Facebook', icon: 'customers', sort_order: 20, is_active: true }
+];
+
 @Component({
   selector: 'app-faq',
   standalone: true,
@@ -270,12 +275,24 @@ export class FaqComponent implements OnInit {
   private readonly faqService = inject(FaqService);
   public readonly stateService = inject(StateService);
 
-  public activeTab = signal<'bm' | 'via'>('bm');
+  public categories = signal<PolicyCategoryItem[]>(DEFAULT_FALLBACK_CATEGORIES);
+  public activeTab = signal<string>('bm');
   public policyType = signal<'all' | 'accepted' | 'rejected'>('all');
   public isLoading = signal<boolean>(true);
 
   public policies = signal<WarrantyPolicyItem[]>(DEFAULT_FALLBACK_POLICIES);
   public faqItems = signal<FaqItem[]>(DEFAULT_FALLBACK_FAQS);
+
+  public readonly activeCategories = computed(() => {
+    return this.categories().filter(c => c.is_active);
+  });
+
+  public readonly currentCategoryName = computed(() => {
+    const tabKey = this.activeTab();
+    const cat = this.categories().find(c => c.key === tabKey);
+    if (!cat) return tabKey.toUpperCase();
+    return this.lang.currentLang() === 'en' ? cat.name_en : cat.name_vi;
+  });
 
   public readonly acceptedPolicies = computed(() => {
     const tab = this.activeTab();
@@ -295,8 +312,17 @@ export class FaqComponent implements OnInit {
     this.isLoading.set(true);
     this.faqService.getPublicFaqs().subscribe({
       next: (res) => {
-        if (res && res.success && res.policies && res.policies.length > 0) {
-          this.policies.set(res.policies);
+        if (res && res.success) {
+          if (res.categories && res.categories.length > 0) {
+            this.categories.set(res.categories);
+            const activeList = res.categories.filter(c => c.is_active);
+            if (activeList.length > 0 && !activeList.some(c => c.key === this.activeTab())) {
+              this.activeTab.set(activeList[0].key);
+            }
+          }
+          if (res.policies && res.policies.length > 0) {
+            this.policies.set(res.policies);
+          }
           if (res.faqs && res.faqs.length > 0) {
             this.faqItems.set(res.faqs.map(f => ({ ...f, isOpen: false })));
           }
@@ -309,7 +335,7 @@ export class FaqComponent implements OnInit {
     });
   }
 
-  public setTab(tab: 'bm' | 'via'): void {
+  public setTab(tab: string): void {
     this.activeTab.set(tab);
   }
 

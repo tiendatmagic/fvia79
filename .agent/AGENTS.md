@@ -13,6 +13,28 @@
 > Khi cần seed dữ liệu cho một seeder cụ thể, chỉ dùng:
 > - `php artisan db:seed --class=TenSeederClass` — chạy đúng 1 seeder.
 
+- **[QUẢN LÝ ĐỘNG THÊM SỬA XÓA DANH MỤC ÁP DỤNG CHO CHÍNH SÁCH BẢO HÀNH & FAQ (POLICY CATEGORY DYNAMIC CRUD INTEGRATION)]**:
+  - **Mô tả yêu cầu**:
+    - Thêm tính năng Quản lý động Danh mục áp dụng (Policy Categories) tại cả 2 trang `/faq` và `/admin/faqs`.
+    - Hỗ trợ Quản trị viên thực hiện đầy đủ các thao tác Thêm, Sửa, Xóa (CRUD) các danh mục áp dụng (như Business Manager (BM), Via / Clone Facebook, Tài khoản Mail, Proxy, Fanpage...).
+    - Khi thêm/sửa Quy định bảo hành trong `/admin/faqs`, ô dropdown "DANH MỤC ÁP DỤNG" sẽ tự động load động từ danh sách danh mục đã khởi tạo trong CSDL.
+    - Tại trang công khai `/faq`, các Tab danh mục chính sách tự động hiển thị linh hoạt các danh mục đang bật (`is_active = true`), khi bấm vào Tab nào sẽ hiển thị chuẩn xác quy định chấp nhận/từ chối bảo hành thuộc danh mục đó.
+  - **Nội dung thực hiện**:
+    - **Backend (`isocalmarket-api`)**:
+      - Tạo migration `2026_07_24_230000_create_policy_categories_table.php` và seed dữ liệu ban đầu cho 2 danh mục `bm` và `via`. Chạy `php artisan migrate` thành công.
+      - Tạo Model `PolicyCategoryModel.php` (`key`, `name_vi`, `name_en`, `icon`, `sort_order`, `is_active`).
+      - Cập nhật `FaqController.php`: Bổ sung `storePolicyCategory`, `updatePolicyCategory`, `destroyPolicyCategory` (có kiểm tra nếu danh mục đang được sử dụng ở quy định bảo hành thì từ chối xóa để bảo vệ toàn vẹn dữ liệu). Cập nhật validation `category` trong `storePolicy` và `updatePolicy` thành `max:50`. Cập nhật `indexPublic` và `indexAdmin` trả về danh sách `categories`.
+      - Đăng ký API routes trong `routes/api.php` (`/admin/policy-categories*`).
+      - Viết unit tests kiểm tra CRUD danh mục trong `FaqTest.php`. Nâng tổng số test backend lên **136/136 PASSED (100%)**, 928 assertions.
+    - **Frontend (`isocalmarket-web`)**:
+      - Cập nhật `FaqService` (`faq.service.ts`): Bổ sung interface `PolicyCategoryItem` và các hàm `createPolicyCategory`, `updatePolicyCategory`, `deletePolicyCategory`.
+      - Cập nhật `AdminFaqsComponent` (`admin-faqs.component.ts` & `.html`): Bổ sung Tab "Danh mục áp dụng" hiển thị bảng danh mục, Modal Thêm/Sửa/Xóa danh mục áp dụng và tự động đồng bộ ô Select danh mục trong modal Quy định bảo hành.
+      - Đồng bộ giao diện thanh Tab chính trong Admin FAQs (`/admin/faqs`) khớp 100% kiểu dáng thiết kế Tab tinh tế của trang Cấu hình hệ thống (`/admin/settings`) (đường viền dưới `border-b-2`, highlight `text-primary`, icon chỉn chu).
+      - Cập nhật `FaqComponent` (`faq.component.ts` & `.html`): Tự động chuyển đổi các Tab danh mục theo dữ liệu động nhận từ API Backend, hiển thị tiêu đề và nội dung bảo hành khớp với từng danh mục được chọn.
+      - Bổ sung từ điển đa ngôn ngữ EN/VI trong `LanguageService.ts`.
+      - Biên dịch Angular Frontend (`npm run build`) thành công **100% SUCCESS, 0 ERRORS**.
+  - **Xác nhận**: Tích hợp hoàn hảo tính năng Quản lý động Thêm/Sửa/Xóa Danh mục áp dụng cho Chính sách Bảo hành và FAQ!
+
 - **[TÍCH HỢP BOT TELEGRAM THÔNG BÁO TỰ ĐỘNG KHO HÀNG MỚI VÀ ĐƠN HÀNG VỪA MUA (TELEGRAM BOT NOTIFICATION INTEGRATION)]**:
   - **Mô tả yêu cầu**:
     - Tích hợp hệ thống Bot Telegram thông báo tự động (`isocalmarketnoti_bot`) cho cả Quản trị viên (`/admin/settings/general`) và Người dùng cá nhân (`/profile/notifications`).
