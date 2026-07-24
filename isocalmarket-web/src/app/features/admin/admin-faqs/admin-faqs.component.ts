@@ -1,6 +1,7 @@
 import { Component, OnInit, inject, signal, computed } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
+import { ActivatedRoute, Router } from '@angular/router';
 import { PageHeaderComponent } from '@shared/components/page-header/page-header.component';
 import { IconComponent } from '@shared/components/icon/icon.component';
 import { TableComponent, TableColumn, TableCellDirective } from '@shared/components/table/table.component';
@@ -9,6 +10,7 @@ import { ButtonComponent } from '@shared/components/button/button.component';
 import { BadgeComponent } from '@shared/components/badge/badge.component';
 import { CustomSwitchComponent } from '@shared/components/custom-switch/custom-switch.component';
 import { CustomSelectComponent } from '@shared/components/custom-select/custom-select.component';
+import { PaginationComponent } from '@shared/components/pagination/pagination.component';
 import { TooltipDirective } from '@shared/components/tooltip/tooltip.directive';
 import { TranslatePipe } from '@shared/pipes/translate.pipe';
 import { FaqService, WarrantyPolicyItem, FaqItem, PolicyCategoryItem } from '@core/services/faq.service';
@@ -30,6 +32,7 @@ import { LanguageService } from '@core/services/language.service';
     BadgeComponent,
     CustomSwitchComponent,
     CustomSelectComponent,
+    PaginationComponent,
     TooltipDirective,
     TranslatePipe
   ],
@@ -40,14 +43,41 @@ export class AdminFaqsComponent implements OnInit {
   private readonly faqService = inject(FaqService);
   private readonly toast = inject(ToastService);
   public readonly lang = inject(LanguageService);
+  private readonly route = inject(ActivatedRoute);
+  private readonly router = inject(Router);
 
-  public activeTab = signal<'policies' | 'categories' | 'faqs'>('policies');
+  public activeTab = signal<'policies' | 'categories' | 'faqs'>('categories');
   public isLoading = signal<boolean>(true);
   public isSubmitting = signal<boolean>(false);
 
   public categories = signal<PolicyCategoryItem[]>([]);
   public policies = signal<WarrantyPolicyItem[]>([]);
   public faqs = signal<FaqItem[]>([]);
+
+  // Pagination states
+  public categoryPage = signal<number>(1);
+  public readonly categoryPageSize = 10;
+  public readonly categoryTotalPages = computed(() => Math.ceil(this.categories().length / this.categoryPageSize) || 1);
+  public readonly paginatedCategories = computed(() => {
+    const start = (this.categoryPage() - 1) * this.categoryPageSize;
+    return this.categories().slice(start, start + this.categoryPageSize);
+  });
+
+  public policyPage = signal<number>(1);
+  public readonly policyPageSize = 10;
+  public readonly policyTotalPages = computed(() => Math.ceil(this.policies().length / this.policyPageSize) || 1);
+  public readonly paginatedPolicies = computed(() => {
+    const start = (this.policyPage() - 1) * this.policyPageSize;
+    return this.policies().slice(start, start + this.policyPageSize);
+  });
+
+  public faqPage = signal<number>(1);
+  public readonly faqPageSize = 10;
+  public readonly faqTotalPages = computed(() => Math.ceil(this.faqs().length / this.faqPageSize) || 1);
+  public readonly paginatedFaqs = computed(() => {
+    const start = (this.faqPage() - 1) * this.faqPageSize;
+    return this.faqs().slice(start, start + this.faqPageSize);
+  });
 
   // Policy Category Modal State
   public isCategoryModalOpen = signal<boolean>(false);
@@ -176,7 +206,23 @@ export class AdminFaqsComponent implements OnInit {
   ];
 
   public ngOnInit(): void {
+    this.route.queryParams.subscribe(params => {
+      const tab = params['tab'];
+      if (tab === 'categories' || tab === 'policies' || tab === 'faqs') {
+        this.activeTab.set(tab);
+      }
+    });
+
     this.loadData();
+  }
+
+  public changeTab(tab: 'categories' | 'policies' | 'faqs'): void {
+    this.activeTab.set(tab);
+    this.router.navigate([], {
+      relativeTo: this.route,
+      queryParams: { tab },
+      queryParamsHandling: 'merge'
+    });
   }
 
   public loadData(): void {

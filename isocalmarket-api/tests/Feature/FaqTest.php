@@ -229,4 +229,93 @@ class FaqTest extends TestCase
             ])
             ->assertStatus(403);
     }
+
+    public function test_flow_create_new_policy_category_and_policy_and_verify_public_api(): void
+    {
+        $admin = UserModel::create([
+            'username' => 'admin_flow_tester',
+            'name' => 'Admin Flow Tester',
+            'email' => 'admin_flow_tester@example.com',
+            'password' => Hash::make('Password123!@#'),
+            'role' => 'admin',
+            'balance' => 0,
+            'google2fa_enabled' => false,
+        ]);
+
+        $token = $this->createTokenForUser($admin);
+
+        // Bước 1: Tạo Danh mục áp dụng mới "Proxy Dân Cư"
+        $catResponse = $this->withToken($token)
+            ->postJson('/api/v1/admin/policy-categories', [
+                'key' => 'proxy_dan_cu',
+                'name_vi' => 'Proxy Dân Cư',
+                'name_en' => 'Residential Proxy',
+                'icon' => 'globe',
+                'sort_order' => 30,
+                'is_active' => true,
+            ]);
+
+        $catResponse->assertStatus(201)
+            ->assertJsonPath('success', true)
+            ->assertJsonPath('data.key', 'proxy_dan_cu');
+
+        $categoryKey = $catResponse->json('data.key');
+
+        // Bước 2: Tạo Quy định Chấp nhận Bảo hành cho danh mục "Proxy Dân Cư" vừa tạo
+        $acceptedPolicyResponse = $this->withToken($token)
+            ->postJson('/api/v1/admin/warranty-policies', [
+                'category' => $categoryKey,
+                'type' => 'accepted',
+                'content_vi' => 'Bảo hành 1 đổi 1 trong 24 giờ nếu IP Proxy bị hỏng kết nối',
+                'content_en' => '1-to-1 warranty replacement within 24h if Proxy IP connection fails',
+                'tag_vi' => '24 giờ',
+                'tag_en' => '24 hours',
+                'tag_color' => 'emerald',
+                'sort_order' => 10,
+                'is_active' => true,
+            ]);
+
+        $acceptedPolicyResponse->assertStatus(201)
+            ->assertJsonPath('success', true)
+            ->assertJsonPath('data.category', 'proxy_dan_cu');
+
+        // Bước 3: Tạo Quy định Từ chối Bảo hành cho danh mục "Proxy Dân Cư" vừa tạo
+        $rejectedPolicyResponse = $this->withToken($token)
+            ->postJson('/api/v1/admin/warranty-policies', [
+                'category' => $categoryKey,
+                'type' => 'rejected',
+                'content_vi' => 'Từ chối bảo hành nếu tự ý đỗi cấu hình Port hoặc Proxy bị lạm dụng spam',
+                'content_en' => 'Warranty rejected if Port settings modified or Proxy abused for spam',
+                'tag_vi' => 'Từ chối',
+                'tag_en' => 'Rejected',
+                'tag_color' => 'rose',
+                'sort_order' => 20,
+                'is_active' => true,
+            ]);
+
+        $rejectedPolicyResponse->assertStatus(201)
+            ->assertJsonPath('success', true)
+            ->assertJsonPath('data.category', 'proxy_dan_cu');
+
+        // Bước 4: Gọi API công khai GET /api/v1/faqs kiểm tra xem Danh mục mới và Quy định mới đã tự động hiển thị đầy đủ
+        $publicResponse = $this->getJson('/api/v1/faqs');
+
+        $publicResponse->assertStatus(200)
+            ->assertJsonPath('success', true);
+
+        $categories = $publicResponse->json('categories');
+        $policies = $publicResponse->json('policies');
+
+        // Kiểm tra danh mục "Proxy Dân Cư" có mặt trong danh sách
+        $foundCat = collect($categories)->firstWhere('key', 'proxy_dan_cu');
+        $this->assertNotNull($foundCat, 'Danh mục Proxy Dân Cư phải có mặt trong API công khai');
+        $this->assertEquals('Proxy Dân Cư', $foundCat['name_vi']);
+        $this->assertEquals('Residential Proxy', $foundCat['name_en']);
+
+        // Kiểm tra các quy định thuộc danh mục "Proxy Dân Cư"
+        $proxyPolicies = collect($policies)->where('category', 'proxy_dan_cu')->values();
+        $this->assertCount(2, $proxyPolicies, 'Phải có 2 quy định bảo hành thuộc danh mục Proxy Dân Cư');
+        $this->assertEquals('Bảo hành 1 đổi 1 trong 24 giờ nếu IP Proxy bị hỏng kết nối', $proxyPolicies[0]['content_vi']);
+        $this->assertEquals('Từ chối bảo hành nếu tự ý đỗi cấu hình Port hoặc Proxy bị lạm dụng spam', $proxyPolicies[1]['content_vi']);
+    }
 }

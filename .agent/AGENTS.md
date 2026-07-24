@@ -25,11 +25,13 @@
       - Tạo Model `PolicyCategoryModel.php` (`key`, `name_vi`, `name_en`, `icon`, `sort_order`, `is_active`).
       - Cập nhật `FaqController.php`: Bổ sung `storePolicyCategory`, `updatePolicyCategory`, `destroyPolicyCategory` (có kiểm tra nếu danh mục đang được sử dụng ở quy định bảo hành thì từ chối xóa để bảo vệ toàn vẹn dữ liệu). Cập nhật validation `category` trong `storePolicy` và `updatePolicy` thành `max:50`. Cập nhật `indexPublic` và `indexAdmin` trả về danh sách `categories`.
       - Đăng ký API routes trong `routes/api.php` (`/admin/policy-categories*`).
-      - Viết unit tests kiểm tra CRUD danh mục trong `FaqTest.php`. Nâng tổng số test backend lên **136/136 PASSED (100%)**, 928 assertions.
+      - Viết unit tests kiểm tra CRUD danh mục và luồng tự động cập nhật quy định thuộc danh mục mới trong `FaqTest.php`. Nâng tổng số test backend lên **137/137 PASSED (100%)**, 945 assertions.
     - **Frontend (`isocalmarket-web`)**:
       - Cập nhật `FaqService` (`faq.service.ts`): Bổ sung interface `PolicyCategoryItem` và các hàm `createPolicyCategory`, `updatePolicyCategory`, `deletePolicyCategory`.
       - Cập nhật `AdminFaqsComponent` (`admin-faqs.component.ts` & `.html`): Bổ sung Tab "Danh mục áp dụng" hiển thị bảng danh mục, Modal Thêm/Sửa/Xóa danh mục áp dụng và tự động đồng bộ ô Select danh mục trong modal Quy định bảo hành.
       - Đồng bộ giao diện thanh Tab chính trong Admin FAQs (`/admin/faqs`) khớp 100% kiểu dáng thiết kế Tab tinh tế của trang Cấu hình hệ thống (`/admin/settings`) (đường viền dưới `border-b-2`, highlight `text-primary`, icon chỉn chu).
+      - Tích hợp điều hướng Route cho từng Tab (`?tab=categories`, `?tab=policies`, `?tab=faqs` tại trang Quản trị và `?tab=bm`, `?tab=via` tại trang công khai `/faq`): Khi tải lại trang hoặc truy cập URL trực tiếp sẽ mở đúng Tab đã lưu.
+      - Tích hợp bộ phân trang chuẩn `<app-pagination>` cho tất cả các bảng bao gồm Danh mục áp dụng, Quy định bảo hành và FAQ (hiển thị 10 mục / trang với đầy đủ bộ nút chuyển trang).
       - Cập nhật `FaqComponent` (`faq.component.ts` & `.html`): Tự động chuyển đổi các Tab danh mục theo dữ liệu động nhận từ API Backend, hiển thị tiêu đề và nội dung bảo hành khớp với từng danh mục được chọn.
       - Bổ sung từ điển đa ngôn ngữ EN/VI trong `LanguageService.ts`.
       - Biên dịch Angular Frontend (`npm run build`) thành công **100% SUCCESS, 0 ERRORS**.

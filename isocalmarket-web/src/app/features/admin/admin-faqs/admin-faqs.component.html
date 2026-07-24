@@ -46,10 +46,12 @@
   </app-page-header>
 
   <!-- Main Tabs Switcher (Matching Admin Settings tab design) -->
-  <div class="flex items-center gap-2 border-b border-slate-200/50 dark:border-slate-800/50 overflow-x-auto scrollbar-none whitespace-nowrap flex-nowrap">
+  <div
+    class="flex items-center gap-2 border-b border-slate-200/50 dark:border-slate-800/50 overflow-x-auto scrollbar-none whitespace-nowrap flex-nowrap"
+  >
     <button
       type="button"
-      (click)="activeTab.set('categories')"
+      (click)="changeTab('categories')"
       class="px-5 py-3 border-b-2 font-bold text-sm transition-colors flex items-center gap-2 cursor-pointer -mb-px whitespace-nowrap"
       [class.border-primary]="activeTab() === 'categories'"
       [class.text-primary]="activeTab() === 'categories'"
@@ -57,6 +59,7 @@
       [class.text-slate-500]="activeTab() !== 'categories'"
       [class.hover:text-slate-800]="activeTab() !== 'categories'"
       [class.dark:hover:text-slate-200]="activeTab() !== 'categories'"
+      [appTooltip]="'Quản lý danh sách các Danh mục áp dụng chính sách'"
     >
       <app-icon name="package" class="w-4 h-4" />
       <span>Danh mục áp dụng</span>
@@ -64,7 +67,7 @@
 
     <button
       type="button"
-      (click)="activeTab.set('policies')"
+      (click)="changeTab('policies')"
       class="px-5 py-3 border-b-2 font-bold text-sm transition-colors flex items-center gap-2 cursor-pointer -mb-px whitespace-nowrap"
       [class.border-primary]="activeTab() === 'policies'"
       [class.text-primary]="activeTab() === 'policies'"
@@ -72,6 +75,7 @@
       [class.text-slate-500]="activeTab() !== 'policies'"
       [class.hover:text-slate-800]="activeTab() !== 'policies'"
       [class.dark:hover:text-slate-200]="activeTab() !== 'policies'"
+      [appTooltip]="'Quản lý danh sách các Quy định Chấp nhận & Từ chối bảo hành'"
     >
       <app-icon name="shield" class="w-4 h-4" />
       <span>Quy định bảo hành</span>
@@ -79,7 +83,7 @@
 
     <button
       type="button"
-      (click)="activeTab.set('faqs')"
+      (click)="changeTab('faqs')"
       class="px-5 py-3 border-b-2 font-bold text-sm transition-colors flex items-center gap-2 cursor-pointer -mb-px whitespace-nowrap"
       [class.border-primary]="activeTab() === 'faqs'"
       [class.text-primary]="activeTab() === 'faqs'"
@@ -87,6 +91,7 @@
       [class.text-slate-500]="activeTab() !== 'faqs'"
       [class.hover:text-slate-800]="activeTab() !== 'faqs'"
       [class.dark:hover:text-slate-200]="activeTab() !== 'faqs'"
+      [appTooltip]="'Quản lý các câu hỏi thường gặp FAQ'"
     >
       <app-icon name="faq" class="w-4 h-4" />
       <span>{{ 'faq.tab_faqs' | translate }}</span>
@@ -95,11 +100,7 @@
 
   <!-- TAB 0: POLICY CATEGORIES TABLE -->
   <div *ngIf="activeTab() === 'categories'" app-card class="overflow-hidden !p-0">
-    <app-table
-      [columns]="categoryColumns"
-      [data]="categories()"
-      [loading]="isLoading()"
-    >
+    <app-table [columns]="categoryColumns" [data]="paginatedCategories()" [loading]="isLoading()">
       <!-- Key -->
       <ng-template appTableCell="key" let-row="row">
         <span
@@ -112,21 +113,30 @@
 
       <!-- Name VI -->
       <ng-template appTableCell="name_vi" let-row="row">
-        <span class="text-xs font-bold text-slate-800 dark:text-slate-200">
+        <span
+          class="text-xs font-bold text-slate-800 dark:text-slate-200"
+          [appTooltip]="'Tên danh mục Tiếng Việt: ' + row.name_vi"
+        >
           🇻🇳 {{ row.name_vi }}
         </span>
       </ng-template>
 
       <!-- Name EN -->
       <ng-template appTableCell="name_en" let-row="row">
-        <span class="text-xs font-bold text-slate-600 dark:text-slate-400">
+        <span
+          class="text-xs font-bold text-slate-600 dark:text-slate-400"
+          [appTooltip]="'Tên danh mục Tiếng Anh: ' + row.name_en"
+        >
           🇬🇧 {{ row.name_en }}
         </span>
       </ng-template>
 
       <!-- Icon -->
       <ng-template appTableCell="icon" let-row="row">
-        <div class="flex items-center justify-center">
+        <div
+          class="flex items-center justify-center"
+          [appTooltip]="'Mã biểu tượng Icon: ' + (row.icon || 'package')"
+        >
           <app-icon [name]="row.icon || 'package'" class="w-4 h-4 text-primary" />
         </div>
       </ng-template>
@@ -135,7 +145,7 @@
       <ng-template appTableCell="sort_order" let-row="row">
         <span
           class="font-extrabold text-xs text-slate-700 dark:text-slate-300"
-          [appTooltip]="'Thứ tự ưu tiên: ' + row.sort_order"
+          [appTooltip]="'Thứ tự ưu tiên sắp xếp: ' + row.sort_order"
         >
           {{ row.sort_order }}
         </span>
@@ -143,12 +153,13 @@
 
       <!-- Active Status Switch -->
       <ng-template appTableCell="is_active" let-row="row">
-        <div class="flex items-center justify-center gap-2">
-          <app-badge
-            [variant]="row.is_active ? 'success' : 'danger'"
-            size="md"
-            rounded="md"
-          >
+        <div
+          class="flex items-center justify-center gap-2"
+          [appTooltip]="
+            row.is_active ? 'Đang bật hiển thị - Nhấp switch để ẩn' : 'Đang ẩn - Nhấp switch để bật'
+          "
+        >
+          <app-badge [variant]="row.is_active ? 'success' : 'danger'" size="md" rounded="md">
             {{ (row.is_active ? 'cat.status_active' : 'cat.status_inactive') | translate }}
           </app-badge>
           <app-custom-switch
@@ -180,20 +191,31 @@
         </div>
       </ng-template>
     </app-table>
+
+    <!-- Pagination for Policy Categories -->
+    <div
+      *ngIf="categories().length > categoryPageSize"
+      class="p-4 border-t border-slate-100 dark:border-slate-800"
+    >
+      <app-pagination
+        [currentPage]="categoryPage()"
+        [totalPages]="categoryTotalPages()"
+        [totalItems]="categories().length"
+        [itemsPerPage]="categoryPageSize"
+        [itemName]="'danh mục'"
+        (pageChange)="categoryPage.set($event)"
+      />
+    </div>
   </div>
 
   <!-- TAB 1: WARRANTY POLICIES TABLE -->
   <div *ngIf="activeTab() === 'policies'" app-card class="overflow-hidden !p-0">
-    <app-table
-      [columns]="policyColumns"
-      [data]="policies()"
-      [loading]="isLoading()"
-    >
+    <app-table [columns]="policyColumns" [data]="paginatedPolicies()" [loading]="isLoading()">
       <!-- Category -->
       <ng-template appTableCell="category" let-row="row">
         <span
           class="px-2.5 py-1 rounded-lg text-xs font-black uppercase inline-block whitespace-nowrap bg-indigo-100 text-indigo-700 dark:bg-indigo-950/80 dark:text-indigo-300"
-          [appTooltip]="getCategoryLabel(row.category)"
+          [appTooltip]="'Danh mục áp dụng: ' + getCategoryLabel(row.category)"
         >
           {{ getCategoryLabel(row.category) }}
         </span>
@@ -202,9 +224,15 @@
       <!-- Type -->
       <ng-template appTableCell="type" let-row="row">
         <span
-          [class]="row.type === 'accepted' ? 'bg-emerald-100 text-emerald-700 dark:bg-emerald-950/80 dark:text-emerald-300' : 'bg-rose-100 text-rose-700 dark:bg-rose-950/80 dark:text-rose-300'"
+          [class]="
+            row.type === 'accepted'
+              ? 'bg-emerald-100 text-emerald-700 dark:bg-emerald-950/80 dark:text-emerald-300'
+              : 'bg-rose-100 text-rose-700 dark:bg-rose-950/80 dark:text-rose-300'
+          "
           class="px-2.5 py-1 rounded-lg text-xs font-black uppercase inline-block whitespace-nowrap"
-          [appTooltip]="row.type === 'accepted' ? 'Quy định Chấp nhận bảo hành' : 'Quy định Từ chối bảo hành'"
+          [appTooltip]="
+            row.type === 'accepted' ? 'Quy định Chấp nhận bảo hành' : 'Quy định Từ chối bảo hành'
+          "
         >
           {{ row.type === 'accepted' ? 'Chấp nhận' : 'Từ chối' }}
         </span>
@@ -261,7 +289,7 @@
       <ng-template appTableCell="sort_order" let-row="row">
         <span
           class="font-extrabold text-xs text-slate-700 dark:text-slate-300"
-          [appTooltip]="'Thứ tự ưu tiên: ' + row.sort_order"
+          [appTooltip]="'Thứ tự ưu tiên sắp xếp: ' + row.sort_order"
         >
           {{ row.sort_order }}
         </span>
@@ -269,18 +297,18 @@
 
       <!-- Active Status Switch -->
       <ng-template appTableCell="is_active" let-row="row">
-        <div class="flex items-center justify-center gap-2">
-          <app-badge
-            [variant]="row.is_active ? 'success' : 'danger'"
-            size="md"
-            rounded="md"
-          >
+        <div
+          class="flex items-center justify-center gap-2"
+          [appTooltip]="
+            row.is_active
+              ? 'Đang hiển thị ở Cửa hàng - Nhấp switch để ẩn'
+              : 'Đang ẩn - Nhấp switch để hiển thị'
+          "
+        >
+          <app-badge [variant]="row.is_active ? 'success' : 'danger'" size="md" rounded="md">
             {{ (row.is_active ? 'cat.status_active' : 'cat.status_inactive') | translate }}
           </app-badge>
-          <app-custom-switch
-            [ngModel]="row.is_active"
-            (ngModelChange)="togglePolicyStatus(row)"
-          />
+          <app-custom-switch [ngModel]="row.is_active" (ngModelChange)="togglePolicyStatus(row)" />
         </div>
       </ng-template>
 
@@ -306,15 +334,26 @@
         </div>
       </ng-template>
     </app-table>
+
+    <!-- Pagination for Warranty Policies -->
+    <div
+      *ngIf="policies().length > policyPageSize"
+      class="p-4 border-t border-slate-100 dark:border-slate-800"
+    >
+      <app-pagination
+        [currentPage]="policyPage()"
+        [totalPages]="policyTotalPages()"
+        [totalItems]="policies().length"
+        [itemsPerPage]="policyPageSize"
+        [itemName]="'quy định'"
+        (pageChange)="policyPage.set($event)"
+      />
+    </div>
   </div>
 
   <!-- TAB 2: FAQS TABLE -->
   <div *ngIf="activeTab() === 'faqs'" app-card class="overflow-hidden !p-0">
-    <app-table
-      [columns]="faqColumns"
-      [data]="faqs()"
-      [loading]="isLoading()"
-    >
+    <app-table [columns]="faqColumns" [data]="paginatedFaqs()" [loading]="isLoading()">
       <!-- Question VI -->
       <ng-template appTableCell="question_vi" let-row="row">
         <div class="max-w-md">
@@ -324,10 +363,7 @@
           >
             {{ row.question_vi }}
           </p>
-          <p
-            class="text-[11px] text-slate-500 mt-1 line-clamp-2"
-            [appTooltip]="row.answer_vi"
-          >
+          <p class="text-[11px] text-slate-500 mt-1 line-clamp-2" [appTooltip]="row.answer_vi">
             {{ row.answer_vi }}
           </p>
         </div>
@@ -342,10 +378,7 @@
           >
             {{ row.question_en }}
           </p>
-          <p
-            class="text-[11px] text-slate-400 mt-1 line-clamp-2"
-            [appTooltip]="row.answer_en"
-          >
+          <p class="text-[11px] text-slate-400 mt-1 line-clamp-2" [appTooltip]="row.answer_en">
             {{ row.answer_en }}
           </p>
         </div>
@@ -355,7 +388,7 @@
       <ng-template appTableCell="sort_order" let-row="row">
         <span
           class="font-extrabold text-xs text-slate-700 dark:text-slate-300"
-          [appTooltip]="'Thứ tự ưu tiên: ' + row.sort_order"
+          [appTooltip]="'Thứ tự ưu tiên sắp xếp: ' + row.sort_order"
         >
           {{ row.sort_order }}
         </span>
@@ -363,18 +396,18 @@
 
       <!-- Active Status Switch -->
       <ng-template appTableCell="is_active" let-row="row">
-        <div class="flex items-center justify-center gap-2">
-          <app-badge
-            [variant]="row.is_active ? 'success' : 'danger'"
-            size="md"
-            rounded="md"
-          >
+        <div
+          class="flex items-center justify-center gap-2"
+          [appTooltip]="
+            row.is_active
+              ? 'Đang hiển thị ở Cửa hàng - Nhấp switch để ẩn'
+              : 'Đang ẩn - Nhấp switch để hiển thị'
+          "
+        >
+          <app-badge [variant]="row.is_active ? 'success' : 'danger'" size="md" rounded="md">
             {{ (row.is_active ? 'cat.status_active' : 'cat.status_inactive') | translate }}
           </app-badge>
-          <app-custom-switch
-            [ngModel]="row.is_active"
-            (ngModelChange)="toggleFaqStatus(row)"
-          />
+          <app-custom-switch [ngModel]="row.is_active" (ngModelChange)="toggleFaqStatus(row)" />
         </div>
       </ng-template>
 
@@ -400,6 +433,21 @@
         </div>
       </ng-template>
     </app-table>
+
+    <!-- Pagination for FAQs -->
+    <div
+      *ngIf="faqs().length > faqPageSize"
+      class="p-4 border-t border-slate-100 dark:border-slate-800"
+    >
+      <app-pagination
+        [currentPage]="faqPage()"
+        [totalPages]="faqTotalPages()"
+        [totalItems]="faqs().length"
+        [itemsPerPage]="faqPageSize"
+        [itemName]="'câu hỏi'"
+        (pageChange)="faqPage.set($event)"
+      />
+    </div>
   </div>
 
   <!-- POLICY CATEGORY EDIT / CREATE MODAL -->
@@ -413,10 +461,16 @@
       class="bg-white dark:bg-slate-900 rounded-2xl border border-slate-200 dark:border-slate-800 w-full max-w-lg overflow-hidden shadow-2xl animate-in fade-in zoom-in duration-200 cursor-default"
     >
       <!-- Modal Header -->
-      <div class="px-6 py-4 border-b border-slate-100 dark:border-slate-800 flex items-center justify-between bg-slate-50/50 dark:bg-slate-950/30">
-        <h3 class="text-base font-extrabold text-slate-800 dark:text-slate-100 flex items-center gap-2">
+      <div
+        class="px-6 py-4 border-b border-slate-100 dark:border-slate-800 flex items-center justify-between bg-slate-50/50 dark:bg-slate-950/30"
+      >
+        <h3
+          class="text-base font-extrabold text-slate-800 dark:text-slate-100 flex items-center gap-2"
+        >
           <app-icon name="package" class="w-5 h-5 text-primary" />
-          <span>{{ editingCategory() ? 'Chỉnh sửa Danh mục áp dụng' : 'Thêm Danh mục áp dụng mới' }}</span>
+          <span>{{
+            editingCategory() ? 'Chỉnh sửa Danh mục áp dụng' : 'Thêm Danh mục áp dụng mới'
+          }}</span>
         </h3>
         <button
           type="button"
@@ -431,7 +485,9 @@
       <div class="p-6 space-y-4 max-h-[75vh] overflow-y-auto">
         <!-- Name VI -->
         <div class="space-y-1.5">
-          <label class="text-xs font-bold text-slate-700 dark:text-slate-300 uppercase tracking-wider block flex items-center justify-between">
+          <label
+            class="text-xs font-bold text-slate-700 dark:text-slate-300 uppercase tracking-wider block flex items-center justify-between"
+          >
             <span>Tên danh mục (Tiếng Việt 🇻🇳)</span>
             <span class="text-rose-500 font-bold">*</span>
           </label>
@@ -445,7 +501,9 @@
 
         <!-- Name EN -->
         <div class="space-y-1.5">
-          <label class="text-xs font-bold text-slate-700 dark:text-slate-300 uppercase tracking-wider block flex items-center justify-between">
+          <label
+            class="text-xs font-bold text-slate-700 dark:text-slate-300 uppercase tracking-wider block flex items-center justify-between"
+          >
             <span>Tên danh mục (Tiếng Anh 🇬🇧)</span>
             <span class="text-rose-500 font-bold">*</span>
           </label>
@@ -460,7 +518,9 @@
         <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
           <!-- Key -->
           <div class="space-y-1.5">
-            <label class="text-xs font-bold text-slate-600 dark:text-slate-300 uppercase tracking-wider block">
+            <label
+              class="text-xs font-bold text-slate-600 dark:text-slate-300 uppercase tracking-wider block"
+            >
               Mã Key Slug (Để trống tự sinh)
             </label>
             <input
@@ -473,7 +533,9 @@
 
           <!-- Icon -->
           <div class="space-y-1.5">
-            <label class="text-xs font-bold text-slate-600 dark:text-slate-300 uppercase tracking-wider block">
+            <label
+              class="text-xs font-bold text-slate-600 dark:text-slate-300 uppercase tracking-wider block"
+            >
               SVG Icon Name
             </label>
             <input
@@ -488,7 +550,9 @@
         <div class="grid grid-cols-1 sm:grid-cols-2 gap-4 items-center pt-2">
           <!-- Sort Order -->
           <div class="space-y-1.5">
-            <label class="text-xs font-bold text-slate-600 dark:text-slate-300 uppercase tracking-wider block">
+            <label
+              class="text-xs font-bold text-slate-600 dark:text-slate-300 uppercase tracking-wider block"
+            >
               Số thứ tự hiển thị
             </label>
             <input
@@ -502,7 +566,7 @@
           <div class="flex items-center gap-3 pt-5">
             <app-custom-switch
               [checked]="categoryForm().is_active"
-              (checkedChange)="categoryForm.update(f => ({ ...f, is_active: $event }))"
+              (checkedChange)="categoryForm.update((f) => ({ ...f, is_active: $event }))"
             />
             <span class="text-xs font-bold text-slate-700 dark:text-slate-300">
               {{ categoryForm().is_active ? 'Đang bật hiển thị' : 'Ẩn danh mục' }}
@@ -512,7 +576,9 @@
       </div>
 
       <!-- Modal Footer -->
-      <div class="px-6 py-4 border-t border-slate-100 dark:border-slate-800 flex items-center justify-end gap-3 bg-slate-50/50 dark:bg-slate-950/30">
+      <div
+        class="px-6 py-4 border-t border-slate-100 dark:border-slate-800 flex items-center justify-end gap-3 bg-slate-50/50 dark:bg-slate-950/30"
+      >
         <button
           app-button
           [variant]="'cancel'"
@@ -545,10 +611,18 @@
       class="bg-white dark:bg-slate-900 rounded-2xl border border-slate-200 dark:border-slate-800 w-full max-w-2xl overflow-hidden shadow-2xl animate-in fade-in zoom-in duration-200 cursor-default"
     >
       <!-- Modal Header -->
-      <div class="px-6 py-4 border-b border-slate-100 dark:border-slate-800 flex items-center justify-between bg-slate-50/50 dark:bg-slate-950/30">
-        <h3 class="text-base font-extrabold text-slate-800 dark:text-slate-100 flex items-center gap-2">
+      <div
+        class="px-6 py-4 border-b border-slate-100 dark:border-slate-800 flex items-center justify-between bg-slate-50/50 dark:bg-slate-950/30"
+      >
+        <h3
+          class="text-base font-extrabold text-slate-800 dark:text-slate-100 flex items-center gap-2"
+        >
           <app-icon name="shield" class="w-5 h-5 text-primary" />
-          <span>{{ editingPolicy() ? ('faq.modal_edit_policy' | translate) : ('faq.modal_add_policy' | translate) }}</span>
+          <span>{{
+            editingPolicy()
+              ? ('faq.modal_edit_policy' | translate)
+              : ('faq.modal_add_policy' | translate)
+          }}</span>
         </h3>
         <button
           type="button"
@@ -564,7 +638,9 @@
         <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
           <!-- Category Select -->
           <div class="space-y-1.5">
-            <label class="text-xs font-bold text-slate-600 dark:text-slate-300 uppercase tracking-wider block">
+            <label
+              class="text-xs font-bold text-slate-600 dark:text-slate-300 uppercase tracking-wider block"
+            >
               Danh mục áp dụng
             </label>
             <app-custom-select
@@ -572,13 +648,15 @@
               valueKey="value"
               labelKey="label"
               [value]="policyForm().category"
-              (valueChange)="policyForm.update(f => ({ ...f, category: $event }))"
+              (valueChange)="policyForm.update((f) => ({ ...f, category: $event }))"
             />
           </div>
 
           <!-- Type Select -->
           <div class="space-y-1.5">
-            <label class="text-xs font-bold text-slate-600 dark:text-slate-300 uppercase tracking-wider block">
+            <label
+              class="text-xs font-bold text-slate-600 dark:text-slate-300 uppercase tracking-wider block"
+            >
               Loại bảo hành
             </label>
             <app-custom-select
@@ -586,14 +664,16 @@
               valueKey="value"
               labelKey="label"
               [value]="policyForm().type"
-              (valueChange)="policyForm.update(f => ({ ...f, type: $event }))"
+              (valueChange)="policyForm.update((f) => ({ ...f, type: $event }))"
             />
           </div>
         </div>
 
         <!-- Content VI -->
         <div class="space-y-1.5">
-          <label class="text-xs font-bold text-slate-700 dark:text-slate-300 uppercase tracking-wider block flex items-center justify-between">
+          <label
+            class="text-xs font-bold text-slate-700 dark:text-slate-300 uppercase tracking-wider block flex items-center justify-between"
+          >
             <span>Nội dung chính (Tiếng Việt 🇻🇳)</span>
             <span class="text-rose-500 font-bold">*</span>
           </label>
@@ -607,7 +687,9 @@
 
         <!-- Content EN -->
         <div class="space-y-1.5">
-          <label class="text-xs font-bold text-slate-700 dark:text-slate-300 uppercase tracking-wider block flex items-center justify-between">
+          <label
+            class="text-xs font-bold text-slate-700 dark:text-slate-300 uppercase tracking-wider block flex items-center justify-between"
+          >
             <span>Nội dung chính (Tiếng Anh 🇬🇧)</span>
             <span class="text-rose-500 font-bold">*</span>
           </label>
@@ -622,7 +704,9 @@
         <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
           <!-- Sub Content VI -->
           <div class="space-y-1.5">
-            <label class="text-xs font-bold text-slate-600 dark:text-slate-300 uppercase tracking-wider block">
+            <label
+              class="text-xs font-bold text-slate-600 dark:text-slate-300 uppercase tracking-wider block"
+            >
               Ghi chú phụ (Tiếng Việt)
             </label>
             <input
@@ -635,7 +719,9 @@
 
           <!-- Sub Content EN -->
           <div class="space-y-1.5">
-            <label class="text-xs font-bold text-slate-600 dark:text-slate-300 uppercase tracking-wider block">
+            <label
+              class="text-xs font-bold text-slate-600 dark:text-slate-300 uppercase tracking-wider block"
+            >
               Ghi chú phụ (Tiếng Anh)
             </label>
             <input
@@ -650,7 +736,9 @@
         <div class="grid grid-cols-1 sm:grid-cols-3 gap-4">
           <!-- Tag VI -->
           <div class="space-y-1.5">
-            <label class="text-xs font-bold text-slate-600 dark:text-slate-300 uppercase tracking-wider block">
+            <label
+              class="text-xs font-bold text-slate-600 dark:text-slate-300 uppercase tracking-wider block"
+            >
               Tên Nhãn Tag (VI)
             </label>
             <input
@@ -663,7 +751,9 @@
 
           <!-- Tag EN -->
           <div class="space-y-1.5">
-            <label class="text-xs font-bold text-slate-600 dark:text-slate-300 uppercase tracking-wider block">
+            <label
+              class="text-xs font-bold text-slate-600 dark:text-slate-300 uppercase tracking-wider block"
+            >
               Tên Nhãn Tag (EN)
             </label>
             <input
@@ -676,7 +766,9 @@
 
           <!-- Tag Color -->
           <div class="space-y-1.5">
-            <label class="text-xs font-bold text-slate-600 dark:text-slate-300 uppercase tracking-wider block">
+            <label
+              class="text-xs font-bold text-slate-600 dark:text-slate-300 uppercase tracking-wider block"
+            >
               Màu sắc Tag
             </label>
             <app-custom-select
@@ -684,7 +776,7 @@
               valueKey="value"
               labelKey="label"
               [value]="policyForm().tag_color"
-              (valueChange)="policyForm.update(f => ({ ...f, tag_color: $event }))"
+              (valueChange)="policyForm.update((f) => ({ ...f, tag_color: $event }))"
             />
           </div>
         </div>
@@ -692,7 +784,9 @@
         <div class="grid grid-cols-1 sm:grid-cols-2 gap-4 items-center pt-2">
           <!-- Sort Order -->
           <div class="space-y-1.5">
-            <label class="text-xs font-bold text-slate-600 dark:text-slate-300 uppercase tracking-wider block">
+            <label
+              class="text-xs font-bold text-slate-600 dark:text-slate-300 uppercase tracking-wider block"
+            >
               Số thứ tự hiển thị
             </label>
             <input
@@ -706,7 +800,7 @@
           <div class="flex items-center gap-3 pt-5">
             <app-custom-switch
               [checked]="policyForm().is_active"
-              (checkedChange)="policyForm.update(f => ({ ...f, is_active: $event }))"
+              (checkedChange)="policyForm.update((f) => ({ ...f, is_active: $event }))"
             />
             <span class="text-xs font-bold text-slate-700 dark:text-slate-300">
               {{ policyForm().is_active ? 'Đang bật hiển thị ở Cửa hàng' : 'Ẩn khỏi Cửa hàng' }}
@@ -716,7 +810,9 @@
       </div>
 
       <!-- Modal Footer -->
-      <div class="px-6 py-4 border-t border-slate-100 dark:border-slate-800 flex items-center justify-end gap-3 bg-slate-50/50 dark:bg-slate-950/30">
+      <div
+        class="px-6 py-4 border-t border-slate-100 dark:border-slate-800 flex items-center justify-end gap-3 bg-slate-50/50 dark:bg-slate-950/30"
+      >
         <button
           app-button
           [variant]="'cancel'"
@@ -749,10 +845,16 @@
       class="bg-white dark:bg-slate-900 rounded-2xl border border-slate-200 dark:border-slate-800 w-full max-w-2xl overflow-hidden shadow-2xl animate-in fade-in zoom-in duration-200 cursor-default"
     >
       <!-- Modal Header -->
-      <div class="px-6 py-4 border-b border-slate-100 dark:border-slate-800 flex items-center justify-between bg-slate-50/50 dark:bg-slate-950/30">
-        <h3 class="text-base font-extrabold text-slate-800 dark:text-slate-100 flex items-center gap-2">
+      <div
+        class="px-6 py-4 border-b border-slate-100 dark:border-slate-800 flex items-center justify-between bg-slate-50/50 dark:bg-slate-950/30"
+      >
+        <h3
+          class="text-base font-extrabold text-slate-800 dark:text-slate-100 flex items-center gap-2"
+        >
           <app-icon name="faq" class="w-5 h-5 text-primary" />
-          <span>{{ editingFaq() ? ('faq.modal_edit_faq' | translate) : ('faq.modal_add_faq' | translate) }}</span>
+          <span>{{
+            editingFaq() ? ('faq.modal_edit_faq' | translate) : ('faq.modal_add_faq' | translate)
+          }}</span>
         </h3>
         <button
           type="button"
@@ -767,7 +869,9 @@
       <div class="p-6 space-y-4 max-h-[75vh] overflow-y-auto">
         <!-- Question VI -->
         <div class="space-y-1.5">
-          <label class="text-xs font-bold text-slate-700 dark:text-slate-300 uppercase tracking-wider block flex items-center justify-between">
+          <label
+            class="text-xs font-bold text-slate-700 dark:text-slate-300 uppercase tracking-wider block flex items-center justify-between"
+          >
             <span>Câu hỏi (Tiếng Việt 🇻🇳)</span>
             <span class="text-rose-500 font-bold">*</span>
           </label>
@@ -781,7 +885,9 @@
 
         <!-- Answer VI -->
         <div class="space-y-1.5">
-          <label class="text-xs font-bold text-slate-700 dark:text-slate-300 uppercase tracking-wider block flex items-center justify-between">
+          <label
+            class="text-xs font-bold text-slate-700 dark:text-slate-300 uppercase tracking-wider block flex items-center justify-between"
+          >
             <span>Câu trả lời (Tiếng Việt 🇻🇳)</span>
             <span class="text-rose-500 font-bold">*</span>
           </label>
@@ -795,7 +901,9 @@
 
         <!-- Question EN -->
         <div class="space-y-1.5">
-          <label class="text-xs font-bold text-slate-700 dark:text-slate-300 uppercase tracking-wider block flex items-center justify-between">
+          <label
+            class="text-xs font-bold text-slate-700 dark:text-slate-300 uppercase tracking-wider block flex items-center justify-between"
+          >
             <span>Câu hỏi (Tiếng Anh 🇬🇧)</span>
             <span class="text-rose-500 font-bold">*</span>
           </label>
@@ -809,7 +917,9 @@
 
         <!-- Answer EN -->
         <div class="space-y-1.5">
-          <label class="text-xs font-bold text-slate-700 dark:text-slate-300 uppercase tracking-wider block flex items-center justify-between">
+          <label
+            class="text-xs font-bold text-slate-700 dark:text-slate-300 uppercase tracking-wider block flex items-center justify-between"
+          >
             <span>Câu trả lời (Tiếng Anh 🇬🇧)</span>
             <span class="text-rose-500 font-bold">*</span>
           </label>
@@ -824,7 +934,9 @@
         <div class="grid grid-cols-1 sm:grid-cols-2 gap-4 items-center pt-2">
           <!-- Sort Order -->
           <div class="space-y-1.5">
-            <label class="text-xs font-bold text-slate-600 dark:text-slate-300 uppercase tracking-wider block">
+            <label
+              class="text-xs font-bold text-slate-600 dark:text-slate-300 uppercase tracking-wider block"
+            >
               Số thứ tự hiển thị
             </label>
             <input
@@ -838,7 +950,7 @@
           <div class="flex items-center gap-3 pt-5">
             <app-custom-switch
               [checked]="faqForm().is_active"
-              (checkedChange)="faqForm.update(f => ({ ...f, is_active: $event }))"
+              (checkedChange)="faqForm.update((f) => ({ ...f, is_active: $event }))"
             />
             <span class="text-xs font-bold text-slate-700 dark:text-slate-300">
               {{ faqForm().is_active ? 'Đang bật hiển thị ở Cửa hàng' : 'Ẩn khỏi Cửa hàng' }}
@@ -848,7 +960,9 @@
       </div>
 
       <!-- Modal Footer -->
-      <div class="px-6 py-4 border-t border-slate-100 dark:border-slate-800 flex items-center justify-end gap-3 bg-slate-50/50 dark:bg-slate-950/30">
+      <div
+        class="px-6 py-4 border-t border-slate-100 dark:border-slate-800 flex items-center justify-end gap-3 bg-slate-50/50 dark:bg-slate-950/30"
+      >
         <button
           app-button
           [variant]="'cancel'"
@@ -880,7 +994,9 @@
       (click)="$event.stopPropagation()"
       class="bg-white dark:bg-slate-900 rounded-2xl border border-slate-200 dark:border-slate-800 w-full max-w-md p-6 space-y-4 shadow-2xl animate-in fade-in zoom-in duration-200 cursor-default"
     >
-      <div class="w-12 h-12 rounded-2xl bg-rose-100 dark:bg-rose-950/80 text-rose-600 dark:text-rose-400 flex items-center justify-center mx-auto">
+      <div
+        class="w-12 h-12 rounded-2xl bg-rose-100 dark:bg-rose-950/80 text-rose-600 dark:text-rose-400 flex items-center justify-center mx-auto"
+      >
         <app-icon name="trash" class="w-6 h-6" />
       </div>
       <div class="text-center space-y-1.5">

@@ -11,6 +11,7 @@
           *ngIf="stateService.isAdmin()"
           routerLink="/admin/faqs"
           class="px-4 py-2.5 text-xs sm:text-sm font-extrabold text-primary bg-primary/10 border border-primary/20 rounded-xl hover:bg-primary hover:text-white transition-all cursor-pointer flex items-center gap-2 shadow-2xs"
+          [appTooltip]="'Chuyển sang trang Quản trị chính sách & FAQ'"
         >
           <app-icon name="edit" class="w-4 h-4 shrink-0" />
           <span>{{ 'faq.admin_manage_btn' | translate }}</span>
@@ -29,6 +30,7 @@
             [class.text-slate-600]="policyType() !== 'all'"
             [class.dark:text-slate-400]="policyType() !== 'all'"
             class="px-3 py-1.5 rounded-lg transition-all cursor-pointer"
+            [appTooltip]="'Lọc tất cả quy định bảo hành'"
           >
             {{ 'faq.filter_all' | translate }}
           </button>
@@ -40,6 +42,7 @@
             [class.text-slate-600]="policyType() !== 'accepted'"
             [class.dark:text-slate-400]="policyType() !== 'accepted'"
             class="px-3 py-1.5 rounded-lg transition-all cursor-pointer"
+            [appTooltip]="'Chỉ hiển thị các quy định Chấp nhận bảo hành'"
           >
             {{ 'faq.filter_accepted' | translate }}
           </button>
@@ -51,6 +54,7 @@
             [class.text-slate-600]="policyType() !== 'rejected'"
             [class.dark:text-slate-400]="policyType() !== 'rejected'"
             class="px-3 py-1.5 rounded-lg transition-all cursor-pointer"
+            [appTooltip]="'Chỉ hiển thị các quy định Từ chối bảo hành'"
           >
             {{ 'faq.filter_rejected' | translate }}
           </button>
@@ -100,6 +104,7 @@
           [class.text-slate-600]="activeTab() !== cat.key"
           [class.dark:text-slate-400]="activeTab() !== cat.key"
           class="warranty-tab-btn flex-1 min-w-[140px] py-3 px-4 rounded-xl font-bold text-xs sm:text-sm tracking-wide uppercase flex items-center justify-center gap-2.5 transition-all cursor-pointer hover:text-blue-600 dark:hover:text-blue-400 whitespace-nowrap"
+          [appTooltip]="'Xem chính sách cho ' + (lang.currentLang() === 'en' ? cat.name_en : cat.name_vi)"
         >
           <app-icon [name]="cat.icon || 'package'" class="w-4 h-4 shrink-0" />
           <span>{{ lang.currentLang() === 'en' ? cat.name_en : cat.name_vi }}</span>
@@ -130,7 +135,10 @@
 
           <div class="grid grid-cols-1 md:grid-cols-2 gap-3.5">
             @for (policy of acceptedPolicies(); track policy.id) {
-              <div class="item-hover-effect p-4 rounded-xl bg-slate-50/80 dark:bg-slate-800/40 border border-slate-200/60 dark:border-slate-800/80 flex items-center justify-between gap-3">
+              <div
+                class="item-hover-effect p-4 rounded-xl bg-slate-50/80 dark:bg-slate-800/40 border border-slate-200/60 dark:border-slate-800/80 flex items-center justify-between gap-3"
+                [appTooltip]="getPolicyContent(policy)"
+              >
                 <div class="flex items-start gap-3 flex-1 min-w-0">
                   <div class="w-6 h-6 rounded-lg bg-emerald-600 text-white font-bold text-xs flex items-center justify-center shrink-0 mt-0.5">
                     <app-icon name="check" class="w-3.5 h-3.5 stroke-[3]" />
@@ -145,7 +153,10 @@
                   </div>
                 </div>
                 <div *ngIf="getPolicyTag(policy)" class="shrink-0">
-                  <span [class]="'inline-flex items-center gap-1.5 px-3 py-1 rounded-full font-bold text-xs ' + getTagBadgeClass(policy.tag_color)">
+                  <span
+                    [class]="'inline-flex items-center gap-1.5 px-3 py-1 rounded-full font-bold text-xs ' + getTagBadgeClass(policy.tag_color)"
+                    [appTooltip]="'Thời hạn / Nhãn điều kiện: ' + getPolicyTag(policy)"
+                  >
                     <app-icon [name]="getTagIconName(policy.tag_color)" class="w-3.5 h-3.5" />
                     <span>{{ getPolicyTag(policy) }}</span>
                   </span>
@@ -170,7 +181,10 @@
 
           <div class="grid grid-cols-1 md:grid-cols-2 gap-3.5">
             @for (policy of rejectedPolicies(); track policy.id) {
-              <div class="item-hover-effect p-4 rounded-xl bg-rose-50/40 dark:bg-rose-950/20 border border-rose-200/50 dark:border-rose-900/40 flex items-center justify-between gap-3">
+              <div
+                class="item-hover-effect p-4 rounded-xl bg-rose-50/40 dark:bg-rose-950/20 border border-rose-200/50 dark:border-rose-900/40 flex items-center justify-between gap-3"
+                [appTooltip]="getPolicyContent(policy)"
+              >
                 <div class="flex items-start gap-3 flex-1 min-w-0">
                   <div class="w-6 h-6 rounded-lg bg-rose-600 text-white font-bold text-xs flex items-center justify-center shrink-0 mt-0.5">
                     <app-icon name="close" class="w-3.5 h-3.5 stroke-[3]" />
@@ -185,7 +199,10 @@
                   </div>
                 </div>
                 <div *ngIf="getPolicyTag(policy)" class="shrink-0">
-                  <span [class]="'inline-flex items-center gap-1.5 px-3 py-1 rounded-full font-bold text-xs ' + getTagBadgeClass(policy.tag_color || 'rose')">
+                  <span
+                    [class]="'inline-flex items-center gap-1.5 px-3 py-1 rounded-full font-bold text-xs ' + getTagBadgeClass(policy.tag_color || 'rose')"
+                    [appTooltip]="'Thời hạn / Nhãn điều kiện: ' + getPolicyTag(policy)"
+                  >
                     <app-icon [name]="getTagIconName(policy.tag_color || 'rose')" class="w-3.5 h-3.5" />
                     <span>{{ getPolicyTag(policy) }}</span>
                   </span>
@@ -229,6 +246,7 @@
             type="button"
             (click)="toggleFaq(item.id)"
             class="w-full px-5 py-4 text-left flex items-center justify-between gap-4 cursor-pointer hover:bg-slate-50/50 dark:hover:bg-slate-800/30 transition-colors"
+            [appTooltip]="'Bấm để ' + (item.isOpen ? 'thu gọn' : 'xem giải đáp chi tiết')"
           >
             <span class="font-semibold text-sm text-slate-800 dark:text-slate-200">
               {{ getFaqQuestion(item) }}

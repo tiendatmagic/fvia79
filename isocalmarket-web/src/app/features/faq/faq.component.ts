@@ -1,9 +1,10 @@
 import { Component, OnInit, inject, signal, computed } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { RouterModule } from '@angular/router';
+import { RouterModule, ActivatedRoute, Router } from '@angular/router';
 import { PageHeaderComponent } from '@shared/components/page-header/page-header.component';
 import { IconComponent } from '@shared/components/icon/icon.component';
 import { LanguageService } from '@core/services/language.service';
+import { TooltipDirective } from '@shared/components/tooltip/tooltip.directive';
 import { TranslatePipe } from '@shared/pipes/translate.pipe';
 import { FaqService, WarrantyPolicyItem, FaqItem, PolicyCategoryItem } from '@core/services/faq.service';
 import { StateService } from '@core/services/state.service';
@@ -265,6 +266,7 @@ const DEFAULT_FALLBACK_CATEGORIES: PolicyCategoryItem[] = [
     RouterModule,
     PageHeaderComponent,
     IconComponent,
+    TooltipDirective,
     TranslatePipe
   ],
   templateUrl: './faq.component.html',
@@ -274,6 +276,8 @@ export class FaqComponent implements OnInit {
   public readonly lang = inject(LanguageService);
   private readonly faqService = inject(FaqService);
   public readonly stateService = inject(StateService);
+  private readonly route = inject(ActivatedRoute);
+  private readonly router = inject(Router);
 
   public categories = signal<PolicyCategoryItem[]>(DEFAULT_FALLBACK_CATEGORIES);
   public activeTab = signal<string>('bm');
@@ -305,6 +309,12 @@ export class FaqComponent implements OnInit {
   });
 
   public ngOnInit(): void {
+    this.route.queryParams.subscribe(params => {
+      if (params['tab']) {
+        this.activeTab.set(params['tab']);
+      }
+    });
+
     this.loadFaqs();
   }
 
@@ -337,6 +347,11 @@ export class FaqComponent implements OnInit {
 
   public setTab(tab: string): void {
     this.activeTab.set(tab);
+    this.router.navigate([], {
+      relativeTo: this.route,
+      queryParams: { tab },
+      queryParamsHandling: 'merge'
+    });
   }
 
   public setPolicyType(type: 'all' | 'accepted' | 'rejected'): void {
