@@ -82,14 +82,14 @@ class AppServiceProvider extends ServiceProvider
             });
         });
         RateLimiter::for('database-backup-export', function (Request $request) {
-            return Limit::perMinute(10)
+            return Limit::perMinute(5)
                 ->by((string) ($request->user()?->id ?? $request->ip()))
                 ->response(fn () => response()->json([
                     'message' => __('messages.database_backup_rate_limited'),
                 ], 429));
         });
         RateLimiter::for('database-backup-restore', function (Request $request) {
-            return Limit::perMinutes(10, 3)
+            return Limit::perMinute(5)
                 ->by((string) ($request->user()?->id ?? $request->ip()))
                 ->response(fn () => response()->json([
                     'message' => __('messages.database_restore_rate_limited'),

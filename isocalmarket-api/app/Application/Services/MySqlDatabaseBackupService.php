@@ -82,6 +82,7 @@ class MySqlDatabaseBackupService
                 $this->dumpTo($preRestorePath);
                 $safetyBackupCreated = true;
                 $importStarted = true;
+                $this->resetDatabase();
                 $this->importFrom($upload->getRealPath());
                 $this->refreshApplicationState();
                 $this->pruneOldBackups($directory);
@@ -102,6 +103,7 @@ class MySqlDatabaseBackupService
 
                 if ($importStarted && $safetyBackupCreated) {
                     try {
+                        $this->resetDatabase();
                         $this->importFrom($preRestorePath);
                         $this->refreshApplicationState();
                         $rollbackSucceeded = true;
@@ -215,6 +217,32 @@ class MySqlDatabaseBackupService
             }
         } finally {
             fclose($stream);
+        }
+    }
+
+    private function resetDatabase(): void
+    {
+        $database = $this->databaseName();
+        $objects = DB::select(
+            'SELECT TABLE_NAME AS object_name, TABLE_TYPE AS object_type
+             FROM information_schema.TABLES
+             WHERE TABLE_SCHEMA = ?
+             ORDER BY CASE WHEN TABLE_TYPE = ? THEN 0 ELSE 1 END',
+            [$database, 'VIEW']
+        );
+
+        DB::statement('SET FOREIGN_KEY_CHECKS=0');
+
+        try {
+            foreach ($objects as $object) {
+                $name = str_replace('`', '``', (string) $object->object_name);
+                $objectType = strtoupper((string) $object->object_type) === 'VIEW'
+                    ? 'VIEW'
+                    : 'TABLE';
+                DB::statement("DROP {$objectType} IF EXISTS `{$name}`");
+            }
+        } finally {
+            DB::statement('SET FOREIGN_KEY_CHECKS=1');
         }
     }
 
