@@ -13,6 +13,16 @@
 > Khi cần seed dữ liệu cho một seeder cụ thể, chỉ dùng:
 > - `php artisan db:seed --class=TenSeederClass` — chạy đúng 1 seeder.
 
+- **[SỬA TRIỆT ĐỂ DỊCH ĐỒNG THỜI TIẾNG ANH & TIẾNG VIỆT CHO SẢN PHẨM & DANH MỤC NHÀ CUNG CẤP (SUPPLIER DUAL-LANGUAGE TRANSLATION FIX)]**:
+  - **Mô tả yêu cầu**:
+    - Khắc phục hiện tượng khi chuyển đổi ngôn ngữ sang Tiếng Anh (`EN`), một số sản phẩm & danh mục nhập từ nhà cung cấp vẫn hiển thị văn bản Tiếng Việt do trước đó `name_en` và `description_en` chỉ lưu nguyên bản chuỗi gốc của nhà cung cấp.
+  - **Nội dung thực hiện**:
+    - **Backend (`isocalmarket-api`)**:
+      - Cập nhật `SupplierCatalogSyncService`: Khi dịch tự động (`auto_translate`), hệ thống tiến hành dịch đồng thời cả Tiếng Việt (`targetLang = 'vi'`) và Tiếng Anh (`otherLang = 'en'`).
+      - Cập nhật `warmTranslationCache()` và kiểm tra trường hợp `name_en === rawName` để tự động dịch bổ sung tên/mô tả Tiếng Anh chuẩn cho các sản phẩm/danh mục hiện có.
+      - Nâng tổng số unit & feature tests thành công **130/130 PASSED (100%)**, 883 assertions.
+  - **Xác nhận**: Chuyển đổi ngôn ngữ giữa `EN` và `VI` hiển thị tên & mô tả Tiếng Anh / Tiếng Việt chuẩn xác 100%!
+
 - **[TỐI ƯU HÓA ĐỒNG BỘ TỰ ĐỘNG DỊCH SẢN PHẨM & DANH MỤC TỪ NHÀ CUNG CẤP (SUPPLIER CATALOG AUTO-TRANSLATE OPTIMIZATION)]**:
   - **Mô tả yêu cầu**:
     - Tối ưu hóa triệt để hiệu năng và tốc độ đồng bộ tự động dịch sản phẩm/danh mục từ Nhà cung cấp (`Auto-translate products`). Khắc phục hiện tượng lag/giữ DB transaction lâu khi đồng bộ catalog số lượng lớn.

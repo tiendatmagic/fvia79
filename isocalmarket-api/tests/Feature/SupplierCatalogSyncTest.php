@@ -524,7 +524,7 @@ class SupplierCatalogSyncTest extends TestCase
         $translationRequestsAfterFirstSync = Http::recorded(
             fn ($request) => str_contains($request->url(), 'translate.googleapis.com')
         )->count();
-        $this->assertSame(3, $translationRequestsAfterFirstSync);
+        $this->assertSame(6, $translationRequestsAfterFirstSync);
 
         $service->sync($supplier->fresh());
         $translationRequestsAfterSecondSync = Http::recorded(

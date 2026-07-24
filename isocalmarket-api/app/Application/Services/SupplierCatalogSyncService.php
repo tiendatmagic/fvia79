@@ -112,63 +112,72 @@ class SupplierCatalogSyncService
 
     private function warmTranslationCache(SupplierModel $supplier, array $catalog): void
     {
-        if (! $supplier->auto_translate) {
-            return;
-        }
+        if ($supplier->auto_translate) {
+            $targetLang = $supplier->target_language ?: 'vi';
+            $otherLang = $targetLang === 'vi' ? 'en' : 'vi';
 
-        $existingCategories = CategoryModel::where('supplier_id', $supplier->id)
-            ->get(['external_id', 'name_vi', 'attributes'])
-            ->keyBy(fn (CategoryModel $category) => (string) $category->external_id);
-        $existingProducts = ProductModel::where('supplier_id', $supplier->id)
-            ->get(['external_id', 'name_vi', 'description_vi', 'attributes'])
-            ->keyBy(fn (ProductModel $product) => (string) $product->external_id);
-        $texts = [];
+            $existingCategories = CategoryModel::where('supplier_id', $supplier->id)
+                ->get(['external_id', 'name_vi', 'name_en', 'attributes'])
+                ->keyBy(fn (CategoryModel $category) => (string) $category->external_id);
+            $existingProducts = ProductModel::where('supplier_id', $supplier->id)
+                ->get(['external_id', 'name_vi', 'name_en', 'description_vi', 'description_en', 'attributes'])
+                ->keyBy(fn (ProductModel $product) => (string) $product->external_id);
+            $textsTarget = [];
+            $textsOther = [];
 
-        foreach ($catalog as $categoryData) {
-            $categoryId = (string) ($categoryData['id'] ?? '');
-            if ($categoryId !== '') {
-                $rawName = (string) ($categoryData['name'] ?? "Category {$categoryId}");
-                $existing = $existingCategories->get($categoryId);
-                $savedRawName = data_get($existing?->attributes, 'raw_name');
+            foreach ($catalog as $categoryData) {
+                $categoryId = (string) ($categoryData['id'] ?? '');
+                if ($categoryId !== '') {
+                    $rawName = (string) ($categoryData['name'] ?? "Category {$categoryId}");
+                    $existing = $existingCategories->get($categoryId);
+                    $savedRawName = data_get($existing?->attributes, 'raw_name');
 
-                if (! $existing || $savedRawName !== $rawName || empty($existing->name_vi)) {
-                    $texts[] = $rawName;
+                    if (! $existing || $savedRawName !== $rawName || empty($existing->{"name_{$targetLang}"})) {
+                        $textsTarget[] = $rawName;
+                    }
+                    if (! $existing || $savedRawName !== $rawName || empty($existing->{"name_{$otherLang}"}) || $existing->{"name_{$otherLang}"} === $rawName) {
+                        $textsOther[] = $rawName;
+                    }
+                }
+
+                foreach (($categoryData['children'] ?? []) as $productData) {
+                    $productId = (string) ($productData['id'] ?? '');
+                    if ($productId === '') {
+                        continue;
+                    }
+
+                    $stock = max(0, (int) ($productData['quantity'] ?? 0));
+                    if (! $supplier->import_out_of_stock && $stock === 0) {
+                        continue;
+                    }
+
+                    $rawName = (string) ($productData['name'] ?? "Product {$productId}");
+                    $rawDescription = $this->normalizeDescription($productData['data']['description'] ?? null);
+                    $existing = $existingProducts->get($productId);
+                    $savedRawName = data_get($existing?->attributes, 'raw_name');
+                    $savedRawDescription = data_get($existing?->attributes, 'raw_desc');
+
+                    if (! $existing || $savedRawName !== $rawName || empty($existing->{"name_{$targetLang}"})) {
+                        $textsTarget[] = $rawName;
+                    }
+                    if (! $existing || $savedRawName !== $rawName || empty($existing->{"name_{$otherLang}"}) || $existing->{"name_{$otherLang}"} === $rawName) {
+                        $textsOther[] = $rawName;
+                    }
+
+                    if ($rawDescription !== null && $rawDescription !== '') {
+                        if (! $existing || $savedRawDescription !== $rawDescription || empty($existing->{"description_{$targetLang}"})) {
+                            $textsTarget[] = $rawDescription;
+                        }
+                        if (! $existing || $savedRawDescription !== $rawDescription || empty($existing->{"description_{$otherLang}"}) || $existing->{"description_{$otherLang}"} === $rawDescription) {
+                            $textsOther[] = $rawDescription;
+                        }
+                    }
                 }
             }
 
-            foreach (($categoryData['children'] ?? []) as $productData) {
-                $productId = (string) ($productData['id'] ?? '');
-                if ($productId === '') {
-                    continue;
-                }
-
-                $stock = max(0, (int) ($productData['quantity'] ?? 0));
-                if (! $supplier->import_out_of_stock && $stock === 0) {
-                    continue;
-                }
-
-                $rawName = (string) ($productData['name'] ?? "Product {$productId}");
-                $rawDescription = $this->normalizeDescription($productData['data']['description'] ?? null);
-                $existing = $existingProducts->get($productId);
-                $savedRawName = data_get($existing?->attributes, 'raw_name');
-                $savedRawDescription = data_get($existing?->attributes, 'raw_desc');
-
-                if (! $existing || $savedRawName !== $rawName || empty($existing->name_vi)) {
-                    $texts[] = $rawName;
-                }
-                if (
-                    $rawDescription !== null
-                    && $rawDescription !== ''
-                    && (! $existing
-                        || $savedRawDescription !== $rawDescription
-                        || empty($existing->description_vi))
-                ) {
-                    $texts[] = $rawDescription;
-                }
-            }
+            $this->translator->translateMany($textsTarget, $targetLang);
+            $this->translator->translateMany($textsOther, $otherLang);
         }
-
-        $this->translator->translateMany($texts, 'vi');
     }
 
     private function upsertCategory(SupplierModel $supplier, array $data): CategoryModel
@@ -192,8 +201,12 @@ class SupplierCatalogSyncService
 
         if ($supplier->auto_translate) {
             $nameVi = $category->name_vi;
+            $nameEn = $category->name_en;
             if (! $category->exists || $savedRawName !== $rawName || empty($nameVi)) {
                 $nameVi = $this->translator->translate($rawName, 'vi') ?? $rawName;
+            }
+            if (! $category->exists || $savedRawName !== $rawName || empty($nameEn) || $nameEn === $rawName) {
+                $nameEn = $this->translator->translate($rawName, 'en') ?? $rawName;
             }
         }
 
@@ -241,8 +254,12 @@ class SupplierCatalogSyncService
 
         if ($supplier->auto_translate) {
             $nameVi = $product->name_vi;
+            $nameEn = $product->name_en;
             if (! $product->exists || $savedRawName !== $rawName || empty($nameVi)) {
                 $nameVi = $this->translator->translate($rawName, 'vi') ?? $rawName;
+            }
+            if (! $product->exists || $savedRawName !== $rawName || empty($nameEn) || $nameEn === $rawName) {
+                $nameEn = $this->translator->translate($rawName, 'en') ?? $rawName;
             }
         }
 
@@ -251,11 +268,19 @@ class SupplierCatalogSyncService
 
         if ($supplier->auto_translate) {
             $descVi = $product->description_vi;
+            $descEn = $product->description_en;
             if (! $product->exists || $savedRawDesc !== $rawDesc || ($rawDesc !== null && empty($descVi))) {
                 if ($rawDesc !== null && trim($rawDesc) !== '') {
                     $descVi = $this->translator->translate($rawDesc, 'vi') ?? $rawDesc;
                 } else {
                     $descVi = null;
+                }
+            }
+            if (! $product->exists || $savedRawDesc !== $rawDesc || ($rawDesc !== null && (empty($descEn) || $descEn === $rawDesc))) {
+                if ($rawDesc !== null && trim($rawDesc) !== '') {
+                    $descEn = $this->translator->translate($rawDesc, 'en') ?? $rawDesc;
+                } else {
+                    $descEn = null;
                 }
             }
         }
