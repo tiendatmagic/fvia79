@@ -20,9 +20,11 @@ use App\Integrations\Suppliers\SupplierConnectorFactory;
 use App\Integrations\Suppliers\SupplierOrderPendingException;
 use App\Integrations\Suppliers\SupplierOutOfStockException;
 use App\Integrations\Suppliers\SupplierPurchaseRejectedException;
+use App\Infrastructure\Persistence\Eloquent\UserModel;
 use Illuminate\Database\QueryException;
 use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Str;
 use Throwable;
 
@@ -211,13 +213,13 @@ class OrderService
             $completedOrder = $this->fulfillPreparedOrder($preparedOrder);
 
             try {
-                $userModel = \App\Infrastructure\Persistence\Eloquent\UserModel::find($userId);
+                $userModel = UserModel::find($userId);
                 $service = $this->telegramService ?? app(TelegramNotificationService::class);
                 if ($userModel) {
                     $service->notifyOrderSuccess($completedOrder, $userModel);
                 }
             } catch (\Throwable $e) {
-                \Illuminate\Support\Facades\Log::error('Telegram order notification error: ' . $e->getMessage());
+                Log::error('Telegram order notification error: ' . $e->getMessage());
             }
 
             return $completedOrder;
