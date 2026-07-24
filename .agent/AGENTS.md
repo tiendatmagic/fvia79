@@ -13,6 +13,21 @@
 > Khi cần seed dữ liệu cho một seeder cụ thể, chỉ dùng:
 > - `php artisan db:seed --class=TenSeederClass` — chạy đúng 1 seeder.
 
+- **[TRIỂN KHẢI CẬP NHẬT LÊN VPS PRODUCTION BẢO TOÀN DỮ LIỆU CSDL (VPS PRODUCTION RE-DEPLOYMENT & DATA PRESERVATION)]**:
+  - **Mô tả yêu cầu**:
+    - Deploy bản cập nhật mới nhất cho cả Frontend và Backend lên VPS production (`https://isocalmarket.com/`).
+    - Tuân thủ tuyệt đối quy tắc **KHÔNG làm mất dữ liệu hiện có trong Database** (chỉ dùng `php artisan migrate --force`, tuyệt đối không dùng `migrate:fresh`).
+  - **Nội dung thực hiện**:
+    - **Frontend (`isocalmarket-web`)**: Biên dịch production (`npm run build`) thành công 100%, đóng gói và upload cập nhật `/var/www/isocalmarket-web`.
+    - **Backend (`isocalmarket-api`)**: Đóng gói mã nguồn mới nhất, upload cập nhật `/var/www/isocalmarket-api`, chạy `composer install --no-dev --optimize-autoloader`.
+    - **Database Migration**: Chạy `php artisan migrate --force` áp dụng các migration mới (`2026_07_24_230000_create_policy_categories_table`) thành công **100% không mất mát dữ liệu**.
+    - **Cấu hình & Service**: Phân quyền `www-data:www-data`, làm sạch và đệm lại cache Laravel (`config:cache`, `route:cache`, `view:cache`), reload `php8.3-fpm` và `nginx`.
+    - **Xác minh**:
+      - `https://isocalmarket.com/` -> HTTP/2 **200 OK**.
+      - `https://isocalmarket.com/api/v1/categories` -> HTTP/2 **200 OK**.
+      - `https://isocalmarket.com/api/v1/faqs` -> HTTP/2 **200 OK** (trả về danh mục bảo hành động mới).
+  - **Xác nhận**: Deploy VPS thành công 100%, giữ nguyên toàn bộ dữ liệu CSDL!
+
 - **[QUẢN LÝ ĐỘNG THÊM SỬA XÓA DANH MỤC ÁP DỤNG CHO CHÍNH SÁCH BẢO HÀNH & FAQ (POLICY CATEGORY DYNAMIC CRUD INTEGRATION)]**:
   - **Mô tả yêu cầu**:
     - Thêm tính năng Quản lý động Danh mục áp dụng (Policy Categories) tại cả 2 trang `/faq` và `/admin/faqs`.
