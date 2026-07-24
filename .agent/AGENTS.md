@@ -13,6 +13,20 @@
 > Khi cần seed dữ liệu cho một seeder cụ thể, chỉ dùng:
 > - `php artisan db:seed --class=TenSeederClass` — chạy đúng 1 seeder.
 
+- **[PHÂN TÍCH VÀ XỬ LÝ LỖI KHÔNG XÓA ĐƯỢC NGƯỜI DÙNG CÓ GIAO DỊCH (USER DELETE FOREIGN KEY CONSTRAINT FIX)]**:
+  - **Mô tả yêu cầu**: Kiểm tra nguyên nhân vì sao tài khoản user `@tiendatmagic8` (`tiendatmagic88@gmail.com`) không thể xóa đơn hoặc xóa hàng loạt tại `/admin/users` (trả về lỗi HTTP 500 `Internal Server Error`).
+  - **Phân tích nguyên nhân**:
+    - Kiểm tra `storage/logs/laravel.log` phát hiện lỗi MySQL: `SQLSTATE[23000]: Integrity constraint violation: 1451 Cannot delete or update a parent row: a foreign key constraint fails (isocalmarket.deposits, CONSTRAINT deposits_user_id_foreign FOREIGN KEY (user_id) REFERENCES users (id) ON DELETE RESTRICT)`.
+    - Nguyên nhân: Tài khoản `@tiendatmagic8` đã phát sinh lịch sử giao dịch nạp tiền (`deposits`) hoặc đơn hàng (`orders`). Cơ sở dữ liệu MySQL áp dụng ràng buộc khóa ngoại `ON DELETE RESTRICT` ngăn chặn việc xóa cứng (Hard Delete) để bảo đảm tính toàn vẹn dữ liệu tài chính.
+  - **Nội dung thực hiện**:
+    - **Backend (`isocalmarket-api`)**:
+      - Cập nhật `AdminUserController.php` (hàm `destroy` và `bulkDestroy`): Bắt ngoại lệ `QueryException` đối với mã lỗi khóa ngoại `23000` / `1451` và trả về phản hồi HTTP `400 Bad Request` với thông báo thân thiện rõ ràng thay vì lỗi `500 Internal Server Error`.
+      - Hướng dẫn Admin sử dụng tính năng **Khóa tài khoản (Banned)** đối với người dùng đã từng nạp tiền/giao dịch.
+    - **Frontend (`isocalmarket-web`)**:
+      - Đăng ký từ điển đa ngôn ngữ `error.cannot_delete_has_transactions` trong `LanguageService.ts` (Tiếng Việt: *"Không thể xóa thành viên đã có lịch sử nạp tiền hoặc đơn hàng! Vui lòng chuyển trạng thái sang Khóa (Banned)."*).
+      - Đăng ký ánh xạ API error message trong `ToastService.ts` (`API_MESSAGE_KEYS`) giúp tự động hiển thị Toast thông báo màu đỏ trực quan khi Admin xóa nhầm tài khoản đã có lịch sử giao dịch.
+  - **Xác nhận**: Unit tests backend `php artisan test` đạt **116/116 PASSED (100%)**!
+
 - **[BỔ SUNG NÚT VÀ MODAL XÁC NHẬN ẨN SẢN PHẨM 0 TỒN KHO TỪ NHÀ CUNG CẤP (SUPPLIER DEACTIVATE OUT OF STOCK PRODUCTS FEATURE)]**:
   - **Mô tả yêu cầu**: Bổ sung nút "Ẩn các sản phẩm (ngưng hoạt động) từ nhà cung cấp có tồn kho là 0" kèm mục mô tả tính năng. Khi bấm vào hiển thị Modal xác nhận với cảnh báo không thể hoàn tác tự động và hướng dẫn người dùng vào Quản lý sản phẩm để bật lại thủ công.
   - **Nội dung thực hiện**:

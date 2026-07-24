@@ -175,6 +175,8 @@ const API_MESSAGE_KEYS: Record<string, string> = {
   'We could not detect your USDT payment on BSC blockchain yet. Please make sure you transferred the exact amount (with the fractional suffix) to the correct wallet address within 15 minutes.': 'invoice.bsc_transaction_missing',
   'You already have an active deposit order. Please cancel the previous order before creating a new one.': 'error.active_deposit',
   'You cannot delete your own account.': 'error.cannot_delete_self',
+  'Cannot delete user because they have existing transactions (deposits or orders). Please ban the user instead.': 'error.cannot_delete_has_transactions',
+  'Cannot delete user(s) because they have existing transactions (deposits or orders). Please ban the user instead.': 'error.cannot_delete_has_transactions',
   'Your account has been banned.': 'error.account_banned',
   'Your account has been banned. Please contact administrator.': 'error.account_banned'
 };

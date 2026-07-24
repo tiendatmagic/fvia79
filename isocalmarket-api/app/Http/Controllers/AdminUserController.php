@@ -270,6 +270,13 @@ class AdminUserController extends Controller
             }
 
             return response()->json(['message' => 'User deleted successfully.']);
+        } catch (\Illuminate\Database\QueryException $e) {
+            if ($e->getCode() === '23000' || str_contains($e->getMessage(), '1451')) {
+                return response()->json([
+                    'message' => 'Cannot delete user because they have existing transactions (deposits or orders). Please ban the user instead.'
+                ], 400);
+            }
+            return $this->serverError($e, 'Failed to delete admin-managed user.');
         } catch (\Throwable $e) {
             return $this->serverError($e, 'Failed to delete admin-managed user.');
         }
@@ -420,6 +427,13 @@ class AdminUserController extends Controller
                     'deleted_count' => $deletedCount
                 ]);
             });
+        } catch (\Illuminate\Database\QueryException $e) {
+            if ($e->getCode() === '23000' || str_contains($e->getMessage(), '1451')) {
+                return response()->json([
+                    'message' => 'Cannot delete user(s) because they have existing transactions (deposits or orders). Please ban the user instead.'
+                ], 400);
+            }
+            return $this->serverError($e, 'Failed to perform bulk user deletion.');
         } catch (\Throwable $e) {
             return $this->serverError($e, 'Failed to perform bulk user deletion.');
         }

@@ -1384,6 +1384,8 @@ export const TRANSLATIONS: Record<SupportedLanguage, Record<string, string>> = {
     'error.coupon_not_active': 'This coupon is not active yet!',
     'error.user_selection_required': 'Select at least one valid user!',
     'error.cannot_delete_self': 'You cannot delete your own account!',
+    'error.cannot_delete_has_transactions':
+      'Cannot delete user(s) because they have existing transactions (deposits or orders). Please ban the user instead!',
     'error.account_banned': 'Your account has been banned. Please contact the administrator!',
     'error.forbidden': 'Access denied!',
     'error.product_unavailable': 'The product is unavailable or has been discontinued!',
@@ -2991,6 +2993,8 @@ export const TRANSLATIONS: Record<SupportedLanguage, Record<string, string>> = {
     'error.coupon_not_active': 'Mã giảm giá này chưa có hiệu lực!',
     'error.user_selection_required': 'Vui lòng chọn ít nhất một người dùng hợp lệ!',
     'error.cannot_delete_self': 'Bạn không thể xóa chính tài khoản của mình!',
+    'error.cannot_delete_has_transactions':
+      'Không thể xóa thành viên đã có lịch sử nạp tiền hoặc đơn hàng! Vui lòng chuyển trạng thái sang Khóa (Banned).',
     'error.account_banned': 'Tài khoản của bạn đã bị khóa. Vui lòng liên hệ quản trị viên!',
     'error.forbidden': 'Bạn không có quyền truy cập!',
     'error.product_unavailable': 'Sản phẩm không khả dụng hoặc đã ngừng bán!',
