@@ -15,6 +15,7 @@ Route::prefix('v1')->group(function () {
     Route::get('/products', ['App\Http\Controllers\ProductController', 'index']);
     Route::get('/products/{id}', ['App\Http\Controllers\ProductController', 'show']);
     Route::get('/categories', ['App\Http\Controllers\CategoryController', 'index']);
+    Route::get('/faqs', ['App\Http\Controllers\FaqController', 'indexPublic']);
     Route::post('/tools/check-uid', ['App\Http\Controllers\CheckUidController', 'check'])->middleware('throttle:30,1');
 
     Route::middleware(['b2b.auth'])->group(function () {
@@ -123,6 +124,15 @@ Route::prefix('v1')->group(function () {
             Route::post('/admin/deposits/{id}/approve', ['App\Http\Controllers\AdminDepositController', 'approve']);
             Route::post('/admin/deposits/{id}/reject', ['App\Http\Controllers\AdminDepositController', 'reject']);
             Route::post('/admin/deposits/{id}/revoke', ['App\Http\Controllers\AdminDepositController', 'revoke']);
+
+            // Admin FAQ & Warranty Management Routes
+            Route::get('/admin/faqs', ['App\Http\Controllers\FaqController', 'indexAdmin']);
+            Route::post('/admin/warranty-policies', ['App\Http\Controllers\FaqController', 'storePolicy']);
+            Route::put('/admin/warranty-policies/{id}', ['App\Http\Controllers\FaqController', 'updatePolicy']);
+            Route::delete('/admin/warranty-policies/{id}', ['App\Http\Controllers\FaqController', 'destroyPolicy']);
+            Route::post('/admin/faqs', ['App\Http\Controllers\FaqController', 'storeFaq']);
+            Route::put('/admin/faqs/{id}', ['App\Http\Controllers\FaqController', 'updateFaq']);
+            Route::delete('/admin/faqs/{id}', ['App\Http\Controllers\FaqController', 'destroyFaq']);
         });
     });
 });

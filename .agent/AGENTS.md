@@ -13,21 +13,33 @@
 > Khi cần seed dữ liệu cho một seeder cụ thể, chỉ dùng:
 > - `php artisan db:seed --class=TenSeederClass` — chạy đúng 1 seeder.
 
-- **[TRIỂN KHẢI TRANG FAQ, CHÍNH SÁCH BẢO HÀNH & TỪ CHỐI BẢO HÀNH ĐA NGÔN NGỮ 100% (FULL I18N WARRANTY POLICY & FAQ PAGE)]**:
-  - **Mô tả yêu cầu**:
-    - Thêm một mục mới "Chính sách bảo hành / FAQ" trên menu người dùng (`/faq`), cho phép bất kỳ ai (khách hàng, khách vãng lai không đăng nhập hay quản trị viên) đều truy cập được.
-    - Bổ sung menu item vào Sidebar Desktop và Mobile Menu Drawer.
-    - Nhúng toàn bộ 2 khối quy định: **Chấp nhận bảo hành** và **Từ chối bảo hành** đối với cả Business Manager (BM) và Via / Clone Facebook từ mẫu HTML ads7979.com/warranty_policy.
-    - Đảm bảo 100% đa ngôn ngữ (chuyển đổi mượt mà giữa Tiếng Việt & Tiếng Anh qua `TranslatePipe`), 100% sử dụng icon SVG (hoàn toàn KHÔNG dùng emoji), giao diện responsive mượt mà trên mọi thiết bị và tương thích với cả Light Mode & Dark Mode.
+- **[THAY THẾ ICON SVG CHÍNH SÁCH BẢO HÀNH SANG KHIÊN BẢO VỆ SHIELD-CHECK (WARRANTY POLICY SVG ICON REPLACEMENT)]**:
+  - **Mô tả yêu cầu**: Thay thế icon hỏi chấm `(?)` (`name="faq"`) hiện tại của mục menu "Chính sách bảo hành" (`/faq`) sang biểu tượng icon khiên bảo vệ `shield-check` trực quan, phù hợp và chuyên nghiệp.
   - **Nội dung thực hiện**:
     - **Frontend (`isocalmarket-web`)**:
-      - Bổ sung các icon SVG `@case ('faq')` và `@case ('zap')` trong `IconComponent` (`icon.component.html`).
-      - Đăng ký đầy đủ từ điển đa ngôn ngữ (50+ translation keys) trong `LanguageService.ts` cho cả Tiếng Việt và Tiếng Anh (tất cả các nhãn, thẻ header, tab BM vs Via, bộ lọc Chấp nhận vs Từ chối bảo hành, danh sách lý do và thời gian bảo hành).
-      - Cập nhật `FaqComponent` tại `src/app/features/faq/` (`faq.component.ts`, `faq.component.html`, `faq.component.scss`) với cấu hình Angular Signal quản lý chuyển tab (`bm` / `via`) và bộ lọc quy định (`all` / `accepted` / `rejected`).
-      - 100% giao diện được gắn pipe `| translate` chuẩn nét, sử dụng component `<app-icon>` biểu diễn toàn bộ trạng thái (khiên bảo vệ, đồng hồ thời hạn, lịch 7 ngày, chìa khóa đăng nhập lần đầu, cảnh báo, tia sét không dùng, dấu x từ chối,...).
-      - Khai báo public route `{ path: 'faq', loadComponent: ... }` trong `app.routes.ts` (không bọc AuthGuard để người dùng chưa đăng nhập vẫn xem được).
-      - Bổ sung menu item "Chính sách bảo hành / FAQ" vào Desktop Sidebar (`sidebar.component.html`) và Mobile Drawer (`app.html`).
-  - **Xác nhận**: Biên dịch Angular `npm run build` thành công **100% SUCCESS, 0 ERRORS**, backend unit tests `php artisan test` đạt **111/111 test cases (100% PASSED)**!
+      - Cập nhật `sidebar.component.html` (Desktop Navigation Sidebar): Chuyển `<app-icon name="faq">` sang `<app-icon name="shield-check">` cho liên kết `/faq`.
+      - Cập nhật `app.html` (Mobile Navigation Drawer): Chuyển `<app-icon name="faq">` sang `<app-icon name="shield-check">` cho liên kết `/faq`.
+  - **Xác nhận**: Biên dịch Angular `npm run build` thành công **100% SUCCESS, 0 ERRORS**, backend tests `php artisan test` đạt **115/115 test cases (100% PASSED)**!
+
+- **[TRIỂN KHẢI QUẢN LÝ ĐỘNG CHÍNH SÁCH BẢO HÀNH & FAQ ĐA NGÔN NGỮ CHO ADMIN (DYNAMIC ADMIN FAQ & WARRANTY POLICY MANAGEMENT)]**:
+  - **Mô tả yêu cầu**:
+    - Cho phép Admin có toàn quyền Quản lý động (Thêm, Sửa, Xóa, Bật/Tắt hiển thị, Sắp xếp thứ tự) toàn bộ nội dung Chấp nhận & Từ chối bảo hành (cho BM & Via/Clone) và các câu hỏi FAQ thường gặp.
+    - Hỗ trợ 100% Đa ngôn ngữ (nhập dữ liệu song song Tiếng Việt 🇻🇳 và Tiếng Anh 🇬🇧).
+    - Phân quyền chặt chẽ: Chỉ Admin mới có quyền truy cập các API thêm/sửa/xóa và trang Quản lý Admin. Trang công khai `/faq` lấy dữ liệu động từ API.
+  - **Nội dung thực hiện**:
+    - **Backend (`isocalmarket-api`)**:
+      - Tạo các migration `2026_07_24_140000_create_warranty_policies_table.php` và `2026_07_24_140001_create_faqs_table.php`.
+      - Eloquent Models `WarrantyPolicyModel.php` và `FaqModel.php`.
+      - Seeder `WarrantyPolicyAndFaqSeeder.php` tự động nạp toàn bộ 16 quy định bảo hành BM/Via và 4 câu hỏi FAQ 2 ngôn ngữ chuẩn ban đầu vào Database.
+      - Controller `FaqController.php`: Public API `GET /v1/faqs` (lấy item `is_active = true`) và các Admin APIs `GET /v1/admin/faqs`, `POST/PUT/DELETE /v1/admin/warranty-policies`, `POST/PUT/DELETE /v1/admin/faqs` (bọc middleware `jwt.auth` & `admin`).
+      - Unit Test Suite `FaqTest.php` đạt **4/4 PASSED (100%)**, nâng tổng số test suite backend lên **115/115 PASSED (100%)**.
+    - **Frontend (`isocalmarket-web`)**:
+      - Tạo `FaqService` (`faq.service.ts`) sử dụng `ApiService` để đảm bảo tự động đính kèm `{ withCredentials: true }` cho các HTTP request, truyền chuẩn cookie JWT `access_token` giúp các Admin APIs (`/v1/admin/faqs`, `/v1/admin/warranty-policies`) xác thực thành công mà không bị lỗi 401.
+      - Bổ sung 30+ translation keys trong `LanguageService.ts` cho các nhãn quản lý Admin FAQ cả Tiếng Việt & Tiếng Anh.
+      - Cập nhật `FaqComponent` (`/faq`) kết nối API `GET /v1/faqs` hiển thị dữ liệu động theo ngôn ngữ đã chọn (`lang.currentLang()`), hiển thị Nút **"Quản lý nội dung FAQ"** cho Admin.
+      - Tạo trang Admin `/admin/faqs` (`AdminFaqsComponent`) gồm 2 Tab (Quy định bảo hành & Câu hỏi FAQ), bảng dữ liệu `<app-table>` với nút công tắc Bật/Tắt hiển thị nhanh, Modal Thêm/Sửa hỗ trợ nhập liệu 2 ngôn ngữ và Modal xác nhận xóa động.
+      - Đăng ký route `/admin/faqs` và thêm menu "Quản lý FAQ & Bảo hành" vào Desktop Sidebar & Mobile Drawer (`{{ 'nav.coupons' | translate }}`).
+  - **Xác nhận**: Backend unit tests `php artisan test` đạt **115/115 test cases (100% PASSED)**, biên dịch Angular `npm run build` thành công **100% SUCCESS, 0 ERRORS**!
 
 - **[ĐẶT MẶC ĐỊNH TẮT CHECKBOX "KHÔNG HỎI LẠI TRONG 7 NGÀY" Ở MODAL THÔNG BÁO HỆ THỐNG (DEFAULT DISABLE 7-DAY SUPPRESSION CHECKBOX)]**:
   - **Mô tả yêu cầu**: Thay đổi trạng thái mặc định của ô checkbox "Không hỏi lại trong 7 ngày" tại Modal Thông Báo Hệ Thống (`WelcomeNoticeModalComponent`) từ Bật (checked) sang Tắt (unchecked).

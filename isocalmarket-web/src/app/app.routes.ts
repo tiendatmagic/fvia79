@@ -100,6 +100,10 @@ export const routes: Routes = [
         loadComponent: () => import('@features/inventory/inventory.component').then(m => m.InventoryComponent)
       },
       {
+        path: 'faqs',
+        loadComponent: () => import('@features/admin/admin-faqs/admin-faqs.component').then(m => m.AdminFaqsComponent)
+      },
+      {
         path: 'orders',
         loadComponent: () => import('@features/admin-orders/admin-orders.component').then(m => m.AdminOrdersComponent)
       },
