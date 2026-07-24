@@ -13,6 +13,37 @@
 > Khi cần seed dữ liệu cho một seeder cụ thể, chỉ dùng:
 > - `php artisan db:seed --class=TenSeederClass` — chạy đúng 1 seeder.
 
+- **[SẮP XẾP LẠI THỨ TỰ MENU ĐIỀU HƯỚNG NGƯỜI DÙNG VÀ ADMIN (RE-ORDER NAVIGATION MENU ITEMS)]**:
+  - **Mô tả yêu cầu**:
+    - Sắp xếp lại trình tự các mục menu cho cả Người dùng (User) và Quản trị viên (Admin) theo đúng thứ tự logic nghiệp vụ hệ thống.
+    - Giữ giao diện phẳng, không chia nhỏ tiêu đề phụ, chỉ có duy nhất tiêu đề **Quản trị hệ thống** phân chia vùng tính năng Admin.
+  - **Nội dung thực hiện**:
+    - **Thứ tự Menu Người dùng (User Menu)**:
+      1. `Cửa hàng` (`/storefront`)
+      2. `Lịch sử đơn hàng` (`/orders`)
+      3. `Nạp tiền USDT` (`/deposit`)
+      4. `Lịch sử nạp tiền` (`/deposit/history`)
+      5. `Cài đặt tài khoản` (`/profile/information`)
+      6. `User API` (`/user-api`)
+      7. `Check Live UID` (`/check-uid`)
+      8. `Chính sách bảo hành` (`/faq`)
+    - **Thứ tự Menu Admin (Admin Menu - Quản trị hệ thống)**:
+      1. `Tổng quan` (`/admin/dashboard`)
+      2. `Quản lý đơn hàng` (`/admin/orders`) *(ưu tiên đưa lên đầu khối Admin)*
+      3. `Quản lý sản phẩm` (`/admin/products`)
+      4. `Quản lý danh mục` (`/admin/categories`)
+      5. `Quản lý kho hàng` (`/admin/inventory`)
+      6. `Quản lý mã giảm giá` (`/admin/coupons`)
+      7. `Quản lý FAQ & Bảo hành` (`/admin/faqs`)
+      8. `Quản lý người dùng` (`/admin/users`)
+      9. `Quản lý nạp tiền` (`/admin/deposits`)
+      10. `Quản lý nhà cung cấp` (`/admin/suppliers`)
+      11. `Cấu hình hệ thống` (`/admin/settings`)
+      12. `Admin API` (`/admin/api`)
+    - **Frontend (`isocalmarket-web`)**:
+      - Cập nhật giao diện Desktop Sidebar (`sidebar.component.html`) và Mobile Menu Drawer (`app.html`) áp dụng thứ tự phẳng đồng bộ 100%.
+  - **Xác nhận**: Biên dịch Angular `npm run build` thành công **100% SUCCESS, 0 ERRORS**, backend tests `php artisan test` đạt **115/115 test cases (100% PASSED)**!
+
 - **[ĐỒNG BỘ UI MODAL BACKDROP, CLICK OUTSIDE VÀ ACTION BUTTONS BẢNG ADMIN FAQ (ADMIN FAQ MODAL BACKDROP, CLICK OUTSIDE & TABLE BUTTON SYNCHRONIZATION)]**:
   - **Mô tả yêu cầu**:
     - Đồng bộ tất cả modal trang Admin FAQ (`/admin/faqs`) cho phép đóng modal khi click ra ngoài backdrop (`click outside`), chuyển background backdrop sang đen mượt `bg-black/50` và **gỡ bỏ hoàn toàn hiệu ứng blur** (`backdrop-blur`).

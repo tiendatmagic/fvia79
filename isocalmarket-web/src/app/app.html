@@ -50,7 +50,7 @@
             </button>
           </div>
 
-          <nav class="flex-1 px-4 py-6 space-y-1.5 overflow-y-auto">
+          <nav class="flex-1 px-4 py-6 space-y-1 overflow-y-auto">
             <a
               routerLink="/storefront"
               routerLinkActive="!bg-primary/10 !text-primary !font-extrabold"
@@ -132,143 +132,134 @@
               <span>{{ 'nav.faq' | translate }}</span>
             </a>
 
-            <div *ngIf="stateService.isAdmin()" class="pt-4 pb-2">
-              <span class="px-4 text-xs font-bold text-slate-400 uppercase tracking-wider">
-                {{ 'nav.admin_section' | translate }}
-              </span>
+            <!-- ADMIN SECTION HEADER -->
+            <div *ngIf="stateService.isAdmin()" class="pt-4 pb-2 my-2 border-t border-slate-200/60 dark:border-slate-800/60">
+              <div class="px-4 mb-2">
+                <span class="text-xs font-bold text-slate-500 dark:text-slate-400 uppercase tracking-wider">
+                  {{ 'nav.admin_section' | translate }}
+                </span>
+              </div>
+
+              <a
+                routerLink="/admin/dashboard"
+                routerLinkActive="!bg-primary/10 !text-primary !font-extrabold"
+                (click)="stateService.showMobileMenu.set(false)"
+                class="flex items-center gap-3.5 px-4 py-3 rounded-xl hover:bg-slate-100 dark:hover:bg-slate-800/50 text-slate-600 dark:text-slate-400 font-semibold text-sm transition-colors duration-200 cursor-pointer mb-1"
+              >
+                <app-icon name="dashboard" class="w-5 h-5 flex-shrink-0" />
+                <span>{{ 'nav.dashboard' | translate }}</span>
+              </a>
+
+              <a
+                routerLink="/admin/orders"
+                routerLinkActive="!bg-primary/10 !text-primary !font-extrabold"
+                (click)="stateService.showMobileMenu.set(false)"
+                class="flex items-center gap-3.5 px-4 py-3 rounded-xl hover:bg-slate-100 dark:hover:bg-slate-800/50 text-slate-600 dark:text-slate-400 font-semibold text-sm transition-colors duration-200 cursor-pointer mb-1"
+              >
+                <app-icon name="orders" class="w-5 h-5 flex-shrink-0" />
+                <span>{{ 'admin.manage_orders' | translate }}</span>
+              </a>
+
+              <a
+                routerLink="/admin/products"
+                routerLinkActive="!bg-primary/10 !text-primary !font-extrabold"
+                (click)="stateService.showMobileMenu.set(false)"
+                class="flex items-center gap-3.5 px-4 py-3 rounded-xl hover:bg-slate-100 dark:hover:bg-slate-800/50 text-slate-600 dark:text-slate-400 font-semibold text-sm transition-colors duration-200 cursor-pointer mb-1"
+              >
+                <app-icon name="list-bullet" class="w-5 h-5 flex-shrink-0" />
+                <span>{{ 'admin.manage_products' | translate }}</span>
+              </a>
+
+              <a
+                routerLink="/admin/categories"
+                routerLinkActive="!bg-primary/10 !text-primary !font-extrabold"
+                (click)="stateService.showMobileMenu.set(false)"
+                class="flex items-center gap-3.5 px-4 py-3 rounded-xl hover:bg-slate-100 dark:hover:bg-slate-800/50 text-slate-600 dark:text-slate-400 font-semibold text-sm transition-colors duration-200 cursor-pointer mb-1"
+              >
+                <app-icon name="tag" class="w-5 h-5 flex-shrink-0" />
+                <span>{{ 'admin.manage_categories' | translate }}</span>
+              </a>
+
+              <a
+                routerLink="/admin/inventory"
+                routerLinkActive="!bg-primary/10 !text-primary !font-extrabold"
+                (click)="stateService.showMobileMenu.set(false)"
+                class="flex items-center gap-3.5 px-4 py-3 rounded-xl hover:bg-slate-100 dark:hover:bg-slate-800/50 text-slate-600 dark:text-slate-400 font-semibold text-sm transition-colors duration-200 cursor-pointer mb-1"
+              >
+                <app-icon name="inventory" class="w-5 h-5 flex-shrink-0" />
+                <span>{{ 'admin.manage_inventory' | translate }}</span>
+              </a>
+
+              <a
+                routerLink="/admin/coupons"
+                routerLinkActive="!bg-primary/10 !text-primary !font-extrabold"
+                (click)="stateService.showMobileMenu.set(false)"
+                class="flex items-center gap-3.5 px-4 py-3 rounded-xl hover:bg-slate-100 dark:hover:bg-slate-800/50 text-slate-600 dark:text-slate-400 font-semibold text-sm transition-colors duration-200 cursor-pointer mb-1"
+              >
+                <app-icon name="gift" class="w-5 h-5 flex-shrink-0" />
+                <span>{{ 'nav.coupons' | translate }}</span>
+              </a>
+
+              <a
+                routerLink="/admin/faqs"
+                routerLinkActive="!bg-primary/10 !text-primary !font-extrabold"
+                (click)="stateService.showMobileMenu.set(false)"
+                class="flex items-center gap-3.5 px-4 py-3 rounded-xl hover:bg-slate-100 dark:hover:bg-slate-800/50 text-slate-600 dark:text-slate-400 font-semibold text-sm transition-colors duration-200 cursor-pointer mb-1"
+              >
+                <app-icon name="shield" class="w-5 h-5 flex-shrink-0" />
+                <span>{{ 'nav.admin_faqs' | translate }}</span>
+              </a>
+
+              <a
+                routerLink="/admin/users"
+                routerLinkActive="!bg-primary/10 !text-primary !font-extrabold"
+                (click)="stateService.showMobileMenu.set(false)"
+                class="flex items-center gap-3.5 px-4 py-3 rounded-xl hover:bg-slate-100 dark:hover:bg-slate-800/50 text-slate-600 dark:text-slate-400 font-semibold text-sm transition-colors duration-200 cursor-pointer mb-1"
+              >
+                <app-icon name="customers" class="w-5 h-5 flex-shrink-0" />
+                <span>{{ 'admin.manage_users' | translate }}</span>
+              </a>
+
+              <a
+                routerLink="/admin/deposits"
+                routerLinkActive="!bg-primary/10 !text-primary !font-extrabold"
+                (click)="stateService.showMobileMenu.set(false)"
+                class="flex items-center gap-3.5 px-4 py-3 rounded-xl hover:bg-slate-100 dark:hover:bg-slate-800/50 text-slate-600 dark:text-slate-400 font-semibold text-sm transition-colors duration-200 cursor-pointer mb-1"
+              >
+                <app-icon name="wallet" class="w-5 h-5 flex-shrink-0" />
+                <span>{{ 'admin.manage_deposits' | translate }}</span>
+              </a>
+
+              <a
+                routerLink="/admin/suppliers"
+                routerLinkActive="!bg-primary/10 !text-primary !font-extrabold"
+                (click)="stateService.showMobileMenu.set(false)"
+                class="flex items-center gap-3.5 px-4 py-3 rounded-xl hover:bg-slate-100 dark:hover:bg-slate-800/50 text-slate-600 dark:text-slate-400 font-semibold text-sm transition-colors duration-200 cursor-pointer mb-1"
+              >
+                <app-icon name="sync" class="w-5 h-5 flex-shrink-0" />
+                <span>{{ 'nav.suppliers' | translate }}</span>
+              </a>
+
+              <a
+                routerLink="/admin/settings"
+                routerLinkActive="!bg-primary/10 !text-primary !font-extrabold"
+                (click)="stateService.showMobileMenu.set(false)"
+                class="flex items-center gap-3.5 px-4 py-3 rounded-xl hover:bg-slate-100 dark:hover:bg-slate-800/50 text-slate-600 dark:text-slate-400 font-semibold text-sm transition-colors duration-200 cursor-pointer mb-1"
+              >
+                <app-icon name="settings" class="w-5 h-5 flex-shrink-0" />
+                <span>{{ 'nav.settings' | translate }}</span>
+              </a>
+
+              <a
+                routerLink="/admin/api"
+                routerLinkActive="!bg-primary/10 !text-primary !font-extrabold"
+                (click)="stateService.showMobileMenu.set(false)"
+                class="flex items-center gap-3.5 px-4 py-3 rounded-xl hover:bg-slate-100 dark:hover:bg-slate-800/50 text-slate-600 dark:text-slate-400 font-semibold text-sm transition-colors duration-200 cursor-pointer mb-1"
+              >
+                <app-icon name="code" class="w-5 h-5 flex-shrink-0" />
+                <span>{{ 'nav.admin_api' | translate }}</span>
+              </a>
             </div>
-
-            <a
-              *ngIf="stateService.isAdmin()"
-              routerLink="/admin/dashboard"
-              routerLinkActive="!bg-primary/10 !text-primary !font-extrabold"
-              (click)="stateService.showMobileMenu.set(false)"
-              class="flex items-center gap-3.5 px-4 py-3 rounded-xl hover:bg-slate-100 dark:hover:bg-slate-800/50 text-slate-600 dark:text-slate-400 font-semibold text-sm transition-colors duration-200 cursor-pointer"
-            >
-              <app-icon name="dashboard" class="w-5 h-5 flex-shrink-0" />
-              <span>{{ 'nav.dashboard' | translate }}</span>
-            </a>
-
-            <a
-              *ngIf="stateService.isAdmin()"
-              routerLink="/admin/products"
-              routerLinkActive="!bg-primary/10 !text-primary !font-extrabold"
-              (click)="stateService.showMobileMenu.set(false)"
-              class="flex items-center gap-3.5 px-4 py-3 rounded-xl hover:bg-slate-100 dark:hover:bg-slate-800/50 text-slate-600 dark:text-slate-400 font-semibold text-sm transition-colors duration-200 cursor-pointer"
-            >
-              <app-icon name="list-bullet" class="w-5 h-5 flex-shrink-0" />
-              <span>{{ 'admin.manage_products' | translate }}</span>
-            </a>
-
-            <a
-              *ngIf="stateService.isAdmin()"
-              routerLink="/admin/categories"
-              routerLinkActive="!bg-primary/10 !text-primary !font-extrabold"
-              (click)="stateService.showMobileMenu.set(false)"
-              class="flex items-center gap-3.5 px-4 py-3 rounded-xl hover:bg-slate-100 dark:hover:bg-slate-800/50 text-slate-600 dark:text-slate-400 font-semibold text-sm transition-colors duration-200 cursor-pointer"
-            >
-              <app-icon name="tag" class="w-5 h-5 flex-shrink-0" />
-              <span>{{ 'admin.manage_categories' | translate }}</span>
-            </a>
-
-            <a
-              *ngIf="stateService.isAdmin()"
-              routerLink="/admin/coupons"
-              routerLinkActive="!bg-primary/10 !text-primary !font-extrabold"
-              (click)="stateService.showMobileMenu.set(false)"
-              class="flex items-center gap-3.5 px-4 py-3 rounded-xl hover:bg-slate-100 dark:hover:bg-slate-800/50 text-slate-600 dark:text-slate-400 font-semibold text-sm transition-colors duration-200 cursor-pointer"
-            >
-              <app-icon name="gift" class="w-5 h-5 flex-shrink-0" />
-              <span>{{ 'nav.coupons' | translate }}</span>
-            </a>
-
-            <a
-              *ngIf="stateService.isAdmin()"
-              routerLink="/admin/faqs"
-              routerLinkActive="!bg-primary/10 !text-primary !font-extrabold"
-              (click)="stateService.showMobileMenu.set(false)"
-              class="flex items-center gap-3.5 px-4 py-3 rounded-xl hover:bg-slate-100 dark:hover:bg-slate-800/50 text-slate-600 dark:text-slate-400 font-semibold text-sm transition-colors duration-200 cursor-pointer"
-            >
-              <app-icon name="shield" class="w-5 h-5 flex-shrink-0" />
-              <span>{{ 'nav.admin_faqs' | translate }}</span>
-            </a>
-
-            <a
-              *ngIf="stateService.isAdmin()"
-              routerLink="/admin/inventory"
-              routerLinkActive="!bg-primary/10 !text-primary !font-extrabold"
-              (click)="stateService.showMobileMenu.set(false)"
-              class="flex items-center gap-3.5 px-4 py-3 rounded-xl hover:bg-slate-100 dark:hover:bg-slate-800/50 text-slate-600 dark:text-slate-400 font-semibold text-sm transition-colors duration-200 cursor-pointer"
-            >
-              <app-icon name="inventory" class="w-5 h-5 flex-shrink-0" />
-              <span>{{ 'admin.manage_inventory' | translate }}</span>
-            </a>
-
-            <a
-              *ngIf="stateService.isAdmin()"
-              routerLink="/admin/orders"
-              routerLinkActive="!bg-primary/10 !text-primary !font-extrabold"
-              (click)="stateService.showMobileMenu.set(false)"
-              class="flex items-center gap-3.5 px-4 py-3 rounded-xl hover:bg-slate-100 dark:hover:bg-slate-800/50 text-slate-600 dark:text-slate-400 font-semibold text-sm transition-colors duration-200 cursor-pointer"
-            >
-              <app-icon name="orders" class="w-5 h-5 flex-shrink-0" />
-              <span>{{ 'admin.manage_orders' | translate }}</span>
-            </a>
-
-            <a
-              *ngIf="stateService.isAdmin()"
-              routerLink="/admin/users"
-              routerLinkActive="!bg-primary/10 !text-primary !font-extrabold"
-              (click)="stateService.showMobileMenu.set(false)"
-              class="flex items-center gap-3.5 px-4 py-3 rounded-xl hover:bg-slate-100 dark:hover:bg-slate-800/50 text-slate-600 dark:text-slate-400 font-semibold text-sm transition-colors duration-200 cursor-pointer"
-            >
-              <app-icon name="customers" class="w-5 h-5 flex-shrink-0" />
-              <span>{{ 'admin.manage_users' | translate }}</span>
-            </a>
-
-            <a
-              *ngIf="stateService.isAdmin()"
-              routerLink="/admin/deposits"
-              routerLinkActive="!bg-primary/10 !text-primary !font-extrabold"
-              (click)="stateService.showMobileMenu.set(false)"
-              class="flex items-center gap-3.5 px-4 py-3 rounded-xl hover:bg-slate-100 dark:hover:bg-slate-800/50 text-slate-600 dark:text-slate-400 font-semibold text-sm transition-colors duration-200 cursor-pointer"
-            >
-              <app-icon name="wallet" class="w-5 h-5 flex-shrink-0" />
-              <span>{{ 'admin.manage_deposits' | translate }}</span>
-            </a>
-
-            <a
-              *ngIf="stateService.isAdmin()"
-              routerLink="/admin/suppliers"
-              routerLinkActive="!bg-primary/10 !text-primary !font-extrabold"
-              (click)="stateService.showMobileMenu.set(false)"
-              class="flex items-center gap-3.5 px-4 py-3 rounded-xl hover:bg-slate-100 dark:hover:bg-slate-800/50 text-slate-600 dark:text-slate-400 font-semibold text-sm transition-colors duration-200 cursor-pointer"
-            >
-              <app-icon name="sync" class="w-5 h-5 flex-shrink-0" />
-              <span>{{ 'nav.suppliers' | translate }}</span>
-            </a>
-
-            <a
-              *ngIf="stateService.isAdmin()"
-              routerLink="/admin/settings"
-              routerLinkActive="!bg-primary/10 !text-primary !font-extrabold"
-              (click)="stateService.showMobileMenu.set(false)"
-              class="flex items-center gap-3.5 px-4 py-3 rounded-xl hover:bg-slate-100 dark:hover:bg-slate-800/50 text-slate-600 dark:text-slate-400 font-semibold text-sm transition-colors duration-200 cursor-pointer"
-            >
-              <app-icon name="settings" class="w-5 h-5 flex-shrink-0" />
-              <span>{{ 'nav.settings' | translate }}</span>
-            </a>
-
-            <a
-              *ngIf="stateService.isAdmin()"
-              routerLink="/admin/api"
-              routerLinkActive="!bg-primary/10 !text-primary !font-extrabold"
-              (click)="stateService.showMobileMenu.set(false)"
-              class="flex items-center gap-3.5 px-4 py-3 rounded-xl hover:bg-slate-100 dark:hover:bg-slate-800/50 text-slate-600 dark:text-slate-400 font-semibold text-sm transition-colors duration-200 cursor-pointer"
-            >
-              <app-icon name="code" class="w-5 h-5 flex-shrink-0" />
-              <span>{{ 'nav.admin_api' | translate }}</span>
-            </a>
           </nav>
 
           <div
