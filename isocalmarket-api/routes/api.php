@@ -16,6 +16,7 @@ Route::prefix('v1')->group(function () {
     Route::get('/products/{id}', ['App\Http\Controllers\ProductController', 'show']);
     Route::get('/categories', ['App\Http\Controllers\CategoryController', 'index']);
     Route::get('/faqs', ['App\Http\Controllers\FaqController', 'indexPublic']);
+    Route::get('/deposit/rate', ['App\Http\Controllers\DepositController', 'getRate']);
     Route::post('/tools/check-uid', ['App\Http\Controllers\CheckUidController', 'check'])->middleware('throttle:30,1');
 
     Route::middleware(['b2b.auth'])->group(function () {
@@ -54,7 +55,6 @@ Route::prefix('v1')->group(function () {
         Route::get('/orders/{id}', ['App\Http\Controllers\OrderController', 'show']);
         Route::post('/coupons/validate', ['App\Http\Controllers\CouponController', 'validateCoupon']);
 
-        Route::get('/deposit/rate', ['App\Http\Controllers\DepositController', 'getRate']);
         Route::post('/deposit', ['App\Http\Controllers\DepositController', 'create']);
         Route::get('/deposit/history', ['App\Http\Controllers\DepositController', 'history']);
         Route::get('/deposit/invoice/{id}', ['App\Http\Controllers\DepositController', 'showInvoice']);

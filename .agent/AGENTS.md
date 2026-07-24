@@ -13,6 +13,40 @@
 > Khi cần seed dữ liệu cho một seeder cụ thể, chỉ dùng:
 > - `php artisan db:seed --class=TenSeederClass` — chạy đúng 1 seeder.
 
+- **[CÀI ĐẶT PHPMYADMIN & ĐỔI MẬT KHẨU MYSQL NGẪU NHIÊN TRÊN VPS (PHPMYADMIN DEPLOYMENT & RANDOM MYSQL PASS)]**:
+  - **Mô tả yêu cầu**:
+    - Tạo mật khẩu ngẫu nhiên bảo mật cho tài khoản CSDL MySQL `isocalmarket_user`, cập nhật `.env` của Laravel và cài đặt giao diện phpMyAdmin quản lý CSDL trực quan.
+  - **Nội dung thực hiện**:
+    - Đổi mật khẩu MySQL user `isocalmarket_user` sang chuỗi ngẫu nhiên `IsoCal_9221eaf12c8455169dfec5b9`.
+    - Đã đồng bộ `DB_PASSWORD` mới vào file `.env` Laravel tại `/var/www/isocalmarket-api/.env` và làm sạch cache `php artisan config:cache`.
+    - Cài đặt phpMyAdmin 5.2.1 tại `/var/www/phpmyadmin` với cấu hình Blowfish Secret bảo mật.
+    - Cấu hình Nginx Location `/phpmyadmin` sử dụng PHP 8.3 FPM socket (`/run/php/php8.3-fpm.sock`).
+  - **Xác nhận & Nghiệm thu**: `https://isocalmarket.com/phpmyadmin/` trả về **HTTP/2 200 OK**, truy cập giao diện quản trị MySQL mượt mà!
+
+- **[SỬA LỖI 401 UNAUTHORIZED TẠI ENDPOINT TỶ GIÁ NẠP TIỀN /api/v1/deposit/rate (PUBLIC DEPOSIT RATE ROUTE FIX)]**:
+  - **Mô tả yêu cầu**:
+    - Khắc phục lỗi `401 Unauthorized` (`JWT token missing`) khi gọi API lấy tỷ giá nạp tiền `GET /api/v1/deposit/rate` từ trang Quản lý Nhà cung cấp và trang Nạp tiền.
+  - **Nội dung thực hiện**:
+    - **Backend (`isocalmarket-api`)**:
+      - Cập nhật `routes/api.php`: Chuyển route `Route::get('/deposit/rate', ['App\Http\Controllers\DepositController', 'getRate'])` từ nhóm `jwt.auth` ra ngoài nhóm Public routes.
+      - Nâng tổng số unit test suite backend thành công **122/122 PASSED (100%)**.
+    - **Deploy VPS Production**:
+      - Đồng bộ file `routes/api.php` lên VPS `/var/www/isocalmarket-api/routes/api.php`.
+      - Chạy `php artisan route:clear && php artisan route:cache` trên VPS.
+  - **Xác nhận & Nghiệm thu**: `curl -i https://isocalmarket.com/api/v1/deposit/rate` trả về **HTTP/2 200 OK** với JSON `{"rate": 26302}` mà không yêu cầu token JWT!
+
+- **[TRIỂN KHẢI THÀNH CÔNG HỆ THỐNG ISOCALMARKET LÊN VPS (VPS PRODUCTION DEPLOYMENT & SSL HTTPS ENABLING)]**:
+  - **Mô tả yêu cầu**:
+    - Deploy toàn bộ ứng dụng `isocalmarket` lên VPS `184.164.93.247` với tên miền `https://isocalmarket.com/` kích hoạt SSL (HTTPS), Nginx, PHP 8.3, CSDL MySQL, Cronjob tự động nạp tiền và đồng bộ nhà cung cấp.
+  - **Nội dung thực hiện**:
+    - Build Angular Frontend production (`npm run build`) và deploy lên `/var/www/isocalmarket-web`.
+    - Cài đặt Nginx, MySQL Server, nâng cấp PHP 8.3 (`ppa:ondrej/php`), giải nén Laravel Backend tại `/var/www/isocalmarket-api`, chạy `composer install`, thiết lập `.env` production, bộ nhớ đệm và phân quyền.
+    - Import CSDL `isocalmarket_24_7_2026.sql` vào MySQL database `isocalmarket`.
+    - Cấu hình Nginx Virtual Host chuẩn SPA routing cho Frontend và proxy `/api` sang Laravel FastCGI (`php8.3-fpm.sock`).
+    - Kích hoạt SSL HTTPS tự động qua Certbot (Let's Encrypt).
+    - Thiết lập Cronjob cho user `www-data`: `* * * * * cd /var/www/isocalmarket-api && php artisan schedule:run >> /dev/null 2>&1`.
+  - **Xác nhận & Nghiệm thu**: `https://isocalmarket.com/` trả về HTTP/2 200 OK (SSL hợp lệ), `https://isocalmarket.com/api/v1/categories` trả về JSON danh mục 200 OK, Cronjob tự động kích hoạt hoàn hảo!
+
 - **[BỔ SUNG 3 LỚP BẢO VỆ TỶ GIÁ VÀ HIỂN THỊ TỶ GIÁ TẠI TRANG NHÀ CUNG CẤP (3-TIER EXCHANGE RATE FALLBACK & SUPPLIER UI RATE DISPLAY)]**:
   - **Mô tả yêu cầu**:
     - Triển khai cơ chế dự phòng 3 lớp cho Tỷ giá quy đổi USDT/VND khi đồng bộ sản phẩm từ Nhà cung cấp.
