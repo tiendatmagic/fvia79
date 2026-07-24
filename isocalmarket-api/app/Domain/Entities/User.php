@@ -34,6 +34,10 @@ class User
 
     private string $status;
 
+    private ?string $telegramChatId;
+
+    private bool $telegramNotificationsEnabled;
+
     public function __construct(
         ?string $id,
         string $username,
@@ -49,7 +53,9 @@ class User
         bool $google2faEnabled = false,
         ?string $apiKey = null,
         string $status = 'active',
-        ?string $uid = null
+        ?string $uid = null,
+        ?string $telegramChatId = null,
+        bool $telegramNotificationsEnabled = true
     ) {
         $this->id = $id;
         $this->uid = $uid;
@@ -66,6 +72,8 @@ class User
         $this->google2faEnabled = $google2faEnabled;
         $this->apiKey = $apiKey;
         $this->status = $status;
+        $this->telegramChatId = $telegramChatId;
+        $this->telegramNotificationsEnabled = $telegramNotificationsEnabled;
     }
 
     public function getId(): ?string
@@ -207,5 +215,25 @@ class User
     public function isBanned(): bool
     {
         return $this->status === 'banned';
+    }
+
+    public function getTelegramChatId(): ?string
+    {
+        return $this->telegramChatId;
+    }
+
+    public function setTelegramChatId(?string $chatId): void
+    {
+        $this->telegramChatId = $chatId;
+    }
+
+    public function isTelegramNotificationsEnabled(): bool
+    {
+        return $this->telegramNotificationsEnabled;
+    }
+
+    public function setTelegramNotificationsEnabled(bool $enabled): void
+    {
+        $this->telegramNotificationsEnabled = $enabled;
     }
 }

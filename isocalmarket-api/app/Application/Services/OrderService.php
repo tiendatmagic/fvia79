@@ -46,6 +46,7 @@ class OrderService
         CouponRepositoryInterface $couponRepository,
         private readonly SupplierConnectorFactory $supplierConnectorFactory,
         private readonly DepositService $depositService,
+        private readonly ?TelegramNotificationService $telegramService = null,
     ) {
         $this->orderRepository = $orderRepository;
         $this->productRepository = $productRepository;
@@ -115,28 +116,26 @@ class OrderService
                 $couponId = null;
                 $appliedCouponCode = null;
 
-                if ($couponCode) {
-                    $coupon = $this->couponRepository->findByCode(strtoupper(trim($couponCode)));
+                if ($couponCode !== null && trim($couponCode) !== '') {
+                    $coupon = $this->couponRepository->findByCode(trim($couponCode));
                     if (! $coupon) {
-                        throw new OrderException("Coupon code '{$couponCode}' is invalid.");
+                        throw new OrderException('Coupon code is invalid or does not exist.');
                     }
 
-                    $now = new \DateTime;
-                    $start = (clone $coupon->getStartDate())->setTime(0, 0, 0);
-                    $end = (clone $coupon->getEndDate())->setTime(23, 59, 59);
-
-                    if ($now < $start) {
-                        throw new OrderException('This coupon is not active yet.');
-                    }
-                    if ($now > $end) {
-                        throw new OrderException('This coupon has expired.');
-                    }
-
-                    if ($coupon->getUsageLimit() > 0 && $coupon->getUsedCount() >= $coupon->getUsageLimit()) {
-                        throw new OrderException('This coupon has reached its usage limit.');
-                    }
-                    if ($totalPrice < $coupon->getMinSpend()) {
-                        throw new OrderException('Cart total must be at least '.number_format($coupon->getMinSpend()).' USD.');
+                    if (! $coupon->isValidForCart($totalPrice)) {
+                        if (! $coupon->isActive()) {
+                            throw new OrderException('This coupon is not active yet.');
+                        }
+                        if ($coupon->isExpired()) {
+                            throw new OrderException('This coupon has expired.');
+                        }
+                        if ($coupon->isLimitReached()) {
+                            throw new OrderException('This coupon has reached its usage limit.');
+                        }
+                        if ($totalPrice < $coupon->getMinSpend()) {
+                            throw new OrderException('Cart total does not meet the minimum spend requirement for this coupon.');
+                        }
+                        throw new OrderException('Coupon is not applicable to this order.');
                     }
 
                     $discountAmount = $coupon->calculateDiscount($totalPrice);
@@ -209,7 +208,19 @@ class OrderService
         }
 
         try {
-            return $this->fulfillPreparedOrder($preparedOrder);
+            $completedOrder = $this->fulfillPreparedOrder($preparedOrder);
+
+            try {
+                $userModel = \App\Infrastructure\Persistence\Eloquent\UserModel::find($userId);
+                $service = $this->telegramService ?? app(TelegramNotificationService::class);
+                if ($userModel) {
+                    $service->notifyOrderSuccess($completedOrder, $userModel);
+                }
+            } catch (\Throwable $e) {
+                \Illuminate\Support\Facades\Log::error('Telegram order notification error: ' . $e->getMessage());
+            }
+
+            return $completedOrder;
         } catch (OrderException $exception) {
             $hasUnknownSupplierPurchase = SupplierPurchaseModel::where('order_id', $preparedOrder->getId())
                 ->where('status', 'unknown')

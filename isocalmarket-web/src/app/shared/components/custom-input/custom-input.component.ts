@@ -19,7 +19,7 @@ import { IconComponent } from '../icon/icon.component';
 })
 export class CustomInputComponent implements ControlValueAccessor, AfterViewInit {
   private readonly elementRef = inject(ElementRef);
-  private innerValue: any = '';
+  public innerValue: any = '';
 
   @Input() type: 'text' | 'number' | 'email' | 'password' | 'textarea' | 'date' = 'text';
   @Input() placeholder: string = '';

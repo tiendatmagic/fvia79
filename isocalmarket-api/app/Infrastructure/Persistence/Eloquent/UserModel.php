@@ -10,7 +10,7 @@ use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
 use Illuminate\Support\Str;
 
-#[Fillable(['uid', 'username', 'name', 'email', 'phone', 'password', 'role', 'balance', 'refresh_token_hash', 'refresh_token_expired_at', 'google2fa_secret', 'google2fa_enabled', 'api_key', 'api_key_hash', 'status', 'token_version'])]
+#[Fillable(['uid', 'username', 'name', 'email', 'phone', 'telegram_chat_id', 'telegram_notifications_enabled', 'password', 'role', 'balance', 'refresh_token_hash', 'refresh_token_expired_at', 'google2fa_secret', 'google2fa_enabled', 'api_key', 'api_key_hash', 'status', 'token_version'])]
 #[Hidden(['password', 'remember_token'])]
 class UserModel extends Authenticatable
 {
@@ -81,6 +81,7 @@ class UserModel extends Authenticatable
             'password' => 'hashed',
             'refresh_token_expired_at' => 'datetime',
             'google2fa_enabled' => 'boolean',
+            'telegram_notifications_enabled' => 'boolean',
             'balance' => 'float',
             'token_version' => 'integer',
             'api_key' => 'encrypted',

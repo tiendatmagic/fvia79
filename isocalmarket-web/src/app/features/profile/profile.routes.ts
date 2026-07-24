@@ -21,6 +21,10 @@ export const PROFILE_ROUTES: Routes = [
       {
         path: 'devices',
         loadComponent: () => import('./devices/profile-devices.component').then(m => m.ProfileDevicesComponent)
+      },
+      {
+        path: 'notifications',
+        loadComponent: () => import('./notifications/profile-notifications.component').then(m => m.ProfileNotificationsComponent)
       }
     ]
   }

@@ -13,6 +13,7 @@ import { ToastService } from '@core/services/toast.service';
 import { ModalService } from '@core/services/modal.service';
 import { LanguageService } from '@core/services/language.service';
 import { TranslatePipe } from '@shared/pipes/translate.pipe';
+import { CustomSwitchComponent } from '@shared/components/custom-switch/custom-switch.component';
 import { DatabaseBackupPanelComponent } from './database-backup-panel/database-backup-panel.component';
 
 @Component({
@@ -27,6 +28,7 @@ import { DatabaseBackupPanelComponent } from './database-backup-panel/database-b
     SkeletonLoaderComponent,
     IconComponent,
     TranslatePipe,
+    CustomSwitchComponent,
     DatabaseBackupPanelComponent
   ],
   templateUrl: './admin-settings.component.html',
@@ -55,6 +57,8 @@ export class AdminSettingsComponent implements OnInit, OnDestroy {
   public readonly showApiKey = signal<boolean>(false);
   public readonly showBinanceKey = signal<boolean>(false);
   public readonly showBinanceSecret = signal<boolean>(false);
+  public readonly showTelegramToken = signal<boolean>(false);
+  public readonly testingTelegramBot = signal<boolean>(false);
 
   public readonly activeTab = signal<'general' | 'maintenance' | 'backup'>('general');
   public readonly tokenCleanupDays = signal<number>(7);
@@ -66,7 +70,10 @@ export class AdminSettingsComponent implements OnInit, OnDestroy {
     usdt_exchange_rate: 0,
     admin_binance_id: '',
     binance_api_key: '',
-    binance_api_secret: ''
+    binance_api_secret: '',
+    telegram_bot_token: '',
+    telegram_bot_username: 'isocalmarketnoti_bot',
+    telegram_bot_enabled: true
   };
 
   ngOnInit(): void {
@@ -86,7 +93,10 @@ export class AdminSettingsComponent implements OnInit, OnDestroy {
             ...settings,
             scanner_api_key: '',
             binance_api_key: '',
-            binance_api_secret: ''
+            binance_api_secret: '',
+            telegram_bot_token: '',
+            telegram_bot_username: settings.telegram_bot_username || 'isocalmarketnoti_bot',
+            telegram_bot_enabled: settings.telegram_bot_enabled !== undefined ? Boolean(settings.telegram_bot_enabled) : true
           };
           if (settings.token_cleanup_days) {
             this.tokenCleanupDays.set(Number(settings.token_cleanup_days));
@@ -117,6 +127,32 @@ export class AdminSettingsComponent implements OnInit, OnDestroy {
 
   public toggleBinanceSecretVisibility(): void {
     this.showBinanceSecret.set(!this.showBinanceSecret());
+  }
+
+  public toggleTelegramTokenVisibility(): void {
+    this.showTelegramToken.set(!this.showTelegramToken());
+  }
+
+  public testTelegramBotConnection(): void {
+    if (this.testingTelegramBot()) return;
+    this.testingTelegramBot.set(true);
+
+    const token = this.form.telegram_bot_token ? this.form.telegram_bot_token.trim() : undefined;
+    this.store.testTelegramBot(token).subscribe({
+      next: (res) => {
+        this.testingTelegramBot.set(false);
+        const botName = res.bot?.username ? `@${res.bot.username}` : '';
+        this.toast.showToast(
+          `${this.lang.translate('admin_settings.telegram_test_success')} ${botName}`,
+          'success'
+        );
+      },
+      error: (err) => {
+        this.testingTelegramBot.set(false);
+        const errMsg = err.error?.message || this.lang.translate('admin_settings.telegram_test_failed');
+        this.toast.showToast(errMsg, 'error');
+      }
+    });
   }
 
   public changeTab(tab: 'general' | 'maintenance' | 'backup'): void {

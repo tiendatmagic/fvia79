@@ -14,6 +14,7 @@ class SystemSettingModel extends Model
         'scanner_api_key',
         'binance_api_key',
         'binance_api_secret',
+        'telegram_bot_token',
     ];
 
     protected $table = 'system_settings';

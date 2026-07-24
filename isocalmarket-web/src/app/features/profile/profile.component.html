@@ -48,12 +48,21 @@
           <app-icon name="devices" class="w-[18px] h-[18px] shrink-0" />
           <span class="whitespace-nowrap">{{ 'profile.devices' | translate }}</span>
         </a>
+
+        <a
+          routerLink="notifications"
+          routerLinkActive="bg-[var(--color-primary)]/5 dark:bg-[var(--color-primary)]/10 border-l-4 border-[var(--color-primary)] text-[var(--color-primary)] font-extrabold"
+          class="flex items-center gap-3 px-4 py-3 text-sm font-semibold text-slate-600 dark:text-slate-400 hover:bg-slate-50 dark:hover:bg-slate-800/10 border-l-4 border-transparent rounded-xl transition-all cursor-pointer whitespace-nowrap"
+        >
+          <app-icon name="telegram" class="w-[18px] h-[18px] shrink-0" />
+          <span class="whitespace-nowrap">{{ 'profile.telegram_notifications' | translate }}</span>
+        </a>
       </div>
     </div>
 
         <div
       app-card
-      class="col-span-12 lg:col-span-8 xl:col-span-9 p-5 sm:p-6"
+      class="col-span-12 lg:col-span-8 xl:col-span-9"
     >
       <router-outlet></router-outlet>
     </div>

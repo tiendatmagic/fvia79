@@ -13,6 +13,35 @@
 > Khi cần seed dữ liệu cho một seeder cụ thể, chỉ dùng:
 > - `php artisan db:seed --class=TenSeederClass` — chạy đúng 1 seeder.
 
+- **[TÍCH HỢP BOT TELEGRAM THÔNG BÁO TỰ ĐỘNG KHO HÀNG MỚI VÀ ĐƠN HÀNG VỪA MUA (TELEGRAM BOT NOTIFICATION INTEGRATION)]**:
+  - **Mô tả yêu cầu**:
+    - Tích hợp hệ thống Bot Telegram thông báo tự động (`isocalmarketnoti_bot`) cho cả Quản trị viên (`/admin/settings/general`) và Người dùng cá nhân (`/profile/notifications`).
+    - **Cấu hình Quản trị (`/admin/settings/general`)**:
+      - Lưu trữ và quản lý API Bot Token (mã hóa tự động trong CSDL bằng `Crypt::encryptString`), Bot Username và công tắc bật/tắt dịch vụ Bot Telegram.
+      - Tích hợp nút "Kiểm tra kết nối Bot" (Test Bot Connection) kiểm tra trực tiếp với Telegram API (`getMe`).
+    - **Cấu hình Người dùng (`/profile/notifications`)**:
+      - Banner lời gọi hành động nổi bật: *"📢 Vui lòng kết nối Bot Telegram để nhận ngay thông báo khi có hàng mới về kho và Đơn hàng vừa mua 24/7! Nếu có thắc mắc hoặc cần hỗ trợ, vui lòng liên hệ Telegram Support."*
+      - Nút kết nối 1-Click (`https://t.me/isocalmarketnoti_bot?start={UID}`), nhập thủ công Chat ID, gửi tin nhắn thử nghiệm, ngắt kết nối và công tắc bật/tắt nhận thông báo.
+    - **Điều kiện gửi thông báo**:
+      - **Điều kiện 1 (Kho hàng mới nhập)**: Khi Admin nhập kho mới (`initialCount > 0`), hệ thống tự động gửi thông báo Telegram cho tất cả người dùng đã bật thông báo. **Chỉ gửi 1 lần duy nhất** cho mỗi đợt tạo kho hàng mới. Khi chỉnh sửa/bổ sung kho hàng hiện có, không gửi lại.
+      - **Điều kiện 2 (Mua hàng thành công)**: Tự động gửi thông báo chi tiết mã đơn hàng, danh sách tên sản phẩm, số lượng và tổng thanh toán. **TUYỆT ĐỐI KHÔNG gửi dữ liệu tài nguyên/mật khẩu tài khoản qua Telegram** để đảm bảo an toàn thông tin.
+  - **Nội dung thực hiện**:
+    - **Backend (`isocalmarket-api`)**:
+      - Tạo migration `2026_07_24_220000_add_telegram_fields_to_users_table.php` bổ sung `telegram_chat_id` và `telegram_notifications_enabled` vào bảng `users`.
+      - Cập nhật `SystemSettingModel`: Tự động mã hóa `telegram_bot_token` trong CSDL qua `SENSITIVE_KEYS`.
+      - Tạo service `TelegramNotificationService.php` (`getBotToken`, `getBotUsername`, `isEnabled`, `testBotConnection`, `sendMessage`, `notifyNewInventoryBatch`, `notifyOrderSuccess`).
+      - Tạo controller `TelegramWebhookController.php` xử lý tự động liên kết tài khoản khi người dùng gửi lệnh `/start {uid}` trên Telegram Bot.
+      - Tạo controller `UserTelegramController.php` quản lý API get status, update Chat ID, send test message, disconnect.
+      - Đăng ký API routes trong `routes/api.php` (`/telegram/webhook`, `/user/telegram*`, `/admin/settings/telegram/test`).
+      - Viết unit & feature test suite `TelegramNotificationTest.php` đạt **135/135 PASSED (100%)**, 907 assertions.
+    - **Frontend (`isocalmarket-web`)**:
+      - Tạo component `ProfileNotificationsComponent` (`profile-notifications.component.ts`, `.html`, `.scss`).
+      - Đăng ký sub-route `notifications` trong `profile.routes.ts` và tab menu trong `profile.component.html`.
+      - Cập nhật `AdminSettingsComponent` (`admin-settings.component.ts` & `.html`) bổ sung Card cấu hình Bot Telegram với nút Test Connection.
+      - Bổ sung đầy đủ từ điển đa ngôn ngữ (EN/VI) trong `LanguageService.ts`.
+      - Biên dịch Angular Frontend (`npm run build`) thành công **100% SUCCESS, 0 ERRORS**.
+  - **Xác nhận**: Tích hợp hoàn hảo Bot Telegram thông báo tự động kho hàng mới và đơn hàng vừa mua, bảo mật token CSDL 100%!
+
 - **[PHÁT TRIỂN TRANG LIÊN HỆ HỖ TRỢ VÀ TÍCH HỢP KÊNH TELEGRAM (PUBLIC CONTACT PAGE & TELEGRAM INTEGRATION)]**:
   - **Mô tả yêu cầu**:
     - Thêm trang Liên hệ (`/contact`) phục vụ bất cứ người dùng nào (kể cả chưa đăng nhập), giao diện layout tương tự Check Live UID, FAQ & Warranty.

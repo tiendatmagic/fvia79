@@ -11,9 +11,13 @@ export interface SystemSettingsPayload {
   admin_binance_id?: string;
   binance_api_key?: string;
   binance_api_secret?: string;
+  telegram_bot_token?: string;
+  telegram_bot_username?: string;
+  telegram_bot_enabled?: boolean | string;
   has_scanner_api_key?: boolean;
   has_binance_api_key?: boolean;
   has_binance_api_secret?: boolean;
+  has_telegram_bot_token?: boolean;
 }
 
 @Injectable({
@@ -35,7 +39,10 @@ export class SystemSettingStore {
     usdt_exchange_rate: 0,
     admin_binance_id: '',
     binance_api_key: '',
-    binance_api_secret: ''
+    binance_api_secret: '',
+    telegram_bot_token: '',
+    telegram_bot_username: 'isocalmarketnoti_bot',
+    telegram_bot_enabled: true
   });
 
   private cachedSettings: SystemSettingsPayload | null = null;
@@ -119,5 +126,9 @@ export class SystemSettingStore {
     return this.api.post<any>('v1/admin/maintenance/clean-all-tokens', {}).pipe(
       finalize(() => this.isCleaningTokens.set(false))
     );
+  }
+
+  public testTelegramBot(token?: string): Observable<any> {
+    return this.api.post<any>('v1/admin/settings/telegram/test', { telegram_bot_token: token });
   }
 }

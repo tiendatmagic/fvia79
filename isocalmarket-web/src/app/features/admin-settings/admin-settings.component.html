@@ -308,9 +308,115 @@
                 </div>
               </div>
             </div>
+          <!-- Telegram Bot Configuration Card -->
+          <div class="md:col-span-2 space-y-6 pt-6 border-t border-slate-200/60 dark:border-slate-800/60">
+            <div class="flex items-center justify-between gap-3">
+              <div class="flex items-center gap-3">
+                <div class="w-10 h-10 rounded-xl bg-blue-500/10 text-blue-600 dark:text-blue-400 flex items-center justify-center shrink-0">
+                  <app-icon name="telegram" class="w-5 h-5" />
+                </div>
+                <div>
+                  <h3 class="text-base font-bold text-slate-800 dark:text-white">
+                    {{ 'admin_settings.telegram_card_title' | translate }}
+                  </h3>
+                  <p class="text-xs text-slate-500 dark:text-slate-400 font-medium">
+                    {{ 'admin_settings.telegram_card_subtitle' | translate }}
+                  </p>
+                </div>
+              </div>
+
+              <button
+                type="button"
+                app-button
+                variant="secondary"
+                size="sm"
+                (click)="testTelegramBotConnection()"
+                [loading]="testingTelegramBot()"
+                [disabled]="isLocked()"
+                class="cursor-pointer whitespace-nowrap"
+              >
+                <app-icon name="telegram" class="w-4 h-4 mr-1.5 shrink-0" />
+                <span>{{ 'admin_settings.telegram_btn_test_conn' | translate }}</span>
+              </button>
+            </div>
+
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+              <!-- Bot Username -->
+              <div class="form-field">
+                <label class="text-xs font-bold text-slate-400 dark:text-slate-500 uppercase tracking-wider block mb-1.5">
+                  {{ 'admin_settings.telegram_username_label' | translate }}
+                </label>
+                <div class="relative">
+                  <input
+                    type="text"
+                    name="telegram_bot_username"
+                    class="form-input w-full pl-9"
+                    placeholder="isocalmarketnoti_bot"
+                    [(ngModel)]="form.telegram_bot_username"
+                    [disabled]="isLocked()"
+                  />
+                  <div class="absolute left-3 top-1/2 -translate-y-1/2 text-slate-400 font-bold text-sm">
+                    @
+                  </div>
+                </div>
+              </div>
+
+              <!-- Enable Switch -->
+              <div class="form-field flex flex-col justify-end">
+                <div class="flex items-center justify-between p-3 rounded-xl bg-slate-50 dark:bg-slate-900/60 border border-slate-200/50 dark:border-slate-800/40">
+                  <span class="text-xs font-bold text-slate-700 dark:text-slate-200">
+                    {{ 'admin_settings.telegram_enable_label' | translate }}
+                  </span>
+                  <app-custom-switch
+                    [checked]="!!form.telegram_bot_enabled"
+                    (checkedChange)="form.telegram_bot_enabled = $event"
+                    [disabled]="isLocked()"
+                  />
+                </div>
+              </div>
+
+              <!-- Bot API Token (Encrypted) -->
+              <div class="form-field md:col-span-2">
+                <div class="flex items-center justify-between mb-1.5">
+                  <label class="text-xs font-bold text-slate-400 dark:text-slate-500 uppercase tracking-wider">
+                    {{ 'admin_settings.telegram_token_label' | translate }}
+                  </label>
+                  @if (form.has_telegram_bot_token) {
+                    <span class="text-xs font-semibold text-emerald-600 dark:text-emerald-400 flex items-center gap-1">
+                      <app-icon name="check-circle" class="w-3.5 h-3.5" />
+                      {{ 'settings.key_configured' | translate }}
+                    </span>
+                  }
+                </div>
+                <div class="relative">
+                  <input
+                    type="text"
+                    name="telegram_bot_token"
+                    class="form-input w-full pr-12 font-mono text-xs"
+                    [class.mask-security]="!showTelegramToken()"
+                    [placeholder]="form.has_telegram_bot_token ? ('settings.key_configured' | translate) : '8829514283:AAFZ1qpXqqPbJjVwHa4jtBIRDmbm52jVEMA'"
+                    [(ngModel)]="form.telegram_bot_token"
+                    [disabled]="isLocked()"
+                  />
+                  <button
+                    type="button"
+                    (click)="toggleTelegramTokenVisibility()"
+                    class="absolute top-1/2 -translate-y-1/2 right-0 pr-4 flex items-center text-slate-400 hover:text-slate-600 dark:hover:text-slate-200 transition-colors"
+                  >
+                    <app-icon [name]="showTelegramToken() ? 'eye-slash' : 'eye'" class="w-5 h-5" />
+                  </button>
+                </div>
+                @if (form.has_telegram_bot_token && !form.telegram_bot_token) {
+                  <p class="mt-1.5 text-xs text-emerald-600 dark:text-emerald-400 font-semibold flex items-center gap-1">
+                    <app-icon name="check-circle" class="w-3.5 h-3.5 shrink-0" />
+                    {{ 'settings.key_saved_hint' | translate }}
+                  </p>
+                }
+              </div>
+            </div>
           </div>
 
-          <div class="flex justify-end items-center gap-3 pt-4">
+          <div class="md:col-span-2 flex justify-end items-center gap-3 pt-4">
             <button
               type="button"
               app-button
@@ -333,6 +439,7 @@
                 {{ 'settings.save' | translate }}
               </button>
             }
+          </div>
           </div>
         </form>
       </app-card>

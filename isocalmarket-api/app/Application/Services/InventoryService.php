@@ -14,15 +14,18 @@ class InventoryService
     private InventoryBatchRepositoryInterface $inventoryRepository;
     private InventoryItemRepositoryInterface $inventoryItemRepository;
     private ProductRepositoryInterface $productRepository;
+    private TelegramNotificationService $telegramService;
 
     public function __construct(
         InventoryBatchRepositoryInterface $inventoryRepository,
         InventoryItemRepositoryInterface $inventoryItemRepository,
-        ProductRepositoryInterface $productRepository
+        ProductRepositoryInterface $productRepository,
+        ?TelegramNotificationService $telegramService = null
     ) {
         $this->inventoryRepository = $inventoryRepository;
         $this->inventoryItemRepository = $inventoryItemRepository;
         $this->productRepository = $productRepository;
+        $this->telegramService = $telegramService ?? app(TelegramNotificationService::class);
     }
 
     public function importBatch(string $productId, string $batchName, string $rawData, ?float $costPrice = null): InventoryBatch
@@ -61,6 +64,14 @@ class InventoryService
 
         $saved = $this->inventoryRepository->save($batch);
         Cache::forget('products_active_storefront');
+
+        try {
+            $this->telegramService->notifyNewInventoryBatch($product, $saved);
+        } catch (\Throwable $e) {
+            // Log & ignore notification failures to prevent blocking inventory import
+            \Illuminate\Support\Facades\Log::error('Telegram inventory notification error: ' . $e->getMessage());
+        }
+
         return $saved;
     }
 

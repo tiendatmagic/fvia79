@@ -5,6 +5,7 @@
       [placeholder]="placeholder"
       [disabled]="disabled"
       [rows]="rows"
+      [value]="innerValue"
       (input)="onInput($event)"
       class="form-textarea {{ customClass }}"
     ></textarea>
@@ -14,6 +15,7 @@
       [name]="name"
       [placeholder]="placeholder"
       [disabled]="disabled"
+      [value]="innerValue"
       (input)="onInput($event)"
       class="form-input form-input-password {{ customClass }}"
     />
@@ -38,6 +40,7 @@
       [min]="min"
       [max]="max"
       [step]="step"
+      [value]="innerValue"
       (input)="onInput($event)"
       class="form-input {{ rightIcon ? 'pr-10' : '' }} {{ customClass }}"
     />

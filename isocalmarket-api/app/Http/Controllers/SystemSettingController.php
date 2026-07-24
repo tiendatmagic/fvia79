@@ -23,7 +23,7 @@ class SystemSettingController extends Controller
     {
         $settings = $this->settingService->getAllSettings();
 
-        foreach (['scanner_api_key', 'binance_api_key', 'binance_api_secret'] as $sensitiveKey) {
+        foreach (['scanner_api_key', 'binance_api_key', 'binance_api_secret', 'telegram_bot_token'] as $sensitiveKey) {
             $settings['has_'.$sensitiveKey] = ! empty($settings[$sensitiveKey] ?? null);
             unset($settings[$sensitiveKey]);
         }
@@ -41,6 +41,9 @@ class SystemSettingController extends Controller
             'admin_binance_id' => 'sometimes|nullable|string|max:100',
             'binance_api_key' => 'sometimes|nullable|string|max:200',
             'binance_api_secret' => 'sometimes|nullable|string|max:200',
+            'telegram_bot_token' => 'sometimes|nullable|string|max:500',
+            'telegram_bot_username' => 'sometimes|nullable|string|max:100',
+            'telegram_bot_enabled' => 'sometimes|nullable',
         ], [
             'admin_wallet_address.regex' => 'The admin wallet address must be a valid BEP20/EVM address starting with 0x followed by 40 hex characters.',
         ]);
@@ -69,6 +72,16 @@ class SystemSettingController extends Controller
             $settingsToSave['binance_api_secret'] = $request->input('binance_api_secret');
         }
 
+        if ($request->filled('telegram_bot_token')) {
+            $settingsToSave['telegram_bot_token'] = $request->input('telegram_bot_token');
+        }
+        if ($request->has('telegram_bot_username')) {
+            $settingsToSave['telegram_bot_username'] = $request->input('telegram_bot_username') ?: '';
+        }
+        if ($request->has('telegram_bot_enabled')) {
+            $settingsToSave['telegram_bot_enabled'] = $request->boolean('telegram_bot_enabled') ? '1' : '0';
+        }
+
         if (! empty($settingsToSave)) {
             $this->settingService->saveSettings($settingsToSave);
         }
@@ -76,6 +89,14 @@ class SystemSettingController extends Controller
         return response()->json([
             'message' => 'System settings updated successfully.',
         ]);
+    }
+
+    public function testTelegramBot(Request $request, \App\Application\Services\TelegramNotificationService $telegramService)
+    {
+        $overrideToken = $request->input('telegram_bot_token');
+        $result = $telegramService->testBotConnection($overrideToken ?: null);
+
+        return response()->json($result, $result['success'] ? 200 : 400);
     }
 
     public function clearViews()

@@ -18,6 +18,7 @@ Route::prefix('v1')->group(function () {
     Route::get('/faqs', ['App\Http\Controllers\FaqController', 'indexPublic']);
     Route::get('/deposit/rate', ['App\Http\Controllers\DepositController', 'getRate']);
     Route::post('/tools/check-uid', ['App\Http\Controllers\CheckUidController', 'check'])->middleware('throttle:30,1');
+    Route::post('/telegram/webhook', ['App\Http\Controllers\TelegramWebhookController', 'handleWebhook']);
 
     Route::middleware(['b2b.auth'])->group(function () {
         Route::get('/b2b/products', ['App\Http\Controllers\B2bController', 'index']);
@@ -49,6 +50,10 @@ Route::prefix('v1')->group(function () {
         Route::get('/user/sessions', ['App\Http\Controllers\UserSessionController', 'index']);
         Route::delete('/user/sessions/others', ['App\Http\Controllers\UserSessionController', 'destroyOthers']);
         Route::delete('/user/sessions/{id}', ['App\Http\Controllers\UserSessionController', 'destroy']);
+        Route::get('/user/telegram', ['App\Http\Controllers\UserTelegramController', 'getStatus']);
+        Route::post('/user/telegram', ['App\Http\Controllers\UserTelegramController', 'updateStatus']);
+        Route::post('/user/telegram/test', ['App\Http\Controllers\UserTelegramController', 'sendTestMessage']);
+        Route::delete('/user/telegram', ['App\Http\Controllers\UserTelegramController', 'disconnect']);
 
         Route::post('/orders', ['App\Http\Controllers\OrderController', 'store']);
         Route::get('/orders', ['App\Http\Controllers\OrderController', 'index']);
@@ -66,6 +71,7 @@ Route::prefix('v1')->group(function () {
 
             Route::get('/admin/settings', ['App\Http\Controllers\SystemSettingController', 'index']);
             Route::put('/admin/settings', ['App\Http\Controllers\SystemSettingController', 'update']);
+            Route::post('/admin/settings/telegram/test', ['App\Http\Controllers\SystemSettingController', 'testTelegramBot']);
             Route::get('/admin/database-backup/status', ['App\Http\Controllers\DatabaseBackupController', 'status']);
             Route::post('/admin/database-backup/export', ['App\Http\Controllers\DatabaseBackupController', 'export'])
                 ->middleware('throttle:database-backup-export');

@@ -24,7 +24,9 @@ class UserMapper
             $model->google2fa_enabled,
             $model->api_key,
             $model->status ?? 'active',
-            $model->uid
+            $model->uid,
+            $model->telegram_chat_id,
+            (bool) ($model->telegram_notifications_enabled ?? true)
         );
     }
  
@@ -52,6 +54,8 @@ class UserMapper
         $model->google2fa_enabled = $entity->isGoogle2faEnabled();
         $model->api_key = $entity->getApiKey();
         $model->status = $entity->getStatus();
+        $model->telegram_chat_id = $entity->getTelegramChatId();
+        $model->telegram_notifications_enabled = $entity->isTelegramNotificationsEnabled();
  
         return $model;
     }

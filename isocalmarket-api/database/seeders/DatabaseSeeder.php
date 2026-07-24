@@ -46,7 +46,7 @@ class DatabaseSeeder extends Seeder
             'email' => 'customer1@isocalmarket.com',
             'password' => Hash::make($customerPassword),
             'role' => 'customer',
-            'phone' => '098'.rand(1000000, 9999999),
+            'phone' => '098' . rand(1000000, 9999999),
         ]);
 
         $categoriesData = [
@@ -505,7 +505,7 @@ class DatabaseSeeder extends Seeder
         }
 
         foreach ($products as $p) {
-            $template = '1000'.rand(100000000, 999999999).'{i}|pass_secret_via_{i}|2FA_SECRET_KEY_XYZ_{i}|recovery_mail_{i}@gmail.com|pass_mail';
+            $template = '1000' . rand(100000000, 999999999) . '{i}|pass_secret_via_{i}|2FA_SECRET_KEY_XYZ_{i}|recovery_mail_{i}@gmail.com|pass_mail';
             if (str_contains($p->slug, 'gmail') || str_contains($p->slug, 'outlook') || str_contains($p->slug, 'hotmail')) {
                 $template = 'mail_seed_account_{i}@hotmail.com|pass_mail_{i}|recovery_seed_mail_{i}@outlook.com';
             } elseif (str_contains($p->slug, 'proxy')) {
@@ -522,7 +522,7 @@ class DatabaseSeeder extends Seeder
 
             InventoryBatchModel::create([
                 'product_id' => $p->id,
-                'batch_name' => 'Lô hàng mẫu #'.strtoupper(Str::random(5)),
+                'batch_name' => 'Lô hàng mẫu #' . strtoupper(Str::random(5)),
                 'keys_pool' => $keysPool,
                 'initial_count' => count($keysList),
                 'sold_count' => 0,
@@ -544,7 +544,7 @@ class DatabaseSeeder extends Seeder
 
             $status = $statusDistribution[array_rand($statusDistribution)];
 
-            $orderCode = 'ORD-'.$orderDate->format('Ymd').'-'.strtoupper(Str::random(6));
+            $orderCode = 'ORD-' . $orderDate->format('Ymd') . '-' . strtoupper(Str::random(6));
 
             $numItems = rand(1, 2);
             $selectedProducts = (array) array_rand($products, $numItems);
@@ -662,6 +662,27 @@ class DatabaseSeeder extends Seeder
                 'key' => 'usdt_exchange_rate',
                 'value' => '0',
                 'description' => 'Tỷ giá quy đổi USDT sang VND cố định (Đặt 0 để tự động lấy từ CoinGecko)',
+                'created_at' => now(),
+                'updated_at' => now(),
+            ],
+            [
+                'key' => 'telegram_bot_token',
+                'value' => Crypt::encryptString(''),
+                'description' => 'API Bot Telegram thông báo tự động (Mã hóa CSDL)',
+                'created_at' => now(),
+                'updated_at' => now(),
+            ],
+            [
+                'key' => 'telegram_bot_username',
+                'value' => 'isocalmarketnoti_bot',
+                'description' => 'Username của Bot Telegram chính thức',
+                'created_at' => now(),
+                'updated_at' => now(),
+            ],
+            [
+                'key' => 'telegram_bot_enabled',
+                'value' => '1',
+                'description' => 'Kích hoạt hệ thống thông báo tự động Telegram',
                 'created_at' => now(),
                 'updated_at' => now(),
             ],
