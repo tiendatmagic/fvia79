@@ -13,6 +13,29 @@
 > Khi cần seed dữ liệu cho một seeder cụ thể, chỉ dùng:
 > - `php artisan db:seed --class=TenSeederClass` — chạy đúng 1 seeder.
 
+- **[CẢI TIẾN GIAO DIỆN VÀ THAY THẾ ẢNH BẢN BANNER SOCIAL (REDESIGN SOCIAL PREVIEW BANNER IMAGE)]**:
+  - **Mô tả yêu cầu**:
+    - Thiết kế lại ảnh social banner `isocalmarket-web/public/assets/image/social_image.png` với giao diện siêu rộng hiện đại, sang trọng, loại bỏ hoàn toàn logo thương hiệu/chữ logo website theo yêu cầu người dùng, giữ đúng kích thước chuẩn 574x240 px không bị biến dạng/bị dẹt.
+  - **Nội dung thực hiện**:
+    - **Frontend (`isocalmarket-web`)**:
+      - Tạo mới banner 3D nghệ thuật siêu rộng cho mạng xã hội với thiết kế UI kho hàng kỹ thuật số, hiệu ứng neon glow xanh neon & tím mượt, hoàn toàn **không chứa logo chữ website**.
+      - Áp dụng thuật toán Cắt ảnh thông minh (Aspect-Fill / Cover Crop) chuẩn tỷ lệ **574x240 px**, giữ trọn vẹn đường nét sắc nét, không bị co giãn hay bóp dẹt hình ảnh.
+      - Ghi đè file ảnh mới vào `public/assets/image/social_image.png`.
+      - Giữ chuẩn thẻ Open Graph `og:image:width` (574px) và `og:image:height` (240px) trong `src/index.html`.
+      - Biên dịch Angular Frontend (`npm run build`) thành công **100% SUCCESS, 0 ERRORS**.
+  - **Xác nhận**: Biên dịch thành công, ảnh banner social mới sắc nét 574x240 px, không có logo website và không bị bóp dẹt!
+
+- **[BỔ SUNG THẺ SEO META OPEN GRAPH VÀ TẠO ẢNH SOCIAL IMAGE (SEO META TAGS & SOCIAL IMAGE INTEGRATION)]**:
+  - **Mô tả yêu cầu**:
+    - Thêm đầy đủ bộ thẻ SEO Open Graph (`og:type`, `og:site_name`, `og:title`, `og:url`, `og:description`, `og:image`, `og:image:width`, `og:image:height`) và Twitter card vào `index.html`.
+    - Tạo và tích hợp file ảnh đại diện chia sẻ mạng xã hội `social_image.png` với kích thước chuẩn **574x240 px** tại đường dẫn `/assets/image/social_image.png`.
+  - **Nội dung thực hiện**:
+    - **Frontend (`isocalmarket-web`)**:
+      - Cập nhật `src/index.html`: Thêm đầy đủ các thẻ `<meta property="og:..." content="...">` và `<meta property="twitter:..." content="...">`.
+      - Tạo thư mục `public/assets/image/` và sinh file ảnh `social_image.png` chuẩn định dạng PNG với kích thước chính xác **574x240 pixels**.
+      - Biên dịch lại Angular Frontend (`npm run build`) thành công **100% SUCCESS**, kiểm tra file `dist/angular-web3-wallet/browser/assets/image/social_image.png` đã được đóng gói chính xác.
+  - **Xác nhận & Nghiệm thu**: Đóng gói thành công, đầy đủ thẻ Open Graph meta và đường dẫn ảnh social_image sẵn sàng cho chia sẻ mạng xã hội.
+
 - **[CÀI ĐẶT PHPMYADMIN & ĐỔI MẬT KHẨU MYSQL NGẪU NHIÊN TRÊN VPS (PHPMYADMIN DEPLOYMENT & RANDOM MYSQL PASS)]**:
   - **Mô tả yêu cầu**:
     - Tạo mật khẩu ngẫu nhiên bảo mật cho tài khoản CSDL MySQL `isocalmarket_user`, cập nhật `.env` của Laravel và cài đặt giao diện phpMyAdmin quản lý CSDL trực quan.
