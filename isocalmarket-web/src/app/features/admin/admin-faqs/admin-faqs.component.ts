@@ -79,6 +79,10 @@ export class AdminFaqsComponent implements OnInit {
     return this.faqs().slice(start, start + this.faqPageSize);
   });
 
+  public updatingCategoryId = signal<number | null>(null);
+  public updatingPolicyId = signal<number | null>(null);
+  public updatingFaqId = signal<number | null>(null);
+
   // Policy Category Modal State
   public isCategoryModalOpen = signal<boolean>(false);
   public editingCategory = signal<PolicyCategoryItem | null>(null);
@@ -321,12 +325,19 @@ export class AdminFaqsComponent implements OnInit {
   }
 
   public toggleCategoryStatus(cat: PolicyCategoryItem): void {
+    if (!cat || this.updatingCategoryId() === cat.id) return;
+    this.updatingCategoryId.set(cat.id);
+
     this.faqService.updatePolicyCategory(cat.id, { is_active: !cat.is_active }).subscribe({
       next: () => {
         this.toast.showSuccess(this.lang.translate('toast.policy_cat_updated'));
+        this.updatingCategoryId.set(null);
         this.loadData();
       },
-      error: () => this.toast.showError('Cập nhật trạng thái thất bại!')
+      error: () => {
+        this.toast.showError('Cập nhật trạng thái thất bại!');
+        this.updatingCategoryId.set(null);
+      }
     });
   }
 
@@ -409,12 +420,19 @@ export class AdminFaqsComponent implements OnInit {
   }
 
   public togglePolicyStatus(policy: WarrantyPolicyItem): void {
+    if (!policy || this.updatingPolicyId() === policy.id) return;
+    this.updatingPolicyId.set(policy.id);
+
     this.faqService.updatePolicy(policy.id, { is_active: !policy.is_active }).subscribe({
       next: () => {
         this.toast.showSuccess(this.lang.translate('toast.policy_updated'));
+        this.updatingPolicyId.set(null);
         this.loadData();
       },
-      error: () => this.toast.showError('Cập nhật trạng thái thất bại!')
+      error: () => {
+        this.toast.showError('Cập nhật trạng thái thất bại!');
+        this.updatingPolicyId.set(null);
+      }
     });
   }
 
@@ -486,12 +504,19 @@ export class AdminFaqsComponent implements OnInit {
   }
 
   public toggleFaqStatus(faq: FaqItem): void {
+    if (!faq || this.updatingFaqId() === faq.id) return;
+    this.updatingFaqId.set(faq.id);
+
     this.faqService.updateFaq(faq.id, { is_active: !faq.is_active }).subscribe({
       next: () => {
         this.toast.showSuccess(this.lang.translate('toast.faq_updated'));
+        this.updatingFaqId.set(null);
         this.loadData();
       },
-      error: () => this.toast.showError('Cập nhật trạng thái thất bại!')
+      error: () => {
+        this.toast.showError('Cập nhật trạng thái thất bại!');
+        this.updatingFaqId.set(null);
+      }
     });
   }
 

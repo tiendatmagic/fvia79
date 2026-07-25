@@ -137,6 +137,7 @@
           </app-badge>
           <app-custom-switch
             [ngModel]="row.is_active"
+            [disabled]="updatingCategoryId() === row.id"
             (ngModelChange)="toggleStatus(row)"
           />
         </div>

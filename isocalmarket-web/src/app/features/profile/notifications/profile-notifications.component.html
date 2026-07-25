@@ -183,6 +183,7 @@
       </div>
       <app-custom-switch
         [checked]="notificationsEnabled"
+        [disabled]="saving()"
         (checkedChange)="toggleNotifications($event)"
       />
     </div>

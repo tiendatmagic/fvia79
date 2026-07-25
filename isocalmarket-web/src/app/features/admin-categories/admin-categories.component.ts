@@ -193,17 +193,28 @@ export class AdminCategoriesComponent implements OnInit {
     });
   }
 
+  public updatingCategoryId = signal<string | null>(null);
+
   public toggleStatus(category: any) {
+    if (!category || this.updatingCategoryId() === category.id) return;
+    this.updatingCategoryId.set(category.id);
+
     const data = {
       name: category.name,
       slug: category.slug,
       description: category.description,
       is_active: !category.is_active
     };
-    this.state.productStore.updateCategory(category.id, data).subscribe((res) => {
-      if (res !== null) {
-        this.state.showToast(this.lang.translate('toast.category_status_updated'), 'success');
-        this.fetchCategories();
+    this.state.productStore.updateCategory(category.id, data).subscribe({
+      next: (res) => {
+        this.updatingCategoryId.set(null);
+        if (res !== null) {
+          this.state.showToast(this.lang.translate('toast.category_status_updated'), 'success');
+          this.fetchCategories();
+        }
+      },
+      error: () => {
+        this.updatingCategoryId.set(null);
       }
     });
   }

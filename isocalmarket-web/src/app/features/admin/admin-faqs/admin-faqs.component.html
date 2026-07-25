@@ -164,6 +164,7 @@
           </app-badge>
           <app-custom-switch
             [ngModel]="row.is_active"
+            [disabled]="updatingCategoryId() === row.id"
             (ngModelChange)="toggleCategoryStatus(row)"
           />
         </div>
@@ -308,7 +309,7 @@
           <app-badge [variant]="row.is_active ? 'success' : 'danger'" size="md" rounded="md">
             {{ (row.is_active ? 'cat.status_active' : 'cat.status_inactive') | translate }}
           </app-badge>
-          <app-custom-switch [ngModel]="row.is_active" (ngModelChange)="togglePolicyStatus(row)" />
+          <app-custom-switch [ngModel]="row.is_active" [disabled]="updatingPolicyId() === row.id" (ngModelChange)="togglePolicyStatus(row)" />
         </div>
       </ng-template>
 
@@ -407,7 +408,7 @@
           <app-badge [variant]="row.is_active ? 'success' : 'danger'" size="md" rounded="md">
             {{ (row.is_active ? 'cat.status_active' : 'cat.status_inactive') | translate }}
           </app-badge>
-          <app-custom-switch [ngModel]="row.is_active" (ngModelChange)="toggleFaqStatus(row)" />
+          <app-custom-switch [ngModel]="row.is_active" [disabled]="updatingFaqId() === row.id" (ngModelChange)="toggleFaqStatus(row)" />
         </div>
       </ng-template>
 
