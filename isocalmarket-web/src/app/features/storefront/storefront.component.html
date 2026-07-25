@@ -18,15 +18,9 @@
         @if (announcement().announcement_effect === 'marquee') {
           <div class="announcement-marquee-track text-xs sm:text-sm font-semibold text-slate-800 dark:text-slate-100">
             <span>{{ announcement().announcement_text }}</span>
-            <span class="mx-12 opacity-30 text-amber-500 font-bold">•</span>
-            <span>{{ announcement().announcement_text }}</span>
           </div>
         } @else if (announcement().announcement_effect === 'fade') {
           <div class="announcement-fade text-xs sm:text-sm font-semibold text-amber-600 dark:text-amber-300">
-            {{ announcement().announcement_text }}
-          </div>
-        } @else if (announcement().announcement_effect === 'slide') {
-          <div class="announcement-slide text-xs sm:text-sm font-semibold text-slate-800 dark:text-slate-100">
             {{ announcement().announcement_text }}
           </div>
         } @else {

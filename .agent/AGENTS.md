@@ -44,9 +44,13 @@
     - **Frontend (`isocalmarket-web`)**:
       - Tạo `PublicSettingStore` (`public-setting.store.ts`) quản lý state công khai, đệm Cache FE 10 phút (600,000 ms), bổ sung Signal `loaded` và khởi tạo trạng thái mặc định rỗng giúp loại bỏ hoàn toàn hiện tượng chớp dữ liệu cũ khi reload trang.
       - Cập nhật `SystemSettingStore` (`system-setting.store.ts`) tự động làm sạch Cache FE công khai khi Admin lưu cài đặt mới.
-      - Cập nhật `AdminSettingsComponent` (`admin-settings.component.ts` & `.html`): Tách riêng Tab độc lập **"Thông báo trang chủ"** (`/admin/settings/announcement`) tích hợp Custom Switch, Textarea, Custom Select chọn 4 loại hiệu ứng, và khung Xem trước trực quan (Live Banner Preview).
+      - Cập nhật `AdminSettingsComponent` (`admin-settings.component.ts` & `.html`): Tách riêng Tab độc lập **"Thông báo trang chủ"** (`/admin/settings/announcement`) tích hợp Custom Switch, Textarea, Custom Select chọn 3 loại hiệu ứng (Chữ chạy ngang Marquee, Nhấp nháy Fade Pulse, Đổi màu nhấp nháy Bounce/Color Pulse), và khung Xem trước trực quan (Live Banner Preview).
       - Cập nhật `IconComponent` (`icon.component.html`): Bổ sung đầy đủ đường dẫn SVG `announcement`, `megaphone`, `bell`, `x-mark` chuẩn Heroicons 24x24 giúp hiển thị icon loa thông báo và icon đóng sắc nét 100%, không bị lỗi lọt vào icon mặc định.
-      - Cập nhật `StorefrontComponent` (`storefront.component.ts` & `.html`): Tích hợp **Skeleton Loading giả** (`@if (!publicSettingStore.loaded())`) trong lúc chờ API nạp xong. Khi nạp thành công, chỉ hiển thị Banner nếu Admin đang BẬT thông báo (`announcement_enabled = true`) và có nội dung; ngược lại nếu Admin TẮT thì ẩn hoàn toàn 100% không làm xáo trộn layout.
+      - Cập nhật `StorefrontComponent` (`storefront.component.ts` & `.html`):
+        - Chuẩn hóa CSS animation `marqueeScroll` chỉ xuất hiện 1 chuỗi duy nhất, đi từ mép phải (`translateX(100%)`) chạy biến mất sang mép trái (`translateX(-100%)`) rồi mới lặp lại.
+        - Chuyển đổi hiệu ứng tùy chọn 3 thành **Đổi màu nhấp nháy chú ý (Color Glow Pulse)** hiện đại.
+        - Loại bỏ hoàn toàn hiệu ứng trượt trôi `slide`.
+        - Tích hợp **Skeleton Loading giả** (`@if (!publicSettingStore.loaded())`) trong lúc chờ API nạp xong. Khi nạp thành công, chỉ hiển thị Banner nếu Admin đang BẬT thông báo (`announcement_enabled = true`) và có nội dung; ngược lại nếu Admin TẮT thì ẩn hoàn toàn 100% không làm xáo trộn layout.
       - Bổ sung từ điển đa ngôn ngữ EN và VI trong `LanguageService.ts`.
       - Biên dịch Angular Frontend (`npm run build`) thành công **100% SUCCESS, 0 ERRORS**.
   - **Xác nhận**: Tích hợp hoàn hảo tính năng Quản lý Thông báo Trang chủ Admin (Tab riêng biệt) & Hiệu ứng Banner Storefront với SVG Icons chuẩn 100%!

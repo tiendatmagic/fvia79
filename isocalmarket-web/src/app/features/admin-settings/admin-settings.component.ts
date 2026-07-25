@@ -43,35 +43,28 @@ import { DatabaseBackupPanelComponent } from './database-backup-panel/database-b
       text-security: disc !important;
     }
     @keyframes marqueeScroll {
-      0% { transform: translateX(0%); }
-      100% { transform: translateX(-50%); }
+      0% { transform: translateX(100%); }
+      100% { transform: translateX(-100%); }
     }
     @keyframes fadePulse {
       0%, 100% { opacity: 1; }
       50% { opacity: 0.3; }
     }
-    @keyframes slideLeftRight {
-      0% { transform: translateX(-20px); opacity: 0.8; }
-      50% { transform: translateX(20px); opacity: 1; }
-      100% { transform: translateX(-20px); opacity: 0.8; }
-    }
-    @keyframes subtleBounce {
-      0%, 100% { transform: translateY(0); }
-      50% { transform: translateY(-4px); }
+    @keyframes colorGlowPulse {
+      0%, 100% { color: #f59e0b; text-shadow: 0 0 8px rgba(245, 158, 11, 0.4); }
+      33% { color: #10b981; text-shadow: 0 0 12px rgba(16, 185, 129, 0.6); }
+      66% { color: #3b82f6; text-shadow: 0 0 10px rgba(59, 130, 246, 0.5); }
     }
     .effect-marquee-preview {
-      display: inline-flex;
+      display: inline-block;
       white-space: nowrap;
-      animation: marqueeScroll 12s linear infinite;
+      animation: marqueeScroll 14s linear infinite;
     }
     .effect-fade-preview {
       animation: fadePulse 2s ease-in-out infinite;
     }
-    .effect-slide-preview {
-      animation: slideLeftRight 4s ease-in-out infinite;
-    }
     .effect-bounce-preview {
-      animation: subtleBounce 1.5s ease-in-out infinite;
+      animation: colorGlowPulse 3s ease-in-out infinite;
     }
   `]
 })
@@ -99,7 +92,6 @@ export class AdminSettingsComponent implements OnInit, OnDestroy {
   public readonly effectOptions = computed(() => [
     { label: this.lang.translate('settings.effect_marquee'), value: 'marquee' },
     { label: this.lang.translate('settings.effect_fade'), value: 'fade' },
-    { label: this.lang.translate('settings.effect_slide'), value: 'slide' },
     { label: this.lang.translate('settings.effect_bounce'), value: 'bounce' },
   ]);
 

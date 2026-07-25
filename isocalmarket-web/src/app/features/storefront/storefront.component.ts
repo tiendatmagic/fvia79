@@ -69,9 +69,10 @@ import { PublicSettingStore } from '@core/services/public-setting.store';
         0%, 100% { opacity: 1; }
         50% { opacity: 0.35; }
       }
-      @keyframes subtleBounce {
-        0%, 100% { transform: translateY(0); }
-        50% { transform: translateY(-3px); }
+      @keyframes colorGlowPulse {
+        0%, 100% { color: #f59e0b; text-shadow: 0 0 8px rgba(245, 158, 11, 0.4); }
+        33% { color: #10b981; text-shadow: 0 0 12px rgba(16, 185, 129, 0.6); }
+        66% { color: #3b82f6; text-shadow: 0 0 10px rgba(59, 130, 246, 0.5); }
       }
       .announcement-marquee-track {
         display: inline-block;
@@ -86,7 +87,7 @@ import { PublicSettingStore } from '@core/services/public-setting.store';
         animation: fadePulse 2.5s ease-in-out infinite;
       }
       .announcement-bounce {
-        animation: subtleBounce 1.8s ease-in-out infinite;
+        animation: colorGlowPulse 3s ease-in-out infinite;
       }
     `,
   ],
