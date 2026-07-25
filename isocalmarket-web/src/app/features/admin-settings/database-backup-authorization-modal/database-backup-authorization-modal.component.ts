@@ -3,6 +3,7 @@ import { Component, Inject } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { MODAL_DATA, ModalRef } from '@core/services/modal-ref';
 import { ButtonComponent } from '@shared/components/button/button.component';
+import { CustomInputComponent } from '@shared/components/custom-input/custom-input.component';
 import { IconComponent } from '@shared/components/icon/icon.component';
 import { TranslatePipe } from '@shared/pipes/translate.pipe';
 import { DatabaseBackupAuthorization } from '../database-backup.store';
@@ -16,7 +17,7 @@ export interface DatabaseBackupModalData {
 @Component({
   selector: 'app-database-backup-authorization-modal',
   standalone: true,
-  imports: [CommonModule, FormsModule, ButtonComponent, IconComponent, TranslatePipe],
+  imports: [CommonModule, FormsModule, ButtonComponent, CustomInputComponent, IconComponent, TranslatePipe],
   templateUrl: './database-backup-authorization-modal.component.html',
   styleUrl: './database-backup-authorization-modal.component.css'
 })

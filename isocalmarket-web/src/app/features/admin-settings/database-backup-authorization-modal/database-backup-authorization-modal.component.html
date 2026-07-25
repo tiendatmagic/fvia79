@@ -68,14 +68,14 @@
   }
 
   <div class="form-field">
-    <label>{{ 'database_backup.current_password' | translate }}</label>
-    <input
+    <label class="text-xs font-bold text-slate-400 dark:text-slate-500 uppercase tracking-wider block mb-1.5 font-sans">
+      {{ 'database_backup.current_password' | translate }} <span class="text-rose-500">*</span>
+    </label>
+    <app-custom-input
       type="password"
       name="password"
-      class="form-input w-full"
-      autocomplete="current-password"
       [(ngModel)]="password"
-      required
+      [placeholder]="'database_backup.current_password' | translate"
     />
   </div>
 

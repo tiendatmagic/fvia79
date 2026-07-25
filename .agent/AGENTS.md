@@ -25,7 +25,7 @@
       - `database-backup.store.ts`: Bổ sung `php_upload_max_filesize` & `php_post_max_size` vào `DatabaseBackupStatus` interface.
       - `vi.ts` & `en.ts`: Bổ sung các translation keys `database_backup.server_environment`, `database_backup.php_upload_max_filesize`, `database_backup.php_post_max_size`, `database_backup.php_sync_hint`.
       - `database-backup-panel.component.ts`: Import `BadgeComponent`.
-      - `database-backup-panel.component.html`: Tái cấu trúc và nâng cấp giao diện HTML tab Sao lưu & Khôi phục CSDL. Xây dựng **Bảng Thông số Máy chủ & Hệ thống (Server & System Environment Status)** dạng Grid 4 cột sắc nét hiển thị CSDL Driver (`MySQL`), Giới hạn Ứng dụng (`100 MB`), PHP `upload_max_filesize` và PHP `post_max_size` kèm thẻ lưu ý đồng bộ `php.ini`.
+      - `database-backup-authorization-modal.component.html` & `.ts`: Thay thế ô nhập password thô bằng `<app-custom-input type="password">` tích hợp sẵn nút công tắc con mắt ẩn/hiện mật khẩu đồng bộ 100% UI/UX toàn hệ thống.
       - Biên dịch Angular Frontend (`npm run build`) thành công **100% SUCCESS, 0 ERRORS**.
   - **Xác nhận**: Đã hiển thị đầy đủ thông số cấu hình server PHP và nâng cấp giao diện Sao lưu CSDL hoàn hảo!
 

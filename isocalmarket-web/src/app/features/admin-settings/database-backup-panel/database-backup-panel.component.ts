@@ -87,7 +87,7 @@ export class DatabaseBackupPanelComponent implements OnInit {
         mode === 'export' ? 'database_backup.export_title' : 'database_backup.restore_title'
       ),
       size: 'lg',
-      closeOnBackdropClick: mode === 'export',
+      closeOnBackdropClick: true,
       data
     });
   }
