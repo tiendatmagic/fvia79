@@ -330,6 +330,21 @@
       - Biên dịch Angular Frontend (`npm run build`) thành công **100% SUCCESS, 0 ERRORS**.
   - **Xác nhận**: Tích hợp hoàn hảo tính năng Quản lý Thông báo Trang chủ Admin (Tab riêng biệt) & Hiệu ứng Banner Storefront với SVG Icons chuẩn 100%!
 
+- **[TRIỂN KHẢI CẬP NHẬT FE VÀ BE LÊN VPS PRODUCTION BẢO TOÀN DỮ LIỆU CSDL (FULL FE & BE VPS PRODUCTION DEPLOYMENT)]**:
+  - **Mô tả yêu cầu**:
+    - Triển khai bản cập nhật mới nhất cho cả Frontend (Angular) và Backend (Laravel) lên VPS Production (`https://isocalmarket.com/`).
+    - Tuân thủ nghiêm ngặt quy tắc **BẢO TOÀN CƠ SỞ DỮ LIỆU** (chỉ dùng `php artisan migrate --force`, tuyệt đối KHÔNG chạy `migrate:fresh`).
+  - **Nội dung thực hiện**:
+    - **Kiểm thử**: PHP Unit tests đạt **150/150 PASSED (100%)**, 1018 assertions.
+    - **Frontend (`isocalmarket-web`)**: Biên dịch production (`npm run build`) thành công **100% SUCCESS**, nén và giải nén tại `/var/www/isocalmarket-web`.
+    - **Backend (`isocalmarket-api`)**: Đóng gói mã nguồn Backend, upload lên VPS `/var/www/isocalmarket-api`, chạy `composer install --no-dev --optimize-autoloader`.
+    - **Database Migrations**: Chạy `php artisan migrate --force` thành công 3 migrations mới mà không mất mát bất kỳ dữ liệu nào:
+      - `2026_07_25_200000_create_membership_tiers_table`
+      - `2026_07_25_200001_add_membership_tier_and_total_deposited_to_users_table`
+      - `2026_07_26_000000_split_discount_amount_on_orders_table`
+    - **Cấu hình & Reload**: Phân quyền `www-data:www-data`, cấp quyền `775` cho storage/cache, làm sạch và đệm lại cache (`config:cache`, `route:cache`, `view:cache`), reload `php8.3-fpm` và `nginx`.
+  - **Xác nhận**: Deploy VPS thành công **100%**, tất cả các API và giao diện Web trả về HTTP/2 **200 OK**, giữ nguyên tuyệt đối dữ liệu CSDL!
+
 - **[TRIỂN KHẢI CẬP NHẬT LÊN VPS PRODUCTION BẢO TOÀN DỮ LIỆU CSDL (VPS PRODUCTION RE-DEPLOYMENT & DATA PRESERVATION)]**:
   - **Mô tả yêu cầu**:
     - Deploy bản cập nhật mới nhất cho cả Frontend và Backend lên VPS production (`https://isocalmarket.com/`).

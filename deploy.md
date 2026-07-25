@@ -8,6 +8,7 @@ Tài liệu này ghi lại chi tiết các bước đã thực hiện để depl
 
 - **VPS IP**: `184.164.93.247`
 - **Username VPS**: `root`
+  **Pass VPS**: "T7o9pEuOCesR" (không có dấu ")
 - **Domain**: `https://isocalmarket.com/`
 - **phpMyAdmin URL**: `https://isocalmarket.com/phpmyadmin/`
 - **MySQL Database**: `isocalmarket`
@@ -22,6 +23,7 @@ Tài liệu này ghi lại chi tiết các bước đã thực hiện để depl
 ## 🚀 2. Chi Tiết Các Bước Triển Khai
 
 ### Bước 1: Chuẩn Bị & Build Frontend Cục Bộ
+
 1. Di chuyển vào thư mục Frontend: `cd D:\git\isocalmarket\isocalmarket-web`
 2. Tiến hành build sản phẩm production:
    ```bash
@@ -30,6 +32,7 @@ Tài liệu này ghi lại chi tiết các bước đã thực hiện để depl
 3. Đóng gói kết quả tại `dist/angular-web3-wallet/browser` thành file `frontend-dist.zip`.
 
 ### Bước 2: Cài Đặt Môi Trường Mới Trên VPS
+
 1. Thêm PPA và cài đặt PHP 8.3 cùng các extension cần thiết:
    ```bash
    apt-get update && apt-get install -y software-properties-common
@@ -40,6 +43,7 @@ Tài liệu này ghi lại chi tiết các bước đã thực hiện để depl
    ```
 
 ### Bước 3: Tạo CSDL & Import Dữ Liệu SQL
+
 1. Tạo Database `isocalmarket` và User truy cập:
    ```sql
    CREATE DATABASE IF NOT EXISTS isocalmarket CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
@@ -53,12 +57,14 @@ Tài liệu này ghi lại chi tiết các bước đã thực hiện để depl
    ```
 
 ### Bước 4: Triển Khai Backend Laravel (`/var/www/isocalmarket-api`)
+
 1. Upload và giải nén source code Backend:
    ```bash
    mkdir -p /var/www/isocalmarket-api
    unzip -o /tmp/source-code.zip -d /var/www/isocalmarket-api
    ```
 2. Tạo file cấu hình `.env` cho môi trường Production:
+
    ```env
    APP_NAME=Isocalmarket
    APP_ENV=production
@@ -94,6 +100,7 @@ Tài liệu này ghi lại chi tiết các bước đã thực hiện để depl
    TOKEN_CONTRACT_ADDRESS=0x55d398326f99059ff775485246999027b3197955
    TOKEN_DECIMALS=18
    ```
+
 3. Cài đặt thư mục vendor và tối ưu hóa Laravel:
    ```bash
    cd /var/www/isocalmarket-api
@@ -110,6 +117,7 @@ Tài liệu này ghi lại chi tiết các bước đã thực hiện để depl
    ```
 
 ### Bước 5: Triển Khai Frontend Angular (`/var/www/isocalmarket-web`)
+
 1. Upload và giải nén giao diện Angular:
    ```bash
    mkdir -p /var/www/isocalmarket-web
@@ -118,7 +126,9 @@ Tài liệu này ghi lại chi tiết các bước đã thực hiện để depl
    ```
 
 ### Bước 6: Cấu Hình Nginx Web Server
+
 Tạo file `/etc/nginx/sites-available/isocalmarket.com`:
+
 ```nginx
 server {
     listen 80;
@@ -172,7 +182,9 @@ server {
     }
 }
 ```
+
 Kích hoạt site và khởi động lại Nginx:
+
 ```bash
 ln -sf /etc/nginx/sites-available/isocalmarket.com /etc/nginx/sites-enabled/isocalmarket.com
 rm -f /etc/nginx/sites-enabled/default
@@ -182,13 +194,17 @@ systemctl restart nginx
 ```
 
 ### Bước 7: Cấp Chứng Chỉ SSL (HTTPS)
+
 Đăng ký chứng chỉ SSL miễn phí từ Let's Encrypt cho tên miền:
+
 ```bash
 certbot --nginx -d isocalmarket.com -d www.isocalmarket.com --non-interactive --agree-tos --email admin@isocalmarket.com --redirect
 ```
 
 ### Bước 8: Thiết Lập Cronjob Tự Động
+
 Thêm dòng sau vào crontab của user `www-data`:
+
 ```bash
 (crontab -u www-data -l 2>/dev/null; echo "* * * * * cd /var/www/isocalmarket-api && php artisan schedule:run >> /dev/null 2>&1") | crontab -u www-data -
 ```

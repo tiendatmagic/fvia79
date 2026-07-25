@@ -671,7 +671,7 @@ class DepositService
             }
 
             $userModel->balance = round($currentBalance - $amountToRevoke, 8);
-            $featureTiersEnabled = filter_var(config('app.feature_membership_tiers_enabled', true), FILTER_VALIDATE_BOOLEAN);
+            $featureTiersEnabled = filter_var(config('app.feature_membership_tiers_enabled', false), FILTER_VALIDATE_BOOLEAN);
             if ($featureTiersEnabled) {
                 $userModel->total_deposited = max(0.0, round((float) $userModel->total_deposited - $amountToRevoke, 4));
             }
@@ -751,7 +751,7 @@ class DepositService
                 }
 
                 $userModel->balance = round($currentBalance - $totalRevokeAmount, 8);
-                $featureTiersEnabled = filter_var(config('app.feature_membership_tiers_enabled', true), FILTER_VALIDATE_BOOLEAN);
+                $featureTiersEnabled = filter_var(config('app.feature_membership_tiers_enabled', false), FILTER_VALIDATE_BOOLEAN);
                 if ($featureTiersEnabled) {
                     $userModel->total_deposited = max(0.0, round((float) $userModel->total_deposited - $totalRevokeAmount, 4));
                 }
@@ -789,7 +789,7 @@ class DepositService
 
         $amount = (float) $deposit->getAmountUsdt();
         $userModel->balance = round((float) $userModel->balance + $amount, 8);
-        $featureTiersEnabled = filter_var(config('app.feature_membership_tiers_enabled', true), FILTER_VALIDATE_BOOLEAN);
+        $featureTiersEnabled = filter_var(config('app.feature_membership_tiers_enabled', false), FILTER_VALIDATE_BOOLEAN);
         if ($featureTiersEnabled) {
             $userModel->total_deposited = round((float) $userModel->total_deposited + $amount, 4);
         }

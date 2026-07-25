@@ -128,7 +128,7 @@ class SystemSettingController extends Controller
         $usdtRate = $this->settingService->getSetting('usdt_exchange_rate', '25400');
         $telegramBotUsername = $this->settingService->getSetting('telegram_bot_username', 'isocalmarketnoti_bot');
 
-        $envFeatureEnabled = config('app.feature_membership_tiers_enabled', true);
+        $envFeatureEnabled = filter_var(config('app.feature_membership_tiers_enabled', false), FILTER_VALIDATE_BOOLEAN);
         $membershipTiersFeatureEnabled = filter_var($envFeatureEnabled, FILTER_VALIDATE_BOOLEAN);
 
         $membershipTiersEnabled = $membershipTiersFeatureEnabled

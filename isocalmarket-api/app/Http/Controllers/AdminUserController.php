@@ -227,7 +227,7 @@ class AdminUserController extends Controller
                 $amount         = (float) $request->input('amount');
                 $reason         = trim($request->input('reason'));
                 $affectCumulative = (bool) $request->input('affect_cumulative_deposit', false);
-                $featureTiersEnabled = filter_var(config('app.feature_membership_tiers_enabled', true), FILTER_VALIDATE_BOOLEAN);
+                $featureTiersEnabled = filter_var(config('app.feature_membership_tiers_enabled', false), FILTER_VALIDATE_BOOLEAN);
                 if (! $featureTiersEnabled) {
                     $affectCumulative = false;
                 }

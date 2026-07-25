@@ -13,7 +13,7 @@ class CheckMembershipTiersFeatureEnabled
      */
     public function handle(Request $request, Closure $next): Response
     {
-        $enabled = filter_var(config('app.feature_membership_tiers_enabled', true), FILTER_VALIDATE_BOOLEAN);
+        $enabled = filter_var(config('app.feature_membership_tiers_enabled', false), FILTER_VALIDATE_BOOLEAN);
 
         if (! $enabled) {
             return response()->json([

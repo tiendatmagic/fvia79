@@ -13,7 +13,7 @@ class MembershipTierService
      */
     public function recalculateUserTier(UserModel $user): ?MembershipTierModel
     {
-        $enabled = filter_var(config('app.feature_membership_tiers_enabled', true), FILTER_VALIDATE_BOOLEAN);
+        $enabled = filter_var(config('app.feature_membership_tiers_enabled', false), FILTER_VALIDATE_BOOLEAN);
         if (! $enabled) {
             if ($user->membership_tier_id !== null) {
                 $user->membership_tier_id = null;
