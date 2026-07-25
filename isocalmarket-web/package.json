@@ -3,9 +3,9 @@
   "version": "0.0.0",
   "scripts": {
     "ng": "ng",
-    "start": "ng serve",
-    "build": "ng build",
-    "watch": "ng build --watch --configuration development",
+    "start": "node scripts/filter-runner.js serve",
+    "build": "node scripts/filter-runner.js build",
+    "watch": "node scripts/filter-runner.js build --watch --configuration development",
     "test": "ng test"
   },
   "private": true,

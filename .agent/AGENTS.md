@@ -18,6 +18,16 @@
 > `php artisan config:clear && php artisan config:cache && php artisan route:cache && php artisan view:cache`
 > để đảm bảo Laravel cập nhật ngay lập tức 100% các biến môi trường tươi mới nhất từ tệp `.env`, tuyệt đối không được bỏ qua bước `config:clear` để tránh tình trạng dính cache đệm tĩnh cũ.
 
+- **[ẨN CẢNH BÁO BROWSERSLIST TRÊN ANGULAR CLI (SUPPRESS BROWSERSLIST CLI WARNINGS)]**:
+  - **Mô tả yêu cầu**:
+    - Lọc và ẩn hoàn toàn cảnh báo Browserslist unsupported/ignored khi chạy `npm start` hay `npm run build` mà không sửa hay đụng tới tệp `.browserslistrc`.
+  - **Nội dung thực hiện**:
+    - **Frontend (`isocalmarket-web`)**:
+      - Tạo tệp `scripts/filter-runner.js`: Sử dụng Node.js child_process thực hiện stream filter loại bỏ các dòng thông báo Browserslist / Ignored browsers / Unsupported browsers từ stdout/stderr.
+      - `package.json`: Cập nhật các scripts `"start"`, `"build"`, `"watch"` gọi qua `node scripts/filter-runner.js <command>`.
+      - **Biên dịch Frontend**: Lệnh `npm run build` thành công **100% SUCCESS, 0 ERRORS**, ẩn sạch cảnh báo Browserslist.
+  - **Xác nhận**: Đã tích hợp bộ lọc log cảnh báo mượt mà, giữ nguyên 100% tệp `.browserslistrc`!
+
 - **[TÍCH HỢP SKELETON LOADING CHO KHỐI ĐĂNG NHẬP / THÔNG TIN TÀI KHOẢN TRÊN HEADER (HEADER AUTH SKELETON LOADING ON API PENDING)]**:
   - **Mô tả yêu cầu**:
     - Khi tải/tải lại trang (reload) hoặc hệ thống phản hồi chậm, API kiểm tra xác thực người dùng (`/api/v1/auth/me`) ở trạng thái pending làm frontend chưa xác định được trạng thái đăng nhập. Hiển thị khối Skeleton Loading hiệu ứng mượt mà tại đúng vị trí Nút đăng nhập / Thông tin số dư và Tên tài khoản trên Header để nâng cao trải nghiệm UI/UX. Giữ nguyên khối Đổi ngôn ngữ `[VI v]`.
