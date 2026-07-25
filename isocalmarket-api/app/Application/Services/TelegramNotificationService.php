@@ -130,14 +130,12 @@ class TelegramNotificationService
             return 0;
         }
 
-        $productNameVi = $product->getLocalizedName('vi') ?: $product->getName();
-        $priceVnd = number_format($product->getPrice(), 0, ',', '.') . ' VNĐ';
+        $productName = $product->getLocalizedName('en') ?: $product->getName();
 
-        $message = "📦 <b>[HÀNG MỚI VỀ KHO]</b>\n\n"
-            . "📌 <b>Sản phẩm:</b> {$productNameVi}\n"
-            . "📥 <b>Số lượng mới nhập:</b> {$stockAdded} sản phẩm\n"
-            . "💰 <b>Đơn giá:</b> {$priceVnd}\n\n"
-            . "🛒 Mua ngay tại hệ thống ISOCALMARKET!";
+        $message = "📦 <b>[NEW INVENTORY ARRIVED]</b>\n\n"
+            . "📌 <b>Product:</b> {$productName}\n"
+            . "📥 <b>New Stock Added:</b> {$stockAdded} item(s)\n\n"
+            . "🛒 Buy now at ISOCALMARKET!";
 
         $sentCount = 0;
         foreach ($users as $user) {
@@ -167,16 +165,16 @@ class TelegramNotificationService
             $prodName = $item->getProductName();
             $qty = $item->getQuantity();
             $priceUsd = number_format($item->getPrice(), 2);
-            $itemsSummary .= "• <b>{$prodName}</b> x {$qty} (<b>\${$priceUsd}</b>/sp)\n";
+            $itemsSummary .= "• <b>{$prodName}</b> x {$qty} (<b>\${$priceUsd}</b>/item)\n";
         }
 
-        $message = "🎉 <b>[ĐƠN HÀNG MUA THÀNH CÔNG]</b>\n\n"
-            . "📋 <b>Mã đơn hàng:</b> <code>#{$orderCode}</code>\n"
-            . "💵 <b>Tổng thanh toán:</b> \${$totalUsd}\n\n"
-            . "🛍️ <b>Danh sách sản phẩm:</b>\n"
+        $message = "🎉 <b>[ORDER PLACED SUCCESSFULLY]</b>\n\n"
+            . "📋 <b>Order Code:</b> <code>#{$orderCode}</code>\n"
+            . "💵 <b>Total Paid:</b> \${$totalUsd}\n\n"
+            . "🛍️ <b>Items:</b>\n"
             . $itemsSummary . "\n"
-            . "⚠️ <i>Ghi chú: Vì lý do bảo mật, dữ liệu tài nguyên không gửi qua Telegram. Vui lòng xem chi tiết tại Lịch sử đơn hàng trên website.</i>\n\n"
-            . "Cảm ơn bạn đã tin tưởng dịch vụ của ISOCALMARKET!";
+            . "⚠️ <i>Note: For security reasons, account credentials/resources are not sent via Telegram. Please check your order history on the website.</i>\n\n"
+            . "Thank you for shopping with ISOCALMARKET!";
 
         return $this->sendMessage($user->telegram_chat_id, $message);
     }

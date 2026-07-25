@@ -13,6 +13,21 @@
 > Khi cần seed dữ liệu cho một seeder cụ thể, chỉ dùng:
 > - `php artisan db:seed --class=TenSeederClass` — chạy đúng 1 seeder.
 
+- **[CỦNG CỐ CẤU TRÚC THÔNG BÁO BOT TELEGRAM & BỘ NGÔN NGỮ TIẾNG ANH (TELEGRAM BOT NOTIFICATION ENGLISH FORMATTING)]**:
+  - **Mô tả yêu cầu**:
+    - Bỏ dòng hiển thị `Đơn giá` trong thông báo Telegram "Hàng mới về kho".
+    - Chuyển đổi toàn bộ nội dung tin nhắn gửi từ Telegram Bot (`notifyNewInventoryBatch`, `notifyOrderSuccess`, `handleWebhook`, `sendTestMessage`) sang **Tiếng Anh chuẩn (English)**.
+  - **Nội dung thực hiện**:
+    - **Backend (`isocalmarket-api`)**:
+      - Cập nhật `TelegramNotificationService.php`:
+        - Loại bỏ hoàn toàn dòng `💰 Đơn giá: ...` khỏi mẫu thông báo kho mới về.
+        - Lấy tên sản phẩm Tiếng Anh (`$product->getLocalizedName('en')`) làm mặc định trong thông báo.
+        - Chuyển đổi toàn bộ nhãn, ghi chú bảo mật và câu chào trong `notifyNewInventoryBatch` và `notifyOrderSuccess` sang Tiếng Anh.
+      - Cập nhật `TelegramWebhookController.php`: Chuyển đổi thông báo kết nối thành công và câu hướng dẫn cú pháp `/start` sang Tiếng Anh.
+      - Cập nhật `UserTelegramController.php`: Chuyển đổi nội dung tin nhắn thử nghiệm (Test Message) sang Tiếng Anh.
+      - Chạy bộ kiểm thử `php artisan test`: Đạt **139/139 PASSED (100%)**, 954 assertions.
+  - **Xác nhận**: Đã tối ưu mẫu tin nhắn Telegram Bot sắc nét, không hiện đơn giá thừa và chuẩn ngôn ngữ Tiếng Anh 100%!
+
 - **[TÍCH HỢP THAO TÁC MỞ KHÓA ĐỂ SỬA TRANG CẤU HÌNH NHÀ CUNG CẤP ADMIN (SUPPLIER UNLOCK TO EDIT FEATURE INTEGRATION)]**:
   - **Mô tả yêu cầu**:
     - Bổ sung nút bấm **"Mở khóa để sửa" / "Khóa chỉnh sửa"** tại trang Quản lý Nhà cung cấp Admin (`/admin/suppliers`), tương tự như cơ chế bảo mật tại trang Cấu hình Hệ thống Admin (`/admin/settings/general`).

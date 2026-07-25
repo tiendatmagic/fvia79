@@ -74,10 +74,10 @@ class UserTelegramController extends Controller
             ], 400);
         }
 
-        $testText = "🔔 <b>[TIN NHẮN THỬ NGHIỆM]</b>\n\n"
-            . "Xin chào <b>{$user->name}</b>,\n"
-            . "Hệ thống ISOCALMARKET đã kết nối thành công với tài khoản Telegram của bạn.\n"
-            . "Bạn sẽ nhận được thông báo tự động khi có <b>Hàng mới về kho</b> và <b>Đơn hàng vừa mua</b> 24/7!";
+        $testText = "🔔 <b>[TEST NOTIFICATION]</b>\n\n"
+            . "Hello <b>{$user->name}</b>,\n"
+            . "ISOCALMARKET system has successfully connected to your Telegram account.\n"
+            . "You will receive automated notifications for <b>New Inventory</b> and <b>Successful Orders</b> 24/7!";
 
         $success = $this->telegramService->sendMessage($user->telegram_chat_id, $testText);
 

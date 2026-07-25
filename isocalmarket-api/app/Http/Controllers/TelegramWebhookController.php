@@ -45,10 +45,10 @@ class TelegramWebhookController extends Controller
                     $user->telegram_notifications_enabled = true;
                     $user->save();
 
-                    $replyText = "🎉 <b>Kết nối tài khoản thành công!</b>\n\n"
-                        . "👤 <b>Tài khoản:</b> {$user->name}\n"
+                    $replyText = "🎉 <b>Account Linked Successfully!</b>\n\n"
+                        . "👤 <b>Account Name:</b> {$user->name}\n"
                         . "🆔 <b>UID:</b> <code>{$user->uid}</code>\n\n"
-                        . "Bạn đã sẵn sàng nhận thông báo tự động khi có <b>Hàng mới về kho</b> và <b>Đơn hàng vừa mua</b> 24/7 từ hệ thống ISOCALMARKET.";
+                        . "You are now ready to receive instant notifications for <b>New Inventory</b> and <b>Successful Orders</b> 24/7 from ISOCALMARKET.";
 
                     $this->telegramService->sendMessage($chatId, $replyText);
 
@@ -56,10 +56,10 @@ class TelegramWebhookController extends Controller
                 }
             }
 
-            $replyText = "👋 <b>Chào mừng bạn đến với Bot Thông Báo ISOCALMARKET!</b>\n\n"
-                . "Để tự động kết nối nhận thông báo số dư & đơn hàng, vui lòng truy cập trang <b>Hồ sơ cá nhân</b> trên website và bấm nút <b>Kết nối Telegram</b>, hoặc gửi tin nhắn theo cú pháp:\n\n"
-                . "<code>/start UID_của_bạn</code>\n\n"
-                . "Ví dụ: <code>/start 10000005</code>";
+            $replyText = "👋 <b>Welcome to ISOCALMARKET Notification Bot!</b>\n\n"
+                . "To automatically link your account and receive instant updates, please visit your <b>User Profile</b> page on our website and click <b>Connect Telegram</b>, or send a message with the command:\n\n"
+                . "<code>/start YOUR_UID</code>\n\n"
+                . "Example: <code>/start 10000005</code>";
 
             $this->telegramService->sendMessage($chatId, $replyText);
         }
