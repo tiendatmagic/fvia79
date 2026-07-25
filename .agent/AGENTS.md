@@ -13,6 +13,18 @@
 > Khi cần seed dữ liệu cho một seeder cụ thể, chỉ dùng:
 > - `php artisan db:seed --class=TenSeederClass` — chạy đúng 1 seeder.
 
+- **[CHUYỂN MẶC ĐỊNH FEATURE_MEMBERSHIP_TIERS_ENABLED THÀNH FALSE (OFF BY DEFAULT IF OMITTED IN ENV)]**:
+  - **Mô tả yêu cầu**:
+    - Khi Admin không khai báo hoặc thiếu cấu hình `FEATURE_MEMBERSHIP_TIERS_ENABLED` trong tệp `.env`, hệ thống tự động nhận diện giá trị mặc định là `false` (TẮT HOÀN TOÀN) thay vì `true`.
+  - **Nội dung thực hiện**:
+    - **Backend (`isocalmarket-api`)**:
+      - `config/app.php`: Cập nhật `'feature_membership_tiers_enabled' => (bool) env('FEATURE_MEMBERSHIP_TIERS_ENABLED', false)`.
+      - Các Controllers, Services và Middlewares (`CheckMembershipTiersFeatureEnabled.php`, `AdminUserController.php`, `SystemSettingController.php`, `AdminMembershipTierController.php`, `OrderService.php`, `MembershipTierService.php`, `DepositService.php`): Đồng bộ tất cả các vị trí đọc `config('app.feature_membership_tiers_enabled', false)` thành fallback `false`.
+      - `.env.example`: Thêm `FEATURE_MEMBERSHIP_TIERS_ENABLED=false` kèm ghi chú hướng dẫn chi tiết.
+      - **Kiểm thử**: PHP Unit tests đạt **150/150 PASSED (100%)**, 1018 assertions.
+      - **Frontend**: `npm run build` biên dịch thành công **100% SUCCESS, 0 ERRORS**.
+  - **Xác nhận**: Tính năng Cấp bậc Đại lý mặc định TẮT 100% nếu không chủ động bật trong `.env`!
+
 - **[BỎ CALL API SỐ DƯ KHI TẮT NHÀ CUNG CẤP (SKIP SUPPLIER BALANCE API WHEN DISABLED)]**:
   - **Mô tả yêu cầu**:
     - Khi công tắc "Bật nhà cung cấp này" ở trạng thái TẮT (`enabled: false`), không thực hiện gọi API lấy số dư balance từ nhà cung cấp để tránh tốn request API thừa và hiển thị trạng thái tắt trực quan.
