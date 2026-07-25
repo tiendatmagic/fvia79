@@ -33,6 +33,13 @@
       - Cập nhật `SidebarComponent` (`sidebar.component.ts` & `.html`) và `App` (`app.ts` & `app.html`): Bọc ẩn/hiện menu Quản lý cấp bậc dựa trên `membership_tiers_feature_enabled`.
       - Cập nhật `AdminMembershipTiersComponent` (`admin-membership-tiers.component.html`): Bổ sung Banner cảnh báo đỏ khi tính năng chưa kích hoạt trong `.env`.
       - Biên dịch Angular Frontend (`npm run build`) thành công **100% SUCCESS, 0 ERRORS**.
+  - **Xác nhận & Kiểm thử Bật/Tắt FEATURE_MEMBERSHIP_TIERS_ENABLED=false**:
+    - Khi đặt `FEATURE_MEMBERSHIP_TIERS_ENABLED=false` trong `.env`:
+      - Tất cả API công khai (`/api/v1/settings/public`, `/api/v1/membership-tiers`) và API xác thực (`/api/v1/auth/me`, `/api/v1/profile`, `/api/v1/b2b/me`) hoạt động an toàn, trả về `membership_tier: null` hoặc danh sách rỗng, **tuyệt đối KHÔNG xảy ra lỗi 500 Server Error**.
+      - Các route Admin bảo vệ (`/api/v1/admin/membership-tiers`, `/api/v1/admin/users/{id}/adjust-cumulative-deposit`) trả về phản hồi mã **403 Forbidden** kèm thông báo hướng dẫn rõ ràng.
+      - Đã cập nhật `B2bController.php` bổ sung kiểm tra `FEATURE_MEMBERSHIP_TIERS_ENABLED` để vô hiệu hóa tier trong API B2B `/b2b/me` khi công tắc bị tắt.
+      - Đã hoàn thiện bộ kiểm thử tự động `MembershipTierTest.php`: Đạt **147/147 PASSED (100%)**, 995 assertions.
+      - Biên dịch Angular Frontend (`npm run build`) thành công **100% SUCCESS, 0 ERRORS**.
   - **Xác nhận**: Tích hợp hoàn hảo công tắc bản quyền tệp `.env` và công tắc tổng Bật/Tắt hệ thống Cấp bậc Đại lý!
 
 - **[TỐI ƯU RESPONSIVE FOOTER BADGE BẢO MẬT ĐĂNG NHẬP / ĐĂNG KÝ (AUTH FOOTER SECURITY BADGES RESPONSIVE LAYOUT)]**:

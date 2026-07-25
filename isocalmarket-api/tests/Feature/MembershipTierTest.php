@@ -316,6 +316,56 @@ class MembershipTierTest extends TestCase
         $res = $this->withHeader('Authorization', "Bearer {$this->adminToken}")
             ->getJson('/api/v1/admin/membership-tiers');
 
-        $res->assertStatus(403);
+        $res->assertStatus(403)
+            ->assertJsonPath('message', 'The Membership Tiers feature is disabled in the server environment configuration (.env FEATURE_MEMBERSHIP_TIERS_ENABLED=false).');
+    }
+
+    public function test_disabling_feature_in_env_behaves_safely_across_all_endpoints(): void
+    {
+        config(['app.feature_membership_tiers_enabled' => false]);
+
+        // 1. Public settings returns feature disabled flag
+        $resPublicSettings = $this->getJson('/api/v1/settings/public');
+        $resPublicSettings->assertStatus(200)
+            ->assertJsonPath('membership_tiers_feature_enabled', false)
+            ->assertJsonPath('membership_tiers_enabled', false);
+
+        // 2. Public tiers returns empty list safely
+        $resPublicTiers = $this->getJson('/api/v1/membership-tiers');
+        $resPublicTiers->assertStatus(200)
+            ->assertJsonPath('data', []);
+
+        // 3. User profile & Auth /me return null tier safely
+        $resMe = $this->withHeader('Authorization', "Bearer {$this->customerToken}")
+            ->getJson('/api/v1/auth/me');
+        $resMe->assertStatus(200)
+            ->assertJsonPath('user.membership_tier', null);
+
+        // 4. B2B /me returns null tier safely
+        $this->customerModel->api_key = 'b2b_disabled_feature_key';
+        $this->customerModel->save();
+        $resB2b = $this->withHeader('X-API-KEY', 'b2b_disabled_feature_key')
+            ->getJson('/api/v1/b2b/me');
+        $resB2b->assertStatus(200)
+            ->assertJsonPath('membership_tier', null);
+
+        // 5. Admin adjust cumulative deposit is blocked with 403 Forbidden when feature is disabled in .env
+        $resAdjustDep = $this->withHeader('Authorization', "Bearer {$this->adminToken}")
+            ->postJson("/api/v1/admin/users/{$this->customerModel->id}/adjust-cumulative-deposit", [
+                'type' => 'add',
+                'amount' => 500.0,
+            ]);
+        $resAdjustDep->assertStatus(403);
+
+        // 6. Admin adjust balance handles gracefully without 500 error
+        $resAdjustBal = $this->withHeader('Authorization', "Bearer {$this->adminToken}")
+            ->postJson("/api/v1/admin/users/{$this->customerModel->id}/adjust-balance", [
+                'type' => 'add',
+                'amount' => 100.0,
+                'affect_cumulative_deposit' => true,
+            ]);
+        $resAdjustBal->assertStatus(200)
+            ->assertJsonPath('user.membership_tier', null);
     }
 }
+
