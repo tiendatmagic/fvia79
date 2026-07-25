@@ -37,10 +37,14 @@ class UserRepository implements UserRepositoryInterface
 
     public function findByEmailOrUsername(string $login): ?User
     {
-        $model = UserModel::with('membershipTier')->where('email', $login)
-            ->orWhere('username', $login)
-            ->orWhere('uid', $login)
-            ->first();
+        $query = UserModel::with('membershipTier')->where('email', $login)
+            ->orWhere('username', $login);
+
+        if (\Illuminate\Support\Facades\Schema::hasColumn('users', 'uid')) {
+            $query->orWhere('uid', $login);
+        }
+
+        $model = $query->first();
         return $model ? UserMapper::toDomain($model) : null;
     }
 

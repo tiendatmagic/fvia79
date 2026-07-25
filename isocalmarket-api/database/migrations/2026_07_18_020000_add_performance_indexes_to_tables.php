@@ -9,12 +9,18 @@ return new class extends Migration
     public function up(): void
     {
         Schema::table('products', function (Blueprint $table) {
-            $table->index('deleted_at');
-            $table->index('created_at');
+            try {
+                $table->index('deleted_at');
+            } catch (\Throwable $e) {}
+            try {
+                $table->index('created_at');
+            } catch (\Throwable $e) {}
         });
 
         Schema::table('inventory_batches', function (Blueprint $table) {
-            $table->index('created_at');
+            try {
+                $table->index('created_at');
+            } catch (\Throwable $e) {}
         });
     }
     public function down(): void

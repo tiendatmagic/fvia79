@@ -18,6 +18,34 @@
 > `php artisan config:clear && php artisan config:cache && php artisan route:cache && php artisan view:cache`
 > để đảm bảo Laravel cập nhật ngay lập tức 100% các biến môi trường tươi mới nhất từ tệp `.env`, tuyệt đối không được bỏ qua bước `config:clear` để tránh tình trạng dính cache đệm tĩnh cũ.
 
+- **[KHẮC PHỤC LỖI BACKEND 500 DO MIGRATION THIẾU CỘT UID VÀ LỖI KHÓA TRÙNG LẬP (FIX BACKEND 500 ERROR & RUN PENDING MIGRATIONS)]**:
+  - **Mô tả yêu cầu**:
+    - Khi đăng nhập hoặc gọi API authenticating user, hệ thống trả về lỗi **HTTP 500 Internal Server Error** với log lỗi `Column not found: 1054 Unknown column 'uid' in 'where clause'`. Nguyên nhân do một số file migration cũ bị nghẽn (fail ở khóa index trùng `products_deleted_at_index` và `users_api_key_unique`), khiến các migration thêm cột `uid`, `user_sessions`, `membership_tiers`... chưa được áp dụng vào CSDL MySQL local.
+  - **Nội dung thực hiện**:
+    - **Backend (`isocalmarket-api`)**:
+      - `UserRepository.php`: Bổ sung kiểm tra an toàn `Schema::hasColumn('users', 'uid')` trước khi query `orWhere('uid', $login)` để ngăn ngừa triệt để lỗi 500 nếu CSDL chưa có cột `uid`.
+      - `2026_07_18_020000_add_performance_indexes_to_tables.php`: Bọc việc thêm index trong `try-catch` để chống lỗi trùng tên index.
+      - `2026_07_21_062251_encrypt_existing_api_keys.php` & `2026_07_21_200002_add_api_key_hash_to_users_table.php`: Sử dụng `DB::statement` hủy an toàn các index cũ và kiểm tra `Schema::hasColumn('users', 'api_key_hash')` trước khi alter table.
+      - Thực hiện chạy thành công lệnh `php artisan migrate` áp dụng toàn bộ **27 migrations** chưa chạy vào CSDL MySQL local không mất dữ liệu.
+      - Thực hiện xóa và tái tạo cache cấu hình `php artisan config:clear && php artisan config:cache && php artisan route:cache && php artisan view:cache` đúng quy tắc.
+  - **Xác nhận**: Đã sửa triệt để lỗi 500 backend, chạy 100% migrations thành công!
+
+- **[TỰ ĐỘNG CHUẨN HÓA THUẬT NGỮ MMO TIẾNG ANH KHI IMPORT SẢN PHẨM NHÀ CUNG CẤP (AUTOMATIC MMO DICTIONARY TRANSLATION FOR SUPPLIER PRODUCTS)]**:
+  - **Mô tả yêu cầu**:
+    - Khi import/sync sản phẩm từ Nhà cung cấp với tính năng "Tự động dịch" bật, API Google Translate giữ nguyên các thuật ngữ MMO Tiếng Việt như *"Cổ"*, *"Ngoại"*, *"Kháng"*, *"XMDT"* (ví dụ *"Via Indonesia Cổ 3-5K Friend"*, *"Via Ngoại Live Ads"*). Cần bổ sung bộ từ điển chuyển đổi thuật ngữ MMO chuẩn sang Tiếng Anh (*"Aged"*, *"Foreign"*, *"Resistant"*, *"Identity Verified"*...) và tự động phát hiện/dịch lại tên Tiếng Anh còn sót chữ Tiếng Việt trong CSDL.
+  - **Nội dung thực hiện**:
+    - **Backend (`isocalmarket-api`)**:
+      - `GoogleTranslateService.php`:
+        - Bổ sung phương thức `applyMmoDictionaryEn(string $text): string` với `Normalizer::normalize(FORM_C)` xử lý ký tự Unicode NFD/NFC và Regex thay thế các từ chuyên ngành MMO sang Tiếng Anh chuẩn (*"Cổ / Co"* ➔ *"Aged"*, *"Ngoại / Ngoai"* ➔ *"Foreign"*, *"Siêu Cổ"* ➔ *"Super Aged"*, *"Kháng / Khang"* ➔ *"Resistant"*, *"XMDT / Xác minh danh tính"* ➔ *"Identity Verified"*, *"Việt"* ➔ *"Vietnamese"*, *"Bè"* ➔ *"Friends"*, *"TKQC"* ➔ *"Ad Account"*, *"Ngâm"* ➔ *"Seasoned"*, *"XMDN"* ➔ *"Business Verified"*).
+        - Áp dụng bộ lọc này tự động khi `targetLang === 'en'`.
+        - Đổi cache key version thành `gtrans_v3_` để tự động dọn dẹp các đệm dịch cũ từ trước.
+      - `SupplierCatalogSyncService.php`:
+        - Bổ sung helper `hasUntranslatedVietnamese(?string $text): bool`.
+        - Cập nhật `upsertCategory` và `upsertProduct` bắt buộc re-translate nếu `name_en` hoặc `description_en` vẫn còn chứa các từ Tiếng Việt chuyên ngành chưa được dịch.
+      - **Kiểm thử Unit Test**: `GoogleTranslateServiceTest` đạt **5/5 PASSED (100%)**, 13 assertions.
+      - **Frontend (`isocalmarket-web`)**: Biên dịch Angular build (`npm run build`) thành công **100% SUCCESS, 0 ERRORS**.
+  - **Xác nhận**: Tên sản phẩm import từ Nhà cung cấp tự động chuyển thành Tiếng Anh chuẩn sắc nét khi đồng bộ!
+
 - **[ĐỔI TÊN DỰ ÁN FRONTEND TỪ ANGULAR-WEB3-WALLET SANG ISOCALMARKET-WEB (RENAME FRONTEND PROJECT NAME)]**:
   - **Mô tả yêu cầu**:
     - Đổi toàn bộ tên project cũ `angular-web3-wallet` thành `isocalmarket-web` trong cấu hình Frontend và cấu hình deploy.

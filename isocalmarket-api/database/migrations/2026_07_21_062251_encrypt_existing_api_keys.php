@@ -11,6 +11,14 @@ return new class extends Migration
 {
     public function up(): void
     {
+        try {
+            DB::statement('ALTER TABLE users DROP INDEX users_api_key_unique');
+        } catch (\Throwable $e) {}
+
+        try {
+            DB::statement('ALTER TABLE users DROP INDEX users_api_key_index');
+        } catch (\Throwable $e) {}
+
         Schema::table('users', function (Blueprint $table) {
             $table->text('api_key')->nullable()->change();
         });

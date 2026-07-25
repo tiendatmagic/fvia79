@@ -11,7 +11,8 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('membership_tiers', function (Blueprint $table) {
+        if (! Schema::hasTable('membership_tiers')) {
+            Schema::create('membership_tiers', function (Blueprint $table) {
             $table->uuid('id')->primary();
             $table->integer('level')->default(1);
             $table->string('name_vi');
@@ -23,6 +24,7 @@ return new class extends Migration
             $table->boolean('is_active')->default(true);
             $table->timestamps();
         });
+        }
     }
 
     /**

@@ -205,7 +205,7 @@ class SupplierCatalogSyncService
             if (! $category->exists || $savedRawName !== $rawName || empty($nameVi)) {
                 $nameVi = $this->translator->translate($rawName, 'vi') ?? $rawName;
             }
-            if (! $category->exists || $savedRawName !== $rawName || empty($nameEn) || $nameEn === $rawName) {
+            if (! $category->exists || $savedRawName !== $rawName || empty($nameEn) || $nameEn === $rawName || $this->hasUntranslatedVietnamese($nameEn)) {
                 $nameEn = $this->translator->translate($rawName, 'en') ?? $rawName;
             }
         }
@@ -258,7 +258,7 @@ class SupplierCatalogSyncService
             if (! $product->exists || $savedRawName !== $rawName || empty($nameVi)) {
                 $nameVi = $this->translator->translate($rawName, 'vi') ?? $rawName;
             }
-            if (! $product->exists || $savedRawName !== $rawName || empty($nameEn) || $nameEn === $rawName) {
+            if (! $product->exists || $savedRawName !== $rawName || empty($nameEn) || $nameEn === $rawName || $this->hasUntranslatedVietnamese($nameEn)) {
                 $nameEn = $this->translator->translate($rawName, 'en') ?? $rawName;
             }
         }
@@ -276,7 +276,7 @@ class SupplierCatalogSyncService
                     $descVi = null;
                 }
             }
-            if (! $product->exists || $savedRawDesc !== $rawDesc || ($rawDesc !== null && (empty($descEn) || $descEn === $rawDesc))) {
+            if (! $product->exists || $savedRawDesc !== $rawDesc || ($rawDesc !== null && (empty($descEn) || $descEn === $rawDesc || $this->hasUntranslatedVietnamese($descEn)))) {
                 if ($rawDesc !== null && trim($rawDesc) !== '') {
                     $descEn = $this->translator->translate($rawDesc, 'en') ?? $rawDesc;
                 } else {
@@ -395,6 +395,15 @@ class SupplierCatalogSyncService
             'last_sync_status' => 'failed',
             'last_sync_error' => Str::limit($exception->getMessage(), 2000),
         ]);
+    }
+
+    private function hasUntranslatedVietnamese(?string $text): bool
+    {
+        if ($text === null || trim($text) === '') {
+            return false;
+        }
+
+        return (bool) preg_match('/\b(Cổ|Ngoại|Ngoai|Kháng|Siêu|XMDT|Xác minh|Chưa gắn|Chống back|Bè)\b/u', $text);
     }
 
     private function clearStorefrontCache(): void

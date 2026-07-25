@@ -81,4 +81,12 @@ class GoogleTranslateServiceTest extends TestCase
         (new GoogleTranslateService)->translateMany(['First text', 'Second text'], 'vi');
         Http::assertSentCount(2);
     }
+
+    public function test_apply_mmo_dictionary_en_replaces_untranslated_vietnamese_mmo_terms(): void
+    {
+        $service = new GoogleTranslateService;
+        $this->assertEquals('Via Indonesia Aged 3-5K Friend', $service->applyMmoDictionaryEn('Via Indonesia Cổ 3-5K Friend'));
+        $this->assertEquals('Via Foreign Live Ads (2FA)', $service->applyMmoDictionaryEn('Via Ngoại Live Ads (2FA)'));
+        $this->assertEquals('Via Philippines Aged 3K-5K Friend', $service->applyMmoDictionaryEn('Via Philippines Cổ 3K-5K Friend'));
+    }
 }

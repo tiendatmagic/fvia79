@@ -12,13 +12,17 @@ return new class extends Migration
     public function up(): void
     {
         Schema::table('users', function (Blueprint $table) {
-            $table->decimal('total_deposited', 16, 4)->default(0.0000)->after('balance');
-            $table->uuid('membership_tier_id')->nullable()->after('total_deposited');
+            if (! Schema::hasColumn('users', 'total_deposited')) {
+                $table->decimal('total_deposited', 16, 4)->default(0.0000)->after('balance');
+            }
+            if (! Schema::hasColumn('users', 'membership_tier_id')) {
+                $table->uuid('membership_tier_id')->nullable()->after('total_deposited');
 
-            $table->foreign('membership_tier_id')
-                ->references('id')
-                ->on('membership_tiers')
-                ->nullOnDelete();
+                $table->foreign('membership_tier_id')
+                    ->references('id')
+                    ->on('membership_tiers')
+                    ->nullOnDelete();
+            }
         });
     }
 
