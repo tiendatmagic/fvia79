@@ -18,6 +18,15 @@
 > `php artisan config:clear && php artisan config:cache && php artisan route:cache && php artisan view:cache`
 > để đảm bảo Laravel cập nhật ngay lập tức 100% các biến môi trường tươi mới nhất từ tệp `.env`, tuyệt đối không được bỏ qua bước `config:clear` để tránh tình trạng dính cache đệm tĩnh cũ.
 
+- **[ĐỔI TÊN DỰ ÁN FRONTEND TỪ ANGULAR-WEB3-WALLET SANG ISOCALMARKET-WEB (RENAME FRONTEND PROJECT NAME)]**:
+  - **Mô tả yêu cầu**:
+    - Đổi toàn bộ tên project cũ `angular-web3-wallet` thành `isocalmarket-web` trong cấu hình Frontend và cấu hình deploy.
+  - **Nội dung thực hiện**:
+    - `isocalmarket-web/angular.json`: Đổi tên project root và target `buildTarget` từ `angular-web3-wallet` thành `isocalmarket-web`.
+    - `isocalmarket-web/package.json` & `package-lock.json`: Cập nhật trường `name` thành `isocalmarket-web`.
+    - `netlify.toml` (Thư mục gốc & `isocalmarket-web`): Cập nhật đường dẫn xuất bản `publish = "dist/isocalmarket-web/browser"`.
+  - **Xác nhận**: Đã đổi tên chuẩn xác 100%, không còn dấu vết tên cũ `angular-web3-wallet`.
+
 - **[ẨN CẢNH BÁO BROWSERSLIST TRÊN ANGULAR CLI (SUPPRESS BROWSERSLIST CLI WARNINGS)]**:
   - **Mô tả yêu cầu**:
     - Lọc và ẩn hoàn toàn cảnh báo Browserslist unsupported/ignored khi chạy `npm start` hay `npm run build` mà không sửa hay đụng tới tệp `.browserslistrc`.
