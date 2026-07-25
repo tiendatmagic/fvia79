@@ -257,7 +257,7 @@ export class AdminMembershipTiersComponent implements OnInit {
     const ref = this.modalService.confirm({
       title: this.lang.translate('admin.delete_tier_title'),
       descriptionHtml: `${this.lang.translate('admin.delete_tier_confirm')} <strong>${tierName}</strong>?`,
-      confirmText: this.lang.translate('common.delete'),
+      confirmText: this.lang.translate('action.delete'),
       cancelText: this.lang.translate('common.cancel'),
       variant: 'danger',
     });
