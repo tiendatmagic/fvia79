@@ -53,6 +53,7 @@ export const VI_TRANSLATIONS: Record<string, string> = {
   'admin.coupon_status': 'Trạng thái mã: {{status}}',
   'admin.coupon_usage': 'Đã dùng {{used}} / {{limit}}',
   'admin.cumulative_adjustment_type': 'Loại điều chỉnh nạp tích lũy',
+  'admin.cumulative_amount_must_be_greater_than_zero': 'Số tiền cộng hoặc trừ nạp tích lũy phải lớn hơn 0 USD!',
   'admin.cumulative_deposit_tab': '⭐ Nạp Tích Lũy & Cấp Bậc',
   'admin.cumulative_type_add': '+ Cộng tích lũy',
   'admin.cumulative_type_notice': ' Chức năng này chỉ thay đổi Số tiền nạp tích lũy (`total_deposited`) để nâng hoặc hạ Cấp bậc đại lý cho tài khoản, KHÔNG ảnh hưởng tới số dư tiền thực (`balance`).',

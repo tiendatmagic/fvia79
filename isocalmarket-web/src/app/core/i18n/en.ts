@@ -53,6 +53,7 @@ export const EN_TRANSLATIONS: Record<string, string> = {
   'admin.coupon_status': 'Coupon status: {{status}}',
   'admin.coupon_usage': 'Used {{used}} / {{limit}}',
   'admin.cumulative_adjustment_type': 'Cumulative Deposit Adjustment Type',
+  'admin.cumulative_amount_must_be_greater_than_zero': 'Cumulative deposit amount for add or subtract action must be greater than 0 USD!',
   'admin.cumulative_deposit_tab': '⭐ Cumulative Deposit & Tier',
   'admin.cumulative_type_add': '+ Add Cumulative',
   'admin.cumulative_type_notice': ' This function only alters the cumulative deposit amount (`total_deposited`) to upgrade or downgrade agency tier, it does NOT affect real account balance (`balance`).',

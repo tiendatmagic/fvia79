@@ -51,6 +51,18 @@ export class AdjustCumulativeDepositModalComponent implements OnInit {
     return this.data?.user?.total_deposited || 0;
   }
 
+  public get isInvalidAmount(): boolean {
+    if (this.cumulativeAmount === null || this.cumulativeAmount === undefined) {
+      return true;
+    }
+    // FE validation: For 'add' and 'subtract', amount MUST be > 0 (cannot be 0)
+    if (this.cumulativeType === 'add' || this.cumulativeType === 'subtract') {
+      return this.cumulativeAmount <= 0;
+    }
+    // For 'set', amount can be >= 0 (e.g. set total_deposited to 0)
+    return this.cumulativeAmount < 0;
+  }
+
   ngOnInit() {}
 
   public onClose() {
@@ -58,13 +70,12 @@ export class AdjustCumulativeDepositModalComponent implements OnInit {
   }
 
   public onSubmit() {
-    if (this.isSubmitting()) return;
-    if (this.cumulativeAmount === null || this.cumulativeAmount < 0) return;
+    if (this.isSubmitting() || this.isInvalidAmount) return;
 
     this.isSubmitting.set(true);
     const reasonText = this.cumulativeReason.trim() || this.lang.translate('admin.cumulative_deposit_reason');
 
-    this.userStore.adjustCumulativeDeposit(this.data.user.id, this.cumulativeType, this.cumulativeAmount, reasonText).subscribe({
+    this.userStore.adjustCumulativeDeposit(this.data.user.id, this.cumulativeType, this.cumulativeAmount!, reasonText).subscribe({
       next: (res) => {
         this.isSubmitting.set(false);
         if (res) {
