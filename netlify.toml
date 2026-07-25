@@ -1,6 +1,6 @@
 [build]
   base = "isocalmarket-web"
-  publish = "dist/angular-web3-wallet/browser"
+  publish = "dist/isocalmarket-web/browser"
   command = "npm run build"
 
 [build.environment]

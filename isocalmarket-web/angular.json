@@ -6,7 +6,7 @@
   },
   "newProjectRoot": "projects",
   "projects": {
-    "angular-web3-wallet": {
+    "isocalmarket-web": {
       "projectType": "application",
       "schematics": {
         "@schematics/angular:component": {
@@ -75,10 +75,10 @@
           "builder": "@angular/build:dev-server",
           "configurations": {
             "production": {
-              "buildTarget": "angular-web3-wallet:build:production"
+              "buildTarget": "isocalmarket-web:build:production"
             },
             "development": {
-              "buildTarget": "angular-web3-wallet:build:development"
+              "buildTarget": "isocalmarket-web:build:development"
             }
           },
           "defaultConfiguration": "development"
