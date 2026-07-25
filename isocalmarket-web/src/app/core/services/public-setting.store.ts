@@ -1,6 +1,6 @@
 import { Injectable, inject, signal } from '@angular/core';
 import { ApiService } from '@core/services/api.service';
-import { tap, finalize } from 'rxjs/operators';
+import { tap, finalize, shareReplay } from 'rxjs/operators';
 import { Observable, of } from 'rxjs';
 
 export interface PublicSettings {
@@ -35,13 +35,18 @@ export class PublicSettingStore {
   private lastFetchTime = 0;
   private readonly CACHE_TTL_MS = 600000; // 10 minutes cache FE
 
+  /** In-flight request: nếu đang có request chạy, các caller khác share cùng Observable */
+  private inFlight$: Observable<PublicSettings> | null = null;
+
   public clearCache() {
     this.cachedSettings = null;
     this.lastFetchTime = 0;
+    this.inFlight$ = null;
     this.loaded.set(false);
   }
 
   public fetchPublicSettings(): Observable<PublicSettings> {
+    // 1. Cache còn hạn → trả về ngay, không gọi API
     const now = Date.now();
     if (this.cachedSettings && (now - this.lastFetchTime < this.CACHE_TTL_MS)) {
       this.settings.set(this.cachedSettings);
@@ -49,8 +54,14 @@ export class PublicSettingStore {
       return of(this.cachedSettings);
     }
 
+    // 2. Đang có request in-flight → chia sẻ cùng Observable, không gọi API mới
+    if (this.inFlight$) {
+      return this.inFlight$;
+    }
+
+    // 3. Chưa có request nào → tạo mới, lưu vào inFlight$
     this.loading.set(true);
-    return this.api.get<PublicSettings>('v1/settings/public').pipe(
+    this.inFlight$ = this.api.get<PublicSettings>('v1/settings/public').pipe(
       tap(res => {
         if (res) {
           const data: PublicSettings = {
@@ -68,7 +79,13 @@ export class PublicSettingStore {
           this.loaded.set(true);
         }
       }),
-      finalize(() => this.loading.set(false))
+      finalize(() => {
+        this.loading.set(false);
+        this.inFlight$ = null; // Xóa in-flight khi request xong (success hoặc error)
+      }),
+      shareReplay(1) // Tất cả subscriber nhận cùng kết quả từ 1 HTTP call duy nhất
     );
+
+    return this.inFlight$;
   }
 }
