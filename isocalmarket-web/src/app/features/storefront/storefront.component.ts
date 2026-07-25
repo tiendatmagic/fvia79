@@ -210,8 +210,11 @@ export class StorefrontComponent implements OnInit {
   }
 
   public readonly includeOutOfStock = signal<boolean>(false);
+  public readonly isUpdatingOutOfStock = signal<boolean>(false);
 
   public toggleIncludeOutOfStock(enabled: boolean) {
+    if (this.isUpdatingOutOfStock() || this.state.productStore.loading()) return;
+    this.isUpdatingOutOfStock.set(true);
     this.includeOutOfStock.set(enabled);
     this.loadAllGroupedProducts();
   }
@@ -297,10 +300,12 @@ export class StorefrontComponent implements OnInit {
           this.groupedProductsState.set(list);
           this.categoryPages.set(initialPages);
           this.state.productStore.loading.set(false);
+          this.isUpdatingOutOfStock.set(false);
         },
         error: () => {
           this.groupedProductsState.set([]);
           this.state.productStore.loading.set(false);
+          this.isUpdatingOutOfStock.set(false);
         },
       });
   }

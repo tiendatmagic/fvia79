@@ -25,7 +25,7 @@
       - Cập nhật test case `test_grouped_products_search_filters_out_empty_categories` trong `CatalogMultilangApiTest.php` kiểm tra cả 2 trường hợp `include_out_of_stock=0` và `include_out_of_stock=1`. Đạt **149/149 PASSED (100%)**, 1013 assertions.
     - **Frontend (`isocalmarket-web`)**:
       - `product.store.ts`: Bổ sung tham số `includeOutOfStock` vào `fetchGroupedProducts` và `getProductsRaw`.
-      - `storefront.component.ts` & `storefront.component.html`: Tích hợp component `<app-custom-switch>` liên kết với Signal `includeOutOfStock()`. Tự động gọi lại API và cập nhật danh sách khi người dùng bật/tắt công tắc.
+      - `storefront.component.ts` & `storefront.component.html`: Tích hợp component `<app-custom-switch>` liên kết với Signal `includeOutOfStock()`. Bổ sung Signal guard `isUpdatingOutOfStock` và binding `[disabled]="isUpdatingOutOfStock() || state.productStore.loading()"` loại bỏ triệt để hiện tượng click spam và trùng lặp API request song song. Tự động gọi lại API và cập nhật danh sách khi người dùng bật/tắt công tắc.
       - Biên dịch Angular Frontend (`npm run build`) thành công **100% SUCCESS, 0 ERRORS**.
   - **Xác nhận**: Tính năng tìm kiếm theo tồn kho hoạt động chính xác 100%, linh hoạt và trực quan!
 
