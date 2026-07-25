@@ -112,4 +112,46 @@
     </div>
   }
 
+  @if (type === 'membership-tier') {
+    <div class="space-y-6">
+      <!-- Banner Skeleton -->
+      <div
+        class="p-5 sm:p-6 rounded-3xl bg-slate-50/70 dark:bg-slate-900/90 border border-slate-200 dark:border-slate-800 flex flex-col xl:flex-row justify-between gap-6"
+      >
+        <div class="space-y-3.5 flex-1">
+          <div class="flex items-center gap-3">
+            <div class="h-6 w-32 bg-slate-200 dark:bg-slate-800 rounded-full"></div>
+            <div class="h-4 w-44 bg-slate-100 dark:bg-slate-800/60 rounded-md"></div>
+          </div>
+          <div class="h-7 w-64 bg-slate-200 dark:bg-slate-800 rounded-xl"></div>
+          <div class="h-4 w-48 bg-slate-100 dark:bg-slate-800/60 rounded-md"></div>
+        </div>
+        <div class="w-full xl:w-80 h-28 bg-slate-100 dark:bg-slate-800/60 rounded-2xl p-4 space-y-3 shrink-0">
+          <div class="flex justify-between">
+            <div class="h-4 w-32 bg-slate-200 dark:bg-slate-800 rounded-md"></div>
+            <div class="h-4 w-10 bg-slate-200 dark:bg-slate-800 rounded-md"></div>
+          </div>
+          <div class="h-2.5 bg-slate-200 dark:bg-slate-800 rounded-full"></div>
+          <div class="h-3 w-3/4 bg-slate-100 dark:bg-slate-800/40 rounded-md"></div>
+        </div>
+      </div>
+
+      <!-- Privilege Cards Grid Skeleton -->
+      <div class="p-5 sm:p-6 bg-slate-50 dark:bg-slate-900/40 rounded-3xl border border-slate-200/60 dark:border-slate-800/60 space-y-4">
+        <div class="h-5 w-56 bg-slate-200 dark:bg-slate-800 rounded-lg"></div>
+        <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-2 xl:grid-cols-3 2xl:grid-cols-5 gap-4 pt-2">
+          @for (i of getArray(5); track i) {
+            <div class="p-4 rounded-2xl border border-slate-200/60 dark:border-slate-800/60 bg-white dark:bg-slate-900 h-28 flex flex-col justify-between">
+              <div class="space-y-2">
+                <div class="h-5 w-20 bg-slate-200 dark:bg-slate-800 rounded-full"></div>
+                <div class="h-4 w-28 bg-slate-100 dark:bg-slate-800/60 rounded-md"></div>
+              </div>
+              <div class="h-4 w-16 bg-emerald-500/20 rounded-md"></div>
+            </div>
+          }
+        </div>
+      </div>
+    </div>
+  }
+
 </div>

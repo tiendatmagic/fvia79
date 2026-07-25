@@ -13,7 +13,8 @@ export class SkeletonLoaderComponent {
     | 'table'
     | 'card-grid'
     | 'form'
-    | 'list' = 'table';
+    | 'list'
+    | 'membership-tier' = 'table';
   @Input() rows = 5;
   @Input() cols = 5;
   @Input() cards = 8;

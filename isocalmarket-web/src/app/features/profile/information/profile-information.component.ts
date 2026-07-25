@@ -5,6 +5,7 @@ import { StateService } from '@core/services/state.service';
 import { CustomInputComponent } from '@shared/components/custom-input/custom-input.component';
 import { ButtonComponent } from '@shared/components/button/button.component';
 import { IconComponent } from '@shared/components/icon/icon.component';
+import { SkeletonLoaderComponent } from '@shared/components/skeleton-loader/skeleton-loader.component';
 import { LanguageService } from '@core/services/language.service';
 import { TranslatePipe } from '@shared/pipes/translate.pipe';
 import { MembershipTierService, MembershipTier } from '@core/services/membership-tier.service';
@@ -21,6 +22,7 @@ import { PublicSettingStore } from '@core/services/public-setting.store';
     CustomInputComponent,
     ButtonComponent,
     IconComponent,
+    SkeletonLoaderComponent,
     TranslatePipe,
   ],
   templateUrl: './profile-information.component.html',

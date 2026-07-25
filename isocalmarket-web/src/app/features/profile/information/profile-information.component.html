@@ -1,32 +1,7 @@
 <div class="space-y-6">
   @if (publicSettingStore.settings().membership_tiers_enabled) {
     @if (isLoadingTiers()) {
-      <!-- Membership Tier Skeleton Loading -->
-      <div
-        class="p-5 sm:p-6 rounded-3xl bg-slate-50/70 dark:bg-slate-900/90 border border-slate-200 dark:border-slate-800 animate-pulse space-y-4"
-      >
-        <div class="flex flex-col xl:flex-row justify-between gap-5">
-          <div class="space-y-3 flex-1">
-            <div class="flex items-center gap-2">
-              <div class="h-6 w-28 bg-slate-200 dark:bg-slate-800 rounded-full"></div>
-              <div class="h-4 w-36 bg-slate-200 dark:bg-slate-800 rounded-md"></div>
-            </div>
-            <div class="h-7 w-60 bg-slate-200 dark:bg-slate-800 rounded-xl"></div>
-            <div class="h-4 w-40 bg-slate-200 dark:bg-slate-800 rounded-md"></div>
-          </div>
-          <div class="w-full xl:w-80 h-24 bg-slate-200/80 dark:bg-slate-800/60 rounded-2xl"></div>
-        </div>
-      </div>
-
-      <!-- Tiers Privilege Table Skeleton Loading -->
-      <div
-        class="p-5 sm:p-6 bg-slate-50 dark:bg-slate-900/40 rounded-3xl border border-slate-200/60 dark:border-slate-800/60 space-y-4 animate-pulse"
-      >
-        <div class="h-5 w-44 bg-slate-200 dark:bg-slate-800 rounded-lg"></div>
-        <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-2 xl:grid-cols-3 2xl:grid-cols-5 gap-4 pt-2">
-          <div *ngFor="let i of [1,2,3,4,5]" class="h-28 bg-slate-200 dark:bg-slate-800/80 rounded-2xl"></div>
-        </div>
-      </div>
+      <app-skeleton-loader type="membership-tier" />
     } @else {
       <!-- Membership Tier Banner Card -->
       <div
