@@ -1,5 +1,4 @@
 <div class="space-y-6">
-  <!-- Section Title & Log Out All Others Action -->
   <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4 border-b border-slate-100 dark:border-slate-800/60 pb-5">
     <div>
       <h3 class="text-lg font-black text-slate-800 dark:text-slate-200">
@@ -10,7 +9,6 @@
       </p>
     </div>
 
-    <!-- Log Out All Other Devices Button -->
     <div>
       <button
         (click)="confirmRevokeAllOthers()"
@@ -25,7 +23,6 @@
     </div>
   </div>
 
-  <!-- Reusable Table Component inheriting sorting, loading skeletons, and empty state -->
   <app-table
     [columns]="columns"
     [data]="sessions()"
@@ -33,7 +30,6 @@
     [emptyText]="'profile.no_devices' | translate"
     emptyIcon="devices"
   >
-    <!-- IP Address Column Template -->
     <ng-template appTableCell="ip_address" let-row="row">
       <span [appTooltip]="'profile.ip_address' | translate" class="inline-flex items-center gap-1.5 font-mono font-semibold text-xs text-slate-700 dark:text-slate-200 bg-slate-100 dark:bg-slate-800 px-2.5 py-1 rounded-lg border border-slate-200/60 dark:border-slate-700/60">
         <app-icon name="globe" class="w-3.5 h-3.5 text-slate-400 shrink-0" />
@@ -41,7 +37,6 @@
       </span>
     </ng-template>
 
-    <!-- Browser & Device Column Template -->
     <ng-template appTableCell="device_name" let-row="row">
       <div class="flex items-center gap-2.5" [appTooltip]="row.user_agent || ''">
         <div class="w-8 h-8 rounded-lg bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-300 flex items-center justify-center shrink-0">
@@ -58,7 +53,6 @@
       </div>
     </ng-template>
 
-    <!-- Last Active Time Column Template -->
     <ng-template appTableCell="last_activity_at" let-row="row">
       <div class="flex items-center gap-1.5" [appTooltip]="(row.last_activity_at | date: 'dd/MM/yyyy HH:mm:ss') || ''">
         <app-icon name="clock" class="w-3.5 h-3.5 text-slate-400 shrink-0" />
@@ -66,15 +60,12 @@
       </div>
     </ng-template>
 
-    <!-- Actions Column Template -->
     <ng-template appTableCell="actions" let-row="row">
-      <!-- Current Session Badge (Logout Button Hidden) -->
       <div *ngIf="row.is_current" [appTooltip]="'profile.current_device' | translate" class="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-extrabold bg-emerald-50 text-emerald-600 dark:bg-emerald-950/40 dark:text-emerald-400 border border-emerald-200/60 dark:border-emerald-800/60">
         <span class="w-2 h-2 rounded-full bg-emerald-500 animate-pulse"></span>
         {{ 'profile.current_device' | translate }}
       </div>
 
-      <!-- Logout Button for Other Sessions -->
       <button
         *ngIf="!row.is_current"
         (click)="confirmRevokeSession(row)"
@@ -89,7 +80,6 @@
     </ng-template>
   </app-table>
 
-  <!-- Pagination Component -->
   <div *ngIf="!loading() && totalPages() > 1" class="pt-2">
     <app-pagination
       [currentPage]="currentPage()"

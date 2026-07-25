@@ -1,5 +1,4 @@
 <div class="max-w-[1530px] mx-auto w-full px-4 sm:px-6 py-6 space-y-6">
-  <!-- Page Header inheriting PageHeaderComponent -->
   <app-page-header
     [title]="'check_uid.title' | translate"
     [description]="'check_uid.subtitle' | translate"
@@ -14,9 +13,7 @@
     </ng-container>
   </app-page-header>
 
-  <!-- Input & Stats Section Grid -->
   <div class="grid grid-cols-1 lg:grid-cols-12 gap-6">
-    <!-- Left: Input Area (7 cols inheriting CardComponent) -->
     <div app-card class="lg:col-span-7 p-6 space-y-4 flex flex-col">
       <div class="flex flex-wrap items-center justify-between gap-3">
         <label
@@ -89,9 +86,7 @@
       </div>
     </div>
 
-    <!-- Right: Statistics & Progress (5 cols) -->
     <div class="lg:col-span-5 space-y-6 flex flex-col justify-between">
-      <!-- Progress Bar Box (inheriting CardComponent) -->
       <div app-card *ngIf="isChecking() || processedCount() > 0" class="p-6 space-y-3">
         <div class="flex items-center justify-between text-sm font-bold">
           <span class="text-slate-700 dark:text-slate-200">{{
@@ -114,9 +109,7 @@
         </div>
       </div>
 
-      <!-- Stat Cards Grid -->
       <div class="grid grid-cols-1 sm:grid-cols-3 lg:grid-cols-1 gap-4 flex-1">
-        <!-- Total Stat Card (inheriting CardComponent) -->
         <div app-card class="p-5 flex items-center justify-between">
           <div class="space-y-1">
             <span
@@ -135,7 +128,6 @@
           </div>
         </div>
 
-        <!-- Live Stat Card (inheriting CardComponent) -->
         <div
           app-card
           class="p-5 flex items-center justify-between border-emerald-500/30 bg-emerald-500/5 dark:bg-emerald-500/10"
@@ -157,7 +149,6 @@
           </div>
         </div>
 
-        <!-- Die Stat Card (inheriting CardComponent) -->
         <div
           app-card
           class="p-5 flex items-center justify-between border-rose-500/30 bg-rose-500/5 dark:bg-rose-500/10"
@@ -182,9 +173,7 @@
     </div>
   </div>
 
-  <!-- Results Section Grid -->
   <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
-    <!-- Live Result Box (inheriting CardComponent) -->
     <div app-card class="p-6 space-y-4 flex flex-col border-emerald-500/30">
       <div
         class="flex flex-col sm:flex-row sm:items-center justify-between gap-3 pb-3 border-b border-slate-100 dark:border-slate-800/60"
@@ -238,7 +227,6 @@
       ></textarea>
     </div>
 
-    <!-- Die Result Box (inheriting CardComponent) -->
     <div app-card class="p-6 space-y-4 flex flex-col border-rose-500/30">
       <div
         class="flex flex-col sm:flex-row sm:items-center justify-between gap-3 pb-3 border-b border-slate-100 dark:border-slate-800/60"

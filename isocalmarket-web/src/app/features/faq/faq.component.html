@@ -1,12 +1,10 @@
 <div class="max-w-[1530px] mx-auto w-full px-4 sm:px-6 py-6 space-y-6">
-  <!-- Page Header matching all system pages -->
   <app-page-header
     [title]="'faq.title' | translate"
     [description]="'faq.subtitle' | translate"
   >
     <ng-container actions>
       <div class="flex items-center gap-3">
-        <!-- Admin Management Action Button -->
         <a
           *ngIf="stateService.isAdmin()"
           routerLink="/admin/faqs"
@@ -17,7 +15,6 @@
           <span>{{ 'faq.admin_manage_btn' | translate }}</span>
         </a>
 
-        <!-- Filter Sub-Tabs -->
         <div class="flex items-center gap-1.5 p-1 bg-slate-100 dark:bg-slate-800/80 rounded-xl text-xs font-semibold">
           <button
             type="button"
@@ -63,16 +60,13 @@
     </ng-container>
   </app-page-header>
 
-  <!-- Loading Skeleton -->
   <div *ngIf="isLoading()" class="space-y-4">
     <div class="h-64 bg-slate-100 dark:bg-slate-800 rounded-2xl animate-pulse"></div>
     <div class="h-32 bg-slate-100 dark:bg-slate-800 rounded-2xl animate-pulse"></div>
   </div>
 
-  <!-- Main Warranty Policies Container -->
   <div *ngIf="!isLoading()" class="bg-white dark:bg-slate-900 rounded-2xl border border-slate-200/80 dark:border-slate-800 shadow-xs overflow-hidden">
     
-    <!-- Banner Header -->
     <div class="px-6 py-4 bg-gradient-to-r from-blue-600 to-indigo-600 text-white flex items-center justify-between gap-3">
       <div class="flex items-center gap-3">
         <div class="w-9 h-9 rounded-xl bg-white/20 flex items-center justify-center shrink-0">
@@ -89,7 +83,6 @@
       </div>
     </div>
 
-    <!-- Dynamic Category Switcher Tabs -->
     <div class="flex border-b border-slate-200 dark:border-slate-800 bg-slate-50/80 dark:bg-slate-950/60 p-1.5 gap-2 overflow-x-auto">
       @for (cat of activeCategories(); track cat.id) {
         <button
@@ -213,7 +206,6 @@
         </div>
       }
 
-      <!-- EMPTY STATE IF NO POLICIES FOUND FOR SELECTED CATEGORY -->
       @if (acceptedPolicies().length === 0 && rejectedPolicies().length === 0) {
         <div class="py-12 px-4 text-center space-y-3">
           <div class="w-12 h-12 rounded-2xl bg-slate-100 dark:bg-slate-800 text-slate-400 flex items-center justify-center mx-auto">
@@ -228,7 +220,6 @@
     </div>
   </div>
 
-  <!-- FAQ Accordion Section -->
   <div *ngIf="!isLoading() && faqItems().length > 0" class="space-y-4 pt-2">
     <div class="flex items-center gap-3">
       <div class="w-8 h-8 rounded-xl bg-primary/10 text-primary flex items-center justify-center shrink-0">

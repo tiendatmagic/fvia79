@@ -1,5 +1,4 @@
 <div class="max-w-[1530px] mx-auto w-full px-4 sm:px-6 py-6 space-y-6">
-  <!-- Page Header inheriting PageHeaderComponent -->
   <app-page-header
     [title]="'contact.title' | translate"
     [description]="'contact.subtitle' | translate"
@@ -14,9 +13,7 @@
     </ng-container>
   </app-page-header>
 
-  <!-- Telegram Channels Grid -->
   <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
-    <!-- Card 1: Telegram Support -->
     <div
       app-card
       class="p-6 space-y-6 flex flex-col justify-between border-blue-500/20 relative overflow-hidden group hover:border-blue-500/40 transition-all duration-300"
@@ -86,7 +83,6 @@
       </div>
     </div>
 
-    <!-- Card 2: Telegram Bot Notification -->
     <div
       app-card
       class="p-6 space-y-6 flex flex-col justify-between border-cyan-500/20 relative overflow-hidden group hover:border-cyan-500/40 transition-all duration-300"
@@ -157,7 +153,6 @@
     </div>
   </div>
 
-  <!-- Info & Security Notice Box -->
   <div app-card class="p-6 sm:p-8 space-y-6">
     <div class="flex items-center gap-3 pb-3 border-b border-slate-100 dark:border-slate-800/60">
       <div
