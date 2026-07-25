@@ -42,6 +42,7 @@ export class ProfileInformationComponent implements OnInit {
   public email = '';
   public phone = '';
   public readonly isSubmitting = signal(false);
+  public readonly isLoadingTiers = signal(true);
 
   public tiers = signal<MembershipTier[]>([]);
   public nextTier = signal<MembershipTier | null>(null);
@@ -63,33 +64,36 @@ export class ProfileInformationComponent implements OnInit {
   }
 
   loadPublicTiers() {
-    this.tierService.getPublicTiers().subscribe({
-      next: (res) => {
-        const publicTiers = res.data || [];
-        this.tiers.set(publicTiers);
+    this.isLoadingTiers.set(true);
+    this.tierService.getPublicTiers()
+      .pipe(finalize(() => this.isLoadingTiers.set(false)))
+      .subscribe({
+        next: (res) => {
+          const publicTiers = res.data || [];
+          this.tiers.set(publicTiers);
 
-        const user = this.state.authStore.currentUser();
-        const totalDeposited = user?.total_deposited || 0;
+          const user = this.state.authStore.currentUser();
+          const totalDeposited = user?.total_deposited || 0;
 
-        // Find next tier
-        const next = publicTiers.find((t) => t.min_deposit > totalDeposited);
-        if (next) {
-          this.nextTier.set(next);
-          const needed = next.min_deposit - totalDeposited;
-          this.amountNeededForNext.set(needed);
+          // Find next tier
+          const next = publicTiers.find((t) => t.min_deposit > totalDeposited);
+          if (next) {
+            this.nextTier.set(next);
+            const needed = next.min_deposit - totalDeposited;
+            this.amountNeededForNext.set(needed);
 
-          // Calculate percentage based on previous tier min deposit vs next tier min deposit
-          const currentTier = user?.membership_tier;
-          const currentMin = currentTier?.min_deposit || 0;
-          const range = next.min_deposit - currentMin;
-          const progress = range > 0 ? Math.min(100, Math.max(0, ((totalDeposited - currentMin) / range) * 100)) : 0;
-          this.progressPercent.set(progress);
-        } else {
-          this.nextTier.set(null);
-          this.progressPercent.set(100);
-        }
-      },
-    });
+            // Calculate percentage based on previous tier min deposit vs next tier min deposit
+            const currentTier = user?.membership_tier;
+            const currentMin = currentTier?.min_deposit || 0;
+            const range = next.min_deposit - currentMin;
+            const progress = range > 0 ? Math.min(100, Math.max(0, ((totalDeposited - currentMin) / range) * 100)) : 0;
+            this.progressPercent.set(progress);
+          } else {
+            this.nextTier.set(null);
+            this.progressPercent.set(100);
+          }
+        },
+      });
   }
 
   public get currentUserTier(): any {
