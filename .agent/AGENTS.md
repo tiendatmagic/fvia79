@@ -18,6 +18,15 @@
 > `php artisan config:clear && php artisan config:cache && php artisan route:cache && php artisan view:cache`
 > để đảm bảo Laravel cập nhật ngay lập tức 100% các biến môi trường tươi mới nhất từ tệp `.env`, tuyệt đối không được bỏ qua bước `config:clear` để tránh tình trạng dính cache đệm tĩnh cũ.
 
+- **[KHẮC PHỤC LỖI PRODUCT FORM MODAL ATTRIBUTES IS NOT ITERABLE (FIX ATTRIBUTES NOT ITERABLE TYPEERROR IN PRODUCT MODAL)]**:
+  - **Mô tả yêu cầu**:
+    - Khi bấm "Edit" sản phẩm trong trang Quản lý sản phẩm Admin, console báo lỗi `TypeError: this.modalData.attributes is not iterable` tại `product-form-modal.component.ts:89`, làm Modal bấm sửa sản phẩm bị đóng băng và các ô nhập liệu bị trống. Nguyên nhân do các sản phẩm import từ Nhà cung cấp lưu trường `attributes` dưới dạng JSON Object Key-Value chứ không phải Array, làm toán tử Spread `[...attributes]` bị văng ngoại lệ.
+  - **Nội dung thực hiện**:
+    - **Frontend (`isocalmarket-web` & `adsbm79-web`)**:
+      - `product-form-modal.component.ts`: Cập nhật xử lý kiểm tra kiểu dữ liệu an toàn `Array.isArray()`, `typeof === 'object'` (dùng `Object.entries()` chuyển Key-Value thành cặp `{ label, value }`), và `JSON.parse()` cho chuỗi JSON.
+      - **Biên dịch Frontend**: Angular build (`npm run build`) thành công **100% SUCCESS, 0 ERRORS**.
+  - **Xác nhận**: Đã sửa triệt để lỗi 100%, Modal bấm Edit sản phẩm hiển thị thông tin mượt mà sắc nét!
+
 - **[KHẮC PHỤC LỖI BACKEND 500 DO MIGRATION THIẾU CỘT UID VÀ LỖI KHÓA TRÙNG LẬP (FIX BACKEND 500 ERROR & RUN PENDING MIGRATIONS)]**:
   - **Mô tả yêu cầu**:
     - Khi đăng nhập hoặc gọi API authenticating user, hệ thống trả về lỗi **HTTP 500 Internal Server Error** với log lỗi `Column not found: 1054 Unknown column 'uid' in 'where clause'`. Nguyên nhân do một số file migration cũ bị nghẽn (fail ở khóa index trùng `products_deleted_at_index` và `users_api_key_unique`), khiến các migration thêm cột `uid`, `user_sessions`, `membership_tiers`... chưa được áp dụng vào CSDL MySQL local.

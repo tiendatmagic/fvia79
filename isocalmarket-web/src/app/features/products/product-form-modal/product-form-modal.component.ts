@@ -86,7 +86,32 @@ export class ProductFormModalComponent implements OnInit {
       this.descriptionEn = this.modalData.description_en || this.modalData.description || '';
       this.price = this.modalData.price || 0;
       this.status = this.modalData.status || 'active';
-      this.attributes = this.modalData.attributes ? [...this.modalData.attributes] : [];
+      if (Array.isArray(this.modalData.attributes)) {
+        this.attributes = [...this.modalData.attributes];
+      } else if (this.modalData.attributes && typeof this.modalData.attributes === 'object') {
+        this.attributes = Object.entries(this.modalData.attributes).map(([label, value]) => ({
+          label,
+          value: String(value ?? '')
+        }));
+      } else if (typeof this.modalData.attributes === 'string') {
+        try {
+          const parsed = JSON.parse(this.modalData.attributes);
+          if (Array.isArray(parsed)) {
+            this.attributes = parsed;
+          } else if (parsed && typeof parsed === 'object') {
+            this.attributes = Object.entries(parsed).map(([label, value]) => ({
+              label,
+              value: String(value ?? '')
+            }));
+          } else {
+            this.attributes = [];
+          }
+        } catch {
+          this.attributes = [];
+        }
+      } else {
+        this.attributes = [];
+      }
     }
   }
 
