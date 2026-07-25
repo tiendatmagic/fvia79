@@ -12,6 +12,8 @@ import { StateService } from '@core/services/state.service';
 import { MaintenanceComponent } from '@features/maintenance/maintenance.component';
 import { TranslatePipe } from '@shared/pipes/translate.pipe';
 
+import { PublicSettingStore } from '@core/services/public-setting.store';
+
 @Component({
   selector: 'app-root',
   
@@ -33,6 +35,7 @@ import { TranslatePipe } from '@shared/pipes/translate.pipe';
 })
 export class App implements OnInit {
   public stateService = inject(StateService);
+  public publicSettingStore = inject(PublicSettingStore);
   private router = inject(Router);
   public hasBeenOpened = signal<boolean>(false);
   public activeMenuState = signal<boolean>(false);
@@ -61,6 +64,7 @@ export class App implements OnInit {
   }
 
   ngOnInit() {
+    this.publicSettingStore.fetchPublicSettings().subscribe();
     this.stateService.authStore.checkMe().subscribe();
 
     this.router.events.pipe(

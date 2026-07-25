@@ -9,6 +9,8 @@ export interface PublicSettings {
   announcement_effect: 'marquee' | 'fade' | 'slide' | 'bounce';
   usdt_exchange_rate: number;
   telegram_bot_username: string;
+  membership_tiers_feature_enabled: boolean;
+  membership_tiers_enabled: boolean;
 }
 
 @Injectable({
@@ -24,7 +26,9 @@ export class PublicSettingStore {
     announcement_text: '',
     announcement_effect: 'marquee',
     usdt_exchange_rate: 25400,
-    telegram_bot_username: 'isocalmarketnoti_bot'
+    telegram_bot_username: 'isocalmarketnoti_bot',
+    membership_tiers_feature_enabled: true,
+    membership_tiers_enabled: true
   });
 
   private cachedSettings: PublicSettings | null = null;
@@ -54,7 +58,9 @@ export class PublicSettingStore {
             announcement_text: res.announcement_text || '',
             announcement_effect: (res.announcement_effect as any) || 'marquee',
             usdt_exchange_rate: Number(res.usdt_exchange_rate) || 25400,
-            telegram_bot_username: res.telegram_bot_username || 'isocalmarketnoti_bot'
+            telegram_bot_username: res.telegram_bot_username || 'isocalmarketnoti_bot',
+            membership_tiers_feature_enabled: res.membership_tiers_feature_enabled !== undefined ? Boolean(res.membership_tiers_feature_enabled) : true,
+            membership_tiers_enabled: res.membership_tiers_enabled !== undefined ? Boolean(res.membership_tiers_enabled) : true
           };
           this.cachedSettings = data;
           this.lastFetchTime = Date.now();

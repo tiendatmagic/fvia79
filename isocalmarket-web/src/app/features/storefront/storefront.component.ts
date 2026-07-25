@@ -108,6 +108,9 @@ export class StorefrontComponent implements OnInit {
   }
 
   public get tierDiscountPercent(): number {
+    if (!this.publicSettingStore.settings().membership_tiers_enabled) {
+      return 0;
+    }
     return this.state.authStore.currentUser()?.membership_tier?.discount_percent || 0;
   }
 

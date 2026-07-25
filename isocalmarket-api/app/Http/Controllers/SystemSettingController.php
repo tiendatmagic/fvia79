@@ -47,6 +47,7 @@ class SystemSettingController extends Controller
             'announcement_enabled' => 'sometimes|nullable',
             'announcement_text' => 'sometimes|nullable|string|max:1000',
             'announcement_effect' => 'sometimes|nullable|string|in:marquee,fade,slide,bounce',
+            'membership_tiers_enabled' => 'sometimes|nullable',
         ], [
             'admin_wallet_address.regex' => 'The admin wallet address must be a valid BEP20/EVM address starting with 0x followed by 40 hex characters.',
         ]);
@@ -65,7 +66,7 @@ class SystemSettingController extends Controller
             $settingsToSave['usdt_exchange_rate'] = (string) $request->input('usdt_exchange_rate');
         }
         if ($request->has('admin_binance_id')) {
-            $settingsToSave['admin_binance_id'] = $request->input('admin_binance_id') ?: '';
+            $settingsToSave['admin_binance_id'] = (string) $request->input('admin_binance_id');
         }
 
         if ($request->filled('binance_api_key')) {
@@ -79,19 +80,22 @@ class SystemSettingController extends Controller
             $settingsToSave['telegram_bot_token'] = $request->input('telegram_bot_token');
         }
         if ($request->has('telegram_bot_username')) {
-            $settingsToSave['telegram_bot_username'] = $request->input('telegram_bot_username') ?: '';
+            $settingsToSave['telegram_bot_username'] = (string) $request->input('telegram_bot_username');
         }
         if ($request->has('telegram_bot_enabled')) {
-            $settingsToSave['telegram_bot_enabled'] = $request->boolean('telegram_bot_enabled') ? '1' : '0';
+            $settingsToSave['telegram_bot_enabled'] = filter_var($request->input('telegram_bot_enabled'), FILTER_VALIDATE_BOOLEAN) ? '1' : '0';
         }
         if ($request->has('announcement_enabled')) {
-            $settingsToSave['announcement_enabled'] = $request->boolean('announcement_enabled') ? '1' : '0';
+            $settingsToSave['announcement_enabled'] = filter_var($request->input('announcement_enabled'), FILTER_VALIDATE_BOOLEAN) ? '1' : '0';
         }
         if ($request->has('announcement_text')) {
-            $settingsToSave['announcement_text'] = $request->input('announcement_text') ?: '';
+            $settingsToSave['announcement_text'] = (string) $request->input('announcement_text');
         }
         if ($request->has('announcement_effect')) {
-            $settingsToSave['announcement_effect'] = $request->input('announcement_effect') ?: 'marquee';
+            $settingsToSave['announcement_effect'] = (string) $request->input('announcement_effect');
+        }
+        if ($request->has('membership_tiers_enabled')) {
+            $settingsToSave['membership_tiers_enabled'] = filter_var($request->input('membership_tiers_enabled'), FILTER_VALIDATE_BOOLEAN) ? '1' : '0';
         }
 
         if (! empty($settingsToSave)) {
@@ -111,12 +115,21 @@ class SystemSettingController extends Controller
         $usdtRate = $this->settingService->getSetting('usdt_exchange_rate', '25400');
         $telegramBotUsername = $this->settingService->getSetting('telegram_bot_username', 'isocalmarketnoti_bot');
 
+        $envFeatureEnabled = config('app.feature_membership_tiers_enabled', true);
+        $membershipTiersFeatureEnabled = filter_var($envFeatureEnabled, FILTER_VALIDATE_BOOLEAN);
+
+        $membershipTiersEnabled = $membershipTiersFeatureEnabled
+            ? filter_var($this->settingService->getSetting('membership_tiers_enabled', '1'), FILTER_VALIDATE_BOOLEAN)
+            : false;
+
         return response()->json([
             'announcement_enabled' => filter_var($enabled, FILTER_VALIDATE_BOOLEAN),
             'announcement_text' => (string) $text,
             'announcement_effect' => (string) $effect,
             'usdt_exchange_rate' => (float) $usdtRate,
             'telegram_bot_username' => (string) $telegramBotUsername,
+            'membership_tiers_feature_enabled' => $membershipTiersFeatureEnabled,
+            'membership_tiers_enabled' => $membershipTiersEnabled,
         ]);
     }
 

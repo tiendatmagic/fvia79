@@ -13,6 +13,16 @@ class MembershipTierService
      */
     public function recalculateUserTier(UserModel $user): ?MembershipTierModel
     {
+        $enabled = filter_var(config('app.feature_membership_tiers_enabled', true), FILTER_VALIDATE_BOOLEAN);
+        if (! $enabled) {
+            if ($user->membership_tier_id !== null) {
+                $user->membership_tier_id = null;
+                $user->save();
+            }
+
+            return null;
+        }
+
         $totalDeposited = (float) ($user->total_deposited ?? 0);
 
         // Find the active tier with the highest min_deposit requirement that the user meets

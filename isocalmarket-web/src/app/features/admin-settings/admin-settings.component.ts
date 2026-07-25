@@ -203,7 +203,7 @@ export class AdminSettingsComponent implements OnInit, OnDestroy {
     const scannerApiKey = this.form.scanner_api_key?.trim();
 
     if (this.activeTab() === 'general') {
-      const walletAddress = this.form.admin_wallet_address.trim();
+      const walletAddress = (this.form.admin_wallet_address || '').trim();
       if (!walletAddress) {
         this.toast.showToast(this.lang.translate('toast.wallet_required'), 'warning');
         return;

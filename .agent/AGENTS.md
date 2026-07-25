@@ -13,6 +13,28 @@
 > Khi cần seed dữ liệu cho một seeder cụ thể, chỉ dùng:
 > - `php artisan db:seed --class=TenSeederClass` — chạy đúng 1 seeder.
 
+- **[TÍCH HỢP CÔNG TẮC BẢN QUYỀN VÀ CÔNG TẮC TỔNG BẬT / TẮT HỆ THỐNG CẤP BẬC ĐẠI LÝ (ENVIRONMENT LICENSE & SYSTEM TOGGLE FOR MEMBERSHIP TIERS)]**:
+  - **Mô tả yêu cầu**:
+    - Tích hợp công tắc bản quyền gói nâng cao cấp hệ thống trong tệp `.env`: `FEATURE_MEMBERSHIP_TIERS_ENABLED=true/false`.
+    - **Khi chưa mua / chưa kích hoạt trong `.env` (`FEATURE_MEMBERSHIP_TIERS_ENABLED=false`)**:
+      - Hệ thống tự động vô hiệu hóa và ẩn hoàn toàn menu item **"Quản lý cấp bậc"** trên thanh Sidebar Navigation Desktop và Mobile Menu.
+      - Ẩn hoàn toàn tất cả Badge Cấp bậc, Banner Cấp bậc & Bảng ưu đãi trên Storefront, Header và Profile.
+      - Nếu Admin cố tình truy cập trực tiếp URL `/admin/membership-tiers`, hệ thống sẽ hiển thị Banner cảnh báo đỏ thông báo tính năng chưa được kích hoạt trong tệp cấu hình `.env` của máy chủ.
+    - **Khi đã kích hoạt trong `.env` (`FEATURE_MEMBERSHIP_TIERS_ENABLED=true`)**:
+      - Mở khóa menu **"Quản lý cấp bậc"** trên Sidebar Admin và cho phép Admin tự do điều khiển công tắc tổng Bật/Tắt tính năng trong giao diện Quản lý Cấp bậc (`/admin/membership-tiers`).
+  - **Nội dung thực hiện**:
+    - **Backend (`isocalmarket-api`)**:
+      - Cập nhật `.env` & `.env.example`: Thêm key `FEATURE_MEMBERSHIP_TIERS_ENABLED=true`.
+      - Cập nhật `SystemSettingController.php`: Trả về `membership_tiers_feature_enabled` dựa trên `env('FEATURE_MEMBERSHIP_TIERS_ENABLED', true)`.
+      - Cập nhật `OrderService.php`: Kiểm tra `FEATURE_MEMBERSHIP_TIERS_ENABLED` từ `.env` trước khi tính chiết khấu cấp bậc đại lý.
+      - Kiểm thử PHP Unit Test: Đạt **145/145 PASSED (100%)**, 981 assertions.
+    - **Frontend (`isocalmarket-web`)**:
+      - Cập nhật `PublicSettingStore` (`public-setting.store.ts`): Bổ sung `membership_tiers_feature_enabled`.
+      - Cập nhật `SidebarComponent` (`sidebar.component.ts` & `.html`) và `App` (`app.ts` & `app.html`): Bọc ẩn/hiện menu Quản lý cấp bậc dựa trên `membership_tiers_feature_enabled`.
+      - Cập nhật `AdminMembershipTiersComponent` (`admin-membership-tiers.component.html`): Bổ sung Banner cảnh báo đỏ khi tính năng chưa kích hoạt trong `.env`.
+      - Biên dịch Angular Frontend (`npm run build`) thành công **100% SUCCESS, 0 ERRORS**.
+  - **Xác nhận**: Tích hợp hoàn hảo công tắc bản quyền tệp `.env` và công tắc tổng Bật/Tắt hệ thống Cấp bậc Đại lý!
+
 - **[TỐI ƯU RESPONSIVE FOOTER BADGE BẢO MẬT ĐĂNG NHẬP / ĐĂNG KÝ (AUTH FOOTER SECURITY BADGES RESPONSIVE LAYOUT)]**:
   - **Mô tả yêu cầu**:
     - Khắc phục triệt để lỗi hiển thị vỡ dòng chữ `2-FACTOR SECURITY` và lỗi bị tràn vạch cắt viền màn hình (horizontal overflow / clipped text) trên các thiết bị di động / màn hình nhỏ tại khung đăng nhập / đăng ký (`/login`, `/register`).

@@ -15,6 +15,9 @@ import { TranslatePipe } from '@shared/pipes/translate.pipe';
 import { CurrencyPipe } from '@shared/pipes/currency.pipe';
 import { MembershipTierFormModalComponent } from './membership-tier-form-modal/membership-tier-form-modal.component';
 
+import { SystemSettingStore } from '../admin-settings/system-setting.store';
+import { PublicSettingStore } from '@core/services/public-setting.store';
+
 @Component({
   selector: 'app-admin-membership-tiers',
   standalone: true,
@@ -38,10 +41,29 @@ export class AdminMembershipTiersComponent implements OnInit {
   private toast = inject(ToastService);
   private modalService = inject(ModalService);
   public lang = inject(LanguageService);
+  private readonly systemSettingStore = inject(SystemSettingStore);
+  public readonly publicSettingStore = inject(PublicSettingStore);
 
   tiers = signal<MembershipTier[]>([]);
   isLoading = signal<boolean>(false);
   isLocked = signal<boolean>(true);
+
+  public toggleSystemEnable(enabled: boolean): void {
+    if (this.isLocked()) {
+      this.toast.showToast('Vui lòng mở khóa chỉnh sửa trước khi thao tác.', 'warning');
+      return;
+    }
+    this.systemSettingStore.updateSettings({ membership_tiers_enabled: enabled }).subscribe({
+      next: () => {
+        this.publicSettingStore.clearCache();
+        this.publicSettingStore.fetchPublicSettings().subscribe();
+        this.toast.showToast(`Đã ${enabled ? 'BẬT' : 'TẮT'} tính năng Cấp Bậc Đại Lý toàn hệ thống.`, 'success');
+      },
+      error: () => {
+        this.toast.showToast('Cập nhật thất bại.', 'error');
+      }
+    });
+  }
 
   public readonly columns = computed<TableColumn[]>(() => {
     this.lang.currentLang();
@@ -57,10 +79,16 @@ export class AdminMembershipTiersComponent implements OnInit {
   });
 
   ngOnInit(): void {
+    this.publicSettingStore.fetchPublicSettings().subscribe();
     this.loadTiers();
   }
 
   loadTiers(): void {
+    if (!this.publicSettingStore.settings().membership_tiers_feature_enabled) {
+      this.tiers.set([]);
+      this.isLoading.set(false);
+      return;
+    }
     this.isLoading.set(true);
     this.tierService.getAdminTiers().subscribe({
       next: (res) => {

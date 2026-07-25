@@ -226,7 +226,11 @@ class AdminUserController extends Controller
                 $type           = $request->input('type');
                 $amount         = (float) $request->input('amount');
                 $reason         = trim($request->input('reason'));
-                $affectCumulative = $request->boolean('affect_cumulative_deposit', true);
+                $affectCumulative = (bool) $request->input('affect_cumulative_deposit', false);
+                $featureTiersEnabled = filter_var(config('app.feature_membership_tiers_enabled', true), FILTER_VALIDATE_BOOLEAN);
+                if (! $featureTiersEnabled) {
+                    $affectCumulative = false;
+                }
                 $currentBalance = $user->getBalance();
 
                 if ($type === 'subtract' && $currentBalance < $amount) {

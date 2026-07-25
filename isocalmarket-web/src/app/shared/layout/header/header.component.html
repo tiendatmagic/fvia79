@@ -246,7 +246,7 @@
                         }}
                       </app-badge>
 
-                      @if (stateService.currentUser()?.membership_tier) {
+                      @if (publicSettingStore.settings().membership_tiers_enabled && stateService.currentUser()?.membership_tier) {
                         <span
                           class="px-2 py-0.5 rounded-full text-[10px] font-extrabold text-white shadow-xs inline-flex items-center gap-1"
                           [style.backgroundColor]="stateService.currentUser()?.membership_tier?.color || '#3b82f6'"

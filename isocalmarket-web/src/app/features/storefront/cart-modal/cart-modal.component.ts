@@ -20,6 +20,8 @@ import {
   finalize,
 } from 'rxjs/operators';
 
+import { PublicSettingStore } from '@core/services/public-setting.store';
+
 @Component({
   selector: 'app-cart-modal',
   standalone: true,
@@ -40,6 +42,7 @@ export class CartModalComponent implements OnInit {
   public readonly cart = inject(CartStore);
   public readonly state = inject(StateService);
   public readonly lang = inject(LanguageService);
+  public readonly publicSettingStore = inject(PublicSettingStore);
 
   public readonly isSubmitting = signal(false);
   private checkoutIdempotencyKey = this.createIdempotencyKey();
@@ -108,6 +111,9 @@ export class CartModalComponent implements OnInit {
   }
 
   public get tierDiscountAmount(): number {
+    if (!this.publicSettingStore.settings().membership_tiers_enabled) {
+      return 0;
+    }
     const user = this.state.authStore.currentUser();
     const tier = user?.membership_tier;
     if (!tier || !tier.discount_percent || tier.discount_percent <= 0) return 0;

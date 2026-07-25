@@ -11,6 +11,8 @@ import { LogoComponent } from '@shared/components/logo/logo.component';
 import { BadgeComponent } from '@shared/components/badge/badge.component';
 import { ModalService } from '@core/services/modal.service';
 
+import { PublicSettingStore } from '@core/services/public-setting.store';
+
 @Component({
   selector: 'app-header',
   standalone: true,
@@ -37,6 +39,11 @@ export class HeaderComponent {
   public currencyService = inject(CurrencyService);
   public router = inject(Router);
   private modalService = inject(ModalService);
+  public publicSettingStore = inject(PublicSettingStore);
+
+  constructor() {
+    this.publicSettingStore.fetchPublicSettings().subscribe();
+  }
 
   public showUserDropdown = signal(false);
   public showLangDropdown = signal(false);

@@ -6,7 +6,7 @@ import { Observable, of } from 'rxjs';
 import { PublicSettingStore } from '@core/services/public-setting.store';
 
 export interface SystemSettingsPayload {
-  admin_wallet_address: string;
+  admin_wallet_address?: string;
   scanner_api_key?: string;
   token_cleanup_days?: number;
   usdt_exchange_rate?: number;
@@ -19,6 +19,7 @@ export interface SystemSettingsPayload {
   announcement_enabled?: boolean | string;
   announcement_text?: string;
   announcement_effect?: 'marquee' | 'fade' | 'slide' | 'bounce' | string;
+  membership_tiers_enabled?: boolean | string;
   has_scanner_api_key?: boolean;
   has_binance_api_key?: boolean;
   has_binance_api_secret?: boolean;
@@ -92,7 +93,7 @@ export class SystemSettingStore {
     );
   }
 
-  public updateSettings(payload: SystemSettingsPayload): Observable<any> {
+  public updateSettings(payload: Partial<SystemSettingsPayload>): Observable<any> {
     this.submitting.set(true);
     return this.api.put<any>('v1/admin/settings', payload).pipe(
       tap(res => {

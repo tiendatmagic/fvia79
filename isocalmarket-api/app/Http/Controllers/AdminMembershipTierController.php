@@ -27,6 +27,13 @@ class AdminMembershipTierController extends Controller
 
     public function publicIndex(): JsonResponse
     {
+        $enabled = filter_var(config('app.feature_membership_tiers_enabled', true), FILTER_VALIDATE_BOOLEAN);
+        if (! $enabled) {
+            return response()->json([
+                'data' => [],
+            ]);
+        }
+
         try {
             $tiers = $this->membershipTierService->getPublicTiers();
 

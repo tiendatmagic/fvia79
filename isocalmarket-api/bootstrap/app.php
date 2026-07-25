@@ -21,6 +21,7 @@ return Application::configure(basePath: dirname(__DIR__))
             'jwt.auth' => \App\Http\Middleware\JwtAuthMiddleware::class,
             'admin' => \App\Http\Middleware\AdminMiddleware::class,
             'b2b.auth' => \App\Http\Middleware\B2bAuthMiddleware::class,
+            'membership_tiers.enabled' => \App\Http\Middleware\CheckMembershipTiersFeatureEnabled::class,
         ]);
     })
     ->withExceptions(function (Exceptions $exceptions): void {

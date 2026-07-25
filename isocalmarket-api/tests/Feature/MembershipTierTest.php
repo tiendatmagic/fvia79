@@ -27,6 +27,8 @@ class MembershipTierTest extends TestCase
     {
         parent::setUp();
 
+        config(['app.feature_membership_tiers_enabled' => true]);
+
         // Seed 5 tiers
         $this->seed(\Database\Seeders\MembershipTierSeeder::class);
 
@@ -238,5 +240,82 @@ class MembershipTierTest extends TestCase
             ->assertJsonPath('total_deposited', 1000)
             ->assertJsonPath('membership_tier.name_vi', 'Kim cương')
             ->assertJsonPath('membership_tier.discount_percent', 10);
+    }
+
+    public function test_disabling_membership_tiers_system_ignores_tier_discount(): void
+    {
+        // 1. Disable membership tiers system via SystemSetting
+        app(\App\Application\Services\SystemSettingService::class)->setSetting('membership_tiers_enabled', '0');
+
+        // 2. Customer has Kim Cương tier (10% discount) and $100 balance
+        $this->customerModel->balance = 100.0;
+        $this->customerModel->total_deposited = 1000.0;
+        $this->customerModel->save();
+        app(\App\Application\Services\MembershipTierService::class)->recalculateUserTier($this->customerModel);
+
+        $authService = app(\App\Application\Services\AuthService::class);
+        $customerToken = $authService->generateAccessToken(UserMapper::toDomain($this->customerModel->fresh()));
+
+        $category = CategoryModel::create([
+            'id' => (string) Str::uuid7(),
+            'name' => 'Disabled Tier Category',
+            'slug' => 'disabled-tier-category',
+            'sort_order' => 2,
+            'is_active' => true,
+        ]);
+
+        $product = ProductModel::create([
+            'id' => (string) Str::uuid7(),
+            'category_id' => $category->id,
+            'name' => 'Disabled Tier Product',
+            'slug' => 'disabled-tier-product',
+            'price' => 10.0,
+            'description' => 'Test Product',
+            'available_count' => 5,
+            'is_active' => true,
+        ]);
+
+        $batch = \App\Infrastructure\Persistence\Eloquent\InventoryBatchModel::create([
+            'id' => (string) Str::uuid7(),
+            'product_id' => $product->id,
+            'batch_name' => 'Batch Disabled Tier',
+            'initial_count' => 2,
+            'current_count' => 2,
+        ]);
+
+        InventoryItemModel::create([
+            'id' => (string) Str::uuid7(),
+            'product_id' => $product->id,
+            'batch_id' => $batch->id,
+            'data' => 'disabled_tier_1',
+            'secret_data' => 'disabled_tier_1',
+            'status' => 'available',
+        ]);
+
+        // When system is DISABLED, 2 items * $10 = $20 (NO discount applied)
+        $res = $this->withHeader('Authorization', "Bearer {$customerToken}")
+            ->postJson('/api/v1/orders', [
+                'idempotency_key' => (string) Str::uuid7(),
+                'items' => [
+                    [
+                        'product_id' => $product->id,
+                        'quantity' => 1,
+                    ],
+                ],
+            ]);
+
+        $res->assertStatus(201)
+            ->assertJsonPath('order.total_price', 10)
+            ->assertJsonPath('order.discount_amount', 0);
+    }
+
+    public function test_disabling_feature_in_env_blocks_api_routes_with_403(): void
+    {
+        config(['app.feature_membership_tiers_enabled' => false]);
+
+        $res = $this->withHeader('Authorization', "Bearer {$this->adminToken}")
+            ->getJson('/api/v1/admin/membership-tiers');
+
+        $res->assertStatus(403);
     }
 }

@@ -10,6 +10,8 @@ import { TranslatePipe } from '@shared/pipes/translate.pipe';
 import { MembershipTierService, MembershipTier } from '@core/services/membership-tier.service';
 import { finalize } from 'rxjs/operators';
 
+import { PublicSettingStore } from '@core/services/public-setting.store';
+
 @Component({
   selector: 'app-profile-information',
   standalone: true,
@@ -32,6 +34,7 @@ export class ProfileInformationComponent implements OnInit {
   public readonly state = inject(StateService);
   public readonly lang = inject(LanguageService);
   private readonly tierService = inject(MembershipTierService);
+  public readonly publicSettingStore = inject(PublicSettingStore);
 
   public username = '';
   public uid = '';
@@ -46,6 +49,7 @@ export class ProfileInformationComponent implements OnInit {
   public amountNeededForNext = signal<number>(0);
 
   ngOnInit() {
+    this.publicSettingStore.fetchPublicSettings().subscribe();
     const user = this.state.authStore.currentUser();
     if (user) {
       this.username = user.username || '';

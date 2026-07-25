@@ -3,7 +3,7 @@
     [title]="'admin.membership_tiers_title' | translate"
     [description]="'admin.membership_tiers_desc' | translate"
   >
-    <ng-container actions>
+    <ng-container actions *ngIf="publicSettingStore.settings().membership_tiers_feature_enabled">
       <!-- Toggle Lock/Unlock Button -->
       <button
         type="button"
@@ -39,16 +39,62 @@
     </ng-container>
   </app-page-header>
 
-  <!-- Locked Banner Notice -->
+  <!-- ENV Disabled Feature Notice Banner -->
   <div
-    *ngIf="isLocked()"
-    class="p-4 rounded-2xl bg-amber-500/10 border border-amber-500/20 text-amber-700 dark:text-amber-400 text-sm flex items-center gap-3"
+    *ngIf="!publicSettingStore.settings().membership_tiers_feature_enabled"
+    class="p-6 rounded-2xl bg-rose-500/10 border border-rose-500/20 text-rose-700 dark:text-rose-400 text-sm flex flex-col sm:flex-row items-start sm:items-center gap-4 shadow-sm"
   >
-    <app-icon name="lock" class="w-5 h-5 flex-shrink-0 text-amber-500" />
-    <span>{{ 'admin.locked_tier_notice' | translate }}</span>
+    <div class="p-3 rounded-xl bg-rose-500/20 text-rose-600 dark:text-rose-400 shrink-0">
+      <app-icon name="warning" class="w-8 h-8" />
+    </div>
+    <div class="space-y-1">
+      <h4 class="font-extrabold text-base text-rose-800 dark:text-rose-300">Tính năng chưa được kích hoạt bản quyền</h4>
+      <p class="text-xs text-rose-700/90 dark:text-rose-400/90 leading-relaxed">
+        {{ 'admin.feature_disabled_env_notice' | translate }}
+      </p>
+    </div>
   </div>
 
-  <div app-card class="overflow-hidden !p-0">
+  <ng-container *ngIf="publicSettingStore.settings().membership_tiers_feature_enabled">
+    <!-- Global Feature Switch Card -->
+    <div class="p-5 rounded-2xl bg-white dark:bg-slate-900 border border-slate-200/60 dark:border-slate-800/60 shadow-sm flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+      <div class="space-y-1">
+        <div class="flex items-center gap-2">
+          <h3 class="text-sm font-black text-slate-800 dark:text-white">{{ 'admin.system_membership_tiers_enable_title' | translate }}</h3>
+          <span
+            class="px-2.5 py-0.5 rounded-full text-[10px] font-black uppercase tracking-wider"
+            [ngClass]="{
+              'bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 border border-emerald-500/20': publicSettingStore.settings().membership_tiers_enabled,
+              'bg-rose-500/10 text-rose-600 dark:text-rose-400 border border-rose-500/20': !publicSettingStore.settings().membership_tiers_enabled
+            }"
+          >
+            {{ (publicSettingStore.settings().membership_tiers_enabled ? 'common.status_active' : 'common.status_inactive') | translate }}
+          </span>
+        </div>
+        <p class="text-xs text-slate-500 dark:text-slate-400 max-w-3xl">
+          {{ 'admin.system_membership_tiers_enable_desc' | translate }}
+        </p>
+      </div>
+
+      <div class="flex items-center gap-3 shrink-0">
+        <app-custom-switch
+          [checked]="publicSettingStore.settings().membership_tiers_enabled"
+          (checkedChange)="toggleSystemEnable($event)"
+          [disabled]="isLocked()"
+        />
+      </div>
+    </div>
+
+    <!-- Locked Banner Notice -->
+    <div
+      *ngIf="isLocked()"
+      class="p-4 rounded-2xl bg-amber-500/10 border border-amber-500/20 text-amber-700 dark:text-amber-400 text-sm flex items-center gap-3"
+    >
+      <app-icon name="lock" class="w-5 h-5 flex-shrink-0 text-amber-500" />
+      <span>{{ 'admin.locked_tier_notice' | translate }}</span>
+    </div>
+
+    <div app-card class="overflow-hidden !p-0">
     <app-table
       [columns]="columns()"
       [data]="tiers()"
@@ -90,7 +136,7 @@
 
       <ng-template appTableCell="users_count" let-row="row">
         <span class="text-xs font-bold text-slate-700 dark:text-slate-300">
-          {{ row.users_count || 0 }} người
+          {{ row.users_count || 0 }} {{ 'admin.tier_users_unit' | translate }}
         </span>
       </ng-template>
 
@@ -109,7 +155,7 @@
             (click)="openEditModal(row)"
             [disabled]="isLocked()"
             class="p-2 rounded-xl text-slate-500 hover:text-primary hover:bg-slate-100 dark:hover:bg-slate-800 disabled:opacity-40 disabled:cursor-not-allowed transition-all cursor-pointer"
-            title="Chỉnh sửa"
+            [title]="'common.edit' | translate"
           >
             <app-icon name="edit" class="w-4 h-4" />
           </button>
@@ -118,7 +164,7 @@
             (click)="deleteTier(row)"
             [disabled]="isLocked()"
             class="p-2 rounded-xl text-slate-500 hover:text-rose-500 hover:bg-rose-500/10 disabled:opacity-40 disabled:cursor-not-allowed transition-all cursor-pointer"
-            title="Xóa"
+            [title]="'common.delete' | translate"
           >
             <app-icon name="trash" class="w-4 h-4" />
           </button>
@@ -126,4 +172,5 @@
       </ng-template>
     </app-table>
   </div>
+  </ng-container>
 </div>

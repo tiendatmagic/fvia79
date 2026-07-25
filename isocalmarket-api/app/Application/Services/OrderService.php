@@ -120,10 +120,14 @@ class OrderService
                 }
 
                 $tierDiscountAmount = 0.0;
-                $membershipTier = $user->getMembershipTier();
-                if ($membershipTier && ! empty($membershipTier['discount_percent']) && (float) $membershipTier['discount_percent'] > 0) {
-                    $tierPercent = (float) $membershipTier['discount_percent'];
-                    $tierDiscountAmount = round($totalPrice * ($tierPercent / 100), 4);
+                $featureEnabled = filter_var(config('app.feature_membership_tiers_enabled', true), FILTER_VALIDATE_BOOLEAN);
+                $tiersEnabled = app(SystemSettingService::class)->getSetting('membership_tiers_enabled', '1');
+                if ($featureEnabled && filter_var($tiersEnabled, FILTER_VALIDATE_BOOLEAN)) {
+                    $membershipTier = $user->getMembershipTier();
+                    if ($membershipTier && ! empty($membershipTier['discount_percent']) && (float) $membershipTier['discount_percent'] > 0) {
+                        $tierPercent = (float) $membershipTier['discount_percent'];
+                        $tierDiscountAmount = round($totalPrice * ($tierPercent / 100), 4);
+                    }
                 }
 
                 $couponDiscountAmount = 0.0;
