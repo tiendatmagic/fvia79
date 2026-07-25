@@ -16,7 +16,7 @@ Tài liệu này ghi lại chi tiết các bước đã thực hiện để depl
 - **MySQL Password**: `IsoCal_9221eaf12c8455169dfec5b9`
 - **FTP Host**: `184.164.93.247` (Port `21`)
 - **FTP User**: `deploy_f627f2`
-- **FTP Pass**: `IsoFtp_c688e0bca6d2!`
+- **FTP Pass**: `IsoFtp_643631352b38!`
 - **FTP Root Dir**: `/var/www`
   - Frontend: `/var/www/isocalmarket-web`
   - Backend: `/var/www/isocalmarket-api`

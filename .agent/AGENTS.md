@@ -18,21 +18,19 @@
 > `php artisan config:clear && php artisan config:cache && php artisan route:cache && php artisan view:cache`
 > để đảm bảo Laravel cập nhật ngay lập tức 100% các biến môi trường tươi mới nhất từ tệp `.env`, tuyệt đối không được bỏ qua bước `config:clear` để tránh tình trạng dính cache đệm tĩnh cũ.
 
-- **[BỔ SUNG QUY ĐỊNH .GITIGNORE VÀO TỆP HƯỚNG DẪN DEPLOY (ADD GITIGNORE GUIDELINES TO DEPLOY.MD)]**:
+- **[BỔ SUNG VÀ TẠO TỆP .GITIGNORE THƯ MỤC GỐC DỰ ÁN (CREATE ROOT .GITIGNORE & UPDATE DEPLOY.MD)]**:
   - **Mô tả yêu cầu**:
-    - Bổ sung quy định cấu hình `.gitignore` cho cả 2 phân hệ Backend Laravel và Frontend Angular vào tài liệu [deploy.md](file:///d:/git/isocalmarket/deploy.md).
+    - Khởi tạo tệp `.gitignore` chuẩn tại thư mục gốc dự án (`/d:/git/isocalmarket/.gitignore`) và bổ sung quy định cấu hình vào tài liệu [deploy.md](file:///d:/git/isocalmarket/deploy.md).
   - **Nội dung thực hiện**:
-    - Cập nhật mục **"🛡️ 4. Quy Định .gitignore & Quản Lý Mã Nguồn (Git Ignore Guidelines)"** trong [deploy.md](file:///d:/git/isocalmarket/deploy.md):
-      - Backend: Nêu rõ các tệp `.env`, `.env.production`, `/vendor`, `/storage/*.key`, `*.log`, `/backup/*.sql` tuyệt đối không commit để bảo mật thông tin và tối ưu dung lượng.
-      - Frontend: Nêu rõ các thư mục `/dist`, `/node_modules`, `/.angular/cache`, `.idea/`, `.vscode/*`, `.agent/` không lưu trữ trên repo.
-      - Quy chuẩn đóng gói & deploy: Bỏ qua vendor/node_modules/dist/env khi nén code hoặc sync FTP, hướng dẫn các bước cài đặt sạch và build release trên VPS.
-  - **Xác nhận**: Đã cập nhật tài liệu [deploy.md](file:///d:/git/isocalmarket/deploy.md) đầy đủ và minh bạch!
+    - **Tạo tệp [d:\git\isocalmarket\.gitignore](file:///d:/git/isocalmarket/.gitignore)**: Cấu hình loại bỏ `node_modules/`, `vendor/`, `dist/`, `.env`, `.env.*` (trừ `.env.example`), `*.sql`, `*.log`, `.idea/`, `.vscode/*`, `.DS_Store`, `Thumbs.db`.
+    - **Cập nhật tài liệu [deploy.md](file:///d:/git/isocalmarket/deploy.md)**: Bổ sung mục **"🛡️ 4. Quy Định .gitignore & Quản Lý Mã Nguồn (Git Ignore Guidelines)"** giải thích chi tiết quy tắc quản lý mã nguồn ở Thư mục gốc, Backend và Frontend.
+  - **Xác nhận**: Đã tạo thành công tệp `.gitignore` tại thư mục gốc dự án và cập nhật tài liệu [deploy.md](file:///d:/git/isocalmarket/deploy.md) đầy đủ!
 
 - **[CÀI ĐẶT FTP SERVER VÀ CẤP TÀI KHOẢN FTP UPLOAD TRÊN VPS (VSFTPD INSTALLATION & FTP CREDENTIALS)]**:
   - **Mô tả yêu cầu**:
     - Cài đặt dịch vụ FTP (`vsftpd`) trên máy chủ VPS (`184.164.93.247`), tạo tài khoản FTP ngẫu nhiên có quyền ghi dữ liệu để upload/quản lý mã nguồn Frontend (`/var/www/isocalmarket-web`) và Backend (`/var/www/isocalmarket-api`).
   - **Nội dung thực hiện**:
-    - Cài đặt `vsftpd`, bật Passive Mode (ports `40000:40100`), tạo user `deploy_f627f2` kèm mật khẩu ngẫu nhiên `IsoFtp_c688e0bca6d2!`, phân quyền nhóm `www-data` (`chmod 775` & `SGID`).
+    - Cài đặt `vsftpd`, bật Passive Mode (ports `40000:40100`), tạo user `deploy_f627f2` kèm mật khẩu ngẫu nhiên mới `IsoFtp_643631352b38!`, phân quyền nhóm `www-data` (`chmod 775` & `SGID`).
     - Cập nhật đầy đủ thông số kết nối FTP vào tệp [deploy.md](file:///d:/git/isocalmarket/deploy.md).
   - **Xác nhận**: Đã cài đặt dịch vụ FTP Server thành công và ghi chép thông tin đầy đủ!
 
