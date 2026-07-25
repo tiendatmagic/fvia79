@@ -62,7 +62,8 @@
     - `isocalmarket-web/angular.json`: Đổi tên project root và target `buildTarget` từ `angular-web3-wallet` thành `isocalmarket-web`.
     - `isocalmarket-web/package.json` & `package-lock.json`: Cập nhật trường `name` thành `isocalmarket-web`.
     - `netlify.toml` (Thư mục gốc & `isocalmarket-web`): Cập nhật đường dẫn xuất bản `publish = "dist/isocalmarket-web/browser"`.
-  - **Xác nhận**: Đã đổi tên chuẩn xác 100%, không còn dấu vết tên cũ `angular-web3-wallet`.
+    - Script Deploy (`deploy_fe_vps.js`, `deploy_vps_production.js`): Cập nhật 100% đường dẫn xuất bản sang `dist/isocalmarket-web/browser` và xóa bỏ hoàn toàn thư mục build cũ `dist/angular-web3-wallet`.
+  - **Xác nhận**: Đã đổi tên chuẩn xác 100%, xóa sạch thư mục cũ, không còn dính cache build cũ!
 
 - **[ẨN CẢNH BÁO BROWSERSLIST TRÊN ANGULAR CLI (SUPPRESS BROWSERSLIST CLI WARNINGS)]**:
   - **Mô tả yêu cầu**:
