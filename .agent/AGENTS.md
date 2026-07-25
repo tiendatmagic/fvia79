@@ -13,6 +13,21 @@
 > Khi cần seed dữ liệu cho một seeder cụ thể, chỉ dùng:
 > - `php artisan db:seed --class=TenSeederClass` — chạy đúng 1 seeder.
 
+- **[TỐI ƯU RESPONSIVE CARD CẤP BẬC ĐẠI LÝ VÀ CHUẨN HÓA APP-ICON (MEMBERSHIP TIER PROFILE RESPONSIVE & APP-ICON REFACTOR)]**:
+  - **Mô tả yêu cầu**:
+    - Khắc phục lỗi vỡ dòng / ép khung chèn ép card Cấp bậc Đại lý trong trang Hồ sơ cá nhân (`/profile`).
+    - Khắc phục lỗi đè chữ chèn ép của badge `HIỆN TẠI` với tên cấp bậc (`Bạc`, `Vàng`...).
+    - Rà soát và chuẩn hóa 100% biểu tượng SVG trên giao diện web sử dụng `<app-icon name="...">`.
+  - **Nội dung thực hiện**:
+    - **Frontend (`isocalmarket-web`)**:
+      - `profile-information.component.html`:
+        - Chuyển đổi badge `HIỆN TẠI` thành **Top Floating Badge (`absolute -top-3 right-3 z-10`)** nổi trên viền card Cấp bậc hiện tại, loại bỏ 100% rủi ro đè chữ hay chạm mép card bên cạnh.
+        - Cập nhật lưới hiển thị `grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-2 xl:grid-cols-5 gap-4 pt-2` linh hoạt theo tỷ lệ màn hình.
+      - `user-form-modal.component.html` & `import-inventory-modal.component.html`:
+        - Thay thế toàn bộ các thẻ `<svg>` inline còn sót lại trong form quản lý user và import kho thành component `<app-icon name="...">` (`wallet`, `shield-check`, `exclamation`, `eye`, `eye-slash`, `key`, `copy`), đảm bảo đồng bộ 100% thiết kế giao diện UI/UX GEMINI.
+      - Biên dịch Angular Frontend (`npm run build`) thành công **100% SUCCESS, 0 ERRORS**.
+  - **Xác nhận**: Giao diện Card Cấp bậc Đại lý đẹp mắt, sắc nét và 100% đồng bộ chuẩn `<app-icon>`!
+
 - **[SỬA ICON VÀ NÂNG CẤP TRANG QUẢN LÝ CẤP BẬC ĐẠI LÝ (SUPPLIER ICON + MEMBERSHIP TIERS UX UPGRADE)]**:
   - **Mô tả yêu cầu**:
     - Sửa icon "Quản lý nhà cung cấp" trong sidebar (đang dùng `sync` không phù hợp) → đổi sang icon xe tải `truck`.

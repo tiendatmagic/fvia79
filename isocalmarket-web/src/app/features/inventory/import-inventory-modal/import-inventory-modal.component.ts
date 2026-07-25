@@ -6,6 +6,7 @@ import { StateService } from '@core/services/state.service';
 import { CustomSelectComponent } from '@shared/components/custom-select/custom-select.component';
 import { CustomInputComponent } from '@shared/components/custom-input/custom-input.component';
 import { ButtonComponent } from '@shared/components/button/button.component';
+import { IconComponent } from '@shared/components/icon/icon.component';
 import { TranslatePipe } from '@shared/pipes/translate.pipe';
 import { LanguageService } from '@core/services/language.service';
 import { finalize } from 'rxjs/operators';
@@ -19,6 +20,7 @@ import { finalize } from 'rxjs/operators';
     CustomSelectComponent,
     CustomInputComponent,
     ButtonComponent,
+    IconComponent,
     TranslatePipe
   ],
   templateUrl: './import-inventory-modal.component.html',
