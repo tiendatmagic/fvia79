@@ -1,4 +1,4 @@
-import { Component, OnInit, OnDestroy, inject, signal } from '@angular/core';
+import { Component, OnInit, OnDestroy, inject, signal, computed } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { ActivatedRoute, Router } from '@angular/router';
@@ -14,6 +14,7 @@ import { ModalService } from '@core/services/modal.service';
 import { LanguageService } from '@core/services/language.service';
 import { TranslatePipe } from '@shared/pipes/translate.pipe';
 import { CustomSwitchComponent } from '@shared/components/custom-switch/custom-switch.component';
+import { CustomSelectComponent } from '@shared/components/custom-select/custom-select.component';
 import { DatabaseBackupPanelComponent } from './database-backup-panel/database-backup-panel.component';
 
 @Component({
@@ -29,6 +30,7 @@ import { DatabaseBackupPanelComponent } from './database-backup-panel/database-b
     IconComponent,
     TranslatePipe,
     CustomSwitchComponent,
+    CustomSelectComponent,
     DatabaseBackupPanelComponent
   ],
   templateUrl: './admin-settings.component.html',
@@ -39,6 +41,37 @@ import { DatabaseBackupPanelComponent } from './database-backup-panel/database-b
     .mask-security {
       -webkit-text-security: disc !important;
       text-security: disc !important;
+    }
+    @keyframes marqueeScroll {
+      0% { transform: translateX(0%); }
+      100% { transform: translateX(-50%); }
+    }
+    @keyframes fadePulse {
+      0%, 100% { opacity: 1; }
+      50% { opacity: 0.3; }
+    }
+    @keyframes slideLeftRight {
+      0% { transform: translateX(-20px); opacity: 0.8; }
+      50% { transform: translateX(20px); opacity: 1; }
+      100% { transform: translateX(-20px); opacity: 0.8; }
+    }
+    @keyframes subtleBounce {
+      0%, 100% { transform: translateY(0); }
+      50% { transform: translateY(-4px); }
+    }
+    .effect-marquee-preview {
+      display: inline-flex;
+      white-space: nowrap;
+      animation: marqueeScroll 12s linear infinite;
+    }
+    .effect-fade-preview {
+      animation: fadePulse 2s ease-in-out infinite;
+    }
+    .effect-slide-preview {
+      animation: slideLeftRight 4s ease-in-out infinite;
+    }
+    .effect-bounce-preview {
+      animation: subtleBounce 1.5s ease-in-out infinite;
     }
   `]
 })
@@ -60,8 +93,15 @@ export class AdminSettingsComponent implements OnInit, OnDestroy {
   public readonly showTelegramToken = signal<boolean>(false);
   public readonly testingTelegramBot = signal<boolean>(false);
 
-  public readonly activeTab = signal<'general' | 'maintenance' | 'backup'>('general');
+  public readonly activeTab = signal<'general' | 'announcement' | 'maintenance' | 'backup'>('general');
   public readonly tokenCleanupDays = signal<number>(7);
+
+  public readonly effectOptions = computed(() => [
+    { label: this.lang.translate('settings.effect_marquee'), value: 'marquee' },
+    { label: this.lang.translate('settings.effect_fade'), value: 'fade' },
+    { label: this.lang.translate('settings.effect_slide'), value: 'slide' },
+    { label: this.lang.translate('settings.effect_bounce'), value: 'bounce' },
+  ]);
 
   public form: SystemSettingsPayload = {
     admin_wallet_address: '',
@@ -73,14 +113,17 @@ export class AdminSettingsComponent implements OnInit, OnDestroy {
     binance_api_secret: '',
     telegram_bot_token: '',
     telegram_bot_username: 'isocalmarketnoti_bot',
-    telegram_bot_enabled: true
+    telegram_bot_enabled: true,
+    announcement_enabled: true,
+    announcement_text: 'Hệ thống tự động cập nhật sản phẩm liên tục 24/7. Chúc quý khách mua sắm vui vẻ!',
+    announcement_effect: 'marquee'
   };
 
   ngOnInit(): void {
     this.routeSub = this.route.paramMap.subscribe(params => {
       const tab = params.get('tab');
-      if (tab === 'maintenance' || tab === 'backup') {
-        this.activeTab.set(tab);
+      if (tab === 'announcement' || tab === 'maintenance' || tab === 'backup') {
+        this.activeTab.set(tab as any);
       } else {
         this.activeTab.set('general');
       }
@@ -96,7 +139,10 @@ export class AdminSettingsComponent implements OnInit, OnDestroy {
             binance_api_secret: '',
             telegram_bot_token: '',
             telegram_bot_username: settings.telegram_bot_username || 'isocalmarketnoti_bot',
-            telegram_bot_enabled: settings.telegram_bot_enabled !== undefined ? Boolean(settings.telegram_bot_enabled) : true
+            telegram_bot_enabled: settings.telegram_bot_enabled !== undefined ? Boolean(Number(settings.telegram_bot_enabled)) : true,
+            announcement_enabled: settings.announcement_enabled !== undefined ? Boolean(Number(settings.announcement_enabled)) : true,
+            announcement_text: settings.announcement_text ?? 'Hệ thống tự động cập nhật sản phẩm liên tục 24/7. Chúc quý khách mua sắm vui vẻ!',
+            announcement_effect: settings.announcement_effect || 'marquee'
           };
           if (settings.token_cleanup_days) {
             this.tokenCleanupDays.set(Number(settings.token_cleanup_days));
@@ -155,29 +201,32 @@ export class AdminSettingsComponent implements OnInit, OnDestroy {
     });
   }
 
-  public changeTab(tab: 'general' | 'maintenance' | 'backup'): void {
+  public changeTab(tab: 'general' | 'announcement' | 'maintenance' | 'backup'): void {
     this.router.navigate(['/admin/settings', tab]);
   }
 
   public onSubmit(): void {
     if (this.submitting() || this.isLocked()) return;
 
-    const walletAddress = this.form.admin_wallet_address.trim();
-    if (!walletAddress) {
-      this.toast.showToast(this.lang.translate('toast.wallet_required'), 'warning');
-      return;
-    }
-
-    const walletRegex = /^0x[a-fA-F0-9]{40}$/;
-    if (!walletRegex.test(walletAddress)) {
-      this.toast.showToast(this.lang.translate('toast.wallet_invalid'), 'error');
-      return;
-    }
-
     const scannerApiKey = this.form.scanner_api_key?.trim();
-    if (!scannerApiKey && !this.form.has_scanner_api_key) {
-      this.toast.showToast(this.lang.translate('toast.scanner_key_required'), 'warning');
-      return;
+
+    if (this.activeTab() === 'general') {
+      const walletAddress = this.form.admin_wallet_address.trim();
+      if (!walletAddress) {
+        this.toast.showToast(this.lang.translate('toast.wallet_required'), 'warning');
+        return;
+      }
+
+      const walletRegex = /^0x[a-fA-F0-9]{40}$/;
+      if (!walletRegex.test(walletAddress)) {
+        this.toast.showToast(this.lang.translate('toast.wallet_invalid'), 'error');
+        return;
+      }
+
+      if (!scannerApiKey && !this.form.has_scanner_api_key) {
+        this.toast.showToast(this.lang.translate('toast.scanner_key_required'), 'warning');
+        return;
+      }
     }
 
     const binanceId = this.form.admin_binance_id?.trim();

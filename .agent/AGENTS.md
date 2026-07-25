@@ -13,6 +13,44 @@
 > Khi cần seed dữ liệu cho một seeder cụ thể, chỉ dùng:
 > - `php artisan db:seed --class=TenSeederClass` — chạy đúng 1 seeder.
 
+- **[TÍCH HỢP THAO TÁC MỞ KHÓA ĐỂ SỬA TRANG CẤU HÌNH NHÀ CUNG CẤP ADMIN (SUPPLIER UNLOCK TO EDIT FEATURE INTEGRATION)]**:
+  - **Mô tả yêu cầu**:
+    - Bổ sung nút bấm **"Mở khóa để sửa" / "Khóa chỉnh sửa"** tại trang Quản lý Nhà cung cấp Admin (`/admin/suppliers`), tương tự như cơ chế bảo mật tại trang Cấu hình Hệ thống Admin (`/admin/settings/general`).
+  - **Nội dung thực hiện**:
+    - **Frontend (`isocalmarket-web`)**:
+      - Cập nhật `AdminSuppliersComponent` (`admin-suppliers.component.ts`):
+        - Bổ sung Signal `isLocked = signal<boolean>(true);` để mặc định khóa chỉnh sửa cấu hình nhà cung cấp hiện có.
+        - Bổ sung hàm `toggleLock()` chuyển đổi trạng thái khóa/mở khóa.
+        - Tự động mở khóa form khi tạo nhà cung cấp mới (`startCreatingSupplier`) và tự động khóa lại sau khi lưu thành công (`saveSupplier`).
+        - Chặn các thao tác kích hoạt/lưu/tắt sản phẩm khi ở trạng thái khóa.
+      - Cập nhật `AdminSuppliersComponent` (`admin-suppliers.component.html`):
+        - Gắn `[disabled]="isLocked()"` cho tất cả các input text/url/password, select dropdown, custom switch và nút nguy hiểm.
+        - Bổ sung nút `Mở khóa để sửa` / `Khóa chỉnh sửa` kèm icon `lock` / `lock-open` ở góc dưới form, ẩn nút `Lưu cài đặt` khi đang bị khóa (đồng bộ 100% UI/UX với `/admin/settings/general`).
+      - Biên dịch Angular Frontend (`npm run build`) thành công **100% SUCCESS, 0 ERRORS**.
+  - **Xác nhận**: Tích hợp tính năng Mở khóa để sửa cho Quản lý Nhà cung cấp thành công, bảo mật cấu hình và đồng bộ trải nghiệm người dùng!
+
+- **[TÍCH HỢP QUẢN LÝ THÔNG BÁO ĐỘNG TRANG CHỦ CHO ADMIN VÀ HIỆU ỨNG BANNER STOREFRONT (HOMEPAGE ANNOUNCEMENT & DYNAMIC ANIMATION EFFECT)]**:
+  - **Mô tả yêu cầu**:
+    - Bổ sung Tab **"Thông báo trang chủ"** riêng biệt trong trang Cấu hình Hệ thống Admin (`/admin/settings/announcement`).
+    - Cho phép Admin nhập nội dung chữ thông báo, bật/tắt hiển thị, và lựa chọn hiệu ứng thị giác động thông qua custom select UI (chữ chạy ngang Marquee, nhấp nháy Fade Pulse, trượt ngang Slide, nảy nhịp điệu Bounce).
+    - Thay thế hoàn toàn thẻ `<marquee>` cũ ở Storefront (`storefront.component.html`) bằng Banner Thông báo CSS Animation hiện đại, thiết kế Neon Glow Badge, Icon Megaphone SVG chuẩn xác và nút đóng tạm thời.
+    - Phía Frontend tích hợp cơ chế Cache 10 phút (`600,000 ms`) thông qua API công khai gộp (`GET /v1/settings/public`) để tối ưu hiệu năng và tiết kiệm HTTP requests.
+  - **Nội dung thực hiện**:
+    - **Backend (`isocalmarket-api`)**:
+      - Cập nhật `SystemSettingController.php`: Bổ sung validation và logic lưu 3 trường `announcement_enabled`, `announcement_text`, `announcement_effect` trong method `update()`.
+      - Tạo API công khai `GET /v1/settings/public` trong method `publicSettings()` trả về JSON các cấu hình an toàn cho Storefront.
+      - Đăng ký route công khai trong `routes/api.php`.
+      - Viết unit & feature test suite `PublicSettingTest.php` đạt **2/2 PASSED (100%)**. Nâng tổng số test backend lên **139/139 PASSED (100%)**, 954 assertions.
+    - **Frontend (`isocalmarket-web`)**:
+      - Tạo `PublicSettingStore` (`public-setting.store.ts`) quản lý state công khai, đệm Cache FE 10 phút (600,000 ms), bổ sung Signal `loaded` và khởi tạo trạng thái mặc định rỗng giúp loại bỏ hoàn toàn hiện tượng chớp dữ liệu cũ khi reload trang.
+      - Cập nhật `SystemSettingStore` (`system-setting.store.ts`) tự động làm sạch Cache FE công khai khi Admin lưu cài đặt mới.
+      - Cập nhật `AdminSettingsComponent` (`admin-settings.component.ts` & `.html`): Tách riêng Tab độc lập **"Thông báo trang chủ"** (`/admin/settings/announcement`) tích hợp Custom Switch, Textarea, Custom Select chọn 4 loại hiệu ứng, và khung Xem trước trực quan (Live Banner Preview).
+      - Cập nhật `IconComponent` (`icon.component.html`): Bổ sung đầy đủ đường dẫn SVG `announcement`, `megaphone`, `bell`, `x-mark` chuẩn Heroicons 24x24 giúp hiển thị icon loa thông báo và icon đóng sắc nét 100%, không bị lỗi lọt vào icon mặc định.
+      - Cập nhật `StorefrontComponent` (`storefront.component.ts` & `.html`): Tích hợp **Skeleton Loading giả** (`@if (!publicSettingStore.loaded())`) trong lúc chờ API nạp xong. Khi nạp thành công, chỉ hiển thị Banner nếu Admin đang BẬT thông báo (`announcement_enabled = true`) và có nội dung; ngược lại nếu Admin TẮT thì ẩn hoàn toàn 100% không làm xáo trộn layout.
+      - Bổ sung từ điển đa ngôn ngữ EN và VI trong `LanguageService.ts`.
+      - Biên dịch Angular Frontend (`npm run build`) thành công **100% SUCCESS, 0 ERRORS**.
+  - **Xác nhận**: Tích hợp hoàn hảo tính năng Quản lý Thông báo Trang chủ Admin (Tab riêng biệt) & Hiệu ứng Banner Storefront với SVG Icons chuẩn 100%!
+
 - **[TRIỂN KHẢI CẬP NHẬT LÊN VPS PRODUCTION BẢO TOÀN DỮ LIỆU CSDL (VPS PRODUCTION RE-DEPLOYMENT & DATA PRESERVATION)]**:
   - **Mô tả yêu cầu**:
     - Deploy bản cập nhật mới nhất cho cả Frontend và Backend lên VPS production (`https://isocalmarket.com/`).

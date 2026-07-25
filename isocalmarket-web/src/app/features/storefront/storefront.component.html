@@ -1,4 +1,52 @@
 <div class="max-w-[1530px] mx-auto w-full px-4 sm:px-6 py-6 space-y-6">
+  @if (!publicSettingStore.loaded()) {
+    <div class="relative overflow-hidden rounded-2xl bg-slate-100 dark:bg-slate-800/40 border border-slate-200/50 dark:border-slate-800/50 p-3.5 sm:px-5 flex items-center gap-4 animate-pulse">
+      <div class="w-24 h-6 rounded-full bg-slate-200 dark:bg-slate-700/60 shrink-0"></div>
+      <div class="flex-1 h-4 rounded bg-slate-200 dark:bg-slate-700/60"></div>
+      <div class="w-5 h-5 rounded-lg bg-slate-200 dark:bg-slate-700/60 shrink-0"></div>
+    </div>
+  } @else if (announcement().announcement_enabled && announcement().announcement_text && !dismissedAnnouncement()) {
+    <div class="relative overflow-hidden rounded-2xl bg-gradient-to-r from-amber-500/10 via-primary/10 to-blue-500/10 border border-amber-500/20 backdrop-blur-md p-3.5 sm:px-5 flex items-center gap-3 sm:gap-4 shadow-sm transition-all">
+      <div class="flex items-center gap-2 shrink-0">
+        <span class="px-3 py-1 rounded-full text-[11px] font-black tracking-wider bg-gradient-to-r from-amber-500 to-orange-500 text-white shadow-md uppercase flex items-center gap-1.5">
+          <app-icon name="announcement" class="w-3.5 h-3.5" />
+          {{ 'storefront.announcement_badge' | translate }}
+        </span>
+      </div>
+
+      <div class="flex-1 overflow-hidden">
+        @if (announcement().announcement_effect === 'marquee') {
+          <div class="announcement-marquee-track text-xs sm:text-sm font-semibold text-slate-800 dark:text-slate-100">
+            <span>{{ announcement().announcement_text }}</span>
+            <span class="mx-12 opacity-30 text-amber-500 font-bold">•</span>
+            <span>{{ announcement().announcement_text }}</span>
+          </div>
+        } @else if (announcement().announcement_effect === 'fade') {
+          <div class="announcement-fade text-xs sm:text-sm font-semibold text-amber-600 dark:text-amber-300">
+            {{ announcement().announcement_text }}
+          </div>
+        } @else if (announcement().announcement_effect === 'slide') {
+          <div class="announcement-slide text-xs sm:text-sm font-semibold text-slate-800 dark:text-slate-100">
+            {{ announcement().announcement_text }}
+          </div>
+        } @else {
+          <div class="announcement-bounce text-xs sm:text-sm font-semibold text-amber-600 dark:text-amber-400">
+            {{ announcement().announcement_text }}
+          </div>
+        }
+      </div>
+
+      <button
+        type="button"
+        (click)="dismissAnnouncement()"
+        class="text-slate-400 hover:text-slate-600 dark:hover:text-slate-200 transition-colors p-1 rounded-lg hover:bg-slate-200/50 dark:hover:bg-slate-800/50 shrink-0 cursor-pointer"
+        title="Dismiss announcement"
+      >
+        <app-icon name="x-mark" class="w-4 h-4" />
+      </button>
+    </div>
+  }
+
   <div
     class="relative bg-gradient-to-r from-[var(--color-primary)]/10 to-[var(--color-secondary)]/10 backdrop-blur-md border border-slate-200/50 dark:border-slate-800/50 rounded-2xl p-6 sm:p-10 flex flex-col md:flex-row md:items-center justify-between gap-6 overflow-hidden"
   >
@@ -145,7 +193,9 @@
           />
         } @else {
           @if (!group.products || group.products.length === 0) {
-            <div class="py-8 px-4 text-center rounded-xl bg-slate-50/50 dark:bg-slate-900/30 border border-dashed border-slate-200/60 dark:border-slate-800/60">
+            <div
+              class="py-8 px-4 text-center rounded-xl bg-slate-50/50 dark:bg-slate-900/30 border border-dashed border-slate-200/60 dark:border-slate-800/60"
+            >
               <p class="text-xs sm:text-sm font-semibold text-slate-400 dark:text-slate-500">
                 {{ 'storefront.no_products_in_category' | translate }}
               </p>
@@ -171,7 +221,11 @@
                       rounded="md"
                       class="shrink-0"
                     >
-                      {{ p.available_count > 0 ? ('storefront.in_stock' | translate) : ('storefront.out_of_stock' | translate) }}
+                      {{
+                        p.available_count > 0
+                          ? ('storefront.in_stock' | translate)
+                          : ('storefront.out_of_stock' | translate)
+                      }}
                     </app-badge>
                   </div>
 
@@ -264,9 +318,7 @@
                 </ng-template>
 
                 <ng-template appTableCell="price" let-row="row">
-                  <span
-                    class="font-black text-[var(--color-primary)] text-sm whitespace-nowrap"
-                  >
+                  <span class="font-black text-[var(--color-primary)] text-sm whitespace-nowrap">
                     {{ row.price | appCurrency }}
                   </span>
                 </ng-template>
@@ -278,7 +330,11 @@
                       size="sm"
                       rounded="md"
                     >
-                      {{ row.available_count > 0 ? ('storefront.in_stock' | translate) : ('storefront.out_of_stock' | translate) }}
+                      {{
+                        row.available_count > 0
+                          ? ('storefront.in_stock' | translate)
+                          : ('storefront.out_of_stock' | translate)
+                      }}
                     </app-badge>
                     <span
                       class="text-xs text-slate-400 dark:text-slate-500 font-bold whitespace-nowrap"
@@ -324,7 +380,11 @@
                     rounded="md"
                     class="shrink-0"
                   >
-                    {{ p.available_count > 0 ? ('storefront.in_stock' | translate) : ('storefront.out_of_stock' | translate) }}
+                    {{
+                      p.available_count > 0
+                        ? ('storefront.in_stock' | translate)
+                        : ('storefront.out_of_stock' | translate)
+                    }}
                   </app-badge>
                 </div>
 
@@ -382,4 +442,3 @@
     }
   </div>
 </div>
-

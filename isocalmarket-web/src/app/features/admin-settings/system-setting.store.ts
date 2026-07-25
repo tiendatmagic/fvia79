@@ -3,6 +3,8 @@ import { ApiService } from '@core/services/api.service';
 import { tap, finalize } from 'rxjs/operators';
 import { Observable, of } from 'rxjs';
 
+import { PublicSettingStore } from '@core/services/public-setting.store';
+
 export interface SystemSettingsPayload {
   admin_wallet_address: string;
   scanner_api_key?: string;
@@ -14,6 +16,9 @@ export interface SystemSettingsPayload {
   telegram_bot_token?: string;
   telegram_bot_username?: string;
   telegram_bot_enabled?: boolean | string;
+  announcement_enabled?: boolean | string;
+  announcement_text?: string;
+  announcement_effect?: 'marquee' | 'fade' | 'slide' | 'bounce' | string;
   has_scanner_api_key?: boolean;
   has_binance_api_key?: boolean;
   has_binance_api_secret?: boolean;
@@ -25,6 +30,7 @@ export interface SystemSettingsPayload {
 })
 export class SystemSettingStore {
   private readonly api = inject(ApiService);
+  private readonly publicSettingStore = inject(PublicSettingStore);
 
   public readonly loading = signal<boolean>(false);
   public readonly submitting = signal<boolean>(false);
@@ -42,7 +48,10 @@ export class SystemSettingStore {
     binance_api_secret: '',
     telegram_bot_token: '',
     telegram_bot_username: 'isocalmarketnoti_bot',
-    telegram_bot_enabled: true
+    telegram_bot_enabled: true,
+    announcement_enabled: true,
+    announcement_text: 'Hệ thống tự động cập nhật sản phẩm liên tục 24/7. Chúc quý khách mua sắm vui vẻ!',
+    announcement_effect: 'marquee'
   });
 
   private cachedSettings: SystemSettingsPayload | null = null;
@@ -51,6 +60,7 @@ export class SystemSettingStore {
   public clearCache() {
     this.cachedSettings = null;
     this.lastFetchTime = 0;
+    this.publicSettingStore.clearCache();
   }
 
   public fetchSettings(): Observable<SystemSettingsPayload> {

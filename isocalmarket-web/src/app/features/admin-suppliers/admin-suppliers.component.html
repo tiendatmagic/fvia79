@@ -154,6 +154,7 @@
         <app-custom-switch
           [checked]="supplierForm.enabled ?? false"
           (checkedChange)="supplierForm.enabled = $event"
+          [disabled]="isLocked()"
           [label]="'supplier.enabled' | translate"
         />
         @if (!isCreatingSupplier()) {
@@ -176,6 +177,7 @@
         type="full"
         [checked]="supplierForm.products_enabled ?? true"
         (checkedChange)="supplierForm.products_enabled = $event"
+        [disabled]="isLocked()"
         [label]="'supplier.products_enabled' | translate"
         [description]="'supplier.products_enabled_hint' | translate"
       />
@@ -186,6 +188,7 @@
         type="full"
         [checked]="supplierForm.import_out_of_stock ?? true"
         (checkedChange)="supplierForm.import_out_of_stock = $event"
+        [disabled]="isLocked()"
         [label]="'supplier.import_out_of_stock' | translate"
         [description]="'supplier.import_out_of_stock_hint' | translate"
       />
@@ -208,6 +211,7 @@
           variant="danger"
           type="button"
           class="shrink-0"
+          [disabled]="isLocked()"
           (click)="openDeactivateModal()"
         >
           <app-icon name="eye-slash" class="mr-1.5 h-4 w-4" />
@@ -231,6 +235,7 @@
           variant="danger"
           type="button"
           class="shrink-0"
+          [disabled]="isLocked()"
           (click)="openDeactivateCatModal()"
         >
           <app-icon name="eye-slash" class="mr-1.5 h-4 w-4" />
@@ -257,6 +262,7 @@
             name="supplier_name"
             class="form-input mt-1 w-full"
             [(ngModel)]="supplierForm.name"
+            [disabled]="isLocked()"
             required
           />
         </div>
@@ -269,6 +275,7 @@
             class="form-input mt-1 w-full"
             [(ngModel)]="supplierForm.base_url"
             placeholder="https://vlclone.com"
+            [disabled]="isLocked()"
             required
           />
         </div>
@@ -283,6 +290,7 @@
               [(ngModel)]="supplierForm.api_key"
               autocomplete="off"
               spellcheck="false"
+              [disabled]="isLocked()"
               [placeholder]="
                 supplierForm.has_api_key
                   ? ('supplier.key_configured' | translate)
@@ -319,6 +327,7 @@
             valueKey="value"
             labelKey="label"
             [(ngModel)]="supplierForm.price_adjustment_type"
+            [disabled]="isLocked()"
             name="price_adjustment_type"
           />
         </div>
@@ -332,6 +341,7 @@
             name="price_adjustment_value"
             class="form-input mt-1 w-full"
             [(ngModel)]="supplierForm.price_adjustment_value"
+            [disabled]="isLocked()"
             required
           />
         </div>
@@ -343,6 +353,7 @@
             valueKey="value"
             labelKey="label"
             [(ngModel)]="supplierForm.sync_interval_minutes"
+            [disabled]="isLocked()"
             name="sync_interval_minutes"
           />
         </div>
@@ -352,6 +363,7 @@
             type="full"
             [checked]="supplierForm.auto_sync ?? false"
             (checkedChange)="supplierForm.auto_sync = $event"
+            [disabled]="isLocked()"
             [label]="'supplier.auto_sync' | translate"
           />
         </div>
@@ -361,6 +373,7 @@
             type="full"
             [checked]="supplierForm.auto_translate ?? false"
             (checkedChange)="supplierForm.auto_translate = $event"
+            [disabled]="isLocked()"
             [label]="'supplier.auto_translate' | translate"
             [description]="'supplier.auto_translate_desc' | translate"
           />
@@ -374,6 +387,7 @@
               valueKey="value"
               labelKey="label"
               [(ngModel)]="supplierForm.target_language"
+              [disabled]="isLocked()"
               name="target_language"
             />
           </div>
@@ -395,16 +409,30 @@
         </p>
       </div>
 
-      <div class="flex justify-end">
+      <div class="flex justify-end items-center gap-3 pt-4 border-t border-slate-200/50 dark:border-slate-800/50">
         <button
+          type="button"
           app-button
-          variant="primary"
-          type="submit"
-          [loading]="supplierStore.saving()"
-          [disabled]="supplierStore.saving()"
+          variant="secondary"
+          (click)="toggleLock()"
+          class="px-4 py-2.5 rounded-xl font-semibold flex items-center gap-2 hover:scale-[1.01] active:scale-[0.98] transition-all duration-300"
         >
-          {{ 'supplier.save' | translate }}
+          <app-icon [name]="isLocked() ? 'lock' : 'lock-open'" class="w-4 h-4" />
+          <span>{{ isLocked() ? ('settings.unlock' | translate) : ('settings.lock' | translate) }}</span>
         </button>
+
+        @if (!isLocked()) {
+          <button
+            app-button
+            variant="primary"
+            type="submit"
+            [loading]="supplierStore.saving()"
+            [disabled]="supplierStore.saving()"
+            class="px-6 py-2.5 rounded-xl font-bold bg-gradient-to-r from-[var(--color-primary)] to-[var(--color-secondary)] text-white hover:scale-[1.01] active:scale-[0.98] transition-all duration-300 shadow-md shadow-[var(--color-primary)]/20"
+          >
+            {{ 'supplier.save' | translate }}
+          </button>
+        }
       </div>
     </form>
   </app-card>

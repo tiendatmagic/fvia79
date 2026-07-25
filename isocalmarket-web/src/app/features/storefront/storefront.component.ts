@@ -31,6 +31,8 @@ import { TooltipDirective } from '@shared/components/tooltip/tooltip.directive';
 import { TranslatePipe } from '@shared/pipes/translate.pipe';
 import { CurrencyPipe } from '@shared/pipes/currency.pipe';
 
+import { PublicSettingStore } from '@core/services/public-setting.store';
+
 @Component({
   selector: 'app-storefront',
   standalone: true,
@@ -59,6 +61,33 @@ import { CurrencyPipe } from '@shared/pipes/currency.pipe';
       :host {
         display: block;
       }
+      @keyframes marqueeScroll {
+        0% { transform: translateX(100%); }
+        100% { transform: translateX(-100%); }
+      }
+      @keyframes fadePulse {
+        0%, 100% { opacity: 1; }
+        50% { opacity: 0.35; }
+      }
+      @keyframes subtleBounce {
+        0%, 100% { transform: translateY(0); }
+        50% { transform: translateY(-3px); }
+      }
+      .announcement-marquee-track {
+        display: inline-block;
+        white-space: nowrap;
+        animation: marqueeScroll 18s linear infinite;
+        will-change: transform;
+      }
+      .announcement-marquee-track:hover {
+        animation-play-state: paused;
+      }
+      .announcement-fade {
+        animation: fadePulse 2.5s ease-in-out infinite;
+      }
+      .announcement-bounce {
+        animation: subtleBounce 1.8s ease-in-out infinite;
+      }
     `,
   ],
 })
@@ -66,8 +95,24 @@ export class StorefrontComponent implements OnInit {
   public readonly state = inject(StateService);
   public readonly lang = inject(LanguageService);
   public readonly cart = inject(CartStore);
+  public readonly publicSettingStore = inject(PublicSettingStore);
   private readonly router = inject(Router);
   private readonly modalService = inject(ModalService);
+
+  public readonly dismissedAnnouncement = signal<boolean>(false);
+  public readonly announcement = this.publicSettingStore.settings;
+
+  public dismissAnnouncement() {
+    this.dismissedAnnouncement.set(true);
+  }
+
+  ngOnInit(): void {
+    this.publicSettingStore.fetchPublicSettings().subscribe();
+    this.state.authStore.checkMe(true).subscribe();
+    this.state.depositStore.fetchRate().subscribe({ error: () => undefined });
+    this.state.productStore.clearCache();
+    this.loadAllGroupedProducts();
+  }
 
   public readonly columns = computed<TableColumn[]>(() => {
     this.lang.currentLang();
@@ -249,12 +294,6 @@ export class StorefrontComponent implements OnInit {
       });
   }
 
-  ngOnInit() {
-    this.state.authStore.checkMe(true).subscribe();
-    this.state.depositStore.fetchRate().subscribe({ error: () => undefined });
-    this.state.productStore.clearCache();
-    this.loadAllGroupedProducts();
-  }
 
   public onSearch(query: string) {
     this.searchQuery = query;

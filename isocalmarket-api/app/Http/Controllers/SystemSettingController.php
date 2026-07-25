@@ -44,6 +44,9 @@ class SystemSettingController extends Controller
             'telegram_bot_token' => 'sometimes|nullable|string|max:500',
             'telegram_bot_username' => 'sometimes|nullable|string|max:100',
             'telegram_bot_enabled' => 'sometimes|nullable',
+            'announcement_enabled' => 'sometimes|nullable',
+            'announcement_text' => 'sometimes|nullable|string|max:1000',
+            'announcement_effect' => 'sometimes|nullable|string|in:marquee,fade,slide,bounce',
         ], [
             'admin_wallet_address.regex' => 'The admin wallet address must be a valid BEP20/EVM address starting with 0x followed by 40 hex characters.',
         ]);
@@ -81,6 +84,15 @@ class SystemSettingController extends Controller
         if ($request->has('telegram_bot_enabled')) {
             $settingsToSave['telegram_bot_enabled'] = $request->boolean('telegram_bot_enabled') ? '1' : '0';
         }
+        if ($request->has('announcement_enabled')) {
+            $settingsToSave['announcement_enabled'] = $request->boolean('announcement_enabled') ? '1' : '0';
+        }
+        if ($request->has('announcement_text')) {
+            $settingsToSave['announcement_text'] = $request->input('announcement_text') ?: '';
+        }
+        if ($request->has('announcement_effect')) {
+            $settingsToSave['announcement_effect'] = $request->input('announcement_effect') ?: 'marquee';
+        }
 
         if (! empty($settingsToSave)) {
             $this->settingService->saveSettings($settingsToSave);
@@ -88,6 +100,23 @@ class SystemSettingController extends Controller
 
         return response()->json([
             'message' => 'System settings updated successfully.',
+        ]);
+    }
+
+    public function publicSettings()
+    {
+        $enabled = $this->settingService->getSetting('announcement_enabled', '1');
+        $text = $this->settingService->getSetting('announcement_text', 'Hệ thống tự động cập nhật sản phẩm liên tục 24/7. Chúc quý khách mua sắm vui vẻ!');
+        $effect = $this->settingService->getSetting('announcement_effect', 'marquee');
+        $usdtRate = $this->settingService->getSetting('usdt_exchange_rate', '25400');
+        $telegramBotUsername = $this->settingService->getSetting('telegram_bot_username', 'isocalmarketnoti_bot');
+
+        return response()->json([
+            'announcement_enabled' => filter_var($enabled, FILTER_VALIDATE_BOOLEAN),
+            'announcement_text' => (string) $text,
+            'announcement_effect' => (string) $effect,
+            'usdt_exchange_rate' => (float) $usdtRate,
+            'telegram_bot_username' => (string) $telegramBotUsername,
         ]);
     }
 

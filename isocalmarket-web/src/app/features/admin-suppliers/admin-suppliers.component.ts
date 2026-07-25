@@ -39,6 +39,7 @@ export class AdminSuppliersComponent implements OnInit {
   public readonly balanceLoadFailed = signal(false);
   public readonly isDeactivateModalOpen = signal(false);
   public readonly isDeactivating = signal(false);
+  public readonly isLocked = signal<boolean>(true);
 
   public get adjustmentTypeOptions() {
     return [
@@ -91,11 +92,17 @@ export class AdminSuppliersComponent implements OnInit {
     });
   }
 
+  public toggleLock(): void {
+    this.isLocked.set(!this.isLocked());
+  }
+
   public toggleSupplierApiKeyVisibility(): void {
     this.showSupplierApiKey.set(!this.showSupplierApiKey());
   }
 
   public saveSupplier(): void {
+    if (this.supplierStore.saving() || this.isLocked()) return;
+
     const payload = { ...this.supplierForm };
     if (!payload.api_key?.trim()) delete payload.api_key;
 
@@ -116,6 +123,7 @@ export class AdminSuppliersComponent implements OnInit {
         this.selectedSupplierCode.set(supplier.code);
         this.isCreatingSupplier.set(false);
         this.supplierForm = { ...supplier, api_key: '' };
+        this.isLocked.set(true);
         this.loadSupplierBalance(true);
         this.toast.showToast(this.lang.translate('supplier.saved'), 'success');
       },
@@ -145,7 +153,7 @@ export class AdminSuppliersComponent implements OnInit {
   }
 
   public openDeactivateModal(): void {
-    if (this.isDeactivating()) return;
+    if (this.isDeactivating() || this.isLocked()) return;
     this.isDeactivateModalOpen.set(true);
   }
 
@@ -156,7 +164,7 @@ export class AdminSuppliersComponent implements OnInit {
 
   public confirmDeactivateOutOfStock(): void {
     const code = this.selectedSupplierCode();
-    if (!code || this.isDeactivating()) return;
+    if (!code || this.isDeactivating() || this.isLocked()) return;
 
     this.isDeactivating.set(true);
     this.supplierStore.deactivateOutOfStock(code).subscribe({
@@ -189,7 +197,7 @@ export class AdminSuppliersComponent implements OnInit {
   public readonly isDeactivatingCat = signal(false);
 
   public openDeactivateCatModal(): void {
-    if (this.isDeactivatingCat()) return;
+    if (this.isDeactivatingCat() || this.isLocked()) return;
     this.isDeactivateCatModalOpen.set(true);
   }
 
@@ -200,7 +208,7 @@ export class AdminSuppliersComponent implements OnInit {
 
   public confirmDeactivateOutOfStockCategories(): void {
     const code = this.selectedSupplierCode();
-    if (!code || this.isDeactivatingCat()) return;
+    if (!code || this.isDeactivatingCat() || this.isLocked()) return;
 
     this.isDeactivatingCat.set(true);
     this.supplierStore.deactivateOutOfStockCategories(code).subscribe({
@@ -234,6 +242,7 @@ export class AdminSuppliersComponent implements OnInit {
     this.isCreatingSupplier.set(false);
     this.showSupplierApiKey.set(false);
     this.supplierForm = { ...supplier, api_key: '' };
+    this.isLocked.set(true);
     this.loadSupplierBalance();
   }
 
@@ -243,6 +252,7 @@ export class AdminSuppliersComponent implements OnInit {
     this.showSupplierApiKey.set(false);
     this.balanceLoadFailed.set(false);
     this.supplierStore.clearBalance();
+    this.isLocked.set(false);
     this.supplierForm = {
       name: '',
       base_url: 'https://',
