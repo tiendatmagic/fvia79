@@ -9,8 +9,11 @@ class UserMapper
 {
     public static function toDomain(UserModel $model): User
     {
+        $featureTiersEnabled = filter_var(config('app.feature_membership_tiers_enabled', false), FILTER_VALIDATE_BOOLEAN);
+
         $tierArray = null;
-        if ($model->relationLoaded('membershipTier') && $model->membershipTier) {
+        $tierId = $featureTiersEnabled ? $model->membership_tier_id : null;
+        if ($featureTiersEnabled && $model->relationLoaded('membershipTier') && $model->membershipTier) {
             $tier = $model->membershipTier;
             $tierArray = [
                 'id' => $tier->id,
@@ -43,11 +46,11 @@ class UserMapper
             $model->telegram_chat_id,
             (bool) ($model->telegram_notifications_enabled ?? true),
             (float) ($model->total_deposited ?? 0),
-            $model->membership_tier_id,
+            $tierId,
             $tierArray
         );
     }
- 
+
     public static function toPersistence(User $entity): UserModel
     {
         $model = new UserModel();
@@ -58,7 +61,7 @@ class UserMapper
         if ($entity->getUid()) {
             $model->uid = $entity->getUid();
         }
- 
+
         $model->username = $entity->getUsername();
         $model->name = $entity->getName();
         $model->email = $entity->getEmail();
@@ -76,7 +79,7 @@ class UserMapper
         $model->status = $entity->getStatus();
         $model->telegram_chat_id = $entity->getTelegramChatId();
         $model->telegram_notifications_enabled = $entity->isTelegramNotificationsEnabled();
- 
+
         return $model;
     }
 }
