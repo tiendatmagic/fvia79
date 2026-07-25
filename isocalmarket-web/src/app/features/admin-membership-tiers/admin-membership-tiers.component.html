@@ -4,20 +4,6 @@
     [description]="'admin.membership_tiers_desc' | translate"
   >
     <ng-container actions *ngIf="publicSettingStore.settings().membership_tiers_feature_enabled">
-      <!-- Toggle Lock/Unlock Button -->
-      <button
-        type="button"
-        (click)="toggleLock()"
-        class="inline-flex items-center gap-2 px-4 py-2.5 rounded-xl font-extrabold text-sm transition-all duration-200 shadow-sm cursor-pointer"
-        [ngClass]="{
-          'bg-amber-500/10 text-amber-600 dark:text-amber-400 border border-amber-500/20 hover:bg-amber-500/20': isLocked(),
-          'bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 border border-emerald-500/20 hover:bg-emerald-500/20': !isLocked()
-        }"
-      >
-        <app-icon [name]="isLocked() ? 'lock' : 'lock-open'" class="w-4 h-4" />
-        <span>{{ (isLocked() ? 'admin.unlock_to_edit' : 'admin.lock_editing') | translate }}</span>
-      </button>
-
       <button
         (click)="loadTiers()"
         class="px-4 py-2.5 text-sm font-extrabold text-slate-600 dark:text-slate-400 hover:text-primary bg-white dark:bg-slate-950 border border-slate-200/60 dark:border-slate-800/80 rounded-xl hover:bg-slate-50 dark:hover:bg-slate-900 transition-all cursor-pointer flex items-center gap-1.5"
@@ -30,7 +16,6 @@
         app-button
         (click)="openCreateModal()"
         variant="primary"
-        [disabled]="isLocked()"
         class="flex items-center gap-2 py-2.5 px-4 rounded-xl bg-gradient-to-r from-[var(--color-primary)] to-[var(--color-secondary)] text-white font-extrabold shadow-md shadow-[var(--color-primary)]/15 active:scale-95 transition-all text-sm cursor-pointer"
       >
         <app-icon name="plus" class="w-5 h-5" />
@@ -79,19 +64,10 @@
       <div class="flex items-center gap-3 shrink-0">
         <app-custom-switch
           [checked]="publicSettingStore.settings().membership_tiers_enabled"
+          [disabled]="isUpdatingSystemSetting()"
           (checkedChange)="toggleSystemEnable($event)"
-          [disabled]="isLocked()"
         />
       </div>
-    </div>
-
-    <!-- Locked Banner Notice -->
-    <div
-      *ngIf="isLocked()"
-      class="p-4 rounded-2xl bg-amber-500/10 border border-amber-500/20 text-amber-700 dark:text-amber-400 text-sm flex items-center gap-3"
-    >
-      <app-icon name="lock" class="w-5 h-5 flex-shrink-0 text-amber-500" />
-      <span>{{ 'admin.locked_tier_notice' | translate }}</span>
     </div>
 
     <div app-card class="overflow-hidden !p-0">
@@ -143,8 +119,8 @@
       <ng-template appTableCell="is_active" let-row="row">
         <app-custom-switch
           [checked]="row.is_active ?? true"
-          [disabled]="isLocked()"
-          (change)="toggleActive(row)"
+          [disabled]="updatingTierId() === row.id"
+          (checkedChange)="toggleActive(row)"
         />
       </ng-template>
 
@@ -153,8 +129,7 @@
           <button
             type="button"
             (click)="openEditModal(row)"
-            [disabled]="isLocked()"
-            class="p-2 rounded-xl text-slate-500 hover:text-primary hover:bg-slate-100 dark:hover:bg-slate-800 disabled:opacity-40 disabled:cursor-not-allowed transition-all cursor-pointer"
+            class="p-2 rounded-xl text-slate-500 hover:text-primary hover:bg-slate-100 dark:hover:bg-slate-800 transition-all cursor-pointer"
             [title]="'common.edit' | translate"
           >
             <app-icon name="edit" class="w-4 h-4" />
@@ -162,8 +137,7 @@
           <button
             type="button"
             (click)="deleteTier(row)"
-            [disabled]="isLocked()"
-            class="p-2 rounded-xl text-slate-500 hover:text-rose-500 hover:bg-rose-500/10 disabled:opacity-40 disabled:cursor-not-allowed transition-all cursor-pointer"
+            class="p-2 rounded-xl text-slate-500 hover:text-rose-500 hover:bg-rose-500/10 transition-all cursor-pointer"
             [title]="'common.delete' | translate"
           >
             <app-icon name="trash" class="w-4 h-4" />

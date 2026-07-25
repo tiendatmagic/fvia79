@@ -46,20 +46,24 @@ export class AdminMembershipTiersComponent implements OnInit {
 
   tiers = signal<MembershipTier[]>([]);
   isLoading = signal<boolean>(false);
-  isLocked = signal<boolean>(true);
+  isUpdatingSystemSetting = signal<boolean>(false);
+  updatingTierId = signal<string | null>(null);
 
   public toggleSystemEnable(enabled: boolean): void {
-    if (this.isLocked()) {
-      this.toast.showToast('Vui lòng mở khóa chỉnh sửa trước khi thao tác.', 'warning');
-      return;
-    }
+    if (this.isUpdatingSystemSetting()) return;
+    this.isUpdatingSystemSetting.set(true);
+
     this.systemSettingStore.updateSettings({ membership_tiers_enabled: enabled }).subscribe({
       next: () => {
         this.publicSettingStore.clearCache();
-        this.publicSettingStore.fetchPublicSettings().subscribe();
+        this.publicSettingStore.fetchPublicSettings().subscribe({
+          next: () => this.isUpdatingSystemSetting.set(false),
+          error: () => this.isUpdatingSystemSetting.set(false),
+        });
         this.toast.showToast(`Đã ${enabled ? 'BẬT' : 'TẮT'} tính năng Cấp Bậc Đại Lý toàn hệ thống.`, 'success');
       },
       error: () => {
+        this.isUpdatingSystemSetting.set(false);
         this.toast.showToast('Cập nhật thất bại.', 'error');
       }
     });
@@ -102,20 +106,12 @@ export class AdminMembershipTiersComponent implements OnInit {
     });
   }
 
-  toggleLock(): void {
-    this.isLocked.update((v) => !v);
-  }
-
   getTierName(tier: MembershipTier): string {
     if (!tier) return '';
     return this.lang.currentLang() === 'en' ? (tier.name_en || tier.name_vi) : tier.name_vi;
   }
 
   openCreateModal(): void {
-    if (this.isLocked()) {
-      this.toast.showToast('Vui lòng mở khóa chỉnh sửa trước khi thao tác.', 'warning');
-      return;
-    }
     const maxLevel = this.tiers().reduce((max, t) => Math.max(max, t.level), 0);
     const ref = this.modalService.open(MembershipTierFormModalComponent, {
       title: this.lang.translate('admin.add_membership_tier'),
@@ -132,11 +128,6 @@ export class AdminMembershipTiersComponent implements OnInit {
   }
 
   openEditModal(tier: MembershipTier): void {
-    if (this.isLocked()) {
-      this.toast.showToast('Vui lòng mở khóa chỉnh sửa trước khi thao tác.', 'warning');
-      return;
-    }
-
     const ref = this.modalService.open(MembershipTierFormModalComponent, {
       title: this.lang.translate('admin.edit_membership_tier'),
       size: 'md',
@@ -152,29 +143,24 @@ export class AdminMembershipTiersComponent implements OnInit {
   }
 
   toggleActive(tier: MembershipTier): void {
-    if (this.isLocked()) {
-      this.toast.showToast('Vui lòng mở khóa chỉnh sửa trước khi thao tác.', 'warning');
-      return;
-    }
+    if (!tier || this.updatingTierId() === tier.id) return;
+    this.updatingTierId.set(tier.id);
 
     const newStatus = !tier.is_active;
     this.tierService.updateTier(tier.id, { is_active: newStatus }).subscribe({
       next: () => {
         this.toast.showToast(`Đã ${newStatus ? 'kích hoạt' : 'tắt'} cấp bậc ${tier.name_vi}.`, 'success');
         this.loadTiers();
+        this.updatingTierId.set(null);
       },
       error: (err) => {
         this.toast.showToast(err.error?.message || 'Thao tác thất bại.', 'error');
+        this.updatingTierId.set(null);
       },
     });
   }
 
   deleteTier(tier: MembershipTier): void {
-    if (this.isLocked()) {
-      this.toast.showToast('Vui lòng mở khóa chỉnh sửa trước khi thao tác.', 'warning');
-      return;
-    }
-
     const tierName = this.getTierName(tier);
     const ref = this.modalService.confirm({
       title: this.lang.translate('admin.delete_tier_title'),

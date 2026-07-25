@@ -167,7 +167,8 @@ class B2bController extends Controller
                 return response()->json(['message' => 'Unauthorized.'], 401);
             }
 
-            $tier = $userModel->membershipTier;
+            $featureTiersEnabled = filter_var(config('app.feature_membership_tiers_enabled', false), FILTER_VALIDATE_BOOLEAN);
+            $tier = $featureTiersEnabled ? $userModel->membershipTier : null;
 
             return response()->json([
                 'id' => $userModel->id,
@@ -210,7 +211,7 @@ class B2bController extends Controller
             if (! $orderModel && str_starts_with($orderCode, 'API-')) {
                 $hex = strtolower(substr($orderCode, 4));
                 $orderModel = OrderModel::where('user_id', $userId)
-                    ->where('id', 'like', $hex.'-%')
+                    ->where('id', 'like', $hex . '-%')
                     ->first();
             }
 

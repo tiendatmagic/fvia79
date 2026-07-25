@@ -13,6 +13,26 @@
 > Khi cần seed dữ liệu cho một seeder cụ thể, chỉ dùng:
 > - `php artisan db:seed --class=TenSeederClass` — chạy đúng 1 seeder.
 
+- **[KHẮC PHỤC LỖI SPAM API KHI NẮM BẤM BẬT/TẮT NÚT SWITCH TẠI QUẢN LÝ CẤP BẬC (PREVENT API SPAMMING ON SWITCH TOGGLE)]**:
+  - **Mô tả yêu cầu**:
+    - Khắc phục hiện tượng spam nhiều request HTTP API song song khi Admin nhấp chuột liên tục (click spam) vào nút công tắc Custom Switch bật/tắt tính năng tổng hoặc bật/tắt trạng thái cấp bậc đại lý (`/admin/membership-tiers`).
+  - **Nội dung thực hiện**:
+    - **Frontend (`isocalmarket-web`)**:
+      - Cập nhật `AdminMembershipTiersComponent` (`admin-membership-tiers.component.ts`): Bổ sung các Signal quản lý trạng thái nạp `isUpdatingSystemSetting` và `updatingTierId`. Thêm logic Guard kiểm tra ngay đầu phương thức `toggleSystemEnable` (`if (this.isUpdatingSystemSetting()) return;`) và `toggleActive` (`if (!tier || this.updatingTierId() === tier.id) return;`).
+      - Cập nhật `AdminMembershipTiersComponent` (`admin-membership-tiers.component.html`): Chuyển binding sự kiện từ `(change)` sang `(checkedChange)` chuẩn Angular ComponentOutput. Gán thuộc tính `[disabled]="isUpdatingSystemSetting()"` cho công tắc tổng và `[disabled]="updatingTierId() === row.id"` cho công tắc hàng cấp bậc. Khi đang xử lý request, nút công tắc tự động khóa tương tác (`pointer-events-none`) và mờ đục (`opacity-50`).
+      - Biên dịch Angular Frontend (`npm run build`) thành công **100% SUCCESS, 0 ERRORS**.
+  - **Xác nhận**: Đã loại bỏ hoàn toàn lỗi spam API, nút Switch vô hiệu hóa ngay lập tức khi gửi request!
+
+- **[LOẠI BỎ BƯỚC MỞ KHÓA CHỈNH SỬA TRANG QUẢN LÝ CẤP BẬC ĐẠI LÝ (REMOVE UNLOCK TO EDIT STEP IN MEMBERSHIP TIERS)]**:
+  - **Mô tả yêu cầu**:
+    - Loại bỏ nút bấm "Mở khóa để sửa" và cơ chế khóa chỉnh sửa rườm rà tại trang Quản lý Cấp bậc Đại lý (`/admin/membership-tiers`), giúp Admin thao tác trực tiếp nhanh chóng (Thêm/Sửa/Xóa cấp bậc, Bật/Tắt trạng thái) mà không cần qua bước mở khóa thủ công.
+  - **Nội dung thực hiện**:
+    - **Frontend (`isocalmarket-web`)**:
+      - Cập nhật `AdminMembershipTiersComponent` (`admin-membership-tiers.component.ts`): Loại bỏ Signal `isLocked`, loại bỏ phương thức `toggleLock()`, và loại bỏ toàn bộ điều kiện `if (this.isLocked())` trong các hàm thao tác (`toggleSystemEnable`, `openCreateModal`, `openEditModal`, `toggleActive`, `deleteTier`).
+      - Cập nhật `AdminMembershipTiersComponent` (`admin-membership-tiers.component.html`): Loại bỏ nút "Mở khóa để sửa", loại bỏ Banner thông báo khóa màu vàng, và gỡ bỏ thuộc tính `[disabled]="isLocked()"` khỏi tất cả các nút Thêm cấp bậc, Custom Switch và Icon thao tác Sửa/Xóa.
+      - Biên dịch Angular Frontend (`npm run build`) thành công **100% SUCCESS, 0 ERRORS**.
+  - **Xác nhận**: Đã loại bỏ hoàn toàn nút Mở khóa để sửa,Admin có thể thao tác Quản lý Cấp bậc Đại lý trực tiếp mượt mà!
+
 - **[TÍCH HỢP CÔNG TẮC BẢN QUYỀN VÀ CÔNG TẮC TỔNG BẬT / TẮT HỆ THỐNG CẤP BẬC ĐẠI LÝ (ENVIRONMENT LICENSE & SYSTEM TOGGLE FOR MEMBERSHIP TIERS)]**:
   - **Mô tả yêu cầu**:
     - Tích hợp công tắc bản quyền gói nâng cao cấp hệ thống trong tệp `.env`: `FEATURE_MEMBERSHIP_TIERS_ENABLED=true/false`.
