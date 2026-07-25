@@ -156,7 +156,7 @@ export class ProductStore {
     );
   }
 
-  public getProductsRaw(page?: number, limit?: number, categoryId?: string, search?: string, status?: string, filterDeleted?: string) {
+  public getProductsRaw(page?: number, limit?: number, categoryId?: string, search?: string, status?: string, filterDeleted?: string, includeOutOfStock?: boolean) {
     let params = new HttpParams();
     if (page !== undefined) {
       params = params.set('page', page.toString());
@@ -176,16 +176,22 @@ export class ProductStore {
     if (filterDeleted) {
       params = params.set('filter_deleted', filterDeleted);
     }
+    if (includeOutOfStock !== undefined) {
+      params = params.set('include_out_of_stock', includeOutOfStock ? '1' : '0');
+    }
     return this.api.get<any>('v1/products', params);
   }
 
-  public fetchGroupedProducts(limit?: number, search?: string) {
+  public fetchGroupedProducts(limit?: number, search?: string, includeOutOfStock?: boolean) {
     let params = new HttpParams();
     if (limit !== undefined) {
       params = params.set('limit', limit.toString());
     }
     if (search) {
       params = params.set('search', search);
+    }
+    if (includeOutOfStock !== undefined) {
+      params = params.set('include_out_of_stock', includeOutOfStock ? '1' : '0');
     }
     return this.api.get<any>('v1/products/grouped', params);
   }

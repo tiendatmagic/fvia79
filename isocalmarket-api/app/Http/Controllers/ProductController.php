@@ -28,6 +28,7 @@ class ProductController extends Controller
             $search = $request->query('search');
             $status = $request->query('status');
             $filterDeleted = $request->query('filter_deleted', 'active');
+            $includeOutOfStock = $request->boolean('include_out_of_stock', false);
 
             $user = $this->getAuthenticatedUser($request);
 
@@ -42,7 +43,7 @@ class ProductController extends Controller
             $lang = $this->resolveLanguage($request);
 
             if ($page) {
-                $result = $this->productService->getActiveProductsPaginated((int) $page, (int) $limit, $categoryId, $status, $search, $filterDeleted);
+                $result = $this->productService->getActiveProductsPaginated((int) $page, (int) $limit, $categoryId, $status, $search, $filterDeleted, $includeOutOfStock);
                 $products = $result['items'];
                 $total = $result['total'];
 
@@ -74,9 +75,10 @@ class ProductController extends Controller
         try {
             $limit = (int) $request->query('limit', 8);
             $search = $request->query('search');
+            $includeOutOfStock = $request->boolean('include_out_of_stock', false);
             $lang = $this->resolveLanguage($request);
 
-            $groupedData = $this->productService->getGroupedActiveProducts($limit, $search);
+            $groupedData = $this->productService->getGroupedActiveProducts($limit, $search, $includeOutOfStock);
 
             $result = array_map(function ($group) use ($lang) {
                 $mappedProducts = array_map(fn (Product $product) => $this->serializeProduct($product, false, $lang), $group['products']);

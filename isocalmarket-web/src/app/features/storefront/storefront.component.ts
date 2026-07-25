@@ -14,6 +14,7 @@ import { LanguageService } from '@core/services/language.service';
 import { CartStore } from './cart.store';
 import { SkeletonLoaderComponent } from '@shared/components/skeleton-loader/skeleton-loader.component';
 import { CustomSearchInputComponent } from '@shared/components/custom-search-input/custom-search-input.component';
+import { CustomSwitchComponent } from '@shared/components/custom-switch/custom-switch.component';
 import { ButtonComponent } from '@shared/components/button/button.component';
 import { BadgeComponent } from '@shared/components/badge/badge.component';
 import { CardComponent } from '@shared/components/card/card.component';
@@ -43,6 +44,7 @@ import { PublicSettingStore } from '@core/services/public-setting.store';
     RouterModule,
     SkeletonLoaderComponent,
     CustomSearchInputComponent,
+    CustomSwitchComponent,
     CustomSelectComponent,
     ButtonComponent,
     BadgeComponent,
@@ -207,6 +209,13 @@ export class StorefrontComponent implements OnInit {
     }
   }
 
+  public readonly includeOutOfStock = signal<boolean>(false);
+
+  public toggleIncludeOutOfStock(enabled: boolean) {
+    this.includeOutOfStock.set(enabled);
+    this.loadAllGroupedProducts();
+  }
+
   public readonly groupedProductsState = signal<any[]>([]);
 
   public readonly sortOptions = computed(() => [
@@ -217,7 +226,9 @@ export class StorefrontComponent implements OnInit {
 
   public readonly groupedProducts = computed(() => {
     const language = this.lang.currentLang();
-    const groups = this.groupedProductsState().map((group) => ({
+    const isSearching = !!this.searchQuery.trim();
+
+    let groups = this.groupedProductsState().map((group) => ({
       ...group,
       name: language === 'vi'
         ? (group.name_vi || group.name_en || group.name)
@@ -235,6 +246,21 @@ export class StorefrontComponent implements OnInit {
           : (product.description_en ?? product.description_vi ?? product.description),
       })),
     }));
+
+    if (isSearching) {
+      if (!this.includeOutOfStock()) {
+        groups = groups.map((g) => {
+          const inStockProds = (g.products || []).filter((p: any) => (p.available_count ?? 0) > 0);
+          return {
+            ...g,
+            products: inStockProds,
+            total: inStockProds.length < g.total ? inStockProds.length : g.total,
+          };
+        });
+      }
+      groups = groups.filter((g) => (g.total ?? 0) > 0 || (g.products && g.products.length > 0));
+    }
+
     const sortVal = this.categorySort();
 
     const otherGroup = groups.find((g) => g.id === 'other');
@@ -257,7 +283,7 @@ export class StorefrontComponent implements OnInit {
   public loadAllGroupedProducts() {
     this.state.productStore.loading.set(true);
     this.state.productStore
-      .fetchGroupedProducts(this.limit, this.searchQuery.trim() || undefined)
+      .fetchGroupedProducts(this.limit, this.searchQuery.trim() || undefined, this.includeOutOfStock())
       .subscribe({
         next: (res: any[]) => {
           const initialPages: { [catId: string]: number } = {};
@@ -289,7 +315,7 @@ export class StorefrontComponent implements OnInit {
     const apiCategoryId = catId === 'other' ? 'other' : catId;
 
     this.state.productStore
-      .getProductsRaw(page, this.limit, apiCategoryId, searchVal, 'active')
+      .getProductsRaw(page, this.limit, apiCategoryId, searchVal, 'active', undefined, this.includeOutOfStock())
       .subscribe({
         next: (res: any) => {
           const items = res?.data || [];

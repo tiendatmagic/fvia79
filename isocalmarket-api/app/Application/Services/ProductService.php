@@ -76,14 +76,14 @@ class ProductService
         return $this->productRepository->findAllActive($categoryId, $status, $search, $filterDeleted);
     }
 
-    public function getActiveProductsPaginated(int $page, int $limit, ?string $categoryId = null, ?string $status = null, ?string $search = null, ?string $filterDeleted = 'active'): array
+    public function getActiveProductsPaginated(int $page, int $limit, ?string $categoryId = null, ?string $status = null, ?string $search = null, ?string $filterDeleted = 'active', bool $includeOutOfStock = false): array
     {
-        return $this->productRepository->findAllActivePaginated($page, $limit, $categoryId, $status, $search, $filterDeleted);
+        return $this->productRepository->findAllActivePaginated($page, $limit, $categoryId, $status, $search, $filterDeleted, $includeOutOfStock);
     }
 
-    public function getGroupedActiveProducts(int $limit, ?string $search = null): array
+    public function getGroupedActiveProducts(int $limit, ?string $search = null, bool $includeOutOfStock = false): array
     {
-        return $this->productRepository->findGroupedActiveProducts($limit, $search);
+        return $this->productRepository->findGroupedActiveProducts($limit, $search, $includeOutOfStock);
     }
 
     public function getProductById(string $id): ?Product

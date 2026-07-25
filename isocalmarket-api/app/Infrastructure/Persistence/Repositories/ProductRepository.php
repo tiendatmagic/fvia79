@@ -79,7 +79,7 @@ class ProductRepository implements ProductRepositoryInterface
         return $products;
     }
 
-    public function findAllActivePaginated(int $page, int $limit, ?string $categoryId = null, ?string $status = null, ?string $search = null, ?string $filterDeleted = 'active'): array
+    public function findAllActivePaginated(int $page, int $limit, ?string $categoryId = null, ?string $status = null, ?string $search = null, ?string $filterDeleted = 'active', bool $includeOutOfStock = false): array
     {
         $query = ProductModel::query();
         if ($filterDeleted === 'deleted') {
@@ -110,27 +110,31 @@ class ProductRepository implements ProductRepositoryInterface
                 $query->where('category_id', $categoryId);
             }
         }
-        if ($search) {
+        $isSearching = $search !== null && trim($search) !== '';
+        if ($isSearching) {
+            $search = trim($search);
             $query->where(function ($q) use ($search) {
                 $this->applyAccentInsensitiveSearch($q, 'name', $search);
                 $q->orWhere('name_en', 'like', "%{$search}%")
                     ->orWhere('name_vi', 'like', "%{$search}%");
             });
         }
-        $total = $query->count();
-        $models = $query->with(['supplier:id,code,name,enabled,products_enabled', 'activeBatches:id,product_id,initial_count,sold_count,status,created_at'])->orderBy('created_at', 'desc')
-            ->skip(($page - 1) * $limit)
-            ->take($limit)
-            ->get();
+        $models = $query->with(['supplier:id,code,name,enabled,products_enabled', 'activeBatches:id,product_id,initial_count,sold_count,status,created_at'])->orderBy('created_at', 'desc')->get();
 
-        $products = [];
+        $filtered = [];
         foreach ($models as $model) {
             $availableCount = $this->getAvailableCount($model);
-            $products[] = ProductMapper::toDomain($model, $availableCount);
+            if ($isSearching && !$includeOutOfStock && $availableCount <= 0) {
+                continue;
+            }
+            $filtered[] = ProductMapper::toDomain($model, $availableCount);
         }
 
+        $total = count($filtered);
+        $paged = array_slice($filtered, ($page - 1) * $limit, $limit);
+
         return [
-            'items' => $products,
+            'items' => $paged,
             'total' => $total,
         ];
     }
@@ -189,7 +193,7 @@ class ProductRepository implements ProductRepositoryInterface
         return false;
     }
 
-    public function findGroupedActiveProducts(int $limit, ?string $search = null): array
+    public function findGroupedActiveProducts(int $limit, ?string $search = null, bool $includeOutOfStock = false): array
     {
         $categories = CategoryModel::where('is_active', true)->orderBy('name', 'asc')->get();
 
@@ -202,7 +206,9 @@ class ProductRepository implements ProductRepositoryInterface
                     });
             });
 
-        if ($search) {
+        $isSearching = $search !== null && trim($search) !== '';
+        if ($isSearching) {
+            $search = trim($search);
             $productQuery->where(function ($q) use ($search) {
                 $this->applyAccentInsensitiveSearch($q, 'name', $search);
                 $q->orWhere('name_en', 'like', "%{$search}%")
@@ -210,26 +216,43 @@ class ProductRepository implements ProductRepositoryInterface
             });
         }
 
-        $countsByCategory = (clone $productQuery)
-            ->selectRaw('category_id, COUNT(*) as aggregate')
-            ->groupBy('category_id')
-            ->pluck('aggregate', 'category_id');
-
         $allActiveProducts = (clone $productQuery)
             ->with(['supplier:id,code,name,enabled,products_enabled', 'activeBatches:id,product_id,initial_count,sold_count,status,created_at'])
             ->orderBy('created_at', 'desc')
             ->get();
 
+        $filteredProducts = [];
+        foreach ($allActiveProducts as $model) {
+            $availableCount = $this->getAvailableCount($model);
+
+            if ($isSearching && !$includeOutOfStock && $availableCount <= 0) {
+                continue;
+            }
+
+            $filteredProducts[] = [
+                'model' => $model,
+                'available_count' => $availableCount,
+                'category_id' => (string) ($model->category_id ?? 'other'),
+            ];
+        }
+
+        $productsByCat = collect($filteredProducts)->groupBy('category_id');
+
         $grouped = [];
-        $productsByCat = $allActiveProducts->groupBy(fn ($p) => (string) ($p->category_id ?? 'other'));
 
         foreach ($categories as $cat) {
             $catId = (string) $cat->id;
-            $catProductsModels = isset($productsByCat[$catId]) ? $productsByCat[$catId]->take($limit) : collect();
+            $catEntries = isset($productsByCat[$catId]) ? $productsByCat[$catId] : collect();
+            $total = $catEntries->count();
+
+            if ($isSearching && $total === 0) {
+                continue;
+            }
+
+            $catProductsModels = $catEntries->take($limit);
             $products = [];
-            foreach ($catProductsModels as $model) {
-                $availableCount = $this->getAvailableCount($model);
-                $products[] = ProductMapper::toDomain($model, $availableCount);
+            foreach ($catProductsModels as $entry) {
+                $products[] = ProductMapper::toDomain($entry['model'], $entry['available_count']);
             }
 
             $grouped[] = [
@@ -237,26 +260,29 @@ class ProductRepository implements ProductRepositoryInterface
                 'name' => $cat->name,
                 'description' => $cat->description,
                 'products' => $products,
-                'total' => (int) ($countsByCategory[$catId] ?? 0),
+                'total' => $total,
             ];
         }
 
         if (isset($productsByCat['other'])) {
-            $otherModels = $productsByCat['other']->take($limit);
-            $productsOther = [];
-            foreach ($otherModels as $model) {
-                $availableCount = $this->getAvailableCount($model);
-                $productsOther[] = ProductMapper::toDomain($model, $availableCount);
-            }
+            $otherEntries = $productsByCat['other'];
+            $totalOther = $otherEntries->count();
 
-            $totalOther = (int) ($countsByCategory[''] ?? $countsByCategory[null] ?? count($otherModels));
-            $grouped[] = [
-                'id' => 'other',
-                'name' => 'Other Products',
-                'description' => 'Products that have not been assigned to a specific category.',
-                'products' => $productsOther,
-                'total' => $totalOther,
-            ];
+            if (!$isSearching || $totalOther > 0) {
+                $otherModels = $otherEntries->take($limit);
+                $productsOther = [];
+                foreach ($otherModels as $entry) {
+                    $productsOther[] = ProductMapper::toDomain($entry['model'], $entry['available_count']);
+                }
+
+                $grouped[] = [
+                    'id' => 'other',
+                    'name' => 'Other Products',
+                    'description' => 'Products that have not been assigned to a specific category.',
+                    'products' => $productsOther,
+                    'total' => $totalOther,
+                ];
+            }
         }
 
         return $grouped;

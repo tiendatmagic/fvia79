@@ -182,6 +182,67 @@ class CatalogMultilangApiTest extends TestCase
             ->assertJsonPath('description', 'Chi tiết tiếng Việt');
     }
 
+    public function test_grouped_products_search_filters_out_empty_categories(): void
+    {
+        $catEmpty = CategoryModel::create([
+            'name' => 'Empty Cat',
+            'slug' => 'empty-cat',
+            'name_vi' => 'Danh mục rỗng',
+            'name_en' => 'Empty Cat',
+            'is_active' => true,
+        ]);
+        $catWithProd = CategoryModel::create([
+            'name' => 'Active Cat',
+            'slug' => 'active-cat',
+            'name_vi' => 'Danh mục có hàng',
+            'name_en' => 'Active Cat',
+            'is_active' => true,
+        ]);
+
+        $prodInStock = ProductModel::create([
+            'category_id' => $catWithProd->id,
+            'name' => 'Special Search Target',
+            'name_vi' => 'Sản phẩm đặc biệt',
+            'name_en' => 'Special Search Target',
+            'slug' => 'special-search-target',
+            'price' => 10,
+            'status' => 'active',
+        ]);
+        \App\Infrastructure\Persistence\Eloquent\InventoryBatchModel::create([
+            'batch_name' => 'BATCH001',
+            'product_id' => $prodInStock->id,
+            'initial_count' => 10,
+            'sold_count' => 0,
+            'status' => 'active',
+        ]);
+
+        $prodOutOfStock = ProductModel::create([
+            'category_id' => $catEmpty->id,
+            'name' => 'Special Out Of Stock',
+            'name_vi' => 'Sản phẩm hết hàng',
+            'name_en' => 'Special Out Of Stock',
+            'slug' => 'special-out-of-stock',
+            'price' => 10,
+            'status' => 'active',
+        ]);
+
+        // With include_out_of_stock=0 (default), out-of-stock product is excluded
+        $resDefault = $this->getJson('/api/v1/products/grouped?search=Special')
+            ->assertOk()
+            ->json();
+
+        $this->assertCount(1, $resDefault);
+        $this->assertEquals($catWithProd->id, $resDefault[0]['id']);
+        $this->assertEquals('Special Search Target', $resDefault[0]['products'][0]['name']);
+
+        // With include_out_of_stock=1, both categories with products are returned
+        $resWithOos = $this->getJson('/api/v1/products/grouped?search=Special&include_out_of_stock=1')
+            ->assertOk()
+            ->json();
+
+        $this->assertCount(2, $resWithOos);
+    }
+
     private function adminToken(): string
     {
         $admin = UserModel::create([

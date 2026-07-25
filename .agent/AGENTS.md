@@ -13,20 +13,51 @@
 > Khi cần seed dữ liệu cho một seeder cụ thể, chỉ dùng:
 > - `php artisan db:seed --class=TenSeederClass` — chạy đúng 1 seeder.
 
+- **[TÍCH HỢP NÚT CÔNG TẮC BẬT/TẮT TÌM KIẾM SẢN PHẨM HẾT HÀNG TẠI STOREFRONT (INCLUDE OUT OF STOCK SEARCH TOGGLE)]**:
+  - **Mô tả yêu cầu**:
+    - Bổ sung nút công tắc Custom Switch "Tìm sản phẩm hết hàng" (mặc định TẮT) tại khu vực tìm kiếm Storefront.
+    - Khi công tắc TẮT (mặc định): Khi gõ từ khóa tìm kiếm, hệ thống chỉ hiển thị các sản phẩm còn hàng trong kho (`available_count > 0`). Các sản phẩm hết hàng (`available_count === 0`) sẽ bị loại bỏ khỏi kết quả tìm kiếm.
+    - Khi công tắc BẬT: Hệ thống sẽ hiển thị toàn bộ tất cả sản phẩm khớp từ khóa kể cả sản phẩm đã hết hàng (`available_count === 0`).
+  - **Nội dung thực hiện**:
+    - **Language i18n (`en.ts`, `vi.ts`)**: Bổ sung key `'storefront.include_out_of_stock'`: `'Tìm sản phẩm hết hàng'` / `'Include out of stock products'`.
+    - **Backend (`isocalmarket-api`)**:
+      - `ProductRepositoryInterface.php`, `ProductRepository.php`, `ProductService.php`, `ProductController.php`: Bổ sung tham số `include_out_of_stock` (mặc định `false`) vào API `/api/v1/products/grouped` và `/api/v1/products`. Khi `isSearching` và `include_out_of_stock` là `false`, hệ thống lọc bỏ tất cả sản phẩm có `available_count <= 0`.
+      - Cập nhật test case `test_grouped_products_search_filters_out_empty_categories` trong `CatalogMultilangApiTest.php` kiểm tra cả 2 trường hợp `include_out_of_stock=0` và `include_out_of_stock=1`. Đạt **149/149 PASSED (100%)**, 1013 assertions.
+    - **Frontend (`isocalmarket-web`)**:
+      - `product.store.ts`: Bổ sung tham số `includeOutOfStock` vào `fetchGroupedProducts` và `getProductsRaw`.
+      - `storefront.component.ts` & `storefront.component.html`: Tích hợp component `<app-custom-switch>` liên kết với Signal `includeOutOfStock()`. Tự động gọi lại API và cập nhật danh sách khi người dùng bật/tắt công tắc.
+      - Biên dịch Angular Frontend (`npm run build`) thành công **100% SUCCESS, 0 ERRORS**.
+  - **Xác nhận**: Tính năng tìm kiếm theo tồn kho hoạt động chính xác 100%, linh hoạt và trực quan!
+
+- **[TỐI ƯU TÌM KIẾM SẢN PHẨM TRÊN STOREFRONT - ẨN CÁC DANH MỤC KHÔNG CÓ SẢN PHẨM KHỚP TÌM KIẾM (STOREFRONT SEARCH CATEGORY FILTER)]**:
+  - **Mô tả yêu cầu**:
+    - Khắc phục lỗi khi tìm kiếm sản phẩm trên Storefront (ví dụ nhập "sản phẩm"), các danh mục không có sản phẩm phù hợp vẫn hiển thị thẻ danh mục rỗng (0 products - "Chưa có sản phẩm nào trong danh mục này"), bắt người dùng phải cuộn xuống tận dưới cùng mới thấy danh mục chứa sản phẩm.
+  - **Nội dung thực hiện**:
+    - **Backend (`isocalmarket-api`)**:
+      - Cập nhật `ProductRepository.php` (`findGroupedActiveProducts`): Khi tham số tìm kiếm `$search` được truyền (khác rỗng), tự động lọc bỏ (skip) tất cả các nhóm danh mục có `$total === 0` sản phẩm khớp từ khóa.
+      - Bổ sung Unit Test `test_grouped_products_search_filters_out_empty_categories` trong `CatalogMultilangApiTest.php` kiểm tra API `/api/v1/products/grouped?search=Special` chỉ trả về đúng danh mục chứa sản phẩm phù hợp. Đạt **149/149 PASSED (100%)**, 1011 assertions.
+    - **Frontend (`isocalmarket-web`)**:
+      - Cập nhật `StorefrontComponent` (`storefront.component.ts`): Cập nhật Signal `groupedProducts` computed tự động lọc bỏ các danh mục không có sản phẩm (`(g.total ?? 0) > 0`) khi người dùng đang thực hiện tìm kiếm (`isSearching`).
+      - Biên dịch Angular Frontend (`npm run build`) thành công **100% SUCCESS, 0 ERRORS**.
+  - **Xác nhận**: Kết quả tìm kiếm hiển thị ngay danh mục chứa sản phẩm khớp từ khóa ở trên cùng, hoàn toàn loại bỏ các khối danh mục rỗng thừa thãi!
+
 - **[TỐI ƯU RESPONSIVE CARD CẤP BẬC ĐẠI LÝ VÀ CHUẨN HÓA APP-ICON (MEMBERSHIP TIER PROFILE RESPONSIVE & APP-ICON REFACTOR)]**:
   - **Mô tả yêu cầu**:
     - Khắc phục lỗi vỡ dòng / ép khung chèn ép card Cấp bậc Đại lý trong trang Hồ sơ cá nhân (`/profile`).
     - Khắc phục lỗi đè chữ chèn ép của badge `HIỆN TẠI` với tên cấp bậc (`Bạc`, `Vàng`...).
     - Rà soát và chuẩn hóa 100% biểu tượng SVG trên giao diện web sử dụng `<app-icon name="...">`.
+    - Nâng cấp `SkeletonLoaderComponent` bổ sung kiểu `type="membership-tier"` chuẩn xác 100% theo hình dạng Banner + Bảng card Cấp bậc đại lý.
   - **Nội dung thực hiện**:
     - **Frontend (`isocalmarket-web`)**:
+      - `skeleton-loader.component.ts` & `skeleton-loader.component.html`: Bổ sung `@Input() type: ... | 'membership-tier'` với cấu trúc Skeleton bao gồm Banner Hạng hiện tại + Khung tiến trình nạp lên hạng kế tiếp + Lưới 5 Card Cấp bậc ưu đãi.
+      - `profile-information.component.html`: Kế thừa component `<app-skeleton-loader type="membership-tier" />` khi `isLoadingTiers()` đang tải.
       - `profile-information.component.html`:
         - Chuyển đổi badge `HIỆN TẠI` thành **Top Floating Badge (`absolute -top-3 right-3 z-10`)** nổi trên viền card Cấp bậc hiện tại, loại bỏ 100% rủi ro đè chữ hay chạm mép card bên cạnh.
-        - Cập nhật lưới hiển thị `grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-2 xl:grid-cols-5 gap-4 pt-2` linh hoạt theo tỷ lệ màn hình.
+        - Cập nhật lưới hiển thị `grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-2 xl:grid-cols-3 2xl:grid-cols-5 gap-4 pt-2` linh hoạt theo tỷ lệ màn hình.
       - `user-form-modal.component.html` & `import-inventory-modal.component.html`:
         - Thay thế toàn bộ các thẻ `<svg>` inline còn sót lại trong form quản lý user và import kho thành component `<app-icon name="...">` (`wallet`, `shield-check`, `exclamation`, `eye`, `eye-slash`, `key`, `copy`), đảm bảo đồng bộ 100% thiết kế giao diện UI/UX GEMINI.
       - Biên dịch Angular Frontend (`npm run build`) thành công **100% SUCCESS, 0 ERRORS**.
-  - **Xác nhận**: Giao diện Card Cấp bậc Đại lý đẹp mắt, sắc nét và 100% đồng bộ chuẩn `<app-icon>`!
+  - **Xác nhận**: Giao diện Card Cấp bậc Đại lý đẹp mắt, sắc nét và 100% đồng bộ chuẩn `<app-icon>` & Skeleton tái sử dụng!
 
 - **[SỬA ICON VÀ NÂNG CẤP TRANG QUẢN LÝ CẤP BẬC ĐẠI LÝ (SUPPLIER ICON + MEMBERSHIP TIERS UX UPGRADE)]**:
   - **Mô tả yêu cầu**:

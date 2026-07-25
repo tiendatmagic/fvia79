@@ -1147,6 +1147,7 @@ export const EN_TRANSLATIONS: Record<string, string> = {
   'storefront.available': 'Available',
   'storefront.card_view': 'Card',
   'storefront.in_stock': 'In Stock',
+  'storefront.include_out_of_stock': 'Include out of stock products',
   'storefront.list_view': 'List',
   'storefront.no_products': 'No products found!',
   'storefront.no_products_in_category': 'No products currently available in this category.',

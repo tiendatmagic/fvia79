@@ -52,7 +52,7 @@
         {{ 'storefront.subtitle' | translate }}
       </p>
 
-      <div class="max-w-md pt-2">
+      <div class="max-w-md pt-2 space-y-2.5">
         <app-custom-search-input
           [placeholder]="'storefront.search_placeholder' | translate"
           [(ngModel)]="searchQuery"
@@ -60,6 +60,14 @@
           (valueChange)="onSearch($event)"
           [debounce]="500"
         />
+
+        <div class="flex items-center gap-2 px-1">
+          <app-custom-switch
+            [checked]="includeOutOfStock()"
+            (checkedChange)="toggleIncludeOutOfStock($event)"
+            [label]="'storefront.include_out_of_stock' | translate"
+          />
+        </div>
       </div>
     </div>
 

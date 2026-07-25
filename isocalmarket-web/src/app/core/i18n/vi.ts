@@ -1147,6 +1147,7 @@ export const VI_TRANSLATIONS: Record<string, string> = {
   'storefront.available': 'Khả dụng',
   'storefront.card_view': 'Dạng thẻ',
   'storefront.in_stock': 'Còn hàng',
+  'storefront.include_out_of_stock': 'Tìm sản phẩm hết hàng',
   'storefront.list_view': 'Danh sách',
   'storefront.no_products': 'Không tìm thấy sản phẩm!',
   'storefront.no_products_in_category': 'Chưa có sản phẩm nào trong danh mục này.',
