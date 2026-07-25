@@ -244,7 +244,7 @@ class FaqTest extends TestCase
 
         $token = $this->createTokenForUser($admin);
 
-        // Bước 1: Tạo Danh mục áp dụng mới "Proxy Dân Cư"
+        // Step 1: Create new applicable category "Residential Proxy"
         $catResponse = $this->withToken($token)
             ->postJson('/api/v1/admin/policy-categories', [
                 'key' => 'proxy_dan_cu',
@@ -261,7 +261,7 @@ class FaqTest extends TestCase
 
         $categoryKey = $catResponse->json('data.key');
 
-        // Bước 2: Tạo Quy định Chấp nhận Bảo hành cho danh mục "Proxy Dân Cư" vừa tạo
+        // Step 2: Create warranty accepted policy for "Residential Proxy"
         $acceptedPolicyResponse = $this->withToken($token)
             ->postJson('/api/v1/admin/warranty-policies', [
                 'category' => $categoryKey,
@@ -279,7 +279,7 @@ class FaqTest extends TestCase
             ->assertJsonPath('success', true)
             ->assertJsonPath('data.category', 'proxy_dan_cu');
 
-        // Bước 3: Tạo Quy định Từ chối Bảo hành cho danh mục "Proxy Dân Cư" vừa tạo
+        // Step 3: Create warranty declined policy for "Residential Proxy"
         $rejectedPolicyResponse = $this->withToken($token)
             ->postJson('/api/v1/admin/warranty-policies', [
                 'category' => $categoryKey,
@@ -297,7 +297,7 @@ class FaqTest extends TestCase
             ->assertJsonPath('success', true)
             ->assertJsonPath('data.category', 'proxy_dan_cu');
 
-        // Bước 4: Gọi API công khai GET /api/v1/faqs kiểm tra xem Danh mục mới và Quy định mới đã tự động hiển thị đầy đủ
+        // Step 4: Call public API GET /api/v1/faqs to verify new category and policies appear in output
         $publicResponse = $this->getJson('/api/v1/faqs');
 
         $publicResponse->assertStatus(200)
@@ -306,15 +306,15 @@ class FaqTest extends TestCase
         $categories = $publicResponse->json('categories');
         $policies = $publicResponse->json('policies');
 
-        // Kiểm tra danh mục "Proxy Dân Cư" có mặt trong danh sách
+        // Verify "Residential Proxy" category exists in list
         $foundCat = collect($categories)->firstWhere('key', 'proxy_dan_cu');
-        $this->assertNotNull($foundCat, 'Danh mục Proxy Dân Cư phải có mặt trong API công khai');
+        $this->assertNotNull($foundCat, 'Residential Proxy category must exist in public API');
         $this->assertEquals('Proxy Dân Cư', $foundCat['name_vi']);
         $this->assertEquals('Residential Proxy', $foundCat['name_en']);
 
-        // Kiểm tra các quy định thuộc danh mục "Proxy Dân Cư"
+        // Verify policies belonging to "Residential Proxy"
         $proxyPolicies = collect($policies)->where('category', 'proxy_dan_cu')->values();
-        $this->assertCount(2, $proxyPolicies, 'Phải có 2 quy định bảo hành thuộc danh mục Proxy Dân Cư');
+        $this->assertCount(2, $proxyPolicies, 'Must have 2 warranty policies under Residential Proxy category');
         $this->assertEquals('Bảo hành 1 đổi 1 trong 24 giờ nếu IP Proxy bị hỏng kết nối', $proxyPolicies[0]['content_vi']);
         $this->assertEquals('Từ chối bảo hành nếu tự ý đỗi cấu hình Port hoặc Proxy bị lạm dụng spam', $proxyPolicies[1]['content_vi']);
     }

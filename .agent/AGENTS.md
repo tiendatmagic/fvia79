@@ -18,6 +18,29 @@
 > `php artisan config:clear && php artisan config:cache && php artisan route:cache && php artisan view:cache`
 > để đảm bảo Laravel cập nhật ngay lập tức 100% các biến môi trường tươi mới nhất từ tệp `.env`, tuyệt đối không được bỏ qua bước `config:clear` để tránh tình trạng dính cache đệm tĩnh cũ.
 
+- **[RÀ SOÁT VÀ CHUẨN HÓA COMMENT CODE TIẾNG ANH TOÀN BỘ MÃ NGUỒN (FULL SOURCE CODE COMMENT CLEANUP & ENGLISH STANDARDIZATION)]**:
+  - **Mô tả yêu cầu**:
+    - Rà soát toàn bộ source code cả Frontend và Backend, loại bỏ các comment dư thừa, và chuẩn hóa 100% comment trong code sang Tiếng Anh.
+  - **Nội dung thực hiện**:
+    - **Backend (`isocalmarket-api`)**:
+      - `TelegramNotificationService.php`: Dịch comment giải thích bộ lọc người dùng nhận tin Telegram sang Tiếng Anh.
+      - `2026_07_15_000003_create_order_items_table.php`: Dịch comment snapshot `product_name` sang Tiếng Anh.
+      - `TelegramNotificationTest.php`, `ProfitCalculationTest.php`, `MembershipTierTest.php`, `FaqTest.php`: Dịch toàn bộ comment các bước testcase sang Tiếng Anh.
+      - **Kiểm thử**: PHPUnit Tests đạt **150/150 PASSED (100%)**, 1018 assertions.
+    - **Frontend (`isocalmarket-web`)**:
+      - `public-setting.store.ts`: Dịch comment về cache & in-flight request handling sang Tiếng Anh.
+      - `profile-notifications.component.html`, `faq.component.html`, `check-uid.component.html`: Dịch các HTML layout block comments sang Tiếng Anh.
+      - **Biên dịch Frontend**: Angular build (`npm run build`) thành công **100% SUCCESS, 0 ERRORS**.
+  - **Xác nhận**: 100% comment trong dự án đã được chuẩn hóa Tiếng Anh sắc nét, minh bạch!
+
+- **[KHẮC PHỤC HIỂN THỊ THÔNG BÁO ĐA NGÔN NGỮ TRÊN STOREFRONT (STOREFRONT MULTI-LANG ANNOUNCEMENT FIX)]**:
+  - **Mô tả yêu cầu**:
+    - Khắc phục lỗi Thông báo trang chủ đã bật và nhập nội dung trên Admin VPS nhưng không hiển thị ngoài Storefront.
+  - **Nội dung thực hiện**:
+    - **Frontend (`public-setting.store.ts`)**: Bổ sung 2 trường `announcement_text_vi` và `announcement_text_en` vào object `data` khi parse API response `/api/v1/settings/public`. Trước đó do thiếu 2 trường này trong mapper làm getter `announcementText` nhận giá trị `undefined` dẫn tới ẩn banner thông báo.
+    - **Build & Deploy**: Biên dịch Angular Frontend (`npm run build`) và deploy thành công 100% lên VPS Production.
+  - **Xác nhận**: Thông báo trang chủ *"MAI CHỦ SITE ĐI NHẬU KHÔNG LÀM VIỆC"* đã hiển thị rực rỡ và chạy chữ mượt mà 100% ngoài Storefront!
+
 - **[SEED DỮ LIỆU CẤP BẬC ĐẠI LÝ MẶC ĐỊNH TRÊN VPS PRODUCTION (MEMBERSHIP TIER SEEDING ON VPS)]**:
   - **Mô tả yêu cầu**:
     - Khởi tạo 5 Cấp bậc Đại lý mặc định trên VPS Production (Đồng 0$, Bạc 100$, Vàng 300$, Bạch kim 500$, Kim cương 1000$) tương tự môi trường Local.

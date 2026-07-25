@@ -156,7 +156,7 @@ class ProfitCalculationTest extends TestCase
 
     public function test_order_checkout_snapshots_cost_price_and_calculates_profit_correctly(): void
     {
-        // 1. Tạo sản phẩm với giá bán 50k
+        // 1. Create product with selling price 50k
         $product = ProductModel::create([
             'id' => '019f6699-e6d2-70f2-89bd-d3b93946a775',
             'category_id' => $this->category->id,
@@ -166,7 +166,7 @@ class ProfitCalculationTest extends TestCase
             'status' => 'active',
         ]);
 
-        // 2. Nhập kho lô hàng với Giá vốn 20k
+        // 2. Import inventory batch with cost price 20k
         $importResponse = $this->withHeaders($this->adminHeaders())
             ->postJson('/api/v1/inventory/import', [
                 'product_id' => $product->id,
@@ -176,7 +176,7 @@ class ProfitCalculationTest extends TestCase
             ]);
         $importResponse->assertStatus(201);
 
-        // 3. Khách mua 2 cái -> Tổng Giá bán = 100k, Tổng Giá vốn = 40k, Lợi nhuận = 60k
+        // 3. Customer buys 2 units -> Total selling price = 100k, Total cost = 40k, Profit = 60k
         $checkoutResponse = $this->withHeaders($this->customerHeaders())
             ->postJson('/api/v1/orders', [
                 'idempotency_key' => '019f906d-a49e-7e91-9331-589e9942bf20',
@@ -190,7 +190,7 @@ class ProfitCalculationTest extends TestCase
 
         $checkoutResponse->assertStatus(201);
 
-        // Kiểm tra Snapshot cost_price trong order_items
+        // Verify snapshot cost_price in order_items
         $this->assertDatabaseHas('order_items', [
             'product_id' => $product->id,
             'price' => 50000.0,
@@ -198,7 +198,7 @@ class ProfitCalculationTest extends TestCase
             'quantity' => 2,
         ]);
 
-        // 4. Kiểm tra API Dashboard Stats
+        // 4. Test Dashboard Stats API
         $statsResponse = $this->withHeaders($this->adminHeaders())
             ->getJson('/api/v1/admin/dashboard-stats');
 

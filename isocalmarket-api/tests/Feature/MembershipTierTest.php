@@ -122,7 +122,7 @@ class MembershipTierTest extends TestCase
         $resLevel->assertStatus(422)
             ->assertJsonValidationErrors(['level']);
 
-        // Try creating duplicate min_deposit (100.0 already exists for Bạc)
+        // Try creating duplicate min_deposit (100.0 already exists for Silver)
         $resDeposit = $this->withHeader('Authorization', "Bearer {$this->adminToken}")
             ->postJson('/api/v1/admin/membership-tiers', [
                 'level' => 99,
@@ -134,7 +134,7 @@ class MembershipTierTest extends TestCase
         $resDeposit->assertStatus(422)
             ->assertJsonValidationErrors(['min_deposit']);
 
-        // Try creating duplicate name_vi ('Đồng' already exists)
+        // Try creating duplicate name_vi ('Bronze' tier already exists)
         $resName = $this->withHeader('Authorization', "Bearer {$this->adminToken}")
             ->postJson('/api/v1/admin/membership-tiers', [
                 'level' => 99,
@@ -161,13 +161,13 @@ class MembershipTierTest extends TestCase
 
     public function test_adjust_cumulative_deposit_updates_user_tier_automatically(): void
     {
-        // Initially total_deposited is 0 (Tier Đồng)
+        // Initially total_deposited is 0 (Bronze Tier)
         $user = $this->customerModel->fresh();
         app(\App\Application\Services\MembershipTierService::class)->recalculateUserTier($user);
         $user->refresh();
         $this->assertSame('Đồng', $user->membershipTier->name_vi);
 
-        // Admin adds $100 -> Reaches Bạc (Silver)
+        // Admin adds $100 -> Reaches Silver
         $res = $this->withHeader('Authorization', "Bearer {$this->adminToken}")
             ->postJson("/api/v1/admin/users/{$this->customerModel->id}/adjust-cumulative-deposit", [
                 'type' => 'add',
@@ -178,7 +178,7 @@ class MembershipTierTest extends TestCase
             ->assertJsonPath('user.total_deposited', 100)
             ->assertJsonPath('user.membership_tier.name_vi', 'Bạc');
 
-        // Admin adds $900 -> Total $1000 -> Reaches Kim Cương (Diamond)
+        // Admin adds $900 -> Total $1000 -> Reaches Diamond
         $res2 = $this->withHeader('Authorization', "Bearer {$this->adminToken}")
             ->postJson("/api/v1/admin/users/{$this->customerModel->id}/adjust-cumulative-deposit", [
                 'type' => 'add',
@@ -189,7 +189,7 @@ class MembershipTierTest extends TestCase
             ->assertJsonPath('user.total_deposited', 1000)
             ->assertJsonPath('user.membership_tier.name_vi', 'Kim cương');
 
-        // Admin subtracts $600 -> Total $400 -> Drops to Vàng (Gold)
+        // Admin subtracts $600 -> Total $400 -> Drops to Gold
         $res3 = $this->withHeader('Authorization', "Bearer {$this->adminToken}")
             ->postJson("/api/v1/admin/users/{$this->customerModel->id}/adjust-cumulative-deposit", [
                 'type' => 'subtract',
@@ -203,7 +203,7 @@ class MembershipTierTest extends TestCase
 
     public function test_order_creation_applies_tier_discount(): void
     {
-        // 1. Set user balance to 100 and total_deposited to 1000 (Kim cương - 10% discount)
+        // 1. Set user balance to 100 and total_deposited to 1000 (Diamond - 10% discount)
         $this->customerModel->balance = 100.0;
         $this->customerModel->total_deposited = 1000.0;
         $this->customerModel->save();
@@ -259,7 +259,7 @@ class MembershipTierTest extends TestCase
         ]);
 
         // Buy 2 items: Raw Total = 2 * 10 = $20.
-        // Kim Cương tier discount = 10% -> Discount = $2.0. Total to pay = $18.0.
+        // Diamond tier discount = 10% -> Discount = $2.0. Total to pay = $18.0.
         $res = $this->withHeader('Authorization', "Bearer {$customerToken}")
             ->postJson('/api/v1/orders', [
                 'idempotency_key' => (string) Str::uuid7(),
@@ -298,7 +298,7 @@ class MembershipTierTest extends TestCase
         // 1. Disable membership tiers system via SystemSetting
         app(\App\Application\Services\SystemSettingService::class)->setSetting('membership_tiers_enabled', '0');
 
-        // 2. Customer has Kim Cương tier (10% discount) and $100 balance
+        // 2. Customer has Diamond tier (10% discount) and $100 balance
         $this->customerModel->balance = 100.0;
         $this->customerModel->total_deposited = 1000.0;
         $this->customerModel->save();

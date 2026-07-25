@@ -39,7 +39,7 @@ export class PublicSettingStore {
   private lastFetchTime = 0;
   private readonly CACHE_TTL_MS = 600000; // 10 minutes cache FE
 
-  /** In-flight request: nếu đang có request chạy, các caller khác share cùng Observable */
+  /** In-flight request: share Observable among concurrent callers while request is pending */
   private inFlight$: Observable<PublicSettings> | null = null;
 
   public clearCache() {
@@ -50,7 +50,7 @@ export class PublicSettingStore {
   }
 
   public fetchPublicSettings(): Observable<PublicSettings> {
-    // 1. Cache còn hạn → trả về ngay, không gọi API
+    // 1. Valid cache -> return cached result directly without HTTP call
     const now = Date.now();
     if (this.cachedSettings && (now - this.lastFetchTime < this.CACHE_TTL_MS)) {
       this.settings.set(this.cachedSettings);
@@ -58,18 +58,20 @@ export class PublicSettingStore {
       return of(this.cachedSettings);
     }
 
-    // 2. Đang có request in-flight → chia sẻ cùng Observable, không gọi API mới
+    // 2. In-flight request existing -> share Observable without creating new API request
     if (this.inFlight$) {
       return this.inFlight$;
     }
 
-    // 3. Chưa có request nào → tạo mới, lưu vào inFlight$
+    // 3. No existing request -> initialize new in-flight Observable
     this.loading.set(true);
     this.inFlight$ = this.api.get<PublicSettings>('v1/settings/public').pipe(
       tap(res => {
         if (res) {
           const data: PublicSettings = {
             announcement_enabled: Boolean(res.announcement_enabled),
+            announcement_text_vi: res.announcement_text_vi || '',
+            announcement_text_en: res.announcement_text_en || '',
             announcement_text: res.announcement_text || '',
             announcement_effect: (res.announcement_effect as any) || 'marquee',
             usdt_exchange_rate: Number(res.usdt_exchange_rate) || 25400,
@@ -85,9 +87,9 @@ export class PublicSettingStore {
       }),
       finalize(() => {
         this.loading.set(false);
-        this.inFlight$ = null; // Xóa in-flight khi request xong (success hoặc error)
+        this.inFlight$ = null; // Clear in-flight reference after request settles (success or error)
       }),
-      shareReplay(1) // Tất cả subscriber nhận cùng kết quả từ 1 HTTP call duy nhất
+      shareReplay(1) // All subscribers receive same result from single HTTP call
     );
 
     return this.inFlight$;

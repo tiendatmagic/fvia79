@@ -183,13 +183,13 @@ class TelegramNotificationTest extends TestCase
             'value' => '1',
         ]);
 
-        // u1: có Telegram + đã mua sản phẩm trong 6 tháng → ĐƯỢC gửi
+        // u1: linked Telegram + purchased product within 6 months -> eligible
         $u1 = UserModel::create(['username' => 'u1', 'name' => 'U1', 'email' => 'u1@ex.com', 'password' => Hash::make('password123'), 'role' => 'customer', 'google2fa_enabled' => false, 'telegram_chat_id' => '1154171881', 'telegram_notifications_enabled' => true]);
-        // u2: có Telegram + đã mua sản phẩm trong 6 tháng → ĐƯỢC gửi
+        // u2: linked Telegram + purchased product within 6 months -> eligible
         $u2 = UserModel::create(['username' => 'u2', 'name' => 'U2', 'email' => 'u2@ex.com', 'password' => Hash::make('password123'), 'role' => 'customer', 'google2fa_enabled' => false, 'telegram_chat_id' => '222222', 'telegram_notifications_enabled' => true]);
-        // u3: không có chat_id → KHÔNG gửi
+        // u3: missing telegram_chat_id -> ineligible
         UserModel::create(['username' => 'u3', 'name' => 'U3', 'email' => 'u3@ex.com', 'password' => Hash::make('password123'), 'role' => 'customer', 'google2fa_enabled' => false, 'telegram_chat_id' => null]);
-        // u4: có Telegram nhưng chưa mua sản phẩm này → KHÔNG gửi
+        // u4: linked Telegram but hasn't purchased product -> ineligible
         UserModel::create(['username' => 'u4', 'name' => 'U4', 'email' => 'u4@ex.com', 'password' => Hash::make('password123'), 'role' => 'customer', 'google2fa_enabled' => false, 'telegram_chat_id' => '444444', 'telegram_notifications_enabled' => true]);
 
         $admin = UserModel::create(['username' => 'adm', 'name' => 'Admin', 'email' => 'adm@ex.com', 'password' => Hash::make('password123'), 'role' => 'admin', 'google2fa_enabled' => false]);
@@ -210,7 +210,7 @@ class TelegramNotificationTest extends TestCase
             'status' => 'active',
         ]);
 
-        // Tạo order trong 6 tháng cho u1 và u2 với đúng product này
+        // Create orders within 6 months for u1 and u2 with this product
         $orderU1 = OrderModel::create(['user_id' => $u1->id, 'order_code' => 'ORD-U1', 'total_price' => 50000, 'status' => 'completed']);
         OrderItemModel::create(['order_id' => $orderU1->id, 'product_id' => $product->id, 'product_name' => 'BM Facebook 50$', 'price' => 50000, 'quantity' => 1]);
 
@@ -226,7 +226,7 @@ class TelegramNotificationTest extends TestCase
 
         $response->assertStatus(201);
 
-        // Chỉ u1 và u2 nhận thông báo (2 lần gọi Telegram)
+        // Only u1 and u2 receive notifications (2 Telegram API calls)
         Http::assertSentCount(2);
 
         Http::assertSent(function ($request) {
