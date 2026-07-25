@@ -22,8 +22,11 @@
       - `icon.component.html`: Thêm `@case ('truck')` — SVG xe tải Heroicons.
       - `sidebar.component.html` & `app.html`: Đổi `name="sync"` → `name="truck"` cho menu item Suppliers (cả desktop và mobile).
       - `admin-membership-tiers.component.ts`: Thêm signals `_searchQuery`, `selectedSort`, `selectedStatusFilter`, `currentPage`; computed `filteredTiers` (filter + sort client-side), `pagedTiers` (slice phân trang), `totalPages`, `totalItems`; methods `onSearch`, `fetchPage`. Import thêm `CustomSearchInputComponent`, `CustomSelectComponent`, `PaginationComponent`, `BadgeComponent`, `TooltipDirective`.
-      - `admin-membership-tiers.component.html`: Thêm filter bar 3 cột (Lọc trạng thái, Sắp xếp, Tìm kiếm), tooltip trên tất cả ô dữ liệu, badge `app-badge` kèm switch trong cột `is_active`, nút action đồng nhất style categories, `app-pagination` ở cuối bảng.
-      - `language.service.ts`: Thêm 4 key mới (cả EN + VI): `admin.search_tier_placeholder`, `admin.tier_item`, `common.filter_status`, `common.all`.
+      - `admin-membership-tiers.component.html`: Thêm filter bar (Lọc trạng thái, Tìm kiếm - đã bỏ ô Sắp xếp theo), tooltip trên tất cả ô dữ liệu, badge `app-badge` kèm switch trong cột `is_active`, nút action đồng nhất style categories, `app-pagination` ở cuối bảng.
+      - `language.service.ts`: Tái cấu trúc kiến trúc i18n — tách từ điển dịch thuật thành 2 tệp độc lập [en.ts](file:///d:/git/isocalmarket/isocalmarket-web/src/app/core/i18n/en.ts) và [vi.ts](file:///d:/git/isocalmarket/isocalmarket-web/src/app/core/i18n/vi.ts) trong thư mục `src/app/core/i18n/`. Đồng bộ chuẩn xác 100% 1,464/1,464 keys giữa Tiếng Anh và Tiếng Việt, loại bỏ hoàn toàn trùng lặp.
+      - `AdminMembershipTierController.php`: Bổ sung 3 ràng buộc duy nhất (`unique:level/min_deposit/name`) và quy tắc **ràng buộc tịnh tiến số tiền nạp tích lũy theo Level**: Level cao hơn bắt buộc phải có mốc `min_deposit` lớn hơn các Level thấp hơn và ngược lại. Đảm bảo toàn bộ phản hồi Backend API response messages 100% Tiếng Anh chuẩn (English) theo nguyên tắc GEMINI.md.
+      - `MembershipTierTest.php`: Viết unit/feature test `test_admin_cannot_create_duplicate_membership_tier_rules` kiểm tra chặn tạo Level 6 ($900) nhỏ hơn Level 5 ($1000), đạt **148/148 PASSED (100%)**, 1007 assertions.
+      - `membership-tier-form-modal.component.ts`: Cập nhật hàm `extractErrorMessage` tự động bắt lỗi validation 422 từ backend và hiển thị Toast thông báo tiếng Việt chính xác.
       - Biên dịch Angular Frontend (`npm run build`) thành công **100% SUCCESS, 0 ERRORS**.
   - **Xác nhận**: Icon supplier đúng semantic, trang Membership Tiers đồng bộ UX 100% với các trang admin khác!
 

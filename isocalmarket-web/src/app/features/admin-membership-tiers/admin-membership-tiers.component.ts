@@ -61,21 +61,9 @@ export class AdminMembershipTiersComponent implements OnInit {
   // Search & Filter
   searchQuery = '';
   private readonly _searchQuery = signal('');
-  readonly selectedSort = signal<string>('level-asc');
   readonly selectedStatusFilter = signal<string>('all');
   readonly currentPage = signal<number>(1);
   readonly limit = 10;
-
-  public get sortOptions() {
-    return [
-      { label: this.lang.translate('admin.tier_level') + ' ↑', value: 'level-asc' },
-      { label: this.lang.translate('admin.tier_level') + ' ↓', value: 'level-desc' },
-      { label: this.lang.translate('admin.tier_min_deposit') + ' ↑', value: 'deposit-asc' },
-      { label: this.lang.translate('admin.tier_min_deposit') + ' ↓', value: 'deposit-desc' },
-      { label: this.lang.translate('admin.tier_discount_percent') + ' ↑', value: 'discount-asc' },
-      { label: this.lang.translate('admin.tier_discount_percent') + ' ↓', value: 'discount-desc' },
-    ];
-  }
 
   public get statusOptions() {
     return [
@@ -87,7 +75,6 @@ export class AdminMembershipTiersComponent implements OnInit {
 
   readonly filteredTiers = computed(() => {
     const q = this._searchQuery().toLowerCase().trim();
-    const sort = this.selectedSort();
     const status = this.selectedStatusFilter();
 
     let list = this.tiers();
@@ -107,18 +94,8 @@ export class AdminMembershipTiersComponent implements OnInit {
       list = list.filter(t => !t.is_active);
     }
 
-    // Sort
-    list = [...list].sort((a, b) => {
-      switch (sort) {
-        case 'level-asc':    return a.level - b.level;
-        case 'level-desc':   return b.level - a.level;
-        case 'deposit-asc':  return a.min_deposit - b.min_deposit;
-        case 'deposit-desc': return b.min_deposit - a.min_deposit;
-        case 'discount-asc': return a.discount_percent - b.discount_percent;
-        case 'discount-desc':return b.discount_percent - a.discount_percent;
-        default: return 0;
-      }
-    });
+    // Default sort by level ascending
+    list = [...list].sort((a, b) => a.level - b.level);
 
     return list;
   });

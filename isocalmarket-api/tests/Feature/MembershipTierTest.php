@@ -108,6 +108,57 @@ class MembershipTierTest extends TestCase
         $deleteRes->assertStatus(200);
     }
 
+    public function test_admin_cannot_create_duplicate_membership_tier_rules(): void
+    {
+        // Try creating duplicate level (level 1 already exists)
+        $resLevel = $this->withHeader('Authorization', "Bearer {$this->adminToken}")
+            ->postJson('/api/v1/admin/membership-tiers', [
+                'level' => 1,
+                'name_vi' => 'Cấp Mới 1',
+                'name_en' => 'New Level 1',
+                'min_deposit' => 9999.0,
+                'discount_percent' => 5.0,
+            ]);
+        $resLevel->assertStatus(422)
+            ->assertJsonValidationErrors(['level']);
+
+        // Try creating duplicate min_deposit (100.0 already exists for Bạc)
+        $resDeposit = $this->withHeader('Authorization', "Bearer {$this->adminToken}")
+            ->postJson('/api/v1/admin/membership-tiers', [
+                'level' => 99,
+                'name_vi' => 'Cấp Mới 2',
+                'name_en' => 'New Level 2',
+                'min_deposit' => 100.0,
+                'discount_percent' => 5.0,
+            ]);
+        $resDeposit->assertStatus(422)
+            ->assertJsonValidationErrors(['min_deposit']);
+
+        // Try creating duplicate name_vi ('Đồng' already exists)
+        $resName = $this->withHeader('Authorization', "Bearer {$this->adminToken}")
+            ->postJson('/api/v1/admin/membership-tiers', [
+                'level' => 99,
+                'name_vi' => 'Đồng',
+                'name_en' => 'Bronze Unique',
+                'min_deposit' => 9999.0,
+                'discount_percent' => 5.0,
+            ]);
+        $resName->assertStatus(422)
+            ->assertJsonValidationErrors(['name_vi']);
+
+        // Try creating Level 6 with min_deposit = 900 (smaller than Level 5 = 1000) -> Must be rejected with 422!
+        $resProgression = $this->withHeader('Authorization', "Bearer {$this->adminToken}")
+            ->postJson('/api/v1/admin/membership-tiers', [
+                'level' => 6,
+                'name_vi' => 'Tinh Anh Thất Bại',
+                'name_en' => 'Failed Elite',
+                'min_deposit' => 900.0,
+                'discount_percent' => 20.0,
+            ]);
+        $resProgression->assertStatus(422)
+            ->assertJsonValidationErrors(['min_deposit']);
+    }
+
     public function test_adjust_cumulative_deposit_updates_user_tier_automatically(): void
     {
         // Initially total_deposited is 0 (Tier Đồng)

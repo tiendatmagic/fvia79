@@ -73,7 +73,7 @@
 
     <!-- Search & Filter Bar -->
     <div
-      class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 bg-slate-50 dark:bg-slate-900/40 border border-slate-200/30 dark:border-slate-800/30 rounded-2xl p-4 sm:p-5"
+      class="grid grid-cols-1 sm:grid-cols-2 gap-4 bg-slate-50 dark:bg-slate-900/40 border border-slate-200/30 dark:border-slate-800/30 rounded-2xl p-4 sm:p-5"
     >
       <div class="form-field">
         <label>{{ 'common.filter_status' | translate }}</label>
@@ -83,17 +83,6 @@
           labelKey="label"
           [value]="selectedStatusFilter()"
           (valueChange)="selectedStatusFilter.set($event); currentPage.set(1)"
-        />
-      </div>
-
-      <div class="form-field">
-        <label>{{ 'common.sort_by' | translate }}</label>
-        <app-custom-select
-          [options]="sortOptions"
-          valueKey="value"
-          labelKey="label"
-          [value]="selectedSort()"
-          (valueChange)="selectedSort.set($event); currentPage.set(1)"
         />
       </div>
 

@@ -115,7 +115,7 @@ export class MembershipTierFormModalComponent implements OnInit {
         },
         error: (err) => {
           this.isSubmitting.set(false);
-          this.toast.showToast(err.error?.message || 'Cập nhật thất bại.', 'error');
+          this.toast.showToast(this.extractErrorMessage(err, 'Cập nhật thất bại.'), 'error');
         },
       });
     } else {
@@ -129,9 +129,19 @@ export class MembershipTierFormModalComponent implements OnInit {
         },
         error: (err) => {
           this.isSubmitting.set(false);
-          this.toast.showToast(err.error?.message || 'Thêm cấp bậc thất bại.', 'error');
+          this.toast.showToast(this.extractErrorMessage(err, 'Thêm cấp bậc thất bại.'), 'error');
         },
       });
     }
+  }
+
+  private extractErrorMessage(err: any, fallback: string): string {
+    if (err?.error?.errors) {
+      const firstErrorKey = Object.keys(err.error.errors)[0];
+      if (firstErrorKey && err.error.errors[firstErrorKey]?.length > 0) {
+        return err.error.errors[firstErrorKey][0];
+      }
+    }
+    return err?.error?.message || fallback;
   }
 }
