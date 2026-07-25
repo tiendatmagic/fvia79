@@ -9,7 +9,7 @@
         {{ data.user.name }}
         <span
           *ngIf="data.user.membership_tier"
-          class="px-2 py-0.5 rounded-full text-[10px] font-bold text-white shadow-sm"
+          class="px-2 py-0.5 rounded-full text-[10px] font-bold text-white shadow-sm shrink-0"
           [style.backgroundColor]="data.user.membership_tier.color || '#3b82f6'"
         >
           {{ data.user.membership_tier.name_vi }}
@@ -24,40 +24,11 @@
       <span class="text-base font-extrabold text-[var(--color-primary)] block">
         {{ currentBalance | number: '1.2-4' }} USD
       </span>
-      <span class="text-[11px] font-bold text-emerald-600 dark:text-emerald-400 block mt-0.5">
-        {{ 'admin.total_deposited' | translate }}: {{ currentTotalDeposited | currency:'USD':'symbol':'1.2-2' }}
-      </span>
     </div>
   </div>
 
-  <!-- Tabs Select -->
-  <div class="flex border-b border-slate-200 dark:border-slate-800">
-    <button
-      type="button"
-      (click)="activeTab = 'balance'"
-      class="py-2.5 px-4 font-bold text-xs uppercase tracking-wider border-b-2 transition-colors cursor-pointer"
-      [ngClass]="{
-        'border-primary text-primary': activeTab === 'balance',
-        'border-transparent text-slate-400 hover:text-slate-600 dark:hover:text-slate-200': activeTab !== 'balance'
-      }"
-    >
-      {{ 'admin.adjust_balance_tab' | translate }}
-    </button>
-    <button
-      type="button"
-      (click)="activeTab = 'cumulative'"
-      class="py-2.5 px-4 font-bold text-xs uppercase tracking-wider border-b-2 transition-colors cursor-pointer"
-      [ngClass]="{
-        'border-primary text-primary': activeTab === 'cumulative',
-        'border-transparent text-slate-400 hover:text-slate-600 dark:hover:text-slate-200': activeTab !== 'cumulative'
-      }"
-    >
-      {{ 'admin.cumulative_deposit_tab' | translate }}
-    </button>
-  </div>
-
-  <!-- Tab 1: Balance Adjustment -->
-  <form *ngIf="activeTab === 'balance'" (ngSubmit)="onSubmit()" class="space-y-4">
+  <!-- Balance Adjustment Form -->
+  <form (ngSubmit)="onSubmit()" class="space-y-4">
     <div class="space-y-1.5">
       <label class="text-xs font-bold text-slate-400 dark:text-slate-500 uppercase tracking-wider block">
         {{ 'admin.adjustment_action' | translate }} <span class="text-rose-500">*</span>
@@ -119,7 +90,7 @@
     </div>
 
     <div class="flex justify-end gap-3 pt-2">
-      <button type="button" (click)="onClose()" class="px-4 py-2 rounded-xl border border-slate-200 dark:border-slate-800 font-bold text-sm">
+      <button type="button" (click)="onClose()" class="px-4 py-2 rounded-xl border border-slate-200 dark:border-slate-800 font-bold text-sm cursor-pointer">
         {{ 'action.cancel' | translate }}
       </button>
       <button
@@ -131,86 +102,6 @@
         class="px-6 py-2 rounded-xl font-bold text-sm cursor-pointer"
       >
         {{ 'action.confirm' | translate }}
-      </button>
-    </div>
-  </form>
-
-  <!-- Tab 2: Cumulative Deposit Adjustment -->
-  <form *ngIf="activeTab === 'cumulative'" (ngSubmit)="onSubmit()" class="space-y-4">
-    <div class="space-y-1.5">
-      <label class="text-xs font-bold text-slate-400 dark:text-slate-500 uppercase tracking-wider block">
-        {{ 'admin.cumulative_adjustment_type' | translate }} <span class="text-rose-500">*</span>
-      </label>
-      <div class="grid grid-cols-3 gap-2">
-        <button
-          type="button"
-          (click)="cumulativeType = 'add'"
-          class="py-2 px-3 rounded-xl border text-xs font-extrabold transition-all cursor-pointer"
-          [ngClass]="{
-            'border-emerald-500 bg-emerald-50 text-emerald-700 dark:bg-emerald-950/30 dark:text-emerald-400': cumulativeType === 'add',
-            'border-slate-200 dark:border-slate-800 text-slate-600 dark:text-slate-400': cumulativeType !== 'add'
-          }"
-        >
-          {{ 'admin.cumulative_type_add' | translate }}
-        </button>
-
-        <button
-          type="button"
-          (click)="cumulativeType = 'subtract'"
-          class="py-2 px-3 rounded-xl border text-xs font-extrabold transition-all cursor-pointer"
-          [ngClass]="{
-            'border-rose-500 bg-rose-50 text-rose-700 dark:bg-rose-950/30 dark:text-rose-400': cumulativeType === 'subtract',
-            'border-slate-200 dark:border-slate-800 text-slate-600 dark:text-slate-400': cumulativeType !== 'subtract'
-          }"
-        >
-          {{ 'admin.cumulative_type_subtract' | translate }}
-        </button>
-
-        <button
-          type="button"
-          (click)="cumulativeType = 'set'"
-          class="py-2 px-3 rounded-xl border text-xs font-extrabold transition-all cursor-pointer"
-          [ngClass]="{
-            'border-blue-500 bg-blue-50 text-blue-700 dark:bg-blue-950/30 dark:text-blue-400': cumulativeType === 'set',
-            'border-slate-200 dark:border-slate-800 text-slate-600 dark:text-slate-400': cumulativeType !== 'set'
-          }"
-        >
-          {{ 'admin.cumulative_type_set' | translate }}
-        </button>
-      </div>
-    </div>
-
-    <div class="space-y-1.5">
-      <label class="text-xs font-bold text-slate-400 dark:text-slate-500 uppercase tracking-wider block">
-        {{ 'admin.amount_usd' | translate }} <span class="text-rose-500">*</span>
-      </label>
-      <app-custom-input
-        [(ngModel)]="cumulativeAmount"
-        name="cumulativeAmount"
-        type="number"
-        [placeholder]="'admin.amount_usd_placeholder' | translate"
-        [min]="0"
-        required
-      />
-    </div>
-
-    <div class="p-3 bg-amber-500/10 border border-amber-500/20 rounded-xl text-xs text-amber-700 dark:text-amber-400">
-      {{ 'admin.cumulative_type_notice' | translate }}
-    </div>
-
-    <div class="flex justify-end gap-3 pt-2">
-      <button type="button" (click)="onClose()" class="px-4 py-2 rounded-xl border border-slate-200 dark:border-slate-800 font-bold text-sm">
-        {{ 'action.cancel' | translate }}
-      </button>
-      <button
-        type="submit"
-        app-button
-        variant="primary"
-        [loading]="isSubmitting()"
-        [disabled]="cumulativeAmount === null || cumulativeAmount < 0"
-        class="px-6 py-2 rounded-xl font-bold text-sm cursor-pointer"
-      >
-        {{ 'admin.save_cumulative_deposit' | translate }}
       </button>
     </div>
   </form>

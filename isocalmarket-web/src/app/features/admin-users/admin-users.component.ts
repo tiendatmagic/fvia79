@@ -14,6 +14,7 @@ import { ModalService } from '@core/services/modal.service';
 import { PaginationComponent } from '@shared/components/pagination/pagination.component';
 import { UserFormModalComponent } from './user-form-modal/user-form-modal.component';
 import { AdjustBalanceModalComponent } from './adjust-balance-modal/adjust-balance-modal.component';
+import { AdjustCumulativeDepositModalComponent } from './adjust-cumulative-deposit-modal/adjust-cumulative-deposit-modal.component';
 import { CustomSelectComponent } from '@shared/components/custom-select/custom-select.component';
 import { CustomCheckboxComponent } from '@shared/components/custom-checkbox/custom-checkbox.component';
 import { CustomDateTimeRangeComponent, DateTimeRangeValue } from '@shared/components/custom-date-time-range/custom-date-time-range.component';
@@ -290,6 +291,21 @@ export class AdminUsersComponent implements OnInit {
   public openAdjustBalanceModal(user: any) {
     const ref = this.modalService.open(AdjustBalanceModalComponent, {
       title: this.lang.translate('modal.adjust_balance_title'),
+      size: 'md',
+      closeOnBackdropClick: true,
+      data: { user }
+    });
+
+    ref.afterClosed$.subscribe((success: any) => {
+      if (success) {
+        this.fetchUsers(this.currentPage());
+      }
+    });
+  }
+
+  public openAdjustCumulativeDepositModal(user: any) {
+    const ref = this.modalService.open(AdjustCumulativeDepositModalComponent, {
+      title: this.lang.translate('admin.adjust_cumulative_title'),
       size: 'md',
       closeOnBackdropClick: true,
       data: { user }

@@ -44,18 +44,11 @@ export class AdjustBalanceModalComponent implements OnInit {
   private readonly userStore = inject(UserStore);
   private readonly lang = inject(LanguageService);
 
-  public activeTab: 'balance' | 'cumulative' = 'balance';
-
   // Balance Form
   public type: 'add' | 'subtract' = 'add';
   public amount: number | null = null;
   public affectCumulative = true;
   public reason = '';
-
-  // Cumulative Form
-  public cumulativeType: 'add' | 'subtract' | 'set' = 'add';
-  public cumulativeAmount: number | null = null;
-  public cumulativeReason = '';
 
   public readonly isSubmitting = signal(false);
 
@@ -63,12 +56,8 @@ export class AdjustBalanceModalComponent implements OnInit {
     return this.data?.user?.balance || 0;
   }
 
-  public get currentTotalDeposited(): number {
-    return this.data?.user?.total_deposited || 0;
-  }
-
   public get isSubtractExceeded(): boolean {
-    if (this.activeTab === 'balance' && this.type === 'subtract' && this.amount) {
+    if (this.type === 'subtract' && this.amount) {
       return this.amount > this.currentBalance;
     }
     return false;
@@ -82,42 +71,22 @@ export class AdjustBalanceModalComponent implements OnInit {
 
   public onSubmit() {
     if (this.isSubmitting()) return;
+    if (!this.amount || this.amount <= 0 || this.isSubtractExceeded) return;
 
-    if (this.activeTab === 'balance') {
-      if (!this.amount || this.amount <= 0 || this.isSubtractExceeded) return;
+    this.isSubmitting.set(true);
+    const reasonText = this.reason.trim()
+      || this.lang.translate(this.type === 'add' ? 'balance.admin_add_reason' : 'balance.admin_subtract_reason');
 
-      this.isSubmitting.set(true);
-      const reasonText = this.reason.trim()
-        || this.lang.translate(this.type === 'add' ? 'balance.admin_add_reason' : 'balance.admin_subtract_reason');
-
-      this.userStore.adjustBalance(this.data.user.id, this.type, this.amount, reasonText, this.affectCumulative).subscribe({
-        next: (res) => {
-          this.isSubmitting.set(false);
-          if (res) {
-            this.modalRef.close(true);
-          }
-        },
-        error: () => {
-          this.isSubmitting.set(false);
-        },
-      });
-    } else {
-      if (this.cumulativeAmount === null || this.cumulativeAmount < 0) return;
-
-      this.isSubmitting.set(true);
-      const reasonText = this.cumulativeReason.trim() || this.lang.translate('admin.cumulative_deposit_reason');
-
-      this.userStore.adjustCumulativeDeposit(this.data.user.id, this.cumulativeType, this.cumulativeAmount, reasonText).subscribe({
-        next: (res) => {
-          this.isSubmitting.set(false);
-          if (res) {
-            this.modalRef.close(true);
-          }
-        },
-        error: () => {
-          this.isSubmitting.set(false);
-        },
-      });
-    }
+    this.userStore.adjustBalance(this.data.user.id, this.type, this.amount, reasonText, this.affectCumulative).subscribe({
+      next: (res) => {
+        this.isSubmitting.set(false);
+        if (res) {
+          this.modalRef.close(true);
+        }
+      },
+      error: () => {
+        this.isSubmitting.set(false);
+      },
+    });
   }
 }

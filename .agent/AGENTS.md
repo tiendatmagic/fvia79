@@ -129,7 +129,11 @@
       - Component `AdminMembershipTiersComponent` (`/admin/membership-tiers`): Đồng bộ 100% layout tiêu chuẩn Admin với `<app-page-header>`, `<app-card>` và `<app-table>`.
       - Standalone Component `MembershipTierFormModalComponent` (`membership-tier-form-modal.component.ts` & `.html`): Tách biệt modal form thêm/sửa cấp bậc, mở qua `ModalService` loại bỏ hoàn toàn custom backdrop blur tự chế, đạt chuẩn UI/UX đồng bộ 100% với các modal khác.
       - Cập nhật `HeaderComponent`: Bổ sung Badge Cấp bậc Đại lý trong User Menu Dropdown góc trên phải màn hình.
-      - Cập nhật `AdminUsersComponent` & `UserFormModalComponent` (Badge cấp bậc, cột `total_deposited` và Modal điều chỉnh nạp tích lũy trực tiếp).
+      - `AdminUsersComponent` & `UserFormModalComponent`: Tách biệt hoàn toàn thành 2 Modal chuyên biệt độc lập:
+        1. **Modal Điều chỉnh Số dư Thành viên** (`AdjustBalanceModalComponent`): Chuyên trách cộng/trừ số dư ví thực (`balance`) kèm công tắc đồng bộ.
+        2. **Modal Điều chỉnh Tổng nạp Tích lũy** (`AdjustCumulativeDepositModalComponent`): Chuyên trách cộng/trừ/đặt cố định số tiền tích lũy (`total_deposited`) và tự động nâng/hạ Cấp bậc Đại lý.
+        - Cột thao tác bảng Admin Users được trang bị 2 nút bấm riêng biệt: `Sửa số dư` (Icon ví tiền `wallet`) và `Nạp tích lũy` (Icon ngôi sao `star`).
+        - Khung Cập nhật Thông tin Thành viên (`UserFormModalComponent`) bổ sung đầy đủ cả 2 khối điều chỉnh độc lập.
       - Cập nhật `ProfileInformationComponent` (`/profile`): Card Hạng Đại lý hiện tại, Progress Bar tiến trình nâng hạng và Bảng ưu đãi chiết khấu các cấp bậc.
       - Cập nhật `CartModalComponent`: Hiển thị dòng ưu đãi chiết khấu Cấp bậc Đại lý khi xem giỏ hàng và thanh toán.
       - Khai báo bộ từ điển i18n Tiếng Việt & Tiếng Anh đầy đủ (`admin.*`, `profile.*`, `cart.*`, `nav.*`) trong `LanguageService.ts`. Hiển thị tên cấp bậc động linh hoạt theo ngôn ngữ người dùng lựa chọn.

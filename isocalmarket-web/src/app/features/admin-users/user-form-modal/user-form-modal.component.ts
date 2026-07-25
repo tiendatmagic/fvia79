@@ -14,9 +14,11 @@ import { IconComponent } from '@shared/components/icon/icon.component';
 import { TranslatePipe } from '@shared/pipes/translate.pipe';
 import { finalize } from 'rxjs/operators';
 import { QrCodeModule } from 'ng-qrcode';
-
 import { ModalService } from '@core/services/modal.service';
 import { AdjustBalanceModalComponent } from '../adjust-balance-modal/adjust-balance-modal.component';
+import { AdjustCumulativeDepositModalComponent } from '../adjust-cumulative-deposit-modal/adjust-cumulative-deposit-modal.component';
+
+
 
 type TabId = 'info' | 'permissions' | 'security';
 
@@ -64,6 +66,8 @@ export class UserFormModalComponent implements OnInit {
   public phone = '';
   public role = 'customer';
   public balance = 0;
+  public total_deposited = 0;
+  public membership_tier: any = null;
   public password = '';
   public api_key = '';
   public status = 'active';
@@ -111,6 +115,8 @@ export class UserFormModalComponent implements OnInit {
       this.phone = this.modalData.phone || '';
       this.role = this.modalData.role;
       this.balance = this.modalData.balance;
+      this.total_deposited = this.modalData.total_deposited || 0;
+      this.membership_tier = this.modalData.membership_tier || null;
       this.api_key = this.modalData.api_key || '';
       this.status = this.modalData.status || 'active';
       this.google2fa_enabled = this.modalData.google2fa_enabled || false;
@@ -283,7 +289,9 @@ export class UserFormModalComponent implements OnInit {
           id: this.editingId,
           name: this.name,
           email: this.email,
-          balance: this.balance
+          balance: this.balance,
+          total_deposited: this.total_deposited,
+          membership_tier: this.membership_tier
         }
       }
     }).afterClosed$.subscribe((updated?: boolean) => {
@@ -292,6 +300,37 @@ export class UserFormModalComponent implements OnInit {
           const u = this.state.userStore.users().find(x => x.id === this.editingId);
           if (u) {
             this.balance = u.balance;
+            this.total_deposited = u.total_deposited || 0;
+            this.membership_tier = u.membership_tier || null;
+            this.cdr.detectChanges();
+          }
+        });
+      }
+    });
+  }
+
+  public openAdjustCumulativeDeposit() {
+    if (!this.isEditMode || !this.editingId) return;
+
+    this.modalService.open(AdjustCumulativeDepositModalComponent, {
+      title: this.lang.translate('admin.adjust_cumulative_title'),
+      size: 'md',
+      data: {
+        user: {
+          id: this.editingId,
+          name: this.name,
+          email: this.email,
+          total_deposited: this.total_deposited,
+          membership_tier: this.membership_tier
+        }
+      }
+    }).afterClosed$.subscribe((updated?: boolean) => {
+      if (updated) {
+        this.state.userStore.fetchUsers(this.state.userStore.currentPage(), 10).subscribe(() => {
+          const u = this.state.userStore.users().find(x => x.id === this.editingId);
+          if (u) {
+            this.total_deposited = u.total_deposited || 0;
+            this.membership_tier = u.membership_tier || null;
             this.cdr.detectChanges();
           }
         });

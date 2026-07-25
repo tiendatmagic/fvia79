@@ -293,8 +293,17 @@
             class="text-xs font-bold px-3 py-1.5 rounded-lg border border-teal-500/20 dark:border-teal-500/30 hover:bg-teal-100 dark:hover:bg-teal-950/40 text-teal-700 dark:text-teal-400 bg-teal-50 dark:bg-teal-950/20 hover:scale-105 active:scale-95 transition-all cursor-pointer flex items-center gap-1 shrink-0"
             [appTooltip]="'admin.balance_action' | translate"
           >
-            <app-icon name="plus" class="w-3.5 h-3.5" />
+            <app-icon name="wallet" class="w-3.5 h-3.5" />
             <span>{{ 'admin.balance_action_short' | translate }}</span>
+          </button>
+
+          <button
+            (click)="openAdjustCumulativeDepositModal(row)"
+            class="text-xs font-bold px-3 py-1.5 rounded-lg border border-amber-500/20 dark:border-amber-500/30 hover:bg-amber-100 dark:hover:bg-amber-950/40 text-amber-700 dark:text-amber-400 bg-amber-50 dark:bg-amber-950/20 hover:scale-105 active:scale-95 transition-all cursor-pointer flex items-center gap-1 shrink-0"
+            [appTooltip]="'admin.adjust_cumulative_title' | translate"
+          >
+            <app-icon name="star" class="w-3.5 h-3.5" />
+            <span>{{ 'admin.adjust_cumulative_short' | translate }}</span>
           </button>
           <button
             (click)="openEditModal(row)"
