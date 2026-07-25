@@ -415,6 +415,19 @@ class SupplierCatalogSyncTest extends TestCase
             ->assertJsonMissingPath('account.api_key');
     }
 
+    public function test_supplier_balance_returns_error_when_supplier_is_disabled(): void
+    {
+        $supplier = SupplierModel::where('code', 'ads7979')->firstOrFail();
+        $supplier->update(['enabled' => false]);
+
+        $token = $this->adminToken('disabled_supplier_balance_admin');
+
+        $this->withToken($token)
+            ->postJson('/api/v1/admin/suppliers/ads7979/balance')
+            ->assertStatus(422)
+            ->assertJson(['message' => 'Supplier is disabled.']);
+    }
+
     public function test_supplier_sync_returns_safe_bad_gateway_response_for_upstream_failure(): void
     {
         config()->set('services.ads7979.api_key', 'test-api-key');

@@ -210,6 +210,13 @@ class SupplierController extends Controller
     {
         try {
             $supplier = SupplierModel::where('code', $code)->firstOrFail();
+
+            if (!$supplier->enabled) {
+                return response()->json([
+                    'message' => 'Supplier is disabled.',
+                ], 422);
+            }
+
             $account = $this->connector->fetchAccount($supplier);
 
             return response()->json([

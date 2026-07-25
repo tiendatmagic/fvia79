@@ -1328,6 +1328,7 @@ export const EN_TRANSLATIONS: Record<string, string> = {
   'supplier.description': 'Import product catalogs, stock and VND pricing from this provider.',
   'supplier.detected_standard': 'Detected standard',
   'supplier.disabled_error': 'The supplier is disabled.',
+  'supplier.disabled_hint': 'Supplier is disabled',
   'supplier.disabled_named': 'Supplier {{name}} is disabled.',
   'supplier.enabled': 'Enable this supplier',
   'supplier.exchange_rate_invalid': 'The VND/USD exchange rate must be greater than zero.',

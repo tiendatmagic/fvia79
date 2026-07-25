@@ -13,6 +13,22 @@
 > Khi cần seed dữ liệu cho một seeder cụ thể, chỉ dùng:
 > - `php artisan db:seed --class=TenSeederClass` — chạy đúng 1 seeder.
 
+- **[BỎ CALL API SỐ DƯ KHI TẮT NHÀ CUNG CẤP (SKIP SUPPLIER BALANCE API WHEN DISABLED)]**:
+  - **Mô tả yêu cầu**:
+    - Khi công tắc "Bật nhà cung cấp này" ở trạng thái TẮT (`enabled: false`), không thực hiện gọi API lấy số dư balance từ nhà cung cấp để tránh tốn request API thừa và hiển thị trạng thái tắt trực quan.
+  - **Nội dung thực hiện**:
+    - **Backend (`isocalmarket-api`)**:
+      - `SupplierController.php`: Bổ sung kiểm tra `if (!$supplier->enabled)` trong phương thức `balance(string $code)`. Trả về HTTP response status 422 (`Supplier is disabled.`) nếu nhà cung cấp bị tắt.
+      - `SupplierCatalogSyncTest.php`: Bổ sung unit test `test_supplier_balance_returns_error_when_supplier_is_disabled`. PHPUnit test đạt **17/17 PASSED (100%)**, 77 assertions.
+    - **Frontend (`isocalmarket-web`)**:
+      - `admin-suppliers.component.ts`:
+        - Cập nhật `loadSupplierBalance()`: Kiểm tra `!this.supplierForm.enabled`, tự động xóa số dư trong store (`clearBalance()`), gỡ cờ lỗi `balanceLoadFailed` và `return` ngay mà không gọi HTTP API.
+        - Thêm phương thức `onSupplierEnabledChange(enabled: boolean)` tự động dọn dẹp số dư hiển thị khi Admin bật/tắt công tắc.
+      - `admin-suppliers.component.html`:
+        - Thẻ "SỐ DƯ TÀI KHOẢN NHÀ CUNG CẤP" hiển thị "Nhà cung cấp đang tắt" (`supplier.disabled_hint`) khi công tắc TẮT.
+        - Nút bấm làm mới số dư tự động vô hiệu hóa (`[disabled]="... || !supplierForm.enabled"`).
+      - `vi.ts` & `en.ts`: Bổ sung translation key `supplier.disabled_hint` ('Nhà cung cấp đang tắt' / 'Supplier is disabled').
+
 - **[HIỂN THỊ THÔNG SỐ PHP INI VÀ NÂNG CẤP GIAO DIỆN SAO LƯU CƠ SỞ DỮ LIỆU (SHOW SERVER PHP INI LIMITS & DATABASE BACKUP UI REDESIGN)]**:
   - **Mô tả yêu cầu**:
     - Hiển thị các thông số giới hạn của máy chủ PHP (`upload_max_filesize`, `post_max_size`) bên cạnh thông số hệ quản trị CSDL (MySQL) và giới hạn tải ứng dụng (100 MB).

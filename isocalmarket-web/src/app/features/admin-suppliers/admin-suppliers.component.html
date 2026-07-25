@@ -66,7 +66,11 @@
               >
                 {{ 'supplier.account_balance' | translate }}
               </p>
-              @if (supplierStore.balanceLoading()) {
+              @if (!supplierForm.enabled) {
+                <p class="mt-0.5 text-sm font-bold text-slate-500 dark:text-slate-400">
+                  {{ 'supplier.disabled_hint' | translate }}
+                </p>
+              } @else if (supplierStore.balanceLoading()) {
                 <p class="mt-0.5 text-sm font-bold text-slate-500">
                   {{ 'supplier.balance_loading' | translate }}
                 </p>
@@ -84,7 +88,7 @@
             <button
               type="button"
               class="w-8 h-8 shrink-0 rounded-lg inline-flex items-center justify-center text-emerald-600 transition-colors hover:bg-emerald-100 disabled:cursor-not-allowed disabled:opacity-50 dark:text-emerald-400 dark:hover:bg-emerald-900/40"
-              [disabled]="supplierStore.balanceLoading()"
+              [disabled]="supplierStore.balanceLoading() || !supplierForm.enabled"
               [attr.aria-label]="'supplier.refresh_balance' | translate"
               [title]="'supplier.refresh_balance' | translate"
               (click)="loadSupplierBalance(true)"
@@ -153,7 +157,7 @@
       <div class="flex flex-col items-stretch gap-3 sm:items-end">
         <app-custom-switch
           [checked]="supplierForm.enabled ?? false"
-          (checkedChange)="supplierForm.enabled = $event"
+          (checkedChange)="onSupplierEnabledChange($event)"
           [disabled]="isLocked()"
           [label]="'supplier.enabled' | translate"
         />

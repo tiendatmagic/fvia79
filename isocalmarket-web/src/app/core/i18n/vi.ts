@@ -1328,6 +1328,7 @@ export const VI_TRANSLATIONS: Record<string, string> = {
   'supplier.description': 'Nhập danh mục, tồn kho và giá VND từ nhà cung cấp này.',
   'supplier.detected_standard': 'Chuẩn API đã nhận diện',
   'supplier.disabled_error': 'Nhà cung cấp đang bị tắt.',
+  'supplier.disabled_hint': 'Nhà cung cấp đang tắt',
   'supplier.disabled_named': 'Nhà cung cấp {{name}} đang bị tắt.',
   'supplier.enabled': 'Bật nhà cung cấp này',
   'supplier.exchange_rate_invalid': 'Tỷ giá VND/USD phải lớn hơn 0.',

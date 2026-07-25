@@ -284,9 +284,23 @@ export class AdminSuppliersComponent implements OnInit {
     return rate > 0 ? this.supplierExamplePriceVnd() / rate : 0;
   }
 
+  public onSupplierEnabledChange(enabled: boolean): void {
+    this.supplierForm.enabled = enabled;
+    if (!enabled) {
+      this.balanceLoadFailed.set(false);
+      this.supplierStore.clearBalance();
+    }
+  }
+
   public loadSupplierBalance(forceRefresh = false): void {
     const code = this.selectedSupplierCode();
-    if (!code || this.isCreatingSupplier()) return;
+    if (!code || this.isCreatingSupplier() || !this.supplierForm.enabled) {
+      if (!this.supplierForm.enabled) {
+        this.balanceLoadFailed.set(false);
+        this.supplierStore.clearBalance();
+      }
+      return;
+    }
 
     this.balanceLoadFailed.set(false);
     this.supplierStore.fetchBalance(code, forceRefresh).subscribe({
