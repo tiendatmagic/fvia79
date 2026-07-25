@@ -30,7 +30,7 @@
   - **Mô tả yêu cầu**:
     - Cài đặt dịch vụ FTP (`vsftpd`) trên máy chủ VPS (`184.164.93.247`), tạo tài khoản FTP ngẫu nhiên có quyền ghi dữ liệu để upload/quản lý mã nguồn Frontend (`/var/www/isocalmarket-web`) và Backend (`/var/www/isocalmarket-api`).
   - **Nội dung thực hiện**:
-    - Cài đặt `vsftpd`, bật Passive Mode (ports `40000:40100`), tạo user `deploy_f627f2` kèm mật khẩu ngẫu nhiên mới `IsoFtp_643631352b38!`, phân quyền nhóm `www-data` (`chmod 775` & `SGID`).
+    - Cài đặt `vsftpd`, bật Passive Mode (ports `40000:40100`), tạo user `deploy_f627f2` kèm mật khẩu ngẫu nhiên mới `IsoFtp_0c0650a1b5cdb3eeadd2cd44!`, phân quyền nhóm `www-data` (`chmod 775` & `SGID`).
     - Cập nhật đầy đủ thông số kết nối FTP vào tệp [deploy.md](file:///d:/git/isocalmarket/deploy.md).
   - **Xác nhận**: Đã cài đặt dịch vụ FTP Server thành công và ghi chép thông tin đầy đủ!
 

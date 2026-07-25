@@ -1,6 +1,7 @@
 # Dependencies
 node_modules/
 vendor/
+deploy.md
 
 # Build & Dist outputs
 dist/
