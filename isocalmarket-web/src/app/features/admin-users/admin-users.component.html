@@ -172,9 +172,29 @@
         </app-badge>
       </ng-template>
 
+      <ng-template appTableCell="tier" let-row="row">
+        <span
+          *ngIf="row.membership_tier; else noTier"
+          class="px-2.5 py-1 rounded-full text-xs font-bold text-white shadow-sm inline-flex items-center gap-1"
+          [style.backgroundColor]="row.membership_tier.color || '#3b82f6'"
+        >
+          <app-icon [name]="row.membership_tier.icon || 'shield'" class="w-3.5 h-3.5" />
+          {{ lang.currentLang() === 'en' ? (row.membership_tier.name_en || row.membership_tier.name_vi) : row.membership_tier.name_vi }} (-{{ row.membership_tier.discount_percent }}%)
+        </span>
+        <ng-template #noTier>
+          <span class="text-xs text-slate-400 font-semibold">{{ 'profile.default_bronze_member' | translate }}</span>
+        </ng-template>
+      </ng-template>
+
       <ng-template appTableCell="balance" let-row="row">
         <span class="text-sm font-extrabold text-[var(--color-primary)]">
           {{ row.balance | number: '1.2-4' }} USD
+        </span>
+      </ng-template>
+
+      <ng-template appTableCell="total_deposited" let-row="row">
+        <span class="text-xs font-extrabold text-emerald-600 dark:text-emerald-400">
+          {{ (row.total_deposited || 0) | currency:'USD':'symbol':'1.2-2' }}
         </span>
       </ng-template>
 

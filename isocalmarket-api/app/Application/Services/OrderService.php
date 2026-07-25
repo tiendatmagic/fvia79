@@ -114,7 +114,19 @@ class OrderService
                     );
                 }
 
-                $discountAmount = 0.0;
+                $user = $this->userRepository->findByIdForUpdate($userId);
+                if (! $user) {
+                    throw new OrderException('User account not found.');
+                }
+
+                $tierDiscountAmount = 0.0;
+                $membershipTier = $user->getMembershipTier();
+                if ($membershipTier && ! empty($membershipTier['discount_percent']) && (float) $membershipTier['discount_percent'] > 0) {
+                    $tierPercent = (float) $membershipTier['discount_percent'];
+                    $tierDiscountAmount = round($totalPrice * ($tierPercent / 100), 4);
+                }
+
+                $couponDiscountAmount = 0.0;
                 $couponId = null;
                 $appliedCouponCode = null;
 
@@ -140,7 +152,7 @@ class OrderService
                         throw new OrderException('Coupon is not applicable to this order.');
                     }
 
-                    $discountAmount = $coupon->calculateDiscount($totalPrice);
+                    $couponDiscountAmount = $coupon->calculateDiscount($totalPrice);
                     $couponId = $coupon->getId();
                     $appliedCouponCode = $coupon->getCode();
 
@@ -159,12 +171,8 @@ class OrderService
                     $this->couponRepository->save($updatedCoupon);
                 }
 
+                $discountAmount = $tierDiscountAmount + $couponDiscountAmount;
                 $finalPrice = max(0.0, $totalPrice - $discountAmount);
-
-                $user = $this->userRepository->findByIdForUpdate($userId);
-                if (! $user) {
-                    throw new OrderException('User account not found.');
-                }
 
                 if ($user->getBalance() < $finalPrice) {
                     throw new OrderException('Insufficient balance to pay for the order (Required: '.number_format($finalPrice, 4).' USD, Current: '.number_format($user->getBalance(), 4).' USD).');

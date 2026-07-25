@@ -42,6 +42,12 @@ export class HeaderComponent {
   public showLangDropdown = signal(false);
   public showCurrencyDropdown = signal(false);
 
+  public getTierName(tier: any): string {
+    if (!tier) return '';
+    const currentLang = this.langService.currentLang();
+    return currentLang === 'en' ? (tier.name_en || tier.name_vi) : tier.name_vi;
+  }
+
   public openMobileMenu() {
     this.stateService.showMobileMenu.set(true);
   }

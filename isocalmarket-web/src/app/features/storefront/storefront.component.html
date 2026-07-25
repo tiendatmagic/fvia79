@@ -256,9 +256,22 @@
                       class="text-xs text-slate-400 dark:text-slate-500 font-bold uppercase tracking-wider"
                       >{{ 'storefront.unit_price' | translate }}</span
                     >
-                    <p class="text-lg font-black text-[var(--color-primary)]">
-                      {{ p.price | appCurrency }}
-                    </p>
+                    <div class="flex flex-col items-end">
+                      <div *ngIf="tierDiscountPercent > 0" class="flex items-center gap-1.5 mb-0.5">
+                        <span class="text-xs text-slate-400 dark:text-slate-500 line-through font-mono">
+                          {{ p.price | appCurrency }}
+                        </span>
+                        <span
+                          class="text-[10px] font-extrabold px-1.5 py-0.5 rounded bg-sky-500/10 text-sky-600 dark:text-sky-400 border border-sky-500/20"
+                          [appTooltip]="'Ưu đãi ' + tierName + ' (-' + tierDiscountPercent + '%)'"
+                        >
+                          -{{ tierDiscountPercent }}% {{ tierName }}
+                        </span>
+                      </div>
+                      <p class="text-lg font-black text-[var(--color-primary)]">
+                        {{ getDiscountedPrice(p.price) | appCurrency }}
+                      </p>
+                    </div>
                   </div>
 
                   <button
@@ -312,9 +325,21 @@
                 </ng-template>
 
                 <ng-template appTableCell="price" let-row="row">
-                  <span class="font-black text-[var(--color-primary)] text-sm whitespace-nowrap">
-                    {{ row.price | appCurrency }}
-                  </span>
+                  <div class="flex flex-col items-start">
+                    <div *ngIf="tierDiscountPercent > 0" class="flex items-center gap-1 mb-0.5">
+                      <span class="text-xs text-slate-400 dark:text-slate-500 line-through font-mono">
+                        {{ row.price | appCurrency }}
+                      </span>
+                      <span
+                        class="text-[9px] font-extrabold px-1 py-0.2 rounded bg-sky-500/10 text-sky-600 dark:text-sky-400 border border-sky-500/20"
+                      >
+                        -{{ tierDiscountPercent }}%
+                      </span>
+                    </div>
+                    <span class="font-black text-[var(--color-primary)] text-sm whitespace-nowrap">
+                      {{ getDiscountedPrice(row.price) | appCurrency }}
+                    </span>
+                  </div>
                 </ng-template>
 
                 <ng-template appTableCell="available_count" let-row="row">

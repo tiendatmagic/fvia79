@@ -13,6 +13,63 @@
 > Khi cần seed dữ liệu cho một seeder cụ thể, chỉ dùng:
 > - `php artisan db:seed --class=TenSeederClass` — chạy đúng 1 seeder.
 
+- **[TỐI ƯU RESPONSIVE FOOTER BADGE BẢO MẬT ĐĂNG NHẬP / ĐĂNG KÝ (AUTH FOOTER SECURITY BADGES RESPONSIVE LAYOUT)]**:
+  - **Mô tả yêu cầu**:
+    - Khắc phục triệt để lỗi hiển thị vỡ dòng chữ `2-FACTOR SECURITY` và lỗi bị tràn vạch cắt viền màn hình (horizontal overflow / clipped text) trên các thiết bị di động / màn hình nhỏ tại khung đăng nhập / đăng ký (`/login`, `/register`).
+  - **Nội dung thực hiện**:
+    - **Language Service (`language.service.ts`)**:
+      - Tối ưu nhãn `auth.security_2fa` Tiếng Anh ngắn gọn chuẩn quốc tế: `'2FA Security'` (thay vì `'2-Factor Security'`).
+    - **Frontend (`isocalmarket-web`)**:
+      - Cập nhật `auth-layout.component.html`, `login.component.html`, `register.component.html`:
+        - Áp dụng `flex-wrap sm:flex-nowrap` kết hợp `justify-center sm:justify-between`: Trên màn hình nhỏ/di động, các badge tự động xuống dòng và căn giữa mượt mà, không bao giờ bị tràn mép card.
+        - Bổ sung `whitespace-nowrap` cho text các badge (`SSL ENCRYPTION`, `24/7 OPERATION`, `2FA SECURITY`) giúp giữ nguyên từng cụm từ trên 1 dòng.
+        - Chuyển thanh phân cách `w-[1px] h-3` thành `hidden sm:block` để khi xuống dòng ở mobile không bị thừa vạch phân cách.
+      - Biên dịch Angular Frontend (`npm run build`) thành công 100% không có lỗi.
+  - **Xác nhận**: Thanh badge bảo mật hiển thị chuẩn đẹp, sắc nét 100% không tràn viền trên mọi kích thước màn hình!
+
+- **[TỐI ƯU BACKGROUND CARD CẤP BẬC ĐẠI LÝ HỖ TRỢ ĐỒNG BỘ LIGHT MODE VÀ DARK MODE (MEMBERSHIP TIER DUAL THEME ADAPTATION)]**:
+  - **Mô tả yêu cầu**:
+    - Chuyển đổi nền màu tối cứng (hardcoded dark navy `bg-gradient-to-r from-slate-900 via-slate-800 to-slate-900`) của Banner Card Cấp bậc Đại lý trong trang Hồ sơ cá nhân (`/profile`) thành nền chuyển đổi linh hoạt theo chế độ giao diện người dùng lựa chọn (Light Mode / Dark Mode).
+  - **Nội dung thực hiện**:
+    - **Frontend (`isocalmarket-web`)**:
+      - Cập nhật `profile-information.component.html`:
+        - Card nền banner: `from-slate-100 via-white to-slate-100 dark:from-slate-900 dark:via-slate-800 dark:to-slate-900`.
+        - Màu chữ tiêu đề, phụ đề, tổng nạp tích lũy và số tiền: Tự động điều chỉnh linh hoạt giữa `text-slate-900` (Light Mode) và `text-white` (Dark Mode).
+        - Khung tiến trình nâng hạng tiếp theo (`nextTier` progress container): `bg-white/80 dark:bg-slate-800/80 border-slate-200/90 dark:border-slate-700/60 shadow-sm dark:shadow-none`.
+        - Thanh tiến trình (progress bar track & text): Đồng bộ màu nền `bg-slate-200 dark:bg-slate-700` và màu text xanh lá `text-emerald-600 dark:text-emerald-400`.
+      - Biên dịch Angular Frontend thành công 100%.
+  - **Xác nhận**: Card Cấp bậc Đại lý hiển thị chuẩn đẹp, sắc nét và tương thích 100% trên cả 2 chế độ Sáng (Light Mode) và Tối (Dark Mode)!
+
+- **[PHÁT TRIỂN HỆ THỐNG QUẢN LÝ CẤP BẬC ĐẠI LÝ VÀ SỐ TIỀN NẠP TÍCH LŨY VĨNH VIỄN (AGENCY MEMBERSHIP TIERS & CUMULATIVE DEPOSIT INTEGRATION)]**:
+  - **Mô tả yêu cầu**:
+    - Bổ sung hệ thống Quản lý cấp bậc cho người dùng (gọi là Đại lý) dựa trên **Số tiền nạp tích lũy vĩnh viễn (`total_deposited`)**.
+    - Khởi tạo mặc định 5 cấp bậc: Đồng (0$, 0%), Bạc (100$, 2%), Vàng (300$, 5%), Bạch kim (500$, 8%), Kim cương (1000$, 10%). Admin có toàn quyền Thêm, Sửa (Tên VI/EN, Mức nạp tối thiểu $, % Chiết khấu), Xóa các cấp bậc này.
+    - **Tự động cộng/trừ tích lũy & Nâng/Hạ hạng**: Khi Nạp tiền thành công (BEP20 / Binance Pay / Admin duyệt manual), hệ thống tự động cộng `total_deposited` và nâng hạng. Khi Admin Thu hồi giao dịch nạp (`Revoke`), hệ thống tự động trừ `total_deposited` và hạ hạng tương ứng.
+    - **Admin Cộng/Trừ Số dư & Nạp tích lũy trực tiếp**: Admin có công tắc đồng bộ khi cộng/trừ số dư, đồng thời có chức năng điều chỉnh `total_deposited` trực tiếp cho từng user trong Admin.
+    - **Áp dụng Chiết khấu Cấp bậc**: Khi người dùng đặt mua tài khoản, hệ thống tự động tính chiết khấu giảm giá tương ứng với Cấp bậc Đại lý hiện tại.
+  - **Nội dung thực hiện**:
+    - **Backend (`isocalmarket-api`)**:
+      - Migration `2026_07_25_200000_create_membership_tiers_table.php` & `2026_07_25_200001_add_membership_tier_and_total_deposited_to_users_table.php`.
+      - Seeder `MembershipTierSeeder.php` tạo 5 cấp bậc mặc định.
+      - Model `MembershipTierModel.php`, `UserModel.php`, `User.php` entity & `UserMapper.php`.
+      - Service `MembershipTierService.php` (`recalculateUserTier`, CRUD cấp bậc).
+      - Cập nhật `DepositService.php` (tự động cộng/trừ `total_deposited` & recalculate tier khi credit/revoke).
+      - Cập nhật `AdminUserController.php` (`adjustBalance` kèm `affect_cumulative_deposit`, `adjustCumulativeDeposit`).
+      - Controller `AdminMembershipTierController.php` (API công khai `GET /v1/membership-tiers` & API Admin `/v1/admin/membership-tiers`).
+      - Cập nhật `OrderService.php` (tự động tính chiết khấu Cấp bậc Đại lý khi tạo đơn hàng).
+      - Viết unit & feature test suite `MembershipTierTest.php` đạt **143/143 PASSED (100%)**, 974 assertions.
+    - **Frontend (`isocalmarket-web`)**:
+      - Service `MembershipTierService` (`membership-tier.service.ts`).
+      - Component `AdminMembershipTiersComponent` (`/admin/membership-tiers`): Đồng bộ 100% layout tiêu chuẩn Admin với `<app-page-header>`, `<app-card>` và `<app-table>`.
+      - Standalone Component `MembershipTierFormModalComponent` (`membership-tier-form-modal.component.ts` & `.html`): Tách biệt modal form thêm/sửa cấp bậc, mở qua `ModalService` loại bỏ hoàn toàn custom backdrop blur tự chế, đạt chuẩn UI/UX đồng bộ 100% với các modal khác.
+      - Cập nhật `HeaderComponent`: Bổ sung Badge Cấp bậc Đại lý trong User Menu Dropdown góc trên phải màn hình.
+      - Cập nhật `AdminUsersComponent` & `UserFormModalComponent` (Badge cấp bậc, cột `total_deposited` và Modal điều chỉnh nạp tích lũy trực tiếp).
+      - Cập nhật `ProfileInformationComponent` (`/profile`): Card Hạng Đại lý hiện tại, Progress Bar tiến trình nâng hạng và Bảng ưu đãi chiết khấu các cấp bậc.
+      - Cập nhật `CartModalComponent`: Hiển thị dòng ưu đãi chiết khấu Cấp bậc Đại lý khi xem giỏ hàng và thanh toán.
+      - Khai báo bộ từ điển i18n Tiếng Việt & Tiếng Anh đầy đủ (`admin.*`, `profile.*`, `cart.*`, `nav.*`) trong `LanguageService.ts`. Hiển thị tên cấp bậc động linh hoạt theo ngôn ngữ người dùng lựa chọn.
+      - Biên dịch Angular Frontend (`npm run build`) thành công **100% SUCCESS, 0 ERRORS**.
+  - **Xác nhận**: Tích hợp hoàn hảo hệ thống Quản lý Cấp bậc Đại lý và Số tiền nạp tích lũy vĩnh viễn!
+
 - **[CỦNG CỐ CẤU TRÚC THÔNG BÁO BOT TELEGRAM & BỘ NGÔN NGỮ TIẾNG ANH (TELEGRAM BOT NOTIFICATION ENGLISH FORMATTING)]**:
   - **Mô tả yêu cầu**:
     - Bỏ dòng hiển thị `Đơn giá` trong thông báo Telegram "Hàng mới về kho".

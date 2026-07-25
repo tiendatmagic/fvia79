@@ -1,0 +1,242 @@
+<?php
+
+namespace Tests\Feature;
+
+use App\Infrastructure\Persistence\Eloquent\CategoryModel;
+use App\Infrastructure\Persistence\Eloquent\InventoryItemModel;
+use App\Infrastructure\Persistence\Eloquent\ProductModel;
+use App\Infrastructure\Persistence\Eloquent\UserModel;
+use App\Infrastructure\Persistence\Mappers\UserMapper;
+use Illuminate\Foundation\Testing\RefreshDatabase;
+use Illuminate\Support\Str;
+use Tests\TestCase;
+
+class MembershipTierTest extends TestCase
+{
+    use RefreshDatabase;
+
+    protected UserModel $adminModel;
+
+    protected UserModel $customerModel;
+
+    protected string $adminToken;
+
+    protected string $customerToken;
+
+    protected function setUp(): void
+    {
+        parent::setUp();
+
+        // Seed 5 tiers
+        $this->seed(\Database\Seeders\MembershipTierSeeder::class);
+
+        $this->adminModel = UserModel::create([
+            'id' => (string) Str::uuid7(),
+            'uid' => '10000001',
+            'username' => 'admin_user',
+            'name' => 'Admin User',
+            'email' => 'admin@example.com',
+            'password' => bcrypt('password123'),
+            'role' => 'admin',
+            'balance' => 1000.0,
+            'total_deposited' => 0.0,
+            'status' => 'active',
+        ]);
+
+        $this->customerModel = UserModel::create([
+            'id' => (string) Str::uuid7(),
+            'uid' => '10000002',
+            'username' => 'customer_user',
+            'name' => 'Customer User',
+            'email' => 'customer@example.com',
+            'password' => bcrypt('password123'),
+            'role' => 'customer',
+            'balance' => 0.0,
+            'total_deposited' => 0.0,
+            'status' => 'active',
+        ]);
+
+        $authService = app(\App\Application\Services\AuthService::class);
+        $this->adminToken = $authService->generateAccessToken(UserMapper::toDomain($this->adminModel));
+        $this->customerToken = $authService->generateAccessToken(UserMapper::toDomain($this->customerModel));
+    }
+
+    public function test_public_can_fetch_membership_tiers(): void
+    {
+        $response = $this->getJson('/api/v1/membership-tiers');
+
+        $response->assertStatus(200)
+            ->assertJsonCount(5, 'data');
+    }
+
+    public function test_admin_can_crud_membership_tiers(): void
+    {
+        // Fetch
+        $response = $this->withHeader('Authorization', "Bearer {$this->adminToken}")
+            ->getJson('/api/v1/admin/membership-tiers');
+        $response->assertStatus(200);
+
+        // Create
+        $createRes = $this->withHeader('Authorization', "Bearer {$this->adminToken}")
+            ->postJson('/api/v1/admin/membership-tiers', [
+                'level' => 6,
+                'name_vi' => 'Siêu Kim Cương',
+                'name_en' => 'Super Diamond',
+                'min_deposit' => 5000.0,
+                'discount_percent' => 15.0,
+                'icon' => 'crown',
+                'color' => '#3b82f6',
+                'is_active' => true,
+            ]);
+
+        $createRes->assertStatus(201);
+        $tierId = $createRes->json('data.id');
+
+        // Update
+        $updateRes = $this->withHeader('Authorization', "Bearer {$this->adminToken}")
+            ->putJson("/api/v1/admin/membership-tiers/{$tierId}", [
+                'discount_percent' => 18.0,
+            ]);
+        $updateRes->assertStatus(200)
+            ->assertJsonPath('data.discount_percent', 18);
+
+        // Delete
+        $deleteRes = $this->withHeader('Authorization', "Bearer {$this->adminToken}")
+            ->deleteJson("/api/v1/admin/membership-tiers/{$tierId}");
+        $deleteRes->assertStatus(200);
+    }
+
+    public function test_adjust_cumulative_deposit_updates_user_tier_automatically(): void
+    {
+        // Initially total_deposited is 0 (Tier Đồng)
+        $user = $this->customerModel->fresh();
+        app(\App\Application\Services\MembershipTierService::class)->recalculateUserTier($user);
+        $user->refresh();
+        $this->assertSame('Đồng', $user->membershipTier->name_vi);
+
+        // Admin adds $100 -> Reaches Bạc (Silver)
+        $res = $this->withHeader('Authorization', "Bearer {$this->adminToken}")
+            ->postJson("/api/v1/admin/users/{$this->customerModel->id}/adjust-cumulative-deposit", [
+                'type' => 'add',
+                'amount' => 100.0,
+            ]);
+
+        $res->assertStatus(200)
+            ->assertJsonPath('user.total_deposited', 100)
+            ->assertJsonPath('user.membership_tier.name_vi', 'Bạc');
+
+        // Admin adds $900 -> Total $1000 -> Reaches Kim Cương (Diamond)
+        $res2 = $this->withHeader('Authorization', "Bearer {$this->adminToken}")
+            ->postJson("/api/v1/admin/users/{$this->customerModel->id}/adjust-cumulative-deposit", [
+                'type' => 'add',
+                'amount' => 900.0,
+            ]);
+
+        $res2->assertStatus(200)
+            ->assertJsonPath('user.total_deposited', 1000)
+            ->assertJsonPath('user.membership_tier.name_vi', 'Kim cương');
+
+        // Admin subtracts $600 -> Total $400 -> Drops to Vàng (Gold)
+        $res3 = $this->withHeader('Authorization', "Bearer {$this->adminToken}")
+            ->postJson("/api/v1/admin/users/{$this->customerModel->id}/adjust-cumulative-deposit", [
+                'type' => 'subtract',
+                'amount' => 600.0,
+            ]);
+
+        $res3->assertStatus(200)
+            ->assertJsonPath('user.total_deposited', 400)
+            ->assertJsonPath('user.membership_tier.name_vi', 'Vàng');
+    }
+
+    public function test_order_creation_applies_tier_discount(): void
+    {
+        // 1. Set user balance to 100 and total_deposited to 1000 (Kim cương - 10% discount)
+        $this->customerModel->balance = 100.0;
+        $this->customerModel->total_deposited = 1000.0;
+        $this->customerModel->save();
+        app(\App\Application\Services\MembershipTierService::class)->recalculateUserTier($this->customerModel);
+
+        $authService = app(\App\Application\Services\AuthService::class);
+        $customerToken = $authService->generateAccessToken(UserMapper::toDomain($this->customerModel->fresh()));
+
+        // 2. Create product
+        $category = CategoryModel::create([
+            'id' => (string) Str::uuid7(),
+            'name' => 'General Accounts',
+            'slug' => 'general-accounts',
+            'sort_order' => 1,
+            'is_active' => true,
+        ]);
+
+        $product = ProductModel::create([
+            'id' => (string) Str::uuid7(),
+            'category_id' => $category->id,
+            'name' => 'Test Item',
+            'slug' => 'test-item',
+            'price' => 10.0, // 10 USD per item
+            'description' => 'Test Item Description',
+            'available_count' => 10,
+            'is_active' => true,
+        ]);
+
+        $batch = \App\Infrastructure\Persistence\Eloquent\InventoryBatchModel::create([
+            'id' => (string) Str::uuid7(),
+            'product_id' => $product->id,
+            'batch_name' => 'Batch 1',
+            'initial_count' => 2,
+            'current_count' => 2,
+        ]);
+
+        // Add inventory
+        InventoryItemModel::create([
+            'id' => (string) Str::uuid7(),
+            'product_id' => $product->id,
+            'batch_id' => $batch->id,
+            'data' => 'acc_data_1',
+            'secret_data' => 'acc_data_1',
+            'status' => 'available',
+        ]);
+        InventoryItemModel::create([
+            'id' => (string) Str::uuid7(),
+            'product_id' => $product->id,
+            'batch_id' => $batch->id,
+            'data' => 'acc_data_2',
+            'secret_data' => 'acc_data_2',
+            'status' => 'available',
+        ]);
+
+        // Buy 2 items: Raw Total = 2 * 10 = $20.
+        // Kim Cương tier discount = 10% -> Discount = $2.0. Total to pay = $18.0.
+        $res = $this->withHeader('Authorization', "Bearer {$customerToken}")
+            ->postJson('/api/v1/orders', [
+                'idempotency_key' => (string) Str::uuid7(),
+                'items' => [
+                    [
+                        'product_id' => $product->id,
+                        'quantity' => 2,
+                    ],
+                ],
+            ]);
+
+        $res->assertStatus(201)
+            ->assertJsonPath('order.total_price', 18)
+            ->assertJsonPath('order.discount_amount', 2);
+    }
+
+    public function test_b2b_profile_returns_tier_and_total_deposited(): void
+    {
+        $this->customerModel->balance = 500.0;
+        $this->customerModel->total_deposited = 1000.0;
+        $this->customerModel->api_key = 'b2b_test_api_key_secret';
+        $this->customerModel->save();
+        app(\App\Application\Services\MembershipTierService::class)->recalculateUserTier($this->customerModel);
+
+        $res = $this->withHeader('X-API-KEY', 'b2b_test_api_key_secret')
+            ->getJson('/api/v1/b2b/me');
+
+        $res->assertStatus(200)
+            ->assertJsonPath('total_deposited', 1000)
+            ->assertJsonPath('membership_tier.name_vi', 'Kim cương')
+            ->assertJsonPath('membership_tier.discount_percent', 10);
+    }
+}

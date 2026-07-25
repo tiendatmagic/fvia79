@@ -107,11 +107,19 @@ export class CartModalComponent implements OnInit {
     this.couponSubject.next(code);
   }
 
+  public get tierDiscountAmount(): number {
+    const user = this.state.authStore.currentUser();
+    const tier = user?.membership_tier;
+    if (!tier || !tier.discount_percent || tier.discount_percent <= 0) return 0;
+    const total = this.cart.totalAmount();
+    return Math.round(total * (tier.discount_percent / 100) * 10000) / 10000;
+  }
+
   public getFinalTotal(): number {
     const total = this.cart.totalAmount();
     const coupon = this.appliedCoupon();
-    if (!coupon) return total;
-    return Math.max(0, total - (coupon.discount_amount || 0));
+    const couponDiscount = coupon ? (coupon.discount_amount || 0) : 0;
+    return Math.max(0, total - this.tierDiscountAmount - couponDiscount);
   }
 
   public onClose() {

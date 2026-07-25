@@ -116,6 +116,10 @@ export const routes: Routes = [
         loadComponent: () => import('@features/admin-users/admin-users.component').then(m => m.AdminUsersComponent)
       },
       {
+        path: 'membership-tiers',
+        loadComponent: () => import('@features/admin-membership-tiers/admin-membership-tiers.component').then(m => m.AdminMembershipTiersComponent)
+      },
+      {
         path: 'suppliers',
         loadComponent: () => import('@features/admin-suppliers/admin-suppliers.component').then(m => m.AdminSuppliersComponent)
       },

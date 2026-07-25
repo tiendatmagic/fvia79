@@ -9,6 +9,21 @@ class UserMapper
 {
     public static function toDomain(UserModel $model): User
     {
+        $tierArray = null;
+        if ($model->relationLoaded('membershipTier') && $model->membershipTier) {
+            $tier = $model->membershipTier;
+            $tierArray = [
+                'id' => $tier->id,
+                'level' => $tier->level,
+                'name_vi' => $tier->name_vi,
+                'name_en' => $tier->name_en,
+                'min_deposit' => (float) $tier->min_deposit,
+                'discount_percent' => (float) $tier->discount_percent,
+                'icon' => $tier->icon,
+                'color' => $tier->color,
+            ];
+        }
+
         return new User(
             $model->id,
             $model->username ?? '',
@@ -21,12 +36,15 @@ class UserMapper
             $model->refresh_token_expired_at ? new \DateTime($model->refresh_token_expired_at->toDateTimeString()) : null,
             $model->phone,
             $model->google2fa_secret,
-            $model->google2fa_enabled,
+            (bool) ($model->google2fa_enabled ?? false),
             $model->api_key,
             $model->status ?? 'active',
             $model->uid,
             $model->telegram_chat_id,
-            (bool) ($model->telegram_notifications_enabled ?? true)
+            (bool) ($model->telegram_notifications_enabled ?? true),
+            (float) ($model->total_deposited ?? 0),
+            $model->membership_tier_id,
+            $tierArray
         );
     }
  
@@ -48,6 +66,8 @@ class UserMapper
         $model->password = $entity->getPassword();
         $model->role = $entity->getRole();
         $model->balance = $entity->getBalance();
+        $model->total_deposited = $entity->getTotalDeposited();
+        $model->membership_tier_id = $entity->getMembershipTierId();
         $model->refresh_token_hash = $entity->getRefreshTokenHash();
         $model->refresh_token_expired_at = $entity->getRefreshTokenExpiredAt();
         $model->google2fa_secret = $entity->getGoogle2faSecret();

@@ -167,6 +167,8 @@ class B2bController extends Controller
                 return response()->json(['message' => 'Unauthorized.'], 401);
             }
 
+            $tier = $userModel->membershipTier;
+
             return response()->json([
                 'id' => $userModel->id,
                 'uid' => $userModel->uid,
@@ -176,6 +178,17 @@ class B2bController extends Controller
                 'phone' => $userModel->phone,
                 'role' => $userModel->role,
                 'balance' => (float) $userModel->balance,
+                'total_deposited' => (float) $userModel->total_deposited,
+                'membership_tier' => $tier ? [
+                    'id' => $tier->id,
+                    'level' => $tier->level,
+                    'name_vi' => $tier->name_vi,
+                    'name_en' => $tier->name_en,
+                    'min_deposit' => (float) $tier->min_deposit,
+                    'discount_percent' => (float) $tier->discount_percent,
+                    'color' => $tier->color,
+                    'icon' => $tier->icon,
+                ] : null,
             ]);
         } catch (\Throwable $e) {
             return $this->serverError($e, 'Failed to fetch B2B profile.');

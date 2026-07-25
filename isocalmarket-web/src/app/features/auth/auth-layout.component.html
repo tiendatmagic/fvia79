@@ -91,7 +91,7 @@
     <div
       class="col-span-1 flex items-center justify-center p-6 md:p-10 bg-slate-50 dark:bg-slate-950 transition-colors min-h-screen relative"
     >
-      <div class="absolute top-6 right-6 z-20">
+      <div class="absolute top-3 right-6 z-20">
         <div
           class="flex items-center gap-3 bg-white dark:bg-slate-900 border border-slate-200/50 dark:border-slate-800/50 px-3 py-1.5 rounded-full shadow-sm transition-colors"
         >
@@ -470,23 +470,29 @@
           }
 
           <div class="mt-6 pt-5 border-t border-slate-100 dark:border-slate-800">
-            <div class="flex items-center justify-between">
+            <div
+              class="flex flex-wrap sm:flex-nowrap items-center justify-center sm:justify-between gap-y-2 gap-x-3 sm:gap-x-1.5 px-3 py-2.5 bg-slate-100/80 dark:bg-slate-900/80 border border-slate-200/50 dark:border-slate-800/60 rounded-xl transition-colors duration-300 justify-start flex-col items-start sm:flex-row"
+            >
               <div
-                class="flex items-center gap-1.5 text-[10px] font-bold uppercase tracking-wider text-slate-600 dark:text-slate-300"
+                class="flex items-center gap-1 sm:gap-1.5 text-[10px] sm:text-[11px] font-bold uppercase tracking-wider text-slate-600 dark:text-slate-300 whitespace-nowrap"
               >
                 <app-icon name="shield" class="w-3.5 h-3.5 text-primary shrink-0" />
                 <span>{{ 'auth.ssl_encryption' | translate }}</span>
               </div>
-              <div class="w-[1px] h-3 bg-slate-200 dark:bg-slate-800"></div>
               <div
-                class="flex items-center gap-1.5 text-[10px] font-bold uppercase tracking-wider text-slate-600 dark:text-slate-300"
+                class="hidden sm:block w-[1px] h-3 bg-slate-200 dark:bg-slate-800 shrink-0"
+              ></div>
+              <div
+                class="flex items-center gap-1 sm:gap-1.5 text-[10px] sm:text-[11px] font-bold uppercase tracking-wider text-slate-600 dark:text-slate-300 whitespace-nowrap"
               >
                 <app-icon name="clock" class="w-3.5 h-3.5 text-primary shrink-0" />
                 <span>{{ 'auth.operation_247' | translate }}</span>
               </div>
-              <div class="w-[1px] h-3 bg-slate-200 dark:bg-slate-800"></div>
               <div
-                class="flex items-center gap-1.5 text-[10px] font-bold uppercase tracking-wider text-slate-600 dark:text-slate-300"
+                class="hidden sm:block w-[1px] h-3 bg-slate-200 dark:bg-slate-800 shrink-0"
+              ></div>
+              <div
+                class="flex items-center gap-1 sm:gap-1.5 text-[10px] sm:text-[11px] font-bold uppercase tracking-wider text-slate-600 dark:text-slate-300 whitespace-nowrap"
               >
                 <app-icon name="check-circle" class="w-3.5 h-3.5 text-primary shrink-0" />
                 <span>{{ 'auth.security_2fa' | translate }}</span>

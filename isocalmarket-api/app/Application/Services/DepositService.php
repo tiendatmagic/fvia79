@@ -671,7 +671,10 @@ class DepositService
             }
 
             $userModel->balance = round($currentBalance - $amountToRevoke, 8);
+            $userModel->total_deposited = max(0.0, round((float) $userModel->total_deposited - $amountToRevoke, 4));
             $userModel->save();
+
+            app(MembershipTierService::class)->recalculateUserTier($userModel);
 
             $depositModel->status = 'revoked';
             $depositModel->save();
@@ -745,7 +748,10 @@ class DepositService
                 }
 
                 $userModel->balance = round($currentBalance - $totalRevokeAmount, 8);
+                $userModel->total_deposited = max(0.0, round((float) $userModel->total_deposited - $totalRevokeAmount, 4));
                 $userModel->save();
+
+                app(MembershipTierService::class)->recalculateUserTier($userModel);
 
                 foreach ($userDeposits as $d) {
                     $d->status = 'revoked';
@@ -775,7 +781,11 @@ class DepositService
             throw new \RuntimeException('User not found for this deposit.');
         }
 
-        $userModel->balance = round((float) $userModel->balance + $deposit->getAmountUsdt(), 8);
+        $amount = (float) $deposit->getAmountUsdt();
+        $userModel->balance = round((float) $userModel->balance + $amount, 8);
+        $userModel->total_deposited = round((float) $userModel->total_deposited + $amount, 4);
         $userModel->save();
+
+        app(MembershipTierService::class)->recalculateUserTier($userModel);
     }
 }

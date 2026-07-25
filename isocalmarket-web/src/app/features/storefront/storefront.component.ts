@@ -107,6 +107,22 @@ export class StorefrontComponent implements OnInit {
     this.dismissedAnnouncement.set(true);
   }
 
+  public get tierDiscountPercent(): number {
+    return this.state.authStore.currentUser()?.membership_tier?.discount_percent || 0;
+  }
+
+  public get tierName(): string {
+    const tier = this.state.authStore.currentUser()?.membership_tier;
+    if (!tier) return '';
+    return this.lang.currentLang() === 'en' ? (tier.name_en || tier.name_vi) : tier.name_vi;
+  }
+
+  public getDiscountedPrice(originalPrice: number): number {
+    const discount = this.tierDiscountPercent;
+    if (discount <= 0) return originalPrice;
+    return Math.max(0, originalPrice * (1 - discount / 100));
+  }
+
   ngOnInit(): void {
     this.publicSettingStore.fetchPublicSettings().subscribe();
     this.state.authStore.checkMe(true).subscribe();

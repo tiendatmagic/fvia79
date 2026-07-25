@@ -11,7 +11,9 @@ use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
 use Illuminate\Support\Str;
 
-#[Fillable(['uid', 'username', 'name', 'email', 'phone', 'telegram_chat_id', 'telegram_notifications_enabled', 'password', 'role', 'balance', 'refresh_token_hash', 'refresh_token_expired_at', 'google2fa_secret', 'google2fa_enabled', 'api_key', 'api_key_hash', 'status', 'token_version'])]
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
+
+#[Fillable(['uid', 'username', 'name', 'email', 'phone', 'telegram_chat_id', 'telegram_notifications_enabled', 'password', 'role', 'balance', 'total_deposited', 'membership_tier_id', 'refresh_token_hash', 'refresh_token_expired_at', 'google2fa_secret', 'google2fa_enabled', 'api_key', 'api_key_hash', 'status', 'token_version'])]
 #[Hidden(['password', 'remember_token'])]
 class UserModel extends Authenticatable
 {
@@ -84,6 +86,7 @@ class UserModel extends Authenticatable
             'google2fa_enabled' => 'boolean',
             'telegram_notifications_enabled' => 'boolean',
             'balance' => 'float',
+            'total_deposited' => 'float',
             'token_version' => 'integer',
             'api_key' => 'encrypted',
         ];
@@ -92,5 +95,10 @@ class UserModel extends Authenticatable
     public function orders(): HasMany
     {
         return $this->hasMany(OrderModel::class, 'user_id');
+    }
+
+    public function membershipTier(): BelongsTo
+    {
+        return $this->belongsTo(MembershipTierModel::class, 'membership_tier_id');
     }
 }

@@ -13,31 +13,31 @@ class UserRepository implements UserRepositoryInterface
 
     public function findById(string $id): ?User
     {
-        $model = UserModel::find($id);
+        $model = UserModel::with('membershipTier')->find($id);
         return $model ? UserMapper::toDomain($model) : null;
     }
 
     public function findByUid(string $uid): ?User
     {
-        $model = UserModel::where('uid', $uid)->first();
+        $model = UserModel::with('membershipTier')->where('uid', $uid)->first();
         return $model ? UserMapper::toDomain($model) : null;
     }
 
     public function findByIdForUpdate(string $id): ?User
     {
-        $model = UserModel::where('id', $id)->lockForUpdate()->first();
+        $model = UserModel::with('membershipTier')->where('id', $id)->lockForUpdate()->first();
         return $model ? UserMapper::toDomain($model) : null;
     }
 
     public function findByEmail(string $email): ?User
     {
-        $model = UserModel::where('email', $email)->first();
+        $model = UserModel::with('membershipTier')->where('email', $email)->first();
         return $model ? UserMapper::toDomain($model) : null;
     }
 
     public function findByEmailOrUsername(string $login): ?User
     {
-        $model = UserModel::where('email', $login)
+        $model = UserModel::with('membershipTier')->where('email', $login)
             ->orWhere('username', $login)
             ->orWhere('uid', $login)
             ->first();
@@ -48,18 +48,19 @@ class UserRepository implements UserRepositoryInterface
     {
         $model = UserMapper::toPersistence($user);
         $model->save();
+        $model->load('membershipTier');
         return UserMapper::toDomain($model);
     }
 
     public function findByApiKey(string $apiKey): ?User
     {
-        $model = UserModel::where('api_key_hash', hash('sha256', $apiKey))->first();
+        $model = UserModel::with('membershipTier')->where('api_key_hash', hash('sha256', $apiKey))->first();
         return $model ? UserMapper::toDomain($model) : null;
     }
 
     public function findAllPaginated(int $page, int $limit, ?string $search = null, ?string $role = null, ?string $startDate = null, ?string $endDate = null): array
     {
-        $query = UserModel::query();
+        $query = UserModel::with('membershipTier');
         if ($search) {
             $normalized = $this->normalizeSearchKeyword($search);
             $query->where(function ($q) use ($search, $normalized) {

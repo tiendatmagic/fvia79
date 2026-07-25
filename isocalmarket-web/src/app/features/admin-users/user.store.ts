@@ -137,9 +137,9 @@ export class UserStore {
     );
   }
 
-  public adjustBalance(id: string, type: 'add' | 'subtract', amount: number, reason: string): Observable<any> {
+  public adjustBalance(id: string, type: 'add' | 'subtract', amount: number, reason: string, affectCumulative: boolean = true): Observable<any> {
     this.loading.set(true);
-    return this.api.post<any>(`v1/admin/users/${id}/adjust-balance`, { type, amount, reason }).pipe(
+    return this.api.post<any>(`v1/admin/users/${id}/adjust-balance`, { type, amount, reason, affect_cumulative_deposit: affectCumulative }).pipe(
       tap(() => {
         this.clearCache();
         this.toast.showToast(this.lang.translate('toast.user_balance_adjusted'), 'success');
@@ -149,6 +149,22 @@ export class UserStore {
         if (msg.includes('Insufficient user balance')) {
           msg = this.lang.translate('toast.user_balance_insufficient');
         }
+        this.toast.showToast(msg, 'error');
+        return of(null);
+      }),
+      finalize(() => this.loading.set(false))
+    );
+  }
+
+  public adjustCumulativeDeposit(id: string, type: 'add' | 'subtract' | 'set', amount: number, reason: string): Observable<any> {
+    this.loading.set(true);
+    return this.api.post<any>(`v1/admin/users/${id}/adjust-cumulative-deposit`, { type, amount, reason }).pipe(
+      tap(() => {
+        this.clearCache();
+        this.toast.showToast('Đã điều chỉnh số tiền nạp tích lũy và cập nhật cấp bậc thành công.', 'success');
+      }),
+      catchError((err) => {
+        const msg = err.error?.message || 'Điều chỉnh số tiền nạp tích lũy thất bại.';
         this.toast.showToast(msg, 'error');
         return of(null);
       }),

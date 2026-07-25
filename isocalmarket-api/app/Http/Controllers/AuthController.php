@@ -2,9 +2,10 @@
 
 namespace App\Http\Controllers;
 
-use App\Http\Requests\RegisterRequest;
-use App\Http\Requests\LoginRequest;
 use App\Application\Services\AuthService;
+use App\Http\Requests\LoginRequest;
+use App\Http\Requests\RegisterRequest;
+use App\Infrastructure\Persistence\Mappers\UserMapper;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 
@@ -275,6 +276,9 @@ class AuthController extends Controller
                 'role' => $user->getRole(),
                 'google2fa_enabled' => $user->isGoogle2faEnabled(),
                 'balance' => $user->getBalance(),
+                'total_deposited' => $user->getTotalDeposited(),
+                'membership_tier_id' => $user->getMembershipTierId(),
+                'membership_tier' => $user->getMembershipTier(),
                 'api_key' => $user->getApiKey()
             ]
         ])->withCookie($accessTokenCookie)->withCookie($refreshTokenCookie);
@@ -312,18 +316,24 @@ class AuthController extends Controller
             return response()->json(['message' => 'Not logged in.'], 401);
         }
 
+        $userModel->load('membershipTier');
+        $user = UserMapper::toDomain($userModel);
+
         return response()->json([
             'user' => [
-                'id' => $userModel->id,
-                'uid' => $userModel->uid,
-                'username' => $userModel->username,
-                'name' => $userModel->name,
-                'email' => $userModel->email,
-                'phone' => $userModel->phone,
-                'role' => $userModel->role,
-                'google2fa_enabled' => $userModel->google2fa_enabled,
-                'balance' => (float)$userModel->balance,
-                'api_key' => $userModel->api_key
+                'id' => $user->getId(),
+                'uid' => $user->getUid(),
+                'username' => $user->getUsername(),
+                'name' => $user->getName(),
+                'email' => $user->getEmail(),
+                'phone' => $user->getPhone(),
+                'role' => $user->getRole(),
+                'google2fa_enabled' => $user->isGoogle2faEnabled(),
+                'balance' => $user->getBalance(),
+                'total_deposited' => $user->getTotalDeposited(),
+                'membership_tier_id' => $user->getMembershipTierId(),
+                'membership_tier' => $user->getMembershipTier(),
+                'api_key' => $user->getApiKey()
             ]
         ]);
     }

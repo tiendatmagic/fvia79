@@ -43,6 +43,9 @@ class AdminUserController extends Controller
                     'phone' => $user->getPhone(),
                     'role' => $user->getRole(),
                     'balance' => $user->getBalance(),
+                    'total_deposited' => $user->getTotalDeposited(),
+                    'membership_tier_id' => $user->getMembershipTierId(),
+                    'membership_tier' => $user->getMembershipTier(),
                     'api_key' => $user->getApiKey(),
                     'google2fa_enabled' => $user->isGoogle2faEnabled(),
                     'google2fa_secret' => $user->getGoogle2faSecret(),
@@ -210,6 +213,7 @@ class AdminUserController extends Controller
             'type'   => 'required|string|in:add,subtract',
             'amount' => 'required|numeric|min:0.01',
             'reason' => 'nullable|string|max:500',
+            'affect_cumulative_deposit' => 'nullable|boolean',
         ]);
 
         try {
@@ -222,6 +226,7 @@ class AdminUserController extends Controller
                 $type           = $request->input('type');
                 $amount         = (float) $request->input('amount');
                 $reason         = trim($request->input('reason'));
+                $affectCumulative = $request->boolean('affect_cumulative_deposit', true);
                 $currentBalance = $user->getBalance();
 
                 if ($type === 'subtract' && $currentBalance < $amount) {
@@ -232,27 +237,96 @@ class AdminUserController extends Controller
 
                 if ($type === 'add') {
                     $user->addBalance($amount);
+                    if ($affectCumulative) {
+                        $user->addTotalDeposited($amount);
+                    }
                 } else {
                     $user->deductBalance($amount);
+                    if ($affectCumulative) {
+                        $user->deductTotalDeposited($amount);
+                    }
                 }
 
                 $savedUser = $this->userRepository->save($user);
 
-                \Illuminate\Support\Facades\Log::info("Admin [" . Auth::id() . "] adjusted balance for User [{$id}]: Type={$type}, Amount={$amount}, Reason='{$reason}', NewBalance=" . $savedUser->getBalance());
+                $userModel = \App\Infrastructure\Persistence\Eloquent\UserModel::find($savedUser->getId());
+                if ($userModel) {
+                    app(\App\Application\Services\MembershipTierService::class)->recalculateUserTier($userModel);
+                    $savedUser = $this->userRepository->findById($savedUser->getId());
+                }
+
+                \Illuminate\Support\Facades\Log::info("Admin [" . Auth::id() . "] adjusted balance for User [{$id}]: Type={$type}, Amount={$amount}, AffectCumulative=" . ($affectCumulative ? 'YES' : 'NO') . ", Reason='{$reason}', NewBalance=" . $savedUser->getBalance() . ", NewTotalDeposited=" . $savedUser->getTotalDeposited());
 
                 return response()->json([
                     'message' => 'User balance adjusted successfully.',
                     'user' => [
-                        'id'      => $savedUser->getId(),
-                        'uid'     => $savedUser->getUid(),
-                        'name'    => $savedUser->getName(),
-                        'email'   => $savedUser->getEmail(),
-                        'balance' => $savedUser->getBalance(),
+                        'id'              => $savedUser->getId(),
+                        'uid'             => $savedUser->getUid(),
+                        'name'            => $savedUser->getName(),
+                        'email'           => $savedUser->getEmail(),
+                        'balance'         => $savedUser->getBalance(),
+                        'total_deposited' => $savedUser->getTotalDeposited(),
+                        'membership_tier' => $savedUser->getMembershipTier(),
                     ]
                 ]);
             });
         } catch (\Throwable $e) {
             return $this->serverError($e, 'Failed to adjust user balance.');
+        }
+    }
+
+    public function adjustCumulativeDeposit(Request $request, $id)
+    {
+        $request->validate([
+            'type'   => 'required|string|in:add,subtract,set',
+            'amount' => 'required|numeric|min:0',
+            'reason' => 'nullable|string|max:500',
+        ]);
+
+        try {
+            return \Illuminate\Support\Facades\DB::transaction(function () use ($request, $id) {
+                $user = $this->userRepository->findByIdForUpdate($id);
+                if (!$user) {
+                    return response()->json(['message' => 'User not found.'], 404);
+                }
+
+                $type   = $request->input('type');
+                $amount = (float) $request->input('amount');
+                $reason = trim($request->input('reason'));
+
+                if ($type === 'add') {
+                    $user->addTotalDeposited($amount);
+                } elseif ($type === 'subtract') {
+                    $user->deductTotalDeposited($amount);
+                } elseif ($type === 'set') {
+                    $user->setTotalDeposited($amount);
+                }
+
+                $savedUser = $this->userRepository->save($user);
+
+                $userModel = \App\Infrastructure\Persistence\Eloquent\UserModel::find($savedUser->getId());
+                if ($userModel) {
+                    app(\App\Application\Services\MembershipTierService::class)->recalculateUserTier($userModel);
+                    $savedUser = $this->userRepository->findById($savedUser->getId());
+                }
+
+                \Illuminate\Support\Facades\Log::info("Admin [" . Auth::id() . "] adjusted cumulative deposit for User [{$id}]: Type={$type}, Amount={$amount}, Reason='{$reason}', NewTotalDeposited=" . $savedUser->getTotalDeposited());
+
+                return response()->json([
+                    'message' => 'User cumulative deposit adjusted successfully.',
+                    'user' => [
+                        'id'              => $savedUser->getId(),
+                        'uid'             => $savedUser->getUid(),
+                        'name'            => $savedUser->getName(),
+                        'email'           => $savedUser->getEmail(),
+                        'balance'         => $savedUser->getBalance(),
+                        'total_deposited' => $savedUser->getTotalDeposited(),
+                        'membership_tier' => $savedUser->getMembershipTier(),
+                    ]
+                ]);
+            });
+        } catch (\Throwable $e) {
+            return $this->serverError($e, 'Failed to adjust user cumulative deposit.');
         }
     }
 

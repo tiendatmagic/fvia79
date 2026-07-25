@@ -18,6 +18,7 @@ Route::prefix('v1')->group(function () {
     Route::get('/faqs', ['App\Http\Controllers\FaqController', 'indexPublic']);
     Route::get('/deposit/rate', ['App\Http\Controllers\DepositController', 'getRate']);
     Route::get('/settings/public', ['App\Http\Controllers\SystemSettingController', 'publicSettings']);
+    Route::get('/membership-tiers', ['App\Http\Controllers\AdminMembershipTierController', 'publicIndex']);
     Route::post('/tools/check-uid', ['App\Http\Controllers\CheckUidController', 'check'])->middleware('throttle:30,1');
     Route::post('/telegram/webhook', ['App\Http\Controllers\TelegramWebhookController', 'handleWebhook']);
 
@@ -110,9 +111,15 @@ Route::prefix('v1')->group(function () {
             Route::post('/admin/users/bulk-delete', ['App\Http\Controllers\AdminUserController', 'bulkDestroy']);
             Route::put('/admin/users/{id}', ['App\Http\Controllers\AdminUserController', 'update']);
             Route::post('/admin/users/{id}/adjust-balance', ['App\Http\Controllers\AdminUserController', 'adjustBalance']);
+            Route::post('/admin/users/{id}/adjust-cumulative-deposit', ['App\Http\Controllers\AdminUserController', 'adjustCumulativeDeposit']);
             Route::post('/admin/users/{id}/reset-2fa', ['App\Http\Controllers\AdminUserController', 'reset2fa']);
             Route::post('/admin/users/{id}/enable-2fa', ['App\Http\Controllers\AdminUserController', 'enable2fa']);
             Route::delete('/admin/users/{id}', ['App\Http\Controllers\AdminUserController', 'destroy']);
+
+            Route::get('/admin/membership-tiers', ['App\Http\Controllers\AdminMembershipTierController', 'index']);
+            Route::post('/admin/membership-tiers', ['App\Http\Controllers\AdminMembershipTierController', 'store']);
+            Route::put('/admin/membership-tiers/{id}', ['App\Http\Controllers\AdminMembershipTierController', 'update']);
+            Route::delete('/admin/membership-tiers/{id}', ['App\Http\Controllers\AdminMembershipTierController', 'destroy']);
 
             Route::post('/products', ['App\Http\Controllers\ProductController', 'store']);
             Route::put('/products/{id}', ['App\Http\Controllers\ProductController', 'update']);

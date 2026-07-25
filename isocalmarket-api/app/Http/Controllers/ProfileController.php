@@ -212,17 +212,23 @@ class ProfileController extends Controller
 
     private function serializeUser(UserModel $userModel): array
     {
+        $userModel->load('membershipTier');
+        $user = UserMapper::toDomain($userModel);
+
         return [
-            'id' => $userModel->id,
-            'uid' => $userModel->uid,
-            'username' => $userModel->username,
-            'name' => $userModel->name,
-            'email' => $userModel->email,
-            'phone' => $userModel->phone,
-            'role' => $userModel->role,
-            'google2fa_enabled' => (bool) $userModel->google2fa_enabled,
-            'balance' => (float) $userModel->balance,
-            'api_key' => $userModel->api_key,
+            'id' => $user->getId(),
+            'uid' => $user->getUid(),
+            'username' => $user->getUsername(),
+            'name' => $user->getName(),
+            'email' => $user->getEmail(),
+            'phone' => $user->getPhone(),
+            'role' => $user->getRole(),
+            'google2fa_enabled' => $user->isGoogle2faEnabled(),
+            'balance' => $user->getBalance(),
+            'total_deposited' => $user->getTotalDeposited(),
+            'membership_tier_id' => $user->getMembershipTierId(),
+            'membership_tier' => $user->getMembershipTier(),
+            'api_key' => $user->getApiKey(),
         ];
     }
 }

@@ -34,9 +34,11 @@ class User
 
     private string $status;
 
-    private ?string $telegramChatId;
+    private float $totalDeposited;
 
-    private bool $telegramNotificationsEnabled;
+    private ?string $membershipTierId;
+
+    private ?array $membershipTier;
 
     public function __construct(
         ?string $id,
@@ -55,7 +57,10 @@ class User
         string $status = 'active',
         ?string $uid = null,
         ?string $telegramChatId = null,
-        bool $telegramNotificationsEnabled = true
+        bool $telegramNotificationsEnabled = true,
+        float $totalDeposited = 0.0,
+        ?string $membershipTierId = null,
+        ?array $membershipTier = null
     ) {
         $this->id = $id;
         $this->uid = $uid;
@@ -74,6 +79,9 @@ class User
         $this->status = $status;
         $this->telegramChatId = $telegramChatId;
         $this->telegramNotificationsEnabled = $telegramNotificationsEnabled;
+        $this->totalDeposited = $totalDeposited;
+        $this->membershipTierId = $membershipTierId;
+        $this->membershipTier = $membershipTier;
     }
 
     public function getId(): ?string
@@ -190,6 +198,46 @@ class User
     public function deductBalance(float $amount): void
     {
         $this->balance = round($this->balance - $amount, 8);
+    }
+
+    public function getTotalDeposited(): float
+    {
+        return $this->totalDeposited;
+    }
+
+    public function setTotalDeposited(float $totalDeposited): void
+    {
+        $this->totalDeposited = max(0.0, round($totalDeposited, 4));
+    }
+
+    public function addTotalDeposited(float $amount): void
+    {
+        $this->totalDeposited = round($this->totalDeposited + $amount, 4);
+    }
+
+    public function deductTotalDeposited(float $amount): void
+    {
+        $this->totalDeposited = max(0.0, round($this->totalDeposited - $amount, 4));
+    }
+
+    public function getMembershipTierId(): ?string
+    {
+        return $this->membershipTierId;
+    }
+
+    public function setMembershipTierId(?string $membershipTierId): void
+    {
+        $this->membershipTierId = $membershipTierId;
+    }
+
+    public function getMembershipTier(): ?array
+    {
+        return $this->membershipTier;
+    }
+
+    public function setMembershipTier(?array $membershipTier): void
+    {
+        $this->membershipTier = $membershipTier;
     }
 
     public function getApiKey(): ?string

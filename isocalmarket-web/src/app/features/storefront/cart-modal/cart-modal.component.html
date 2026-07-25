@@ -92,6 +92,14 @@
       </div>
 
       <div
+        *ngIf="tierDiscountAmount > 0"
+        class="flex justify-between text-xs font-extrabold text-sky-600 dark:text-sky-400"
+      >
+        <span>{{ 'cart.agency_tier_discount' | translate }} ({{ lang.currentLang() === 'en' ? (state.authStore.currentUser()?.membership_tier?.name_en || state.authStore.currentUser()?.membership_tier?.name_vi) : state.authStore.currentUser()?.membership_tier?.name_vi }} -{{ state.authStore.currentUser()?.membership_tier?.discount_percent }}%):</span>
+        <span>-{{ tierDiscountAmount | appCurrency }}</span>
+      </div>
+
+      <div
         *ngIf="appliedCoupon()"
         class="flex justify-between text-xs font-extrabold text-emerald-600 dark:text-emerald-400"
       >
