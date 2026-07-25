@@ -106,7 +106,7 @@ Tài liệu này ghi lại chi tiết các bước đã thực hiện để depl
    cd /var/www/isocalmarket-api
    composer install --no-dev --optimize-autoloader --no-interaction
    php artisan storage:link
-   php artisan config:cache
+   php artisan config:clear && php artisan config:cache
    php artisan route:cache
    php artisan view:cache
    ```

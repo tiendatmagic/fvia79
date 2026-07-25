@@ -12,8 +12,26 @@
 >
 > Khi cần seed dữ liệu cho một seeder cụ thể, chỉ dùng:
 > - `php artisan db:seed --class=TenSeederClass` — chạy đúng 1 seeder.
+>
+> **QUY TẮC BẮT BUỘC KHI DEPLOY VPS & NÂNG CẤP CẤU HÌNH .ENV**:
+> Khi triển khai (deploy) hoặc thay đổi file `.env` trên VPS, **LUÔN LUÔN phải thực hiện chuỗi xóa và tái tạo cache cấu hình**:
+> `php artisan config:clear && php artisan config:cache && php artisan route:cache && php artisan view:cache`
+> để đảm bảo Laravel cập nhật ngay lập tức 100% các biến môi trường tươi mới nhất từ tệp `.env`, tuyệt đối không được bỏ qua bước `config:clear` để tránh tình trạng dính cache đệm tĩnh cũ.
 
 - **[CHUYỂN MẶC ĐỊNH FEATURE_MEMBERSHIP_TIERS_ENABLED THÀNH FALSE (OFF BY DEFAULT IF OMITTED IN ENV)]**:
+  - **Mô tả yêu cầu**:
+    - Khi Admin không khai báo hoặc thiếu cấu hình `FEATURE_MEMBERSHIP_TIERS_ENABLED` trong tệp `.env`, hệ thống tự động nhận diện giá trị mặc định là `false` (TẮT HOÀN TOÀN) thay vì `true`.
+  - **Nội dung thực hiện**:
+    - **Backend (`isocalmarket-api`)**:
+      - `config/app.php`: Cập nhật `'feature_membership_tiers_enabled' => (bool) env('FEATURE_MEMBERSHIP_TIERS_ENABLED', false)`.
+      - Các Controllers, Services và Middlewares (`CheckMembershipTiersFeatureEnabled.php`, `AdminUserController.php`, `SystemSettingController.php`, `AdminMembershipTierController.php`, `OrderService.php`, `MembershipTierService.php`, `DepositService.php`): Đồng bộ tất cả các vị trí đọc `config('app.feature_membership_tiers_enabled', false)` thành fallback `false`.
+      - `.env.example`: Thêm `FEATURE_MEMBERSHIP_TIERS_ENABLED=false` kèm ghi chú hướng dẫn chi tiết.
+      - **Xóa Cache Môi Trường**: Thực hiện `php artisan config:clear && php artisan config:cache` đảm bảo Laravel cập nhật giá trị `.env` tươi mới nhất ngay lập tức.
+      - **Kiểm thử**: PHP Unit tests đạt **150/150 PASSED (100%)**, 1018 assertions.
+      - **Frontend**: `npm run build` biên dịch thành công **100% SUCCESS, 0 ERRORS**.
+  - **Xác nhận**: Tính năng Cấp bậc Đại lý mặc định TẮT 100% nếu không chủ động bật trong `.env`!
+
+- **[TRIỂN KHẢI CẬP NHẬT FE VÀ BE LÊN VPS PRODUCTION VỚI FEATURE_MEMBERSHIP_TIERS_ENABLED=TRUE (PRODUCTION DEPLOYMENT WITH MEMBERSHIP TIERS ENABLED)]**:
   - **Mô tả yêu cầu**:
     - Khi Admin không khai báo hoặc thiếu cấu hình `FEATURE_MEMBERSHIP_TIERS_ENABLED` trong tệp `.env`, hệ thống tự động nhận diện giá trị mặc định là `false` (TẮT HOÀN TOÀN) thay vì `true`.
   - **Nội dung thực hiện**:
@@ -341,6 +359,18 @@
       - Bổ sung từ điển đa ngôn ngữ EN và VI trong `LanguageService.ts`.
       - Biên dịch Angular Frontend (`npm run build`) thành công **100% SUCCESS, 0 ERRORS**.
   - **Xác nhận**: Tích hợp hoàn hảo tính năng Quản lý Thông báo Trang chủ Admin (Tab riêng biệt) & Hiệu ứng Banner Storefront với SVG Icons chuẩn 100%!
+
+- **[TRIỂN KHẢI CẬP NHẬT FE VÀ BE LÊN VPS PRODUCTION VỚI FEATURE_MEMBERSHIP_TIERS_ENABLED=TRUE (PRODUCTION DEPLOYMENT WITH MEMBERSHIP TIERS ENABLED)]**:
+  - **Mô tả yêu cầu**:
+    - Triển khai bản cập nhật mới nhất cho cả Frontend và Backend lên VPS Production (`https://isocalmarket.com/`).
+    - Chủ động thiết lập biến cấu hình `.env` của Backend tại máy chủ VPS: `FEATURE_MEMBERSHIP_TIERS_ENABLED=true`.
+    - Bảo toàn 100% dữ liệu hiện có trong CSDL (chỉ chạy `php artisan migrate --force`).
+  - **Nội dung thực hiện**:
+    - **Frontend & Backend**: Biên dịch production (`npm run build`) và đóng gói mã nguồn mới nhất upload lên VPS.
+    - **Cấu hình Môi trường VPS**: Tự động cập nhật `FEATURE_MEMBERSHIP_TIERS_ENABLED=true` trong `/var/www/isocalmarket-api/.env` và làm mới bộ nhớ đệm `php artisan config:cache`.
+    - **Cơ sở dữ liệu**: Chạy `php artisan migrate --force` bảo toàn 100% dữ liệu CSDL.
+    - **Xác minh API Live**: API public `/api/v1/settings/public` phản hồi `"membership_tiers_feature_enabled": true` và `"membership_tiers_enabled": true`. Tất cả các endpoint đều trả về HTTP/2 **200 OK**.
+  - **Xác nhận**: Deploy VPS thành công **100%**, tính năng Cấp bậc Đại lý đã được bật trực tiếp trên Production!
 
 - **[TRIỂN KHẢI CẬP NHẬT FE VÀ BE LÊN VPS PRODUCTION BẢO TOÀN DỮ LIỆU CSDL (FULL FE & BE VPS PRODUCTION DEPLOYMENT)]**:
   - **Mô tả yêu cầu**:
