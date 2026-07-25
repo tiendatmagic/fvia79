@@ -18,6 +18,14 @@
 > `php artisan config:clear && php artisan config:cache && php artisan route:cache && php artisan view:cache`
 > để đảm bảo Laravel cập nhật ngay lập tức 100% các biến môi trường tươi mới nhất từ tệp `.env`, tuyệt đối không được bỏ qua bước `config:clear` để tránh tình trạng dính cache đệm tĩnh cũ.
 
+- **[CÀI ĐẶT FTP SERVER VÀ CẤP TÀI KHOẢN FTP UPLOAD TRÊN VPS (VSFTPD INSTALLATION & FTP CREDENTIALS)]**:
+  - **Mô tả yêu cầu**:
+    - Cài đặt dịch vụ FTP (`vsftpd`) trên máy chủ VPS (`184.164.93.247`), tạo tài khoản FTP ngẫu nhiên có quyền ghi dữ liệu để upload/quản lý mã nguồn Frontend (`/var/www/isocalmarket-web`) và Backend (`/var/www/isocalmarket-api`).
+  - **Nội dung thực hiện**:
+    - Cài đặt `vsftpd`, bật Passive Mode (ports `40000:40100`), tạo user `deploy_f627f2` kèm mật khẩu ngẫu nhiên `IsoFtp_c688e0bca6d2!`, phân quyền nhóm `www-data` (`chmod 775` & `SGID`).
+    - Cập nhật đầy đủ thông số kết nối FTP vào tệp [deploy.md](file:///d:/git/isocalmarket/deploy.md).
+  - **Xác nhận**: Đã cài đặt dịch vụ FTP Server thành công và ghi chép thông tin đầy đủ!
+
 - **[TỐI ƯU RESPONSIVE GIAO DIỆN KHỐI THÔNG BÁO TRANG CHỦ STOREFRONT (STOREFRONT ANNOUNCEMENT BANNER RESPONSIVE FIX)]**:
   - **Mô tả yêu cầu**:
     - Tối ưu giao diện responsive cho khối Thông báo trang chủ (`storefront.component.html`) trên màn hình di động (mobile), cho phép cả huy hiệu "THÔNG BÁO" và nội dung văn bản thông báo tự động rớt xuống dòng riêng biệt (`flex-col sm:flex-row`), mở rộng 100% chiều rộng để người dùng đọc được 100% chữ nội dung một cách thoáng đãng, sắc nét.

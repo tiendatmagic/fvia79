@@ -14,6 +14,12 @@ Tài liệu này ghi lại chi tiết các bước đã thực hiện để depl
 - **MySQL Database**: `isocalmarket`
 - **MySQL User**: `isocalmarket_user`
 - **MySQL Password**: `IsoCal_9221eaf12c8455169dfec5b9`
+- **FTP Host**: `184.164.93.247` (Port `21`)
+- **FTP User**: `deploy_f627f2`
+- **FTP Pass**: `IsoFtp_c688e0bca6d2!`
+- **FTP Root Dir**: `/var/www`
+  - Frontend: `/var/www/isocalmarket-web`
+  - Backend: `/var/www/isocalmarket-api`
 - **Web Server**: Nginx (Ubuntu 22.04 LTS)
 - **PHP**: PHP 8.3 (PPA `ppa:ondrej/php`) + PHP-FPM
 - **SSL Certificate**: Let's Encrypt (Certbot)
