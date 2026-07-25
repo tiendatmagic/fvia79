@@ -107,9 +107,13 @@ export class AdminSettingsComponent implements OnInit, OnDestroy {
     telegram_bot_username: 'isocalmarketnoti_bot',
     telegram_bot_enabled: true,
     announcement_enabled: true,
-    announcement_text: 'Hệ thống tự động cập nhật sản phẩm liên tục 24/7. Chúc quý khách mua sắm vui vẻ!',
+    announcement_text_vi: '',
+    announcement_text_en: '',
+    announcement_text: '',
     announcement_effect: 'marquee'
   };
+
+  public readonly previewLang = signal<'vi' | 'en'>('vi');
 
   ngOnInit(): void {
     this.routeSub = this.route.paramMap.subscribe(params => {
@@ -133,7 +137,9 @@ export class AdminSettingsComponent implements OnInit, OnDestroy {
             telegram_bot_username: settings.telegram_bot_username || 'isocalmarketnoti_bot',
             telegram_bot_enabled: settings.telegram_bot_enabled !== undefined ? Boolean(Number(settings.telegram_bot_enabled)) : true,
             announcement_enabled: settings.announcement_enabled !== undefined ? Boolean(Number(settings.announcement_enabled)) : true,
-            announcement_text: settings.announcement_text ?? 'Hệ thống tự động cập nhật sản phẩm liên tục 24/7. Chúc quý khách mua sắm vui vẻ!',
+            announcement_text_vi: settings.announcement_text_vi ?? settings.announcement_text ?? '',
+            announcement_text_en: settings.announcement_text_en ?? '',
+            announcement_text: settings.announcement_text ?? '',
             announcement_effect: settings.announcement_effect || 'marquee'
           };
           if (settings.token_cleanup_days) {

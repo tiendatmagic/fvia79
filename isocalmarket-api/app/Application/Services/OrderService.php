@@ -196,7 +196,11 @@ class OrderService
                     null,
                     $appliedCouponCode,
                     $discountAmount,
-                    $couponId
+                    $couponId,
+                    null,
+                    null,
+                    $tierDiscountAmount,
+                    $couponDiscountAmount
                 );
                 $savedOrder = $this->orderRepository->save($order);
                 if ($idempotencyKey !== null) {

@@ -13,6 +13,38 @@
 > Khi cần seed dữ liệu cho một seeder cụ thể, chỉ dùng:
 > - `php artisan db:seed --class=TenSeederClass` — chạy đúng 1 seeder.
 
+- **[TÍCH HỢP ĐA NGÔN NGỮ CHO NỘI DUNG THÔNG BÁO TRANG CHỦ (STOREFRONT ANNOUNCEMENT MULTI-LANGUAGE)]**:
+  - **Mô tả yêu cầu**:
+    - Tích hợp tính năng hỗ trợ đa ngôn ngữ (Tiếng Việt 🇻🇳 & Tiếng Anh 🇬🇧) cho phần "Nội dung chữ thông báo" tại Cấu hình hệ thống Admin và hiển thị linh hoạt theo ngôn ngữ người dùng tại Storefront.
+  - **Nội dung thực hiện**:
+    - **Backend (`isocalmarket-api`)**:
+      - `SystemSettingController.php`: Bổ sung validation & lưu trữ 2 trường `announcement_text_vi` và `announcement_text_en`. Giữ lại trường `announcement_text` làm fallback tự động. Cập nhật API `GET /api/v1/settings/public` trả về cả 2 ngôn ngữ và fallback.
+      - `PublicSettingTest.php`: Cập nhật test cases kiểm tra lưu và nhận thông báo đa ngôn ngữ. PHP Unit Tests đạt **149/149 PASSED (100%)**, 1014 assertions.
+    - **Frontend (`isocalmarket-web`)**:
+      - `system-setting.store.ts` & `public-setting.store.ts`: Bổ sung `announcement_text_vi` và `announcement_text_en` vào các Interfaces và default signals.
+      - `vi.ts` & `en.ts`: Bổ sung các translation keys `settings.announcement_text_vi`, `settings.announcement_text_en`, `settings.announcement_text_vi_placeholder`, `settings.announcement_text_en_placeholder`.
+      - `admin-settings.component.html` & `.ts`: Tách ô nhập thông báo đơn thành 2 ô textarea dành riêng cho Tiếng Việt 🇻🇳 và Tiếng Anh 🇬🇧. Bổ sung bộ công tắc chuyển đổi ngôn ngữ 🇻🇳 VI / 🇬🇧 EN tại ô Live Preview (Xem trước hiệu ứng trực quan).
+      - `storefront.component.ts` & `.html`: Bổ sung getter `announcementText` tự động hiển thị `announcement_text_en` nếu ngôn ngữ hiện tại là Tiếng Anh, ngược lại hiển thị `announcement_text_vi` (hoặc fallback `announcement_text`).
+      - Biên dịch Angular Frontend (`npm run build`) thành công **100% SUCCESS, 0 ERRORS**.
+  - **Xác nhận**: Thông báo trang chủ hỗ trợ đa ngôn ngữ hoàn hảo trên cả Admin Cấu hình và Cửa hàng Storefront!
+
+- **[TÁCH CỘT CHIẾT KHẤU ĐƠN HÀNG THÀNH TIER VÀ COUPON RIÊNG BIỆT (SPLIT ORDER DISCOUNT INTO TIER & COUPON)]**:
+  - **Mô tả yêu cầu**:
+    - Tách cột `discount_amount` (tổng chiết khấu gộp) trong bảng `orders` thành 2 cột riêng biệt `tier_discount_amount` (chiết khấu Cấp bậc Đại lý) và `coupon_discount_amount` (giảm giá Mã giảm giá), giúp minh bạch hóa nguồn gốc chiết khấu trên API response và giao diện Chi tiết đơn hàng.
+  - **Nội dung thực hiện**:
+    - **Database Migration**: `2026_07_26_000000_split_discount_amount_on_orders_table.php` — Thêm 2 cột `tier_discount_amount DECIMAL(16,4)` và `coupon_discount_amount DECIMAL(16,4)` vào bảng `orders`. Backfill dữ liệu cũ (đơn có coupon → coupon_discount_amount, đơn không coupon → tier_discount_amount).
+    - **Backend Domain Entity (`Order.php`)**: Thêm properties `tierDiscountAmount`, `couponDiscountAmount` + getters `getTierDiscountAmount()`, `getCouponDiscountAmount()`.
+    - **Backend Model (`OrderModel.php`)**: Thêm vào fillable và casts.
+    - **Backend Mapper (`OrderMapper.php`)**: Map 2 cột mới trong `toDomain` và `toPersistence`.
+    - **Backend Service (`OrderService.php`)**: Truyền `$tierDiscountAmount` và `$couponDiscountAmount` riêng biệt khi tạo Order entity.
+    - **Backend Controllers**: Cập nhật `OrderController.php`, `B2bController.php`, `B2bAdminController.php` — trả về `tier_discount_amount` và `coupon_discount_amount` trong tất cả API responses (tạo đơn, danh sách đơn, chi tiết đơn).
+    - **Frontend (`isocalmarket-web`)**:
+      - `order-detail.component.html`: Tách khối chiết khấu thành 2 dòng riêng: "Chiết khấu Cấp bậc" (màu sky) và "Giảm giá Mã giảm giá" (màu emerald).
+      - `en.ts` & `vi.ts`: Thêm keys `orders.tier_discount` / `orders.coupon_discount`.
+      - `user-api.component.html` & `admin-api.component.html`: Cập nhật tài liệu API với 2 trường mới trong response samples.
+    - **Kiểm thử**: PHP Unit Test **149/149 PASSED (100%)**, 1013 assertions. Angular Build **100% SUCCESS, 0 ERRORS**.
+  - **Xác nhận**: Chiết khấu đơn hàng được tách riêng minh bạch trên toàn bộ API, giao diện và tài liệu!
+
 - **[TỐI ƯU HIỂN THỊ CHIẾT KHẤU GIÁ VÀ ĐỊNH DẠNG SỐ DƯ 4 CHỮ SỐ THẬP PHÂN (MICRO-PRICING & 4-DECIMAL BALANCE FORMAT)]**:
   - **Mô tả yêu cầu**:
     - Khắc phục lỗi làm tròn ngược khi sản phẩm có đơn giá nhỏ (ví dụ `$0.04`, `$0.01` của Mail clone / Hotmail) kết hợp với chiết khấu Cấp bậc Đại lý (-2%), dẫn đến việc làm tròn 2 chữ số thập phân bị hiển thị giá giảm trùng khớp y hệt giá gốc (gạch ngang `~~$0.01~~` `-2%` vẫn ra `$0.01`).

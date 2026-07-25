@@ -109,6 +109,14 @@ export class StorefrontComponent implements OnInit {
     this.dismissedAnnouncement.set(true);
   }
 
+  public get announcementText(): string {
+    const s = this.announcement();
+    if (this.lang.currentLang() === 'en') {
+      return s.announcement_text_en || s.announcement_text_vi || s.announcement_text || '';
+    }
+    return s.announcement_text_vi || s.announcement_text || s.announcement_text_en || '';
+  }
+
   public get tierDiscountPercent(): number {
     if (!this.publicSettingStore.settings().membership_tiers_enabled) {
       return 0;

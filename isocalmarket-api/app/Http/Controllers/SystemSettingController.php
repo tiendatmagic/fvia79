@@ -46,6 +46,8 @@ class SystemSettingController extends Controller
             'telegram_bot_enabled' => 'sometimes|nullable',
             'announcement_enabled' => 'sometimes|nullable',
             'announcement_text' => 'sometimes|nullable|string|max:1000',
+            'announcement_text_vi' => 'sometimes|nullable|string|max:1000',
+            'announcement_text_en' => 'sometimes|nullable|string|max:1000',
             'announcement_effect' => 'sometimes|nullable|string|in:marquee,fade,slide,bounce',
             'membership_tiers_enabled' => 'sometimes|nullable',
         ], [
@@ -88,8 +90,17 @@ class SystemSettingController extends Controller
         if ($request->has('announcement_enabled')) {
             $settingsToSave['announcement_enabled'] = filter_var($request->input('announcement_enabled'), FILTER_VALIDATE_BOOLEAN) ? '1' : '0';
         }
+        if ($request->has('announcement_text_vi')) {
+            $settingsToSave['announcement_text_vi'] = (string) $request->input('announcement_text_vi');
+        }
+        if ($request->has('announcement_text_en')) {
+            $settingsToSave['announcement_text_en'] = (string) $request->input('announcement_text_en');
+        }
         if ($request->has('announcement_text')) {
             $settingsToSave['announcement_text'] = (string) $request->input('announcement_text');
+            if (! $request->has('announcement_text_vi')) {
+                $settingsToSave['announcement_text_vi'] = (string) $request->input('announcement_text');
+            }
         }
         if ($request->has('announcement_effect')) {
             $settingsToSave['announcement_effect'] = (string) $request->input('announcement_effect');
@@ -110,7 +121,9 @@ class SystemSettingController extends Controller
     public function publicSettings()
     {
         $enabled = $this->settingService->getSetting('announcement_enabled', '1');
-        $text = $this->settingService->getSetting('announcement_text', 'Hệ thống tự động cập nhật sản phẩm liên tục 24/7. Chúc quý khách mua sắm vui vẻ!');
+        $textVi = $this->settingService->getSetting('announcement_text_vi', $this->settingService->getSetting('announcement_text', ''));
+        $textEn = $this->settingService->getSetting('announcement_text_en', '');
+        $text = $this->settingService->getSetting('announcement_text', $textVi);
         $effect = $this->settingService->getSetting('announcement_effect', 'marquee');
         $usdtRate = $this->settingService->getSetting('usdt_exchange_rate', '25400');
         $telegramBotUsername = $this->settingService->getSetting('telegram_bot_username', 'isocalmarketnoti_bot');
@@ -124,6 +137,8 @@ class SystemSettingController extends Controller
 
         return response()->json([
             'announcement_enabled' => filter_var($enabled, FILTER_VALIDATE_BOOLEAN),
+            'announcement_text_vi' => (string) $textVi,
+            'announcement_text_en' => (string) $textEn,
             'announcement_text' => (string) $text,
             'announcement_effect' => (string) $effect,
             'usdt_exchange_rate' => (float) $usdtRate,

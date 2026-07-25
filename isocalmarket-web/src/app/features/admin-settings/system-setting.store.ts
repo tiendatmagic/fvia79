@@ -17,6 +17,8 @@ export interface SystemSettingsPayload {
   telegram_bot_username?: string;
   telegram_bot_enabled?: boolean | string;
   announcement_enabled?: boolean | string;
+  announcement_text_vi?: string;
+  announcement_text_en?: string;
   announcement_text?: string;
   announcement_effect?: 'marquee' | 'fade' | 'slide' | 'bounce' | string;
   membership_tiers_enabled?: boolean | string;
@@ -51,7 +53,9 @@ export class SystemSettingStore {
     telegram_bot_username: 'isocalmarketnoti_bot',
     telegram_bot_enabled: true,
     announcement_enabled: true,
-    announcement_text: 'Hệ thống tự động cập nhật sản phẩm liên tục 24/7. Chúc quý khách mua sắm vui vẻ!',
+    announcement_text_vi: '',
+    announcement_text_en: '',
+    announcement_text: '',
     announcement_effect: 'marquee'
   });
 

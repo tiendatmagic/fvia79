@@ -5,6 +5,8 @@ import { Observable, of } from 'rxjs';
 
 export interface PublicSettings {
   announcement_enabled: boolean;
+  announcement_text_vi?: string;
+  announcement_text_en?: string;
   announcement_text: string;
   announcement_effect: 'marquee' | 'fade' | 'slide' | 'bounce';
   usdt_exchange_rate: number;
@@ -23,6 +25,8 @@ export class PublicSettingStore {
   public readonly loaded = signal<boolean>(false);
   public readonly settings = signal<PublicSettings>({
     announcement_enabled: false,
+    announcement_text_vi: '',
+    announcement_text_en: '',
     announcement_text: '',
     announcement_effect: 'marquee',
     usdt_exchange_rate: 25400,

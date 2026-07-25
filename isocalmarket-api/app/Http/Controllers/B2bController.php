@@ -150,6 +150,8 @@ class B2bController extends Controller
                 'order_code' => $order->getOrderCode(),
                 'total_price' => (float) $order->getTotalPrice(),
                 'discount_amount' => (float) $order->getDiscountAmount(),
+                'tier_discount_amount' => (float) $order->getTierDiscountAmount(),
+                'coupon_discount_amount' => (float) $order->getCouponDiscountAmount(),
                 'accounts' => $accounts,
             ], $isPending ? 202 : 200);
         } catch (OrderException $e) {
@@ -231,6 +233,8 @@ class B2bController extends Controller
                 'order_code' => $orderModel->order_code,
                 'total_price' => (float) $orderModel->total_price,
                 'discount_amount' => (float) $orderModel->discount_amount,
+                'tier_discount_amount' => (float) ($orderModel->tier_discount_amount ?? 0),
+                'coupon_discount_amount' => (float) ($orderModel->coupon_discount_amount ?? 0),
                 'status' => $orderModel->status,
                 'created_at' => $orderModel->created_at->toIso8601String(),
                 'accounts' => $accounts,

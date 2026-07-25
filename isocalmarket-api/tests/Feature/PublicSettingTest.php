@@ -26,7 +26,9 @@ class PublicSettingTest extends TestCase
         $response->assertStatus(200)
             ->assertJson([
                 'announcement_enabled' => true,
-                'announcement_text' => 'Hệ thống tự động cập nhật sản phẩm liên tục 24/7. Chúc quý khách mua sắm vui vẻ!',
+                'announcement_text_vi' => '',
+                'announcement_text_en' => '',
+                'announcement_text' => '',
                 'announcement_effect' => 'marquee',
                 'telegram_bot_username' => 'isocalmarketnoti_bot',
             ]);
@@ -49,7 +51,8 @@ class PublicSettingTest extends TestCase
         $response = $this->withHeaders(['Authorization' => 'Bearer ' . $token])
             ->putJson('/api/v1/admin/settings', [
                 'announcement_enabled' => true,
-                'announcement_text' => 'Thông báo bảo trì hệ thống 2h sáng mai!',
+                'announcement_text_vi' => 'Thông báo bảo trì hệ thống 2h sáng mai!',
+                'announcement_text_en' => 'System maintenance notification at 2 AM tomorrow!',
                 'announcement_effect' => 'bounce',
             ]);
 
@@ -62,8 +65,13 @@ class PublicSettingTest extends TestCase
         ]);
 
         $this->assertDatabaseHas('system_settings', [
-            'key' => 'announcement_text',
+            'key' => 'announcement_text_vi',
             'value' => 'Thông báo bảo trì hệ thống 2h sáng mai!',
+        ]);
+
+        $this->assertDatabaseHas('system_settings', [
+            'key' => 'announcement_text_en',
+            'value' => 'System maintenance notification at 2 AM tomorrow!',
         ]);
 
         $this->assertDatabaseHas('system_settings', [
@@ -76,7 +84,8 @@ class PublicSettingTest extends TestCase
         $publicRes->assertStatus(200)
             ->assertJson([
                 'announcement_enabled' => true,
-                'announcement_text' => 'Thông báo bảo trì hệ thống 2h sáng mai!',
+                'announcement_text_vi' => 'Thông báo bảo trì hệ thống 2h sáng mai!',
+                'announcement_text_en' => 'System maintenance notification at 2 AM tomorrow!',
                 'announcement_effect' => 'bounce',
             ]);
     }

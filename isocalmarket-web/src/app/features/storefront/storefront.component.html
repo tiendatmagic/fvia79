@@ -9,7 +9,7 @@
     </div>
   } @else if (
     announcement().announcement_enabled &&
-    announcement().announcement_text &&
+    announcementText &&
     !dismissedAnnouncement()
   ) {
     <div
@@ -29,19 +29,19 @@
           <div
             class="announcement-marquee-track text-xs sm:text-sm font-semibold text-slate-800 dark:text-slate-100"
           >
-            <span>{{ announcement().announcement_text }}</span>
+            <span>{{ announcementText }}</span>
           </div>
         } @else if (announcement().announcement_effect === 'fade') {
           <div
             class="announcement-fade text-xs sm:text-sm font-semibold text-amber-600 dark:text-amber-300"
           >
-            {{ announcement().announcement_text }}
+            {{ announcementText }}
           </div>
         } @else {
           <div
             class="announcement-bounce text-xs sm:text-sm font-semibold text-amber-600 dark:text-amber-400"
           >
-            {{ announcement().announcement_text }}
+            {{ announcementText }}
           </div>
         }
       </div>

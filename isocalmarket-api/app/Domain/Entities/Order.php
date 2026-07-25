@@ -17,6 +17,8 @@ class Order
     private ?string $couponCode;
     private float $discountAmount;
     private ?string $couponId;
+    private float $tierDiscountAmount;
+    private float $couponDiscountAmount;
 
     public function __construct(
         ?string $id,
@@ -31,7 +33,9 @@ class Order
         float $discountAmount = 0.0,
         ?string $couponId = null,
         ?string $userName = null,
-        ?string $userUid = null
+        ?string $userUid = null,
+        float $tierDiscountAmount = 0.0,
+        float $couponDiscountAmount = 0.0
     ) {
         $this->id = $id;
         $this->userId = $userId;
@@ -46,6 +50,8 @@ class Order
         $this->couponId = $couponId;
         $this->userName = $userName;
         $this->userUid = $userUid;
+        $this->tierDiscountAmount = $tierDiscountAmount;
+        $this->couponDiscountAmount = $couponDiscountAmount;
     }
 
     public function getId(): ?string
@@ -126,5 +132,15 @@ class Order
     public function getUserUid(): ?string
     {
         return $this->userUid;
+    }
+
+    public function getTierDiscountAmount(): float
+    {
+        return $this->tierDiscountAmount;
+    }
+
+    public function getCouponDiscountAmount(): float
+    {
+        return $this->couponDiscountAmount;
     }
 }

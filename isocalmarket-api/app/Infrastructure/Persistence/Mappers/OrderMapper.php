@@ -45,7 +45,9 @@ class OrderMapper
             (float) $model->discount_amount,
             $model->coupon_id,
             $userName,
-            $userUid
+            $userUid,
+            (float) ($model->tier_discount_amount ?? 0),
+            (float) ($model->coupon_discount_amount ?? 0)
         );
     }
 
@@ -63,6 +65,8 @@ class OrderMapper
         $model->coupon_code = $entity->getCouponCode();
         $model->discount_amount = $entity->getDiscountAmount();
         $model->coupon_id = $entity->getCouponId();
+        $model->tier_discount_amount = $entity->getTierDiscountAmount();
+        $model->coupon_discount_amount = $entity->getCouponDiscountAmount();
 
         return $model;
     }

@@ -486,24 +486,44 @@
             </div>
           </div>
 
-          <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
-            <!-- Announcement Text -->
-            <div class="form-field md:col-span-2">
-              <label class="text-xs font-bold text-slate-400 dark:text-slate-500 uppercase tracking-wider block mb-1.5">
-                {{ 'settings.announcement_text' | translate }}
-              </label>
-              <textarea
-                name="announcement_text"
-                class="form-textarea w-full py-3 text-xs leading-relaxed resize-none"
-                rows="4"
-                [placeholder]="'Nội dung thông báo hiển thị ở Storefront...'"
-                [(ngModel)]="form.announcement_text"
-                [disabled]="isLocked()"
-              ></textarea>
+          <div class="space-y-4">
+            <!-- Multi-language Announcement Fields -->
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+              <!-- Announcement Text (Vietnamese) -->
+              <div class="form-field">
+                <label class="text-xs font-bold text-slate-400 dark:text-slate-500 uppercase tracking-wider block mb-1.5 flex items-center gap-1.5">
+                  <span>🇻🇳</span>
+                  <span>{{ 'settings.announcement_text_vi' | translate }}</span>
+                </label>
+                <textarea
+                  name="announcement_text_vi"
+                  class="form-textarea w-full py-3 text-xs leading-relaxed resize-none"
+                  rows="3"
+                  [placeholder]="'settings.announcement_text_vi_placeholder' | translate"
+                  [(ngModel)]="form.announcement_text_vi"
+                  [disabled]="isLocked()"
+                ></textarea>
+              </div>
+
+              <!-- Announcement Text (English) -->
+              <div class="form-field">
+                <label class="text-xs font-bold text-slate-400 dark:text-slate-500 uppercase tracking-wider block mb-1.5 flex items-center gap-1.5">
+                  <span>🇬🇧</span>
+                  <span>{{ 'settings.announcement_text_en' | translate }}</span>
+                </label>
+                <textarea
+                  name="announcement_text_en"
+                  class="form-textarea w-full py-3 text-xs leading-relaxed resize-none"
+                  rows="3"
+                  [placeholder]="'settings.announcement_text_en_placeholder' | translate"
+                  [(ngModel)]="form.announcement_text_en"
+                  [disabled]="isLocked()"
+                ></textarea>
+              </div>
             </div>
 
             <!-- Effect Selector -->
-            <div class="form-field">
+            <div class="form-field max-w-xs">
               <label class="text-xs font-bold text-slate-400 dark:text-slate-500 uppercase tracking-wider block mb-1.5">
                 {{ 'settings.announcement_effect' | translate }}
               </label>
@@ -517,28 +537,57 @@
           </div>
 
           <!-- Live Preview Banner -->
-          @if (form.announcement_enabled && form.announcement_text) {
+          @if (form.announcement_enabled && (form.announcement_text_vi || form.announcement_text_en)) {
             <div class="mt-4 p-4 rounded-xl bg-slate-50 dark:bg-slate-900/80 border border-slate-200 dark:border-slate-800/80 backdrop-blur-md">
-              <div class="text-[11px] uppercase tracking-wider font-extrabold text-slate-500 dark:text-slate-400 mb-2 flex items-center gap-1.5">
-                <app-icon name="eye" class="w-3.5 h-3.5 text-amber-500" />
-                {{ 'settings.preview_title' | translate }}
+              <div class="flex items-center justify-between mb-2">
+                <div class="text-[11px] uppercase tracking-wider font-extrabold text-slate-500 dark:text-slate-400 flex items-center gap-1.5">
+                  <app-icon name="eye" class="w-3.5 h-3.5 text-amber-500" />
+                  {{ 'settings.preview_title' | translate }}
+                </div>
+                <div class="flex items-center gap-1 bg-slate-200/60 dark:bg-slate-800/80 p-0.5 rounded-lg text-[11px] font-bold">
+                  <button
+                    type="button"
+                    (click)="previewLang.set('vi')"
+                    class="px-2 py-0.5 rounded-md transition-all duration-200 flex items-center gap-1"
+                    [class.bg-white]="previewLang() === 'vi'"
+                    [class.dark:bg-slate-700]="previewLang() === 'vi'"
+                    [class.text-primary]="previewLang() === 'vi'"
+                    [class.shadow-sm]="previewLang() === 'vi'"
+                    [class.text-slate-500]="previewLang() !== 'vi'"
+                  >
+                    <span>🇻🇳</span> <span>VI</span>
+                  </button>
+                  <button
+                    type="button"
+                    (click)="previewLang.set('en')"
+                    class="px-2 py-0.5 rounded-md transition-all duration-200 flex items-center gap-1"
+                    [class.bg-white]="previewLang() === 'en'"
+                    [class.dark:bg-slate-700]="previewLang() === 'en'"
+                    [class.text-primary]="previewLang() === 'en'"
+                    [class.shadow-sm]="previewLang() === 'en'"
+                    [class.text-slate-500]="previewLang() !== 'en'"
+                  >
+                    <span>🇬🇧</span> <span>EN</span>
+                  </button>
+                </div>
               </div>
               <div class="relative overflow-hidden rounded-lg bg-gradient-to-r from-amber-500/10 via-primary/10 to-blue-500/10 border border-amber-500/20 p-3.5 flex items-center gap-3">
                 <span class="px-2.5 py-1 rounded-full text-[10px] font-black tracking-wide bg-gradient-to-r from-amber-500 to-orange-500 text-white shadow-sm shrink-0 uppercase">
                   {{ 'storefront.announcement_badge' | translate }}
                 </span>
                 <div class="flex-1 overflow-hidden">
+                  @let currentPreviewText = previewLang() === 'en' ? (form.announcement_text_en || form.announcement_text_vi) : (form.announcement_text_vi || form.announcement_text_en);
                   @if (form.announcement_effect === 'marquee') {
                     <div class="effect-marquee-preview text-xs font-semibold text-slate-800 dark:text-slate-100">
-                      <span>{{ form.announcement_text }}</span>
+                      <span>{{ currentPreviewText }}</span>
                     </div>
                   } @else if (form.announcement_effect === 'fade') {
                     <div class="effect-fade-preview text-xs font-semibold text-amber-600 dark:text-amber-300">
-                      {{ form.announcement_text }}
+                      {{ currentPreviewText }}
                     </div>
                   } @else {
                     <div class="effect-bounce-preview text-xs font-semibold text-amber-600 dark:text-amber-400">
-                      {{ form.announcement_text }}
+                      {{ currentPreviewText }}
                     </div>
                   }
                 </div>

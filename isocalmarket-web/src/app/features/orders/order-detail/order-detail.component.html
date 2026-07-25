@@ -88,11 +88,19 @@
           </div>
 
           <div
-            *ngIf="detail.discount_amount > 0"
+            *ngIf="detail.tier_discount_amount > 0"
+            class="flex justify-between items-center text-xs font-extrabold text-sky-600 dark:text-sky-400"
+          >
+            <span>{{ 'orders.tier_discount' | translate }}:</span>
+            <span>-{{ detail.tier_discount_amount | appCurrency }}</span>
+          </div>
+
+          <div
+            *ngIf="detail.coupon_discount_amount > 0"
             class="flex justify-between items-center text-xs font-extrabold text-emerald-600 dark:text-emerald-400"
           >
-            <span>{{ 'orders.discount' | translate }}:</span>
-            <span>-{{ detail.discount_amount | appCurrency }}</span>
+            <span>{{ 'orders.coupon_discount' | translate }}:</span>
+            <span>-{{ detail.coupon_discount_amount | appCurrency }}</span>
           </div>
 
           <div

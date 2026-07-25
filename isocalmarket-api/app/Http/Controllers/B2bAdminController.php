@@ -150,6 +150,8 @@ class B2bAdminController extends Controller
                         ],
                         'total_price' => (float) $order->total_price,
                         'discount_amount' => (float) $order->discount_amount,
+                        'tier_discount_amount' => (float) ($order->tier_discount_amount ?? 0),
+                        'coupon_discount_amount' => (float) ($order->coupon_discount_amount ?? 0),
                         'coupon_code' => $order->coupon_code,
                         'status' => $order->status,
                         'created_at' => $order->created_at->toIso8601String(),

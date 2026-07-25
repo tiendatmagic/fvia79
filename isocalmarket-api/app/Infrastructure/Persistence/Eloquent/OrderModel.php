@@ -9,7 +9,7 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Support\Str;
 
-#[Fillable(['user_id', 'order_code', 'idempotency_key', 'total_price', 'status', 'coupon_code', 'discount_amount', 'coupon_id'])]
+#[Fillable(['user_id', 'order_code', 'idempotency_key', 'total_price', 'status', 'coupon_code', 'discount_amount', 'coupon_id', 'tier_discount_amount', 'coupon_discount_amount'])]
 class OrderModel extends Model
 {
     use HasUuids;
@@ -26,6 +26,8 @@ class OrderModel extends Model
         return [
             'total_price' => 'float',
             'discount_amount' => 'float',
+            'tier_discount_amount' => 'float',
+            'coupon_discount_amount' => 'float',
         ];
     }
 
