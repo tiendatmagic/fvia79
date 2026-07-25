@@ -13,6 +13,20 @@
 > Khi cần seed dữ liệu cho một seeder cụ thể, chỉ dùng:
 > - `php artisan db:seed --class=TenSeederClass` — chạy đúng 1 seeder.
 
+- **[SỬA ICON VÀ NÂNG CẤP TRANG QUẢN LÝ CẤP BẬC ĐẠI LÝ (SUPPLIER ICON + MEMBERSHIP TIERS UX UPGRADE)]**:
+  - **Mô tả yêu cầu**:
+    - Sửa icon "Quản lý nhà cung cấp" trong sidebar (đang dùng `sync` không phù hợp) → đổi sang icon xe tải `truck`.
+    - Nâng cấp trang `/admin/membership-tiers` bổ sung đầy đủ tooltip, phân trang, bộ lọc và tìm kiếm giống các trang admin khác.
+  - **Nội dung thực hiện**:
+    - **Frontend (`isocalmarket-web`)**:
+      - `icon.component.html`: Thêm `@case ('truck')` — SVG xe tải Heroicons.
+      - `sidebar.component.html` & `app.html`: Đổi `name="sync"` → `name="truck"` cho menu item Suppliers (cả desktop và mobile).
+      - `admin-membership-tiers.component.ts`: Thêm signals `_searchQuery`, `selectedSort`, `selectedStatusFilter`, `currentPage`; computed `filteredTiers` (filter + sort client-side), `pagedTiers` (slice phân trang), `totalPages`, `totalItems`; methods `onSearch`, `fetchPage`. Import thêm `CustomSearchInputComponent`, `CustomSelectComponent`, `PaginationComponent`, `BadgeComponent`, `TooltipDirective`.
+      - `admin-membership-tiers.component.html`: Thêm filter bar 3 cột (Lọc trạng thái, Sắp xếp, Tìm kiếm), tooltip trên tất cả ô dữ liệu, badge `app-badge` kèm switch trong cột `is_active`, nút action đồng nhất style categories, `app-pagination` ở cuối bảng.
+      - `language.service.ts`: Thêm 4 key mới (cả EN + VI): `admin.search_tier_placeholder`, `admin.tier_item`, `common.filter_status`, `common.all`.
+      - Biên dịch Angular Frontend (`npm run build`) thành công **100% SUCCESS, 0 ERRORS**.
+  - **Xác nhận**: Icon supplier đúng semantic, trang Membership Tiers đồng bộ UX 100% với các trang admin khác!
+
 - **[KHẮC PHỤC LỖI SPAM API KHI NẮM BẤM BẬT/TẮT NÚT SWITCH TẠI QUẢN LÝ CẤP BẬC (PREVENT API SPAMMING ON SWITCH TOGGLE)]**:
   - **Mô tả yêu cầu**:
     - Khắc phục hiện tượng spam nhiều request HTTP API song song khi Admin nhấp chuột liên tục (click spam) vào nút công tắc Custom Switch bật/tắt tính năng tổng hoặc bật/tắt trạng thái cấp bậc đại lý (`/admin/membership-tiers`).

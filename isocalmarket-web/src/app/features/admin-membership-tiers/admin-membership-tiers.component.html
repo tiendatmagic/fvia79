@@ -6,6 +6,7 @@
     <ng-container actions *ngIf="publicSettingStore.settings().membership_tiers_feature_enabled">
       <button
         (click)="loadTiers()"
+        [appTooltip]="'common.reload' | translate"
         class="px-4 py-2.5 text-sm font-extrabold text-slate-600 dark:text-slate-400 hover:text-primary bg-white dark:bg-slate-950 border border-slate-200/60 dark:border-slate-800/80 rounded-xl hover:bg-slate-50 dark:hover:bg-slate-900 transition-all cursor-pointer flex items-center gap-1.5"
       >
         <app-icon name="sync" class="w-4 h-4" />
@@ -70,81 +71,156 @@
       </div>
     </div>
 
-    <div app-card class="overflow-hidden !p-0">
-    <app-table
-      [columns]="columns()"
-      [data]="tiers()"
-      [loading]="isLoading()"
-      [emptyText]="'admin.no_tiers_found' | translate"
+    <!-- Search & Filter Bar -->
+    <div
+      class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 bg-slate-50 dark:bg-slate-900/40 border border-slate-200/30 dark:border-slate-800/30 rounded-2xl p-4 sm:p-5"
     >
-      <ng-template appTableCell="level" let-row="row">
-        <span class="font-mono font-extrabold text-slate-900 dark:text-white text-xs">
-          #{{ row.level }}
-        </span>
-      </ng-template>
-
-      <ng-template appTableCell="name" let-row="row">
-        <div class="flex items-center gap-2.5">
-          <span
-            class="px-3 py-1 rounded-full text-xs font-extrabold text-white flex items-center gap-1.5 shadow-sm shrink-0"
-            [style.backgroundColor]="row.color || '#3b82f6'"
-          >
-            <app-icon [name]="row.icon || 'shield'" class="w-3.5 h-3.5" />
-            {{ getTierName(row) }}
-          </span>
-          <span class="text-xs font-semibold text-slate-400 dark:text-slate-500">
-            ({{ row.name_en }})
-          </span>
-        </div>
-      </ng-template>
-
-      <ng-template appTableCell="min_deposit" let-row="row">
-        <span class="text-xs font-extrabold text-slate-900 dark:text-white">
-          {{ row.min_deposit | currency:'USD':'symbol':'1.2-2' }}
-        </span>
-      </ng-template>
-
-      <ng-template appTableCell="discount_percent" let-row="row">
-        <span class="inline-flex items-center gap-1 px-2.5 py-1 rounded-lg bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 font-extrabold text-xs">
-          -{{ row.discount_percent }}%
-        </span>
-      </ng-template>
-
-      <ng-template appTableCell="users_count" let-row="row">
-        <span class="text-xs font-bold text-slate-700 dark:text-slate-300">
-          {{ row.users_count || 0 }} {{ 'admin.tier_users_unit' | translate }}
-        </span>
-      </ng-template>
-
-      <ng-template appTableCell="is_active" let-row="row">
-        <app-custom-switch
-          [checked]="row.is_active ?? true"
-          [disabled]="updatingTierId() === row.id"
-          (checkedChange)="toggleActive(row)"
+      <div class="form-field">
+        <label>{{ 'common.filter_status' | translate }}</label>
+        <app-custom-select
+          [options]="statusOptions"
+          valueKey="value"
+          labelKey="label"
+          [value]="selectedStatusFilter()"
+          (valueChange)="selectedStatusFilter.set($event); currentPage.set(1)"
         />
-      </ng-template>
+      </div>
 
-      <ng-template appTableCell="actions" let-row="row">
-        <div class="flex items-center justify-end gap-1.5">
-          <button
-            type="button"
-            (click)="openEditModal(row)"
-            class="p-2 rounded-xl text-slate-500 hover:text-primary hover:bg-slate-100 dark:hover:bg-slate-800 transition-all cursor-pointer"
-            [title]="'common.edit' | translate"
+      <div class="form-field">
+        <label>{{ 'common.sort_by' | translate }}</label>
+        <app-custom-select
+          [options]="sortOptions"
+          valueKey="value"
+          labelKey="label"
+          [value]="selectedSort()"
+          (valueChange)="selectedSort.set($event); currentPage.set(1)"
+        />
+      </div>
+
+      <div class="form-field">
+        <label>{{ 'common.search' | translate }}</label>
+        <app-custom-search-input
+          [placeholder]="'admin.search_tier_placeholder' | translate"
+          [(ngModel)]="searchQuery"
+          name="searchQuery"
+          (valueChange)="onSearch($event)"
+          [debounce]="300"
+          containerClass="w-full"
+        />
+      </div>
+    </div>
+
+    <!-- Table Card -->
+    <div app-card class="overflow-hidden !p-0">
+      <app-table
+        [columns]="columns()"
+        [data]="pagedTiers()"
+        [loading]="isLoading()"
+        [emptyText]="'admin.no_tiers_found' | translate"
+      >
+        <ng-template appTableCell="level" let-row="row">
+          <span
+            class="font-mono font-extrabold text-slate-900 dark:text-white text-xs"
+            [appTooltip]="('admin.tier_level' | translate) + ' ' + row.level"
           >
-            <app-icon name="edit" class="w-4 h-4" />
-          </button>
-          <button
-            type="button"
-            (click)="deleteTier(row)"
-            class="p-2 rounded-xl text-slate-500 hover:text-rose-500 hover:bg-rose-500/10 transition-all cursor-pointer"
-            [title]="'common.delete' | translate"
+            #{{ row.level }}
+          </span>
+        </ng-template>
+
+        <ng-template appTableCell="name" let-row="row">
+          <div class="flex items-center gap-2.5">
+            <span
+              class="px-3 py-1 rounded-full text-xs font-extrabold text-white flex items-center gap-1.5 shadow-sm shrink-0"
+              [style.backgroundColor]="row.color || '#3b82f6'"
+              [appTooltip]="row.name_vi + ' / ' + row.name_en"
+            >
+              <app-icon [name]="row.icon || 'shield'" class="w-3.5 h-3.5" />
+              {{ getTierName(row) }}
+            </span>
+            <span class="text-xs font-semibold text-slate-400 dark:text-slate-500">
+              ({{ row.name_en }})
+            </span>
+          </div>
+        </ng-template>
+
+        <ng-template appTableCell="min_deposit" let-row="row">
+          <span
+            class="text-xs font-extrabold text-slate-900 dark:text-white"
+            [appTooltip]="('admin.tier_min_deposit' | translate) + ': $' + row.min_deposit"
           >
-            <app-icon name="trash" class="w-4 h-4" />
-          </button>
-        </div>
-      </ng-template>
-    </app-table>
-  </div>
+            {{ row.min_deposit | currency:'USD':'symbol':'1.2-2' }}
+          </span>
+        </ng-template>
+
+        <ng-template appTableCell="discount_percent" let-row="row">
+          <span
+            class="inline-flex items-center gap-1 px-2.5 py-1 rounded-lg bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 font-extrabold text-xs"
+            [appTooltip]="('admin.tier_discount_percent' | translate) + ': ' + row.discount_percent + '%'"
+          >
+            -{{ row.discount_percent }}%
+          </span>
+        </ng-template>
+
+        <ng-template appTableCell="users_count" let-row="row">
+          <app-badge
+            [variant]="(row.users_count || 0) > 0 ? 'success' : 'secondary'"
+            size="lg"
+            rounded="md"
+            [appTooltip]="('admin.tier_users_count' | translate) + ': ' + (row.users_count || 0)"
+          >
+            {{ row.users_count || 0 }} {{ 'admin.tier_users_unit' | translate }}
+          </app-badge>
+        </ng-template>
+
+        <ng-template appTableCell="is_active" let-row="row">
+          <div class="flex items-center justify-center gap-2">
+            <app-badge
+              [variant]="row.is_active ? 'success' : 'danger'"
+              size="md"
+              rounded="md"
+            >
+              {{ (row.is_active ? 'common.status_active' : 'common.status_inactive') | translate }}
+            </app-badge>
+            <app-custom-switch
+              [checked]="row.is_active ?? true"
+              [disabled]="updatingTierId() === row.id"
+              (checkedChange)="toggleActive(row)"
+            />
+          </div>
+        </ng-template>
+
+        <ng-template appTableCell="actions" let-row="row">
+          <div class="flex items-center justify-end gap-1.5 whitespace-nowrap">
+            <button
+              type="button"
+              (click)="openEditModal(row)"
+              [appTooltip]="'common.edit' | translate"
+              class="text-xs font-bold px-3 py-1.5 rounded-lg border border-[var(--color-primary)]/20 hover:bg-[var(--color-primary)]/10 text-[var(--color-primary)] bg-[var(--color-primary)]/5 dark:bg-[var(--color-primary)]/10 dark:border-[var(--color-primary)]/30 dark:hover:bg-[var(--color-primary)]/20 hover:scale-105 active:scale-95 transition-all cursor-pointer flex items-center gap-1 shrink-0"
+            >
+              <app-icon name="edit" class="w-3.5 h-3.5" />
+              <span>{{ 'common.edit' | translate }}</span>
+            </button>
+            <button
+              type="button"
+              (click)="deleteTier(row)"
+              [appTooltip]="'common.delete' | translate"
+              class="text-xs font-bold px-3 py-1.5 rounded-lg border border-rose-500/20 dark:border-rose-500/30 hover:bg-rose-100 dark:hover:bg-rose-950/40 text-rose-600 dark:text-rose-400 bg-rose-50 dark:bg-rose-950/20 hover:scale-105 active:scale-95 transition-all cursor-pointer flex items-center gap-1 shrink-0"
+            >
+              <app-icon name="trash" class="w-3.5 h-3.5" />
+              <span>{{ 'common.delete' | translate }}</span>
+            </button>
+          </div>
+        </ng-template>
+      </app-table>
+
+      <app-pagination
+        [currentPage]="currentPage()"
+        [totalPages]="totalPages()"
+        [totalItems]="totalItems()"
+        [itemsPerPage]="limit"
+        [itemName]="'admin.tier_item' | translate"
+        (pageChange)="fetchPage($event)"
+      />
+    </div>
   </ng-container>
 </div>

@@ -1731,6 +1731,10 @@ export const TRANSLATIONS: Record<SupportedLanguage, Record<string, string>> = {
     'settings.effect_bounce': 'Neon Color Pulse',
     'settings.preview_title': 'Live Animation Preview',
     'storefront.announcement_badge': 'ANNOUNCEMENT',
+    'admin.search_tier_placeholder': 'Search by tier name...',
+    'admin.tier_item': 'tiers',
+    'common.filter_status': 'Filter by Status',
+    'common.all': 'All',
   },
   vi: {
     'nav.home': 'Cửa hàng',
@@ -3511,6 +3515,10 @@ export const TRANSLATIONS: Record<SupportedLanguage, Record<string, string>> = {
     'settings.effect_bounce': 'Đổi màu nhấp nháy chú ý (Color Pulse)',
     'settings.preview_title': 'Xem trước hiệu ứng hiển thị (Live Preview)',
     'storefront.announcement_badge': 'THÔNG BÁO',
+    'admin.search_tier_placeholder': 'Tìm theo tên cấp bậc...',
+    'admin.tier_item': 'cấp bậc',
+    'common.filter_status': 'Lọc theo trạng thái',
+    'common.all': 'Tất cả',
   },
 };
 
