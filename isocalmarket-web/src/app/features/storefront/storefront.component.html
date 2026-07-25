@@ -1,11 +1,14 @@
 <div class="max-w-[1530px] mx-auto w-full px-4 sm:px-6 py-6 space-y-6">
   @if (!publicSettingStore.loaded()) {
     <div
-      class="relative overflow-hidden rounded-2xl bg-slate-100 dark:bg-slate-800/40 border border-slate-200/50 dark:border-slate-800/50 p-3.5 sm:px-5 flex items-center gap-4 animate-pulse"
+      class="relative overflow-hidden rounded-2xl bg-slate-100 dark:bg-slate-800/40 border border-slate-200/50 dark:border-slate-800/50 p-3.5 sm:px-5 flex flex-col sm:flex-row sm:items-center gap-3 sm:gap-4 animate-pulse"
     >
-      <div class="w-24 h-6 rounded-full bg-slate-200 dark:bg-slate-700/60 shrink-0"></div>
-      <div class="flex-1 h-4 rounded bg-slate-200 dark:bg-slate-700/60"></div>
-      <div class="w-5 h-5 rounded-lg bg-slate-200 dark:bg-slate-700/60 shrink-0"></div>
+      <div class="flex items-center justify-between w-full sm:w-auto">
+        <div class="w-20 sm:w-24 h-6 rounded-full bg-slate-200 dark:bg-slate-700/60 shrink-0"></div>
+        <div class="w-5 h-5 rounded-lg bg-slate-200 dark:bg-slate-700/60 shrink-0 sm:hidden"></div>
+      </div>
+      <div class="flex-1 h-4 rounded bg-slate-200 dark:bg-slate-700/60 min-w-0 w-full"></div>
+      <div class="w-5 h-5 rounded-lg bg-slate-200 dark:bg-slate-700/60 shrink-0 hidden sm:block"></div>
     </div>
   } @else if (
     announcement().announcement_enabled &&
@@ -13,33 +16,42 @@
     !dismissedAnnouncement()
   ) {
     <div
-      class="relative overflow-hidden rounded-2xl bg-gradient-to-r from-amber-500/10 via-primary/10 to-blue-500/10 border border-amber-500/20 backdrop-blur-md p-3.5 sm:px-5 flex items-center gap-3 sm:gap-4 shadow-sm transition-all"
+      class="relative overflow-hidden rounded-2xl bg-gradient-to-r from-amber-500/10 via-primary/10 to-blue-500/10 border border-amber-500/20 backdrop-blur-md p-3.5 sm:px-5 flex flex-col sm:flex-row sm:items-center justify-between gap-2.5 sm:gap-4 shadow-sm transition-all"
     >
-      <div class="flex items-center gap-2 shrink-0">
+      <div class="flex items-center justify-between w-full sm:w-auto gap-2 shrink-0">
         <span
-          class="px-3 py-1 rounded-full text-[11px] font-black tracking-wider bg-gradient-to-r from-amber-500 to-orange-500 text-white shadow-md uppercase flex items-center gap-1.5"
+          class="px-2.5 sm:px-3 py-1 rounded-full text-[10px] sm:text-[11px] font-black tracking-wider bg-gradient-to-r from-amber-500 to-orange-500 text-white shadow-md uppercase flex items-center gap-1 sm:gap-1.5 whitespace-nowrap shrink-0"
         >
-          <app-icon name="announcement" class="w-3.5 h-3.5" />
+          <app-icon name="announcement" class="w-3 sm:w-3.5 h-3 sm:h-3.5 shrink-0" />
           {{ 'storefront.announcement_badge' | translate }}
         </span>
+
+        <button
+          type="button"
+          (click)="dismissAnnouncement()"
+          class="sm:hidden text-slate-400 hover:text-slate-600 dark:hover:text-slate-200 transition-colors p-1 rounded-lg hover:bg-slate-200/50 dark:hover:bg-slate-800/50 shrink-0 cursor-pointer"
+          title="Dismiss announcement"
+        >
+          <app-icon name="x-mark" class="w-4 h-4" />
+        </button>
       </div>
 
-      <div class="flex-1 overflow-hidden">
+      <div class="flex-1 min-w-0 w-full">
         @if (announcement().announcement_effect === 'marquee') {
           <div
-            class="announcement-marquee-track text-xs sm:text-sm font-semibold text-slate-800 dark:text-slate-100"
+            class="announcement-marquee-track text-xs sm:text-sm font-semibold text-slate-800 dark:text-slate-100 whitespace-nowrap overflow-hidden"
           >
             <span>{{ announcementText }}</span>
           </div>
         } @else if (announcement().announcement_effect === 'fade') {
           <div
-            class="announcement-fade text-xs sm:text-sm font-semibold text-amber-600 dark:text-amber-300"
+            class="announcement-fade text-xs sm:text-sm font-semibold text-amber-600 dark:text-amber-300 break-words leading-relaxed"
           >
             {{ announcementText }}
           </div>
         } @else {
           <div
-            class="announcement-bounce text-xs sm:text-sm font-semibold text-amber-600 dark:text-amber-400"
+            class="announcement-bounce text-xs sm:text-sm font-semibold text-amber-600 dark:text-amber-400 break-words leading-relaxed"
           >
             {{ announcementText }}
           </div>
@@ -49,7 +61,7 @@
       <button
         type="button"
         (click)="dismissAnnouncement()"
-        class="text-slate-400 hover:text-slate-600 dark:hover:text-slate-200 transition-colors p-1 rounded-lg hover:bg-slate-200/50 dark:hover:bg-slate-800/50 shrink-0 cursor-pointer"
+        class="hidden sm:block text-slate-400 hover:text-slate-600 dark:hover:text-slate-200 transition-colors p-1 rounded-lg hover:bg-slate-200/50 dark:hover:bg-slate-800/50 shrink-0 cursor-pointer"
         title="Dismiss announcement"
       >
         <app-icon name="x-mark" class="w-4 h-4" />
@@ -456,8 +468,22 @@
                         p.available_count
                       }}</span>
                     </div>
-                    <div class="text-sm font-black text-[var(--color-primary)] whitespace-nowrap">
-                      {{ p.price | appCurrency }}
+                    <div class="flex flex-col items-start">
+                      <div *ngIf="tierDiscountPercent > 0" class="flex items-center gap-1 mb-0.5">
+                        <span
+                          class="text-[11px] text-slate-400 dark:text-slate-500 line-through font-mono"
+                        >
+                          {{ p.price | appCurrency }}
+                        </span>
+                        <span
+                          class="text-[9px] font-extrabold px-1 py-0.2 rounded bg-sky-500/10 text-sky-600 dark:text-sky-400 border border-sky-500/20"
+                        >
+                          -{{ tierDiscountPercent }}%
+                        </span>
+                      </div>
+                      <div class="text-sm font-black text-[var(--color-primary)] whitespace-nowrap">
+                        {{ getDiscountedPrice(p.price) | appCurrency }}
+                      </div>
                     </div>
                   </div>
 

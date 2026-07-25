@@ -18,6 +18,22 @@
 > `php artisan config:clear && php artisan config:cache && php artisan route:cache && php artisan view:cache`
 > để đảm bảo Laravel cập nhật ngay lập tức 100% các biến môi trường tươi mới nhất từ tệp `.env`, tuyệt đối không được bỏ qua bước `config:clear` để tránh tình trạng dính cache đệm tĩnh cũ.
 
+- **[TỐI ƯU RESPONSIVE GIAO DIỆN KHỐI THÔNG BÁO TRANG CHỦ STOREFRONT (STOREFRONT ANNOUNCEMENT BANNER RESPONSIVE FIX)]**:
+  - **Mô tả yêu cầu**:
+    - Tối ưu giao diện responsive cho khối Thông báo trang chủ (`storefront.component.html`) trên màn hình di động (mobile), cho phép cả huy hiệu "THÔNG BÁO" và nội dung văn bản thông báo tự động rớt xuống dòng riêng biệt (`flex-col sm:flex-row`), mở rộng 100% chiều rộng để người dùng đọc được 100% chữ nội dung một cách thoáng đãng, sắc nét.
+  - **Nội dung thực hiện**:
+    - **Frontend (`isocalmarket-web`)**:
+      - `storefront.component.html`:
+        - Cập nhật flex container khối Thông báo thành `flex flex-col sm:flex-row sm:items-center justify-between gap-2.5 sm:gap-4 p-3.5 sm:px-5`.
+        - Trên di động (`mobile / xs screens`):
+          - Hàng 1: Nút huy hiệu **"THÔNG BÁO"** bên trái và Nút tắt **"X"** bên phải (`flex items-center justify-between w-full sm:w-auto`).
+          - Hàng 2: Div chứa nội dung chữ thông báo (`flex-1 min-w-0 w-full`) rớt hẳn xuống dòng riêng biệt dưới huy hiệu, tận dụng 100% chiều rộng banner.
+        - Áp dụng các lớp `break-words leading-relaxed` cho các hiệu ứng `fade` và `bounce` (hoặc hiển thị tĩnh mặc định), cho phép văn bản ngắt dòng tự nhiên theo từng từ, hiển thị đầy đủ 100% chữ nội dung mà không bị che khuất hay ngắt câu thô ráp.
+        - Giữ hiệu ứng `marquee` cuộn ngang mượt mà (`whitespace-nowrap overflow-hidden`).
+        - Đồng bộ tính toán giá sau chiết khấu Cấp bậc (`getDiscountedPrice(p.price)`) và huy hiệu chiết khấu (`-{{ tierDiscountPercent }}%`) trên thẻ sản phẩm chế độ xem List của màn hình Mobile.
+      - **Biên dịch Frontend**: Lệnh `npm run build` thành công **100% SUCCESS, 0 ERRORS**.
+  - **Xác nhận**: Giao diện khối Thông báo hiển thị rớt dòng riêng biệt cực kỳ đẹp mắt, full toàn bộ chữ, chuẩn responsive 100% trên mọi màn hình di động & máy tính!
+
 - **[RÀ SOÁT VÀ CHUẨN HÓA COMMENT CODE TIẾNG ANH TOÀN BỘ MÃ NGUỒN (FULL SOURCE CODE COMMENT CLEANUP & ENGLISH STANDARDIZATION)]**:
   - **Mô tả yêu cầu**:
     - Rà soát toàn bộ source code cả Frontend và Backend, loại bỏ các comment dư thừa, và chuẩn hóa 100% comment trong code sang Tiếng Anh.
