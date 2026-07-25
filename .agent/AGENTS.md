@@ -3224,7 +3224,15 @@
       - Biên dịch Angular Frontend (`npm run build`) thành công **100% SUCCESS, 0 ERRORS**.
   - **Xác nhận**: Trang Storefront luôn xác minh session đăng nhập chính xác khi reload, loại bỏ hoàn toàn lỗ hổng logic!
 
-
-
+- **[THÊM CHỨC NĂNG NHẬP TÀI NGUYÊN TỪ FILE TXT (INVENTORY TXT FILE IMPORT)]**:
+  - **Mô tả yêu cầu**:
+    - Thêm nút "Nhập từ file TXT" vào modal Import Tài Nguyên Số và modal Chỉnh sửa Tài nguyên, cho phép Admin upload file `.txt` để nhập dữ liệu kho nhanh hơn (mỗi dòng = 1 tài khoản).
+  - **Nội dung thực hiện**:
+    - **Frontend (`isocalmarket-web`)**:
+      - `import-inventory-modal.component.html` & `.ts`: Thêm nút upload TXT (hidden file input + styled button) bên cạnh label textarea. File được đọc bằng `FileReader`, nội dung append vào rawData. Hiển thị banner xanh với tên file và số dòng đã nhập.
+      - `edit-resource-item-modal.component.ts`: Thêm nút upload TXT tương tự vào phần chỉnh sửa nội dung tài nguyên (`secretData`). File TXT thay thế nội dung hiện tại.
+      - `vi.ts` & `en.ts`: Bổ sung 8 translation keys (`inventory.import_txt`, `inventory.txt_imported`, `inventory.txt_import_success`, `inventory.txt_import_success_edit`, `inventory.txt_invalid_format`, `inventory.txt_empty`, `inventory.txt_read_error`, `inventory.lines`).
+      - Biên dịch Angular Frontend (`npm run build`) thành công **100% SUCCESS, 0 ERRORS**.
+  - **Xác nhận**: Chức năng nhập kho từ file TXT hoạt động hoàn hảo trên cả 2 modal Import và Chỉnh sửa Tài nguyên!
 
 

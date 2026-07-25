@@ -1,4 +1,4 @@
-import { Component, Input, Output, EventEmitter, forwardRef, ElementRef, inject, AfterViewInit } from '@angular/core';
+import { Component, Input, Output, EventEmitter, forwardRef, ElementRef, inject, AfterViewInit, ChangeDetectorRef } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule, ControlValueAccessor, NG_VALUE_ACCESSOR } from '@angular/forms';
 import { IconComponent } from '../icon/icon.component';
@@ -19,6 +19,7 @@ import { IconComponent } from '../icon/icon.component';
 })
 export class CustomInputComponent implements ControlValueAccessor, AfterViewInit {
   private readonly elementRef = inject(ElementRef);
+  private readonly cdr = inject(ChangeDetectorRef);
   public innerValue: any = '';
 
   @Input() type: 'text' | 'number' | 'email' | 'password' | 'textarea' | 'date' = 'text';
@@ -87,18 +88,14 @@ export class CustomInputComponent implements ControlValueAccessor, AfterViewInit
 
   public writeValue(value: any): void {
     const normalizedValue = value === null || value === undefined ? '' : value;
+    this.innerValue = normalizedValue;
     
     const inputEl = this.elementRef.nativeElement.querySelector('input, textarea') as HTMLInputElement | HTMLTextAreaElement;
     if (inputEl) {
-      const currentValue = inputEl.value;
-      if (this.areValuesEquivalent(currentValue, normalizedValue)) {
-        this.innerValue = normalizedValue;
-        return;
-      }
       inputEl.value = normalizedValue;
     }
     
-    this.innerValue = normalizedValue;
+    this.cdr.markForCheck();
   }
 
   private areValuesEquivalent(val1: any, val2: any): boolean {

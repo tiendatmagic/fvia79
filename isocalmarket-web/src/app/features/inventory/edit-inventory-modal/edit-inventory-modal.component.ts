@@ -1,4 +1,4 @@
-import { Component, inject, OnInit, signal } from '@angular/core';
+import { Component, inject, OnInit, signal, ChangeDetectorRef, NgZone } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { ModalRef, MODAL_DATA } from '@core/services/modal-ref';
@@ -6,6 +6,7 @@ import { StateService } from '@core/services/state.service';
 import { CustomSelectComponent } from '@shared/components/custom-select/custom-select.component';
 import { CustomInputComponent } from '@shared/components/custom-input/custom-input.component';
 import { ButtonComponent } from '@shared/components/button/button.component';
+import { IconComponent } from '@shared/components/icon/icon.component';
 import { TranslatePipe } from '@shared/pipes/translate.pipe';
 import { LanguageService } from '@core/services/language.service';
 import { finalize } from 'rxjs/operators';
@@ -19,6 +20,7 @@ import { finalize } from 'rxjs/operators';
     CustomSelectComponent,
     CustomInputComponent,
     ButtonComponent,
+    IconComponent,
     TranslatePipe
   ],
   templateUrl: './edit-inventory-modal.component.html',
@@ -33,6 +35,8 @@ export class EditInventoryModalComponent implements OnInit {
   private readonly modalData = inject(MODAL_DATA);
   public readonly state = inject(StateService);
   public readonly lang = inject(LanguageService);
+  private readonly cdr = inject(ChangeDetectorRef);
+  private readonly zone = inject(NgZone);
 
   public itemId = '';
   public editProductId = '';
@@ -43,6 +47,8 @@ export class EditInventoryModalComponent implements OnInit {
   public lastUpdatedAt = '';
   public productOptions: any[] = [];
   public readonly isSubmitting = signal(false);
+  public importedFileName = '';
+  public importedLineCount = 0;
 
   public get statusOptions() {
     return [
@@ -75,6 +81,58 @@ export class EditInventoryModalComponent implements OnInit {
     if (!this.keysPool) return 0;
     const lines = this.keysPool.split('\n');
     return lines.filter(line => line.trim().length > 0).length;
+  }
+
+  public onTxtFileSelected(event: Event) {
+    const input = event.target as HTMLInputElement;
+    const file = input?.files?.[0];
+    if (!file) return;
+
+    if (!file.name.toLowerCase().endsWith('.txt')) {
+      this.state.showToast(this.lang.translate('inventory.txt_invalid_format'), 'error');
+      input.value = '';
+      return;
+    }
+
+    const reader = new FileReader();
+    reader.onload = () => {
+      this.zone.run(() => {
+        const content = (reader.result as string) || '';
+        const lines = content.split(/\r?\n/).filter(line => line.trim().length > 0);
+
+        if (lines.length === 0) {
+          this.state.showToast(this.lang.translate('inventory.txt_empty'), 'error');
+          input.value = '';
+          return;
+        }
+
+        if (this.keysPool.trim().length > 0) {
+          this.keysPool = this.keysPool.trimEnd() + '\n' + lines.join('\n');
+        } else {
+          this.keysPool = lines.join('\n');
+        }
+
+        this.importedFileName = file.name;
+        this.importedLineCount = lines.length;
+        this.state.showToast(
+          this.lang.translate('inventory.txt_import_success').replace('{{count}}', String(lines.length)),
+          'success'
+        );
+
+        input.value = '';
+        this.cdr.markForCheck();
+      });
+    };
+
+    reader.onerror = () => {
+      this.zone.run(() => {
+        this.state.showToast(this.lang.translate('inventory.txt_read_error'), 'error');
+        input.value = '';
+        this.cdr.markForCheck();
+      });
+    };
+
+    reader.readAsText(file, 'UTF-8');
   }
 
   public onSubmit() {

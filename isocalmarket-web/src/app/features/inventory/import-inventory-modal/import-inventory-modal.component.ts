@@ -1,4 +1,4 @@
-import { Component, inject, OnInit, signal } from '@angular/core';
+import { Component, inject, OnInit, signal, ChangeDetectorRef, NgZone } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { ModalRef, MODAL_DATA } from '@core/services/modal-ref';
@@ -35,6 +35,8 @@ export class ImportInventoryModalComponent implements OnInit {
   private readonly modalData = inject(MODAL_DATA);
   public readonly state = inject(StateService);
   public readonly lang = inject(LanguageService);
+  private readonly cdr = inject(ChangeDetectorRef);
+  private readonly zone = inject(NgZone);
 
   public importProductId = '';
   public batchName = '';
@@ -42,6 +44,8 @@ export class ImportInventoryModalComponent implements OnInit {
   public rawData = '';
   public productOptions: any[] = [];
   public readonly isSubmitting = signal(false);
+  public importedFileName = '';
+  public importedLineCount = 0;
 
   public ngOnInit() {
     const targetProductId = this.modalData?.productId || this.modalData?.selectedProductId || '';
@@ -108,6 +112,60 @@ export class ImportInventoryModalComponent implements OnInit {
     if (!this.rawData) return 0;
     const lines = this.rawData.split('\n');
     return lines.filter(line => line.trim().length > 0).length;
+  }
+
+  public onTxtFileSelected(event: Event) {
+    const input = event.target as HTMLInputElement;
+    const file = input?.files?.[0];
+    if (!file) return;
+
+    if (!file.name.toLowerCase().endsWith('.txt')) {
+      this.state.showToast(this.lang.translate('inventory.txt_invalid_format'), 'error');
+      input.value = '';
+      return;
+    }
+
+    const reader = new FileReader();
+    reader.onload = () => {
+      this.zone.run(() => {
+        const content = (reader.result as string) || '';
+        const lines = content.split(/\r?\n/).filter(line => line.trim().length > 0);
+
+        if (lines.length === 0) {
+          this.state.showToast(this.lang.translate('inventory.txt_empty'), 'error');
+          input.value = '';
+          return;
+        }
+
+        // Append to existing rawData (add newline separator if rawData already has content)
+        if (this.rawData.trim().length > 0) {
+          this.rawData = this.rawData.trimEnd() + '\n' + lines.join('\n');
+        } else {
+          this.rawData = lines.join('\n');
+        }
+
+        this.importedFileName = file.name;
+        this.importedLineCount = lines.length;
+        this.state.showToast(
+          this.lang.translate('inventory.txt_import_success').replace('{{count}}', String(lines.length)),
+          'success'
+        );
+
+        // Reset file input so same file can be re-selected
+        input.value = '';
+        this.cdr.markForCheck();
+      });
+    };
+
+    reader.onerror = () => {
+      this.zone.run(() => {
+        this.state.showToast(this.lang.translate('inventory.txt_read_error'), 'error');
+        input.value = '';
+        this.cdr.markForCheck();
+      });
+    };
+
+    reader.readAsText(file, 'UTF-8');
   }
 
   public onSubmit() {

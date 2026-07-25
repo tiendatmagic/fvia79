@@ -1,4 +1,4 @@
-import { Component, OnInit, inject, signal } from '@angular/core';
+import { Component, OnInit, inject, signal, ChangeDetectorRef, NgZone } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { ModalRef, MODAL_DATA } from '@core/services/modal-ref';
@@ -57,10 +57,37 @@ import { TranslatePipe } from '@shared/pipes/translate.pipe';
       </div>
 
       <div class="form-field">
-        <label class="text-xs font-black text-slate-400 uppercase tracking-wider block mb-2">
-          {{ 'inventory.resource_content' | translate }}
-          <span class="text-red-500">*</span>
-        </label>
+        <div class="flex items-center justify-between mb-2">
+          <label class="text-xs font-black text-slate-400 uppercase tracking-wider">
+            {{ 'inventory.resource_content' | translate }}
+            <span class="text-red-500">*</span>
+          </label>
+          <!-- Hidden file input for TXT import -->
+          <input
+            #txtFileInput
+            type="file"
+            accept=".txt"
+            class="hidden"
+            (change)="onTxtFileSelected($event)"
+          />
+          <button
+            type="button"
+            (click)="txtFileInput.click()"
+            class="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-[11px] font-bold
+              bg-emerald-500/10 text-emerald-600 dark:text-emerald-400
+              hover:bg-emerald-500/20 active:scale-95
+              border border-emerald-500/20 transition-all duration-200 cursor-pointer"
+          >
+            <app-icon name="upload" class="w-3.5 h-3.5" />
+            <span>{{ 'inventory.import_txt' | translate }}</span>
+          </button>
+        </div>
+        @if (importedFileName) {
+          <div class="flex items-center gap-2 mb-2 px-3 py-2 rounded-lg bg-emerald-500/5 border border-emerald-500/10 text-xs font-semibold text-emerald-600 dark:text-emerald-400">
+            <app-icon name="check-circle" class="w-4 h-4 shrink-0" />
+            <span class="truncate">{{ 'inventory.txt_imported' | translate }}: {{ importedFileName }}</span>
+          </div>
+        }
         <app-custom-input
           [placeholder]="'inventory.resource_content_placeholder' | translate"
           [(ngModel)]="secretData"
@@ -103,11 +130,14 @@ export class EditResourceItemModalComponent implements OnInit {
   private readonly modalData = inject(MODAL_DATA);
   public readonly state = inject(StateService);
   public readonly lang = inject(LanguageService);
+  private readonly cdr = inject(ChangeDetectorRef);
+  private readonly zone = inject(NgZone);
 
   public item: any = null;
   public secretData = '';
   public status = 'available';
   public submitting = signal<boolean>(false);
+  public importedFileName = '';
 
   public get statusOptions() {
     return [
@@ -147,6 +177,51 @@ export class EditResourceItemModalComponent implements OnInit {
         this.submitting.set(false);
       }
     });
+  }
+
+  public onTxtFileSelected(event: Event) {
+    const input = event.target as HTMLInputElement;
+    const file = input?.files?.[0];
+    if (!file) return;
+
+    if (!file.name.toLowerCase().endsWith('.txt')) {
+      this.state.showToast(this.lang.translate('inventory.txt_invalid_format'), 'error');
+      input.value = '';
+      return;
+    }
+
+    const reader = new FileReader();
+    reader.onload = () => {
+      this.zone.run(() => {
+        const content = (reader.result as string) || '';
+        const trimmed = content.trim();
+
+        if (!trimmed) {
+          this.state.showToast(this.lang.translate('inventory.txt_empty'), 'error');
+          input.value = '';
+          return;
+        }
+
+        this.secretData = trimmed;
+        this.importedFileName = file.name;
+        this.state.showToast(
+          this.lang.translate('inventory.txt_import_success_edit'),
+          'success'
+        );
+        input.value = '';
+        this.cdr.markForCheck();
+      });
+    };
+
+    reader.onerror = () => {
+      this.zone.run(() => {
+        this.state.showToast(this.lang.translate('inventory.txt_read_error'), 'error');
+        input.value = '';
+        this.cdr.markForCheck();
+      });
+    };
+
+    reader.readAsText(file, 'UTF-8');
   }
 
   public close(success: boolean = false) {
