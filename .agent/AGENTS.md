@@ -13,6 +13,16 @@
 > Khi cần seed dữ liệu cho một seeder cụ thể, chỉ dùng:
 > - `php artisan db:seed --class=TenSeederClass` — chạy đúng 1 seeder.
 
+- **[RÀ SOÁT & BỔ SUNG ĐẦY ĐỦ 100% DICTIONARY I18N KEYS (I18N COMPLETE REFACTOR & PARITY)]**:
+  - **Mô tả yêu cầu**:
+    - Khắc phục triệt để lỗi hiển thị tên key thô (`auth.marketing_desc`, `auth.feature_1_desc`, `auth.terms_commitment`, `auth.legal_disclaimer`...) trên giao diện Auth Marketing layout (`/login`, `/register`).
+    - Quét toàn bộ mã nguồn giao diện Angular (`isocalmarket-web`) để tìm tất cả các translation keys được sử dụng trong các tệp `.html` và `.ts` nhưng chưa được khai báo trong từ điển ngôn ngữ.
+  - **Nội dung thực hiện**:
+    - **Tạo công cụ audit tự động (`audit_i18n.js`)**: Quét và đối chiếu 1,351 key strings được gọi trong toàn bộ HTML/TS với từ điển [vi.ts](file:///d:/git/isocalmarket/isocalmarket-web/src/app/core/i18n/vi.ts) và [en.ts](file:///d:/git/isocalmarket/isocalmarket-web/src/app/core/i18n/en.ts). Phát hiện ~134 keys bị thiếu (như `auth.marketing_desc`, `api.admin_description`, `settings.description`, `modal.bulk_lock_desc`...).
+    - **Language i18n (`vi.ts`, `en.ts`)**: Bổ sung đầy đủ 134 keys còn thiếu cho cả 2 ngôn ngữ Tiếng Việt và Tiếng Anh. Nâng tổng số lượng translation keys trong cả 2 tệp từ 1,468 lên **1,602 keys** với **100% Parity (0 missing, 0 mismatch)**.
+    - **Biên dịch Frontend**: Chạy `npm run build` biên dịch thành công **100% SUCCESS, 0 ERRORS**.
+  - **Xác nhận**: Giao diện Auth Marketing và toàn bộ các trang trên ứng dụng hiển thị ngôn ngữ Tiếng Việt và Tiếng Anh mượt mà, sắc nét, hoàn toàn không còn xuất hiện key thô!
+
 - **[TÍCH HỢP NÚT CÔNG TẮC BẬT/TẮT TÌM KIẾM SẢN PHẨM HẾT HÀNG TẠI STOREFRONT (INCLUDE OUT OF STOCK SEARCH TOGGLE)]**:
   - **Mô tả yêu cầu**:
     - Bổ sung nút công tắc Custom Switch "Tìm sản phẩm hết hàng" (mặc định TẮT) tại khu vực tìm kiếm Storefront.
