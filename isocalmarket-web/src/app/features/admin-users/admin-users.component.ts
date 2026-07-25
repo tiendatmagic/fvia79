@@ -20,6 +20,7 @@ import { CustomCheckboxComponent } from '@shared/components/custom-checkbox/cust
 import { CustomDateTimeRangeComponent, DateTimeRangeValue } from '@shared/components/custom-date-time-range/custom-date-time-range.component';
 import { TableComponent, TableCellDirective, TableColumn } from '@shared/components/table/table.component';
 import { TranslatePipe } from '@shared/pipes/translate.pipe';
+import { CurrencyPipe } from '@shared/pipes/currency.pipe';
 
 @Component({
   selector: 'app-admin-users',
@@ -40,7 +41,8 @@ import { TranslatePipe } from '@shared/pipes/translate.pipe';
     CustomDateTimeRangeComponent,
     TableComponent,
     TableCellDirective,
-    TranslatePipe
+    TranslatePipe,
+    CurrencyPipe
   ],
   templateUrl: './admin-users.component.html',
   styles: [`

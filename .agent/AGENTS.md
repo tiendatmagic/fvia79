@@ -13,7 +13,20 @@
 > Khi cần seed dữ liệu cho một seeder cụ thể, chỉ dùng:
 > - `php artisan db:seed --class=TenSeederClass` — chạy đúng 1 seeder.
 
-- **[RÀ SOÁT & BỔ SUNG ĐẦY ĐỦ 100% DICTIONARY I18N KEYS (I18N COMPLETE REFACTOR & PARITY)]**:
+- **[TỐI ƯU HIỂN THỊ CHIẾT KHẤU GIÁ VÀ ĐỊNH DẠNG SỐ DƯ 4 CHỮ SỐ THẬP PHÂN (MICRO-PRICING & 4-DECIMAL BALANCE FORMAT)]**:
+  - **Mô tả yêu cầu**:
+    - Khắc phục lỗi làm tròn ngược khi sản phẩm có đơn giá nhỏ (ví dụ `$0.04`, `$0.01` của Mail clone / Hotmail) kết hợp với chiết khấu Cấp bậc Đại lý (-2%), dẫn đến việc làm tròn 2 chữ số thập phân bị hiển thị giá giảm trùng khớp y hệt giá gốc (gạch ngang `~~$0.01~~` `-2%` vẫn ra `$0.01`).
+    - Nâng cấp hiển thị Số dư tài khoản người dùng (`User Balance`) và toàn bộ định dạng tiền tệ trên hệ thống lên **4 chữ số thập phân** (ví dụ `$10.0000`, `$9.9902`).
+  - **Nội dung thực hiện**:
+    - **Frontend (`isocalmarket-web`)**:
+      - `currency.service.ts`:
+        - Cập nhật hàm `format(amount, decimals?)`: Khi tiền tệ là USD, tự động phát hiện số tiền lẻ hàng phần nghìn / phần vạn (như `$0.0392`, `$0.0098`) để áp dụng độ phân giải **4 chữ số thập phân (`maximumFractionDigits: 4`)**.
+        - Bổ sung hàm chuyên biệt `formatBalance(amount)` cố định định dạng số dư với **4 chữ số thập phân (`minimumFractionDigits: 4`, `maximumFractionDigits: 4`)**.
+      - `currency.pipe.ts`: Mở rộng pipe `appCurrency:decimals` cho phép truyền tham số số chữ số thập phân linh hoạt trong HTML template.
+      - `header.component.ts`: Cập nhật `formatBalance` sử dụng `currencyService.formatBalance(balance)` đảm bảo số dư trên Header & User Dropdown luôn hiển thị chuẩn 4 chữ số thập phân.
+      - `admin-users.component.html` & `admin-users.component.ts`: Đồng bộ cột Số dư trong danh sách Quản lý Người dùng Admin thành `{{ row.balance | appCurrency:4 }}` và import `CurrencyPipe`.
+      - Biên dịch Angular Frontend (`npm run build`) thành công **100% SUCCESS, 0 ERRORS**.
+  - **Xác nhận**: Mức chiết khấu trên các sản phẩm đơn giá nhỏ hiển thị chính xác tuyệt đối (`$0.0392`, `$0.0098`), và Số dư tài khoản hiển thị chuẩn 4 chữ số thập phân mượt mà, minh bạch!
   - **Mô tả yêu cầu**:
     - Khắc phục triệt để lỗi hiển thị tên key thô (`auth.marketing_desc`, `auth.feature_1_desc`, `auth.terms_commitment`, `auth.legal_disclaimer`...) trên giao diện Auth Marketing layout (`/login`, `/register`).
     - Quét toàn bộ mã nguồn giao diện Angular (`isocalmarket-web`) để tìm tất cả các translation keys được sử dụng trong các tệp `.html` và `.ts` nhưng chưa được khai báo trong từ điển ngôn ngữ.
@@ -3010,8 +3023,21 @@
      - Chạy `php artisan test` vượt qua **47/47 unit & feature tests** (189 assertions).
      - Chạy `npm run build` biên dịch Angular thành công 100%.
 
-
-
+- **[KHẮC PHỤC LỖ HỔNG LOGIC CHECKME TRÊN TRANG CÔNG KHAI - STOREFRONT KHÔNG GỌI API /AUTH/ME KHI RELOAD (PUBLIC PAGE CHECKME SESSION VERIFICATION BUG)]**:
+  - **Mô tả yêu cầu**:
+    - Khi reload trang `/storefront` (trang công khai, không có `AuthGuard`), hệ thống không gọi API `/auth/me` nên luôn coi người dùng chưa đăng nhập, dù session HttpOnly cookie vẫn còn hợp lệ.
+    - Ngược lại, khi vào trang `/orders` (có `AuthGuard`), API `/auth/me` được gọi bình thường và nhận diện đúng user đã đăng nhập.
+  - **Phân tích nguyên nhân gốc rễ**:
+    - `checkMe(force, verifyWithoutMarker)` kiểm tra cookie `auth_logged_in` (non-HttpOnly marker) trước khi gọi API. Nếu cookie marker bị mất/hết hạn nhưng HttpOnly session cookie vẫn còn, hệ thống short-circuit trả về `null` mà không gọi API.
+    - `app.ts` gọi `checkMe()` → `verifyWithoutMarker=false` → chặn bởi cookie marker.
+    - `storefront.component.ts` gọi `checkMe(true)` → `verifyWithoutMarker=false` → vẫn chặn.
+    - `AuthGuard` gọi `checkMe(false, true)` → `verifyWithoutMarker=true` → bỏ qua cookie → gọi API thành công.
+  - **Nội dung thực hiện**:
+    - **Frontend (`isocalmarket-web`)**:
+      - `app.ts`: Đổi `checkMe()` → `checkMe(false, true)` trong `ngOnInit` để lần khởi tạo ứng dụng đầu tiên luôn gọi API xác minh session thực tế.
+      - `storefront.component.ts`: Đổi `checkMe(true)` → `checkMe(true, true)` trong `ngOnInit` để storefront luôn xác minh session khi load trực tiếp.
+      - Biên dịch Angular Frontend (`npm run build`) thành công **100% SUCCESS, 0 ERRORS**.
+  - **Xác nhận**: Trang Storefront luôn xác minh session đăng nhập chính xác khi reload, loại bỏ hoàn toàn lỗ hổng logic!
 
 
 

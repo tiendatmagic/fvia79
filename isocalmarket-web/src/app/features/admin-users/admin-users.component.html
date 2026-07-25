@@ -187,8 +187,8 @@
       </ng-template>
 
       <ng-template appTableCell="balance" let-row="row">
-        <span class="text-sm font-extrabold text-[var(--color-primary)]">
-          {{ row.balance | number: '1.2-4' }} USD
+        <span class="font-bold text-emerald-600 dark:text-emerald-400">
+          {{ row.balance | appCurrency:4 }}
         </span>
       </ng-template>
 

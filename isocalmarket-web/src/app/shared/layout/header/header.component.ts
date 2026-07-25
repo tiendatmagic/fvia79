@@ -128,7 +128,7 @@ export class HeaderComponent {
   }
 
   public formatBalance(balance: number | undefined): string {
-    return this.currencyService.format(balance || 0);
+    return this.currencyService.formatBalance(balance || 0);
   }
 }
 

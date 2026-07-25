@@ -35,16 +35,29 @@ export class CurrencyService {
     return Number.isFinite(savedRate) && savedRate > 0 ? savedRate : 26276;
   }
 
-  public format(amount: number | string | null | undefined): string {
+  public format(amount: number | string | null | undefined, decimals?: number): string {
     const numericAmount = Number(amount) || 0;
     const curr = this.currentCurrency();
 
     if (curr === 'USD') {
+      let minDigits = 2;
+      let maxDigits = decimals !== undefined ? decimals : 2;
+
+      if (decimals === 4) {
+        minDigits = 4;
+        maxDigits = 4;
+      } else if (decimals === undefined) {
+        const rounded2 = Math.round(numericAmount * 100) / 100;
+        if (Math.abs(numericAmount - rounded2) > 0.00001 && numericAmount < 10) {
+          maxDigits = 4;
+        }
+      }
+
       return new Intl.NumberFormat('en-US', {
         style: 'currency',
         currency: 'USD',
-        minimumFractionDigits: 2,
-        maximumFractionDigits: 2
+        minimumFractionDigits: minDigits,
+        maximumFractionDigits: maxDigits
       }).format(numericAmount);
     } else {
       const vndAmount = numericAmount * this.usdToVndRate();
@@ -54,5 +67,9 @@ export class CurrencyService {
         maximumFractionDigits: 0
       }).format(vndAmount);
     }
+  }
+
+  public formatBalance(amount: number | string | null | undefined): string {
+    return this.format(amount, 4);
   }
 }

@@ -65,7 +65,7 @@ export class App implements OnInit {
 
   ngOnInit() {
     this.publicSettingStore.fetchPublicSettings().subscribe();
-    this.stateService.authStore.checkMe().subscribe();
+    this.stateService.authStore.checkMe(false, true).subscribe();
 
     this.router.events.pipe(
       filter(event => event instanceof NavigationEnd)
