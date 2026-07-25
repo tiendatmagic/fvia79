@@ -16,4 +16,6 @@ Mỗi khi thực hiện yêu cầu ở đoạn chat mới, luôn đọc .agent\A
 
 Còn về khi tôi yêu cầu phát triển tính năng mới liên quan đến giao diện, hãy đọc .agent\design.md trước để tuân theo quy tắc chung nhé. Chú ý không được viết lại những thứ đã có sẵn, hãy tận dụng component, class có sẵn trong css để viết lại, kế thừa và tối ưu từ những thứ đã có
 
+Thư mục components đây: src\app\shared\components
+
 đảm bảo đọc kỹ yêu cầu tại thư mục .agent ,đọc hết các file nguyên tắc để tuân thủ quy tắc nhé

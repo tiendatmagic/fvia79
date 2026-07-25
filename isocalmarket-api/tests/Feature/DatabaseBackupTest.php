@@ -35,6 +35,8 @@ class DatabaseBackupTest extends TestCase
                 'export_available',
                 'restore_available',
                 'max_upload_megabytes',
+                'php_upload_max_filesize',
+                'php_post_max_size',
                 'requires_otp',
             ]);
 

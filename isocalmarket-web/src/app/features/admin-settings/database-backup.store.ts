@@ -10,6 +10,8 @@ export interface DatabaseBackupStatus {
   export_available: boolean;
   restore_available: boolean;
   max_upload_megabytes: number;
+  php_upload_max_filesize?: string;
+  php_post_max_size?: string;
   requires_otp: boolean;
 }
 
@@ -25,7 +27,7 @@ export interface DatabaseRestoreResponse {
   safety_backup: string;
 }
 
-@Injectable()
+@Injectable({ providedIn: 'root' })
 export class DatabaseBackupStore {
   private readonly api = inject(ApiService);
 

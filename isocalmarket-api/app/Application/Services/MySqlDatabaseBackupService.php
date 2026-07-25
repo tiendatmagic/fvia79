@@ -27,6 +27,8 @@ class MySqlDatabaseBackupService
             'export_available' => $this->findExecutable((string) config('database_backup.mysqldump_binary')) !== null,
             'restore_available' => $this->findExecutable((string) config('database_backup.mysql_binary')) !== null,
             'max_upload_megabytes' => round((int) config('database_backup.max_upload_kilobytes') / 1024, 1),
+            'php_upload_max_filesize' => ini_get('upload_max_filesize') ?: 'N/A',
+            'php_post_max_size' => ini_get('post_max_size') ?: 'N/A',
             'requires_otp' => (bool) auth()->user()?->google2fa_enabled,
         ];
     }

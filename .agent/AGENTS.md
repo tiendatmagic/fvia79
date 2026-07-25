@@ -13,6 +13,22 @@
 > Khi cần seed dữ liệu cho một seeder cụ thể, chỉ dùng:
 > - `php artisan db:seed --class=TenSeederClass` — chạy đúng 1 seeder.
 
+- **[HIỂN THỊ THÔNG SỐ PHP INI VÀ NÂNG CẤP GIAO DIỆN SAO LƯU CƠ SỞ DỮ LIỆU (SHOW SERVER PHP INI LIMITS & DATABASE BACKUP UI REDESIGN)]**:
+  - **Mô tả yêu cầu**:
+    - Hiển thị các thông số giới hạn của máy chủ PHP (`upload_max_filesize`, `post_max_size`) bên cạnh thông số hệ quản trị CSDL (MySQL) và giới hạn tải ứng dụng (100 MB).
+    - Định dạng lại giao diện HTML tab Sao lưu & Khôi phục cơ sở dữ liệu trên Admin hiện đại, sắc nét và trực quan.
+  - **Nội dung thực hiện**:
+    - **Backend (`isocalmarket-api`)**:
+      - `MySqlDatabaseBackupService.php`: Bổ sung 2 thuộc tính `php_upload_max_filesize` và `php_post_max_size` (sử dụng `ini_get()`) vào API response `/api/v1/admin/database-backup/status`.
+      - `DatabaseBackupTest.php`: Cập nhật PHPUnit test structure. PHP Unit Tests đạt **4/4 PASSED (100%)**, 23 assertions.
+    - **Frontend (`isocalmarket-web`)**:
+      - `database-backup.store.ts`: Bổ sung `php_upload_max_filesize` & `php_post_max_size` vào `DatabaseBackupStatus` interface.
+      - `vi.ts` & `en.ts`: Bổ sung các translation keys `database_backup.server_environment`, `database_backup.php_upload_max_filesize`, `database_backup.php_post_max_size`, `database_backup.php_sync_hint`.
+      - `database-backup-panel.component.ts`: Import `BadgeComponent`.
+      - `database-backup-panel.component.html`: Tái cấu trúc và nâng cấp giao diện HTML tab Sao lưu & Khôi phục CSDL. Xây dựng **Bảng Thông số Máy chủ & Hệ thống (Server & System Environment Status)** dạng Grid 4 cột sắc nét hiển thị CSDL Driver (`MySQL`), Giới hạn Ứng dụng (`100 MB`), PHP `upload_max_filesize` và PHP `post_max_size` kèm thẻ lưu ý đồng bộ `php.ini`.
+      - Biên dịch Angular Frontend (`npm run build`) thành công **100% SUCCESS, 0 ERRORS**.
+  - **Xác nhận**: Đã hiển thị đầy đủ thông số cấu hình server PHP và nâng cấp giao diện Sao lưu CSDL hoàn hảo!
+
 - **[TÍCH HỢP ĐA NGÔN NGỮ CHO NỘI DUNG THÔNG BÁO TRANG CHỦ (STOREFRONT ANNOUNCEMENT MULTI-LANGUAGE)]**:
   - **Mô tả yêu cầu**:
     - Tích hợp tính năng hỗ trợ đa ngôn ngữ (Tiếng Việt 🇻🇳 & Tiếng Anh 🇬🇧) cho phần "Nội dung chữ thông báo" tại Cấu hình hệ thống Admin và hiển thị linh hoạt theo ngôn ngữ người dùng tại Storefront.

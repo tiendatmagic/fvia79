@@ -3,98 +3,177 @@
     <app-skeleton-loader type="form" [showHeader]="false" [rows]="2" buttonLayout="end" />
   </app-card>
 } @else if (store.status(); as status) {
-  @if (!status.supported || !status.export_available || !status.restore_available) {
-    <div class="rounded-xl border border-amber-200/60 bg-amber-50/80 p-4 dark:border-amber-900/50 dark:bg-amber-950/20">
-      <div class="flex items-start gap-3">
-        <app-icon name="warning" class="mt-0.5 h-5 w-5 shrink-0 text-amber-600" />
-        <div>
-          <p class="font-extrabold text-amber-800 dark:text-amber-300">
-            {{ 'database_backup.unavailable_title' | translate }}
-          </p>
-          <p class="mt-1 text-sm font-semibold text-amber-700 dark:text-amber-400">
-            {{ 'database_backup.unavailable_desc' | translate }}
-          </p>
+  <div class="space-y-6">
+    @if (!status.supported || !status.export_available || !status.restore_available) {
+      <div class="rounded-xl border border-amber-200/60 bg-amber-50/80 p-4 dark:border-amber-900/50 dark:bg-amber-950/20">
+        <div class="flex items-start gap-3">
+          <app-icon name="warning" class="mt-0.5 h-5 w-5 shrink-0 text-amber-600 dark:text-amber-400" />
+          <div>
+            <p class="font-extrabold text-amber-800 dark:text-amber-300">
+              {{ 'database_backup.unavailable_title' | translate }}
+            </p>
+            <p class="mt-1 text-sm font-semibold text-amber-700 dark:text-amber-400">
+              {{ 'database_backup.unavailable_desc' | translate }}
+            </p>
+          </div>
         </div>
       </div>
+    }
+
+    <!-- Primary Action Cards -->
+    <div class="grid grid-cols-1 gap-6 lg:grid-cols-2">
+      <!-- Export Database Card -->
+      <app-card>
+        <div class="space-y-5">
+          <div class="flex items-start gap-4">
+            <div class="flex h-11 w-11 shrink-0 items-center justify-center rounded-xl bg-[var(--dynamic-primary)]/10 text-[var(--dynamic-primary)]">
+              <app-icon name="download" class="h-5 w-5" />
+            </div>
+            <div>
+              <h3 class="text-lg font-extrabold text-slate-800 dark:text-white">
+                {{ 'database_backup.export_title' | translate }}
+              </h3>
+              <p class="mt-1 text-sm font-semibold leading-relaxed text-slate-500 dark:text-slate-400">
+                {{ 'database_backup.export_desc' | translate }}
+              </p>
+            </div>
+          </div>
+
+          <div class="rounded-xl bg-slate-50 p-4 text-xs font-semibold leading-relaxed text-slate-500 dark:bg-slate-950/40 dark:text-slate-400">
+            {{ 'database_backup.export_sensitive_notice' | translate }}
+          </div>
+
+          <div class="flex justify-end pt-2">
+            <button
+              type="button"
+              app-button
+              variant="primary"
+              [loading]="store.exporting()"
+              [disabled]="!status.export_available || store.restoring()"
+              (click)="openExportModal()"
+            >
+              <app-icon name="download" class="h-4 w-4" />
+              {{ 'database_backup.export_button' | translate }}
+            </button>
+          </div>
+        </div>
+      </app-card>
+
+      <!-- Restore Database Card -->
+      <app-card>
+        <div class="space-y-5">
+          <div class="flex items-start gap-4">
+            <div class="flex h-11 w-11 shrink-0 items-center justify-center rounded-xl bg-rose-500/10 text-rose-600 dark:bg-rose-500/20 dark:text-rose-400">
+              <app-icon name="upload" class="h-5 w-5" />
+            </div>
+            <div>
+              <h3 class="text-lg font-extrabold text-slate-800 dark:text-white">
+                {{ 'database_backup.restore_title' | translate }}
+              </h3>
+              <p class="mt-1 text-sm font-semibold leading-relaxed text-slate-500 dark:text-slate-400">
+                {{ 'database_backup.restore_desc' | translate }}
+              </p>
+            </div>
+          </div>
+
+          <div class="rounded-xl bg-rose-50 p-4 text-xs font-semibold leading-relaxed text-rose-700 dark:bg-rose-950/25 dark:text-rose-300">
+            {{ 'database_backup.restore_safety_notice' | translate }}
+          </div>
+
+          <div class="flex justify-end pt-2">
+            <button
+              type="button"
+              app-button
+              variant="danger"
+              [loading]="store.restoring()"
+              [disabled]="!status.restore_available || store.exporting()"
+              (click)="openRestoreModal()"
+            >
+              <app-icon name="upload" class="h-4 w-4" />
+              {{ 'database_backup.restore_button' | translate }}
+            </button>
+          </div>
+        </div>
+      </app-card>
     </div>
-  }
 
-  <div class="grid grid-cols-1 gap-6 lg:grid-cols-2">
+    <!-- Server & System Environment Status Card -->
     <app-card>
       <div class="space-y-5">
-        <div class="flex items-start gap-4">
-          <div class="flex h-11 w-11 shrink-0 items-center justify-center rounded-xl bg-[var(--dynamic-primary)]/10 text-[var(--dynamic-primary)]">
-            <app-icon name="download" class="h-5 w-5" />
+        <div class="flex items-center gap-3">
+          <div class="flex h-9 w-9 shrink-0 items-center justify-center rounded-lg bg-sky-500/10 text-sky-600 dark:bg-sky-500/20 dark:text-sky-400">
+            <app-icon name="cog" class="h-4 w-4" />
           </div>
           <div>
-            <h3 class="text-lg font-extrabold text-slate-800 dark:text-white">
-              {{ 'database_backup.export_title' | translate }}
-            </h3>
-            <p class="mt-1 text-sm font-semibold leading-relaxed text-slate-500">
-              {{ 'database_backup.export_desc' | translate }}
-            </p>
+            <h4 class="text-base font-extrabold text-slate-800 dark:text-white">
+              {{ 'database_backup.server_environment' | translate }}
+            </h4>
           </div>
         </div>
 
-        <div class="rounded-xl bg-slate-50 p-4 text-xs font-semibold text-slate-500 dark:bg-slate-950/40">
-          {{ 'database_backup.export_sensitive_notice' | translate }}
-        </div>
-
-        <div class="flex justify-end">
-          <button
-            type="button"
-            app-button
-            variant="primary"
-            [loading]="store.exporting()"
-            [disabled]="!status.export_available || store.restoring()"
-            (click)="openExportModal()"
-          >
-            <app-icon name="download" class="h-4 w-4" />
-            {{ 'database_backup.export_button' | translate }}
-          </button>
-        </div>
-      </div>
-    </app-card>
-
-    <app-card>
-      <div class="space-y-5">
-        <div class="flex items-start gap-4">
-          <div class="flex h-11 w-11 shrink-0 items-center justify-center rounded-xl bg-rose-500/10 text-rose-600">
-            <app-icon name="upload" class="h-5 w-5" />
+        <!-- 4-Column Grid Metrics -->
+        <div class="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-4">
+          <!-- Metric 1: DB Driver -->
+          <div class="rounded-xl border border-slate-200/80 bg-slate-50/50 p-4 dark:border-slate-800 dark:bg-slate-900/50">
+            <span class="text-xs font-semibold text-slate-400">
+              {{ 'database_backup.driver' | translate }}
+            </span>
+            <div class="mt-2 flex items-center justify-between">
+              <span class="text-base font-extrabold text-slate-800 dark:text-white">
+                {{ status.driver | uppercase }}
+              </span>
+              <app-badge variant="info">SQL</app-badge>
+            </div>
           </div>
-          <div>
-            <h3 class="text-lg font-extrabold text-slate-800 dark:text-white">
-              {{ 'database_backup.restore_title' | translate }}
-            </h3>
-            <p class="mt-1 text-sm font-semibold leading-relaxed text-slate-500">
-              {{ 'database_backup.restore_desc' | translate }}
-            </p>
+
+          <!-- Metric 2: Max App Upload Limit -->
+          <div class="rounded-xl border border-slate-200/80 bg-slate-50/50 p-4 dark:border-slate-800 dark:bg-slate-900/50">
+            <span class="text-xs font-semibold text-slate-400">
+              {{ 'database_backup.max_file_size' | translate }}
+            </span>
+            <div class="mt-2 flex items-center justify-between">
+              <span class="text-base font-extrabold text-slate-800 dark:text-white">
+                {{ status.max_upload_megabytes }} MB
+              </span>
+              <app-badge variant="success">App</app-badge>
+            </div>
+          </div>
+
+          <!-- Metric 3: PHP upload_max_filesize -->
+          <div class="rounded-xl border border-slate-200/80 bg-slate-50/50 p-4 dark:border-slate-800 dark:bg-slate-900/50">
+            <span class="text-xs font-semibold text-slate-400">
+              upload_max_filesize
+            </span>
+            <div class="mt-2 flex items-center justify-between">
+              <span class="text-base font-extrabold text-slate-800 dark:text-white">
+                {{ status.php_upload_max_filesize || 'N/A' }}
+              </span>
+              <app-badge variant="warning">PHP ini</app-badge>
+            </div>
+          </div>
+
+          <!-- Metric 4: PHP post_max_size -->
+          <div class="rounded-xl border border-slate-200/80 bg-slate-50/50 p-4 dark:border-slate-800 dark:bg-slate-900/50">
+            <span class="text-xs font-semibold text-slate-400">
+              post_max_size
+            </span>
+            <div class="mt-2 flex items-center justify-between">
+              <span class="text-base font-extrabold text-slate-800 dark:text-white">
+                {{ status.php_post_max_size || 'N/A' }}
+              </span>
+              <app-badge variant="neutral">PHP ini</app-badge>
+            </div>
           </div>
         </div>
 
-        <div class="rounded-xl bg-rose-50 p-4 text-xs font-semibold text-rose-700 dark:bg-rose-950/25 dark:text-rose-300">
-          {{ 'database_backup.restore_safety_notice' | translate }}
-        </div>
-
-        <div class="flex justify-end">
-          <button
-            type="button"
-            app-button
-            variant="danger"
-            [loading]="store.restoring()"
-            [disabled]="!status.restore_available || store.exporting()"
-            (click)="openRestoreModal()"
-          >
-            <app-icon name="upload" class="h-4 w-4" />
-            {{ 'database_backup.restore_button' | translate }}
-          </button>
+        <!-- Sync Hint Notice -->
+        <div class="flex items-start gap-3 rounded-xl border border-sky-100 bg-sky-50/50 p-3.5 text-xs font-semibold text-sky-800 dark:border-sky-900/40 dark:bg-sky-950/20 dark:text-sky-300">
+          <app-icon name="exclamation" class="mt-0.5 h-4 w-4 shrink-0 text-sky-600 dark:text-sky-400" />
+          <span class="leading-relaxed">
+            {{ 'database_backup.php_sync_hint' | translate }}
+          </span>
         </div>
       </div>
     </app-card>
   </div>
-
-  <p class="text-xs font-semibold text-slate-400">
-    {{ 'database_backup.driver' | translate }}: {{ status.driver | uppercase }}
-    · {{ 'database_backup.max_file_size' | translate }}: {{ status.max_upload_megabytes }} MB
-  </p>
 }

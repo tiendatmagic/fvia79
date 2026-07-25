@@ -3,6 +3,7 @@ import { Component, OnInit, inject } from '@angular/core';
 import { ModalService } from '@core/services/modal.service';
 import { LanguageService } from '@core/services/language.service';
 import { ToastService } from '@core/services/toast.service';
+import { BadgeComponent } from '@shared/components/badge/badge.component';
 import { ButtonComponent } from '@shared/components/button/button.component';
 import { CardComponent } from '@shared/components/card/card.component';
 import { IconComponent } from '@shared/components/icon/icon.component';
@@ -22,13 +23,13 @@ import {
   standalone: true,
   imports: [
     CommonModule,
+    BadgeComponent,
     ButtonComponent,
     CardComponent,
     IconComponent,
     SkeletonLoaderComponent,
     TranslatePipe
   ],
-  providers: [DatabaseBackupStore],
   templateUrl: './database-backup-panel.component.html',
   styleUrl: './database-backup-panel.component.css'
 })
@@ -39,6 +40,8 @@ export class DatabaseBackupPanelComponent implements OnInit {
   private readonly lang = inject(LanguageService);
 
   public ngOnInit(): void {
+    if (this.store.status()) return;
+
     this.store.fetchStatus().subscribe({
       next: status => this.store.status.set(status),
       error: () => this.toast.showToast(
