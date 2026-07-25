@@ -59,7 +59,7 @@
     - **Frontend (`isocalmarket-web`)**:
       - Tạo `PublicSettingStore` (`public-setting.store.ts`) quản lý state công khai, đệm Cache FE 10 phút (600,000 ms), bổ sung Signal `loaded` và khởi tạo trạng thái mặc định rỗng giúp loại bỏ hoàn toàn hiện tượng chớp dữ liệu cũ khi reload trang.
       - Cập nhật `SystemSettingStore` (`system-setting.store.ts`) tự động làm sạch Cache FE công khai khi Admin lưu cài đặt mới.
-      - Cập nhật `AdminSettingsComponent` (`admin-settings.component.ts` & `.html`): Tách riêng Tab độc lập **"Thông báo trang chủ"** (`/admin/settings/announcement`) tích hợp Custom Switch, Textarea, Custom Select chọn 3 loại hiệu ứng (Chữ chạy ngang Marquee, Nhấp nháy Fade Pulse, Đổi màu nhấp nháy Bounce/Color Pulse), và khung Xem trước trực quan (Live Banner Preview).
+      - Cập nhật `AdminSettingsComponent` (`admin-settings.component.ts` & `.html`): Tách riêng Tab độc lập **"Thông báo trang chủ"** (`/admin/settings/announcement`) tích hợp Custom Switch, Textarea, Custom Select chọn 3 loại hiệu ứng (Chữ chạy ngang Marquee, Nhấp nháy Fade Pulse, Đổi màu nhấp nháy Bounce/Color Pulse), và khung Xem trước trực quan (Live Banner Preview) hỗ trợ đồng bộ chuẩn xác 100% theo chế độ Sáng / Tối (Light Mode / Dark Mode).
       - Cập nhật `IconComponent` (`icon.component.html`): Bổ sung đầy đủ đường dẫn SVG `announcement`, `megaphone`, `bell`, `x-mark` chuẩn Heroicons 24x24 giúp hiển thị icon loa thông báo và icon đóng sắc nét 100%, không bị lỗi lọt vào icon mặc định.
       - Cập nhật `StorefrontComponent` (`storefront.component.ts` & `.html`):
         - Chuẩn hóa CSS animation `marqueeScroll` chỉ xuất hiện 1 chuỗi duy nhất, đi từ mép phải (`translateX(100%)`) chạy biến mất sang mép trái (`translateX(-100%)`) rồi mới lặp lại.

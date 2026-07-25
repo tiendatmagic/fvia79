@@ -518,9 +518,9 @@
 
           <!-- Live Preview Banner -->
           @if (form.announcement_enabled && form.announcement_text) {
-            <div class="mt-4 p-4 rounded-xl bg-slate-900/90 border border-slate-800 backdrop-blur-md">
-              <div class="text-[11px] uppercase tracking-wider font-extrabold text-slate-400 mb-2 flex items-center gap-1.5">
-                <app-icon name="eye" class="w-3.5 h-3.5 text-amber-400" />
+            <div class="mt-4 p-4 rounded-xl bg-slate-50 dark:bg-slate-900/80 border border-slate-200 dark:border-slate-800/80 backdrop-blur-md">
+              <div class="text-[11px] uppercase tracking-wider font-extrabold text-slate-500 dark:text-slate-400 mb-2 flex items-center gap-1.5">
+                <app-icon name="eye" class="w-3.5 h-3.5 text-amber-500" />
                 {{ 'settings.preview_title' | translate }}
               </div>
               <div class="relative overflow-hidden rounded-lg bg-gradient-to-r from-amber-500/10 via-primary/10 to-blue-500/10 border border-amber-500/20 p-3.5 flex items-center gap-3">
@@ -529,15 +529,15 @@
                 </span>
                 <div class="flex-1 overflow-hidden">
                   @if (form.announcement_effect === 'marquee') {
-                    <div class="effect-marquee-preview text-xs font-semibold text-slate-200">
+                    <div class="effect-marquee-preview text-xs font-semibold text-slate-800 dark:text-slate-100">
                       <span>{{ form.announcement_text }}</span>
                     </div>
                   } @else if (form.announcement_effect === 'fade') {
-                    <div class="effect-fade-preview text-xs font-semibold text-amber-300">
+                    <div class="effect-fade-preview text-xs font-semibold text-amber-600 dark:text-amber-300">
                       {{ form.announcement_text }}
                     </div>
                   } @else {
-                    <div class="effect-bounce-preview text-xs font-semibold text-amber-400">
+                    <div class="effect-bounce-preview text-xs font-semibold text-amber-600 dark:text-amber-400">
                       {{ form.announcement_text }}
                     </div>
                   }
