@@ -18,6 +18,15 @@
 > `php artisan config:clear && php artisan config:cache && php artisan route:cache && php artisan view:cache`
 > để đảm bảo Laravel cập nhật ngay lập tức 100% các biến môi trường tươi mới nhất từ tệp `.env`, tuyệt đối không được bỏ qua bước `config:clear` để tránh tình trạng dính cache đệm tĩnh cũ.
 
+- **[SEED DỮ LIỆU CẤP BẬC ĐẠI LÝ MẶC ĐỊNH TRÊN VPS PRODUCTION (MEMBERSHIP TIER SEEDING ON VPS)]**:
+  - **Mô tả yêu cầu**:
+    - Khởi tạo 5 Cấp bậc Đại lý mặc định trên VPS Production (Đồng 0$, Bạc 100$, Vàng 300$, Bạch kim 500$, Kim cương 1000$) tương tự môi trường Local.
+  - **Nội dung thực hiện**:
+    - Chạy lệnh seed an toàn theo đúng quy tắc **BẢO TOÀN DỮ LIỆU**:
+      `php artisan db:seed --class=MembershipTierSeeder --force`
+    - Kiểm tra bảng `membership_tiers` trên CSDL VPS xác nhận đủ 5 cấp bậc với thông số chuẩn.
+  - **Xác nhận**: Đã bổ sung thành công 5 cấp bậc mặc định trên VPS Production!
+
 - **[CHUYỂN MẶC ĐỊNH FEATURE_MEMBERSHIP_TIERS_ENABLED THÀNH FALSE (OFF BY DEFAULT IF OMITTED IN ENV)]**:
   - **Mô tả yêu cầu**:
     - Khi Admin không khai báo hoặc thiếu cấu hình `FEATURE_MEMBERSHIP_TIERS_ENABLED` trong tệp `.env`, hệ thống tự động nhận diện giá trị mặc định là `false` (TẮT HOÀN TOÀN) thay vì `true`.
