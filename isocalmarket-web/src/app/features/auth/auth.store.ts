@@ -31,6 +31,7 @@ export class AuthStore {
 
   public readonly currentUser = signal<any | null>(null);
   public readonly authLoading = signal<boolean>(false);
+  public readonly isCheckingAuth = signal<boolean>(true);
 
   public readonly isAuthenticated = computed(() => this.currentUser() !== null);
   public readonly isAdmin = computed(() => this.currentUser()?.role === 'admin');
@@ -99,21 +100,23 @@ export class AuthStore {
   }
 
   public checkMe(force = false, verifyWithoutMarker = false) {
+    if (this.checkMeObservable$) {
+      return this.checkMeObservable$;
+    }
+
     if (!verifyWithoutMarker && !this.hasLoggedInMarker()) {
       this.currentUser.set(null);
+      this.isCheckingAuth.set(false);
       return of(null);
     }
 
     if (!force && this.currentUser()) {
+      this.isCheckingAuth.set(false);
       return of(this.currentUser());
     }
 
-    const now = Date.now();
-    if (this.checkMeObservable$ && now - this.lastCheckMeTime < 2000) {
-      return this.checkMeObservable$;
-    }
-
-    this.lastCheckMeTime = now;
+    this.lastCheckMeTime = Date.now();
+    this.isCheckingAuth.set(true);
     this.checkMeObservable$ = this.api.get<any>('v1/auth/me').pipe(
       map((res) => res?.user || null),
       tap((user) => {
@@ -129,6 +132,7 @@ export class AuthStore {
       }),
       finalize(() => {
         this.checkMeObservable$ = null;
+        this.isCheckingAuth.set(false);
       }),
       shareReplay(1)
     );

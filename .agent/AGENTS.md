@@ -18,6 +18,22 @@
 > `php artisan config:clear && php artisan config:cache && php artisan route:cache && php artisan view:cache`
 > để đảm bảo Laravel cập nhật ngay lập tức 100% các biến môi trường tươi mới nhất từ tệp `.env`, tuyệt đối không được bỏ qua bước `config:clear` để tránh tình trạng dính cache đệm tĩnh cũ.
 
+- **[TÍCH HỢP SKELETON LOADING CHO KHỐI ĐĂNG NHẬP / THÔNG TIN TÀI KHOẢN TRÊN HEADER (HEADER AUTH SKELETON LOADING ON API PENDING)]**:
+  - **Mô tả yêu cầu**:
+    - Khi tải/tải lại trang (reload) hoặc hệ thống phản hồi chậm, API kiểm tra xác thực người dùng (`/api/v1/auth/me`) ở trạng thái pending làm frontend chưa xác định được trạng thái đăng nhập. Hiển thị khối Skeleton Loading hiệu ứng mượt mà tại đúng vị trí Nút đăng nhập / Thông tin số dư và Tên tài khoản trên Header để nâng cao trải nghiệm UI/UX. Giữ nguyên khối Đổi ngôn ngữ `[VI v]`.
+  - **Nội dung thực hiện**:
+    - **Frontend (`isocalmarket-web`)**:
+      - `auth.store.ts`:
+        - Khởi tạo signal `isCheckingAuth = signal<boolean>(true)`.
+        - Cập nhật phương thức `checkMe()` đưa điều kiện kiểm tra `if (this.checkMeObservable$) return this.checkMeObservable$;` lên **ưu tiên hàng đầu**, tránh trường hợp sự kiện `NavigationEnd` hoặc các component khác gọi `checkMe()` làm tắt cờ `isCheckingAuth` khi request `/api/v1/auth/me` vẫn đang chạy pending trong background.
+        - Cập nhật tắt `isCheckingAuth.set(false)` trong block `finalize` hoặc khi trả về dữ liệu early return.
+      - `state.service.ts`: Xuất thuộc tính `isCheckingAuth` từ `authStore` giúp các giao diện layout truy cập thuận tiện.
+      - `header.component.html`:
+        - Bổ sung điều kiện `@if (stateService.isCheckingAuth() && !stateService.currentUser())` hiển thị khối Skeleton Loading animation (`animate-pulse`) chuẩn tỉ lệ 1:1 khớp chính xác với kích thước, độ cong góc, padding (`px-2 sm:px-3 py-2 rounded-xl border border-slate-300/80 dark:border-slate-700/80 bg-white dark:bg-slate-900`), chứa skeleton avatar `w-7 h-7`, skeleton text tên & số dư, và skeleton nút mũi tên chevron icon.
+        - Khối Đổi ngôn ngữ giữ nguyên 100% không chỉnh sửa.
+      - **Biên dịch Frontend**: Lệnh `npm run build` biên dịch thành công **100% SUCCESS, 0 ERRORS**.
+  - **Xác nhận**: Đã tích hợp Skeleton Loading mượt mà, loại bỏ triệt để hiện tượng giật nút Đăng nhập khi reload trang!
+
 - **[BỔ SUNG VÀ TẠO TỆP .GITIGNORE THƯ MỤC GỐC DỰ ÁN (CREATE ROOT .GITIGNORE & UPDATE DEPLOY.MD)]**:
   - **Mô tả yêu cầu**:
     - Khởi tạo tệp `.gitignore` chuẩn tại thư mục gốc dự án (`/d:/git/isocalmarket/.gitignore`) và bổ sung quy định cấu hình vào tài liệu [deploy.md](file:///d:/git/isocalmarket/deploy.md).

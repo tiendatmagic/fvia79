@@ -49,6 +49,7 @@ export class StateService {
   public readonly currentUser = this.authStore.currentUser;
   public readonly isAuthenticated = this.authStore.isAuthenticated;
   public readonly isAdmin = this.authStore.isAdmin;
+  public readonly isCheckingAuth = this.authStore.isCheckingAuth;
 
   public readonly address = computed(() => null);
   public readonly chainId = computed(() => null);

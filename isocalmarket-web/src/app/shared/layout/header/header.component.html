@@ -142,7 +142,18 @@
         }
       </div>
 
-      @if (stateService.isAuthenticated()) {
+      @if (stateService.isCheckingAuth() && !stateService.currentUser()) {
+        <div
+          class="flex items-center gap-2 px-2 sm:px-3 py-2 rounded-xl border border-slate-300/80 dark:border-slate-700/80 bg-white dark:bg-slate-900 animate-pulse shrink-0"
+        >
+          <div class="w-7 h-7 rounded-lg bg-slate-200 dark:bg-slate-800 shrink-0"></div>
+          <div class="hidden md:flex flex-col items-start gap-1 min-w-[80px] lg:min-w-[110px]">
+            <div class="h-3 bg-slate-200 dark:bg-slate-800 rounded-xs w-20"></div>
+            <div class="h-2.5 bg-slate-200 dark:bg-slate-800 rounded-xs w-14"></div>
+          </div>
+          <div class="w-3.5 h-3.5 rounded bg-slate-200 dark:bg-slate-800 hidden sm:block shrink-0"></div>
+        </div>
+      } @else if (stateService.isAuthenticated()) {
         <div class="relative">
           <button
             (click)="toggleUserDropdown($event)"
