@@ -18,6 +18,16 @@
 > `php artisan config:clear && php artisan config:cache && php artisan route:cache && php artisan view:cache`
 > để đảm bảo Laravel cập nhật ngay lập tức 100% các biến môi trường tươi mới nhất từ tệp `.env`, tuyệt đối không được bỏ qua bước `config:clear` để tránh tình trạng dính cache đệm tĩnh cũ.
 
+- **[BỔ SUNG QUY ĐỊNH .GITIGNORE VÀO TỆP HƯỚNG DẪN DEPLOY (ADD GITIGNORE GUIDELINES TO DEPLOY.MD)]**:
+  - **Mô tả yêu cầu**:
+    - Bổ sung quy định cấu hình `.gitignore` cho cả 2 phân hệ Backend Laravel và Frontend Angular vào tài liệu [deploy.md](file:///d:/git/isocalmarket/deploy.md).
+  - **Nội dung thực hiện**:
+    - Cập nhật mục **"🛡️ 4. Quy Định .gitignore & Quản Lý Mã Nguồn (Git Ignore Guidelines)"** trong [deploy.md](file:///d:/git/isocalmarket/deploy.md):
+      - Backend: Nêu rõ các tệp `.env`, `.env.production`, `/vendor`, `/storage/*.key`, `*.log`, `/backup/*.sql` tuyệt đối không commit để bảo mật thông tin và tối ưu dung lượng.
+      - Frontend: Nêu rõ các thư mục `/dist`, `/node_modules`, `/.angular/cache`, `.idea/`, `.vscode/*`, `.agent/` không lưu trữ trên repo.
+      - Quy chuẩn đóng gói & deploy: Bỏ qua vendor/node_modules/dist/env khi nén code hoặc sync FTP, hướng dẫn các bước cài đặt sạch và build release trên VPS.
+  - **Xác nhận**: Đã cập nhật tài liệu [deploy.md](file:///d:/git/isocalmarket/deploy.md) đầy đủ và minh bạch!
+
 - **[CÀI ĐẶT FTP SERVER VÀ CẤP TÀI KHOẢN FTP UPLOAD TRÊN VPS (VSFTPD INSTALLATION & FTP CREDENTIALS)]**:
   - **Mô tả yêu cầu**:
     - Cài đặt dịch vụ FTP (`vsftpd`) trên máy chủ VPS (`184.164.93.247`), tạo tài khoản FTP ngẫu nhiên có quyền ghi dữ liệu để upload/quản lý mã nguồn Frontend (`/var/www/isocalmarket-web`) và Backend (`/var/www/isocalmarket-api`).

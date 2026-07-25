@@ -226,3 +226,42 @@ Thêm dòng sau vào crontab của user `www-data`:
    - URL: `https://isocalmarket.com/api/v1/products/grouped` (Trả về JSON sản phẩm theo nhóm thành công).
 3. **Cronjob Scheduler**:
    - Đã cài đặt tự động quét nạp tiền USDT BEP20, Binance Pay và đồng bộ nhà cung cấp mỗi phút.
+
+---
+
+## 🛡️ 4. Quy Định .gitignore & Quản Lý Mã Nguồn (Git Ignore Guidelines)
+
+Để đảm bảo an toàn mật mã, tránh lộ thông tin môi trường nhạy cảm (CSDL, API Key, Secret Token) và tối ưu hóa dung lượng khi lưu trữ mã nguồn trên Git cũng như khi đóng gói deploy qua FTP/VPS, dự án thiết lập cấu hình `.gitignore` ở thư mục gốc và ở cả 2 phân hệ Backend/Frontend:
+
+### 1. Thư Mục Gốc Dự Án (`.gitignore`)
+- **Quản lý tổng thể**: Bỏ qua toàn bộ `node_modules/`, `vendor/`, `dist/`, các tệp `.env`, `.env.*` (ngoại trừ `.env.example`), tệp sao lưu CSDL `*.sql` và tệp tạm hệ thống (`.DS_Store`, `Thumbs.db`, `.idea/`, `.vscode/*`).
+
+### 2. Backend Laravel (`isocalmarket-api/.gitignore`)
+- **Môi trường & Mật mã nhạy cảm (CỰC KỲ QUAN TRỌNG)**:
+  - `.env`, `.env.backup`, `.env.production` (Không bao giờ commit tệp `.env` chứa mật khẩu thật lên repository).
+- **Thư mục thư viện & Nhật ký hoạt động**:
+  - `/vendor` (Tải lại bằng `composer install` trên môi trường VPS/Local).
+  - `/node_modules`
+  - `*.log` (Nhật ký lỗi hệ thống trong `storage/logs/`).
+  - `/storage/*.key` (Khóa bảo mật OAuth/JWT).
+- **Thư mục Sao lưu CSDL & Cache công cụ**:
+  - `/backup/*.sql` (Tệp dump database tự động).
+  - `/.phpunit.cache`, `_ide_helper.php`, `/.idea`, `/.vscode`.
+
+### 2. Frontend Angular (`isocalmarket-web/.gitignore`)
+- **Sản phẩm biên dịch & Bộ nhớ đệm Build**:
+  - `/dist` (Sản phẩm build Frontend sau khi chạy `npm run build`).
+  - `/tmp`, `/out-tsc`, `/.angular/cache`.
+- **Thư mục thư viện & Log lỗi**:
+  - `/node_modules` (Tải lại bằng `npm install`).
+  - `npm-debug.log`, `yarn-error.log`.
+- **Cấu hình cá nhân IDE & Agent AI**:
+  - `.idea/`, `.vscode/*` (Trừ các tệp thiết lập dùng chung được phép theo dõi).
+  - `.DS_Store`, `Thumbs.db`, `.agent/`, `.agents/`.
+
+### 💡 Quy Chuẩn Khi Đóng Gói & Deploy Lên VPS
+1. **Bảo tồn dữ liệu & Bảo mật**: Khi nén code hoặc sync qua FTP, **LUÔN BỎ QUA** thư mục `vendor/`, `node_modules/`, `dist/` và tệp `.env`.
+2. **Triển khai trên VPS**:
+   - Backend: Upload mã nguồn sạch -> Chạy `composer install --no-dev --optimize-autoloader` trên VPS -> Tạo tệp `.env` riêng biệt theo đúng thông số server -> Chạy `php artisan config:clear && php artisan config:cache && php artisan route:cache && php artisan view:cache`.
+   - Frontend: Chạy `npm run build` tại máy Local -> Upload nội dung thư mục `dist/angular-web3-wallet/browser` trực tiếp vào `/var/www/isocalmarket-web`.
+
