@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Application\Services\AuthService;
 use App\Http\Requests\LoginRequest;
 use App\Http\Requests\RegisterRequest;
+use App\Infrastructure\Persistence\Eloquent\UserSessionModel;
 use App\Infrastructure\Persistence\Mappers\UserMapper;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
