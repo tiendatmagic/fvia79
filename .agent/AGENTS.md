@@ -1,4 +1,4 @@
-# AGENTS.md - Lịch sử Thay Đổi & Ghi Nhớ Công Việc (Isocalmarket)
+# AGENTS.md - Lịch sử Thay Đổi & Ghi Nhớ Công Việc (Fvia79)
 
 ## ⛔ QUY TẮC BẮT BUỘC (MANDATORY RULES)
 
@@ -36,7 +36,7 @@
   - Biên dịch và kiểm thử: Chạy `npx ng build --configuration production` thành công **100% BUILD SUCCESS**.
 
 ### [2026-07-26] Điều tra nguyên nhân và khôi phục toàn bộ source code fvia79-web
-- **Nguyên nhân**: Trong quá trình merge conflict resolution (commit `9bfe475`) và commit setup (`158d8df`), thư mục source code frontend `fvia79-web/src` cùng các file cấu hình `package.json`, `angular.json`, `tsconfig.json` đã bị ghi đè/xóa nhầm do xung đột đường dẫn khi đổi tên từ `isocalmarket-web` sang `fvia79-web`.
+- **Nguyên nhân**: Trong quá trình merge conflict resolution (commit `9bfe475`) và commit setup (`158d8df`), thư mục source code frontend `fvia79-web/src` cùng các file cấu hình `package.json`, `angular.json`, `tsconfig.json` đã bị ghi đè/xóa nhầm do xung đột đường dẫn khi đổi tên từ `fvia79-web` sang `fvia79-web`.
 - **Thực hiện**:
   - Truy vết lịch sử Git reflog và cây thư mục ở các commit trước đó (`42c4d21`).
   - Khôi phục 100% toàn bộ source code frontend (`fvia79-web/src` với 225 files) và các tệp tin cấu hình liên quan từ commit `42c4d21`.
@@ -55,17 +55,17 @@
     - Kiểm thử: Kiểm tra cú pháp PHP `php -l` toàn bộ các Controller thành công **100% SUCCESS, 0 ERRORS**.
 - Xác nhận: Hệ thống hoạt động an toàn 100%!
 
-### [2026-07-26] Khắc phục triệt để đường dẫn Build & Deploy FE/BE Isocalmarket
-- **Mô tả yêu cầu**: Dọn dẹp tệp ghi chép cũ, chuẩn hóa tên dự án `isocalmarket-web`, khắc phục triệt để việc script deploy nén nhầm thư mục cũ `dist/angular-web3-wallet`.
+### [2026-07-26] Khắc phục triệt để đường dẫn Build & Deploy FE/BE Fvia79
+- **Mô tả yêu cầu**: Dọn dẹp tệp ghi chép cũ, chuẩn hóa tên dự án `fvia79-web`, khắc phục triệt để việc script deploy nén nhầm thư mục cũ `dist/angular-web3-wallet`.
 - **Thực hiện**:
-  - **Frontend (`isocalmarket-web`)**:
-    - `angular.json`, `package.json`, `netlify.toml`: Đồng bộ đổi tên dự án thành `isocalmarket-web`.
+  - **Frontend (`fvia79-web`)**:
+    - `angular.json`, `package.json`, `netlify.toml`: Đồng bộ đổi tên dự án thành `fvia79-web`.
     - `product-form-modal.component.ts`: Sửa lỗi `TypeError: this.modalData.attributes is not iterable` khi Edit sản phẩm (hỗ trợ kiểm tra Array, Object Key-Value, JSON string).
-    - Thư mục build output: `dist/isocalmarket-web/browser`. Xóa hoàn toàn thư mục build cũ `dist/angular-web3-wallet`.
+    - Thư mục build output: `dist/fvia79-web/browser`. Xóa hoàn toàn thư mục build cũ `dist/angular-web3-wallet`.
   - **Script Deploy (`deploy_vps_production.js`, `deploy_fe_vps.js`)**:
-    - Cập nhật 100% đường dẫn nén sang `dist/isocalmarket-web/browser`.
+    - Cập nhật 100% đường dẫn nén sang `dist/fvia79-web/browser`.
   - **VPS Production (`184.164.93.247`)**:
-    - Web Root FE: `/var/www/isocalmarket-web`
-    - Web Root BE: `/var/www/isocalmarket-api`
+    - Web Root FE: `/var/www/fvia79-web`
+    - Web Root BE: `/var/www/fvia79-api`
 - **Xác nhận**: Biên dịch Angular build và triển khai 100% thành công.
 
