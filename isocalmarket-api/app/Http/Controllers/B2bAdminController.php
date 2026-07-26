@@ -17,7 +17,7 @@ class B2bAdminController extends Controller
     {
         try {
             $page = max(1, (int) $request->query('page', 1));
-            $limit = min(100, max(1, (int) $request->query('limit', 10)));
+            $limit = min(20, max(1, (int) $request->query('limit', 10)));
             $search = $request->query('search');
             $role = $request->query('role');
             $hasApiKey = $request->query('has_api_key');
@@ -91,7 +91,7 @@ class B2bAdminController extends Controller
     {
         try {
             $page = max(1, (int) $request->query('page', 1));
-            $limit = min(100, max(1, (int) $request->query('limit', 10)));
+            $limit = min(20, max(1, (int) $request->query('limit', 10)));
             $status = $request->query('status');
             $userId = $request->query('user_id');
             $search = $request->query('search');

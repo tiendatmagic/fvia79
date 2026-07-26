@@ -28,7 +28,7 @@ class CategoryController extends Controller
     {
         try {
             $page = $request->query('page');
-            $limit = $request->query('limit', 10);
+            $limit = min(20, max(1, (int) $request->query('limit', 10)));
             $search = $request->query('search');
             $lang = $this->resolveLanguage($request);
 

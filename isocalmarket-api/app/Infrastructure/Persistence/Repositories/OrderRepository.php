@@ -57,6 +57,8 @@ class OrderRepository implements OrderRepositoryInterface
 
     public function findByUserIdPaginated(string $userId, int $page, int $limit, ?string $status = null, ?string $search = null, ?string $startDate = null, ?string $endDate = null): array
     {
+        $page = max(1, $page);
+        $limit = max(1, $limit);
         $query = OrderModel::where('user_id', $userId);
         if ($status) {
             $query->where('status', $status);
@@ -98,6 +100,8 @@ class OrderRepository implements OrderRepositoryInterface
 
     public function findAllPaginated(int $page, int $limit, ?string $status = null, ?string $search = null, ?string $startDate = null, ?string $endDate = null): array
     {
+        $page = max(1, $page);
+        $limit = max(1, $limit);
         $query = OrderModel::query();
         if ($status) {
             $query->where('status', $status);

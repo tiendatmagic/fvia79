@@ -22,8 +22,8 @@ class AdminUserController extends Controller
     public function index(Request $request)
     {
         try {
-            $page = (int)$request->query('page', 1);
-            $limit = (int)$request->query('limit', 10);
+            $page = max(1, (int) $request->query('page', 1));
+            $limit = min(20, max(1, (int) $request->query('limit', 10)));
             $search = $request->query('search');
             $role = $request->query('role');
             $startDate = $request->query('start_date');

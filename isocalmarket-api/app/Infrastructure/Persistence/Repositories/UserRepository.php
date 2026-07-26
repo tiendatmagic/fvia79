@@ -64,6 +64,8 @@ class UserRepository implements UserRepositoryInterface
 
     public function findAllPaginated(int $page, int $limit, ?string $search = null, ?string $role = null, ?string $startDate = null, ?string $endDate = null): array
     {
+        $page = max(1, $page);
+        $limit = max(1, $limit);
         $query = UserModel::with('membershipTier');
         if ($search) {
             $normalized = $this->normalizeSearchKeyword($search);

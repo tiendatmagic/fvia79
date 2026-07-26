@@ -16,7 +16,7 @@ class UserSessionController extends Controller
         }
 
         $perPage = (int) $request->query('per_page', 10);
-        $perPage = max(1, min(100, $perPage));
+        $perPage = max(1, min(20, $perPage));
 
         $currentSessionId = $request->attributes->get('current_session_id');
 

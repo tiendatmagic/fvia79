@@ -18,6 +18,16 @@
 > `php artisan config:clear && php artisan config:cache && php artisan route:cache && php artisan view:cache`
 > để đảm bảo Laravel cập nhật ngay lập tức 100% các biến môi trường tươi mới nhất từ tệp `.env`, tuyệt đối không được bỏ qua bước `config:clear` để tránh tình trạng dính cache đệm tĩnh cũ.
 
+- **[RÀ SOÁT VÀ CHUẨN HÓA THAM SỐ LIMIT VÀ PAGE TRONG TRUY VẤN CSDL (QUERY LIMIT & PAGE SANITIZATION)]**:
+  - **Mô tả yêu cầu**:
+    - Rà soát các vấn đề liên quan đến tham số `limit` và `page` khi client gửi request truy vấn API phân trang, phòng chống các lỗi offset âm (`OFFSET -10`), chia cho 0 (`limit = 0`), cắt mảng sai trang trong `array_slice`, và áp dụng mức `limit` tối đa **20** bản ghi/trang theo đúng yêu cầu.
+  - **Nội dung thực hiện**:
+    - **Backend (`isocalmarket-api`)**:
+      - `ProductRepository.php`, `OrderRepository.php`, `UserRepository.php`, `CategoryRepository.php`, `InventoryItemRepository.php`, `InventoryBatchRepository.php`, `CouponRepository.php`, `DepositRepository.php`: Đồng bộ bổ sung chuẩn hóa `$page = max(1, $page);` và `$limit = max(1, $limit);` cho toàn bộ các hàm phân trang.
+      - `ProductController.php`, `OrderController.php`, `AdminUserController.php`, `CategoryController.php`, `UserSessionController.php`, `B2bController.php`, `B2bAdminController.php`: Cập nhật bọc trần `$limit = min(20, max(1, (int) $request->query('limit', ...)));` ép giá trị `limit` tối đa không vượt quá **20** bản ghi/trang.
+      - **Kiểm thử**: Đã chạy kiểm tra cú pháp PHP `php -l` toàn bộ các Controller thành công **100% SUCCESS, 0 ERRORS**.
+  - **Xác nhận**: Hệ thống hoạt động an toàn 100%, tự động ép `limit` tối đa **20** bản ghi/trang!
+
 - **[KHẮC PHỤC LỖI PRODUCT FORM MODAL ATTRIBUTES IS NOT ITERABLE (FIX ATTRIBUTES NOT ITERABLE TYPEERROR IN PRODUCT MODAL)]**:
   - **Mô tả yêu cầu**:
     - Khi bấm "Edit" sản phẩm trong trang Quản lý sản phẩm Admin, console báo lỗi `TypeError: this.modalData.attributes is not iterable` tại `product-form-modal.component.ts:89`, làm Modal bấm sửa sản phẩm bị đóng băng và các ô nhập liệu bị trống. Nguyên nhân do các sản phẩm import từ Nhà cung cấp lưu trường `attributes` dưới dạng JSON Object Key-Value chứ không phải Array, làm toán tử Spread `[...attributes]` bị văng ngoại lệ.

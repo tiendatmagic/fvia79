@@ -27,7 +27,7 @@ class B2bController extends Controller
     {
         try {
             $page = max(1, (int) $request->query('page', 1));
-            $limit = min(100, max(1, (int) $request->query('limit', 10)));
+            $limit = min(20, max(1, (int) $request->query('limit', 10)));
             $categoryId = $request->query('category_id');
             $search = $request->query('search');
             $lang = $this->resolveLanguage($request);
