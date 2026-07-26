@@ -76,18 +76,26 @@ class DepositController extends Controller
 
     public function cancelInvoice(string $id): JsonResponse
     {
-        $userId = Auth::id();
-        $success = $this->depositService->cancelInvoice($id, $userId);
+        try {
+            $userId = Auth::id();
+            $success = $this->depositService->cancelInvoice($id, $userId);
 
-        if (!$success) {
+            if (! $success) {
+                return response()->json([
+                    'message' => 'Failed to cancel invoice. Invalid invoice state or unauthorized.'
+                ], 400);
+            }
+
             return response()->json([
-                'message' => 'Failed to cancel invoice. Invalid invoice state or unauthorized.'
+                'message' => 'Cancelled deposit invoice successfully.'
+            ]);
+        } catch (\Throwable $e) {
+            Log::error("Error in cancelInvoice controller for invoice ID {$id}: {$e->getMessage()}");
+
+            return response()->json([
+                'message' => $e->getMessage() ?: 'Failed to cancel invoice.'
             ], 400);
         }
-
-        return response()->json([
-            'message' => 'Cancelled deposit invoice successfully.'
-        ]);
     }
 
     public function history(Request $request): JsonResponse

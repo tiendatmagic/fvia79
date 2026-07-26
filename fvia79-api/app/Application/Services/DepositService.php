@@ -237,8 +237,7 @@ class DepositService
                 return true;
             }
         } catch (\Exception $e) {
-            Log::error("Failed to check blockchain before canceling deposit ID {$id}: ".$e->getMessage());
-            throw new \RuntimeException('Unable to verify payment status on blockchain right now. Please try again later.');
+            Log::warning("Failed to check blockchain/binance before canceling deposit ID {$id}: ".$e->getMessage());
         }
 
         return DB::transaction(function () use ($id, $userId) {
