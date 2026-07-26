@@ -1,12 +1,12 @@
 {
-  "name": "isocalmarket",
+  "name": "fvia79",
   "version": "1.0.0",
-  "description": "Thư mục gốc quản lý dự án Isocalmarket",
+  "description": "Thư mục gốc quản lý dự án Fvia79",
   "scripts": {
     "start": "npx concurrently --kill-others \"npm run be\" \"npm run fe\"",
-    "be": "cd isocalmarket-api && php artisan serve",
-    "fe": "cd isocalmarket-web && npm start",
-    "build": "cd isocalmarket-web && npm run build"
+    "be": "cd fvia79-api && php artisan serve",
+    "fe": "cd fvia79-web && npm start",
+    "build": "cd fvia79-web && npm run build"
   },
   "devDependencies": {
     "concurrently": "^8.2.2"
