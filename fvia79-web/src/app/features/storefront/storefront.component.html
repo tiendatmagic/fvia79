@@ -320,7 +320,7 @@
                         </span>
                         <span
                           class="text-[10px] font-extrabold px-1.5 py-0.5 rounded bg-sky-500/10 text-sky-600 dark:text-sky-400 border border-sky-500/20"
-                          [appTooltip]="'Ưu đãi ' + tierName + ' (-' + tierDiscountPercent + '%)'"
+                          [appTooltip]="'cart.tier_discount_tooltip' | translate: { name: tierName, percent: tierDiscountPercent }"
                         >
                           -{{ tierDiscountPercent }}% {{ tierName }}
                         </span>
@@ -534,7 +534,6 @@
     }
   </div>
 
-  <!-- Recent Activities Section (Mua hàng gần đây & Nạp tiền gần đây - Đặt ở cuối trang) -->
   @if (recentPurchasesEnabled() || recentDepositsEnabled()) {
     <div class="grid grid-cols-1 lg:grid-cols-2 gap-6 pt-4">
       <!-- Recent Purchases Card -->

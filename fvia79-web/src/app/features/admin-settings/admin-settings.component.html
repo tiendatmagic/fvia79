@@ -29,7 +29,7 @@
       [class.dark:hover:text-slate-200]="activeTab() !== 'activities'"
     >
       <app-icon name="shopping-bag" class="w-4 h-4" />
-      <span>Hoạt động gần đây</span>
+      <span>{{ 'settings.tab_storefront' | translate }}</span>
     </button>
     <button
       (click)="changeTab('announcement')"
@@ -517,10 +517,10 @@
               </div>
               <div>
                 <h3 class="text-base font-bold text-slate-800 dark:text-white">
-                  Hoạt động gần đây (Storefront Recent Activities)
+                  {{ 'settings.storefront_section_title' | translate }}
                 </h3>
                 <p class="text-xs text-slate-500 dark:text-slate-400 font-medium">
-                  Cấu hình bật/tắt và chế độ hiển thị cho Đơn hàng vừa mua & Lịch sử nạp gần đây ở Storefront
+                  {{ 'settings.storefront_section_desc' | translate }}
                 </p>
               </div>
             </div>
@@ -532,7 +532,7 @@
               <div class="flex items-center justify-between">
                 <span class="text-sm font-bold text-slate-800 dark:text-white flex items-center gap-2">
                   <app-icon name="shopping-bag" class="w-5 h-5 text-blue-500" />
-                  Đơn hàng vừa mua (Recent Purchases)
+                  {{ 'settings.recent_purchases_enabled' | translate }}
                 </span>
                 <app-custom-switch
                   [checked]="form.recent_purchases_enabled === true || form.recent_purchases_enabled === '1' || form.recent_purchases_enabled === 'true'"
@@ -542,11 +542,11 @@
               </div>
 
               <div class="space-y-2 pt-2 border-t border-slate-200/50 dark:border-slate-800/50">
-                <label class="text-xs font-bold text-slate-600 dark:text-slate-400 uppercase tracking-wider block">Chế độ dữ liệu (Data Mode)</label>
+                <label class="text-xs font-bold text-slate-600 dark:text-slate-400 uppercase tracking-wider block">{{ 'settings.recent_purchases_mode' | translate }}</label>
                 <app-custom-select
                   [options]="[
-                    { label: 'Dữ liệu Demo tự động (Tạo ngẫu nhiên)', value: 'demo' },
-                    { label: 'Dữ liệu Thực tế (Đơn hàng thật)', value: 'real' }
+                    { label: ('settings.mode_demo' | translate), value: 'demo' },
+                    { label: ('settings.mode_real' | translate), value: 'real' }
                   ]"
                   valueKey="value"
                   labelKey="label"
@@ -562,7 +562,7 @@
               <div class="flex items-center justify-between">
                 <span class="text-sm font-bold text-slate-800 dark:text-white flex items-center gap-2">
                   <app-icon name="credit-card" class="w-5 h-5 text-purple-500" />
-                  Lịch sử nạp gần đây (Recent Deposits)
+                  {{ 'settings.recent_deposits_enabled' | translate }}
                 </span>
                 <app-custom-switch
                   [checked]="form.recent_deposits_enabled === true || form.recent_deposits_enabled === '1' || form.recent_deposits_enabled === 'true'"
@@ -572,11 +572,11 @@
               </div>
 
               <div class="space-y-2 pt-2 border-t border-slate-200/50 dark:border-slate-800/50">
-                <label class="text-xs font-bold text-slate-600 dark:text-slate-400 uppercase tracking-wider block">Chế độ dữ liệu (Data Mode)</label>
+                <label class="text-xs font-bold text-slate-600 dark:text-slate-400 uppercase tracking-wider block">{{ 'settings.recent_deposits_mode' | translate }}</label>
                 <app-custom-select
                   [options]="[
-                    { label: 'Dữ liệu Demo tự động (Tạo ngẫu nhiên)', value: 'demo' },
-                    { label: 'Dữ liệu Thực tế (Lịch sử nạp thật)', value: 'real' }
+                    { label: ('settings.mode_demo' | translate), value: 'demo' },
+                    { label: ('settings.mode_real' | translate), value: 'real' }
                   ]"
                   valueKey="value"
                   labelKey="label"

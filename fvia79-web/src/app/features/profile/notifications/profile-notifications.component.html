@@ -52,7 +52,7 @@
         <span
           class="text-xs font-bold uppercase tracking-wider block text-slate-400 dark:text-slate-500"
         >
-          Trạng thái kết nối
+          {{ 'profile.telegram_status_title' | translate }}
         </span>
         <span
           class="text-sm font-extrabold"
@@ -172,8 +172,7 @@
           {{ 'profile.telegram_enable_notifications' | translate }}
         </span>
         <span class="text-xs text-slate-500 dark:text-slate-400 font-medium">
-          Tự động nhận thông báo khi có sản phẩm mới nhập kho hoặc khi thanh toán đơn hàng thành
-          công.
+          {{ 'profile.telegram_auto_notify_desc' | translate }}
         </span>
       </div>
       <app-custom-switch

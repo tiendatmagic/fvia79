@@ -363,18 +363,16 @@ export class StorefrontComponent implements OnInit, OnDestroy {
     const hours = Math.floor(minutes / 60);
     const days = Math.floor(hours / 24);
 
-    const isEn = this.lang.currentLang() === 'en';
-
     if (minutes < 1) {
-      return isEn ? 'just now' : 'vừa xong';
+      return this.lang.translate('storefront.time_just_now');
     }
     if (minutes < 60) {
-      return isEn ? `${minutes} minutes ago` : `${minutes} phút trước`;
+      return this.lang.translate('storefront.time_minutes_ago', { count: minutes });
     }
     if (hours < 24) {
-      return isEn ? `${hours} hours ago` : `${hours} giờ trước`;
+      return this.lang.translate('storefront.time_hours_ago', { count: hours });
     }
-    return isEn ? `${days} days ago` : `${days} ngày trước`;
+    return this.lang.translate('storefront.time_days_ago', { count: days });
   }
 
   public readonly columns = computed<TableColumn[]>(() => {

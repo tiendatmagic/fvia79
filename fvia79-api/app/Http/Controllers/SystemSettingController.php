@@ -161,7 +161,7 @@ class SystemSettingController extends Controller
         $text = $this->settingService->getSetting('announcement_text', $textVi);
         $effect = $this->settingService->getSetting('announcement_effect', 'marquee');
         $usdtRate = $this->settingService->getSetting('usdt_exchange_rate', '25400');
-        $telegramBotUsername = $this->settingService->getSetting('telegram_bot_username', 'adsbm79noti_bot');
+        $telegramBotUsername = $this->settingService->getSetting('telegram_bot_username', 'fvia79noti_bot');
 
         $envFeatureEnabled = filter_var(config('app.feature_membership_tiers_enabled', false), FILTER_VALIDATE_BOOLEAN);
         $membershipTiersFeatureEnabled = filter_var($envFeatureEnabled, FILTER_VALIDATE_BOOLEAN);

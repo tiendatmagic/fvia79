@@ -61,11 +61,11 @@ export class AdminSuppliersComponent implements OnInit {
 
   public get targetLanguageOptions() {
     return [
-      { label: 'Tiếng Việt (vi)', value: 'vi' },
-      { label: 'Tiếng Anh (en)', value: 'en' },
-      { label: 'Tiếng Trung (zh-CN)', value: 'zh-CN' },
-      { label: 'Tiếng Nhật (ja)', value: 'ja' },
-      { label: 'Tiếng Hàn (ko)', value: 'ko' },
+      { label: this.lang.translate('supplier.lang_vi'), value: 'vi' },
+      { label: this.lang.translate('supplier.lang_en'), value: 'en' },
+      { label: this.lang.translate('supplier.lang_zh'), value: 'zh-CN' },
+      { label: this.lang.translate('supplier.lang_ja'), value: 'ja' },
+      { label: this.lang.translate('supplier.lang_ko'), value: 'ko' },
     ];
   }
 

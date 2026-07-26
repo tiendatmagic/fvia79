@@ -33,10 +33,10 @@ class UserSessionModel extends Model
     public static function parseDeviceName(?string $userAgent): string
     {
         if (empty($userAgent)) {
-            return 'Thiết bị không xác định';
+            return 'Unknown device';
         }
 
-        $browser = 'Trình duyệt không xác định';
+        $browser = 'Unknown browser';
         if (preg_match('/edg/i', $userAgent)) {
             $browser = 'Microsoft Edge';
         } elseif (preg_match('/chrome|crios/i', $userAgent)) {
@@ -49,7 +49,7 @@ class UserSessionModel extends Model
             $browser = 'Opera';
         }
 
-        $platform = 'Máy tính';
+        $platform = 'Desktop';
         if (preg_match('/iphone/i', $userAgent)) {
             $platform = 'iPhone';
         } elseif (preg_match('/ipad/i', $userAgent)) {

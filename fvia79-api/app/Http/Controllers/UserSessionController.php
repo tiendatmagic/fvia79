@@ -28,7 +28,7 @@ class UserSessionController extends Controller
         $items = collect($paginator->items())->map(function (UserSessionModel $session) use ($currentSessionId) {
             return [
                 'id' => $session->id,
-                'ip_address' => $session->ip_address ?? 'Không xác định',
+                'ip_address' => $session->ip_address ?? 'Unknown',
                 'user_agent' => $session->user_agent,
                 'device_name' => $session->device_name ?? UserSessionModel::parseDeviceName($session->user_agent),
                 'last_activity_at' => $session->last_activity_at ? $session->last_activity_at->toIso8601String() : null,

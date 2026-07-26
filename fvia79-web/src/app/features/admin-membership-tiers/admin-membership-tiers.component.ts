@@ -171,11 +171,12 @@ export class AdminMembershipTiersComponent implements OnInit {
           next: () => this.isUpdatingSystemSetting.set(false),
           error: () => this.isUpdatingSystemSetting.set(false),
         });
-        this.toast.showToast(`Đã ${enabled ? 'BẬT' : 'TẮT'} tính năng Cấp Bậc Đại Lý toàn hệ thống.`, 'success');
+        const statusText = this.lang.translate(enabled ? 'toast.status_enabled' : 'toast.status_disabled');
+        this.toast.showToast(this.lang.translate('toast.system_tier_feature_toggled', { status: statusText }), 'success');
       },
       error: () => {
         this.isUpdatingSystemSetting.set(false);
-        this.toast.showToast('Cập nhật thất bại.', 'error');
+        this.toast.showToast(this.lang.translate('toast.action_failed'), 'error');
       }
     });
   }
@@ -218,12 +219,13 @@ export class AdminMembershipTiersComponent implements OnInit {
     const newStatus = !tier.is_active;
     this.tierService.updateTier(tier.id, { is_active: newStatus }).subscribe({
       next: () => {
-        this.toast.showToast(`Đã ${newStatus ? 'kích hoạt' : 'tắt'} cấp bậc ${tier.name_vi}.`, 'success');
+        const statusText = this.lang.translate(newStatus ? 'toast.tier_status_activated' : 'toast.tier_status_deactivated');
+        this.toast.showToast(this.lang.translate('toast.tier_status_changed', { status: statusText, name: this.getTierName(tier) }), 'success');
         this.loadTiers();
         this.updatingTierId.set(null);
       },
       error: (err) => {
-        this.toast.showToast(err.error?.message || 'Thao tác thất bại.', 'error');
+        this.toast.showToast(err.error?.message || this.lang.translate('toast.action_failed'), 'error');
         this.updatingTierId.set(null);
       },
     });
@@ -243,11 +245,11 @@ export class AdminMembershipTiersComponent implements OnInit {
       if (confirmed) {
         this.tierService.deleteTier(tier.id).subscribe({
           next: () => {
-            this.toast.showToast(`Đã xóa cấp bậc ${tier.name_vi}.`, 'success');
+            this.toast.showToast(this.lang.translate('toast.tier_deleted', { name: tierName }), 'success');
             this.loadTiers();
           },
           error: (err) => {
-            this.toast.showToast(err.error?.message || 'Xóa cấp bậc thất bại.', 'error');
+            this.toast.showToast(err.error?.message || this.lang.translate('toast.tier_delete_failed'), 'error');
           },
         });
       }

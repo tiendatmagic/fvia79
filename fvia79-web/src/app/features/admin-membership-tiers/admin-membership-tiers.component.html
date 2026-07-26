@@ -34,7 +34,9 @@
       <app-icon name="warning" class="w-8 h-8" />
     </div>
     <div class="space-y-1">
-      <h4 class="font-extrabold text-base text-rose-800 dark:text-rose-300">Tính năng chưa được kích hoạt bản quyền</h4>
+      <h4 class="font-extrabold text-base text-rose-800 dark:text-rose-300">
+        {{ 'admin.tier_feature_not_licensed' | translate }}
+      </h4>
       <p class="text-xs text-rose-700/90 dark:text-rose-400/90 leading-relaxed">
         {{ 'admin.feature_disabled_env_notice' | translate }}
       </p>

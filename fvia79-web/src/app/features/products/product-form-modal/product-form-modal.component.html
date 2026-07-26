@@ -1,7 +1,7 @@
 <div class="space-y-6 pb-2">
   <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
     <div class="form-field">
-      <label class="text-xs font-black text-slate-400 uppercase tracking-wider block mb-2">Tên Sản Phẩm (EN - Mặc định) <span class="text-red-500">*</span></label>
+      <label class="text-xs font-black text-slate-400 uppercase tracking-wider block mb-2">{{ 'product.name_en_label' | translate }} <span class="text-red-500">*</span></label>
       <app-custom-input
         placeholder="e.g. Premium Account (Default EN)"
         [(ngModel)]="nameEn"
@@ -12,9 +12,9 @@
     </div>
 
     <div class="form-field">
-      <label class="text-xs font-black text-slate-400 uppercase tracking-wider block mb-2">Tên Sản Phẩm (VI - Tiếng Việt)</label>
+      <label class="text-xs font-black text-slate-400 uppercase tracking-wider block mb-2">{{ 'product.name_vi_label' | translate }}</label>
       <app-custom-input
-        placeholder="Ví dụ: Tài khoản Cao cấp (Để trống tự động dùng EN)"
+        [placeholder]="'product.name_vi_placeholder' | translate"
         [(ngModel)]="nameVi"
         name="nameVi"
         type="text"
@@ -55,9 +55,9 @@
 
   <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
     <div class="form-field">
-      <label class="text-xs font-black text-slate-400 uppercase tracking-wider block mb-2">Mô tả (EN - Mặc định)</label>
+      <label class="text-xs font-black text-slate-400 uppercase tracking-wider block mb-2">{{ 'product.desc_en' | translate }}</label>
       <app-custom-input
-        placeholder="Product description in English..."
+        [placeholder]="'product.description_en_placeholder' | translate"
         [(ngModel)]="descriptionEn"
         name="descriptionEn"
         type="textarea"
@@ -66,9 +66,9 @@
     </div>
 
     <div class="form-field">
-      <label class="text-xs font-black text-slate-400 uppercase tracking-wider block mb-2">Mô tả (VI - Tiếng Việt)</label>
+      <label class="text-xs font-black text-slate-400 uppercase tracking-wider block mb-2">{{ 'product.desc_vi' | translate }}</label>
       <app-custom-input
-        placeholder="Mô tả sản phẩm bằng Tiếng Việt (Để trống tự dùng EN)..."
+        [placeholder]="'product.description_vi_placeholder' | translate"
         [(ngModel)]="descriptionVi"
         name="descriptionVi"
         type="textarea"

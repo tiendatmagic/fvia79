@@ -161,10 +161,10 @@ export class UserStore {
     return this.api.post<any>(`v1/admin/users/${id}/adjust-cumulative-deposit`, { type, amount, reason }).pipe(
       tap(() => {
         this.clearCache();
-        this.toast.showToast('Đã điều chỉnh số tiền nạp tích lũy và cập nhật cấp bậc thành công.', 'success');
+        this.toast.showToast(this.lang.translate('toast.cumulative_deposit_adjusted'), 'success');
       }),
       catchError((err) => {
-        const msg = err.error?.message || 'Điều chỉnh số tiền nạp tích lũy thất bại.';
+        const msg = err.error?.message || this.lang.translate('toast.cumulative_deposit_adjust_failed');
         this.toast.showToast(msg, 'error');
         return of(null);
       }),

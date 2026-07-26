@@ -168,46 +168,56 @@ export class AdminFaqsComponent implements OnInit {
     }));
   });
 
-  public policyTypeOptions = [
-    { label: 'Chấp nhận bảo hành (Accepted)', value: 'accepted' },
-    { label: 'Từ chối bảo hành (Rejected)', value: 'rejected' }
-  ];
+  public get policyTypeOptions() {
+    return [
+      { label: this.lang.translate('admin_faq.option_accepted'), value: 'accepted' },
+      { label: this.lang.translate('admin_faq.option_rejected'), value: 'rejected' }
+    ];
+  }
 
-  public tagColorOptions = [
-    { label: 'Xanh dương (Blue)', value: 'blue' },
-    { label: 'Xanh lá (Emerald)', value: 'emerald' },
-    { label: 'Hổ phách (Amber)', value: 'amber' },
-    { label: 'Đỏ (Rose)', value: 'rose' }
-  ];
+  public get tagColorOptions() {
+    return [
+      { label: this.lang.translate('admin_faq.color_blue'), value: 'blue' },
+      { label: this.lang.translate('admin_faq.color_emerald'), value: 'emerald' },
+      { label: this.lang.translate('admin_faq.color_amber'), value: 'amber' },
+      { label: this.lang.translate('admin_faq.color_rose'), value: 'rose' }
+    ];
+  }
 
-  public categoryColumns: TableColumn[] = [
-    { key: 'key', label: 'Mã Key (Slug)', sortable: true },
-    { key: 'name_vi', label: 'Tên Danh mục (VI)', sortable: true },
-    { key: 'name_en', label: 'Tên Danh mục (EN)', sortable: true },
-    { key: 'icon', label: 'Icon', sortable: false, align: 'center' },
-    { key: 'sort_order', label: 'Thứ tự', sortable: true, align: 'center' },
-    { key: 'is_active', label: 'Trạng thái', sortable: true, align: 'center' },
-    { key: 'actions', label: 'Thao tác', sortable: false, align: 'right' }
-  ];
+  public get categoryColumns(): TableColumn[] {
+    return [
+      { key: 'key', label: this.lang.translate('admin_faq.column_key'), sortable: true },
+      { key: 'name_vi', label: this.lang.translate('admin_faq.column_name_vi'), sortable: true },
+      { key: 'name_en', label: this.lang.translate('admin_faq.column_name_en'), sortable: true },
+      { key: 'icon', label: this.lang.translate('admin_faq.column_icon'), sortable: false, align: 'center' },
+      { key: 'sort_order', label: this.lang.translate('admin_faq.column_sort_order'), sortable: true, align: 'center' },
+      { key: 'is_active', label: this.lang.translate('admin_faq.column_status'), sortable: true, align: 'center' },
+      { key: 'actions', label: this.lang.translate('admin_faq.column_actions'), sortable: false, align: 'right' }
+    ];
+  }
 
-  public policyColumns: TableColumn[] = [
-    { key: 'category', label: 'Danh mục', sortable: true },
-    { key: 'type', label: 'Loại quy định', sortable: true },
-    { key: 'content_vi', label: 'Nội dung (VI)', sortable: false },
-    { key: 'content_en', label: 'Nội dung (EN)', sortable: false },
-    { key: 'tag', label: 'Nhãn (Tag)', sortable: false },
-    { key: 'sort_order', label: 'Thứ tự', sortable: true, align: 'center' },
-    { key: 'is_active', label: 'Trạng thái', sortable: true, align: 'center' },
-    { key: 'actions', label: 'Thao tác', sortable: false, align: 'right' }
-  ];
+  public get policyColumns(): TableColumn[] {
+    return [
+      { key: 'category', label: this.lang.translate('admin_faq.column_category'), sortable: true },
+      { key: 'type', label: this.lang.translate('admin_faq.column_policy_type'), sortable: true },
+      { key: 'content_vi', label: this.lang.translate('admin_faq.column_content_vi'), sortable: false },
+      { key: 'content_en', label: this.lang.translate('admin_faq.column_content_en'), sortable: false },
+      { key: 'tag', label: this.lang.translate('admin_faq.column_tag'), sortable: false },
+      { key: 'sort_order', label: this.lang.translate('admin_faq.column_sort_order'), sortable: true, align: 'center' },
+      { key: 'is_active', label: this.lang.translate('admin_faq.column_status'), sortable: true, align: 'center' },
+      { key: 'actions', label: this.lang.translate('admin_faq.column_actions'), sortable: false, align: 'right' }
+    ];
+  }
 
-  public faqColumns: TableColumn[] = [
-    { key: 'question_vi', label: 'Câu hỏi (VI)', sortable: false },
-    { key: 'question_en', label: 'Câu hỏi (EN)', sortable: false },
-    { key: 'sort_order', label: 'Thứ tự', sortable: true, align: 'center' },
-    { key: 'is_active', label: 'Trạng thái', sortable: true, align: 'center' },
-    { key: 'actions', label: 'Thao tác', sortable: false, align: 'right' }
-  ];
+  public get faqColumns(): TableColumn[] {
+    return [
+      { key: 'question_vi', label: this.lang.translate('admin_faq.column_question_vi'), sortable: false },
+      { key: 'question_en', label: this.lang.translate('admin_faq.column_question_en'), sortable: false },
+      { key: 'sort_order', label: this.lang.translate('admin_faq.column_sort_order'), sortable: true, align: 'center' },
+      { key: 'is_active', label: this.lang.translate('admin_faq.column_status'), sortable: true, align: 'center' },
+      { key: 'actions', label: this.lang.translate('admin_faq.column_actions'), sortable: false, align: 'right' }
+    ];
+  }
 
   public ngOnInit(): void {
     this.route.queryParams.subscribe(params => {
@@ -241,7 +251,9 @@ export class AdminFaqsComponent implements OnInit {
         this.isLoading.set(false);
       },
       error: (err) => {
-        this.toast.showError(err?.error?.message || 'Failed to load FAQ admin data');
+        this.toast.showError(
+          err?.error?.message || this.lang.translate('admin_faq.toast_load_failed')
+        );
         this.isLoading.set(false);
       }
     });
@@ -288,7 +300,7 @@ export class AdminFaqsComponent implements OnInit {
     if (this.isSubmitting()) return;
     const form = this.categoryForm();
     if (!form.name_vi.trim() || !form.name_en.trim()) {
-      this.toast.showError('Vui lòng nhập tên danh mục cả Tiếng Việt và Tiếng Anh!');
+      this.toast.showError(this.lang.translate('admin_faq.toast_bilingual_required'));
       return;
     }
 
@@ -304,7 +316,7 @@ export class AdminFaqsComponent implements OnInit {
           this.loadData();
         },
         error: (err) => {
-          this.toast.showError(err?.error?.message || 'Cập nhật danh mục thất bại!');
+          this.toast.showError(err?.error?.message || this.lang.translate('admin_faq.toast_category_update_failed'));
           this.isSubmitting.set(false);
         }
       });
@@ -317,7 +329,7 @@ export class AdminFaqsComponent implements OnInit {
           this.loadData();
         },
         error: (err) => {
-          this.toast.showError(err?.error?.message || 'Tạo danh mục thất bại!');
+          this.toast.showError(err?.error?.message || this.lang.translate('admin_faq.toast_category_create_failed'));
           this.isSubmitting.set(false);
         }
       });
@@ -335,7 +347,7 @@ export class AdminFaqsComponent implements OnInit {
         this.loadData();
       },
       error: () => {
-        this.toast.showError('Cập nhật trạng thái thất bại!');
+        this.toast.showError(this.lang.translate('admin_faq.toast_status_update_failed'));
         this.updatingCategoryId.set(null);
       }
     });
@@ -383,7 +395,7 @@ export class AdminFaqsComponent implements OnInit {
     if (this.isSubmitting()) return;
     const form = this.policyForm();
     if (!form.content_vi.trim() || !form.content_en.trim()) {
-      this.toast.showError('Vui lòng nhập nội dung cả Tiếng Việt và Tiếng Anh!');
+      this.toast.showError(this.lang.translate('admin_faq.toast_bilingual_required'));
       return;
     }
 
@@ -399,7 +411,7 @@ export class AdminFaqsComponent implements OnInit {
           this.loadData();
         },
         error: (err) => {
-          this.toast.showError(err?.error?.message || 'Cập nhật thất bại!');
+          this.toast.showError(err?.error?.message || this.lang.translate('toast.action_failed'));
           this.isSubmitting.set(false);
         }
       });
@@ -412,7 +424,7 @@ export class AdminFaqsComponent implements OnInit {
           this.loadData();
         },
         error: (err) => {
-          this.toast.showError(err?.error?.message || 'Tạo thất bại!');
+          this.toast.showError(err?.error?.message || this.lang.translate('toast.action_failed'));
           this.isSubmitting.set(false);
         }
       });
@@ -430,7 +442,7 @@ export class AdminFaqsComponent implements OnInit {
         this.loadData();
       },
       error: () => {
-        this.toast.showError('Cập nhật trạng thái thất bại!');
+        this.toast.showError(this.lang.translate('admin_faq.toast_status_update_failed'));
         this.updatingPolicyId.set(null);
       }
     });
@@ -467,7 +479,7 @@ export class AdminFaqsComponent implements OnInit {
     if (this.isSubmitting()) return;
     const form = this.faqForm();
     if (!form.question_vi.trim() || !form.question_en.trim() || !form.answer_vi.trim() || !form.answer_en.trim()) {
-      this.toast.showError('Vui lòng nhập đầy đủ câu hỏi và câu trả lời 2 ngôn ngữ!');
+      this.toast.showError(this.lang.translate('admin_faq.toast_faq_bilingual_required'));
       return;
     }
 
@@ -483,7 +495,7 @@ export class AdminFaqsComponent implements OnInit {
           this.loadData();
         },
         error: (err) => {
-          this.toast.showError(err?.error?.message || 'Cập nhật thất bại!');
+          this.toast.showError(err?.error?.message || this.lang.translate('toast.action_failed'));
           this.isSubmitting.set(false);
         }
       });
@@ -496,7 +508,7 @@ export class AdminFaqsComponent implements OnInit {
           this.loadData();
         },
         error: (err) => {
-          this.toast.showError(err?.error?.message || 'Tạo thất bại!');
+          this.toast.showError(err?.error?.message || this.lang.translate('toast.action_failed'));
           this.isSubmitting.set(false);
         }
       });
@@ -514,7 +526,7 @@ export class AdminFaqsComponent implements OnInit {
         this.loadData();
       },
       error: () => {
-        this.toast.showError('Cập nhật trạng thái thất bại!');
+        this.toast.showError(this.lang.translate('admin_faq.toast_status_update_failed'));
         this.updatingFaqId.set(null);
       }
     });
@@ -541,7 +553,7 @@ export class AdminFaqsComponent implements OnInit {
           this.loadData();
         },
         error: (err) => {
-          this.toast.showError(err?.error?.message || 'Xóa danh mục thất bại! Danh mục có thể đang được sử dụng.');
+          this.toast.showError(err?.error?.message || this.lang.translate('admin_faq.toast_category_delete_failed'));
           this.isSubmitting.set(false);
         }
       });
@@ -554,7 +566,7 @@ export class AdminFaqsComponent implements OnInit {
           this.loadData();
         },
         error: () => {
-          this.toast.showError('Xóa thất bại!');
+          this.toast.showError(this.lang.translate('toast.action_failed'));
           this.isSubmitting.set(false);
         }
       });
@@ -567,7 +579,7 @@ export class AdminFaqsComponent implements OnInit {
           this.loadData();
         },
         error: () => {
-          this.toast.showError('Xóa thất bại!');
+          this.toast.showError(this.lang.translate('toast.action_failed'));
           this.isSubmitting.set(false);
         }
       });

@@ -4,6 +4,7 @@ import { FormsModule } from '@angular/forms';
 import { ModalRef, MODAL_DATA } from '@core/services/modal-ref';
 import { MembershipTierService, MembershipTier } from '@core/services/membership-tier.service';
 import { ToastService } from '@core/services/toast.service';
+import { LanguageService } from '@core/services/language.service';
 import { CustomInputComponent } from '@shared/components/custom-input/custom-input.component';
 import { CustomSwitchComponent } from '@shared/components/custom-switch/custom-switch.component';
 import { ButtonComponent } from '@shared/components/button/button.component';
@@ -37,6 +38,7 @@ export class MembershipTierFormModalComponent implements OnInit {
   public readonly data = inject<MembershipTierFormModalData>(MODAL_DATA);
   private readonly tierService = inject(MembershipTierService);
   private readonly toast = inject(ToastService);
+  private readonly lang = inject(LanguageService);
 
   public readonly isSubmitting = signal(false);
 
@@ -77,17 +79,17 @@ export class MembershipTierFormModalComponent implements OnInit {
     if (this.isSubmitting()) return;
 
     if (!this.nameVi.trim()) {
-      this.toast.showToast('Vui lòng nhập tên cấp bậc Tiếng Việt.', 'error');
+      this.toast.showToast(this.lang.translate('toast.tier_name_vi_required'), 'error');
       return;
     }
 
     if (this.minDeposit < 0) {
-      this.toast.showToast('Mức nạp tối thiểu không được nhỏ hơn 0.', 'error');
+      this.toast.showToast(this.lang.translate('toast.tier_min_deposit_invalid'), 'error');
       return;
     }
 
     if (this.discountPercent < 0 || this.discountPercent > 100) {
-      this.toast.showToast('% Chiết khấu phải từ 0 đến 100%.', 'error');
+      this.toast.showToast(this.lang.translate('toast.tier_discount_invalid'), 'error');
       return;
     }
 
@@ -109,13 +111,13 @@ export class MembershipTierFormModalComponent implements OnInit {
         next: (res) => {
           this.isSubmitting.set(false);
           if (res) {
-            this.toast.showToast('Cập nhật cấp bậc thành công.', 'success');
+            this.toast.showToast(this.lang.translate('toast.tier_updated'), 'success');
             this.modalRef.close(true);
           }
         },
         error: (err) => {
           this.isSubmitting.set(false);
-          this.toast.showToast(this.extractErrorMessage(err, 'Cập nhật thất bại.'), 'error');
+          this.toast.showToast(this.extractErrorMessage(err, this.lang.translate('toast.tier_update_failed')), 'error');
         },
       });
     } else {
@@ -123,13 +125,13 @@ export class MembershipTierFormModalComponent implements OnInit {
         next: (res) => {
           this.isSubmitting.set(false);
           if (res) {
-            this.toast.showToast('Thêm cấp bậc mới thành công.', 'success');
+            this.toast.showToast(this.lang.translate('toast.tier_created'), 'success');
             this.modalRef.close(true);
           }
         },
         error: (err) => {
           this.isSubmitting.set(false);
-          this.toast.showToast(this.extractErrorMessage(err, 'Thêm cấp bậc thất bại.'), 'error');
+          this.toast.showToast(this.extractErrorMessage(err, this.lang.translate('toast.tier_create_failed')), 'error');
         },
       });
     }

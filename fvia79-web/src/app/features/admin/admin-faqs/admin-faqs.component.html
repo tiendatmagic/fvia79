@@ -12,10 +12,10 @@
           variant="primary"
           (click)="openCreateCategoryModal()"
           class="flex items-center gap-2 py-2.5 px-4 rounded-xl bg-gradient-to-r from-[var(--color-primary)] to-[var(--color-secondary)] text-white font-extrabold shadow-md shadow-[var(--color-primary)]/15 active:scale-95 transition-all text-xs sm:text-sm cursor-pointer"
-          [appTooltip]="'Thêm Danh mục áp dụng mới'"
+          [appTooltip]="'admin_faq.add_category_tooltip' | translate"
         >
           <app-icon name="plus" class="w-4 h-4 shrink-0" />
-          <span>Thêm danh mục áp dụng</span>
+          <span>{{ 'admin_faq.add_category_btn' | translate }}</span>
         </button>
 
         <button
@@ -59,10 +59,10 @@
       [class.text-slate-500]="activeTab() !== 'categories'"
       [class.hover:text-slate-800]="activeTab() !== 'categories'"
       [class.dark:hover:text-slate-200]="activeTab() !== 'categories'"
-      [appTooltip]="'Quản lý danh sách các Danh mục áp dụng chính sách'"
+      [appTooltip]="'admin_faq.manage_categories_tooltip' | translate"
     >
       <app-icon name="package" class="w-4 h-4" />
-      <span>Danh mục áp dụng</span>
+      <span>{{ 'faq.field_category' | translate }}</span>
     </button>
 
     <button
@@ -75,10 +75,10 @@
       [class.text-slate-500]="activeTab() !== 'policies'"
       [class.hover:text-slate-800]="activeTab() !== 'policies'"
       [class.dark:hover:text-slate-200]="activeTab() !== 'policies'"
-      [appTooltip]="'Quản lý danh sách các Quy định Chấp nhận & Từ chối bảo hành'"
+      [appTooltip]="'admin_faq.manage_policies_tooltip' | translate"
     >
       <app-icon name="shield" class="w-4 h-4" />
-      <span>Quy định bảo hành</span>
+      <span>{{ 'faq.tab_policies' | translate }}</span>
     </button>
 
     <button
@@ -91,7 +91,7 @@
       [class.text-slate-500]="activeTab() !== 'faqs'"
       [class.hover:text-slate-800]="activeTab() !== 'faqs'"
       [class.dark:hover:text-slate-200]="activeTab() !== 'faqs'"
-      [appTooltip]="'Quản lý các câu hỏi thường gặp FAQ'"
+      [appTooltip]="'admin_faq.manage_faqs_tooltip' | translate"
     >
       <app-icon name="faq" class="w-4 h-4" />
       <span>{{ 'faq.tab_faqs' | translate }}</span>
@@ -105,7 +105,7 @@
       <ng-template appTableCell="key" let-row="row">
         <span
           class="px-2.5 py-1 rounded-lg text-xs font-black uppercase inline-block whitespace-nowrap bg-purple-100 text-purple-700 dark:bg-purple-950/80 dark:text-purple-300"
-          [appTooltip]="'Mã Key duy nhất: ' + row.key"
+          [appTooltip]="'admin_faq.key_tooltip' | translate: { key: row.key }"
         >
           {{ row.key }}
         </span>
@@ -115,7 +115,7 @@
       <ng-template appTableCell="name_vi" let-row="row">
         <span
           class="text-xs font-bold text-slate-800 dark:text-slate-200"
-          [appTooltip]="'Tên danh mục Tiếng Việt: ' + row.name_vi"
+          [appTooltip]="'admin_faq.name_vi_tooltip' | translate: { name: row.name_vi }"
         >
           🇻🇳 {{ row.name_vi }}
         </span>
@@ -125,7 +125,7 @@
       <ng-template appTableCell="name_en" let-row="row">
         <span
           class="text-xs font-bold text-slate-600 dark:text-slate-400"
-          [appTooltip]="'Tên danh mục Tiếng Anh: ' + row.name_en"
+          [appTooltip]="'admin_faq.name_en_tooltip' | translate: { name: row.name_en }"
         >
           🇬🇧 {{ row.name_en }}
         </span>
@@ -135,7 +135,7 @@
       <ng-template appTableCell="icon" let-row="row">
         <div
           class="flex items-center justify-center"
-          [appTooltip]="'Mã biểu tượng Icon: ' + (row.icon || 'package')"
+          [appTooltip]="'admin_faq.icon_tooltip' | translate: { icon: (row.icon || 'package') }"
         >
           <app-icon [name]="row.icon || 'package'" class="w-4 h-4 text-primary" />
         </div>
@@ -145,7 +145,7 @@
       <ng-template appTableCell="sort_order" let-row="row">
         <span
           class="font-extrabold text-xs text-slate-700 dark:text-slate-300"
-          [appTooltip]="'Thứ tự ưu tiên sắp xếp: ' + row.sort_order"
+          [appTooltip]="'admin_faq.sort_order_tooltip' | translate: { order: row.sort_order }"
         >
           {{ row.sort_order }}
         </span>
@@ -156,7 +156,7 @@
         <div
           class="flex items-center justify-center gap-2"
           [appTooltip]="
-            row.is_active ? 'Đang bật hiển thị - Nhấp switch để ẩn' : 'Đang ẩn - Nhấp switch để bật'
+            (row.is_active ? 'admin_faq.toggle_active_tooltip' : 'admin_faq.toggle_inactive_tooltip') | translate
           "
         >
           <app-badge [variant]="row.is_active ? 'success' : 'danger'" size="md" rounded="md">
@@ -203,7 +203,7 @@
         [totalPages]="categoryTotalPages()"
         [totalItems]="categories().length"
         [itemsPerPage]="categoryPageSize"
-        [itemName]="'danh mục'"
+        [itemName]="'admin_faq.item_name_category' | translate"
         (pageChange)="categoryPage.set($event)"
       />
     </div>
@@ -216,7 +216,7 @@
       <ng-template appTableCell="category" let-row="row">
         <span
           class="px-2.5 py-1 rounded-lg text-xs font-black uppercase inline-block whitespace-nowrap bg-indigo-100 text-indigo-700 dark:bg-indigo-950/80 dark:text-indigo-300"
-          [appTooltip]="'Danh mục áp dụng: ' + getCategoryLabel(row.category)"
+          [appTooltip]="('faq.field_category' | translate) + ': ' + getCategoryLabel(row.category)"
         >
           {{ getCategoryLabel(row.category) }}
         </span>
@@ -232,10 +232,10 @@
           "
           class="px-2.5 py-1 rounded-lg text-xs font-black uppercase inline-block whitespace-nowrap"
           [appTooltip]="
-            row.type === 'accepted' ? 'Quy định Chấp nhận bảo hành' : 'Quy định Từ chối bảo hành'
+            row.type === 'accepted' ? ('faq.filter_accepted_tooltip' | translate) : ('faq.filter_rejected_tooltip' | translate)
           "
         >
-          {{ row.type === 'accepted' ? 'Chấp nhận' : 'Từ chối' }}
+          {{ (row.type === 'accepted' ? 'faq.filter_accepted' : 'faq.filter_rejected') | translate }}
         </span>
       </ng-template>
 
@@ -271,14 +271,14 @@
         <div *ngIf="row.tag_vi" class="flex flex-col gap-1">
           <span
             class="px-2 py-0.5 rounded-md bg-slate-100 dark:bg-slate-800 text-[11px] font-bold text-slate-700 dark:text-slate-300 w-fit"
-            [appTooltip]="'Nhãn Tiếng Việt: ' + row.tag_vi"
+            [appTooltip]="'admin_faq.tag_vi_tooltip' | translate: { tag: row.tag_vi }"
           >
             🇻🇳 {{ row.tag_vi }}
           </span>
           <span
             *ngIf="row.tag_en"
             class="px-2 py-0.5 rounded-md bg-slate-100 dark:bg-slate-800 text-[11px] font-bold text-slate-500 w-fit"
-            [appTooltip]="'Nhãn Tiếng Anh: ' + row.tag_en"
+            [appTooltip]="'admin_faq.tag_en_tooltip' | translate: { tag: row.tag_en }"
           >
             🇬🇧 {{ row.tag_en }}
           </span>
@@ -290,7 +290,7 @@
       <ng-template appTableCell="sort_order" let-row="row">
         <span
           class="font-extrabold text-xs text-slate-700 dark:text-slate-300"
-          [appTooltip]="'Thứ tự ưu tiên sắp xếp: ' + row.sort_order"
+          [appTooltip]="'admin_faq.sort_order_tooltip' | translate: { order: row.sort_order }"
         >
           {{ row.sort_order }}
         </span>
@@ -301,9 +301,7 @@
         <div
           class="flex items-center justify-center gap-2"
           [appTooltip]="
-            row.is_active
-              ? 'Đang hiển thị ở Cửa hàng - Nhấp switch để ẩn'
-              : 'Đang ẩn - Nhấp switch để hiển thị'
+            (row.is_active ? 'admin_faq.toggle_active_tooltip' : 'admin_faq.toggle_inactive_tooltip') | translate
           "
         >
           <app-badge [variant]="row.is_active ? 'success' : 'danger'" size="md" rounded="md">
@@ -346,7 +344,7 @@
         [totalPages]="policyTotalPages()"
         [totalItems]="policies().length"
         [itemsPerPage]="policyPageSize"
-        [itemName]="'quy định'"
+        [itemName]="'admin_faq.item_name_policy' | translate"
         (pageChange)="policyPage.set($event)"
       />
     </div>
@@ -389,7 +387,7 @@
       <ng-template appTableCell="sort_order" let-row="row">
         <span
           class="font-extrabold text-xs text-slate-700 dark:text-slate-300"
-          [appTooltip]="'Thứ tự ưu tiên sắp xếp: ' + row.sort_order"
+          [appTooltip]="'admin_faq.sort_order_tooltip' | translate: { order: row.sort_order }"
         >
           {{ row.sort_order }}
         </span>
@@ -400,9 +398,7 @@
         <div
           class="flex items-center justify-center gap-2"
           [appTooltip]="
-            row.is_active
-              ? 'Đang hiển thị ở Cửa hàng - Nhấp switch để ẩn'
-              : 'Đang ẩn - Nhấp switch để hiển thị'
+            (row.is_active ? 'admin_faq.toggle_active_tooltip' : 'admin_faq.toggle_inactive_tooltip') | translate
           "
         >
           <app-badge [variant]="row.is_active ? 'success' : 'danger'" size="md" rounded="md">
@@ -445,7 +441,7 @@
         [totalPages]="faqTotalPages()"
         [totalItems]="faqs().length"
         [itemsPerPage]="faqPageSize"
-        [itemName]="'câu hỏi'"
+        [itemName]="'admin_faq.item_name_faq' | translate"
         (pageChange)="faqPage.set($event)"
       />
     </div>
@@ -470,7 +466,7 @@
         >
           <app-icon name="package" class="w-5 h-5 text-primary" />
           <span>{{
-            editingCategory() ? 'Chỉnh sửa Danh mục áp dụng' : 'Thêm Danh mục áp dụng mới'
+            editingCategory() ? ('admin_faq.edit_category_title' | translate) : ('admin_faq.add_category_title' | translate)
           }}</span>
         </h3>
         <button
@@ -489,13 +485,13 @@
           <label
             class="text-xs font-bold text-slate-700 dark:text-slate-300 uppercase tracking-wider block flex items-center justify-between"
           >
-            <span>Tên danh mục (Tiếng Việt 🇻🇳)</span>
+            <span>{{ 'admin_faq.field_name_vi' | translate }}</span>
             <span class="text-rose-500 font-bold">*</span>
           </label>
           <input
             type="text"
             [(ngModel)]="categoryForm().name_vi"
-            placeholder="VD: Business Manager (BM), Tài khoản Gmail..."
+            [placeholder]="'admin_faq.category_name_placeholder' | translate"
             class="w-full px-3.5 py-2.5 text-xs sm:text-sm font-bold bg-slate-50 dark:bg-slate-950 border border-slate-200 dark:border-slate-800 rounded-xl focus:outline-hidden focus:border-primary transition-all text-slate-800 dark:text-slate-100"
           />
         </div>
@@ -505,7 +501,7 @@
           <label
             class="text-xs font-bold text-slate-700 dark:text-slate-300 uppercase tracking-wider block flex items-center justify-between"
           >
-            <span>Tên danh mục (Tiếng Anh 🇬🇧)</span>
+            <span>{{ 'admin_faq.field_name_en' | translate }}</span>
             <span class="text-rose-500 font-bold">*</span>
           </label>
           <input
@@ -522,7 +518,7 @@
             <label
               class="text-xs font-bold text-slate-600 dark:text-slate-300 uppercase tracking-wider block"
             >
-              Mã Key Slug (Để trống tự sinh)
+              {{ 'admin_faq.field_slug' | translate }}
             </label>
             <input
               type="text"
@@ -554,7 +550,7 @@
             <label
               class="text-xs font-bold text-slate-600 dark:text-slate-300 uppercase tracking-wider block"
             >
-              Số thứ tự hiển thị
+              {{ 'admin_faq.field_sort_order' | translate }}
             </label>
             <input
               type="number"
@@ -570,7 +566,7 @@
               (checkedChange)="categoryForm.update((f) => ({ ...f, is_active: $event }))"
             />
             <span class="text-xs font-bold text-slate-700 dark:text-slate-300">
-              {{ categoryForm().is_active ? 'Đang bật hiển thị' : 'Ẩn danh mục' }}
+              {{ (categoryForm().is_active ? 'cat.status_active' : 'cat.status_inactive') | translate }}
             </span>
           </div>
         </div>
@@ -642,7 +638,7 @@
             <label
               class="text-xs font-bold text-slate-600 dark:text-slate-300 uppercase tracking-wider block"
             >
-              Danh mục áp dụng
+              {{ 'faq.field_category' | translate }}
             </label>
             <app-custom-select
               [options]="policyCategoryOptions()"
@@ -658,7 +654,7 @@
             <label
               class="text-xs font-bold text-slate-600 dark:text-slate-300 uppercase tracking-wider block"
             >
-              Loại bảo hành
+              {{ 'faq.field_type' | translate }}
             </label>
             <app-custom-select
               [options]="policyTypeOptions"
@@ -675,13 +671,13 @@
           <label
             class="text-xs font-bold text-slate-700 dark:text-slate-300 uppercase tracking-wider block flex items-center justify-between"
           >
-            <span>Nội dung chính (Tiếng Việt 🇻🇳)</span>
+            <span>{{ 'admin_faq.field_content_vi' | translate }}</span>
             <span class="text-rose-500 font-bold">*</span>
           </label>
           <textarea
             [(ngModel)]="policyForm().content_vi"
             rows="2"
-            placeholder="Nhập nội dung quy định bằng Tiếng Việt..."
+            [placeholder]="'admin_faq.content_vi_placeholder' | translate"
             class="w-full px-3.5 py-2.5 text-xs sm:text-sm font-medium bg-slate-50 dark:bg-slate-950 border border-slate-200 dark:border-slate-800 rounded-xl focus:outline-hidden focus:border-primary transition-all text-slate-800 dark:text-slate-100"
           ></textarea>
         </div>
@@ -691,7 +687,7 @@
           <label
             class="text-xs font-bold text-slate-700 dark:text-slate-300 uppercase tracking-wider block flex items-center justify-between"
           >
-            <span>Nội dung chính (Tiếng Anh 🇬🇧)</span>
+            <span>{{ 'admin_faq.field_content_en' | translate }}</span>
             <span class="text-rose-500 font-bold">*</span>
           </label>
           <textarea
@@ -708,12 +704,12 @@
             <label
               class="text-xs font-bold text-slate-600 dark:text-slate-300 uppercase tracking-wider block"
             >
-              Ghi chú phụ (Tiếng Việt)
+              {{ 'admin_faq.field_sub_vi' | translate }}
             </label>
             <input
               type="text"
               [(ngModel)]="policyForm().sub_content_vi"
-              placeholder="(VD: Yêu cầu chưa đổi email)"
+              [placeholder]="'admin_faq.sub_content_vi_placeholder' | translate"
               class="w-full px-3.5 py-2.5 text-xs sm:text-sm font-medium bg-slate-50 dark:bg-slate-950 border border-slate-200 dark:border-slate-800 rounded-xl focus:outline-hidden focus:border-primary transition-all text-slate-800 dark:text-slate-100"
             />
           </div>
@@ -723,7 +719,7 @@
             <label
               class="text-xs font-bold text-slate-600 dark:text-slate-300 uppercase tracking-wider block"
             >
-              Ghi chú phụ (Tiếng Anh)
+              {{ 'admin_faq.field_sub_en' | translate }}
             </label>
             <input
               type="text"
@@ -740,12 +736,12 @@
             <label
               class="text-xs font-bold text-slate-600 dark:text-slate-300 uppercase tracking-wider block"
             >
-              Tên Nhãn Tag (VI)
+              {{ 'admin_faq.field_tag_vi' | translate }}
             </label>
             <input
               type="text"
               [(ngModel)]="policyForm().tag_vi"
-              placeholder="VD: 24 giờ / Từ chối"
+              [placeholder]="'admin_faq.field_tag_vi' | translate"
               class="w-full px-3.5 py-2.5 text-xs sm:text-sm font-medium bg-slate-50 dark:bg-slate-950 border border-slate-200 dark:border-slate-800 rounded-xl focus:outline-hidden focus:border-primary transition-all text-slate-800 dark:text-slate-100"
             />
           </div>
@@ -755,7 +751,7 @@
             <label
               class="text-xs font-bold text-slate-600 dark:text-slate-300 uppercase tracking-wider block"
             >
-              Tên Nhãn Tag (EN)
+              {{ 'admin_faq.field_tag_en' | translate }}
             </label>
             <input
               type="text"
@@ -770,7 +766,7 @@
             <label
               class="text-xs font-bold text-slate-600 dark:text-slate-300 uppercase tracking-wider block"
             >
-              Màu sắc Tag
+              {{ 'admin_faq.field_tag_color' | translate }}
             </label>
             <app-custom-select
               [options]="tagColorOptions"
@@ -788,7 +784,7 @@
             <label
               class="text-xs font-bold text-slate-600 dark:text-slate-300 uppercase tracking-wider block"
             >
-              Số thứ tự hiển thị
+              {{ 'admin_faq.field_sort_order' | translate }}
             </label>
             <input
               type="number"
@@ -804,7 +800,7 @@
               (checkedChange)="policyForm.update((f) => ({ ...f, is_active: $event }))"
             />
             <span class="text-xs font-bold text-slate-700 dark:text-slate-300">
-              {{ policyForm().is_active ? 'Đang bật hiển thị ở Cửa hàng' : 'Ẩn khỏi Cửa hàng' }}
+              {{ (policyForm().is_active ? 'cat.status_active' : 'cat.status_inactive') | translate }}
             </span>
           </div>
         </div>
@@ -873,13 +869,13 @@
           <label
             class="text-xs font-bold text-slate-700 dark:text-slate-300 uppercase tracking-wider block flex items-center justify-between"
           >
-            <span>Câu hỏi (Tiếng Việt 🇻🇳)</span>
+            <span>{{ 'faq.field_question_vi' | translate }}</span>
             <span class="text-rose-500 font-bold">*</span>
           </label>
           <input
             type="text"
             [(ngModel)]="faqForm().question_vi"
-            placeholder="Nhập nội dung câu hỏi bằng Tiếng Việt..."
+            [placeholder]="'admin_faq.question_vi_placeholder' | translate"
             class="w-full px-3.5 py-2.5 text-xs sm:text-sm font-bold bg-slate-50 dark:bg-slate-950 border border-slate-200 dark:border-slate-800 rounded-xl focus:outline-hidden focus:border-primary transition-all text-slate-800 dark:text-slate-100"
           />
         </div>
@@ -889,13 +885,13 @@
           <label
             class="text-xs font-bold text-slate-700 dark:text-slate-300 uppercase tracking-wider block flex items-center justify-between"
           >
-            <span>Câu trả lời (Tiếng Việt 🇻🇳)</span>
+            <span>{{ 'faq.field_answer_vi' | translate }}</span>
             <span class="text-rose-500 font-bold">*</span>
           </label>
           <textarea
             [(ngModel)]="faqForm().answer_vi"
             rows="3"
-            placeholder="Nhập nội dung giải đáp bằng Tiếng Việt..."
+            [placeholder]="'admin_faq.answer_vi_placeholder' | translate"
             class="w-full px-3.5 py-2.5 text-xs sm:text-sm font-medium bg-slate-50 dark:bg-slate-950 border border-slate-200 dark:border-slate-800 rounded-xl focus:outline-hidden focus:border-primary transition-all text-slate-800 dark:text-slate-100"
           ></textarea>
         </div>
@@ -905,7 +901,7 @@
           <label
             class="text-xs font-bold text-slate-700 dark:text-slate-300 uppercase tracking-wider block flex items-center justify-between"
           >
-            <span>Câu hỏi (Tiếng Anh 🇬🇧)</span>
+            <span>{{ 'faq.field_question_en' | translate }}</span>
             <span class="text-rose-500 font-bold">*</span>
           </label>
           <input
@@ -921,7 +917,7 @@
           <label
             class="text-xs font-bold text-slate-700 dark:text-slate-300 uppercase tracking-wider block flex items-center justify-between"
           >
-            <span>Câu trả lời (Tiếng Anh 🇬🇧)</span>
+            <span>{{ 'faq.field_answer_en' | translate }}</span>
             <span class="text-rose-500 font-bold">*</span>
           </label>
           <textarea
@@ -938,7 +934,7 @@
             <label
               class="text-xs font-bold text-slate-600 dark:text-slate-300 uppercase tracking-wider block"
             >
-              Số thứ tự hiển thị
+              {{ 'admin_faq.field_sort_order' | translate }}
             </label>
             <input
               type="number"
@@ -954,7 +950,7 @@
               (checkedChange)="faqForm.update((f) => ({ ...f, is_active: $event }))"
             />
             <span class="text-xs font-bold text-slate-700 dark:text-slate-300">
-              {{ faqForm().is_active ? 'Đang bật hiển thị ở Cửa hàng' : 'Ẩn khỏi Cửa hàng' }}
+              {{ (faqForm().is_active ? 'cat.status_active' : 'cat.status_inactive') | translate }}
             </span>
           </div>
         </div>
@@ -1002,10 +998,10 @@
       </div>
       <div class="text-center space-y-1.5">
         <h3 class="text-base font-extrabold text-slate-800 dark:text-slate-100">
-          Xác nhận xóa nội dung
+          {{ 'common.confirm_delete_title' | translate }}
         </h3>
         <p class="text-xs font-medium text-slate-500 dark:text-slate-400 leading-relaxed">
-          Bạn có chắc chắn muốn xóa mục này khỏi hệ thống? Hành động này không thể hoàn tác.
+          {{ 'common.confirm_delete_msg' | translate }}
         </p>
         <p class="text-xs font-bold text-slate-700 dark:text-slate-300 italic pt-1 truncate">
           "{{ itemToDelete()?.title }}"
@@ -1027,7 +1023,7 @@
           [loading]="isSubmitting()"
           class="flex-1 py-2.5 px-4 text-xs font-extrabold text-white bg-rose-600 hover:bg-rose-700 rounded-xl shadow-md transition-all cursor-pointer flex items-center justify-center"
         >
-          <span>Xóa vĩnh viễn</span>
+          <span>{{ 'common.delete_permanently' | translate }}</span>
         </button>
       </div>
     </div>

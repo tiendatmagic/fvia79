@@ -42,7 +42,7 @@ class StorefrontController extends Controller
                     'quantity' => $firstItem ? $firstItem->quantity : 1,
                     'product_name_vi' => $product ? ($product->name_vi ?? $product->name) : 'Via Ngoại',
                     'product_name_en' => $product ? ($product->name_en ?? $product->name) : 'Via Foreign',
-                    'product_name' => $product ? $product->name : 'Via Ngoại',
+                    'product_name' => $product ? $product->name : 'Foreign account',
                     'total_price' => (float) $order->total_amount,
                     'created_at' => $order->created_at ? $order->created_at->toIso8601String() : now()->toIso8601String(),
                 ];
