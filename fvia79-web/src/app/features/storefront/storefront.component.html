@@ -532,7 +532,19 @@
 
           <!-- Card Body / Item List -->
           <div class="p-3 sm:p-4 space-y-2 max-h-[460px] overflow-y-auto scrollbar-thin">
-            @if (recentPurchases().length === 0) {
+            @if (recentPurchasesLoading()) {
+              <div class="space-y-2.5 animate-pulse">
+                @for (i of [1, 2, 3, 4]; track i) {
+                  <div class="flex items-center justify-between p-2.5 sm:p-3 rounded-xl bg-slate-100/80 dark:bg-slate-800/50 border border-slate-200/50 dark:border-slate-700/50">
+                    <div class="flex items-center gap-2 flex-1 min-w-0">
+                      <div class="h-4 w-20 bg-slate-200 dark:bg-slate-700/60 rounded"></div>
+                      <div class="h-4 w-3/5 bg-slate-200 dark:bg-slate-700/60 rounded"></div>
+                    </div>
+                    <div class="h-5 w-16 bg-slate-200 dark:bg-slate-700/60 rounded-md shrink-0 ml-2"></div>
+                  </div>
+                }
+              </div>
+            } @else if (recentPurchases().length === 0) {
               <div class="py-8 text-center text-xs text-slate-400 font-medium">
                 {{ 'common.no_data' | translate }}
               </div>
@@ -570,7 +582,19 @@
 
           <!-- Card Body / Item List -->
           <div class="p-3 sm:p-4 space-y-2 max-h-[460px] overflow-y-auto scrollbar-thin">
-            @if (recentDeposits().length === 0) {
+            @if (recentDepositsLoading()) {
+              <div class="space-y-2.5 animate-pulse">
+                @for (i of [1, 2, 3, 4]; track i) {
+                  <div class="flex items-center justify-between p-2.5 sm:p-3 rounded-xl bg-slate-100/80 dark:bg-slate-800/50 border border-slate-200/50 dark:border-slate-700/50">
+                    <div class="flex items-center gap-2 flex-1 min-w-0">
+                      <div class="h-4 w-24 bg-slate-200 dark:bg-slate-700/60 rounded"></div>
+                      <div class="h-4 w-1/2 bg-slate-200 dark:bg-slate-700/60 rounded"></div>
+                    </div>
+                    <div class="h-5 w-16 bg-slate-200 dark:bg-slate-700/60 rounded-md shrink-0 ml-2"></div>
+                  </div>
+                }
+              </div>
+            } @else if (recentDeposits().length === 0) {
               <div class="py-8 text-center text-xs text-slate-400 font-medium">
                 {{ 'common.no_data' | translate }}
               </div>

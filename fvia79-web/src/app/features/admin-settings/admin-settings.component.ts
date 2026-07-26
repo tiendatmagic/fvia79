@@ -86,7 +86,7 @@ export class AdminSettingsComponent implements OnInit, OnDestroy {
   public readonly showTelegramToken = signal<boolean>(false);
   public readonly testingTelegramBot = signal<boolean>(false);
 
-  public readonly activeTab = signal<'general' | 'announcement' | 'maintenance' | 'backup'>('general');
+  public readonly activeTab = signal<'general' | 'activities' | 'announcement' | 'maintenance' | 'backup'>('general');
   public readonly tokenCleanupDays = signal<number>(7);
 
   public readonly effectOptions = computed(() => [
@@ -110,7 +110,11 @@ export class AdminSettingsComponent implements OnInit, OnDestroy {
     announcement_text_vi: '',
     announcement_text_en: '',
     announcement_text: '',
-    announcement_effect: 'marquee'
+    announcement_effect: 'marquee',
+    recent_purchases_enabled: true,
+    recent_purchases_mode: 'demo',
+    recent_deposits_enabled: true,
+    recent_deposits_mode: 'demo'
   };
 
   public readonly previewLang = signal<'vi' | 'en'>('vi');
@@ -118,7 +122,7 @@ export class AdminSettingsComponent implements OnInit, OnDestroy {
   ngOnInit(): void {
     this.routeSub = this.route.paramMap.subscribe(params => {
       const tab = params.get('tab');
-      if (tab === 'announcement' || tab === 'maintenance' || tab === 'backup') {
+      if (tab === 'announcement' || tab === 'maintenance' || tab === 'backup' || tab === 'activities') {
         this.activeTab.set(tab as any);
       } else {
         this.activeTab.set('general');
@@ -137,6 +141,10 @@ export class AdminSettingsComponent implements OnInit, OnDestroy {
             telegram_bot_username: settings.telegram_bot_username || 'fvia79noti_bot',
             telegram_bot_enabled: settings.telegram_bot_enabled !== undefined ? Boolean(Number(settings.telegram_bot_enabled)) : true,
             announcement_enabled: settings.announcement_enabled !== undefined ? Boolean(Number(settings.announcement_enabled)) : true,
+            recent_purchases_enabled: settings.recent_purchases_enabled !== undefined ? Boolean(Number(settings.recent_purchases_enabled)) : true,
+            recent_purchases_mode: settings.recent_purchases_mode || 'demo',
+            recent_deposits_enabled: settings.recent_deposits_enabled !== undefined ? Boolean(Number(settings.recent_deposits_enabled)) : true,
+            recent_deposits_mode: settings.recent_deposits_mode || 'demo',
             announcement_text_vi: settings.announcement_text_vi ?? settings.announcement_text ?? '',
             announcement_text_en: settings.announcement_text_en ?? '',
             announcement_text: settings.announcement_text ?? '',
@@ -199,7 +207,7 @@ export class AdminSettingsComponent implements OnInit, OnDestroy {
     });
   }
 
-  public changeTab(tab: 'general' | 'announcement' | 'maintenance' | 'backup'): void {
+  public changeTab(tab: 'general' | 'activities' | 'announcement' | 'maintenance' | 'backup'): void {
     this.router.navigate(['/admin/settings', tab]);
   }
 

@@ -22,6 +22,10 @@ export interface SystemSettingsPayload {
   announcement_text?: string;
   announcement_effect?: 'marquee' | 'fade' | 'slide' | 'bounce' | string;
   membership_tiers_enabled?: boolean | string;
+  recent_purchases_enabled?: boolean | string;
+  recent_purchases_mode?: 'demo' | 'real' | string;
+  recent_deposits_enabled?: boolean | string;
+  recent_deposits_mode?: 'demo' | 'real' | string;
   has_scanner_api_key?: boolean;
   has_binance_api_key?: boolean;
   has_binance_api_secret?: boolean;

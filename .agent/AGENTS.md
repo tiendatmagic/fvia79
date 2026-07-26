@@ -19,6 +19,24 @@
 
 ## 📋 NHẬT KÝ THAY ĐỔI DỰ ÁN
 
+### [2026-07-26] Bổ sung Skeleton Loading cho 2 khối "Đơn hàng vừa mua" & "Lịch sử nạp gần đây" ở Storefront
+- **Mô tả**: Sửa lỗi khi tải trang Storefront, trong khi danh sách sản phẩm hiển thị khung xương skeleton loader thì 2 khối "Đơn hàng vừa mua" và "Lịch sử nạp gần đây" ở phía dưới lại hiển thị ngay dòng chữ "Không có dữ liệu hiển thị".
+- **Thực hiện**:
+  - `storefront.component.ts`: Khai báo 2 signal quản lý trạng thái loading `recentPurchasesLoading = signal<boolean>(true)` và `recentDepositsLoading = signal<boolean>(true)`. Cập nhật hàm `loadRecentActivities()` bật/tắt đúng thời điểm nhận dữ liệu API hoặc lỗi.
+  - `storefront.component.html`: Bổ sung khối template `@if (recentPurchasesLoading())` và `@if (recentDepositsLoading())` rendering các hàng Skeleton Loader có hiệu ứng `animate-pulse` đồng bộ với giao diện chính.
+  - Biên dịch & Kiểm thử: Chạy `npx ng build --configuration production` thành công **100% BUILD SUCCESS**.
+
+
+### [2026-07-26] Tạo tab riêng "Hoạt động gần đây" trong Cấu hình hệ thống Admin
+- **Mô tả**: Tạo một tab quản lý độc lập mang tên **Hoạt động gần đây** (`/admin/settings/activities`) trên thanh điều hướng Cấu hình hệ thống Admin, giúp quản trị viên dễ dàng quản lý bật/tắt và chọn chế độ dữ liệu (Demo/Real) cho 2 khối "Đơn hàng vừa mua" & "Lịch sử nạp gần đây".
+- **Thực hiện**:
+  - `SystemSettingController.php`: Bổ sung validate & xử lý lưu trữ các tham số `recent_purchases_enabled`, `recent_purchases_mode`, `recent_deposits_enabled`, `recent_deposits_mode` trong hàm `update()`.
+  - `system-setting.store.ts`: Khai báo bổ sung các trường cấu hình trong interface `SystemSettingsPayload`.
+  - `admin-settings.component.ts`: Cập nhật signal `activeTab` và phương thức `changeTab()` để hỗ trợ tab `'activities'`.
+  - `admin-settings.component.html`: Thêm nút Tab "Hoạt động gần đây" với icon giỏ hàng 🛍️ và giao diện thẻ độc lập có nút Mở khóa/Lưu riêng biệt.
+  - Biên dịch: Chạy `npx ng build --configuration production` thành công **100% BUILD SUCCESS**.
+
+
 ### [2026-07-26] Bổ sung SVG icon `shopping-bag` & `credit-card`, chuẩn hóa đơn vị USD và chuyển khối Hoạt động gần đây xuống cuối trang Storefront
 - **Mô tả**:
   1. Khắc phục lỗi 2 icon `shopping-bag` và `credit-card` ở tiêu đề khối "Đơn hàng vừa mua" và "Lịch sử nạp gần đây" bị hiển thị biểu tượng chấm hỏi default `(?)` do thiếu `@case` trong `IconComponent`.

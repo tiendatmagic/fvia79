@@ -50,6 +50,10 @@ class SystemSettingController extends Controller
             'announcement_text_en' => 'sometimes|nullable|string|max:1000',
             'announcement_effect' => 'sometimes|nullable|string|in:marquee,fade,slide,bounce',
             'membership_tiers_enabled' => 'sometimes|nullable',
+            'recent_purchases_enabled' => 'sometimes|nullable',
+            'recent_purchases_mode' => 'sometimes|nullable|string|in:demo,real',
+            'recent_deposits_enabled' => 'sometimes|nullable',
+            'recent_deposits_mode' => 'sometimes|nullable|string|in:demo,real',
         ], [
             'admin_wallet_address.regex' => 'The admin wallet address must be a valid BEP20/EVM address starting with 0x followed by 40 hex characters.',
         ]);
@@ -107,6 +111,18 @@ class SystemSettingController extends Controller
         }
         if ($request->has('membership_tiers_enabled')) {
             $settingsToSave['membership_tiers_enabled'] = filter_var($request->input('membership_tiers_enabled'), FILTER_VALIDATE_BOOLEAN) ? '1' : '0';
+        }
+        if ($request->has('recent_purchases_enabled')) {
+            $settingsToSave['recent_purchases_enabled'] = filter_var($request->input('recent_purchases_enabled'), FILTER_VALIDATE_BOOLEAN) ? '1' : '0';
+        }
+        if ($request->has('recent_purchases_mode')) {
+            $settingsToSave['recent_purchases_mode'] = (string) $request->input('recent_purchases_mode');
+        }
+        if ($request->has('recent_deposits_enabled')) {
+            $settingsToSave['recent_deposits_enabled'] = filter_var($request->input('recent_deposits_enabled'), FILTER_VALIDATE_BOOLEAN) ? '1' : '0';
+        }
+        if ($request->has('recent_deposits_mode')) {
+            $settingsToSave['recent_deposits_mode'] = (string) $request->input('recent_deposits_mode');
         }
 
         if (! empty($settingsToSave)) {
