@@ -1,0 +1,50 @@
+<div class="space-y-5">
+  <div class="text-center space-y-2">
+    <p class="text-xs text-slate-500 font-semibold max-w-sm mx-auto">
+  {{ 'security.enable_instruction' | translate }}
+    </p>
+  </div>
+
+    <div class="flex justify-center py-1">
+    <qr-code
+      [value]="qrCodeUrl"
+      [size]="180"
+      class="block p-2 bg-white rounded-lg border border-slate-200/60 shadow-sm"
+    />
+  </div>
+
+    <div class="bg-slate-50 dark:bg-slate-950 border border-slate-200/50 dark:border-slate-800/60 rounded-xl p-3 text-center space-y-1">
+  <span class="text-xs uppercase font-black text-slate-400 block tracking-wider">{{ 'security.manual_key' | translate }}</span>
+    <code class="text-sm font-black text-[var(--color-primary)] tracking-widest block select-all">{{ secretKey }}</code>
+  </div>
+
+    <div class="form-field space-y-1.5">
+  <label class="text-xs font-bold text-slate-500 uppercase tracking-wider block">{{ 'security.app_otp' | translate }} <span class="text-red-500">*</span></label>
+    <app-custom-input
+      [(ngModel)]="otpConfirmCode"
+      name="otpConfirmCode"
+    [placeholder]="'auth.otp_placeholder' | translate"
+      maxlength="6"
+    />
+  </div>
+
+    <div class="flex gap-3 pt-2">
+    <button
+      app-button
+      [variant]="'secondary'"
+      (click)="onClose()"
+      class="flex-1 py-2.5 rounded-xl font-bold"
+    >
+    {{ 'action.cancel' | translate }}
+    </button>
+    <button
+      app-button
+      [variant]="'primary'"
+      [loading]="isSubmitting()"
+      (click)="onConfirm()"
+      class="flex-1 py-2.5 rounded-xl font-bold bg-[var(--color-primary)] text-white shadow-md shadow-[var(--color-primary)]/10"
+    >
+    {{ 'security.enable_confirm' | translate }}
+    </button>
+  </div>
+</div>

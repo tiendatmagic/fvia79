@@ -1,0 +1,202 @@
+<div class="max-w-[1530px] mx-auto w-full px-4 sm:px-6 py-6 space-y-6">
+  <app-page-header
+    [title]="'contact.title' | translate"
+    [description]="'contact.subtitle' | translate"
+  >
+    <ng-container actions>
+      <div
+        class="flex items-center gap-2 px-3.5 py-1.5 text-xs font-bold rounded-full bg-blue-500/10 text-blue-600 dark:text-blue-400 border border-blue-500/20 shrink-0"
+      >
+        <app-icon name="telegram" class="w-4 h-4 shrink-0" />
+        <span>{{ 'contact.badge' | translate }}</span>
+      </div>
+    </ng-container>
+  </app-page-header>
+
+  <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+    <div
+      app-card
+      class="p-6 space-y-6 flex flex-col justify-between border-blue-500/20 relative overflow-hidden group hover:border-blue-500/40 transition-all duration-300"
+    >
+      <div class="space-y-4">
+        <div class="flex items-center justify-between gap-4">
+          <div
+            class="w-12 h-12 rounded-2xl bg-blue-500/10 text-blue-600 dark:text-blue-400 flex items-center justify-center shrink-0 border border-blue-500/20 shadow-xs"
+          >
+            <app-icon name="telegram" class="w-6 h-6" />
+          </div>
+          <span
+            class="px-3 py-1 text-xs font-extrabold rounded-full bg-blue-50 dark:bg-blue-950/60 text-blue-600 dark:text-blue-400 border border-blue-200/60 dark:border-blue-900/60"
+          >
+            {{ 'contact.support_channel_subtitle' | translate }}
+          </span>
+        </div>
+
+        <div class="space-y-1.5">
+          <h2 class="text-lg font-bold text-slate-800 dark:text-white">
+            {{ 'contact.support_channel_title' | translate }}
+          </h2>
+          <p class="text-sm font-medium text-slate-600 dark:text-slate-400 leading-relaxed">
+            {{ 'contact.support_channel_desc' | translate }}
+          </p>
+        </div>
+
+        <div
+          class="p-3.5 rounded-xl bg-slate-50 dark:bg-slate-950/60 border border-slate-200/60 dark:border-slate-800/80 flex items-center justify-between gap-3 font-mono text-xs text-blue-600 dark:text-blue-400 font-bold break-all"
+        >
+          <span>{{ telegramSupportUrl }}</span>
+          <button
+            type="button"
+            (click)="copyLink(telegramSupportUrl)"
+            class="shrink-0 p-1.5 hover:bg-blue-500/10 rounded-lg text-slate-500 hover:text-blue-600 dark:hover:text-blue-400 transition-colors cursor-pointer"
+            [title]="'contact.btn_copy_link' | translate"
+          >
+            <app-icon name="code" class="w-4 h-4" />
+          </button>
+        </div>
+      </div>
+
+      <div class="pt-2 flex flex-wrap items-center gap-3">
+        <a
+          app-button
+          variant="primary"
+          size="md"
+          [href]="telegramSupportUrl"
+          target="_blank"
+          rel="noopener noreferrer"
+          class="flex-1 cursor-pointer justify-center"
+        >
+          <app-icon name="telegram" class="w-5 h-5 mr-2 shrink-0" />
+          <span>{{ 'contact.btn_open_support' | translate }}</span>
+        </a>
+
+        <button
+          app-button
+          variant="secondary"
+          size="md"
+          type="button"
+          (click)="copyLink(telegramSupportUrl)"
+          class="cursor-pointer"
+        >
+          <span>{{ 'contact.btn_copy_link' | translate }}</span>
+        </button>
+      </div>
+    </div>
+
+    <div
+      app-card
+      class="p-6 space-y-6 flex flex-col justify-between border-cyan-500/20 relative overflow-hidden group hover:border-cyan-500/40 transition-all duration-300"
+    >
+      <div class="space-y-4">
+        <div class="flex items-center justify-between gap-4">
+          <div
+            class="w-12 h-12 rounded-2xl bg-cyan-500/10 text-cyan-600 dark:text-cyan-400 flex items-center justify-center shrink-0 border border-cyan-500/20 shadow-xs"
+          >
+            <app-icon name="bot" class="w-6 h-6" />
+          </div>
+          <span
+            class="px-3 py-1 text-xs font-extrabold rounded-full bg-cyan-50 dark:bg-cyan-950/60 text-cyan-600 dark:text-cyan-400 border border-cyan-200/60 dark:border-cyan-900/60"
+          >
+            {{ 'contact.bot_channel_subtitle' | translate }}
+          </span>
+        </div>
+
+        <div class="space-y-1.5">
+          <h2 class="text-lg font-bold text-slate-800 dark:text-white">
+            {{ 'contact.bot_channel_title' | translate }}
+          </h2>
+          <p class="text-sm font-medium text-slate-600 dark:text-slate-400 leading-relaxed">
+            {{ 'contact.bot_channel_desc' | translate }}
+          </p>
+        </div>
+
+        <div
+          class="p-3.5 rounded-xl bg-slate-50 dark:bg-slate-950/60 border border-slate-200/60 dark:border-slate-800/80 flex items-center justify-between gap-3 font-mono text-xs text-cyan-600 dark:text-cyan-400 font-bold break-all"
+        >
+          <span>{{ telegramBotUrl }}</span>
+          <button
+            type="button"
+            (click)="copyLink(telegramBotUrl)"
+            class="shrink-0 p-1.5 hover:bg-cyan-500/10 rounded-lg text-slate-500 hover:text-cyan-600 dark:hover:text-cyan-400 transition-colors cursor-pointer"
+            [title]="'contact.btn_copy_link' | translate"
+          >
+            <app-icon name="code" class="w-4 h-4" />
+          </button>
+        </div>
+      </div>
+
+      <div class="pt-2 flex flex-wrap items-center gap-3">
+        <a
+          app-button
+          variant="primary"
+          size="md"
+          [href]="telegramBotUrl"
+          target="_blank"
+          rel="noopener noreferrer"
+          class="flex-1 cursor-pointer justify-center"
+        >
+          <app-icon name="bot" class="w-5 h-5 mr-2 shrink-0" />
+          <span>{{ 'contact.btn_open_bot' | translate }}</span>
+        </a>
+
+        <button
+          app-button
+          variant="secondary"
+          size="md"
+          type="button"
+          (click)="copyLink(telegramBotUrl)"
+          class="cursor-pointer"
+        >
+          <span>{{ 'contact.btn_copy_link' | translate }}</span>
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <div app-card class="p-6 sm:p-8 space-y-6">
+    <div class="flex items-center gap-3 pb-3 border-b border-slate-100 dark:border-slate-800/60">
+      <div
+        class="w-9 h-9 rounded-xl bg-primary/10 text-primary flex items-center justify-center shrink-0"
+      >
+        <app-icon name="contact" class="w-5 h-5" />
+      </div>
+      <h3 class="text-base sm:text-lg font-bold text-slate-800 dark:text-white">
+        {{ 'contact.info_box_title' | translate }}
+      </h3>
+    </div>
+
+    <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+      <div
+        class="p-5 rounded-2xl bg-emerald-50/50 dark:bg-emerald-950/20 border border-emerald-200/60 dark:border-emerald-900/40 space-y-2"
+      >
+        <div
+          class="flex items-center gap-2.5 text-emerald-700 dark:text-emerald-400 font-bold text-sm"
+        >
+          <app-icon name="check-circle" class="w-5 h-5 shrink-0" />
+          <span>{{ 'contact.info_247_title' | translate }}</span>
+        </div>
+        <p
+          class="text-xs sm:text-sm font-medium text-slate-600 dark:text-slate-400 leading-relaxed pl-7"
+        >
+          {{ 'contact.info_247_desc' | translate }}
+        </p>
+      </div>
+
+      <div
+        class="p-5 rounded-2xl bg-amber-50/50 dark:bg-amber-950/20 border border-amber-200/60 dark:border-amber-900/40 space-y-2"
+      >
+        <div
+          class="flex items-center gap-2.5 text-amber-700 dark:text-amber-400 font-bold text-sm"
+        >
+          <app-icon name="alert-triangle" class="w-5 h-5 shrink-0" />
+          <span>{{ 'contact.info_security_title' | translate }}</span>
+        </div>
+        <p
+          class="text-xs sm:text-sm font-medium text-slate-600 dark:text-slate-400 leading-relaxed pl-7"
+        >
+          {{ 'contact.info_security_desc' | translate }}
+        </p>
+      </div>
+    </div>
+  </div>
+</div>

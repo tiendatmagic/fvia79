@@ -1,0 +1,161 @@
+<div class="space-y-6 pb-2">
+  <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+    <div class="form-field">
+      <label class="text-xs font-black text-slate-400 uppercase tracking-wider block mb-2">Tên Sản Phẩm (EN - Mặc định) <span class="text-red-500">*</span></label>
+      <app-custom-input
+        placeholder="e.g. Premium Account (Default EN)"
+        [(ngModel)]="nameEn"
+        name="nameEn"
+        type="text"
+        required
+      />
+    </div>
+
+    <div class="form-field">
+      <label class="text-xs font-black text-slate-400 uppercase tracking-wider block mb-2">Tên Sản Phẩm (VI - Tiếng Việt)</label>
+      <app-custom-input
+        placeholder="Ví dụ: Tài khoản Cao cấp (Để trống tự động dùng EN)"
+        [(ngModel)]="nameVi"
+        name="nameVi"
+        type="text"
+      />
+    </div>
+  </div>
+
+  <div class="form-field">
+    <label class="text-xs font-black text-slate-400 uppercase tracking-wider block mb-2">{{ 'cat.slug' | translate }}</label>
+    <app-custom-input
+      [placeholder]="'cat.slug' | translate"
+      [(ngModel)]="slug"
+      name="slug"
+      type="text"
+    />
+  </div>
+
+  <div class="form-field">
+    <label class="text-xs font-black text-slate-400 uppercase tracking-wider block mb-2">{{ 'modal.product_category' | translate }}</label>
+    <app-custom-select
+      [options]="categoryOptions()"
+      valueKey="value"
+      labelKey="label"
+      [(value)]="categoryId"
+    />
+  </div>
+
+  <div class="form-field">
+    <label class="text-xs font-black text-slate-400 uppercase tracking-wider block mb-2">{{ 'modal.product_price' | translate }} <span class="text-red-500">*</span></label>
+    <app-custom-input
+      [placeholder]="'modal.product_price' | translate"
+      [(ngModel)]="price"
+      name="price"
+      type="number"
+      required
+    />
+  </div>
+
+  <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+    <div class="form-field">
+      <label class="text-xs font-black text-slate-400 uppercase tracking-wider block mb-2">Mô tả (EN - Mặc định)</label>
+      <app-custom-input
+        placeholder="Product description in English..."
+        [(ngModel)]="descriptionEn"
+        name="descriptionEn"
+        type="textarea"
+        customClass="min-h-[100px]"
+      />
+    </div>
+
+    <div class="form-field">
+      <label class="text-xs font-black text-slate-400 uppercase tracking-wider block mb-2">Mô tả (VI - Tiếng Việt)</label>
+      <app-custom-input
+        placeholder="Mô tả sản phẩm bằng Tiếng Việt (Để trống tự dùng EN)..."
+        [(ngModel)]="descriptionVi"
+        name="descriptionVi"
+        type="textarea"
+        customClass="min-h-[100px]"
+      />
+    </div>
+  </div>
+
+  <div class="form-field">
+    <label class="text-xs font-black text-slate-400 uppercase tracking-wider block mb-2">{{ 'common.status' | translate }} <span class="text-red-500">*</span></label>
+    <app-custom-select
+      [options]="statusOptions"
+      valueKey="value"
+      labelKey="label"
+      [(value)]="status"
+    />
+  </div>
+
+  <div class="pt-2 space-y-4">
+    <div class="flex items-center justify-between">
+      <label class="text-xs font-black text-slate-400 uppercase tracking-wider">{{ 'product.dynamic_attributes' | translate }}</label>
+      <button
+        type="button"
+        (click)="addAttribute()"
+        class="text-xs font-bold text-[var(--color-primary)] hover:underline flex items-center gap-1 cursor-pointer"
+      >
+        <span class="text-base font-medium">+</span> {{ 'product.add_attribute' | translate }}
+      </button>
+    </div>
+
+    @if (attributes.length === 0) {
+      <div class="text-center py-4 bg-slate-50 dark:bg-slate-900/40 rounded-xl border border-dashed border-slate-200/40 dark:border-slate-800/40">
+        <p class="text-xs text-slate-400 font-semibold">{{ 'product.no_dynamic_attributes' | translate }}</p>
+      </div>
+    } @else {
+      <div class="space-y-3">
+        @for (attr of attributes; track $index) {
+          <div class="flex items-center gap-3">
+            <div class="flex-1">
+              <app-custom-input
+                [placeholder]="'Attribute name (e.g., Country)'"
+                [(ngModel)]="attr.label"
+                name="attrLabel_{{$index}}"
+                type="text"
+                required
+              />
+            </div>
+            <div class="flex-1">
+              <app-custom-input
+                [placeholder]="'Value (e.g., US)'"
+                [(ngModel)]="attr.value"
+                name="attrValue_{{$index}}"
+                type="text"
+                required
+              />
+            </div>
+            <button
+               type="button"
+               (click)="removeAttribute($index)"
+               class="p-2.5 rounded-xl border border-rose-500/20 bg-rose-50 dark:bg-rose-950/20 text-rose-600 dark:text-rose-500 hover:bg-rose-100 dark:hover:bg-rose-900/40 transition-colors cursor-pointer flex items-center justify-center shrink-0"
+               [title]="'action.delete' | translate"
+             >
+               <app-icon name="trash" class="h-4 w-4" />
+             </button>
+          </div>
+        }
+      </div>
+    }
+  </div>
+
+  <div class="pt-4 flex items-center justify-end gap-3 shrink-0">
+    <button
+      app-button
+      (click)="onClose()"
+      [variant]="'cancel'"
+      class="py-2.5 px-4 rounded-xl text-xs font-bold"
+    >
+      {{ 'action.cancel' | translate }}
+    </button>
+    <button
+      app-button
+      (click)="onSubmit()"
+      [loading]="isSubmitting()"
+      [variant]="'primary'"
+      class="py-2.5 px-4 rounded-xl bg-gradient-to-r from-[var(--color-primary)] to-[var(--color-secondary)] text-white text-xs font-extrabold active:scale-95 shadow-sm shadow-[var(--color-primary)]/10 cursor-pointer"
+    >
+      {{ 'action.save' | translate }}
+    </button>
+  </div>
+</div>

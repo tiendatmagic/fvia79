@@ -1,0 +1,39 @@
+<div class="relative w-full py-4 flex items-center" [class.opacity-50]="disabled">
+  <div class="relative w-full h-1.5 bg-slate-200 dark:bg-slate-800 rounded-full overflow-visible">
+    <div
+      class="absolute h-full left-0 top-0 rounded-full transition-all duration-75"
+      [style.width.%]="percentage()"
+      [class]="filledTrackClass"
+    ></div>
+
+    @if (marks && markPositions().length > 0) {
+      @for (pos of markPositions(); track pos) {
+        <span
+          class="absolute w-1 h-1 rounded-full top-1/2 -translate-y-1/2 -translate-x-1/2 transition-colors duration-150"
+          [style.left.%]="pos"
+          [class]="pos <= percentage() ? activeMarkClass : inactiveMarkClass"
+        >
+        </span>
+      }
+    }
+  </div>
+
+  <input
+    type="range"
+    [min]="min"
+    [max]="max"
+    [step]="step"
+    [disabled]="disabled"
+    [value]="value()"
+    (input)="onInput($event)"
+    (change)="onChangeEvent($event)"
+    class="absolute inset-0 w-full h-full opacity-0 cursor-pointer disabled:cursor-not-allowed z-10"
+  />
+
+  <span
+    class="absolute w-5 h-5 rounded-full shadow-md border-2 border-white dark:border-slate-900 pointer-events-none transition-all duration-75 -translate-x-1/2 top-1/2 -translate-y-1/2"
+    [style.left.%]="percentage()"
+    [class]="thumbClass"
+  >
+  </span>
+</div>

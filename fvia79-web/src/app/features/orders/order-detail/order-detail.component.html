@@ -1,0 +1,241 @@
+<div class="max-w-[1530px] mx-auto w-full px-4 sm:px-6 py-6 space-y-6">
+  <app-page-header
+    [title]="'orders.detail_title' | translate"
+    [description]="'orders.detail_desc' | translate"
+  >
+    <ng-container actions>
+      <button
+        (click)="goBack()"
+        class="px-4 py-2.5 text-sm font-extrabold text-slate-600 dark:text-slate-400 hover:text-[var(--color-primary)] bg-white dark:bg-slate-950 border border-slate-200/60 dark:border-slate-800/80 rounded-xl hover:bg-slate-50 dark:hover:bg-slate-900 transition-all cursor-pointer flex items-center gap-1.5 shadow-2xs active:scale-95"
+      >
+        <app-icon name="arrow-left" class="w-4 h-4" />
+        {{ 'common.back' | translate }}
+      </button>
+    </ng-container>
+  </app-page-header>
+
+  <div *ngIf="loadingDetails()" app-card class="p-6">
+    <app-skeleton-loader [type]="'list'" [rows]="5" [showHeader]="false" />
+  </div>
+
+  <div *ngIf="!loadingDetails() && orderDetails() as detail" class="space-y-6">
+    <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
+      <div app-card class="overflow-hidden !p-0">
+        <div
+          class="px-6 py-4 border-b border-slate-200/40 dark:border-slate-800/40 bg-slate-50/50 dark:bg-slate-950/20"
+        >
+          <h4
+            class="text-xs font-black text-slate-400 uppercase tracking-wider pl-2 border-l-4 border-[var(--color-primary)]"
+          >
+            {{ 'orders.info' | translate }}
+          </h4>
+        </div>
+        <div class="p-6 space-y-3.5">
+          <div class="flex justify-between items-center text-xs font-bold">
+            <span class="text-slate-400">{{ 'orders.order_code' | translate }}:</span>
+            <div class="flex items-center gap-1">
+              <span class="text-slate-800 dark:text-slate-200 uppercase tracking-wider">{{
+                detail.order_code
+              }}</span>
+              <button
+                (click)="copyToClipboard(detail.order_code)"
+                class="p-1 hover:bg-slate-100 dark:hover:bg-slate-800 rounded transition-colors text-slate-400 hover:text-slate-600 dark:hover:text-slate-200 cursor-pointer"
+                [appTooltip]="'orders.copy_code_tooltip' | translate"
+              >
+                <app-icon name="copy" class="w-3.5 h-3.5" />
+              </button>
+            </div>
+          </div>
+          <div class="flex justify-between items-center text-xs font-bold">
+            <span class="text-slate-400">{{ 'orders.ordered_at' | translate }}</span>
+            <span class="text-slate-700 dark:text-slate-300">{{
+              detail.created_at | date: 'dd/MM/yyyy HH:mm'
+            }}</span>
+          </div>
+          <div class="flex justify-between items-center text-xs font-bold">
+            <span class="text-slate-400">{{ 'orders.status' | translate }}:</span>
+            <app-badge
+              [variant]="
+                detail.status === 'paid'
+                  ? 'success'
+                  : detail.status === 'pending'
+                    ? 'warning'
+                    : 'danger'
+              "
+              size="sm"
+              rounded="md"
+            >
+              {{
+                detail.status === 'paid'
+                  ? ('orders.status_completed' | translate)
+                  : detail.status === 'pending'
+                    ? ('orders.status_pending' | translate)
+                    : ('orders.status_cancelled' | translate)
+              }}
+            </app-badge>
+          </div>
+
+          <div
+            *ngIf="detail.coupon_code"
+            class="flex justify-between items-center text-xs font-bold"
+          >
+            <span class="text-slate-400">{{ 'orders.applied_coupon' | translate }}</span>
+            <span
+              class="font-extrabold text-xs uppercase border border-dashed border-[var(--color-primary)]/40 px-2 py-0.5 rounded bg-[var(--color-primary)]/5 text-[var(--color-primary)]"
+            >
+              {{ detail.coupon_code }}
+            </span>
+          </div>
+
+          <div
+            *ngIf="detail.tier_discount_amount > 0"
+            class="flex justify-between items-center text-xs font-extrabold text-sky-600 dark:text-sky-400"
+          >
+            <span>{{ 'orders.tier_discount' | translate }}:</span>
+            <span>-{{ detail.tier_discount_amount | appCurrency }}</span>
+          </div>
+
+          <div
+            *ngIf="detail.coupon_discount_amount > 0"
+            class="flex justify-between items-center text-xs font-extrabold text-emerald-600 dark:text-emerald-400"
+          >
+            <span>{{ 'orders.coupon_discount' | translate }}:</span>
+            <span>-{{ detail.coupon_discount_amount | appCurrency }}</span>
+          </div>
+
+          <div
+            class="flex justify-between items-center text-sm font-black pt-3 border-t border-slate-100 dark:border-slate-800/60"
+          >
+            <span class="text-slate-700 dark:text-slate-300"
+              >{{ 'orders.total' | translate }}:</span
+            >
+            <span class="text-[var(--color-primary)] text-base font-black">{{
+              detail.total_price | appCurrency
+            }}</span>
+          </div>
+        </div>
+      </div>
+
+      <div app-card class="overflow-hidden !p-0">
+        <div
+          class="px-6 py-4 border-b border-slate-200/40 dark:border-slate-800/40 bg-slate-50/50 dark:bg-slate-950/20"
+        >
+          <h4
+            class="text-xs font-black text-slate-400 uppercase tracking-wider pl-2 border-l-4 border-[var(--color-primary)]"
+          >
+            {{ 'orders.purchased_products' | translate }}
+          </h4>
+        </div>
+        <div class="divide-y divide-slate-200/40 dark:divide-slate-800/40">
+          <div
+            *ngFor="let item of detail.items"
+            class="p-5 flex items-center justify-between text-sm font-semibold"
+          >
+            <div>
+              <p class="font-bold text-slate-800 dark:text-slate-200">{{ item.product_name }}</p>
+              <p class="text-xs text-slate-400 mt-0.5">
+                {{ 'orders.quantity' | translate }}: {{ item.quantity }}
+              </p>
+              <div class="mt-1 flex flex-wrap gap-1.5 text-[11px] font-bold">
+                <span
+                  *ngIf="item.supplier_quantity > 0"
+                  class="rounded-md bg-blue-500/10 px-2 py-0.5 text-blue-600 dark:text-blue-400"
+                >
+                  {{ 'orders.from_supplier' | translate }}: {{ item.supplier_quantity }}
+                </span>
+                <span
+                  *ngIf="item.local_quantity > 0"
+                  class="rounded-md bg-emerald-500/10 px-2 py-0.5 text-emerald-600 dark:text-emerald-400"
+                >
+                  {{ 'orders.from_local_stock' | translate }}: {{ item.local_quantity }}
+                </span>
+              </div>
+              <p *ngIf="item.supplier_order_id" class="mt-1 text-[11px] text-slate-400">
+                {{ 'orders.supplier_order' | translate }}: {{ item.supplier_code }} #{{
+                  item.supplier_order_id
+                }}
+              </p>
+            </div>
+            <div class="text-right">
+              <p class="font-bold text-slate-700 dark:text-slate-300">
+                {{ item.price | appCurrency }}
+              </p>
+              <p class="text-xs text-slate-400 mt-0.5">
+                {{ 'orders.subtotal' | translate }}: {{ item.price * item.quantity | appCurrency }}
+              </p>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div
+      *ngIf="detail.accounts && detail.accounts.length > 0"
+      app-card
+      class="overflow-hidden !p-0"
+    >
+      <div
+        class="px-6 py-4 border-b border-slate-200/40 dark:border-slate-800/40 bg-slate-50/50 dark:bg-slate-950/20 flex flex-col sm:flex-row sm:items-center justify-between gap-3"
+      >
+        <h4
+          class="text-xs font-black text-slate-400 uppercase tracking-wider pl-2 border-l-4 border-[var(--color-primary)]"
+        >
+          {{ 'orders.distributed_resources' | translate }}
+        </h4>
+
+        <button
+          (click)="downloadAccounts()"
+          class="px-3.5 py-1.5 text-xs font-extrabold text-[var(--color-primary)] hover:text-white border border-[var(--color-primary)]/30 hover:bg-[var(--color-primary)] rounded-xl transition-all flex items-center gap-1.5 cursor-pointer shadow-2xs active:scale-95 self-end sm:self-auto"
+        >
+          <app-icon name="download" class="w-3.5 h-3.5" />
+          {{ 'orders.download_txt' | translate }}
+        </button>
+      </div>
+
+      <div class="p-5 space-y-3">
+        <div
+          *ngFor="let acc of detail.accounts; let i = index"
+          class="bg-slate-50/70 dark:bg-slate-950/30 border border-slate-200/40 dark:border-slate-800/50 p-4 rounded-xl flex flex-col sm:flex-row sm:items-center justify-between gap-3"
+        >
+          <div class="flex-1 min-w-0 space-y-1">
+            <p class="text-[11px] font-black text-slate-400 uppercase tracking-wider">
+              {{ 'orders.resource_number' | translate: { number: i + 1 } }}
+            </p>
+            <p
+              class="text-xs font-bold text-slate-800 dark:text-slate-100 font-mono break-all select-all"
+            >
+              {{ acc.data }}
+            </p>
+          </div>
+
+          <button
+            (click)="copyToClipboard(acc.data)"
+            class="px-3 py-1.5 text-xs font-bold text-slate-600 dark:text-slate-300 hover:text-[var(--color-primary)] dark:hover:text-white bg-white dark:bg-slate-900 border border-slate-200/60 dark:border-slate-800 rounded-lg hover:bg-slate-100 dark:hover:bg-slate-800 cursor-pointer shrink-0 transition-all active:scale-95 flex items-center gap-1.5 self-end sm:self-auto"
+            [appTooltip]="'orders.copy_raw_tooltip' | translate"
+          >
+            <app-icon name="copy" class="w-3.5 h-3.5" />
+            <span>{{ 'orders.copy' | translate }}</span>
+          </button>
+        </div>
+      </div>
+    </div>
+
+    <div
+      *ngIf="detail.status !== 'paid'"
+      class="p-4 bg-amber-500/5 border border-amber-500/10 rounded-2xl text-xs font-semibold text-amber-600 dark:text-amber-500 flex items-center gap-2"
+    >
+      <app-icon name="warning" class="w-4 h-4 shrink-0" />
+      <span>{{ 'orders.no_resources_warning' | translate }}</span>
+    </div>
+
+    <div class="flex justify-start">
+      <button
+        (click)="goBack()"
+        class="px-4 py-2.5 text-xs font-extrabold text-slate-600 dark:text-slate-400 hover:text-[var(--color-primary)] dark:hover:text-white bg-white dark:bg-slate-950 border border-slate-200/60 dark:border-slate-800/80 rounded-xl hover:bg-slate-50 dark:hover:bg-slate-900 transition-all cursor-pointer flex items-center gap-2 shadow-2xs active:scale-95"
+      >
+        <app-icon name="arrow-left" class="w-4 h-4" />
+        <span>{{ 'orders.back_to_history' | translate }}</span>
+      </button>
+    </div>
+  </div>
+</div>

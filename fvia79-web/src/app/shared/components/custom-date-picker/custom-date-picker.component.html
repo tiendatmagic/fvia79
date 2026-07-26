@@ -1,0 +1,156 @@
+<div class="w-full">
+  <div
+    #triggerDiv
+    (click)="toggleOpen()"
+    class="form-input flex items-center justify-between !py-0 cursor-pointer"
+    [class.opacity-50]="disabled"
+    [class.pointer-events-none]="disabled"
+    [class.border-[var(--color-primary)]]="isOpen()"
+    [class.ring-1]="isOpen()"
+    [class.ring-[var(--color-primary)]/20]="isOpen()"
+  >
+    <span [class.text-slate-400]="!value()" class="truncate">
+    {{ value() ? displayValue() : (placeholder || lang.translate('date.select')) }}
+    </span>
+    <div class="w-4 h-4 text-slate-400 dark:text-slate-500 flex-shrink-0 ml-2">
+      <app-icon name="calendar" />
+    </div>
+  </div>
+
+  @if (showPresets) {
+    <div class="flex flex-wrap gap-2 mt-2">
+      @for (p of presets; track p.days) {
+        <button
+          type="button"
+          (click)="selectPreset(p.days, $event)"
+          class="text-xs font-bold text-[var(--color-primary)] hover:text-white hover:bg-[var(--color-primary)] px-2 py-0.5 rounded-md transition-all cursor-pointer"
+        >
+          {{ p.label }}
+        </button>
+      }
+    </div>
+  }
+
+  @if (isOpen()) {
+    <div
+      [ngStyle]="popoverStyle"
+      class="date-picker-popover bg-white dark:bg-slate-950 border border-slate-200/50 dark:border-slate-800/50 shadow-lg rounded-xl p-4"
+      (click)="$event.stopPropagation()"
+    >
+      <div class="flex items-center justify-between mb-4">
+        <button
+          type="button"
+          (click)="prevMonth($event)"
+          class="p-1.5 hover:bg-slate-100 dark:hover:bg-slate-900 rounded-lg text-slate-500 hover:text-[var(--color-primary)] active:scale-90 transition-all cursor-pointer"
+        >
+          <div class="w-4 h-4">
+            <app-icon name="chevron-left" />
+          </div>
+        </button>
+        <span class="text-sm font-extrabold text-slate-800 dark:text-slate-200 tracking-wide">
+          {{ currentMonthName() }}, {{ currentYear() }}
+        </span>
+        <button
+          type="button"
+          (click)="nextMonth($event)"
+          class="p-1.5 hover:bg-slate-100 dark:hover:bg-slate-900 rounded-lg text-slate-500 hover:text-[var(--color-primary)] active:scale-90 transition-all cursor-pointer"
+        >
+          <div class="w-4 h-4">
+            <app-icon name="chevron-right" />
+          </div>
+        </button>
+      </div>
+
+      <div class="grid grid-cols-7 gap-0.5 text-center mb-2">
+        @for (day of weekdays; track day) {
+          <span class="text-xs font-bold text-[var(--color-primary)]/70 py-1">
+            {{ day }}
+          </span>
+        }
+      </div>
+
+      <div class="grid grid-cols-7 gap-0.5">
+        @for (day of calendarDays(); track day.getTime()) {
+          <button
+            type="button"
+            (click)="selectDate(day, $event)"
+            [disabled]="isDateDisabled(day)"
+            class="w-full aspect-square flex items-center justify-center text-sm font-bold rounded-full transition-all"
+            [class.text-slate-300]="
+              !isCurrentMonth(day) && !isSelected(day) && !isDateDisabled(day)
+            "
+            [class.dark:text-slate-600]="
+              !isCurrentMonth(day) && !isSelected(day) && !isDateDisabled(day)
+            "
+            [class.text-slate-700]="
+              isCurrentMonth(day) && !isSelected(day) && !isToday(day) && !isDateDisabled(day)
+            "
+            [class.dark:text-slate-300]="
+              isCurrentMonth(day) && !isSelected(day) && !isToday(day) && !isDateDisabled(day)
+            "
+            [class.hover:bg-slate-50]="!isSelected(day) && !isToday(day) && !isDateDisabled(day)"
+            [class.dark:hover:bg-slate-800]="
+              !isSelected(day) && !isToday(day) && !isDateDisabled(day)
+            "
+            [class.cursor-pointer]="!isDateDisabled(day)"
+            [class.bg-[var(--color-primary)]/15]="isToday(day) && !isSelected(day)"
+            [class.!text-[var(--color-primary)]]="isToday(day) && !isSelected(day)"
+            [class.font-extrabold]="isToday(day) || isSelected(day)"
+            [class.bg-[var(--color-primary)]]="isSelected(day)"
+            [class.!text-white]="isSelected(day)"
+            [class.shadow-md]="isSelected(day)"
+            [class.shadow-[var(--color-primary)]/30]="isSelected(day)"
+            [class.opacity-30]="isDateDisabled(day)"
+            [class.cursor-not-allowed]="isDateDisabled(day)"
+            [class.pointer-events-none]="isDateDisabled(day)"
+          >
+            {{ day.getDate() }}
+          </button>
+        }
+      </div>
+
+      @if (enableTime) {
+        <div class="mt-3 pt-3 border-t border-slate-100 dark:border-slate-800 flex items-center justify-between gap-2">
+          <div class="flex items-center gap-1.5 text-xs text-slate-500 dark:text-slate-400 font-bold">
+            <div class="w-3.5 h-3.5 text-[var(--color-primary)] shrink-0">
+              <app-icon name="clock" />
+            </div>
+            <span>{{ 'date.hour' | translate }}:</span>
+            <div class="flex items-center gap-1 bg-slate-50 dark:bg-slate-900 border border-slate-200/60 dark:border-slate-800 rounded-lg px-2 py-1">
+              <select
+                [ngModel]="selectedHour()"
+                (ngModelChange)="onHourChange($event)"
+                class="bg-transparent text-xs font-black text-slate-800 dark:text-slate-200 outline-none cursor-pointer"
+              >
+                @for (h of hours; track h) {
+                  <option [value]="h" class="bg-white dark:bg-slate-900 text-slate-800 dark:text-slate-200">
+                    {{ pad2(h) }}
+                  </option>
+                }
+              </select>
+              <span class="font-black text-slate-400 dark:text-slate-500">:</span>
+              <select
+                [ngModel]="selectedMinute()"
+                (ngModelChange)="onMinuteChange($event)"
+                class="bg-transparent text-xs font-black text-slate-800 dark:text-slate-200 outline-none cursor-pointer"
+              >
+                @for (m of minutes; track m) {
+                  <option [value]="m" class="bg-white dark:bg-slate-900 text-slate-800 dark:text-slate-200">
+                    {{ pad2(m) }}
+                  </option>
+                }
+              </select>
+            </div>
+          </div>
+          <button
+            type="button"
+            (click)="confirmSelection($event)"
+            class="px-2.5 py-1 text-xs font-extrabold text-white bg-[var(--color-primary)] rounded-lg hover:opacity-90 active:scale-95 transition-all cursor-pointer shadow-sm shadow-[var(--color-primary)]/20"
+          >
+            {{ 'action.done' | translate }}
+          </button>
+        </div>
+      }
+    </div>
+  }
+</div>

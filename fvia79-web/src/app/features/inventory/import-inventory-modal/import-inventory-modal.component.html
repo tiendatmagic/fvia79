@@ -1,0 +1,119 @@
+<div class="space-y-6 pb-2">
+  <div class="grid grid-cols-1 sm:grid-cols-3 gap-6">
+    <div class="form-field">
+      <label class="text-xs font-black text-slate-600 dark:text-slate-300 uppercase tracking-wider block mb-2"
+        >{{ 'common.product' | translate }} <span class="text-red-500">*</span></label
+      >
+      <app-custom-select
+        [options]="productOptions"
+        valueKey="value"
+        labelKey="label"
+        [(value)]="importProductId"
+        [loading]="state.productStore.loading()"
+        (valueChange)="onProductSelect($event)"
+      />
+    </div>
+
+    <div class="form-field">
+      <label class="text-xs font-black text-slate-600 dark:text-slate-300 uppercase tracking-wider block mb-2"
+        >{{ 'inv.batch_name' | translate }} <span class="text-red-500">*</span></label
+      >
+      <app-custom-input
+        [placeholder]="'inv.batch_name' | translate"
+        [(ngModel)]="batchName"
+        name="batchName"
+        type="text"
+      />
+    </div>
+
+    <div class="form-field">
+      <label class="text-xs font-black text-slate-600 dark:text-slate-300 uppercase tracking-wider block mb-2 flex items-center justify-between"
+        ><span>{{ 'inv.cost_price' | translate }}</span> <span class="text-[10px] text-slate-500 dark:text-slate-400 font-medium">({{ 'common.optional' | translate }})</span></label
+      >
+      <app-custom-input
+        [placeholder]="'VD: 1.50 (USD/USDT)'"
+        [(ngModel)]="costPrice"
+        name="costPrice"
+        type="number"
+      />
+    </div>
+  </div>
+
+  <div class="form-field">
+    <div class="flex items-center justify-between mb-2">
+      <label class="text-xs font-black text-slate-600 dark:text-slate-300 uppercase tracking-wider"
+        >{{ 'inv.resource_data' | translate }} <span class="text-red-500">*</span></label
+      >
+      <!-- Hidden file input for TXT import -->
+      <input
+        #txtFileInput
+        type="file"
+        accept=".txt"
+        class="hidden"
+        (change)="onTxtFileSelected($event)"
+      />
+      <button
+        type="button"
+        (click)="txtFileInput.click()"
+        class="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-[11px] font-bold
+          bg-emerald-500/10 text-emerald-600 dark:text-emerald-400
+          hover:bg-emerald-500/20 active:scale-95
+          border border-emerald-500/20 transition-all duration-200 cursor-pointer"
+      >
+        <app-icon name="upload" class="w-3.5 h-3.5" />
+        <span>{{ 'inventory.import_txt' | translate }}</span>
+      </button>
+    </div>
+    @if (importedFileName) {
+      <div class="flex items-center gap-2 mb-2 px-3 py-2 rounded-lg bg-emerald-500/5 border border-emerald-500/10 text-xs font-semibold text-emerald-600 dark:text-emerald-400">
+        <app-icon name="check-circle" class="w-4 h-4 shrink-0" />
+        <span class="truncate">{{ 'inventory.txt_imported' | translate }}: {{ importedFileName }}</span>
+        <span class="ml-auto shrink-0 text-[10px] text-emerald-500/70">(+{{ importedLineCount }} {{ 'inventory.lines' | translate }})</span>
+      </div>
+    }
+    <app-custom-input
+      [placeholder]="'inv.resource_data' | translate"
+      [(ngModel)]="rawData"
+      name="rawData"
+      type="textarea"
+      [rows]="8"
+      customClass="min-h-[200px]"
+    />
+    <div class="flex justify-between items-center text-xs font-bold text-slate-500 dark:text-slate-400 mt-1">
+      <span>{{ 'inventory.one_account_per_line' | translate }}</span>
+      <span class="text-[var(--color-primary)]">{{ 'inventory.total' | translate }}: {{ rawDataCount }}</span>
+    </div>
+  </div>
+
+  <div
+    class="bg-amber-500/5 border border-amber-500/10 rounded-xl p-4 text-xs font-semibold text-amber-600 dark:text-amber-500 space-y-1"
+  >
+    <p class="font-extrabold uppercase flex items-center gap-1.5">
+      <app-icon name="exclamation" class="w-4 h-4 text-amber-500 shrink-0" />
+      <span>{{ 'inventory.important_notice' | translate }}:</span>
+    </p>
+    <p class="font-medium">
+      {{ 'inventory.import_notice' | translate }}
+    </p>
+  </div>
+
+  <div class="pt-4 flex items-center justify-end gap-3 shrink-0">
+    <button
+      app-button
+      (click)="onClose()"
+      [variant]="'cancel'"
+      class="py-2.5 px-4 rounded-xl text-xs font-bold"
+    >
+      {{ 'action.cancel' | translate }}
+    </button>
+    <button
+      app-button
+      (click)="onSubmit()"
+      [loading]="isSubmitting()"
+      [variant]="'primary'"
+      class="py-2.5 px-4 rounded-xl bg-gradient-to-r from-[var(--color-primary)] to-[var(--color-secondary)] text-white text-xs font-extrabold active:scale-95 shadow-sm shadow-[var(--color-primary)]/10 cursor-pointer"
+    >
+      {{ 'action.import_stock' | translate }}
+    </button>
+  </div>
+</div>

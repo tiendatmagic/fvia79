@@ -1,0 +1,58 @@
+<?php
+
+namespace App\Infrastructure\Persistence\Mappers;
+
+use App\Domain\Entities\Deposit;
+use App\Infrastructure\Persistence\Eloquent\DepositModel;
+
+class DepositMapper
+{
+    public static function toDomain(DepositModel $model): Deposit
+    {
+        $userEmail = $model->relationLoaded('user') && $model->user ? $model->user->email : null;
+        $userName = $model->relationLoaded('user') && $model->user ? ($model->user->name ?: $model->user->username) : null;
+        $userUid = $model->relationLoaded('user') && $model->user ? $model->user->uid : null;
+
+        return new Deposit(
+            $model->id,
+            $model->user_id,
+            $model->code,
+            (float) $model->amount_usdt,
+            (float) $model->amount_to_pay,
+            (float) $model->amount_vnd,
+            $model->tx_hash,
+            $model->admin_wallet_address,
+            $model->status,
+            $model->payment_method ?: 'bep20',
+            $model->payer_binance_id,
+            $model->admin_binance_id,
+            $model->created_at ? new \DateTime($model->created_at->toDateTimeString()) : null,
+            $model->updated_at ? new \DateTime($model->updated_at->toDateTimeString()) : null,
+            $userEmail,
+            $userName,
+            $userUid
+        );
+    }
+
+    public static function toPersistence(Deposit $entity): DepositModel
+    {
+        $model = new DepositModel();
+        if ($entity->getId()) {
+            $model = DepositModel::find($entity->getId()) ?: $model;
+        }
+
+        $model->user_id = $entity->getUserId();
+        $model->code = $entity->getCode();
+        $model->amount_usdt = $entity->getAmountUsdt();
+        $model->amount_to_pay = $entity->getAmountToPay();
+        $model->amount_vnd = $entity->getAmountVnd();
+        $model->tx_hash = $entity->getTxHash();
+        $model->admin_wallet_address = $entity->getAdminWalletAddress();
+        $model->status = $entity->getStatus();
+        $model->payment_method = $entity->getPaymentMethod();
+        $model->payer_binance_id = $entity->getPayerBinanceId();
+        $model->admin_binance_id = $entity->getAdminBinanceId();
+
+        return $model;
+    }
+}

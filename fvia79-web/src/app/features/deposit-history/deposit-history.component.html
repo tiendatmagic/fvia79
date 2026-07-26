@@ -1,0 +1,167 @@
+<div class="max-w-[1530px] mx-auto w-full px-4 sm:px-6 py-6 space-y-6">
+  <app-page-header
+    [title]="'Deposit History' | translate"
+    [description]="'dep.description' | translate"
+  >
+    <ng-container actions>
+      <button
+        (click)="fetchPage(currentPage())"
+        class="px-4 py-2.5 text-sm font-extrabold text-slate-600 dark:text-slate-400 hover:text-primary bg-white dark:bg-slate-950 border border-slate-200/60 dark:border-slate-800/80 rounded-xl hover:bg-slate-50 dark:hover:bg-slate-900 transition-all cursor-pointer flex items-center gap-1.5"
+      >
+        <app-icon name="sync" class="w-4 h-4" />
+        {{ 'common.reload' | translate }}
+      </button>
+    </ng-container>
+  </app-page-header>
+
+  <div
+    class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 bg-slate-50/50 dark:bg-slate-950/20 border border-slate-200/30 dark:border-slate-800/30 rounded-2xl p-4 sm:p-5"
+  >
+    <div class="form-field">
+      <label
+        class="text-xs font-bold text-slate-400 dark:text-slate-500 uppercase tracking-wider block mb-1"
+      >
+        {{ 'common.filter_date' | translate }}
+      </label>
+      <app-custom-date-time-range
+        [(ngModel)]="selectedDateRange"
+        (ngModelChange)="fetchPage(1)"
+        [showPresets]="true"
+        [showTime]="false"
+        [placeholder]="'common.select_date' | translate"
+      />
+    </div>
+
+    <div class="form-field">
+      <label
+        class="text-xs font-bold text-slate-400 dark:text-slate-500 uppercase tracking-wider block mb-1"
+      >
+        {{ 'common.status' | translate }}
+      </label>
+      <app-custom-select
+        [options]="statusOptions"
+        valueKey="value"
+        labelKey="label"
+        [(value)]="selectedStatusFilter"
+        (valueChange)="selectedStatusFilter = $event; fetchPage(1)"
+      />
+    </div>
+
+    <div class="form-field">
+      <label
+        class="text-xs font-bold text-slate-400 dark:text-slate-500 uppercase tracking-wider block mb-1"
+      >
+        {{ 'common.search' | translate }}
+      </label>
+      <app-custom-search-input
+        [placeholder]="'common.search_placeholder' | translate"
+        [(ngModel)]="searchQuery"
+        name="searchQuery"
+        (valueChange)="onSearch($event)"
+        [debounce]="500"
+        containerClass="w-full"
+      />
+    </div>
+  </div>
+
+  <div app-card class="overflow-hidden !p-0">
+    <app-table
+      [columns]="columns()"
+      [data]="state.depositStore.historyList()"
+      [loading]="state.depositStore.loading()"
+      [emptyText]="'deposit.empty_history' | translate"
+      emptyIcon="archive"
+    >
+      <ng-template appTableCell="code" let-row="row">
+        <a
+          [routerLink]="['/deposit/invoice', row.id]"
+          [appTooltip]="('deposit.view_invoice_prefix' | translate) + ' #' + row.code"
+          class="font-bold text-[var(--color-primary)] hover:underline border-b border-dashed border-slate-300 dark:border-slate-700 pb-0.5 transition-colors cursor-pointer"
+        >
+          #{{ row.code }}
+        </a>
+      </ng-template>
+
+      <ng-template appTableCell="amountUsdt" let-row="row">
+        <div class="flex flex-col text-right">
+          <span
+            class="text-sm font-extrabold text-slate-700 dark:text-slate-200"
+            [appTooltip]="row.amountUsdt + ' USDT'"
+          >
+            {{ row.amountUsdt | number: '1.2-4' }} USDT
+          </span>
+          <span
+            class="text-xs text-slate-400 dark:text-slate-500 leading-none mt-1"
+            [appTooltip]="'deposit.actual_send_tooltip' | translate"
+          >
+            {{ 'deposit.actual_send' | translate }}: {{ row.amountToPay | number: '1.4-4' }} USDT
+          </span>
+        </div>
+      </ng-template>
+
+      <ng-template appTableCell="amountVnd" let-row="row">
+        <span
+          class="font-bold text-emerald-600 dark:text-emerald-400 text-sm"
+        >
+          {{ row.amountVnd | number }} {{ 'currency.vnd_symbol' | translate }}
+        </span>
+      </ng-template>
+
+      <ng-template appTableCell="status" let-row="row">
+        <app-badge
+          [variant]="
+            row.status === 'completed'
+              ? 'success'
+              : row.status === 'pending_payment'
+                ? 'warning'
+                : row.status === 'expired'
+                  ? 'neutral'
+                  : 'danger'
+          "
+          [appTooltip]="'status.' + row.status | translate"
+        >
+          {{ 'status.' + row.status | translate }}
+        </app-badge>
+      </ng-template>
+
+      <ng-template appTableCell="createdAt" let-row="row">
+        <span class="text-xs text-slate-500 dark:text-slate-400 whitespace-nowrap" [appTooltip]="row.createdAt">
+          {{ row.createdAt | date: 'dd/MM/yyyy HH:mm' }}
+        </span>
+      </ng-template>
+      <ng-template appTableCell="actions" let-row="row">
+        <div class="flex items-center justify-end gap-2 whitespace-nowrap">
+          <button
+            *ngIf="row.status === 'pending_payment'"
+            type="button"
+            (click)="viewInvoice(row)"
+            class="text-xs font-bold px-3 py-1.5 rounded-lg border border-[var(--color-primary)]/20 dark:border-[var(--color-primary)]/30 hover:bg-[var(--color-primary)]/10 text-[var(--color-primary)] bg-[var(--color-primary)]/5 hover:scale-105 active:scale-95 transition-all cursor-pointer flex items-center gap-1 shrink-0"
+            [appTooltip]="'deposit.continue_payment' | translate"
+          >
+            <span>{{ 'deposit.pay' | translate }}</span>
+            <app-icon name="chevron-right" class="w-3.5 h-3.5" />
+          </button>
+          <button
+            *ngIf="row.status !== 'pending_payment'"
+            type="button"
+            (click)="viewDetails(row)"
+            class="text-xs font-bold px-3 py-1.5 rounded-lg border border-teal-500/20 dark:border-teal-500/30 hover:bg-teal-100 dark:hover:bg-teal-950/40 text-teal-600 dark:text-teal-400 bg-teal-50 dark:bg-teal-950/20 hover:scale-105 active:scale-95 transition-all cursor-pointer flex items-center gap-1 shrink-0"
+            [appTooltip]="'common.view_details' | translate"
+          >
+            <app-icon name="eye" class="w-3.5 h-3.5" />
+            <span>{{ 'common.details' | translate }}</span>
+          </button>
+        </div>
+      </ng-template>
+    </app-table>
+
+    <app-pagination
+      [currentPage]="state.depositStore.currentPage()"
+      [totalPages]="state.depositStore.lastPage()"
+      [totalItems]="state.depositStore.totalItems()"
+      [itemsPerPage]="itemsPerPage"
+      [itemName]="'deposit.item_name' | translate"
+      (pageChange)="fetchPage($event)"
+    />
+  </div>
+</div>

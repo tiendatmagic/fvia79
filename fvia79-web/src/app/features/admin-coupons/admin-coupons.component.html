@@ -1,0 +1,216 @@
+<div class="max-w-[1530px] mx-auto w-full p-4 sm:p-6 space-y-6">
+  <app-page-header
+    [title]="'coup.title' | translate"
+    [description]="'coup.description' | translate"
+  >
+    <ng-container actions>
+      <button
+        (click)="fetchCoupons()"
+        class="px-4 py-2.5 text-sm font-extrabold text-slate-600 dark:text-slate-400 hover:text-primary bg-white dark:bg-slate-950 border border-slate-200/60 dark:border-slate-800/80 rounded-xl hover:bg-slate-50 dark:hover:bg-slate-900 transition-all cursor-pointer flex items-center gap-1.5"
+      >
+        <app-icon name="sync" class="w-4 h-4" />
+        {{ 'common.reload' | translate }}
+      </button>
+      <button
+        app-button
+        (click)="openCreateModal()"
+        variant="primary"
+        class="flex items-center gap-2 py-2.5 px-4 rounded-xl bg-gradient-to-r from-[var(--color-primary)] to-[var(--color-secondary)] text-white font-extrabold shadow-md shadow-[var(--color-primary)]/15 active:scale-95 transition-all text-sm cursor-pointer"
+      >
+        <app-icon name="plus" class="w-5 h-5" />
+        {{ 'coupon.add' | translate }}
+      </button>
+    </ng-container>
+  </app-page-header>
+
+  <div
+    class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 bg-slate-50/50 dark:bg-slate-950/20 border border-slate-200/30 dark:border-slate-800/30 rounded-2xl p-4 sm:p-5"
+  >
+    <div class="form-field">
+      <label class="text-xs font-bold text-slate-400 dark:text-slate-500 uppercase tracking-wider block mb-1">{{ 'common.status' | translate }}</label>
+      <app-custom-select
+        [options]="statusOptions"
+        valueKey="value"
+        labelKey="label"
+        [value]="statusFilter()"
+        (valueChange)="onStatusChange($event)"
+      />
+    </div>
+
+    <div class="form-field">
+      <label class="text-xs font-bold text-slate-400 dark:text-slate-500 uppercase tracking-wider block mb-1">{{ 'coupon.type' | translate }}</label>
+      <app-custom-select
+        [options]="typeOptions"
+        valueKey="value"
+        labelKey="label"
+        [value]="typeFilter()"
+        (valueChange)="onTypeChange($event)"
+      />
+    </div>
+
+    <div class="form-field">
+      <label class="text-xs font-bold text-slate-400 dark:text-slate-500 uppercase tracking-wider block mb-1">{{ 'common.search' | translate }}</label>
+      <app-custom-search-input
+        [placeholder]="'common.search_placeholder' | translate"
+        [(ngModel)]="searchQuery"
+        name="searchQuery"
+        (valueChange)="onSearch($event)"
+        [debounce]="500"
+        containerClass="w-full"
+      />
+    </div>
+  </div>
+
+  <div app-card class="overflow-hidden !p-0">
+    <app-table
+      [columns]="columns()"
+      [data]="filteredCoupons()"
+      [loading]="couponStore.loading()"
+      [emptyText]="'No coupons found.'"
+    >
+      <ng-template appTableCell="code" let-row="row">
+        <div class="flex items-center gap-1.5">
+          <span
+            class="font-black text-xs uppercase border border-dashed border-[var(--color-primary)]/40 px-2.5 py-1 rounded bg-[var(--color-primary)]/5 text-[var(--color-primary)] select-all tracking-wider"
+        [appTooltip]="'admin.coupon_code' | translate: { code: row.code }"
+            [ngClass]="{ 'line-through opacity-40 text-slate-400 dark:text-slate-500': row.is_deleted }"
+          >
+            {{ row.code }}
+          </span>
+          <button
+          (click)="copyToClipboard(row.code, lang.translate('admin.copy_coupon_success'))"
+            class="p-1 hover:bg-slate-100 dark:hover:bg-slate-800 rounded transition-colors text-slate-400 hover:text-slate-600 dark:hover:text-slate-200 cursor-pointer"
+          [appTooltip]="'admin.copy_coupon' | translate"
+          >
+            <app-icon name="copy" class="w-3.5 h-3.5" />
+          </button>
+        </div>
+      </ng-template>
+
+      <ng-template appTableCell="type" let-row="row">
+        <app-badge
+          [variant]="row.type === 'percentage' ? 'info' : 'primary'"
+          size="md"
+          rounded="md"
+        [appTooltip]="row.type === 'percentage' ? ('admin.coupon_percentage_tooltip' | translate) : ('admin.coupon_fixed_tooltip' | translate)"
+          [ngClass]="{ 'line-through opacity-40': row.is_deleted }"
+        >
+        {{ row.type === 'percentage' ? ('admin.coupon_percentage' | translate) : ('admin.coupon_fixed' | translate) }}
+        </app-badge>
+      </ng-template>
+
+      <ng-template appTableCell="value" let-row="row">
+        <span
+          class="font-extrabold text-slate-800 dark:text-slate-100 text-sm whitespace-nowrap"
+          [ngClass]="{ 'line-through opacity-40 text-slate-400 dark:text-slate-500': row.is_deleted }"
+        >
+          @if (row.type === 'percentage') {
+            {{ row.value }}%
+          } @else {
+            {{ row.value | appCurrency }}
+          }
+        </span>
+      </ng-template>
+
+      <ng-template appTableCell="min_spend" let-row="row">
+        <span
+          class="text-slate-600 dark:text-slate-300 font-semibold text-xs whitespace-nowrap"
+          [ngClass]="{ 'line-through opacity-40 text-slate-400 dark:text-slate-500': row.is_deleted }"
+        >
+          {{ row.min_spend | appCurrency }}
+        </span>
+      </ng-template>
+
+      <ng-template appTableCell="used_count" let-row="row">
+        <div
+          class="flex flex-col items-center justify-center gap-0.5"
+        [appTooltip]="'admin.coupon_usage' | translate: { used: row.used_count, limit: row.usage_limit === 0 ? ('admin.unlimited' | translate) : ('admin.uses' | translate: { count: row.usage_limit }) }"
+          [ngClass]="{ 'line-through opacity-40 text-slate-400 dark:text-slate-500': row.is_deleted }"
+        >
+          <span class="text-xs font-black text-slate-700 dark:text-slate-200">
+            {{ row.used_count }} / {{ row.usage_limit === 0 ? '∞' : row.usage_limit }}
+          </span>
+          @if (row.usage_limit > 0) {
+            <div class="w-16 h-1.5 bg-slate-200 dark:bg-slate-800 rounded-full overflow-hidden mt-0.5">
+              <div
+                class="h-full bg-gradient-to-r from-[var(--color-primary)] to-[var(--color-secondary)] transition-all duration-300"
+                [style.width.%]="(row.used_count / row.usage_limit) * 100"
+              ></div>
+            </div>
+          }
+        </div>
+      </ng-template>
+
+      <ng-template appTableCell="start_date" let-row="row">
+        <div
+          class="flex flex-col gap-1 text-xs text-slate-600 dark:text-slate-400 whitespace-nowrap"
+        [appTooltip]="'admin.time_range' | translate: { start: (row.start_date | date: 'dd/MM/yyyy HH:mm'), end: (row.end_date | date: 'dd/MM/yyyy HH:mm') }"
+          [ngClass]="{ 'line-through opacity-40 text-slate-400 dark:text-slate-500': row.is_deleted }"
+        >
+          <div class="flex items-center gap-1.5">
+          <span class="text-[10px] bg-emerald-50 dark:bg-emerald-950/40 text-emerald-600 dark:text-emerald-400 border border-emerald-500/20 px-1.5 py-0.5 rounded font-black shrink-0">{{ 'coupon.start_abbr' | translate }}</span>
+            <span class="font-semibold text-slate-700 dark:text-slate-300">{{ row.start_date | date: 'dd/MM/yyyy HH:mm' }}</span>
+          </div>
+          <div class="flex items-center gap-1.5">
+            <span class="text-[10px] bg-rose-50 dark:bg-rose-950/40 text-rose-600 dark:text-rose-400 border border-rose-500/20 px-1.5 py-0.5 rounded font-black shrink-0">{{ 'coupon.end_abbr' | translate }}</span>
+            <span class="font-semibold text-slate-700 dark:text-slate-300">{{ row.end_date | date: 'dd/MM/yyyy HH:mm' }}</span>
+          </div>
+        </div>
+      </ng-template>
+
+      <ng-template appTableCell="status" let-row="row">
+        @let statusInfo = getCouponStatus(row);
+        <app-badge
+          [variant]="statusInfo.variant"
+          size="sm"
+          rounded="md"
+        [appTooltip]="'admin.coupon_status' | translate: { status: statusInfo.label }"
+          [ngClass]="{ 'opacity-60': row.is_deleted }"
+        >
+          {{ statusInfo.label }}
+        </app-badge>
+      </ng-template>
+
+      <ng-template appTableCell="actions" let-row="row">
+        <div class="flex items-center justify-end gap-2 whitespace-nowrap">
+          @if (row.is_deleted) {
+            <button
+              (click)="restoreCoupon(row)"
+              class="text-xs font-bold px-3 py-1.5 rounded-lg border border-emerald-500/20 dark:border-emerald-500/30 hover:bg-emerald-100 dark:hover:bg-emerald-950/40 text-emerald-600 dark:text-emerald-400 bg-emerald-50 dark:bg-emerald-950/20 hover:scale-105 active:scale-95 transition-all cursor-pointer flex items-center gap-1 shrink-0"
+            [appTooltip]="'admin.restore_coupon' | translate"
+            >
+              <app-icon name="sync" class="w-3.5 h-3.5" />
+            <span>{{ 'common.restore' | translate }}</span>
+            </button>
+          } @else {
+            <button
+              (click)="openEditModal(row)"
+              class="text-xs font-bold px-3 py-1.5 rounded-lg border border-[var(--color-primary)]/20 hover:bg-[var(--color-primary)]/10 text-[var(--color-primary)] bg-[var(--color-primary)]/5 dark:bg-[var(--color-primary)]/10 dark:border-[var(--color-primary)]/30 dark:hover:bg-[var(--color-primary)]/20 hover:scale-105 active:scale-95 transition-all cursor-pointer flex items-center gap-1 shrink-0"
+            [appTooltip]="'admin.edit_coupon' | translate"
+            >
+              <app-icon name="edit" class="w-3.5 h-3.5" />
+            <span>{{ 'action.edit' | translate }}</span>
+            </button>
+            <button
+              (click)="confirmDelete(row)"
+              class="text-xs font-bold px-3 py-1.5 rounded-lg border border-rose-500/20 dark:border-rose-500/30 hover:bg-rose-100 dark:hover:bg-rose-950/40 text-rose-600 dark:text-rose-400 bg-rose-50 dark:bg-rose-950/20 hover:scale-105 active:scale-95 transition-all cursor-pointer flex items-center gap-1 shrink-0"
+            [appTooltip]="'admin.delete_coupon' | translate"
+            >
+              <app-icon name="trash" class="w-3.5 h-3.5" />
+            <span>{{ 'action.delete' | translate }}</span>
+            </button>
+          }
+        </div>
+      </ng-template>
+    </app-table>
+
+    <app-pagination
+      [currentPage]="couponStore.currentPage()"
+      [totalPages]="couponStore.lastPage()"
+      [totalItems]="couponStore.totalCoupons()"
+      [itemsPerPage]="limit"
+      [itemName]="'admin.coupon_item' | translate"
+      (pageChange)="fetchPage($event)"
+    />
+  </div>
+</div>

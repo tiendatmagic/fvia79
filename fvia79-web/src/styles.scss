@@ -1,0 +1,241 @@
+@import url('https://fonts.googleapis.com/css2?family=Quicksand:wght@500;600;700;800;900&display=swap');
+@import 'tailwindcss' source('.');
+
+@variant dark (&:where(.dark, .dark *));
+
+@theme {
+  --font-sans:
+    'Quicksand', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+  --font-display:
+    'Quicksand', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+
+  --color-primary: var(--dynamic-primary, #006dd0);
+  --color-secondary: var(--dynamic-secondary, #0d9488);
+
+  --radius-xl: 15px;
+  --radius-2xl: 15px;
+  --radius-3xl: 15px;
+  --radius-4xl: 15px;
+}
+
+:root {
+  --dynamic-primary: #006dd0;
+  --dynamic-secondary: #0d9488;
+}
+
+html {
+  @apply bg-slate-50 transition-colors duration-300;
+}
+
+html.dark {
+  @apply bg-slate-950;
+}
+
+body,
+input,
+button,
+select,
+textarea,
+optgroup,
+option {
+  font-family: var(--font-sans);
+  font-weight: 500;
+}
+
+body {
+  @apply bg-slate-50 text-slate-900 min-h-screen m-0 transition-colors duration-300 font-medium;
+}
+
+html.dark body,
+body.dark {
+  @apply bg-slate-950 text-slate-50;
+}
+
+.transition-all-300 {
+  @apply transition-all duration-300 ease-out;
+}
+
+::-webkit-scrollbar {
+  @apply w-1.5 h-1.5;
+}
+::-webkit-scrollbar-track {
+  @apply bg-transparent;
+}
+::-webkit-scrollbar-thumb {
+  @apply bg-slate-300 rounded-sm;
+}
+.dark ::-webkit-scrollbar-thumb,
+body.dark ::-webkit-scrollbar-thumb {
+  @apply bg-slate-700;
+}
+::-webkit-scrollbar-thumb:hover {
+  @apply bg-slate-400;
+}
+
+@keyframes toastProgress {
+  from {
+    width: 100%;
+  }
+  to {
+    width: 0%;
+  }
+}
+
+.toast-progress-success {
+  animation: toastProgress 3000ms linear forwards;
+  @apply bg-gradient-to-r from-primary to-secondary;
+}
+
+.toast-progress-error {
+  animation: toastProgress 4000ms linear forwards;
+}
+
+@keyframes toastSlideIn {
+  from {
+    transform: translateY(20px) scale(0.95);
+    opacity: 0;
+  }
+  to {
+    transform: translateY(0) scale(1);
+    opacity: 1;
+  }
+}
+
+.toast-animate {
+  animation: toastSlideIn 250ms cubic-bezier(0.16, 1, 0.3, 1) forwards;
+}
+
+.btn {
+  @apply inline-flex items-center justify-center gap-1.5 font-bold text-sm rounded-xl whitespace-nowrap transition-all duration-200 cursor-pointer active:scale-[0.98] disabled:opacity-50 disabled:pointer-events-none disabled:cursor-not-allowed px-4 py-2.5;
+}
+
+.btn-primary {
+  @apply inline-flex items-center justify-center gap-1.5 font-bold text-sm rounded-xl transition-all duration-200 cursor-pointer active:scale-[0.98] disabled:opacity-50 disabled:pointer-events-none disabled:cursor-not-allowed px-4 py-2.5 bg-gradient-to-r from-primary to-secondary hover:opacity-90 text-white shadow-md shadow-primary/15 hover:shadow-primary/25;
+}
+
+.btn-secondary {
+  @apply inline-flex items-center justify-center gap-1.5 font-bold text-sm rounded-xl transition-all duration-200 cursor-pointer active:scale-[0.98] disabled:opacity-50 disabled:pointer-events-none disabled:cursor-not-allowed px-4 py-2.5 bg-primary/[0.08] border border-primary/[0.20] text-primary hover:bg-primary/[0.15] hover:border-primary/[0.30] dark:bg-secondary/[0.12] dark:border-secondary/[0.30] dark:text-secondary dark:hover:bg-secondary/[0.20] dark:hover:border-secondary/[0.45];
+}
+
+.btn-danger {
+  @apply inline-flex items-center justify-center gap-1.5 font-bold text-sm rounded-xl transition-all duration-200 cursor-pointer active:scale-[0.98] disabled:opacity-50 disabled:pointer-events-none disabled:cursor-not-allowed px-4 py-2.5 bg-rose-500 hover:bg-rose-600 text-white shadow-md shadow-rose-500/15 hover:shadow-rose-500/25;
+}
+
+.btn-danger-light {
+  @apply inline-flex items-center justify-center gap-1.5 font-bold text-sm rounded-xl transition-all duration-200 cursor-pointer active:scale-[0.98] disabled:opacity-50 disabled:pointer-events-none disabled:cursor-not-allowed px-4 py-2.5 bg-rose-500/[0.08] text-rose-500 hover:bg-rose-500/[0.15] dark:bg-rose-400/[0.15] dark:text-rose-400 dark:hover:bg-rose-400/[0.25];
+}
+
+.btn-cancel {
+  @apply inline-flex items-center justify-center gap-1.5 font-bold text-sm rounded-xl transition-all duration-200 cursor-pointer active:scale-[0.98] disabled:opacity-50 disabled:pointer-events-none disabled:cursor-not-allowed px-4 py-2.5 bg-slate-100 hover:bg-slate-200 dark:bg-slate-800/80 dark:hover:bg-slate-700/80 text-slate-700 dark:text-slate-300;
+}
+
+.btn-success {
+  @apply inline-flex items-center justify-center gap-1.5 font-bold text-sm rounded-xl transition-all duration-200 cursor-pointer active:scale-[0.98] disabled:opacity-50 disabled:pointer-events-none disabled:cursor-not-allowed px-4 py-2.5 bg-emerald-500 hover:bg-emerald-600 text-white shadow-md shadow-emerald-500/15 hover:shadow-emerald-500/25;
+}
+
+.btn-info {
+  @apply inline-flex items-center justify-center gap-1.5 font-bold text-sm rounded-xl transition-all duration-200 cursor-pointer active:scale-[0.98] disabled:opacity-50 disabled:pointer-events-none disabled:cursor-not-allowed px-4 py-2.5 bg-blue-600 hover:bg-blue-700 text-white shadow-md shadow-blue-600/15 hover:shadow-blue-600/25;
+}
+
+.btn-sm {
+  @apply px-3 py-1.5 text-xs rounded-lg gap-1;
+}
+.btn-md {
+  @apply px-4 py-2.5 text-sm rounded-xl gap-1.5;
+}
+.btn-lg {
+  @apply px-6 py-3.5 text-base rounded-[12px] gap-2 font-extrabold;
+}
+.btn-full {
+  @apply w-full justify-center;
+}
+
+.form-input {
+  @apply h-[42px] w-full text-sm font-semibold rounded-xl bg-white dark:bg-slate-950 border border-slate-200/40 dark:border-slate-800/40 text-slate-800 dark:text-white placeholder-slate-400 focus:outline-none focus:border-primary focus:ring-1 focus:ring-primary/20;
+  padding-left: 1rem !important;
+  padding-right: 1rem !important;
+}
+
+.form-input-password {
+  padding-right: 2.75rem !important;
+}
+
+
+.form-textarea {
+  @apply w-full text-sm font-semibold rounded-xl bg-white dark:bg-slate-950 border border-slate-200/40 dark:border-slate-800/40 text-slate-800 dark:text-white placeholder-slate-400 focus:outline-none focus:border-primary focus:ring-1 focus:ring-primary/20 resize-none;
+  padding: 0.75rem 1rem !important;
+}
+
+.form-field {
+  display: flex !important;
+  flex-direction: column !important;
+  gap: 0.5rem !important;
+  width: 100% !important;
+}
+
+.form-field > label {
+  display: block !important;
+  font-size: 0.75rem !important;
+  font-weight: 600 !important;
+  color: #475569 !important;
+  text-transform: uppercase !important;
+  letter-spacing: 0.05em !important;
+  margin-bottom: 0px !important;
+}
+
+.dark .form-field > label,
+body.dark .form-field > label {
+  color: #cbd5e1 !important;
+}
+
+.search-input {
+  @apply h-[42px] w-full text-sm font-semibold rounded-xl bg-white dark:bg-slate-950 border border-slate-200/40 dark:border-slate-800/40 text-slate-800 dark:text-white placeholder-slate-400 focus:outline-none focus:border-primary focus:ring-1 focus:ring-primary/20;
+  padding-left: 2.25rem !important;
+  padding-right: 1rem !important;
+}
+
+.tab-group {
+  @apply h-[42px] flex items-center gap-1 bg-slate-100 dark:bg-slate-950 p-1 rounded-xl border border-slate-200/40 dark:border-slate-800/40 overflow-x-auto flex-nowrap shrink-0 max-w-full;
+  -ms-overflow-style: none;
+  scrollbar-width: none;
+}
+.tab-group::-webkit-scrollbar {
+  @apply hidden;
+}
+
+.tab-item {
+  @apply h-8 px-4 rounded-lg text-xs font-semibold transition-all cursor-pointer inline-flex items-center justify-center gap-1.5 text-slate-500 hover:text-slate-800 dark:hover:text-slate-200 whitespace-nowrap shrink-0;
+}
+.tab-item.active {
+  @apply bg-white dark:bg-slate-900 text-primary dark:text-secondary shadow-sm font-bold;
+}
+
+.app-card,
+.app-card-interactive {
+  @apply bg-white dark:bg-slate-900 border border-slate-200/50 dark:border-slate-800/50 shadow-lg shadow-slate-200/50 dark:shadow-slate-900/30 rounded-[15px] p-6;
+}
+
+.app-card-interactive {
+  @apply transition-all duration-300 hover:shadow-lg hover:shadow-primary/10 hover:border-primary/30 hover:scale-[1.01] cursor-pointer;
+}
+
+.no-scrollbar::-webkit-scrollbar {
+  @apply hidden;
+}
+.no-scrollbar {
+  -ms-overflow-style: none;
+  scrollbar-width: none;
+}
+
+.app-tooltip {
+  @apply fixed z-[9999] py-1.5 px-2.5 text-xs font-bold text-slate-50 bg-slate-900/90 border border-slate-700/50 rounded-lg shadow-md pointer-events-none select-none backdrop-blur-xs opacity-0 transition-all duration-150 ease-out;
+}
+
+.dark .app-tooltip,
+body.dark .app-tooltip {
+  @apply text-slate-300 bg-slate-950/95 border border-slate-600/40;
+}
+
+.app-tooltip-show {
+  opacity: 1 !important;
+}

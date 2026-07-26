@@ -1,0 +1,243 @@
+<div class="max-w-[1530px] mx-auto w-full p-4 sm:p-6 space-y-6">
+  <app-page-header
+    [title]="'cat.title' | translate"
+    [description]="'cat.description' | translate"
+  >
+    <ng-container actions>
+      <button
+        (click)="fetchCategories()"
+        class="px-4 py-2.5 text-sm font-extrabold text-slate-600 dark:text-slate-400 hover:text-primary bg-white dark:bg-slate-950 border border-slate-200/60 dark:border-slate-800/80 rounded-xl hover:bg-slate-50 dark:hover:bg-slate-900 transition-all cursor-pointer flex items-center gap-1.5"
+      >
+        <app-icon name="sync" class="w-4 h-4" />
+        {{ 'common.reload' | translate }}
+      </button>
+      <button
+        app-button
+        (click)="openDeactivateOutOfStockModal()"
+        variant="danger"
+        class="flex items-center gap-1.5 py-2.5 px-4 rounded-xl bg-amber-600 hover:bg-amber-700 text-white font-extrabold shadow-sm active:scale-95 transition-all text-sm cursor-pointer"
+      >
+        <app-icon name="eye-slash" class="w-4 h-4" />
+        {{ 'cat.deactivate_out_of_stock' | translate }}
+      </button>
+      <button
+        app-button
+        (click)="openCreateModal()"
+        variant="primary"
+        class="flex items-center gap-2 py-2.5 px-4 rounded-xl bg-gradient-to-r from-[var(--color-primary)] to-[var(--color-secondary)] text-white font-extrabold shadow-md shadow-[var(--color-primary)]/15 active:scale-95 transition-all text-sm cursor-pointer"
+      >
+        <app-icon name="plus" class="w-5 h-5" />
+        {{ 'cat.add' | translate }}
+      </button>
+    </ng-container>
+  </app-page-header>
+
+  <div
+    class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 bg-slate-50 dark:bg-slate-900/40 border border-slate-200/30 dark:border-slate-800/30 rounded-2xl p-4 sm:p-5"
+  >
+    <div class="form-field">
+      <label>{{ 'common.filter_date' | translate }}</label>
+      <app-custom-date-time-range
+        [ngModel]="selectedDateRange()"
+        (ngModelChange)="selectedDateRange.set($event)"
+        [showPresets]="true"
+        [showTime]="false"
+        [placeholder]="'common.select_date' | translate"
+      />
+    </div>
+
+    <div class="form-field">
+      <label>{{ 'common.sort_by' | translate }}</label>
+      <app-custom-select
+        [options]="sortOptions"
+        valueKey="value"
+        labelKey="label"
+        [value]="selectedSort()"
+        (valueChange)="selectedSort.set($event)"
+      />
+    </div>
+
+    <div class="form-field">
+      <label>{{ 'common.search' | translate }}</label>
+      <app-custom-search-input
+        [placeholder]="'cat.search_placeholder' | translate"
+        [(ngModel)]="searchQuery"
+        name="searchQuery"
+        (valueChange)="onSearch($event)"
+        [debounce]="500"
+        containerClass="w-full"
+      />
+    </div>
+  </div>
+
+  <div app-card class="overflow-hidden !p-0">
+    <app-table
+      [columns]="columns()"
+      [data]="filteredCategories()"
+      [loading]="state.productStore.loading()"
+      [emptyText]="'No categories found.'"
+    >
+      <ng-template appTableCell="id" let-row="row">
+        <div class="flex items-center gap-1.5">
+          <span
+            [appTooltip]="row.id"
+            class="font-bold text-[var(--color-primary)] border-b border-dashed border-slate-300 dark:border-slate-700 pb-0.5"
+          >
+            #{{ row.id | slice: 0 : 8 }}...{{ row.id | slice: -4 }}
+          </span>
+        </div>
+      </ng-template>
+
+      <ng-template appTableCell="name" let-row="row">
+        <span
+          class="text-sm font-extrabold text-slate-700 dark:text-slate-200 line-clamp-2"
+          [appTooltip]="row.name"
+        >
+          {{ row.name }}
+        </span>
+      </ng-template>
+
+      <ng-template appTableCell="slug" let-row="row">
+        <span
+          class="text-sm text-slate-500 dark:text-slate-400 whitespace-nowrap"
+          [appTooltip]="row.slug"
+        >
+          {{ row.slug }}
+        </span>
+      </ng-template>
+
+      <ng-template appTableCell="description" let-row="row">
+        <span
+          class="text-sm text-slate-500 dark:text-slate-400 min-w-[200px] max-w-[400px] truncate block"
+        [appTooltip]="row.description || ('common.no_description' | translate)"
+        >
+          {{ row.description || '-' }}
+        </span>
+      </ng-template>
+
+      <ng-template appTableCell="products_count" let-row="row">
+        <app-badge
+          [variant]="row.products_count > 0 ? 'success' : 'danger'"
+          size="lg"
+          rounded="md"
+        [appTooltip]="'admin.product_count' | translate: { count: row.products_count ?? 0 }"
+        >
+          {{ row.products_count ?? 0 }}
+        </app-badge>
+      </ng-template>
+
+      <ng-template appTableCell="status" let-row="row">
+        <div class="flex items-center justify-center gap-2">
+          <app-badge
+            [variant]="row.is_active ? 'success' : 'danger'"
+            size="md"
+            rounded="md"
+          >
+            {{ (row.is_active ? 'cat.status_active' : 'cat.status_inactive') | translate }}
+          </app-badge>
+          <app-custom-switch
+            [ngModel]="row.is_active"
+            [disabled]="updatingCategoryId() === row.id"
+            (ngModelChange)="toggleStatus(row)"
+          />
+        </div>
+      </ng-template>
+
+      <ng-template appTableCell="created_at" let-row="row">
+        <span
+          [appTooltip]="
+            (row.created_at ? (row.created_at | date: 'dd/MM/yyyy HH:mm') : '-') || ''
+          "
+        >
+          {{ row.created_at | date: 'dd/MM/yyyy HH:mm' }}
+        </span>
+      </ng-template>
+
+      <ng-template appTableCell="actions" let-row="row">
+        <div class="flex items-center justify-end gap-2 whitespace-nowrap">
+          <button
+            (click)="openEditModal(row)"
+            class="text-xs font-bold px-3 py-1.5 rounded-lg border border-[var(--color-primary)]/20 hover:bg-[var(--color-primary)]/10 text-[var(--color-primary)] bg-[var(--color-primary)]/5 dark:bg-[var(--color-primary)]/10 dark:border-[var(--color-primary)]/30 dark:hover:bg-[var(--color-primary)]/20 hover:scale-105 active:scale-95 transition-all cursor-pointer flex items-center gap-1 shrink-0"
+          [appTooltip]="'action.edit' | translate"
+          >
+            <app-icon name="edit" class="w-3.5 h-3.5" />
+          <span>{{ 'action.edit' | translate }}</span>
+          </button>
+          <button
+            (click)="confirmDelete(row)"
+            class="text-xs font-bold px-3 py-1.5 rounded-lg border border-rose-500/20 dark:border-rose-500/30 hover:bg-rose-100 dark:hover:bg-rose-950/40 text-rose-600 dark:text-rose-400 bg-rose-50 dark:bg-rose-950/20 hover:scale-105 active:scale-95 transition-all cursor-pointer flex items-center gap-1 shrink-0"
+          [appTooltip]="'action.delete' | translate"
+          >
+            <app-icon name="trash" class="w-3.5 h-3.5" />
+          <span>{{ 'action.delete' | translate }}</span>
+          </button>
+        </div>
+      </ng-template>
+    </app-table>
+
+    <app-pagination
+      [currentPage]="state.productStore.currentCategoryPage()"
+      [totalPages]="state.productStore.lastCategoryPage()"
+      [totalItems]="state.productStore.totalCategories()"
+      [itemsPerPage]="limit"
+      [itemName]="'admin.category_item' | translate"
+      (pageChange)="fetchPage($event)"
+    />
+  </div>
+</div>
+
+@if (isDeactivateModalOpen()) {
+  <div
+    class="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/50 cursor-pointer"
+    (click)="closeDeactivateOutOfStockModal()"
+  >
+    <div
+      class="relative w-full max-w-md rounded-2xl bg-white p-6 shadow-2xl dark:bg-slate-900 border border-slate-200 dark:border-slate-800 cursor-default"
+      (click)="$event.stopPropagation()"
+    >
+      <div class="flex items-center justify-between border-b border-slate-100 dark:border-slate-800 pb-3">
+        <h3 class="text-base font-bold text-slate-900 dark:text-white flex items-center gap-2">
+          <app-icon name="alert-triangle" class="h-5 w-5 text-amber-500" />
+          {{ 'cat.deactivate_modal_title' | translate }}
+        </h3>
+        <button
+          type="button"
+          class="rounded-lg p-1 text-slate-400 hover:bg-slate-100 hover:text-slate-600 dark:hover:bg-slate-800"
+          (click)="closeDeactivateOutOfStockModal()"
+        >
+          <app-icon name="close" class="h-5 w-5" />
+        </button>
+      </div>
+
+      <div class="py-4 space-y-3 text-sm text-slate-600 dark:text-slate-300">
+        <p>{{ 'cat.deactivate_modal_confirm_msg' | translate }}</p>
+        <div class="rounded-xl border border-amber-200 bg-amber-50/70 p-3.5 text-xs leading-relaxed text-amber-800 dark:border-amber-900/50 dark:bg-amber-950/30 dark:text-amber-300">
+          <strong class="font-bold uppercase tracking-wider block mb-1">Lưu ý:</strong>
+          {{ 'cat.deactivate_modal_warning' | translate }}
+        </div>
+      </div>
+
+      <div class="flex justify-end gap-3 pt-2">
+        <button
+          app-button
+          variant="cancel"
+          type="button"
+          [disabled]="isDeactivating()"
+          (click)="closeDeactivateOutOfStockModal()"
+        >
+          {{ 'common.cancel' | translate }}
+        </button>
+        <button
+          app-button
+          variant="danger"
+          type="button"
+          [loading]="isDeactivating()"
+          [disabled]="isDeactivating()"
+          (click)="confirmDeactivateOutOfStock()"
+        >
+          {{ 'cat.deactivate_modal_confirm_btn' | translate }}
+        </button>
+      </div>
+    </div>
+  </div>
+}

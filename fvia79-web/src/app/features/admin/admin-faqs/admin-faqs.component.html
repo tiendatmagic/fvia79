@@ -1,0 +1,1035 @@
+<div class="max-w-[1530px] mx-auto w-full p-4 sm:p-6 space-y-6">
+  <!-- Page Header -->
+  <app-page-header
+    [title]="'faq.admin_title' | translate"
+    [description]="'faq.admin_subtitle' | translate"
+  >
+    <ng-container actions>
+      <div class="flex items-center gap-3">
+        <button
+          *ngIf="activeTab() === 'categories'"
+          app-button
+          variant="primary"
+          (click)="openCreateCategoryModal()"
+          class="flex items-center gap-2 py-2.5 px-4 rounded-xl bg-gradient-to-r from-[var(--color-primary)] to-[var(--color-secondary)] text-white font-extrabold shadow-md shadow-[var(--color-primary)]/15 active:scale-95 transition-all text-xs sm:text-sm cursor-pointer"
+          [appTooltip]="'Thêm Danh mục áp dụng mới'"
+        >
+          <app-icon name="plus" class="w-4 h-4 shrink-0" />
+          <span>Thêm danh mục áp dụng</span>
+        </button>
+
+        <button
+          *ngIf="activeTab() === 'policies'"
+          app-button
+          variant="primary"
+          (click)="openCreatePolicyModal()"
+          class="flex items-center gap-2 py-2.5 px-4 rounded-xl bg-gradient-to-r from-[var(--color-primary)] to-[var(--color-secondary)] text-white font-extrabold shadow-md shadow-[var(--color-primary)]/15 active:scale-95 transition-all text-xs sm:text-sm cursor-pointer"
+          [appTooltip]="'faq.add_policy' | translate"
+        >
+          <app-icon name="plus" class="w-4 h-4 shrink-0" />
+          <span>{{ 'faq.add_policy' | translate }}</span>
+        </button>
+
+        <button
+          *ngIf="activeTab() === 'faqs'"
+          app-button
+          variant="primary"
+          (click)="openCreateFaqModal()"
+          class="flex items-center gap-2 py-2.5 px-4 rounded-xl bg-gradient-to-r from-[var(--color-primary)] to-[var(--color-secondary)] text-white font-extrabold shadow-md shadow-[var(--color-primary)]/15 active:scale-95 transition-all text-xs sm:text-sm cursor-pointer"
+          [appTooltip]="'faq.add_faq' | translate"
+        >
+          <app-icon name="plus" class="w-4 h-4 shrink-0" />
+          <span>{{ 'faq.add_faq' | translate }}</span>
+        </button>
+      </div>
+    </ng-container>
+  </app-page-header>
+
+  <!-- Main Tabs Switcher (Matching Admin Settings tab design) -->
+  <div
+    class="flex items-center gap-2 border-b border-slate-200/50 dark:border-slate-800/50 overflow-x-auto scrollbar-none whitespace-nowrap flex-nowrap"
+  >
+    <button
+      type="button"
+      (click)="changeTab('categories')"
+      class="px-5 py-3 border-b-2 font-bold text-sm transition-colors flex items-center gap-2 cursor-pointer -mb-px whitespace-nowrap"
+      [class.border-primary]="activeTab() === 'categories'"
+      [class.text-primary]="activeTab() === 'categories'"
+      [class.border-transparent]="activeTab() !== 'categories'"
+      [class.text-slate-500]="activeTab() !== 'categories'"
+      [class.hover:text-slate-800]="activeTab() !== 'categories'"
+      [class.dark:hover:text-slate-200]="activeTab() !== 'categories'"
+      [appTooltip]="'Quản lý danh sách các Danh mục áp dụng chính sách'"
+    >
+      <app-icon name="package" class="w-4 h-4" />
+      <span>Danh mục áp dụng</span>
+    </button>
+
+    <button
+      type="button"
+      (click)="changeTab('policies')"
+      class="px-5 py-3 border-b-2 font-bold text-sm transition-colors flex items-center gap-2 cursor-pointer -mb-px whitespace-nowrap"
+      [class.border-primary]="activeTab() === 'policies'"
+      [class.text-primary]="activeTab() === 'policies'"
+      [class.border-transparent]="activeTab() !== 'policies'"
+      [class.text-slate-500]="activeTab() !== 'policies'"
+      [class.hover:text-slate-800]="activeTab() !== 'policies'"
+      [class.dark:hover:text-slate-200]="activeTab() !== 'policies'"
+      [appTooltip]="'Quản lý danh sách các Quy định Chấp nhận & Từ chối bảo hành'"
+    >
+      <app-icon name="shield" class="w-4 h-4" />
+      <span>Quy định bảo hành</span>
+    </button>
+
+    <button
+      type="button"
+      (click)="changeTab('faqs')"
+      class="px-5 py-3 border-b-2 font-bold text-sm transition-colors flex items-center gap-2 cursor-pointer -mb-px whitespace-nowrap"
+      [class.border-primary]="activeTab() === 'faqs'"
+      [class.text-primary]="activeTab() === 'faqs'"
+      [class.border-transparent]="activeTab() !== 'faqs'"
+      [class.text-slate-500]="activeTab() !== 'faqs'"
+      [class.hover:text-slate-800]="activeTab() !== 'faqs'"
+      [class.dark:hover:text-slate-200]="activeTab() !== 'faqs'"
+      [appTooltip]="'Quản lý các câu hỏi thường gặp FAQ'"
+    >
+      <app-icon name="faq" class="w-4 h-4" />
+      <span>{{ 'faq.tab_faqs' | translate }}</span>
+    </button>
+  </div>
+
+  <!-- TAB 0: POLICY CATEGORIES TABLE -->
+  <div *ngIf="activeTab() === 'categories'" app-card class="overflow-hidden !p-0">
+    <app-table [columns]="categoryColumns" [data]="paginatedCategories()" [loading]="isLoading()">
+      <!-- Key -->
+      <ng-template appTableCell="key" let-row="row">
+        <span
+          class="px-2.5 py-1 rounded-lg text-xs font-black uppercase inline-block whitespace-nowrap bg-purple-100 text-purple-700 dark:bg-purple-950/80 dark:text-purple-300"
+          [appTooltip]="'Mã Key duy nhất: ' + row.key"
+        >
+          {{ row.key }}
+        </span>
+      </ng-template>
+
+      <!-- Name VI -->
+      <ng-template appTableCell="name_vi" let-row="row">
+        <span
+          class="text-xs font-bold text-slate-800 dark:text-slate-200"
+          [appTooltip]="'Tên danh mục Tiếng Việt: ' + row.name_vi"
+        >
+          🇻🇳 {{ row.name_vi }}
+        </span>
+      </ng-template>
+
+      <!-- Name EN -->
+      <ng-template appTableCell="name_en" let-row="row">
+        <span
+          class="text-xs font-bold text-slate-600 dark:text-slate-400"
+          [appTooltip]="'Tên danh mục Tiếng Anh: ' + row.name_en"
+        >
+          🇬🇧 {{ row.name_en }}
+        </span>
+      </ng-template>
+
+      <!-- Icon -->
+      <ng-template appTableCell="icon" let-row="row">
+        <div
+          class="flex items-center justify-center"
+          [appTooltip]="'Mã biểu tượng Icon: ' + (row.icon || 'package')"
+        >
+          <app-icon [name]="row.icon || 'package'" class="w-4 h-4 text-primary" />
+        </div>
+      </ng-template>
+
+      <!-- Sort Order -->
+      <ng-template appTableCell="sort_order" let-row="row">
+        <span
+          class="font-extrabold text-xs text-slate-700 dark:text-slate-300"
+          [appTooltip]="'Thứ tự ưu tiên sắp xếp: ' + row.sort_order"
+        >
+          {{ row.sort_order }}
+        </span>
+      </ng-template>
+
+      <!-- Active Status Switch -->
+      <ng-template appTableCell="is_active" let-row="row">
+        <div
+          class="flex items-center justify-center gap-2"
+          [appTooltip]="
+            row.is_active ? 'Đang bật hiển thị - Nhấp switch để ẩn' : 'Đang ẩn - Nhấp switch để bật'
+          "
+        >
+          <app-badge [variant]="row.is_active ? 'success' : 'danger'" size="md" rounded="md">
+            {{ (row.is_active ? 'cat.status_active' : 'cat.status_inactive') | translate }}
+          </app-badge>
+          <app-custom-switch
+            [ngModel]="row.is_active"
+            [disabled]="updatingCategoryId() === row.id"
+            (ngModelChange)="toggleCategoryStatus(row)"
+          />
+        </div>
+      </ng-template>
+
+      <!-- Actions -->
+      <ng-template appTableCell="actions" let-row="row">
+        <div class="flex items-center justify-end gap-2 whitespace-nowrap">
+          <button
+            (click)="openEditCategoryModal(row)"
+            class="text-xs font-bold px-3 py-1.5 rounded-lg border border-[var(--color-primary)]/20 hover:bg-[var(--color-primary)]/10 text-[var(--color-primary)] bg-[var(--color-primary)]/5 dark:bg-[var(--color-primary)]/10 dark:border-[var(--color-primary)]/30 dark:hover:bg-[var(--color-primary)]/20 hover:scale-105 active:scale-95 transition-all cursor-pointer flex items-center gap-1 shrink-0"
+            [appTooltip]="'action.edit' | translate"
+          >
+            <app-icon name="edit" class="w-3.5 h-3.5" />
+            <span>{{ 'action.edit' | translate }}</span>
+          </button>
+          <button
+            (click)="confirmDelete('category', row.id, row.name_vi)"
+            class="text-xs font-bold px-3 py-1.5 rounded-lg border border-rose-500/20 dark:border-rose-500/30 hover:bg-rose-100 dark:hover:bg-rose-950/40 text-rose-600 dark:text-rose-400 bg-rose-50 dark:bg-rose-950/20 hover:scale-105 active:scale-95 transition-all cursor-pointer flex items-center gap-1 shrink-0"
+            [appTooltip]="'action.delete' | translate"
+          >
+            <app-icon name="trash" class="w-3.5 h-3.5" />
+            <span>{{ 'action.delete' | translate }}</span>
+          </button>
+        </div>
+      </ng-template>
+    </app-table>
+
+    <!-- Pagination for Policy Categories -->
+    <div
+      *ngIf="categories().length > categoryPageSize"
+      class="p-4 border-t border-slate-100 dark:border-slate-800"
+    >
+      <app-pagination
+        [currentPage]="categoryPage()"
+        [totalPages]="categoryTotalPages()"
+        [totalItems]="categories().length"
+        [itemsPerPage]="categoryPageSize"
+        [itemName]="'danh mục'"
+        (pageChange)="categoryPage.set($event)"
+      />
+    </div>
+  </div>
+
+  <!-- TAB 1: WARRANTY POLICIES TABLE -->
+  <div *ngIf="activeTab() === 'policies'" app-card class="overflow-hidden !p-0">
+    <app-table [columns]="policyColumns" [data]="paginatedPolicies()" [loading]="isLoading()">
+      <!-- Category -->
+      <ng-template appTableCell="category" let-row="row">
+        <span
+          class="px-2.5 py-1 rounded-lg text-xs font-black uppercase inline-block whitespace-nowrap bg-indigo-100 text-indigo-700 dark:bg-indigo-950/80 dark:text-indigo-300"
+          [appTooltip]="'Danh mục áp dụng: ' + getCategoryLabel(row.category)"
+        >
+          {{ getCategoryLabel(row.category) }}
+        </span>
+      </ng-template>
+
+      <!-- Type -->
+      <ng-template appTableCell="type" let-row="row">
+        <span
+          [class]="
+            row.type === 'accepted'
+              ? 'bg-emerald-100 text-emerald-700 dark:bg-emerald-950/80 dark:text-emerald-300'
+              : 'bg-rose-100 text-rose-700 dark:bg-rose-950/80 dark:text-rose-300'
+          "
+          class="px-2.5 py-1 rounded-lg text-xs font-black uppercase inline-block whitespace-nowrap"
+          [appTooltip]="
+            row.type === 'accepted' ? 'Quy định Chấp nhận bảo hành' : 'Quy định Từ chối bảo hành'
+          "
+        >
+          {{ row.type === 'accepted' ? 'Chấp nhận' : 'Từ chối' }}
+        </span>
+      </ng-template>
+
+      <!-- Content VI -->
+      <ng-template appTableCell="content_vi" let-row="row">
+        <div class="max-w-xs sm:max-w-md">
+          <p
+            class="text-xs font-medium text-slate-800 dark:text-slate-200 line-clamp-2"
+            [appTooltip]="row.content_vi"
+          >
+            {{ row.content_vi }}
+          </p>
+          <p *ngIf="row.sub_content_vi" class="text-[11px] text-slate-400 mt-0.5">
+            {{ row.sub_content_vi }}
+          </p>
+        </div>
+      </ng-template>
+
+      <!-- Content EN -->
+      <ng-template appTableCell="content_en" let-row="row">
+        <div class="max-w-xs sm:max-w-md">
+          <p
+            class="text-xs font-medium text-slate-600 dark:text-slate-400 line-clamp-2"
+            [appTooltip]="row.content_en"
+          >
+            {{ row.content_en }}
+          </p>
+        </div>
+      </ng-template>
+
+      <!-- Tag -->
+      <ng-template appTableCell="tag" let-row="row">
+        <div *ngIf="row.tag_vi" class="flex flex-col gap-1">
+          <span
+            class="px-2 py-0.5 rounded-md bg-slate-100 dark:bg-slate-800 text-[11px] font-bold text-slate-700 dark:text-slate-300 w-fit"
+            [appTooltip]="'Nhãn Tiếng Việt: ' + row.tag_vi"
+          >
+            🇻🇳 {{ row.tag_vi }}
+          </span>
+          <span
+            *ngIf="row.tag_en"
+            class="px-2 py-0.5 rounded-md bg-slate-100 dark:bg-slate-800 text-[11px] font-bold text-slate-500 w-fit"
+            [appTooltip]="'Nhãn Tiếng Anh: ' + row.tag_en"
+          >
+            🇬🇧 {{ row.tag_en }}
+          </span>
+        </div>
+        <span *ngIf="!row.tag_vi" class="text-slate-400 text-xs">—</span>
+      </ng-template>
+
+      <!-- Sort Order -->
+      <ng-template appTableCell="sort_order" let-row="row">
+        <span
+          class="font-extrabold text-xs text-slate-700 dark:text-slate-300"
+          [appTooltip]="'Thứ tự ưu tiên sắp xếp: ' + row.sort_order"
+        >
+          {{ row.sort_order }}
+        </span>
+      </ng-template>
+
+      <!-- Active Status Switch -->
+      <ng-template appTableCell="is_active" let-row="row">
+        <div
+          class="flex items-center justify-center gap-2"
+          [appTooltip]="
+            row.is_active
+              ? 'Đang hiển thị ở Cửa hàng - Nhấp switch để ẩn'
+              : 'Đang ẩn - Nhấp switch để hiển thị'
+          "
+        >
+          <app-badge [variant]="row.is_active ? 'success' : 'danger'" size="md" rounded="md">
+            {{ (row.is_active ? 'cat.status_active' : 'cat.status_inactive') | translate }}
+          </app-badge>
+          <app-custom-switch [ngModel]="row.is_active" [disabled]="updatingPolicyId() === row.id" (ngModelChange)="togglePolicyStatus(row)" />
+        </div>
+      </ng-template>
+
+      <!-- Actions -->
+      <ng-template appTableCell="actions" let-row="row">
+        <div class="flex items-center justify-end gap-2 whitespace-nowrap">
+          <button
+            (click)="openEditPolicyModal(row)"
+            class="text-xs font-bold px-3 py-1.5 rounded-lg border border-[var(--color-primary)]/20 hover:bg-[var(--color-primary)]/10 text-[var(--color-primary)] bg-[var(--color-primary)]/5 dark:bg-[var(--color-primary)]/10 dark:border-[var(--color-primary)]/30 dark:hover:bg-[var(--color-primary)]/20 hover:scale-105 active:scale-95 transition-all cursor-pointer flex items-center gap-1 shrink-0"
+            [appTooltip]="'action.edit' | translate"
+          >
+            <app-icon name="edit" class="w-3.5 h-3.5" />
+            <span>{{ 'action.edit' | translate }}</span>
+          </button>
+          <button
+            (click)="confirmDelete('policy', row.id, row.content_vi)"
+            class="text-xs font-bold px-3 py-1.5 rounded-lg border border-rose-500/20 dark:border-rose-500/30 hover:bg-rose-100 dark:hover:bg-rose-950/40 text-rose-600 dark:text-rose-400 bg-rose-50 dark:bg-rose-950/20 hover:scale-105 active:scale-95 transition-all cursor-pointer flex items-center gap-1 shrink-0"
+            [appTooltip]="'action.delete' | translate"
+          >
+            <app-icon name="trash" class="w-3.5 h-3.5" />
+            <span>{{ 'action.delete' | translate }}</span>
+          </button>
+        </div>
+      </ng-template>
+    </app-table>
+
+    <!-- Pagination for Warranty Policies -->
+    <div
+      *ngIf="policies().length > policyPageSize"
+      class="p-4 border-t border-slate-100 dark:border-slate-800"
+    >
+      <app-pagination
+        [currentPage]="policyPage()"
+        [totalPages]="policyTotalPages()"
+        [totalItems]="policies().length"
+        [itemsPerPage]="policyPageSize"
+        [itemName]="'quy định'"
+        (pageChange)="policyPage.set($event)"
+      />
+    </div>
+  </div>
+
+  <!-- TAB 2: FAQS TABLE -->
+  <div *ngIf="activeTab() === 'faqs'" app-card class="overflow-hidden !p-0">
+    <app-table [columns]="faqColumns" [data]="paginatedFaqs()" [loading]="isLoading()">
+      <!-- Question VI -->
+      <ng-template appTableCell="question_vi" let-row="row">
+        <div class="max-w-md">
+          <p
+            class="text-xs font-bold text-slate-800 dark:text-slate-200"
+            [appTooltip]="row.question_vi"
+          >
+            {{ row.question_vi }}
+          </p>
+          <p class="text-[11px] text-slate-500 mt-1 line-clamp-2" [appTooltip]="row.answer_vi">
+            {{ row.answer_vi }}
+          </p>
+        </div>
+      </ng-template>
+
+      <!-- Question EN -->
+      <ng-template appTableCell="question_en" let-row="row">
+        <div class="max-w-md">
+          <p
+            class="text-xs font-bold text-slate-600 dark:text-slate-400"
+            [appTooltip]="row.question_en"
+          >
+            {{ row.question_en }}
+          </p>
+          <p class="text-[11px] text-slate-400 mt-1 line-clamp-2" [appTooltip]="row.answer_en">
+            {{ row.answer_en }}
+          </p>
+        </div>
+      </ng-template>
+
+      <!-- Sort Order -->
+      <ng-template appTableCell="sort_order" let-row="row">
+        <span
+          class="font-extrabold text-xs text-slate-700 dark:text-slate-300"
+          [appTooltip]="'Thứ tự ưu tiên sắp xếp: ' + row.sort_order"
+        >
+          {{ row.sort_order }}
+        </span>
+      </ng-template>
+
+      <!-- Active Status Switch -->
+      <ng-template appTableCell="is_active" let-row="row">
+        <div
+          class="flex items-center justify-center gap-2"
+          [appTooltip]="
+            row.is_active
+              ? 'Đang hiển thị ở Cửa hàng - Nhấp switch để ẩn'
+              : 'Đang ẩn - Nhấp switch để hiển thị'
+          "
+        >
+          <app-badge [variant]="row.is_active ? 'success' : 'danger'" size="md" rounded="md">
+            {{ (row.is_active ? 'cat.status_active' : 'cat.status_inactive') | translate }}
+          </app-badge>
+          <app-custom-switch [ngModel]="row.is_active" [disabled]="updatingFaqId() === row.id" (ngModelChange)="toggleFaqStatus(row)" />
+        </div>
+      </ng-template>
+
+      <!-- Actions -->
+      <ng-template appTableCell="actions" let-row="row">
+        <div class="flex items-center justify-end gap-2 whitespace-nowrap">
+          <button
+            (click)="openEditFaqModal(row)"
+            class="text-xs font-bold px-3 py-1.5 rounded-lg border border-[var(--color-primary)]/20 hover:bg-[var(--color-primary)]/10 text-[var(--color-primary)] bg-[var(--color-primary)]/5 dark:bg-[var(--color-primary)]/10 dark:border-[var(--color-primary)]/30 dark:hover:bg-[var(--color-primary)]/20 hover:scale-105 active:scale-95 transition-all cursor-pointer flex items-center gap-1 shrink-0"
+            [appTooltip]="'action.edit' | translate"
+          >
+            <app-icon name="edit" class="w-3.5 h-3.5" />
+            <span>{{ 'action.edit' | translate }}</span>
+          </button>
+          <button
+            (click)="confirmDelete('faq', row.id, row.question_vi)"
+            class="text-xs font-bold px-3 py-1.5 rounded-lg border border-rose-500/20 dark:border-rose-500/30 hover:bg-rose-100 dark:hover:bg-rose-950/40 text-rose-600 dark:text-rose-400 bg-rose-50 dark:bg-rose-950/20 hover:scale-105 active:scale-95 transition-all cursor-pointer flex items-center gap-1 shrink-0"
+            [appTooltip]="'action.delete' | translate"
+          >
+            <app-icon name="trash" class="w-3.5 h-3.5" />
+            <span>{{ 'action.delete' | translate }}</span>
+          </button>
+        </div>
+      </ng-template>
+    </app-table>
+
+    <!-- Pagination for FAQs -->
+    <div
+      *ngIf="faqs().length > faqPageSize"
+      class="p-4 border-t border-slate-100 dark:border-slate-800"
+    >
+      <app-pagination
+        [currentPage]="faqPage()"
+        [totalPages]="faqTotalPages()"
+        [totalItems]="faqs().length"
+        [itemsPerPage]="faqPageSize"
+        [itemName]="'câu hỏi'"
+        (pageChange)="faqPage.set($event)"
+      />
+    </div>
+  </div>
+
+  <!-- POLICY CATEGORY EDIT / CREATE MODAL -->
+  <div
+    *ngIf="isCategoryModalOpen()"
+    (click)="isCategoryModalOpen.set(false)"
+    class="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/50 cursor-pointer"
+  >
+    <div
+      (click)="$event.stopPropagation()"
+      class="bg-white dark:bg-slate-900 rounded-2xl border border-slate-200 dark:border-slate-800 w-full max-w-lg overflow-hidden shadow-2xl animate-in fade-in zoom-in duration-200 cursor-default"
+    >
+      <!-- Modal Header -->
+      <div
+        class="px-6 py-4 border-b border-slate-100 dark:border-slate-800 flex items-center justify-between bg-slate-50/50 dark:bg-slate-950/30"
+      >
+        <h3
+          class="text-base font-extrabold text-slate-800 dark:text-slate-100 flex items-center gap-2"
+        >
+          <app-icon name="package" class="w-5 h-5 text-primary" />
+          <span>{{
+            editingCategory() ? 'Chỉnh sửa Danh mục áp dụng' : 'Thêm Danh mục áp dụng mới'
+          }}</span>
+        </h3>
+        <button
+          type="button"
+          (click)="isCategoryModalOpen.set(false)"
+          class="p-1.5 rounded-lg text-slate-400 hover:text-slate-600 dark:hover:text-slate-200 hover:bg-slate-100 dark:hover:bg-slate-800 transition-colors cursor-pointer"
+        >
+          <app-icon name="close" class="w-5 h-5" />
+        </button>
+      </div>
+
+      <!-- Modal Body -->
+      <div class="p-6 space-y-4 max-h-[75vh] overflow-y-auto">
+        <!-- Name VI -->
+        <div class="space-y-1.5">
+          <label
+            class="text-xs font-bold text-slate-700 dark:text-slate-300 uppercase tracking-wider block flex items-center justify-between"
+          >
+            <span>Tên danh mục (Tiếng Việt 🇻🇳)</span>
+            <span class="text-rose-500 font-bold">*</span>
+          </label>
+          <input
+            type="text"
+            [(ngModel)]="categoryForm().name_vi"
+            placeholder="VD: Business Manager (BM), Tài khoản Gmail..."
+            class="w-full px-3.5 py-2.5 text-xs sm:text-sm font-bold bg-slate-50 dark:bg-slate-950 border border-slate-200 dark:border-slate-800 rounded-xl focus:outline-hidden focus:border-primary transition-all text-slate-800 dark:text-slate-100"
+          />
+        </div>
+
+        <!-- Name EN -->
+        <div class="space-y-1.5">
+          <label
+            class="text-xs font-bold text-slate-700 dark:text-slate-300 uppercase tracking-wider block flex items-center justify-between"
+          >
+            <span>Tên danh mục (Tiếng Anh 🇬🇧)</span>
+            <span class="text-rose-500 font-bold">*</span>
+          </label>
+          <input
+            type="text"
+            [(ngModel)]="categoryForm().name_en"
+            placeholder="e.g. Business Manager (BM), Gmail Accounts..."
+            class="w-full px-3.5 py-2.5 text-xs sm:text-sm font-bold bg-slate-50 dark:bg-slate-950 border border-slate-200 dark:border-slate-800 rounded-xl focus:outline-hidden focus:border-primary transition-all text-slate-800 dark:text-slate-100"
+          />
+        </div>
+
+        <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+          <!-- Key -->
+          <div class="space-y-1.5">
+            <label
+              class="text-xs font-bold text-slate-600 dark:text-slate-300 uppercase tracking-wider block"
+            >
+              Mã Key Slug (Để trống tự sinh)
+            </label>
+            <input
+              type="text"
+              [(ngModel)]="categoryForm().key"
+              placeholder="e.g. bm, via, mail"
+              class="w-full px-3.5 py-2.5 text-xs sm:text-sm font-semibold bg-slate-50 dark:bg-slate-950 border border-slate-200 dark:border-slate-800 rounded-xl focus:outline-hidden focus:border-primary transition-all text-slate-800 dark:text-slate-100"
+            />
+          </div>
+
+          <!-- Icon -->
+          <div class="space-y-1.5">
+            <label
+              class="text-xs font-bold text-slate-600 dark:text-slate-300 uppercase tracking-wider block"
+            >
+              SVG Icon Name
+            </label>
+            <input
+              type="text"
+              [(ngModel)]="categoryForm().icon"
+              placeholder="e.g. package, customers, shield"
+              class="w-full px-3.5 py-2.5 text-xs sm:text-sm font-semibold bg-slate-50 dark:bg-slate-950 border border-slate-200 dark:border-slate-800 rounded-xl focus:outline-hidden focus:border-primary transition-all text-slate-800 dark:text-slate-100"
+            />
+          </div>
+        </div>
+
+        <div class="grid grid-cols-1 sm:grid-cols-2 gap-4 items-center pt-2">
+          <!-- Sort Order -->
+          <div class="space-y-1.5">
+            <label
+              class="text-xs font-bold text-slate-600 dark:text-slate-300 uppercase tracking-wider block"
+            >
+              Số thứ tự hiển thị
+            </label>
+            <input
+              type="number"
+              [(ngModel)]="categoryForm().sort_order"
+              class="w-full px-3.5 py-2.5 text-xs sm:text-sm font-extrabold bg-slate-50 dark:bg-slate-950 border border-slate-200 dark:border-slate-800 rounded-xl focus:outline-hidden focus:border-primary transition-all text-slate-800 dark:text-slate-100"
+            />
+          </div>
+
+          <!-- Active Switch -->
+          <div class="flex items-center gap-3 pt-5">
+            <app-custom-switch
+              [checked]="categoryForm().is_active"
+              (checkedChange)="categoryForm.update((f) => ({ ...f, is_active: $event }))"
+            />
+            <span class="text-xs font-bold text-slate-700 dark:text-slate-300">
+              {{ categoryForm().is_active ? 'Đang bật hiển thị' : 'Ẩn danh mục' }}
+            </span>
+          </div>
+        </div>
+      </div>
+
+      <!-- Modal Footer -->
+      <div
+        class="px-6 py-4 border-t border-slate-100 dark:border-slate-800 flex items-center justify-end gap-3 bg-slate-50/50 dark:bg-slate-950/30"
+      >
+        <button
+          app-button
+          [variant]="'cancel'"
+          (click)="isCategoryModalOpen.set(false)"
+          class="py-2.5 px-4 rounded-xl text-xs font-bold"
+        >
+          {{ 'action.cancel' | translate }}
+        </button>
+        <button
+          app-button
+          [variant]="'primary'"
+          (click)="saveCategory()"
+          [loading]="isSubmitting()"
+          class="py-2.5 px-4 rounded-xl bg-gradient-to-r from-[var(--color-primary)] to-[var(--color-secondary)] text-white text-xs font-extrabold active:scale-95 shadow-sm shadow-[var(--color-primary)]/10 cursor-pointer"
+        >
+          {{ 'action.save' | translate }}
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- POLICY EDIT / CREATE MODAL -->
+  <div
+    *ngIf="isPolicyModalOpen()"
+    (click)="isPolicyModalOpen.set(false)"
+    class="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/50 cursor-pointer"
+  >
+    <div
+      (click)="$event.stopPropagation()"
+      class="bg-white dark:bg-slate-900 rounded-2xl border border-slate-200 dark:border-slate-800 w-full max-w-2xl overflow-hidden shadow-2xl animate-in fade-in zoom-in duration-200 cursor-default"
+    >
+      <!-- Modal Header -->
+      <div
+        class="px-6 py-4 border-b border-slate-100 dark:border-slate-800 flex items-center justify-between bg-slate-50/50 dark:bg-slate-950/30"
+      >
+        <h3
+          class="text-base font-extrabold text-slate-800 dark:text-slate-100 flex items-center gap-2"
+        >
+          <app-icon name="shield" class="w-5 h-5 text-primary" />
+          <span>{{
+            editingPolicy()
+              ? ('faq.modal_edit_policy' | translate)
+              : ('faq.modal_add_policy' | translate)
+          }}</span>
+        </h3>
+        <button
+          type="button"
+          (click)="isPolicyModalOpen.set(false)"
+          class="p-1.5 rounded-lg text-slate-400 hover:text-slate-600 dark:hover:text-slate-200 hover:bg-slate-100 dark:hover:bg-slate-800 transition-colors cursor-pointer"
+        >
+          <app-icon name="close" class="w-5 h-5" />
+        </button>
+      </div>
+
+      <!-- Modal Body -->
+      <div class="p-6 space-y-4 max-h-[75vh] overflow-y-auto">
+        <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+          <!-- Category Select -->
+          <div class="space-y-1.5">
+            <label
+              class="text-xs font-bold text-slate-600 dark:text-slate-300 uppercase tracking-wider block"
+            >
+              Danh mục áp dụng
+            </label>
+            <app-custom-select
+              [options]="policyCategoryOptions()"
+              valueKey="value"
+              labelKey="label"
+              [value]="policyForm().category"
+              (valueChange)="policyForm.update((f) => ({ ...f, category: $event }))"
+            />
+          </div>
+
+          <!-- Type Select -->
+          <div class="space-y-1.5">
+            <label
+              class="text-xs font-bold text-slate-600 dark:text-slate-300 uppercase tracking-wider block"
+            >
+              Loại bảo hành
+            </label>
+            <app-custom-select
+              [options]="policyTypeOptions"
+              valueKey="value"
+              labelKey="label"
+              [value]="policyForm().type"
+              (valueChange)="policyForm.update((f) => ({ ...f, type: $event }))"
+            />
+          </div>
+        </div>
+
+        <!-- Content VI -->
+        <div class="space-y-1.5">
+          <label
+            class="text-xs font-bold text-slate-700 dark:text-slate-300 uppercase tracking-wider block flex items-center justify-between"
+          >
+            <span>Nội dung chính (Tiếng Việt 🇻🇳)</span>
+            <span class="text-rose-500 font-bold">*</span>
+          </label>
+          <textarea
+            [(ngModel)]="policyForm().content_vi"
+            rows="2"
+            placeholder="Nhập nội dung quy định bằng Tiếng Việt..."
+            class="w-full px-3.5 py-2.5 text-xs sm:text-sm font-medium bg-slate-50 dark:bg-slate-950 border border-slate-200 dark:border-slate-800 rounded-xl focus:outline-hidden focus:border-primary transition-all text-slate-800 dark:text-slate-100"
+          ></textarea>
+        </div>
+
+        <!-- Content EN -->
+        <div class="space-y-1.5">
+          <label
+            class="text-xs font-bold text-slate-700 dark:text-slate-300 uppercase tracking-wider block flex items-center justify-between"
+          >
+            <span>Nội dung chính (Tiếng Anh 🇬🇧)</span>
+            <span class="text-rose-500 font-bold">*</span>
+          </label>
+          <textarea
+            [(ngModel)]="policyForm().content_en"
+            rows="2"
+            placeholder="Enter policy content in English..."
+            class="w-full px-3.5 py-2.5 text-xs sm:text-sm font-medium bg-slate-50 dark:bg-slate-950 border border-slate-200 dark:border-slate-800 rounded-xl focus:outline-hidden focus:border-primary transition-all text-slate-800 dark:text-slate-100"
+          ></textarea>
+        </div>
+
+        <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+          <!-- Sub Content VI -->
+          <div class="space-y-1.5">
+            <label
+              class="text-xs font-bold text-slate-600 dark:text-slate-300 uppercase tracking-wider block"
+            >
+              Ghi chú phụ (Tiếng Việt)
+            </label>
+            <input
+              type="text"
+              [(ngModel)]="policyForm().sub_content_vi"
+              placeholder="(VD: Yêu cầu chưa đổi email)"
+              class="w-full px-3.5 py-2.5 text-xs sm:text-sm font-medium bg-slate-50 dark:bg-slate-950 border border-slate-200 dark:border-slate-800 rounded-xl focus:outline-hidden focus:border-primary transition-all text-slate-800 dark:text-slate-100"
+            />
+          </div>
+
+          <!-- Sub Content EN -->
+          <div class="space-y-1.5">
+            <label
+              class="text-xs font-bold text-slate-600 dark:text-slate-300 uppercase tracking-wider block"
+            >
+              Ghi chú phụ (Tiếng Anh)
+            </label>
+            <input
+              type="text"
+              [(ngModel)]="policyForm().sub_content_en"
+              placeholder="(e.g. Email unchanged)"
+              class="w-full px-3.5 py-2.5 text-xs sm:text-sm font-medium bg-slate-50 dark:bg-slate-950 border border-slate-200 dark:border-slate-800 rounded-xl focus:outline-hidden focus:border-primary transition-all text-slate-800 dark:text-slate-100"
+            />
+          </div>
+        </div>
+
+        <div class="grid grid-cols-1 sm:grid-cols-3 gap-4">
+          <!-- Tag VI -->
+          <div class="space-y-1.5">
+            <label
+              class="text-xs font-bold text-slate-600 dark:text-slate-300 uppercase tracking-wider block"
+            >
+              Tên Nhãn Tag (VI)
+            </label>
+            <input
+              type="text"
+              [(ngModel)]="policyForm().tag_vi"
+              placeholder="VD: 24 giờ / Từ chối"
+              class="w-full px-3.5 py-2.5 text-xs sm:text-sm font-medium bg-slate-50 dark:bg-slate-950 border border-slate-200 dark:border-slate-800 rounded-xl focus:outline-hidden focus:border-primary transition-all text-slate-800 dark:text-slate-100"
+            />
+          </div>
+
+          <!-- Tag EN -->
+          <div class="space-y-1.5">
+            <label
+              class="text-xs font-bold text-slate-600 dark:text-slate-300 uppercase tracking-wider block"
+            >
+              Tên Nhãn Tag (EN)
+            </label>
+            <input
+              type="text"
+              [(ngModel)]="policyForm().tag_en"
+              placeholder="e.g. 24 hours / Rejected"
+              class="w-full px-3.5 py-2.5 text-xs sm:text-sm font-medium bg-slate-50 dark:bg-slate-950 border border-slate-200 dark:border-slate-800 rounded-xl focus:outline-hidden focus:border-primary transition-all text-slate-800 dark:text-slate-100"
+            />
+          </div>
+
+          <!-- Tag Color -->
+          <div class="space-y-1.5">
+            <label
+              class="text-xs font-bold text-slate-600 dark:text-slate-300 uppercase tracking-wider block"
+            >
+              Màu sắc Tag
+            </label>
+            <app-custom-select
+              [options]="tagColorOptions"
+              valueKey="value"
+              labelKey="label"
+              [value]="policyForm().tag_color"
+              (valueChange)="policyForm.update((f) => ({ ...f, tag_color: $event }))"
+            />
+          </div>
+        </div>
+
+        <div class="grid grid-cols-1 sm:grid-cols-2 gap-4 items-center pt-2">
+          <!-- Sort Order -->
+          <div class="space-y-1.5">
+            <label
+              class="text-xs font-bold text-slate-600 dark:text-slate-300 uppercase tracking-wider block"
+            >
+              Số thứ tự hiển thị
+            </label>
+            <input
+              type="number"
+              [(ngModel)]="policyForm().sort_order"
+              class="w-full px-3.5 py-2.5 text-xs sm:text-sm font-extrabold bg-slate-50 dark:bg-slate-950 border border-slate-200 dark:border-slate-800 rounded-xl focus:outline-hidden focus:border-primary transition-all text-slate-800 dark:text-slate-100"
+            />
+          </div>
+
+          <!-- Active Switch -->
+          <div class="flex items-center gap-3 pt-5">
+            <app-custom-switch
+              [checked]="policyForm().is_active"
+              (checkedChange)="policyForm.update((f) => ({ ...f, is_active: $event }))"
+            />
+            <span class="text-xs font-bold text-slate-700 dark:text-slate-300">
+              {{ policyForm().is_active ? 'Đang bật hiển thị ở Cửa hàng' : 'Ẩn khỏi Cửa hàng' }}
+            </span>
+          </div>
+        </div>
+      </div>
+
+      <!-- Modal Footer -->
+      <div
+        class="px-6 py-4 border-t border-slate-100 dark:border-slate-800 flex items-center justify-end gap-3 bg-slate-50/50 dark:bg-slate-950/30"
+      >
+        <button
+          app-button
+          [variant]="'cancel'"
+          (click)="isPolicyModalOpen.set(false)"
+          class="py-2.5 px-4 rounded-xl text-xs font-bold"
+        >
+          {{ 'action.cancel' | translate }}
+        </button>
+        <button
+          app-button
+          [variant]="'primary'"
+          (click)="savePolicy()"
+          [loading]="isSubmitting()"
+          class="py-2.5 px-4 rounded-xl bg-gradient-to-r from-[var(--color-primary)] to-[var(--color-secondary)] text-white text-xs font-extrabold active:scale-95 shadow-sm shadow-[var(--color-primary)]/10 cursor-pointer"
+        >
+          {{ 'action.save' | translate }}
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- FAQ EDIT / CREATE MODAL -->
+  <div
+    *ngIf="isFaqModalOpen()"
+    (click)="isFaqModalOpen.set(false)"
+    class="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/50 cursor-pointer"
+  >
+    <div
+      (click)="$event.stopPropagation()"
+      class="bg-white dark:bg-slate-900 rounded-2xl border border-slate-200 dark:border-slate-800 w-full max-w-2xl overflow-hidden shadow-2xl animate-in fade-in zoom-in duration-200 cursor-default"
+    >
+      <!-- Modal Header -->
+      <div
+        class="px-6 py-4 border-b border-slate-100 dark:border-slate-800 flex items-center justify-between bg-slate-50/50 dark:bg-slate-950/30"
+      >
+        <h3
+          class="text-base font-extrabold text-slate-800 dark:text-slate-100 flex items-center gap-2"
+        >
+          <app-icon name="faq" class="w-5 h-5 text-primary" />
+          <span>{{
+            editingFaq() ? ('faq.modal_edit_faq' | translate) : ('faq.modal_add_faq' | translate)
+          }}</span>
+        </h3>
+        <button
+          type="button"
+          (click)="isFaqModalOpen.set(false)"
+          class="p-1.5 rounded-lg text-slate-400 hover:text-slate-600 dark:hover:text-slate-200 hover:bg-slate-100 dark:hover:bg-slate-800 transition-colors cursor-pointer"
+        >
+          <app-icon name="close" class="w-5 h-5" />
+        </button>
+      </div>
+
+      <!-- Modal Body -->
+      <div class="p-6 space-y-4 max-h-[75vh] overflow-y-auto">
+        <!-- Question VI -->
+        <div class="space-y-1.5">
+          <label
+            class="text-xs font-bold text-slate-700 dark:text-slate-300 uppercase tracking-wider block flex items-center justify-between"
+          >
+            <span>Câu hỏi (Tiếng Việt 🇻🇳)</span>
+            <span class="text-rose-500 font-bold">*</span>
+          </label>
+          <input
+            type="text"
+            [(ngModel)]="faqForm().question_vi"
+            placeholder="Nhập nội dung câu hỏi bằng Tiếng Việt..."
+            class="w-full px-3.5 py-2.5 text-xs sm:text-sm font-bold bg-slate-50 dark:bg-slate-950 border border-slate-200 dark:border-slate-800 rounded-xl focus:outline-hidden focus:border-primary transition-all text-slate-800 dark:text-slate-100"
+          />
+        </div>
+
+        <!-- Answer VI -->
+        <div class="space-y-1.5">
+          <label
+            class="text-xs font-bold text-slate-700 dark:text-slate-300 uppercase tracking-wider block flex items-center justify-between"
+          >
+            <span>Câu trả lời (Tiếng Việt 🇻🇳)</span>
+            <span class="text-rose-500 font-bold">*</span>
+          </label>
+          <textarea
+            [(ngModel)]="faqForm().answer_vi"
+            rows="3"
+            placeholder="Nhập nội dung giải đáp bằng Tiếng Việt..."
+            class="w-full px-3.5 py-2.5 text-xs sm:text-sm font-medium bg-slate-50 dark:bg-slate-950 border border-slate-200 dark:border-slate-800 rounded-xl focus:outline-hidden focus:border-primary transition-all text-slate-800 dark:text-slate-100"
+          ></textarea>
+        </div>
+
+        <!-- Question EN -->
+        <div class="space-y-1.5">
+          <label
+            class="text-xs font-bold text-slate-700 dark:text-slate-300 uppercase tracking-wider block flex items-center justify-between"
+          >
+            <span>Câu hỏi (Tiếng Anh 🇬🇧)</span>
+            <span class="text-rose-500 font-bold">*</span>
+          </label>
+          <input
+            type="text"
+            [(ngModel)]="faqForm().question_en"
+            placeholder="Enter question in English..."
+            class="w-full px-3.5 py-2.5 text-xs sm:text-sm font-bold bg-slate-50 dark:bg-slate-950 border border-slate-200 dark:border-slate-800 rounded-xl focus:outline-hidden focus:border-primary transition-all text-slate-800 dark:text-slate-100"
+          />
+        </div>
+
+        <!-- Answer EN -->
+        <div class="space-y-1.5">
+          <label
+            class="text-xs font-bold text-slate-700 dark:text-slate-300 uppercase tracking-wider block flex items-center justify-between"
+          >
+            <span>Câu trả lời (Tiếng Anh 🇬🇧)</span>
+            <span class="text-rose-500 font-bold">*</span>
+          </label>
+          <textarea
+            [(ngModel)]="faqForm().answer_en"
+            rows="3"
+            placeholder="Enter answer explanation in English..."
+            class="w-full px-3.5 py-2.5 text-xs sm:text-sm font-medium bg-slate-50 dark:bg-slate-950 border border-slate-200 dark:border-slate-800 rounded-xl focus:outline-hidden focus:border-primary transition-all text-slate-800 dark:text-slate-100"
+          ></textarea>
+        </div>
+
+        <div class="grid grid-cols-1 sm:grid-cols-2 gap-4 items-center pt-2">
+          <!-- Sort Order -->
+          <div class="space-y-1.5">
+            <label
+              class="text-xs font-bold text-slate-600 dark:text-slate-300 uppercase tracking-wider block"
+            >
+              Số thứ tự hiển thị
+            </label>
+            <input
+              type="number"
+              [(ngModel)]="faqForm().sort_order"
+              class="w-full px-3.5 py-2.5 text-xs sm:text-sm font-extrabold bg-slate-50 dark:bg-slate-950 border border-slate-200 dark:border-slate-800 rounded-xl focus:outline-hidden focus:border-primary transition-all text-slate-800 dark:text-slate-100"
+            />
+          </div>
+
+          <!-- Active Switch -->
+          <div class="flex items-center gap-3 pt-5">
+            <app-custom-switch
+              [checked]="faqForm().is_active"
+              (checkedChange)="faqForm.update((f) => ({ ...f, is_active: $event }))"
+            />
+            <span class="text-xs font-bold text-slate-700 dark:text-slate-300">
+              {{ faqForm().is_active ? 'Đang bật hiển thị ở Cửa hàng' : 'Ẩn khỏi Cửa hàng' }}
+            </span>
+          </div>
+        </div>
+      </div>
+
+      <!-- Modal Footer -->
+      <div
+        class="px-6 py-4 border-t border-slate-100 dark:border-slate-800 flex items-center justify-end gap-3 bg-slate-50/50 dark:bg-slate-950/30"
+      >
+        <button
+          app-button
+          [variant]="'cancel'"
+          (click)="isFaqModalOpen.set(false)"
+          class="py-2.5 px-4 rounded-xl text-xs font-bold"
+        >
+          {{ 'action.cancel' | translate }}
+        </button>
+        <button
+          app-button
+          [variant]="'primary'"
+          (click)="saveFaq()"
+          [loading]="isSubmitting()"
+          class="py-2.5 px-4 rounded-xl bg-gradient-to-r from-[var(--color-primary)] to-[var(--color-secondary)] text-white text-xs font-extrabold active:scale-95 shadow-sm shadow-[var(--color-primary)]/10 cursor-pointer"
+        >
+          {{ 'action.save' | translate }}
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- DELETE CONFIRMATION MODAL -->
+  <div
+    *ngIf="isDeleteModalOpen()"
+    (click)="isDeleteModalOpen.set(false)"
+    class="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/50 cursor-pointer"
+  >
+    <div
+      (click)="$event.stopPropagation()"
+      class="bg-white dark:bg-slate-900 rounded-2xl border border-slate-200 dark:border-slate-800 w-full max-w-md p-6 space-y-4 shadow-2xl animate-in fade-in zoom-in duration-200 cursor-default"
+    >
+      <div
+        class="w-12 h-12 rounded-2xl bg-rose-100 dark:bg-rose-950/80 text-rose-600 dark:text-rose-400 flex items-center justify-center mx-auto"
+      >
+        <app-icon name="trash" class="w-6 h-6" />
+      </div>
+      <div class="text-center space-y-1.5">
+        <h3 class="text-base font-extrabold text-slate-800 dark:text-slate-100">
+          Xác nhận xóa nội dung
+        </h3>
+        <p class="text-xs font-medium text-slate-500 dark:text-slate-400 leading-relaxed">
+          Bạn có chắc chắn muốn xóa mục này khỏi hệ thống? Hành động này không thể hoàn tác.
+        </p>
+        <p class="text-xs font-bold text-slate-700 dark:text-slate-300 italic pt-1 truncate">
+          "{{ itemToDelete()?.title }}"
+        </p>
+      </div>
+      <div class="flex items-center justify-center gap-3 pt-2">
+        <button
+          app-button
+          [variant]="'cancel'"
+          (click)="isDeleteModalOpen.set(false)"
+          class="flex-1 py-2.5 px-4 text-xs font-bold"
+        >
+          {{ 'action.cancel' | translate }}
+        </button>
+        <button
+          app-button
+          [variant]="'danger'"
+          (click)="executeDelete()"
+          [loading]="isSubmitting()"
+          class="flex-1 py-2.5 px-4 text-xs font-extrabold text-white bg-rose-600 hover:bg-rose-700 rounded-xl shadow-md transition-all cursor-pointer flex items-center justify-center"
+        >
+          <span>Xóa vĩnh viễn</span>
+        </button>
+      </div>
+    </div>
+  </div>
+</div>

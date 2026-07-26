@@ -1,0 +1,130 @@
+<form (ngSubmit)="submit()" class="space-y-5">
+  @if (data.mode === 'restore') {
+    <div class="rounded-xl bg-rose-50 dark:bg-rose-950/25 p-4 text-sm text-rose-700 dark:text-rose-300">
+      <div class="flex items-start gap-3">
+        <app-icon name="warning" class="mt-0.5 h-5 w-5 shrink-0" />
+        <p class="font-semibold">{{ 'database_backup.restore_warning' | translate }}</p>
+      </div>
+    </div>
+
+    <div class="form-field">
+      <label>{{ 'database_backup.sql_file' | translate }}</label>
+      <input
+        #backupFileInput
+        type="file"
+        accept=".sql,application/sql,text/plain"
+        class="sr-only"
+        (change)="onFileSelected($event)"
+        required
+      />
+      <button
+        type="button"
+        class="group mt-1 flex w-full items-center gap-4 rounded-xl border border-dashed px-4 py-4 text-left transition-colors focus:outline-none focus:ring-2 focus:ring-[var(--dynamic-primary)]/20"
+        [ngClass]="selectedFile
+          ? 'border-emerald-300 bg-emerald-50 dark:border-emerald-800 dark:bg-emerald-950/20'
+          : 'border-slate-300 bg-slate-50 hover:border-[var(--dynamic-primary)] dark:border-slate-700 dark:bg-slate-950/40'"
+        (click)="backupFileInput.click()"
+      >
+        <span
+          class="flex h-11 w-11 shrink-0 items-center justify-center rounded-xl"
+          [ngClass]="selectedFile
+            ? 'bg-emerald-100 text-emerald-600 dark:bg-emerald-900/40'
+            : 'bg-[var(--dynamic-primary)]/10 text-[var(--dynamic-primary)]'"
+        >
+          <app-icon [name]="selectedFile ? 'check-circle' : 'upload'" class="h-5 w-5" />
+        </span>
+
+        <span class="min-w-0 flex-1">
+          @if (selectedFile) {
+            <span class="block truncate text-sm font-extrabold text-slate-800 dark:text-white">
+              {{ selectedFile.name }}
+            </span>
+            <span class="mt-1 block text-xs font-semibold text-emerald-600 dark:text-emerald-400">
+              {{ 'database_backup.file_selected' | translate }} · {{ formatFileSize(selectedFile.size) }}
+            </span>
+          } @else {
+            <span class="block text-sm font-extrabold text-slate-700 dark:text-slate-200">
+              {{ 'database_backup.choose_file' | translate }}
+            </span>
+            <span class="mt-1 block text-xs font-semibold text-slate-400">
+              {{ 'database_backup.file_hint' | translate }}
+            </span>
+          }
+        </span>
+
+        <span
+          class="shrink-0 rounded-lg bg-white px-3 py-2 text-xs font-extrabold text-[var(--dynamic-primary)] shadow-sm ring-1 ring-slate-200/70 dark:bg-slate-900 dark:ring-slate-700"
+        >
+          {{ (selectedFile ? 'database_backup.change_file' : 'database_backup.browse_file') | translate }}
+        </span>
+      </button>
+      <p class="mt-1.5 text-xs text-slate-400">
+        {{ 'database_backup.max_file_size' | translate }}: {{ data.maxUploadMegabytes }} MB
+      </p>
+      @if (fileError) {
+        <p class="mt-1.5 text-xs font-bold text-rose-600">{{ fileError | translate }}</p>
+      }
+    </div>
+  }
+
+  <div class="form-field">
+    <label class="text-xs font-bold text-slate-400 dark:text-slate-500 uppercase tracking-wider block mb-1.5 font-sans">
+      {{ 'database_backup.current_password' | translate }} <span class="text-rose-500">*</span>
+    </label>
+    <app-custom-input
+      type="password"
+      name="password"
+      [(ngModel)]="password"
+      [placeholder]="'database_backup.current_password' | translate"
+    />
+  </div>
+
+  @if (data.requiresOtp) {
+    <div class="form-field">
+      <label>{{ 'database_backup.otp_code' | translate }}</label>
+      <input
+        type="text"
+        name="otp_code"
+        class="form-input w-full font-mono tracking-[0.3em]"
+        inputmode="numeric"
+        autocomplete="one-time-code"
+        maxlength="6"
+        pattern="[0-9]{6}"
+        [(ngModel)]="otpCode"
+        required
+      />
+    </div>
+  }
+
+  @if (data.mode === 'restore') {
+    <div class="form-field">
+      <label>{{ 'database_backup.confirmation_label' | translate }}</label>
+      <input
+        type="text"
+        name="confirmation"
+        class="form-input w-full font-mono"
+        placeholder="RESTORE"
+        autocomplete="off"
+        [(ngModel)]="confirmation"
+        required
+      />
+      <p class="mt-1.5 text-xs text-slate-400">
+        {{ 'database_backup.confirmation_hint' | translate }}
+      </p>
+    </div>
+  }
+
+  <div class="flex justify-end gap-3 pt-2">
+    <button type="button" app-button variant="cancel" (click)="modalRef.close()">
+      {{ 'action.cancel' | translate }}
+    </button>
+    <button
+      type="submit"
+      app-button
+      [variant]="data.mode === 'restore' ? 'danger' : 'primary'"
+      [disabled]="!canSubmit()"
+    >
+      {{ (data.mode === 'restore' ? 'database_backup.restore_confirm' : 'database_backup.export_confirm') | translate }}
+    </button>
+  </div>
+</form>
