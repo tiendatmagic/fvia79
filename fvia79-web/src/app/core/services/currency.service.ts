@@ -60,11 +60,7 @@ export class CurrencyService {
         maximumFractionDigits: maxDigits
       }).format(numericAmount);
     } else {
-      let vndAmount = numericAmount * this.usdToVndRate();
-      // Round up to nearest 1,000 VND for clean thousand price (e.g., 195,155 -> 196,000, 195,555 -> 196,000)
-      if (decimals === undefined && vndAmount > 0) {
-        vndAmount = Math.ceil(vndAmount / 1000) * 1000;
-      }
+      const vndAmount = numericAmount * this.usdToVndRate();
       return new Intl.NumberFormat('vi-VN', {
         style: 'currency',
         currency: 'VND',
