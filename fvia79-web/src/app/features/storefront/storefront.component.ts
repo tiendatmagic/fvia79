@@ -158,6 +158,19 @@ export class StorefrontComponent implements OnInit, OnDestroy {
     this.state.productStore.clearCache();
     this.loadAllGroupedProducts();
     this.loadRecentActivities();
+    this.fetchCategoriesList();
+  }
+
+  public readonly allCategoriesList = signal<any[]>([]);
+
+  public fetchCategoriesList() {
+    this.state.productStore.fetchCategories().subscribe({
+      next: (cats) => {
+        if (cats && Array.isArray(cats)) {
+          this.allCategoriesList.set(cats);
+        }
+      },
+    });
   }
 
   ngOnDestroy(): void {
@@ -447,6 +460,46 @@ export class StorefrontComponent implements OnInit, OnDestroy {
     this.loadAllGroupedProducts();
   }
 
+  public readonly selectedCategory = signal<string>('all');
+
+  public onCategorySelect(catId: string) {
+    this.selectedCategory.set(catId || 'all');
+  }
+
+  public readonly categoryOptions = computed(() => {
+    const language = this.lang.currentLang();
+    const allLabel = this.lang.translate('storefront.all_categories');
+
+    const options: { id: string; name: string }[] = [
+      { id: 'all', name: allLabel },
+    ];
+
+    const fetchedCats = this.allCategoriesList();
+    if (fetchedCats && fetchedCats.length > 0) {
+      for (const cat of fetchedCats) {
+        const catName = language === 'vi'
+          ? (cat.name_vi || cat.name_en || cat.name)
+          : (cat.name_en || cat.name_vi || cat.name);
+        options.push({
+          id: String(cat.id),
+          name: catName,
+        });
+      }
+    } else {
+      const existingGroups = this.groupedProductsState();
+      for (const group of existingGroups) {
+        if (group.id && group.id !== 'all') {
+          options.push({
+            id: String(group.id),
+            name: group.name,
+          });
+        }
+      }
+    }
+
+    return options;
+  });
+
   public readonly groupedProductsState = signal<any[]>([]);
 
   public readonly sortOptions = computed(() => [
@@ -458,6 +511,7 @@ export class StorefrontComponent implements OnInit, OnDestroy {
   public readonly groupedProducts = computed(() => {
     const language = this.lang.currentLang();
     const isSearching = !!this.searchQuery.trim();
+    const selectedCat = this.selectedCategory();
 
     let groups = this.groupedProductsState().map((group) => ({
       ...group,
@@ -478,8 +532,32 @@ export class StorefrontComponent implements OnInit, OnDestroy {
       })),
     }));
 
+    if (selectedCat !== 'all') {
+      groups = groups.filter((g) => String(g.id) === String(selectedCat));
+
+      if (groups.length === 0) {
+        const catInfo = this.allCategoriesList().find((c) => String(c.id) === String(selectedCat));
+        if (catInfo) {
+          groups = [
+            {
+              id: catInfo.id,
+              name: language === 'vi'
+                ? (catInfo.name_vi || catInfo.name_en || catInfo.name)
+                : (catInfo.name_en || catInfo.name_vi || catInfo.name),
+              description: language === 'vi'
+                ? (catInfo.description_vi ?? catInfo.description_en ?? catInfo.description)
+                : (catInfo.description_en ?? catInfo.description_vi ?? catInfo.description),
+              products: [],
+              total: 0,
+              loading: false,
+            },
+          ];
+        }
+      }
+    }
+
     if (isSearching) {
-      if (!this.includeOutOfStock()) {
+      if (!this.includeOutOfStock() && selectedCat === 'all') {
         groups = groups.map((g) => {
           const inStockProds = (g.products || []).filter((p: any) => (p.available_count ?? 0) > 0);
           return {
