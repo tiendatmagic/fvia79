@@ -39,4 +39,9 @@ return [
         'api_key' => env('ADS7979_API_KEY'),
     ],
 
+    'binance' => [
+        'proxy' => env('BINANCE_PROXY'),
+        'api_host' => env('BINANCE_API_HOST'),
+    ],
+
 ];

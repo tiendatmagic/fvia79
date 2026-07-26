@@ -41,6 +41,8 @@ class SystemSettingController extends Controller
             'admin_binance_id' => 'sometimes|nullable|string|max:100',
             'binance_api_key' => 'sometimes|nullable|string|max:200',
             'binance_api_secret' => 'sometimes|nullable|string|max:200',
+            'binance_proxy' => 'sometimes|nullable|string|max:500',
+            'binance_api_host' => 'sometimes|nullable|string|max:500',
             'telegram_bot_token' => 'sometimes|nullable|string|max:500',
             'telegram_bot_username' => 'sometimes|nullable|string|max:100',
             'telegram_bot_enabled' => 'sometimes|nullable',
@@ -80,6 +82,12 @@ class SystemSettingController extends Controller
         }
         if ($request->filled('binance_api_secret')) {
             $settingsToSave['binance_api_secret'] = $request->input('binance_api_secret');
+        }
+        if ($request->has('binance_proxy')) {
+            $settingsToSave['binance_proxy'] = (string) $request->input('binance_proxy');
+        }
+        if ($request->has('binance_api_host')) {
+            $settingsToSave['binance_api_host'] = (string) $request->input('binance_api_host');
         }
 
         if ($request->filled('telegram_bot_token')) {
