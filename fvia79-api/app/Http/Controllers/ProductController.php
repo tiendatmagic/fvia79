@@ -23,7 +23,7 @@ class ProductController extends Controller
     {
         try {
             $page = $request->query('page');
-            $limit = min(20, max(1, (int) $request->query('limit', 8)));
+            $limit = min(100, max(1, (int) $request->query('limit', 8)));
             $categoryId = $request->query('category_id');
             $search = $request->query('search');
             $status = $request->query('status');
@@ -74,7 +74,7 @@ class ProductController extends Controller
     public function indexGrouped(Request $request)
     {
         try {
-            $limit = min(20, max(1, (int) $request->query('limit', 8)));
+            $limit = min(100, max(1, (int) $request->query('limit', 8)));
             $search = $request->query('search');
             $includeOutOfStock = $request->boolean('include_out_of_stock', false);
             $lang = $this->resolveLanguage($request);
