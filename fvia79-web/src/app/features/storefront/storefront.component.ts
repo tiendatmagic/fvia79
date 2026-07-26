@@ -215,10 +215,10 @@ export class StorefrontComponent implements OnInit, OnDestroy {
 
   private seedInitialPurchases(): void {
     this.recentPurchases.set([
-      { id: 'seed_p1', username: 'gao****', quantity: 5, product_name_vi: 'Via Ngoại Cổ (No2FA)', product_name_en: 'Via Foreign Old (No2FA)', total_price: 239945, created_at: new Date(Date.now() - 45000).toISOString() },
-      { id: 'seed_p2', username: 'es****', quantity: 4, product_name_vi: 'Via Indonesia Cổ 500-3K Friend (No2FA)', product_name_en: 'Via Indonesia Old 500-3K Friend (No2FA)', total_price: 540000, created_at: new Date(Date.now() - 120000).toISOString() },
-      { id: 'seed_p3', username: 'tranph****', quantity: 4, product_name_vi: 'BM50$ Ngâm', product_name_en: 'BM50$ Aged', total_price: 135969, created_at: new Date(Date.now() - 240000).toISOString() },
-      { id: 'seed_p4', username: 'crypto****', quantity: 1, product_name_vi: 'Via Colombia Cổ Kháng 902', product_name_en: 'Via Colombia Old 902 Restored', total_price: 80980, created_at: new Date(Date.now() - 400000).toISOString() }
+      { id: 'seed_p1', username: 'gao****', quantity: 5, product_name_vi: 'Via Ngoại Cổ (No2FA)', product_name_en: 'Via Foreign Old (No2FA)', total_price: 9.15, total_usd: 9.15, created_at: new Date(Date.now() - 45000).toISOString() },
+      { id: 'seed_p2', username: 'es****', quantity: 4, product_name_vi: 'Via Indonesia Cổ 500-3K Friend (No2FA)', product_name_en: 'Via Indonesia Old 500-3K Friend (No2FA)', total_price: 20.55, total_usd: 20.55, created_at: new Date(Date.now() - 120000).toISOString() },
+      { id: 'seed_p3', username: 'tranph****', quantity: 4, product_name_vi: 'BM50$ Ngâm', product_name_en: 'BM50$ Aged', total_price: 5.18, total_usd: 5.18, created_at: new Date(Date.now() - 240000).toISOString() },
+      { id: 'seed_p4', username: 'crypto****', quantity: 1, product_name_vi: 'Via Colombia Cổ Kháng 902', product_name_en: 'Via Colombia Old 902 Restored', total_price: 3.08, total_usd: 3.08, created_at: new Date(Date.now() - 400000).toISOString() }
     ]);
   }
 
@@ -275,7 +275,9 @@ export class StorefrontComponent implements OnInit, OnDestroy {
 
         const prodNameVi = prod ? (prod.name_vi || prod.name) : 'Via Ngoại New';
         const prodNameEn = prod ? (prod.name_en || prod.name) : 'Via Foreign New';
-        const unitPrice = prod ? Number(prod.price) : 22500;
+        const rawUnitPrice = prod ? Number(prod.price) : 2.50;
+        const unitPriceUsd = rawUnitPrice > 1000 ? rawUnitPrice / 26276 : rawUnitPrice;
+        const totalUsd = Math.round(unitPriceUsd * qty * 100) / 100;
 
         const newItem = {
           id: 'live_purch_' + Date.now(),
@@ -284,7 +286,8 @@ export class StorefrontComponent implements OnInit, OnDestroy {
           product_name_vi: prodNameVi,
           product_name_en: prodNameEn,
           product_name: prodNameVi,
-          total_price: unitPrice * qty,
+          total_price: totalUsd,
+          total_usd: totalUsd,
           created_at: new Date().toISOString()
         };
 

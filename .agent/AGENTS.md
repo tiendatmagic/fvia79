@@ -19,6 +19,18 @@
 
 ## 📋 NHẬT KÝ THAY ĐỔI DỰ ÁN
 
+### [2026-07-26] Bổ sung SVG icon `shopping-bag` & `credit-card`, chuẩn hóa đơn vị USD và chuyển khối Hoạt động gần đây xuống cuối trang Storefront
+- **Mô tả**:
+  1. Khắc phục lỗi 2 icon `shopping-bag` và `credit-card` ở tiêu đề khối "Đơn hàng vừa mua" và "Lịch sử nạp gần đây" bị hiển thị biểu tượng chấm hỏi default `(?)` do thiếu `@case` trong `IconComponent`.
+  2. Chuẩn hóa hiển thị tổng tiền khối "Đơn hàng vừa mua" sang đơn vị **USD** (định dạng `$X.XX`) thay vì hiển thị số VND hàng trăm ngàn USD.
+  3. Di chuyển toàn bộ khối "Đơn hàng vừa mua" và "Lịch sử nạp gần đây" từ vị trí trên cùng xuống vị trí **dưới cùng của trang Storefront** (nằm bên dưới tất cả các danh mục sản phẩm).
+- **Thực hiện**:
+  - `icon.component.html`: Bổ sung đường dẫn SVG chuẩn Heroicons cho `@case ('shopping-bag')` và `@case ('credit-card')` (cũng như `@case ('shopping-cart')`).
+  - `storefront.component.ts`: Cập nhật dữ liệu seed và timer tạo đơn hàng demo sử dụng giá USD thực tế (`$2.50` đến `$20.55`).
+  - `storefront.component.html`: Đổi phần định dạng tổng tiền đơn hàng thành `<span class="font-bold">${{ (item.total_usd || item.total_price_usd || (item.total_price > 1000 ? item.total_price / 26276 : item.total_price) || 0) | number:'1.2-2' }}</span>`, đồng thời di chuyển thẻ `@if (recentPurchasesEnabled() || recentDepositsEnabled())` xuống dưới cùng trang HTML bên dưới phần sản phẩm.
+  - Kiểm thử: Đã chạy `npx ng build --configuration production` thành công **100% BUILD SUCCESS**.
+
+
 ### [2026-07-26] Cập nhật Git Remote và Push mã nguồn lên Repository fvia79.git
 - **Mô tả**: Chuyển đổi URL remote `origin` từ repository cũ sang `https://github.com/tiendatmagic/fvia79.git`, dọn dẹp các tệp cache Angular ra khỏi git index tracking, và tiến hành push các nhánh `develop`, `master` lên GitHub repository mới.
 - **Thực hiện**:
