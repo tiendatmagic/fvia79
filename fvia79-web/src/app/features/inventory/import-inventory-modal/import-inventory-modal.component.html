@@ -31,7 +31,7 @@
         ><span>{{ 'inv.cost_price' | translate }}</span> <span class="text-[10px] text-slate-500 dark:text-slate-400 font-medium">({{ 'common.optional' | translate }})</span></label
       >
       <app-custom-input
-        [placeholder]="'VD: 1.50 (USD/USDT)'"
+        [placeholder]="'inventory.cost_price_placeholder' | translate"
         [(ngModel)]="costPrice"
         name="costPrice"
         type="number"

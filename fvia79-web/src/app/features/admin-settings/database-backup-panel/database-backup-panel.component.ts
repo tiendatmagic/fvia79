@@ -117,17 +117,32 @@ export class DatabaseBackupPanelComponent implements OnInit {
 
   private restoreBackup(payload: DatabaseBackupAuthorization): void {
     this.store.restoreBackup(payload).subscribe({
-      next: response => {
+      next: () => {
         this.toast.showToast(
-          response.message || this.lang.translate('database_backup.restore_success'),
+          this.lang.translate('database_backup.restore_success'),
           'success'
         );
         setTimeout(() => window.location.reload(), 1500);
       },
-      error: error => this.toast.showToast(
-        error?.error?.message || this.lang.translate('database_backup.restore_failed'),
-        'error'
-      )
+      error: error => {
+        const rawMessage = error?.error?.message || '';
+        let messageKey = 'database_backup.restore_failed';
+
+        if (rawMessage.includes('rolled back') || rawMessage.includes('trở về trạng thái')) {
+          messageKey = 'database_backup.restore_failed_rolled_back';
+        } else if (rawMessage.includes('safety backup') || rawMessage.includes('sao lưu an toàn')) {
+          messageKey = 'database_backup.safety_backup_failed';
+        } else if (rawMessage.includes('manual recovery') || rawMessage.includes('phục hồi thủ công')) {
+          messageKey = 'database_backup.restore_failed_manual';
+        } else if (rawMessage.includes('busy') || rawMessage.includes('đang chạy')) {
+          messageKey = 'database_backup.busy';
+        } else if (rawMessage) {
+          this.toast.showToast(rawMessage, 'error');
+          return;
+        }
+
+        this.toast.showToast(this.lang.translate(messageKey), 'error');
+      }
     });
   }
 
@@ -143,7 +158,14 @@ export class DatabaseBackupPanelComponent implements OnInit {
         const firstValidationError = Object.values(payload?.errors || {})
           .flat()
           .find(value => typeof value === 'string');
-        message = firstValidationError || payload?.message || message;
+        const rawMessage = firstValidationError || payload?.message;
+        if (rawMessage) {
+          if (rawMessage.includes('busy') || rawMessage.includes('đang chạy')) {
+            message = this.lang.translate('database_backup.busy');
+          } else {
+            message = rawMessage;
+          }
+        }
       } catch {
         // Keep the translated fallback for non-JSON download errors.
       }
