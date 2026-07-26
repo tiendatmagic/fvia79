@@ -20,6 +20,7 @@
 /public/storage
 /storage/*.key
 /storage/pail
+/storage/framework/cache
 /vendor
 /backup/*.sql
 _ide_helper.php
