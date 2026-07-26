@@ -1,7 +1,0 @@
-{
-  "version": 3,
-  "sources": ["../../../../../../node_modules/@reown/appkit-scaffold-ui/dist/esm/src/utils/ConstantsUtil.js"],
-  "sourcesContent": ["export const ConstantsUtil = {\n    ACCOUNT_TABS: [{ label: 'Tokens' }, { label: 'Activity' }],\n    SECURE_SITE_ORIGIN: (typeof process !== 'undefined' && typeof process.env !== 'undefined'\n        ? process.env['NEXT_PUBLIC_SECURE_SITE_ORIGIN']\n        : undefined) || 'https://secure.walletconnect.org',\n    VIEW_DIRECTION: {\n        Next: 'next',\n        Prev: 'prev'\n    },\n    ANIMATION_DURATIONS: {\n        HeaderText: 120,\n        ModalHeight: 150,\n        ViewTransition: 150\n    },\n    VIEWS_WITH_LEGAL_FOOTER: [\n        'Connect',\n        'ConnectWallets',\n        'OnRampTokenSelect',\n        'OnRampFiatSelect',\n        'OnRampProviders'\n    ],\n    VIEWS_WITH_DEFAULT_FOOTER: ['Networks']\n};\n"],
-  "mappings": ";AAAO,IAAM,gBAAgB;AAAA,EACzB,cAAc,CAAC,EAAE,OAAO,SAAS,GAAG,EAAE,OAAO,WAAW,CAAC;AAAA,EACzD,qBAAqB,OAAO,YAAY,eAAe,OAAO,QAAQ,QAAQ,cACxE,QAAQ,IAAI,gCAAgC,IAC5C,WAAc;AAAA,EACpB,gBAAgB;AAAA,IACZ,MAAM;AAAA,IACN,MAAM;AAAA,EACV;AAAA,EACA,qBAAqB;AAAA,IACjB,YAAY;AAAA,IACZ,aAAa;AAAA,IACb,gBAAgB;AAAA,EACpB;AAAA,EACA,yBAAyB;AAAA,IACrB;AAAA,IACA;AAAA,IACA;AAAA,IACA;AAAA,IACA;AAAA,EACJ;AAAA,EACA,2BAA2B,CAAC,UAAU;AAC1C;",
-  "names": []
-}

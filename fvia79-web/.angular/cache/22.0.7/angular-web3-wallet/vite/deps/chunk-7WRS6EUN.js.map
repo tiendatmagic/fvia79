@@ -1,7 +1,0 @@
-{
-  "version": 3,
-  "sources": ["../../../../../../node_modules/isows/_esm/utils.js", "../../../../../../node_modules/isows/_esm/native.js"],
-  "sourcesContent": ["export function getNativeWebSocket() {\n    if (typeof WebSocket !== \"undefined\")\n        return WebSocket;\n    if (typeof global.WebSocket !== \"undefined\")\n        return global.WebSocket;\n    if (typeof window.WebSocket !== \"undefined\")\n        return window.WebSocket;\n    if (typeof self.WebSocket !== \"undefined\")\n        return self.WebSocket;\n    throw new Error(\"`WebSocket` is not supported in this environment\");\n}\n", "import { getNativeWebSocket } from \"./utils.js\";\nexport const WebSocket = getNativeWebSocket();\n"],
-  "mappings": ";;;;;;AAAO,SAAS,qBAAqB;AACjC,MAAI,OAAO,cAAc;AACrB,WAAO;AACX,MAAI,OAAO,OAAO,cAAc;AAC5B,WAAO,OAAO;AAClB,MAAI,OAAO,OAAO,cAAc;AAC5B,WAAO,OAAO;AAClB,MAAI,OAAO,KAAK,cAAc;AAC1B,WAAO,KAAK;AAChB,QAAM,IAAI,MAAM,kDAAkD;AACtE;AAVA;AAAA;AAAA;AAAA;;;ACAA;AAAA;AAAA,mBAAAA;AAAA;AAAA,IACaA;AADb;AAAA;AAAA;AACO,IAAMA,aAAY,mBAAmB;AAAA;AAAA;",
-  "names": ["WebSocket"]
-}
