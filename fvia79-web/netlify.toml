@@ -13,6 +13,12 @@
   force = true
 
 [[redirects]]
+  from = "/storage/*"
+  to = "https://fvia79.ddns.net/storage/:splat"
+  status = 200
+  force = true
+
+[[redirects]]
   from = "/*"
   to = "/index.html"
   status = 200

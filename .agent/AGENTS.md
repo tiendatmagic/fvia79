@@ -19,6 +19,13 @@
 
 ## 📋 NHẬT KÝ THAY ĐỔI DỰ ÁN
 
+### [2026-07-26] Cấu hình & Chuẩn hóa liên kết Frontend Netlify với Backend DDNS
+- **Mô tả**: Thiết lập và kiểm tra cơ chế kết nối giữa FE (`https://fvia79.netlify.app/`) và BE (`https://fvia79.ddns.net/`).
+- **Thực hiện**:
+  - `netlify.toml`: Bổ sung redirect rule proxy `/api/*` và `/storage/*` từ Netlify sang `https://fvia79.ddns.net/api/:splat` và `https://fvia79.ddns.net/storage/:splat` (status 200 rewrite), cập nhật CSP `connect-src 'self' https://fvia79.ddns.net`.
+  - `cors.php`: Đảm bảo `https://fvia79.netlify.app` đã có sẵn trong danh sách `defaultOrigins` cho phép cross-origin request có credentials (`withCredentials: true`).
+  - Hướng dẫn cấu hình môi trường `.env` phía Backend server DDNS & lệnh clear cache bắt buộc `php artisan config:clear && php artisan config:cache && php artisan route:cache && php artisan view:cache`.
+
 ### [2026-07-26] Bổ sung Skeleton Loading cho 2 khối "Đơn hàng vừa mua" & "Lịch sử nạp gần đây" ở Storefront
 - **Mô tả**: Sửa lỗi khi tải trang Storefront, trong khi danh sách sản phẩm hiển thị khung xương skeleton loader thì 2 khối "Đơn hàng vừa mua" và "Lịch sử nạp gần đây" ở phía dưới lại hiển thị ngay dòng chữ "Không có dữ liệu hiển thị".
 - **Thực hiện**:
