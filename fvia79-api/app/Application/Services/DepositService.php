@@ -422,24 +422,36 @@ class DepositService
                 $queryString = 'timestamp='.$timestamp.'&recvWindow=60000';
                 $signature = hash_hmac('sha256', $queryString, $binanceApiSecret);
 
-                $response = Http::timeout(10)
-                    ->withHeaders([
-                        'X-MBX-APIKEY' => $binanceApiKey,
-                    ])
-                    ->get('https://api.binance.com/sapi/v1/pay/transactions?'.$queryString.'&signature='.$signature);
+                try {
+                    $response = Http::timeout(10)
+                        ->withHeaders([
+                            'X-MBX-APIKEY' => $binanceApiKey,
+                        ])
+                        ->get('https://api.binance.com/sapi/v1/pay/transactions?'.$queryString.'&signature='.$signature);
+                } catch (\Throwable $e) {
+                    Log::error('Binance Pay API Connection Error: '.$e->getMessage());
+                    throw new \RuntimeException('Unable to connect to Binance Pay API server: '.$e->getMessage());
+                }
 
                 if ($response->successful()) {
                     $result = $response->json();
                     if (($result['success'] ?? false) !== true || ($result['code'] ?? '') !== '000000') {
+                        $errorMsg = $result['errorMessage'] ?? $result['msg'] ?? ($result['code'] ?? 'Unknown error');
                         Log::error('Binance Pay API returned an unsuccessful payload: '.$response->body());
-                        throw new \RuntimeException('Binance Pay API rejected the transaction history request.');
+                        throw new \RuntimeException("Binance Pay API rejected request: {$errorMsg} (code: ".($result['code'] ?? 'N/A').')');
                     }
 
                     return $result['data'] ?? [];
                 }
 
-                Log::error('Binance Pay API HTTP error: '.$response->status().' - '.$response->body());
-                throw new \RuntimeException('Unable to connect to Binance Pay API. Please try again later.');
+                $statusCode = $response->status();
+                $responseBody = $response->body();
+                Log::error("Binance Pay API HTTP error {$statusCode}: {$responseBody}");
+
+                $jsonErr = json_decode($responseBody, true);
+                $detailedMsg = $jsonErr['msg'] ?? $jsonErr['message'] ?? $responseBody;
+
+                throw new \RuntimeException("Unable to connect to Binance Pay API (HTTP {$statusCode}: {$detailedMsg})");
             });
 
             return DB::transaction(function () use ($id, $userId, $transactions) {

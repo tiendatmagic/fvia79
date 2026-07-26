@@ -28,9 +28,17 @@ class SystemSettingModel extends Model
     protected function value(): Attribute
     {
         return Attribute::make(
-            get: fn (?string $value): ?string => $value !== null && $this->hasSensitiveValue()
-                ? Crypt::decryptString($value)
-                : $value,
+            get: function (?string $value): ?string {
+                if ($value === null || !$this->hasSensitiveValue()) {
+                    return $value;
+                }
+
+                try {
+                    return Crypt::decryptString($value);
+                } catch (\Throwable $e) {
+                    return $value;
+                }
+            },
             set: fn (?string $value): ?string => $value !== null && $this->hasSensitiveValue()
                 ? Crypt::encryptString($value)
                 : $value,
