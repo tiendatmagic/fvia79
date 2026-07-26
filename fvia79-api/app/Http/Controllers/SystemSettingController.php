@@ -28,6 +28,9 @@ class SystemSettingController extends Controller
             unset($settings[$sensitiveKey]);
         }
 
+        $settings['payment_bep20_enabled'] = filter_var($settings['payment_bep20_enabled'] ?? '1', FILTER_VALIDATE_BOOLEAN);
+        $settings['payment_binance_enabled'] = filter_var($settings['payment_binance_enabled'] ?? '1', FILTER_VALIDATE_BOOLEAN);
+
         return response()->json($settings);
     }
 
@@ -52,6 +55,8 @@ class SystemSettingController extends Controller
             'announcement_text_en' => 'sometimes|nullable|string|max:1000',
             'announcement_effect' => 'sometimes|nullable|string|in:marquee,fade,slide,bounce',
             'membership_tiers_enabled' => 'sometimes|nullable',
+            'payment_bep20_enabled' => 'sometimes|nullable',
+            'payment_binance_enabled' => 'sometimes|nullable',
             'recent_purchases_enabled' => 'sometimes|nullable',
             'recent_purchases_mode' => 'sometimes|nullable|string|in:demo,real',
             'recent_deposits_enabled' => 'sometimes|nullable',
@@ -120,6 +125,12 @@ class SystemSettingController extends Controller
         if ($request->has('membership_tiers_enabled')) {
             $settingsToSave['membership_tiers_enabled'] = filter_var($request->input('membership_tiers_enabled'), FILTER_VALIDATE_BOOLEAN) ? '1' : '0';
         }
+        if ($request->has('payment_bep20_enabled')) {
+            $settingsToSave['payment_bep20_enabled'] = filter_var($request->input('payment_bep20_enabled'), FILTER_VALIDATE_BOOLEAN) ? '1' : '0';
+        }
+        if ($request->has('payment_binance_enabled')) {
+            $settingsToSave['payment_binance_enabled'] = filter_var($request->input('payment_binance_enabled'), FILTER_VALIDATE_BOOLEAN) ? '1' : '0';
+        }
         if ($request->has('recent_purchases_enabled')) {
             $settingsToSave['recent_purchases_enabled'] = filter_var($request->input('recent_purchases_enabled'), FILTER_VALIDATE_BOOLEAN) ? '1' : '0';
         }
@@ -150,7 +161,7 @@ class SystemSettingController extends Controller
         $text = $this->settingService->getSetting('announcement_text', $textVi);
         $effect = $this->settingService->getSetting('announcement_effect', 'marquee');
         $usdtRate = $this->settingService->getSetting('usdt_exchange_rate', '25400');
-        $telegramBotUsername = $this->settingService->getSetting('telegram_bot_username', 'fvia79noti_bot');
+        $telegramBotUsername = $this->settingService->getSetting('telegram_bot_username', 'adsbm79noti_bot');
 
         $envFeatureEnabled = filter_var(config('app.feature_membership_tiers_enabled', false), FILTER_VALIDATE_BOOLEAN);
         $membershipTiersFeatureEnabled = filter_var($envFeatureEnabled, FILTER_VALIDATE_BOOLEAN);
@@ -158,6 +169,9 @@ class SystemSettingController extends Controller
         $membershipTiersEnabled = $membershipTiersFeatureEnabled
             ? filter_var($this->settingService->getSetting('membership_tiers_enabled', '1'), FILTER_VALIDATE_BOOLEAN)
             : false;
+
+        $paymentBep20Enabled = filter_var($this->settingService->getSetting('payment_bep20_enabled', '1'), FILTER_VALIDATE_BOOLEAN);
+        $paymentBinanceEnabled = filter_var($this->settingService->getSetting('payment_binance_enabled', '1'), FILTER_VALIDATE_BOOLEAN);
 
         return response()->json([
             'announcement_enabled' => filter_var($enabled, FILTER_VALIDATE_BOOLEAN),
@@ -169,6 +183,8 @@ class SystemSettingController extends Controller
             'telegram_bot_username' => (string) $telegramBotUsername,
             'membership_tiers_feature_enabled' => $membershipTiersFeatureEnabled,
             'membership_tiers_enabled' => $membershipTiersEnabled,
+            'payment_bep20_enabled' => $paymentBep20Enabled,
+            'payment_binance_enabled' => $paymentBinanceEnabled,
         ]);
     }
 

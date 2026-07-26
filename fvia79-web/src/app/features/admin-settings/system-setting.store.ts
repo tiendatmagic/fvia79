@@ -22,6 +22,8 @@ export interface SystemSettingsPayload {
   announcement_text?: string;
   announcement_effect?: 'marquee' | 'fade' | 'slide' | 'bounce' | string;
   membership_tiers_enabled?: boolean | string;
+  payment_bep20_enabled?: boolean | string;
+  payment_binance_enabled?: boolean | string;
   recent_purchases_enabled?: boolean | string;
   recent_purchases_mode?: 'demo' | 'real' | string;
   recent_deposits_enabled?: boolean | string;
@@ -54,13 +56,15 @@ export class SystemSettingStore {
     binance_api_key: '',
     binance_api_secret: '',
     telegram_bot_token: '',
-    telegram_bot_username: 'fvia79noti_bot',
+    telegram_bot_username: 'adsbm79noti_bot',
     telegram_bot_enabled: true,
     announcement_enabled: true,
     announcement_text_vi: '',
     announcement_text_en: '',
     announcement_text: '',
-    announcement_effect: 'marquee'
+    announcement_effect: 'marquee',
+    payment_bep20_enabled: true,
+    payment_binance_enabled: true
   });
 
   private cachedSettings: SystemSettingsPayload | null = null;
@@ -92,6 +96,8 @@ export class SystemSettingStore {
           } else {
             res.usdt_exchange_rate = 0;
           }
+          res.payment_bep20_enabled = res.payment_bep20_enabled !== undefined ? Boolean(res.payment_bep20_enabled) : true;
+          res.payment_binance_enabled = res.payment_binance_enabled !== undefined ? Boolean(res.payment_binance_enabled) : true;
           this.cachedSettings = res;
           this.lastFetchTime = Date.now();
           this.settings.set(res);

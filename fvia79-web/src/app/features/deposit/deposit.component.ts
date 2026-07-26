@@ -50,6 +50,19 @@ export class DepositComponent implements OnInit {
 
   ngOnInit() {
     this.state.authStore.checkMe(true).subscribe();
+    this.state.publicSettingStore.fetchPublicSettings().subscribe({
+      next: (settings) => {
+        if (settings) {
+          if (settings.payment_bep20_enabled) {
+            this.paymentMethod = 'bep20';
+          } else if (settings.payment_binance_enabled) {
+            this.paymentMethod = 'binance';
+          } else {
+            this.paymentMethod = '';
+          }
+        }
+      }
+    });
     this.state.depositStore.fetchRate().subscribe({
       next: () => this.onAmountChange(),
       error: () => this.state.showToast(this.lang.translate('toast.coingecko_error'), 'error')
@@ -67,6 +80,11 @@ export class DepositComponent implements OnInit {
 
   public onCreateInvoice() {
     if (this.isSubmitting()) return;
+
+    if (!this.paymentMethod) {
+      this.state.showToast(this.lang.translate('deposit.all_methods_disabled'), 'error');
+      return;
+    }
 
     if (this.amountUsdt === null || this.amountUsdt === undefined || this.amountUsdt < 0.1 || this.amountUsdt > 100000) {
       if (this.amountUsdt !== null && this.amountUsdt !== undefined && this.amountUsdt > 100000) {

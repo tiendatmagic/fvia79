@@ -117,7 +117,13 @@ class DepositService
         $binanceApiKeySetting = $this->settingService->getSetting('binance_api_key', '');
         $binanceApiSecretSetting = $this->settingService->getSetting('binance_api_secret', '');
 
+        $bep20Enabled = filter_var($this->settingService->getSetting('payment_bep20_enabled', '1'), FILTER_VALIDATE_BOOLEAN);
+        $binanceEnabled = filter_var($this->settingService->getSetting('payment_binance_enabled', '1'), FILTER_VALIDATE_BOOLEAN);
+
         if ($paymentMethod === 'bep20') {
+            if (! $bep20Enabled) {
+                throw new \RuntimeException('USDT BEP-20 deposit method is currently disabled.');
+            }
             if (empty($this->adminWalletAddress)) {
                 throw new \RuntimeException('The administrator has not configured the receiving USDT wallet address yet.');
             }
@@ -125,6 +131,9 @@ class DepositService
                 throw new \RuntimeException('The administrator has not configured the scanner API key yet.');
             }
         } elseif ($paymentMethod === 'binance') {
+            if (! $binanceEnabled) {
+                throw new \RuntimeException('Binance Pay deposit method is currently disabled.');
+            }
             if (empty($adminBinanceIdSetting)) {
                 throw new \RuntimeException('The administrator has not configured the receiving Binance ID yet.');
             }

@@ -13,6 +13,8 @@ export interface PublicSettings {
   telegram_bot_username: string;
   membership_tiers_feature_enabled: boolean;
   membership_tiers_enabled: boolean;
+  payment_bep20_enabled: boolean;
+  payment_binance_enabled: boolean;
 }
 
 @Injectable({
@@ -30,9 +32,11 @@ export class PublicSettingStore {
     announcement_text: '',
     announcement_effect: 'marquee',
     usdt_exchange_rate: 25400,
-    telegram_bot_username: 'fvia79noti_bot',
+    telegram_bot_username: 'adsbm79noti_bot',
     membership_tiers_feature_enabled: true,
-    membership_tiers_enabled: true
+    membership_tiers_enabled: true,
+    payment_bep20_enabled: true,
+    payment_binance_enabled: true
   });
 
   private cachedSettings: PublicSettings | null = null;
@@ -75,9 +79,11 @@ export class PublicSettingStore {
             announcement_text: res.announcement_text || '',
             announcement_effect: (res.announcement_effect as any) || 'marquee',
             usdt_exchange_rate: Number(res.usdt_exchange_rate) || 25400,
-            telegram_bot_username: res.telegram_bot_username || 'fvia79noti_bot',
+            telegram_bot_username: res.telegram_bot_username || 'adsbm79noti_bot',
             membership_tiers_feature_enabled: res.membership_tiers_feature_enabled !== undefined ? Boolean(res.membership_tiers_feature_enabled) : true,
-            membership_tiers_enabled: res.membership_tiers_enabled !== undefined ? Boolean(res.membership_tiers_enabled) : true
+            membership_tiers_enabled: res.membership_tiers_enabled !== undefined ? Boolean(res.membership_tiers_enabled) : true,
+            payment_bep20_enabled: res.payment_bep20_enabled !== undefined ? Boolean(res.payment_bep20_enabled) : true,
+            payment_binance_enabled: res.payment_binance_enabled !== undefined ? Boolean(res.payment_binance_enabled) : true
           };
           this.cachedSettings = data;
           this.lastFetchTime = Date.now();
