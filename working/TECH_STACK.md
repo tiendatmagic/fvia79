@@ -45,4 +45,4 @@ Repository chỉ xử lý Database.
 
 Áp dụng Domain-Driven Design (DDD) lai, CQRS (Command Bus), Event-Driven Architecture (bất đồng bộ) và cơ chế xác thực HttpOnly Cookie bảo mật.
 
-Front end & Backend nên tuân theo kiến trúc ở file D:\git\isocalmarket\ARCHITECTURE.md
+Front end & Backend nên tuân theo kiến trúc ở file D:\git\fvia79\ARCHITECTURE.md
