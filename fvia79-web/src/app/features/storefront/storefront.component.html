@@ -36,10 +36,10 @@
         </button>
       </div>
 
-      <div class="flex-1 min-w-0 w-full">
+      <div class="flex-1 min-w-0 w-full overflow-hidden">
         @if (announcement().announcement_effect === 'marquee') {
           <div
-            class="announcement-marquee-track text-xs sm:text-sm font-semibold text-slate-800 dark:text-slate-100 whitespace-nowrap overflow-hidden"
+            class="announcement-marquee-track text-xs sm:text-sm font-semibold text-slate-800 dark:text-slate-100 whitespace-nowrap"
           >
             <span>{{ announcementText }}</span>
           </div>
@@ -107,6 +107,87 @@
       class="absolute -left-16 -bottom-16 w-64 h-64 bg-[var(--color-secondary)]/10 blur-[80px] rounded-full"
     ></div>
   </div>
+
+  <!-- Recent Activities Section (Mua hàng gần đây & Nạp tiền gần đây) -->
+  @if (recentPurchasesEnabled() || recentDepositsEnabled()) {
+    <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
+      <!-- Recent Purchases Card -->
+      @if (recentPurchasesEnabled()) {
+        <div class="bg-white dark:bg-slate-900 border border-slate-200/80 dark:border-slate-800/80 rounded-2xl overflow-hidden shadow-sm flex flex-col">
+          <!-- Card Header with Gradient -->
+          <div class="bg-gradient-to-r from-blue-600 via-indigo-600 to-purple-600 px-5 py-3.5 flex items-center justify-between">
+            <h3 class="text-base font-bold text-white flex items-center gap-2">
+              <app-icon name="shopping-bag" class="w-5 h-5 text-white/90" />
+              <span>{{ 'storefront.recent_purchases_title' | translate }}</span>
+            </h3>
+          </div>
+
+          <!-- Card Body / Item List -->
+          <div class="p-3 sm:p-4 space-y-2 max-h-[460px] overflow-y-auto scrollbar-thin">
+            @if (recentPurchases().length === 0) {
+              <div class="py-8 text-center text-xs text-slate-400 font-medium">
+                {{ 'common.no_data' | translate }}
+              </div>
+            } @else {
+              @for (item of recentPurchases(); track item.id || $index) {
+                <div class="flex items-center justify-between p-2.5 sm:p-3 rounded-xl bg-slate-50/90 dark:bg-slate-800/60 border border-slate-200/60 dark:border-slate-700/60 transition-all hover:bg-slate-100/80 dark:hover:bg-slate-800">
+                  <div class="min-w-0 flex-1 text-xs sm:text-sm font-semibold truncate leading-relaxed">
+                    <span class="text-emerald-600 dark:text-emerald-400 font-bold font-mono">{{ item.username }}</span>
+                    <span class="text-slate-500 mx-1">:</span>
+                    <span class="text-rose-600 dark:text-rose-400 font-medium">
+                      {{ 'storefront.bought' | translate }} <strong class="font-black">{{ item.quantity }}</strong> {{ getProductName(item) }} - <span class="font-bold">{{ item.total_price | appCurrency }}</span>
+                    </span>
+                  </div>
+
+                  <span class="px-2.5 py-1 text-[11px] font-bold italic rounded-md bg-blue-500/90 text-white shadow-sm shrink-0 whitespace-nowrap ml-2">
+                    {{ formatRelativeTime(item.created_at) }}
+                  </span>
+                </div>
+              }
+            }
+          </div>
+        </div>
+      }
+
+      <!-- Recent Deposits Card -->
+      @if (recentDepositsEnabled()) {
+        <div class="bg-white dark:bg-slate-900 border border-slate-200/80 dark:border-slate-800/80 rounded-2xl overflow-hidden shadow-sm flex flex-col">
+          <!-- Card Header with Gradient -->
+          <div class="bg-gradient-to-r from-purple-600 via-indigo-600 to-blue-600 px-5 py-3.5 flex items-center justify-between">
+            <h3 class="text-base font-bold text-white flex items-center gap-2">
+              <app-icon name="credit-card" class="w-5 h-5 text-white/90" />
+              <span>{{ 'storefront.recent_deposits_title' | translate }}</span>
+            </h3>
+          </div>
+
+          <!-- Card Body / Item List -->
+          <div class="p-3 sm:p-4 space-y-2 max-h-[460px] overflow-y-auto scrollbar-thin">
+            @if (recentDeposits().length === 0) {
+              <div class="py-8 text-center text-xs text-slate-400 font-medium">
+                {{ 'common.no_data' | translate }}
+              </div>
+            } @else {
+              @for (item of recentDeposits(); track item.id || $index) {
+                <div class="flex items-center justify-between p-2.5 sm:p-3 rounded-xl bg-slate-50/90 dark:bg-slate-800/60 border border-slate-200/60 dark:border-slate-700/60 transition-all hover:bg-slate-100/80 dark:hover:bg-slate-800">
+                  <div class="min-w-0 flex-1 text-xs sm:text-sm font-semibold truncate leading-relaxed">
+                    <span class="text-emerald-600 dark:text-emerald-400 font-bold font-mono">{{ item.username }}</span>
+                    <span class="text-slate-500 mx-1">:</span>
+                    <span class="text-rose-600 dark:text-rose-400 font-medium">
+                      {{ 'storefront.deposited' | translate }} <span class="font-bold text-emerald-600 dark:text-emerald-400">{{ (item.amount_usdt || item.amount || 0) | number:'1.0-2' }} USDT</span> - {{ 'storefront.deposit_from' | translate }} <strong class="font-black uppercase">{{ getDepositMethodName(item.method) }}</strong>
+                    </span>
+                  </div>
+
+                  <span class="px-2.5 py-1 text-[11px] font-bold italic rounded-md bg-blue-500/90 text-white shadow-sm shrink-0 whitespace-nowrap ml-2">
+                    {{ formatRelativeTime(item.created_at) }}
+                  </span>
+                </div>
+              }
+            }
+          </div>
+        </div>
+      }
+    </div>
+  }
 
   <div
     class="bg-white dark:bg-slate-900 border border-slate-200/80 dark:border-slate-800/80 p-3 sm:p-3.5 rounded-2xl flex flex-row items-center justify-between gap-4"

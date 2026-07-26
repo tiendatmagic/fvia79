@@ -18,6 +18,8 @@ Route::prefix('v1')->group(function () {
     Route::get('/faqs', ['App\Http\Controllers\FaqController', 'indexPublic']);
     Route::get('/deposit/rate', ['App\Http\Controllers\DepositController', 'getRate']);
     Route::get('/settings/public', ['App\Http\Controllers\SystemSettingController', 'publicSettings']);
+    Route::get('/storefront/recent-purchases', ['App\Http\Controllers\StorefrontController', 'recentPurchases']);
+    Route::get('/storefront/recent-deposits', ['App\Http\Controllers\StorefrontController', 'recentDeposits']);
     Route::get('/membership-tiers', ['App\Http\Controllers\AdminMembershipTierController', 'publicIndex']);
     Route::post('/tools/check-uid', ['App\Http\Controllers\CheckUidController', 'check'])->middleware('throttle:30,1');
     Route::post('/telegram/webhook', ['App\Http\Controllers\TelegramWebhookController', 'handleWebhook']);

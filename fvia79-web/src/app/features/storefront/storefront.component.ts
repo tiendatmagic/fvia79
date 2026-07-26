@@ -1,6 +1,7 @@
 import {
   Component,
   OnInit,
+  OnDestroy,
   inject,
   signal,
   computed,
@@ -11,6 +12,7 @@ import { FormsModule } from '@angular/forms';
 import { RouterModule, Router } from '@angular/router';
 import { StateService } from '@core/services/state.service';
 import { LanguageService } from '@core/services/language.service';
+import { ApiService } from '@core/services/api.service';
 import { CartStore } from './cart.store';
 import { SkeletonLoaderComponent } from '@shared/components/skeleton-loader/skeleton-loader.component';
 import { CustomSearchInputComponent } from '@shared/components/custom-search-input/custom-search-input.component';
@@ -94,16 +96,27 @@ import { PublicSettingStore } from '@core/services/public-setting.store';
     `,
   ],
 })
-export class StorefrontComponent implements OnInit {
+export class StorefrontComponent implements OnInit, OnDestroy {
   public readonly state = inject(StateService);
   public readonly lang = inject(LanguageService);
   public readonly cart = inject(CartStore);
   public readonly publicSettingStore = inject(PublicSettingStore);
+  private readonly api = inject(ApiService);
   private readonly router = inject(Router);
   private readonly modalService = inject(ModalService);
 
   public readonly dismissedAnnouncement = signal<boolean>(false);
   public readonly announcement = this.publicSettingStore.settings;
+
+  public readonly recentPurchases = signal<any[]>([]);
+  public readonly recentPurchasesEnabled = signal<boolean>(true);
+  public readonly recentPurchasesMode = signal<'demo' | 'real'>('demo');
+
+  public readonly recentDeposits = signal<any[]>([]);
+  public readonly recentDepositsEnabled = signal<boolean>(true);
+  public readonly recentDepositsMode = signal<'demo' | 'real'>('demo');
+
+  private demoTimer: any = null;
 
   public dismissAnnouncement() {
     this.dismissedAnnouncement.set(true);
@@ -142,6 +155,201 @@ export class StorefrontComponent implements OnInit {
     this.state.depositStore.fetchRate().subscribe({ error: () => undefined });
     this.state.productStore.clearCache();
     this.loadAllGroupedProducts();
+    this.loadRecentActivities();
+  }
+
+  ngOnDestroy(): void {
+    if (this.demoTimer) {
+      clearInterval(this.demoTimer);
+      this.demoTimer = null;
+    }
+  }
+
+  public loadRecentActivities(): void {
+    this.api.get<any>('v1/storefront/recent-purchases').subscribe({
+      next: (res) => {
+        if (res) {
+          this.recentPurchasesEnabled.set(Boolean(res.enabled));
+          const mode = res.mode || 'demo';
+          this.recentPurchasesMode.set(mode);
+          if (res.data && res.data.length > 0) {
+            this.recentPurchases.set(res.data);
+          } else if (mode === 'demo') {
+            this.seedInitialPurchases();
+          } else {
+            this.recentPurchases.set([]);
+          }
+        }
+      },
+      error: () => {
+        if (this.recentPurchasesMode() === 'demo') {
+          this.seedInitialPurchases();
+        }
+      }
+    });
+
+    this.api.get<any>('v1/storefront/recent-deposits').subscribe({
+      next: (res) => {
+        if (res) {
+          this.recentDepositsEnabled.set(Boolean(res.enabled));
+          const mode = res.mode || 'demo';
+          this.recentDepositsMode.set(mode);
+          if (res.data && res.data.length > 0) {
+            this.recentDeposits.set(res.data);
+          } else if (mode === 'demo') {
+            this.seedInitialDeposits();
+          } else {
+            this.recentDeposits.set([]);
+          }
+        }
+      },
+      error: () => {
+        if (this.recentDepositsMode() === 'demo') {
+          this.seedInitialDeposits();
+        }
+      }
+    });
+
+    this.startDemoActivitiesTimer();
+  }
+
+  private seedInitialPurchases(): void {
+    this.recentPurchases.set([
+      { id: 'seed_p1', username: 'gao****', quantity: 5, product_name_vi: 'Via Ngoại Cổ (No2FA)', product_name_en: 'Via Foreign Old (No2FA)', total_price: 239945, created_at: new Date(Date.now() - 45000).toISOString() },
+      { id: 'seed_p2', username: 'es****', quantity: 4, product_name_vi: 'Via Indonesia Cổ 500-3K Friend (No2FA)', product_name_en: 'Via Indonesia Old 500-3K Friend (No2FA)', total_price: 540000, created_at: new Date(Date.now() - 120000).toISOString() },
+      { id: 'seed_p3', username: 'tranph****', quantity: 4, product_name_vi: 'BM50$ Ngâm', product_name_en: 'BM50$ Aged', total_price: 135969, created_at: new Date(Date.now() - 240000).toISOString() },
+      { id: 'seed_p4', username: 'crypto****', quantity: 1, product_name_vi: 'Via Colombia Cổ Kháng 902', product_name_en: 'Via Colombia Old 902 Restored', total_price: 80980, created_at: new Date(Date.now() - 400000).toISOString() }
+    ]);
+  }
+
+  private seedInitialDeposits(): void {
+    this.recentDeposits.set([
+      { id: 'seed_d1', username: 'gao****', amount_usdt: 50, method: 'usdt_bep20', created_at: new Date(Date.now() - 30000).toISOString() },
+      { id: 'seed_d2', username: 't****', amount_usdt: 25, method: 'binance_pay', created_at: new Date(Date.now() - 90000).toISOString() },
+      { id: 'seed_d3', username: '1****', amount_usdt: 100, method: 'usdt_trc20', created_at: new Date(Date.now() - 180000).toISOString() },
+      { id: 'seed_d4', username: 'es****', amount_usdt: 10, method: 'usdt_bep20', created_at: new Date(Date.now() - 300000).toISOString() },
+      { id: 'seed_d5', username: 'viama****', amount_usdt: 75, method: 'binance_pay', created_at: new Date(Date.now() - 600000).toISOString() }
+    ]);
+  }
+
+  private startDemoActivitiesTimer(): void {
+    if (this.demoTimer) {
+      clearInterval(this.demoTimer);
+      this.demoTimer = null;
+    }
+
+    this.demoTimer = setInterval(() => {
+      const isPurchasesDemo = this.recentPurchasesEnabled() && this.recentPurchasesMode() === 'demo';
+      const isDepositsDemo = this.recentDepositsEnabled() && this.recentDepositsMode() === 'demo';
+
+      if (!isPurchasesDemo && !isDepositsDemo) return;
+
+      const sampleUsernames = [
+        'havy1', 'gaooblu', 'sar', 'tran', 'chu', 'toetkoolh', 'pm', 'long',
+        'essech', 'thanhchun', 's', 'tranphandan', 'emiliot', 'lisa', 'viamaster',
+        'ads79pro', 'bmking', 'crypto_user', 'alex', 'johnny'
+      ];
+
+      const maskName = (name: string) => {
+        const clean = name.trim();
+        const len = clean.length;
+        if (len <= 4) return clean.substring(0, 1) + '****';
+        const prefixLen = Math.min(Math.max(1, len - 4), 6);
+        return clean.substring(0, prefixLen) + '****';
+      };
+
+      if (isPurchasesDemo && Math.random() > 0.3) {
+        const groups = this.groupedProductsState();
+        let availableProds: any[] = [];
+        groups.forEach(g => {
+          if (g.products && g.products.length > 0) {
+            availableProds.push(...g.products);
+          }
+        });
+
+        const randomName = sampleUsernames[Math.floor(Math.random() * sampleUsernames.length)];
+        const qty = Math.floor(Math.random() * 5) + 1;
+        const prod = availableProds.length > 0
+          ? availableProds[Math.floor(Math.random() * availableProds.length)]
+          : null;
+
+        const prodNameVi = prod ? (prod.name_vi || prod.name) : 'Via Ngoại New';
+        const prodNameEn = prod ? (prod.name_en || prod.name) : 'Via Foreign New';
+        const unitPrice = prod ? Number(prod.price) : 22500;
+
+        const newItem = {
+          id: 'live_purch_' + Date.now(),
+          username: maskName(randomName),
+          quantity: qty,
+          product_name_vi: prodNameVi,
+          product_name_en: prodNameEn,
+          product_name: prodNameVi,
+          total_price: unitPrice * qty,
+          created_at: new Date().toISOString()
+        };
+
+        this.recentPurchases.update(list => [newItem, ...list].slice(0, 10));
+      }
+
+      if (isDepositsDemo && Math.random() > 0.3) {
+        const randomName = sampleUsernames[Math.floor(Math.random() * sampleUsernames.length)];
+        const demoUsdtAmounts = [2, 5, 10, 15, 20, 25, 30, 45, 50, 65, 75, 80, 95, 100];
+        const randomUsdt = demoUsdtAmounts[Math.floor(Math.random() * demoUsdtAmounts.length)];
+        const demoMethods = ['usdt_bep20', 'binance_pay', 'usdt_trc20'];
+        const randomMethod = demoMethods[Math.floor(Math.random() * demoMethods.length)];
+
+        const newItem = {
+          id: 'live_dep_' + Date.now(),
+          username: maskName(randomName),
+          amount_usdt: randomUsdt,
+          amount_vnd: randomUsdt * 25400,
+          method: randomMethod,
+          created_at: new Date().toISOString()
+        };
+
+        this.recentDeposits.update(list => [newItem, ...list].slice(0, 10));
+      }
+    }, 12000);
+  }
+
+  public getProductName(item: any): string {
+    if (!item) return '';
+    const isEn = this.lang.currentLang() === 'en';
+    const nameVi = item.product_name_vi || item.name_vi || item.product?.name_vi || item.product_name || item.name || item.product?.name || '';
+    const nameEn = item.product_name_en || item.name_en || item.product?.name_en || (isEn ? '' : nameVi);
+    return isEn ? (nameEn || nameVi) : (nameVi || nameEn);
+  }
+
+  public getDepositMethodName(method: string): string {
+    if (!method) return 'USDT (BEP20)';
+    const lower = method.toLowerCase();
+    if (lower.includes('binance')) return 'BINANCE PAY';
+    if (lower.includes('trc20')) return 'USDT (TRC20)';
+    if (lower.includes('bep20') || lower.includes('usdt')) return 'USDT (BEP20)';
+    if (lower.includes('acb') || lower.includes('bank')) return 'ACB';
+    return method.toUpperCase();
+  }
+
+  public formatRelativeTime(created_at: string): string {
+    if (!created_at) return '';
+    const date = new Date(created_at);
+    const diffMs = Math.max(0, Date.now() - date.getTime());
+    const minutes = Math.floor(diffMs / 60000);
+    const hours = Math.floor(minutes / 60);
+    const days = Math.floor(hours / 24);
+
+    const isEn = this.lang.currentLang() === 'en';
+
+    if (minutes < 1) {
+      return isEn ? 'just now' : 'vừa xong';
+    }
+    if (minutes < 60) {
+      return isEn ? `${minutes} minutes ago` : `${minutes} phút trước`;
+    }
+    if (hours < 24) {
+      return isEn ? `${hours} hours ago` : `${hours} giờ trước`;
+    }
+    return isEn ? `${days} days ago` : `${days} ngày trước`;
   }
 
   public readonly columns = computed<TableColumn[]>(() => {
