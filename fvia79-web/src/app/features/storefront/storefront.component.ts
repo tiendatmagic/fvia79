@@ -203,7 +203,7 @@ export class StorefrontComponent implements OnInit {
     return 'card';
   }
 
-  public readonly limit = 8;
+  public readonly limit = 100;
   public readonly categoryPages = signal<{ [catId: string]: number }>({});
   public readonly viewMode = signal<'card' | 'list'>(this.getInitialViewMode());
   public readonly categorySort = signal<'az' | 'za' | 'default'>('az');
