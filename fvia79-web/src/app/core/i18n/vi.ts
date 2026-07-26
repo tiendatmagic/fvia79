@@ -1367,6 +1367,8 @@ export const VI_TRANSLATIONS: Record<string, string> = {
   'supplier.rate': 'tỷ giá',
   'supplier.refresh_balance': 'Làm mới số dư nhà cung cấp',
   'supplier.required_fields': 'Vui lòng nhập tên, địa chỉ HTTPS và API key của nhà cung cấp.',
+  'supplier.round_vnd_prices': 'Làm tròn số (VND)',
+  'supplier.round_vnd_prices_hint': 'Tự động làm tròn LÊN giá bán VND sang nghìn đồng chẵn (ví dụ: 195.155đ ➔ 196.000đ).',
   'supplier.save': 'Lưu cấu hình nhà cung cấp',
   'supplier.save_failed': 'Không thể lưu cấu hình nhà cung cấp.',
   'supplier.saved': 'Đã lưu cấu hình nhà cung cấp.',

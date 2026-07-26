@@ -80,6 +80,7 @@ export class AdminSuppliersComponent implements OnInit {
     sync_interval_minutes: 30,
     price_adjustment_type: 'fixed',
     price_adjustment_value: 0,
+    round_vnd_prices: false,
   };
 
   ngOnInit(): void {
@@ -266,16 +267,20 @@ export class AdminSuppliersComponent implements OnInit {
       sync_interval_minutes: 30,
       price_adjustment_type: 'fixed',
       price_adjustment_value: 0,
+      round_vnd_prices: false,
     };
   }
 
   public supplierExamplePriceVnd(): number {
     const basePrice = 20000;
     const adjustment = Number(this.supplierForm.price_adjustment_value || 0);
-    const result =
+    let result =
       this.supplierForm.price_adjustment_type === 'percent'
         ? basePrice * (1 + adjustment / 100)
         : basePrice + adjustment;
+    if (this.supplierForm.round_vnd_prices && result > 0) {
+      result = Math.ceil(result / 1000) * 1000;
+    }
     return Math.max(0, result);
   }
 
