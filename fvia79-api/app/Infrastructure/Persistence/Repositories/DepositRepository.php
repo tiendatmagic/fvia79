@@ -30,6 +30,8 @@ class DepositRepository implements DepositRepositoryInterface
 
     public function findByUserIdPaginated(string $userId, int $page = 1, int $limit = 10): array
     {
+        $page = max(1, $page);
+        $limit = max(1, $limit);
         $paginator = DepositModel::where('user_id', $userId)
             ->orderBy('created_at', 'desc')
             ->paginate($limit, ['*'], 'page', $page);
@@ -68,6 +70,8 @@ class DepositRepository implements DepositRepositoryInterface
         ?string $startDate = null,
         ?string $endDate = null
     ): array {
+        $page = max(1, $page);
+        $limit = max(1, $limit);
         $query = DepositModel::query()->with('user');
 
         if ($status) {

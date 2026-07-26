@@ -81,6 +81,8 @@ class ProductRepository implements ProductRepositoryInterface
 
     public function findAllActivePaginated(int $page, int $limit, ?string $categoryId = null, ?string $status = null, ?string $search = null, ?string $filterDeleted = 'active', bool $includeOutOfStock = false): array
     {
+        $page = max(1, $page);
+        $limit = max(1, $limit);
         $query = ProductModel::query();
         if ($filterDeleted === 'deleted') {
             $query->onlyTrashed();
@@ -195,6 +197,7 @@ class ProductRepository implements ProductRepositoryInterface
 
     public function findGroupedActiveProducts(int $limit, ?string $search = null, bool $includeOutOfStock = false): array
     {
+        $limit = max(1, $limit);
         $categories = CategoryModel::where('is_active', true)->orderBy('name', 'asc')->get();
 
         $productQuery = ProductModel::query()

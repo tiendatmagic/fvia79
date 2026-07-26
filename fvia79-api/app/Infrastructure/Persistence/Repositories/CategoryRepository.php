@@ -32,6 +32,8 @@ class CategoryRepository implements CategoryRepositoryInterface
 
     public function findAllPaginated(int $page, int $limit, ?string $search = null): array
     {
+        $page = max(1, $page);
+        $limit = max(1, $limit);
         $query = CategoryModel::query()->withCount('products');
         if ($search) {
             $query->where(function ($q) use ($search) {

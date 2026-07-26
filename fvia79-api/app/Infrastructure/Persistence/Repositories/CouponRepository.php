@@ -49,6 +49,8 @@ class CouponRepository implements CouponRepositoryInterface
         ?string $status = null,
         ?string $type = null
     ): array {
+        $page = max(1, $page);
+        $limit = max(1, $limit);
         $now = now()->toDateTimeString();
 
         if ($status === 'deleted') {

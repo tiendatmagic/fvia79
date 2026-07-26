@@ -70,7 +70,7 @@ class OrderController extends Controller
         try {
             $user = Auth::user();
             $page = $request->query('page');
-            $limit = $request->query('limit', 10);
+            $limit = min(20, max(1, (int) $request->query('limit', 10)));
             $status = $request->query('status');
             $search = $request->query('search');
             $startDate = $request->query('start_date');

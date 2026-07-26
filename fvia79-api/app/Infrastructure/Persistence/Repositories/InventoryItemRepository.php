@@ -29,6 +29,8 @@ class InventoryItemRepository implements InventoryItemRepositoryInterface
 
     public function findAllPaginated(array $filters, int $page, int $limit): array
     {
+        $page = max(1, $page);
+        $limit = max(1, $limit);
         $query = InventoryItemModel::with(['batch', 'product']);
 
         if (!empty($filters['product_id'])) {

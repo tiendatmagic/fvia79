@@ -23,7 +23,7 @@ class ProductController extends Controller
     {
         try {
             $page = $request->query('page');
-            $limit = $request->query('limit', 8);
+            $limit = min(20, max(1, (int) $request->query('limit', 8)));
             $categoryId = $request->query('category_id');
             $search = $request->query('search');
             $status = $request->query('status');
@@ -42,8 +42,9 @@ class ProductController extends Controller
 
             $lang = $this->resolveLanguage($request);
 
-            if ($page) {
-                $result = $this->productService->getActiveProductsPaginated((int) $page, (int) $limit, $categoryId, $status, $search, $filterDeleted, $includeOutOfStock);
+            if ($page !== null) {
+                $pageInt = max(1, (int) $page);
+                $result = $this->productService->getActiveProductsPaginated($pageInt, $limit, $categoryId, $status, $search, $filterDeleted, $includeOutOfStock);
                 $products = $result['items'];
                 $total = $result['total'];
 
@@ -53,8 +54,8 @@ class ProductController extends Controller
                     'data' => $data,
                     'meta' => [
                         'total' => $total,
-                        'page' => (int) $page,
-                        'limit' => (int) $limit,
+                        'page' => $pageInt,
+                        'limit' => $limit,
                         'last_page' => (int) ceil($total / $limit),
                     ],
                 ]);
@@ -73,7 +74,7 @@ class ProductController extends Controller
     public function indexGrouped(Request $request)
     {
         try {
-            $limit = (int) $request->query('limit', 8);
+            $limit = min(20, max(1, (int) $request->query('limit', 8)));
             $search = $request->query('search');
             $includeOutOfStock = $request->boolean('include_out_of_stock', false);
             $lang = $this->resolveLanguage($request);

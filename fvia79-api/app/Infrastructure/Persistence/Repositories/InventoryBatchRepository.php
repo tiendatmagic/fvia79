@@ -125,6 +125,8 @@ class InventoryBatchRepository implements InventoryBatchRepositoryInterface
 
     public function findAllPaginated(array $filters, int $page, int $limit): array
     {
+        $page = max(1, $page);
+        $limit = max(1, $limit);
         $query = InventoryBatchModel::query();
 
         if (!empty($filters['product_id'])) {
