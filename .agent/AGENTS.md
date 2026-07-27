@@ -19,6 +19,13 @@
 
 ## 📋 NHẬT KÝ THAY ĐỔI DỰ ÁN
 
+### [2026-07-27] Phân quyền bắt buộc đăng nhập để xem sản phẩm & danh mục sản phẩm ở trang Storefront (fvia79-web)
+- **Mô tả**: Cấu hình phân quyền đối với trang Storefront (`/storefront`) và submenu **"Mua hàng"** (Danh mục sản phẩm), yêu cầu khách truy cập (Guest) chưa đăng nhập phải thực hiện đăng nhập tài khoản trước mới có thể xem danh sách sản phẩm và danh mục sản phẩm. Các API khác như B2B hoàn toàn giữ nguyên không bị ảnh hưởng.
+- **Thực hiện**:
+  - `fvia79-web/src/app/app.routes.ts`: Bổ sung guard `canActivate: [AuthGuard]` trực tiếp cho route `'storefront'`. Khi khách chưa đăng nhập truy cập vào `/storefront`, Angular Router sẽ ngăn truy cập, hiển thị thông báo toast yêu cầu đăng nhập và tự động chuyển hướng đến `/login` kèm tham số `returnUrl=/storefront`.
+  - `SidebarComponent` (`sidebar.component.ts/html`) & `App` (`app.ts/html`): Bổ sung kiểm tra `stateService.isAuthenticated()`. Khi khách chưa đăng nhập nhấn vào submenu **"Mua hàng"** (hoặc truy cập danh mục sản phẩm), hệ thống sẽ hiển thị thông báo yêu cầu đăng nhập và tự động chuyển hướng đến trang `/login`.
+  - Biên dịch & Kiểm thử: Chạy `npx ng build --configuration production` thành công **100% BUILD SUCCESS**.
+
 ### [2026-07-27] Lọc chỉ hiển thị các danh mục đang hoạt động (is_active) ở submenu Mua hàng trên 3 nguồn (fvia79, adsbm79, isocalmarket)
 - **Mô tả**: Sửa lỗi submenu **"Mua hàng"** (cả Sidebar desktop và Mobile menu) và bộ lọc danh mục trang Storefront hiển thị các danh mục đã bị ẩn (`is_active = false`). Cấu hình chỉ lọc và hiển thị danh mục đang hoạt động (`is_active !== false`).
 - **Thực hiện**:

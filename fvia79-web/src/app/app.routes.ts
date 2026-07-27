@@ -7,6 +7,7 @@ export const routes: Routes = [
   { path: '', redirectTo: 'storefront', pathMatch: 'full' },
   {
     path: 'storefront',
+    canActivate: [AuthGuard],
     loadComponent: () => import('@features/storefront/storefront.component').then(m => m.StorefrontComponent)
   },
 

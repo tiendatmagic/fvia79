@@ -1,6 +1,6 @@
 import { Component, inject, OnInit, signal, computed } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { RouterModule } from '@angular/router';
+import { RouterModule, Router } from '@angular/router';
 import { StateService } from '@core/services/state.service';
 import { PublicSettingStore } from '@core/services/public-setting.store';
 import { LanguageService } from '@core/services/language.service';
@@ -33,6 +33,7 @@ export class SidebarComponent implements OnInit {
   public stateService = inject(StateService);
   public publicSettingStore = inject(PublicSettingStore);
   public lang = inject(LanguageService);
+  private router = inject(Router);
 
   public isBuyMenuOpen = signal<boolean>(false);
 
@@ -53,6 +54,11 @@ export class SidebarComponent implements OnInit {
   }
 
   public toggleBuyMenu() {
+    if (!this.stateService.isAuthenticated()) {
+      this.stateService.showToast(this.lang.translate('common.please_login'), 'warning');
+      this.router.navigate(['/login'], { queryParams: { returnUrl: '/storefront' } });
+      return;
+    }
     this.isBuyMenuOpen.update((v) => !v);
   }
 

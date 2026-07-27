@@ -93,6 +93,14 @@ export class App implements OnInit {
   }
 
   public toggleBuyMenu() {
+    if (!this.stateService.isAuthenticated()) {
+      this.stateService.showToast(this.lang.translate('common.please_login'), 'warning');
+      this.router.navigate(['/login'], { queryParams: { returnUrl: '/storefront' } });
+      if (this.stateService.showMobileMenu()) {
+        this.stateService.showMobileMenu.set(false);
+      }
+      return;
+    }
     this.isBuyMenuOpen.update((v) => !v);
   }
 
