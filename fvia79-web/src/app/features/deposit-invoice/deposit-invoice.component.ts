@@ -61,6 +61,18 @@ export class DepositInvoiceComponent implements OnInit, OnDestroy {
     return this.state.authStore.currentUser()?.role === 'admin';
   }
 
+  public get binanceQrValue(): string {
+    if (!this.invoice) return '';
+    const payLink = this.invoice.adminBinancePayLink?.trim();
+    if (payLink) return payLink;
+
+    const binanceId = (this.invoice.adminBinanceId || '').trim();
+    if (binanceId.startsWith('http://') || binanceId.startsWith('https://') || binanceId.startsWith('bnc://') || binanceId.startsWith('binance://')) {
+      return binanceId;
+    }
+    return '';
+  }
+
   private visibilityHandler = () => {
     if (document.hidden) {
       this.stopStatusPolling();

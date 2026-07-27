@@ -146,9 +146,27 @@
         }
 
         @if (invoice.paymentMethod === 'binance') {
-          <div class="bg-white p-3 rounded-2xl border border-slate-200/50 shadow-md">
-            <qr-code [value]="invoice.adminBinanceId || ''" [size]="200" />
-          </div>
+          @if (binanceQrValue) {
+            <div class="bg-white p-3 rounded-2xl border border-slate-200/50 shadow-md flex flex-col items-center gap-2">
+              <qr-code [value]="binanceQrValue" [size]="200" />
+              <span class="text-[11px] font-bold text-slate-500 flex items-center gap-1">
+                <app-icon name="check-circle" class="w-3.5 h-3.5 text-emerald-500 shrink-0" />
+                {{ 'invoice.binance_qr_scannable' | translate }}
+              </span>
+            </div>
+          } @else {
+            <div class="bg-amber-500/5 dark:bg-amber-500/10 p-4 rounded-2xl border border-amber-500/20 text-center space-y-2 max-w-[240px]">
+              <div class="inline-flex p-2.5 rounded-full bg-amber-500/10 text-amber-500">
+                <app-icon name="warning" class="w-6 h-6 shrink-0" />
+              </div>
+              <h5 class="text-xs font-bold text-amber-700 dark:text-amber-400">
+                {{ 'invoice.binance_manual_notice_title' | translate }}
+              </h5>
+              <p class="text-[11px] text-amber-700/80 dark:text-amber-400/80 leading-relaxed font-semibold">
+                {{ 'invoice.binance_manual_notice_desc' | translate }}
+              </p>
+            </div>
+          }
         } @else {
           <div class="bg-white p-3 rounded-2xl border border-slate-200/50 shadow-md">
             <qr-code [value]="adminWalletAddress()" [size]="200" />

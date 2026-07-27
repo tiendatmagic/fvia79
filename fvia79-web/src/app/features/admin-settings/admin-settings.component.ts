@@ -101,6 +101,7 @@ export class AdminSettingsComponent implements OnInit, OnDestroy {
     token_cleanup_days: 7,
     usdt_exchange_rate: 0,
     admin_binance_id: '',
+    admin_binance_pay_link: '',
     binance_api_key: '',
     binance_api_secret: '',
     telegram_bot_token: '',

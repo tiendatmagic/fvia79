@@ -23,6 +23,16 @@
 
 ## 📋 NHẬT KÝ THAY ĐỔI DỰ ÁN
 
+### [2026-07-27] Khắc phục triệt để lỗi hiển thị mã QR sai khi nạp tiền bằng Binance ID đồng bộ 3 dự án (fvia79, adsbm79, isocalmarket)
+- **Mô tả**: Sửa lỗi khi tạo hóa đơn nạp tiền bằng Binance Pay (`paymentMethod === 'binance'`), hệ thống tạo mã QR chứa chuỗi số thuần túy (như `123456789`) khiến App Binance quét báo lỗi "Mã QR không hợp lệ".
+- **Giải pháp & Thực hiện**:
+  1. **Bổ sung trường Cấu hình `admin_binance_pay_link`**: Thêm trường nhập "Link QR Binance Pay Admin" trong Cấu hình hệ thống Admin cho phép Admin dán Link QR / Payload Binance Pay (dạng `https://s.binance.com/...` hoặc `https://app.binance.com/qr/...`).
+  2. **Render Mã QR thông minh (`DepositInvoiceComponent`)**:
+     - Khi có Link QR Binance Pay (`admin_binance_pay_link` hoặc URL): Hiển thị mã QR chuẩn 100% để quét trực tiếp bằng App Binance.
+     - Khi chỉ có Binance ID dạng số (`admin_binance_id` thuần số): Ẩn mã QR số thừa gây lỗi quét, thay bằng Khối hướng dẫn chuyển tiền thủ công *"Vào App Binance -> Ví Pay -> Gửi (Send) -> Nhập Binance ID (UID)"*.
+  3. **Đồng bộ 3 dự án**: Đã cập nhật 100% ở Backend API (`SystemSettingController`, `DepositService`, `DepositController`, `AdminDepositController`) và Frontend Angular (`SystemSettingStore`, `PublicSettingStore`, `AdminSettingsComponent`, `DepositInvoiceComponent`, `i18n vi.ts/en.ts`) trên cả 3 dự án `fvia79`, `adsbm79`, `isocalmarket`.
+  4. **Kiểm thử**: Đã chạy kiểm tra cú pháp PHP `php -l` đạt **0 errors** và chạy `npx ng build --configuration production` thành công **100% BUILD SUCCESS** cho cả 3 dự án.
+
 ### [2026-07-27] Bổ sung khối Tuyên bố miễn trừ trách nhiệm ở trang Đăng nhập / Đăng ký (fvia79-web)
 - **Mô tả**: Bổ sung thẻ thông báo Tuyên bố miễn trừ trách nhiệm (`notice.disclaimer_title` & `notice.disclaimer_body`) vào giao diện trang Đăng nhập / Đăng ký (`AuthLayoutComponent`) tại vị trí phía trên điều khoản dịch vụ (cả trên Desktop và Mobile).
 - **Thực hiện**:

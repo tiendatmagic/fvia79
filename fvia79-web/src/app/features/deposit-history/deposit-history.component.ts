@@ -33,6 +33,7 @@ export interface DepositHistoryItem {
   paymentMethod?: string;
   payerBinanceId?: string;
   adminBinanceId?: string;
+  adminBinancePayLink?: string;
 }
 
 @Component({

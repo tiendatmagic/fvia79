@@ -54,6 +54,11 @@ class DepositService
         return $this->settingService->getSetting('admin_binance_id', '');
     }
 
+    public function getAdminBinancePayLinkSetting(): string
+    {
+        return $this->settingService->getSetting('admin_binance_pay_link', '');
+    }
+
     public function getUsdtToVndRate(): float
     {
         $fixedRate = $this->settingService->getSetting('usdt_exchange_rate', '0');

@@ -284,6 +284,23 @@
               </p>
             </div>
 
+            <div class="form-field">
+              <label>{{ 'settings.binance_pay_link_label' | translate }}</label>
+              <div class="relative mt-1">
+                <input
+                  type="text"
+                  name="admin_binance_pay_link"
+                  class="form-input w-full"
+                  [placeholder]="'settings.binance_pay_link_placeholder' | translate"
+                  [(ngModel)]="form.admin_binance_pay_link"
+                  [disabled]="isLocked()"
+                />
+              </div>
+              <p class="mt-1.5 text-xs text-slate-400 dark:text-slate-500">
+                {{ 'settings.binance_pay_link_hint' | translate }}
+              </p>
+            </div>
+
             <div class="form-field md:col-span-2">
               <div class="flex items-center justify-between">
                 <label>{{ 'settings.binance_api_key' | translate }} <span class="text-red-500">*</span></label>
