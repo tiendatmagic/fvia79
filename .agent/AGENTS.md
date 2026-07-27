@@ -19,6 +19,16 @@
 > 1. Cronjob Scheduler (`schedule:run`) **CHỈ ĐƯỢC CHẠY DƯỚI USER `www-data`** (`crontab -u www-data -e`). **TUYỆT ĐỐI KHÔNG cài dưới `root`** vì sẽ gây ra lỗi `500 Permission denied` khi người dùng thực hiện thao tác Web/API.
 > 2. Luôn cấp quyền `chmod -R 777` và `chown -R www-data:www-data` cho `storage` & `bootstrap/cache`. Khi gõ lệnh CLI thủ công trên VPS, luôn chạy dưới quyền `www-data` (`su -s /bin/bash www-data -c "php artisan <cmd>"`).
 
+### [2026-07-28] Xử lý hiển thị thu gọn & cắt dòng dấu 3 chấm (...) cho Thuộc tính động (Dynamic Attributes) đồng bộ 3 dự án (FVIA79, ADSBM79, ISOCALMARKET)
+- **Mô tả yêu cầu**: Sửa lỗi các thẻ Thuộc tính động (Dynamic Attributes như `raw_desc`, `raw_name`,...) có nội dung văn bản quá dài bị văng/xuống nhiều dòng tràn khung giao diện trên trang Storefront (Grid view, Table view, Mobile view) và trang Quản lý sản phẩm Admin.
+- **Thực hiện xử lý**:
+  - **Giới hạn số lượng thẻ hiển thị & Cắt dòng văn bản (`truncate`)**:
+    - **Storefront Card Grid & Mobile View (`storefront.component.html`)**: Giới hạn hiển thị tối đa **2 thẻ thuộc tính** (`@if ($index < 2)`). Nếu sản phẩm có nhiều hơn 2 thuộc tính, tự động hiển thị thẻ đếm `+N` (ví dụ `+1`, `+2`) kèm tooltip thông báo. Mỗi thẻ thuộc tính được áp dụng `max-w-full min-w-0 truncate` đảm bảo thu gọn văn bản trên đúng 1 dòng duy nhất, cắt đuôi bằng dấu 3 chấm `...`.
+    - **Storefront List Table View (`storefront.component.html`)**: Giới hạn tối đa **3 thẻ thuộc tính** (`@if ($index < 3)`), thẻ thu gọn tối đa `max-w-[220px] truncate`. Nút `+N` hiển thị nếu vượt quá 3 thuộc tính.
+    - **Trang Quản lý sản phẩm Admin (`products.component.html`)**: Giới hạn tối đa **3 thẻ thuộc tính** (`@if ($index < 3)`), thẻ thu gọn tối đa `max-w-[260px] truncate`. Nút `+N` hiển thị khi > 3 thuộc tính.
+  - **Hover Tooltip (`[appTooltip]`)**: Bổ sung cờ `$any(attr).label ? $any(attr).label + ': ' + $any(attr).value : $any(attr).value` trên mỗi thẻ badge, giúp người dùng khi rên chuột vào thẻ cắt dòng có thể xem đầy đủ 100% nội dung chi tiết.
+- **Kiểm thử**: Biên dịch Angular production `npx ng build --configuration production` thành công 100% trên cả 3 dự án (`fvia79-web`, `adsbm79-web`, `isocalmarket-web`).
+
 ### [2026-07-28] Điều chỉnh tốc độ & keyframe chữ chạy ngang (Marquee) mượt mà đồng bộ 3 dự án (FVIA79, ADSBM79, ISOCALMARKET)
 - **Mô tả yêu cầu**: Sửa lỗi thông báo Marquee chạy quá nhanh trên trang Storefront và xem trước Cài đặt Admin, điều chỉnh tốc độ chạy chậm lại cố định và mượt mà.
 - **Thực hiện xử lý**:
