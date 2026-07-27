@@ -120,4 +120,17 @@
   - `storefront.component.html`: Thay thế class gradient header 2 thẻ bằng `bg-gradient-to-r from-[var(--color-primary)] to-[var(--color-secondary)]`, đổi class badge thời gian từ `bg-blue-500/90` sang `bg-[var(--color-primary)]`.
   - Biên dịch & Kiểm thử: Chạy `npx ng build --configuration production` thành công **100% BUILD SUCCESS** (0 errors).
 
+### [2026-07-27] Thay thế Logo web, Favicon, Social Image (OG Image) và cập nhật Hệ màu chủ đạo/phụ theo Logo mới
+- **Mô tả**: Cập nhật bộ nhận diện thương hiệu web dựa trên tài nguyên từ `D:\git\fvia79\fvia79-logo`, đồng thời trích xuất màu chủ đạo `#0066FF` (Electric Blue) và màu phụ `#0B193C` (Dark Navy Blue) cập nhật cho toàn bộ hệ thống web.
+- **Thực hiện**:
+  - **Tài sản hình ảnh (`fvia79-web/public`)**:
+    - Chuyển đổi & thay thế `logo.png`, `logo-dark.png`, `logo-light.png` bằng ảnh logo mới.
+    - Chuyển đổi `social-image.jpg` thành `public/assets/og-image.png`.
+    - Sinh đầy đủ bộ favicons: `favicon.ico`, `favicon-16x16.png`, `favicon-32x32.png`, `apple-touch-icon.png`, `android-chrome-192x192.png`, `android-chrome-512x512.png`.
+  - **CSS Variables & Splash Screen**:
+    - `styles.scss`: Cập nhật `--color-primary` và `--dynamic-primary` thành `#0066FF`, `--color-secondary` và `--dynamic-secondary` thành `#0B193C`.
+    - `index.html`: Cập nhật `--splash-brand` (`#0066FF`) và `--splash-primary` (`#0B193C`).
+  - **Kiểm thử**: Biên dịch thành công 100% `npx ng build --configuration production` (0 errors).
+
+
 
