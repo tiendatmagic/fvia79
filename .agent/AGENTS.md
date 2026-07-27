@@ -23,6 +23,15 @@
 
 ## 📋 NHẬT KÝ THAY ĐỔI DỰ ÁN
 
+### [2026-07-27] Khắc phục triệt để lỗi giới hạn 20 sản phẩm/danh mục ở trang Storefront (`QueryLimitMiddleware`) đồng bộ 3 dự án (fvia79, adsbm79, isocalmarket)
+- **Mô tả**: Phát hiện và khắc phục nguyên nhân khiến Storefront chỉ hiển thị tối đa 20 sản phẩm cho mỗi danh mục (ví dụ danh mục *Via Ngoại Live Ads (No2FA)* có 32 sản phẩm nhưng chỉ hiển thị 20 sản phẩm).
+- **Nguyên nhân**: `QueryLimitMiddleware` ở Backend Laravel giới hạn cứng `min((int)$limit, 20)` khi client truyền tham số `limit`, khiến yêu cầu `limit=100` từ Frontend bị ép về `limit=20`.
+- **Thực hiện**:
+  - `fvia79-api/app/Http/Middleware/QueryLimitMiddleware.php`: Nâng mức giới hạn tối đa của `limit` từ `20` lên **`100`** (`min((int)$limit, 100)`).
+  - `adsbm79-api/app/Http/Middleware/QueryLimitMiddleware.php`: Nâng lên `100` và cập nhật unit test `QueryLimitMiddlewareTest.php` đồng bộ.
+  - `isocalmarket-api/app/Http/Middleware/QueryLimitMiddleware.php`: Nâng lên `100` và cập nhật unit test `QueryLimitMiddlewareTest.php` đồng bộ.
+  - **Kiểm thử**: Đã kiểm tra cú pháp PHP `php -l` đạt **0 errors** và chạy test thành công. Giờ đây toàn bộ 32 sản phẩm của danh mục *Via Ngoại Live Ads (No2FA)* hiển thị trọn vẹn 100% trên Storefront.
+
 ### [2026-07-27] Triển khai (Deploy) thành công cả 3 dự án (fvia79, adsbm79, isocalmarket) lên hệ thống VPS sản xuất
 - **Mô tả**: Triển khai hoàn chỉnh bản cập nhật Frontend Angular & Backend Laravel mới nhất bao gồm các tính năng vừa phát triển (Modal Phóng to Mã QR Binance Pay & USDT BEP20 kế thừa ModalWrapperComponent hệ thống, Tải trực tiếp ảnh QR từ Admin, Hỗ trợ i18n Đa ngôn ngữ đầy đủ) lên 3 hệ thống VPS độc lập.
 - **Thực hiện**:

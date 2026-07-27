@@ -15,7 +15,7 @@ class QueryLimitMiddleware
             if (!is_numeric($limit) || (int)$limit <= 0) {
                 $limit = 10;
             } else {
-                $limit = min((int)$limit, 20);
+                $limit = min((int)$limit, 100);
             }
             $request->query->set('limit', $limit);
             $request->merge(['limit' => $limit]);
