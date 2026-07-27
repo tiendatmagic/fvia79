@@ -211,6 +211,30 @@
 
     @if (!isCreatingSupplier()) {
       <div
+        class="mb-3 flex flex-col gap-3 rounded-xl border border-emerald-200/80 bg-emerald-50/50 p-4 sm:flex-row sm:items-center sm:justify-between dark:border-emerald-900/50 dark:bg-emerald-950/20"
+      >
+        <div class="min-w-0 flex-1">
+          <h4 class="text-sm font-bold text-emerald-900 dark:text-emerald-300">
+            {{ 'supplier.activate_in_stock' | translate }}
+          </h4>
+          <p class="mt-0.5 text-xs text-emerald-700/80 dark:text-emerald-400/80">
+            {{ 'supplier.activate_in_stock_desc' | translate }}
+          </p>
+        </div>
+        <button
+          app-button
+          variant="primary"
+          type="button"
+          class="shrink-0"
+          [disabled]="isLocked()"
+          (click)="openActivateInStockModal()"
+        >
+          <app-icon name="eye" class="mr-1.5 h-4 w-4" />
+          {{ 'supplier.activate_in_stock' | translate }}
+        </button>
+      </div>
+
+      <div
         class="mb-3 flex flex-col gap-3 rounded-xl border border-rose-200/80 bg-rose-50/50 p-4 sm:flex-row sm:items-center sm:justify-between dark:border-rose-900/50 dark:bg-rose-950/20"
       >
         <div class="min-w-0 flex-1">
@@ -561,6 +585,62 @@
           (click)="confirmDeactivateOutOfStockCategories()"
         >
           {{ 'supplier.deactivate_cat_modal_confirm_btn' | translate }}
+        </button>
+      </div>
+    </div>
+  </div>
+}
+
+@if (isActivateInStockModalOpen()) {
+  <div
+    class="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/50 cursor-pointer"
+    (click)="closeActivateInStockModal()"
+  >
+    <div
+      class="relative w-full max-w-md rounded-2xl bg-white p-6 shadow-2xl dark:bg-slate-900 border border-slate-200 dark:border-slate-800 cursor-default"
+      (click)="$event.stopPropagation()"
+    >
+      <div class="flex items-center justify-between border-b border-slate-100 dark:border-slate-800 pb-3">
+        <h3 class="text-base font-bold text-slate-900 dark:text-white flex items-center gap-2">
+          <app-icon name="check-circle" class="h-5 w-5 text-emerald-500" />
+          {{ 'supplier.activate_in_stock_modal_title' | translate }}
+        </h3>
+        <button
+          type="button"
+          class="rounded-lg p-1 text-slate-400 hover:bg-slate-100 hover:text-slate-600 dark:hover:bg-slate-800"
+          (click)="closeActivateInStockModal()"
+        >
+          <app-icon name="close" class="h-5 w-5" />
+        </button>
+      </div>
+
+      <div class="py-4 space-y-3 text-sm text-slate-600 dark:text-slate-300">
+        <p>{{ 'supplier.activate_in_stock_modal_confirm_msg' | translate }}</p>
+        <div class="rounded-xl border border-emerald-200 bg-emerald-50/70 p-3.5 text-xs leading-relaxed text-emerald-700 dark:border-emerald-900/50 dark:bg-emerald-950/30 dark:text-emerald-300">
+          <strong class="font-bold uppercase tracking-wider block mb-1">{{ 'common.note' | translate }}</strong>
+          {{ 'supplier.activate_in_stock_modal_warning' | translate }}
+        </div>
+      </div>
+
+      <div class="flex justify-end gap-3 pt-2">
+        <button
+          app-button
+          variant="cancel"
+          type="button"
+          [disabled]="isActivatingInStock()"
+          (click)="closeActivateInStockModal()"
+        >
+          {{ 'common.cancel' | translate }}
+        </button>
+        <button
+          app-button
+          variant="primary"
+          type="button"
+          [loading]="isActivatingInStock()"
+          [disabled]="isActivatingInStock()"
+          (click)="confirmActivateInStock()"
+        >
+          {{ 'supplier.activate_in_stock_modal_confirm_btn' | translate }}
         </button>
       </div>
     </div>

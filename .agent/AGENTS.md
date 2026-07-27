@@ -19,6 +19,18 @@
 > 1. Cronjob Scheduler (`schedule:run`) **CHỈ ĐƯỢC CHẠY DƯỚI USER `www-data`** (`crontab -u www-data -e`). **TUYỆT ĐỐI KHÔNG cài dưới `root`** vì sẽ gây ra lỗi `500 Permission denied` khi người dùng thực hiện thao tác Web/API.
 > 2. Luôn cấp quyền `chmod -R 777` và `chown -R www-data:www-data` cho `storage` & `bootstrap/cache`. Khi gõ lệnh CLI thủ công trên VPS, luôn chạy dưới quyền `www-data` (`su -s /bin/bash www-data -c "php artisan <cmd>"`).
 
+### [2026-07-28] Phát triển tính năng "Bật tất cả sản phẩm còn hàng từ Nhà cung cấp" đồng bộ 3 dự án (FVIA79, ADSBM79, ISOCALMARKET)
+- **Mô tả yêu cầu**: Bổ sung tính năng cho phép Admin bật lại trạng thái **Hoạt động (`active`)** cho tất cả sản phẩm của một nhà cung cấp nếu có số lượng tồn kho (`stock > 0`), ghi đè cả việc sản phẩm từng bị tắt thủ công trước đó.
+- **Thực hiện xử lý**:
+  - **Backend API (`fvia79-api`, `adsbm79-api`, `isocalmarket-api`)**:
+    - `SupplierController.php`: Bổ sung phương thức `activateInStockProducts(string $code)` lọc các sản phẩm `status = 'inactive'`, nếu tồn kho tổng hợp `> 0` thì chuyển `status = 'active'`, `supplier_out_of_stock_hidden = false`, `supplier_previous_status = null` và tự động bật lại danh mục chứa sản phẩm nếu danh mục đang ẩn (`is_active = true`). Xóa cache Storefront.
+    - `routes/api.php`: Đăng ký endpoint `POST /api/v1/admin/suppliers/{code}/activate-in-stock-products`.
+  - **Frontend Web (`fvia79-web`, `adsbm79-web`, `isocalmarket-web`)**:
+    - `supplier.store.ts`: Bổ sung hàm `activateInStock(code: string)`.
+    - `admin-suppliers.component.ts/html`: Thêm thẻ khối hành động màu xanh emerald "Bật sản phẩm còn hàng (> 0 tồn kho)" và Modal xác nhận khôi phục sản phẩm.
+    - `vi.ts` & `en.ts`: Thêm đầy đủ từ điển đa ngôn ngữ i18n cho tính năng.
+- **Kiểm thử**: PHP syntax check `php -l` đạt 0 lỗi trên 3 API. Biên dịch Angular production `npx ng build --configuration production` thành công 100% trên cả 3 nguồn dự án.
+
 ### [2026-07-28] Cấu hình làm tròn ngàn RIÊNG CHO GIÁ BÁN GỐC SẢN PHẨM trên dự án FVIA79
 - **Mô tả yêu cầu**: Chỉ áp dụng làm tròn ngàn (`Math.round(vndAmount / 1000) * 1000`) đối với **Giá gốc / Giá bán sản phẩm** trên trang Storefront/Quản lý sản phẩm cho riêng dự án `FVIA79`. Tất cả các mục khác như **Giá sau chiết khấu (giảm giá VIP/Coupon)**, **Số dư tài khoản**, **Hóa đơn nạp tiền**, **Tổng tiền giỏ hàng/đơn hàng** đều giữ nguyên giá trị quy đổi chuẩn xác không làm tròn ngàn.
 - **Thực hiện xử lý**:

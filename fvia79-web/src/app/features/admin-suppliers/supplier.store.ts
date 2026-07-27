@@ -104,6 +104,21 @@ export class SupplierStore {
     );
   }
 
+  public activateInStock(code: string): Observable<{ message: string; count: number; supplier: SupplierSettings }> {
+    return this.api.post<{ message: string; count: number; supplier: SupplierSettings }>(
+      `v1/admin/suppliers/${code}/activate-in-stock-products`,
+      {},
+    ).pipe(
+      tap((response) => {
+        if (response.supplier) {
+          this.suppliers.update((items) =>
+            items.map((item) => (item.code === code ? response.supplier : item)),
+          );
+        }
+      }),
+    );
+  }
+
   public deactivateOutOfStock(code: string): Observable<{ message: string; count: number; supplier: SupplierSettings }> {
     return this.api.post<{ message: string; count: number; supplier: SupplierSettings }>(
       `v1/admin/suppliers/${code}/deactivate-out-of-stock-products`,

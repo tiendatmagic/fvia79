@@ -88,6 +88,7 @@ Route::prefix('v1')->group(function () {
             Route::post('/admin/suppliers/{code}/balance', ['App\Http\Controllers\SupplierController', 'balance'])
                 ->middleware('throttle:10,1');
             Route::post('/admin/suppliers/{code}/sync', ['App\Http\Controllers\SupplierController', 'sync']);
+            Route::post('/admin/suppliers/{code}/activate-in-stock-products', ['App\Http\Controllers\SupplierController', 'activateInStockProducts']);
             Route::post('/admin/suppliers/{code}/deactivate-out-of-stock-products', ['App\Http\Controllers\SupplierController', 'deactivateOutOfStockProducts']);
             Route::post('/admin/suppliers/{code}/deactivate-out-of-stock-categories', ['App\Http\Controllers\SupplierController', 'deactivateOutOfStockCategories']);
             Route::post('/admin/maintenance/clear-views', ['App\Http\Controllers\SystemSettingController', 'clearViews']);

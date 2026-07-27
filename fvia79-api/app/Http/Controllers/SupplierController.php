@@ -286,6 +286,48 @@ class SupplierController extends Controller
         ]);
     }
 
+    public function activateInStockProducts(string $code)
+    {
+        $supplier = SupplierModel::where('code', $code)->firstOrFail();
+
+        $inactiveProducts = ProductModel::where('supplier_id', $supplier->id)
+            ->where('status', 'inactive')
+            ->get();
+
+        $activatedCount = 0;
+        foreach ($inactiveProducts as $product) {
+            $supplierStock = max(0, (int) ($product->supplier_stock ?? 0));
+            $localStock = (int) $product->inventoryItems()->where('status', 'available')->count();
+
+            if (($supplierStock + $localStock) > 0) {
+                $product->status = 'active';
+                $product->supplier_out_of_stock_hidden = false;
+                $product->supplier_previous_status = null;
+                $product->save();
+
+                if ($product->category && ! $product->category->is_active) {
+                    $product->category->is_active = true;
+                    $product->category->save();
+                }
+
+                $activatedCount++;
+            }
+        }
+
+        if ($activatedCount > 0) {
+            Cache::forget('products_active_storefront');
+            Cache::forget('categories_active_storefront');
+            Cache::forget('categories_active_storefront_en');
+            Cache::forget('categories_active_storefront_vi');
+        }
+
+        return response()->json([
+            'message' => "Activated {$activatedCount} in-stock products for supplier {$supplier->name}.",
+            'count' => $activatedCount,
+            'supplier' => $this->serialize($supplier->fresh()),
+        ]);
+    }
+
     public function deactivateOutOfStockCategories(string $code)
     {
         $supplier = SupplierModel::where('code', $code)->firstOrFail();

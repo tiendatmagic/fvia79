@@ -158,6 +158,50 @@ export class AdminSuppliersComponent implements OnInit {
     this.isDeactivateModalOpen.set(true);
   }
 
+  public readonly isActivateInStockModalOpen = signal(false);
+  public readonly isActivatingInStock = signal(false);
+
+  public openActivateInStockModal(): void {
+    if (this.isActivatingInStock() || this.isLocked()) return;
+    this.isActivateInStockModalOpen.set(true);
+  }
+
+  public closeActivateInStockModal(): void {
+    if (this.isActivatingInStock()) return;
+    this.isActivateInStockModalOpen.set(false);
+  }
+
+  public confirmActivateInStock(): void {
+    const code = this.selectedSupplierCode();
+    if (!code || this.isActivatingInStock() || this.isLocked()) return;
+
+    this.isActivatingInStock.set(true);
+    this.supplierStore.activateInStock(code).subscribe({
+      next: (res) => {
+        this.isActivatingInStock.set(false);
+        this.isActivateInStockModalOpen.set(false);
+        if (res.supplier) {
+          this.supplierForm = { ...res.supplier, api_key: '' };
+        }
+        if (res.count > 0) {
+          this.toast.showToast(
+            this.lang.translate('supplier.activate_success', { count: res.count }),
+            'success',
+          );
+        } else {
+          this.toast.showToast(this.lang.translate('supplier.activate_none'), 'warning');
+        }
+      },
+      error: (err) => {
+        this.isActivatingInStock.set(false);
+        this.toast.showToast(
+          err?.error?.message || this.lang.translate('supplier.activate_failed'),
+          'error',
+        );
+      },
+    });
+  }
+
   public closeDeactivateModal(): void {
     if (this.isDeactivating()) return;
     this.isDeactivateModalOpen.set(false);
