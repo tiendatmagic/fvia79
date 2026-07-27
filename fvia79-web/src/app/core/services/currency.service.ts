@@ -60,7 +60,10 @@ export class CurrencyService {
         maximumFractionDigits: maxDigits
       }).format(numericAmount);
     } else {
-      const vndAmount = numericAmount * this.usdToVndRate();
+      let vndAmount = numericAmount * this.usdToVndRate();
+      if (vndAmount >= 1000) {
+        vndAmount = Math.round(vndAmount / 1000) * 1000;
+      }
       return new Intl.NumberFormat('vi-VN', {
         style: 'currency',
         currency: 'VND',

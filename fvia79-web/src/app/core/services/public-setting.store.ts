@@ -1,5 +1,6 @@
 import { Injectable, inject, signal } from '@angular/core';
 import { ApiService } from '@core/services/api.service';
+import { CurrencyService } from '@core/services/currency.service';
 import { tap, finalize, shareReplay } from 'rxjs/operators';
 import { Observable, of } from 'rxjs';
 
@@ -24,6 +25,7 @@ export interface PublicSettings {
 })
 export class PublicSettingStore {
   private readonly api = inject(ApiService);
+  private readonly currencyService = inject(CurrencyService);
 
   public readonly loading = signal<boolean>(false);
   public readonly loaded = signal<boolean>(false);
@@ -34,7 +36,7 @@ export class PublicSettingStore {
     announcement_text: '',
     announcement_effect: 'marquee',
     usdt_exchange_rate: 25400,
-    telegram_bot_username: 'adsbm79noti_bot',
+    telegram_bot_username: 'fvia79noti_bot',
     membership_tiers_feature_enabled: true,
     membership_tiers_enabled: true,
     coupons_feature_enabled: true,
@@ -83,7 +85,7 @@ export class PublicSettingStore {
             announcement_text: res.announcement_text || '',
             announcement_effect: (res.announcement_effect as any) || 'marquee',
             usdt_exchange_rate: Number(res.usdt_exchange_rate) || 25400,
-            telegram_bot_username: res.telegram_bot_username || 'adsbm79noti_bot',
+            telegram_bot_username: res.telegram_bot_username || 'fvia79noti_bot',
             membership_tiers_feature_enabled: res.membership_tiers_feature_enabled !== undefined ? Boolean(res.membership_tiers_feature_enabled) : true,
             membership_tiers_enabled: res.membership_tiers_enabled !== undefined ? Boolean(res.membership_tiers_enabled) : true,
             coupons_feature_enabled: res.coupons_feature_enabled !== undefined ? Boolean(res.coupons_feature_enabled) : true,
@@ -91,6 +93,7 @@ export class PublicSettingStore {
             payment_bep20_enabled: res.payment_bep20_enabled !== undefined ? Boolean(res.payment_bep20_enabled) : true,
             payment_binance_enabled: res.payment_binance_enabled !== undefined ? Boolean(res.payment_binance_enabled) : true
           };
+          this.currencyService.setUsdToVndRate(data.usdt_exchange_rate);
           this.cachedSettings = data;
           this.lastFetchTime = Date.now();
           this.settings.set(data);

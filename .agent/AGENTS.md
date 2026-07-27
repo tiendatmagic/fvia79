@@ -19,6 +19,22 @@
 
 ## 📋 NHẬT KÝ THAY ĐỔI DỰ ÁN
 
+### [2026-07-27] Khắc phục lỗi giá trị mặc định telegram_bot_username bị dính tên dự án cũ (adsbm79noti_bot)
+- **Mô tả**: Phát hiện và khắc phục lỗi giá trị mặc định (fallback) của `telegram_bot_username` ở `public-setting.store.ts` và `system-setting.store.ts` bị dính tên mặc định của dự án cũ `adsbm79noti_bot` trên cả 2 nguồn `fvia79` và `isocalmarket`.
+- **Thực hiện**:
+  - `fvia79-web`: Cập nhật 100% các tệp store fallback thành `fvia79noti_bot`.
+  - `isocalmarket-web`: Cập nhật 100% các tệp store fallback thành `isocalmarketnoti_bot`.
+  - Biên dịch: Chạy `npx ng build --configuration production` thành công **100% BUILD SUCCESS**.
+
+
+### [2026-07-27] Khắc phục lỗi hiển thị giá gốc VND bị lẻ lẻ (225.009đ, 330.013đ) do sai lệch phép chia floating-point
+- **Mô tả**: Khi người dùng xem giá ở đơn vị VND trên Storefront, mặc dù Nhà cung cấp đã bật tùy chọn "Làm tròn số (VND)" (`round_vnd_prices = true`), giá niêm yết gốc lại hiển thị dạng lẻ `225.009 đ` và `330.013 đ`.
+- **Nguyên nhân**: Trong CSDL, giá sản phẩm được lưu dưới dạng USD. Khi `CurrencyService` phía Frontend nhân giá USD với tỷ giá `usdToVndRate` (ví dụ: `8.56294717 * 26276`), phép tính số thực floating-point tạo ra sai lệch vài đồng lẻ làm sai lệch hiển thị giá niêm yết nghìn chẵn.
+- **Thực hiện**:
+  - `currency.service.ts`: Bổ sung tự động làm tròn giá trị VND hiển thị về nghìn đồng chẵn (`Math.round(vndAmount / 1000) * 1000`) đối với các khoản tiền $\ge 1.000$ VNĐ.
+  - Biên dịch: Chạy `npx ng build --configuration production` thành công **100% BUILD SUCCESS**.
+
+
 ### [2026-07-26] Cấu hình & Chuẩn hóa liên kết Frontend Netlify với Backend DDNS
 - **Mô tả**: Thiết lập và kiểm tra cơ chế kết nối giữa FE (`https://fvia79.netlify.app/`) và BE (`https://fvia79.ddns.net/`).
 - **Thực hiện**:
@@ -173,3 +189,14 @@
   - `storefront.component.ts`: Đưa điều kiện `if (mode === 'demo')` lên trước `else if (res.data && res.data.length > 0)` trong `loadRecentActivities()`. Đảm bảo `getRandomDemoUsername()` kiểm tra trùng lặp trong `excludeList`.
   - `StorefrontController.php`: Bổ sung tính toán `total_usd` cho đơn mua và tự động quy đổi `$amountVnd / 25400` cho lượt nạp tiền nếu `amount_usdt > 1000`.
 - **Kiểm thử**: `php -l` thành công, Angular build thành công **100% BUILD SUCCESS**.
+
+### [2026-07-27] Dọn dẹp & Xóa vĩnh viễn tất cả sản phẩm, danh mục rác đã bị xóa trong CSDL
+- **Mô tả**: Rà soát CSDL, tìm và thực hiện xóa vĩnh viễn (force delete) toàn bộ các sản phẩm bị xóa mềm (soft-deleted) và các danh mục rác/không còn sản phẩm trong CSDL theo yêu cầu.
+- **Thực hiện**:
+  - **Sản phẩm (Products)**: Tìm thấy 10 sản phẩm ở trạng thái xóa mềm (`deleted_at IS NOT NULL`). Đã thực hiện force delete 100% khỏi bảng `products` (không có ràng buộc tồn kho/đơn hàng).
+  - **Danh mục (Categories)**: Xóa 3 danh mục rỗng/rác không chứa sản phẩm active nào (`BM Limit 250$`, `Danh mục A`, `LINKED IN`).
+  - **Clear Cache**: Tiến hành xóa toàn bộ cache đệm Laravel và ứng dụng (`php artisan config:clear; php artisan cache:clear`).
+- **Kết quả**:
+  - Sản phẩm xóa mềm còn lại: **0** sản phẩm.
+  - Sản phẩm active còn lại: **128** sản phẩm.
+  - Danh mục còn lại: **14** danh mục.

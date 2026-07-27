@@ -57,7 +57,7 @@ export class SystemSettingStore {
     binance_api_key: '',
     binance_api_secret: '',
     telegram_bot_token: '',
-    telegram_bot_username: 'adsbm79noti_bot',
+    telegram_bot_username: 'fvia79noti_bot',
     telegram_bot_enabled: true,
     announcement_enabled: true,
     announcement_text_vi: '',
