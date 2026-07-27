@@ -19,6 +19,12 @@
 
 ## 📋 NHẬT KÝ THAY ĐỔI DỰ ÁN
 
+### [2026-07-27] Bổ sung khối Tuyên bố miễn trừ trách nhiệm ở trang Đăng nhập / Đăng ký (fvia79-web)
+- **Mô tả**: Bổ sung thẻ thông báo Tuyên bố miễn trừ trách nhiệm (`notice.disclaimer_title` & `notice.disclaimer_body`) vào giao diện trang Đăng nhập / Đăng ký (`AuthLayoutComponent`) tại vị trí phía trên điều khoản dịch vụ (cả trên Desktop và Mobile).
+- **Thực hiện**:
+  - `fvia79-web/src/app/features/auth/auth-layout.component.html`: Thêm khối banner cảnh báo màu hổ phách (amber) hiển thị linh hoạt với hiệu ứng icon warning, tự động nhận ngôn ngữ theo cài đặt i18n (`vi.ts` / `en.ts`).
+  - Biên dịch & Kiểm thử: Chạy `npx ng build --configuration production` thành công **100% BUILD SUCCESS**.
+
 ### [2026-07-27] Cập nhật nội dung Tuyên bố miễn trừ trách nhiệm ở Popup Thông Báo Hệ Thống (fvia79-web)
 - **Mô tả**: Cập nhật văn bản miễn trừ trách nhiệm pháp lý trong popup Thông báo Hệ thống (`WelcomeNoticeModalComponent`), áp dụng hỗ trợ đa ngôn ngữ (Tiếng Việt & Tiếng Anh).
 - **Thực hiện**:
