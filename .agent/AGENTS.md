@@ -19,7 +19,14 @@
 > 1. Cronjob Scheduler (`schedule:run`) **CHỈ ĐƯỢC CHẠY DƯỚI USER `www-data`** (`crontab -u www-data -e`). **TUYỆT ĐỐI KHÔNG cài dưới `root`** vì sẽ gây ra lỗi `500 Permission denied` khi người dùng thực hiện thao tác Web/API.
 > 2. Luôn cấp quyền `chmod -R 777` và `chown -R www-data:www-data` cho `storage` & `bootstrap/cache`. Khi gõ lệnh CLI thủ công trên VPS, luôn chạy dưới quyền `www-data` (`su -s /bin/bash www-data -c "php artisan <cmd>"`).
 
----
+### [2026-07-28] Rà soát & Khắc phục triệt để lỗi i18n / hiển thị Tiếng Anh trên cả 3 dự án (fvia79, adsbm79, isocalmarket)
+- **Mô tả**: Rà soát tự động 100% các tệp HTML/TS trên cả 3 nguồn dự án Web để phát hiện các key dịch bị viết cứng hoặc thiếu trong từ điển `vi.ts`.
+- **Phát hiện & Xử lý**:
+  - **`fvia79-web`**: 
+    1. Sửa lỗi 3 tab trong modal **Cập nhật thành viên** (`UserFormModalComponent`): `'User Info'` -> `'user.tab_basic'`, `'Permissions'` -> `'user.tab_permissions'`, `'Security & API'` -> `'user.tab_security'`.
+    2. Sửa lỗi tiêu đề trang **Lịch sử nạp tiền**: `'Deposit History' | translate` -> `'dep.title' | translate` (Hiển thị *"Lịch Sử Nạp Tiền"* khi chọn VI, *"Deposit History"* khi chọn EN).
+  - **`adsbm79-web` & `isocalmarket-web`**: Đã rà soát tự động 100% tệp mẫu, kết quả đạt **0 lỗi key thiếu/viết cứng i18n**.
+- **Kiểm thử**: Đã chạy `npx ng build --configuration production` trên cả 3 dự án web, kết quả đạt **100% BUILD SUCCESS** 0 lỗi.
 
 ### [2026-07-28] Triển khai (Deploy) hoàn chỉnh FE & BE cho 3 dự án (fvia79, adsbm79, isocalmarket) giữ nguyên CSDL & làm sạch cache
 - **Mô tả**: Biên dịch bản production Frontend Angular và đóng gói Backend Laravel cho cả 3 dự án, triển khai đồng bộ lên 3 VPS tương ứng, thực thi migration an toàn (giữ nguyên dữ liệu CSDL) và xóa/tái tạo toàn bộ cache tĩnh.

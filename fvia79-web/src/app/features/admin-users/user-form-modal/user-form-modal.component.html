@@ -15,7 +15,7 @@
       [class.dark:hover:text-slate-200]="activeTab !== 'info'"
     >
       <app-icon name="user" class="w-4 h-4" />
-      {{ 'User Info' | translate }}
+      {{ 'user.tab_basic' | translate }}
     </button>
 
     <button
@@ -31,7 +31,7 @@
       [class.dark:hover:text-slate-200]="activeTab !== 'permissions'"
     >
       <app-icon name="key" class="w-4 h-4" />
-      {{ 'Permissions' | translate }}
+      {{ 'user.tab_permissions' | translate }}
     </button>
 
     @if (isEditMode) {
@@ -48,7 +48,7 @@
         [class.dark:hover:text-slate-200]="activeTab !== 'security'"
       >
         <app-icon name="shield-check" class="w-4 h-4" />
-        {{ 'Security & API' | translate }}
+        {{ 'user.tab_security' | translate }}
       </button>
     }
   </div>
