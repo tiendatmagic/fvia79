@@ -1,4 +1,4 @@
-import { Component, inject, OnInit, effect, signal } from '@angular/core';
+import { Component, inject, OnInit, effect, signal, computed } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { RouterOutlet, RouterModule, Router, NavigationEnd } from '@angular/router';
 import { filter } from 'rxjs/operators';
@@ -9,6 +9,7 @@ import { SidebarComponent } from '@shared/layout/sidebar/sidebar.component';
 import { LogoComponent } from '@shared/components/logo/logo.component';
 import { ThemeSwitcherComponent } from '@shared/components/theme-switcher/theme-switcher.component';
 import { StateService } from '@core/services/state.service';
+import { LanguageService } from '@core/services/language.service';
 import { MaintenanceComponent } from '@features/maintenance/maintenance.component';
 import { TranslatePipe } from '@shared/pipes/translate.pipe';
 
@@ -36,6 +37,7 @@ import { PublicSettingStore } from '@core/services/public-setting.store';
 export class App implements OnInit {
   public stateService = inject(StateService);
   public publicSettingStore = inject(PublicSettingStore);
+  public lang = inject(LanguageService);
   private router = inject(Router);
   public hasBeenOpened = signal<boolean>(false);
   public activeMenuState = signal<boolean>(false);
@@ -43,6 +45,18 @@ export class App implements OnInit {
     typeof window !== 'undefined' && 
     (window.location.pathname.includes('/login') || window.location.pathname.includes('/register'))
   );
+
+  public isBuyMenuOpen = signal<boolean>(false);
+
+  public readonly sortedCategories = computed(() => {
+    const cats = this.stateService.productStore.categories() || [];
+    const currentLang = this.lang.currentLang();
+    return [...cats].sort((a, b) => {
+      const nameA = (currentLang === 'vi' ? (a.name_vi || a.name_en || a.name) : (a.name_en || a.name_vi || a.name)) || '';
+      const nameB = (currentLang === 'vi' ? (b.name_vi || b.name_en || b.name) : (b.name_en || b.name_vi || b.name)) || '';
+      return nameA.localeCompare(nameB, currentLang === 'vi' ? 'vi' : 'en', { sensitivity: 'base' });
+    });
+  });
 
   constructor() {
     effect(() => {
@@ -66,6 +80,7 @@ export class App implements OnInit {
   ngOnInit() {
     this.publicSettingStore.fetchPublicSettings().subscribe();
     this.stateService.authStore.checkMe(false, true).subscribe();
+    this.stateService.productStore.fetchCategories().subscribe();
 
     this.router.events.pipe(
       filter(event => event instanceof NavigationEnd)
@@ -74,6 +89,15 @@ export class App implements OnInit {
       const url = event.urlAfterRedirects || event.url || '';
       this.isAuthPage.set(url.includes('/login') || url.includes('/register'));
     });
+  }
+
+  public toggleBuyMenu() {
+    this.isBuyMenuOpen.update((v) => !v);
+  }
+
+  public getCategoryName(cat: any): string {
+    const currentLang = this.lang.currentLang();
+    return (currentLang === 'vi' ? (cat.name_vi || cat.name_en || cat.name) : (cat.name_en || cat.name_vi || cat.name)) || '';
   }
 }
 

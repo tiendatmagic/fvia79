@@ -996,6 +996,7 @@ export const EN_TRANSLATIONS: Record<string, string> = {
   'nav.deposits': 'Deposits',
   'nav.faq': 'FAQ & Warranty',
   'nav.home': 'Storefront',
+  'nav.buy': 'Purchase',
   'nav.inventory': 'Inventory',
   'nav.login': 'Sign In',
   'nav.logout': 'Sign Out',

@@ -9,7 +9,7 @@ import {
 } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
-import { RouterModule, Router } from '@angular/router';
+import { RouterModule, Router, ActivatedRoute } from '@angular/router';
 import { StateService } from '@core/services/state.service';
 import { LanguageService } from '@core/services/language.service';
 import { ApiService } from '@core/services/api.service';
@@ -103,6 +103,7 @@ export class StorefrontComponent implements OnInit, OnDestroy {
   public readonly publicSettingStore = inject(PublicSettingStore);
   private readonly api = inject(ApiService);
   private readonly router = inject(Router);
+  private readonly route = inject(ActivatedRoute);
   private readonly modalService = inject(ModalService);
 
   public readonly dismissedAnnouncement = signal<boolean>(false);
@@ -159,6 +160,11 @@ export class StorefrontComponent implements OnInit, OnDestroy {
     this.loadAllGroupedProducts();
     this.loadRecentActivities();
     this.fetchCategoriesList();
+
+    this.route.queryParams.subscribe((params) => {
+      const cat = params['category'];
+      this.selectedCategory.set(cat ? String(cat) : 'all');
+    });
   }
 
   public readonly allCategoriesList = signal<any[]>([]);
@@ -461,7 +467,13 @@ export class StorefrontComponent implements OnInit, OnDestroy {
   public readonly selectedCategory = signal<string>('all');
 
   public onCategorySelect(catId: string) {
-    this.selectedCategory.set(catId || 'all');
+    const targetCat = catId || 'all';
+    this.selectedCategory.set(targetCat);
+    this.router.navigate([], {
+      relativeTo: this.route,
+      queryParams: { category: targetCat === 'all' ? null : targetCat },
+      queryParamsHandling: 'merge',
+    });
   }
 
   public readonly categoryOptions = computed(() => {

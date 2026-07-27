@@ -996,6 +996,7 @@ export const VI_TRANSLATIONS: Record<string, string> = {
   'nav.deposits': 'Nạp tiền',
   'nav.faq': 'Chính sách bảo hành',
   'nav.home': 'Cửa hàng',
+  'nav.buy': 'Mua hàng',
   'nav.inventory': 'Kho hàng',
   'nav.login': 'Đăng nhập',
   'nav.logout': 'Đăng xuất',
