@@ -19,6 +19,17 @@
 
 ## 📋 NHẬT KÝ THAY ĐỔI DỰ ÁN
 
+### [2026-07-27] Bổ sung quy tắc nhận diện logo quốc kỳ cho Ecuador, Timor-Leste, Congo, Mexico và các quốc gia trên thế giới (fvia79 & adsbm79)
+- **Mô tả**: Bổ sung đầy đủ quy tắc nhận diện tên quốc gia cho `ProductIconComponent` đối với các sản phẩm chưa hiển thị đúng cờ (như Ecuador 🇪🇨, Timor-Leste 🇹🇱, Congo 🇨🇬, Mexico 🇲🇽, Luxembourg 🇱🇺, Belgium 🇧🇪...):
+  - Ecuador (`ec`): `/\b(ecuador)\b/i`
+  - Timor-Leste (`tl`): `/\b(timor\s*leste|timor|east\s*timor)\b/i`
+  - Congo (`cg`): `/\b(congo)\b/i`
+  - Mexico (`mx`), Bỉ (`be`), Nepal (`np`), Sri Lanka (`lk`), Mongolia (`mn`), Iraq (`iq`), Iran (`ir`), Israel (`il`)...
+- **Thực hiện**:
+  - `fvia79-web`: Cập nhật `COUNTRY_RULES` trong `product-icon.component.ts`.
+  - `adsbm79-web`: Cập nhật `COUNTRY_RULES` trong `product-icon.component.ts` đồng bộ 100%.
+  - Biên dịch & Kiểm thử: Chạy build Angular production thành công **100% BUILD SUCCESS** trên cả 2 dự án.
+
 ### [2026-07-27] Phát triển tính năng Tùy chỉnh vị trí/thứ tự hiển thị danh mục ở trang chủ Storefront & Modal Sắp xếp vị trí thông minh (fvia79)
 - **Mô tả**: Phát triển hoàn chỉnh tính năng cho phép Admin tùy chỉnh thứ tự (vị trí) sắp xếp của các danh mục hiển thị trên trang chủ Storefront (`/storefront`), giúp sắp xếp vị trí danh mục linh hoạt theo mong muốn (ví dụ đưa danh mục *"Ad account Limit 50$"* xếp dưới *"BM3 Limit 50$"* và *"BM50$"*).
 - **Thực hiện**:

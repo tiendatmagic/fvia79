@@ -21,11 +21,12 @@ import {
 } from 'rxjs/operators';
 
 import { PublicSettingStore } from '@core/services/public-setting.store';
+import { TooltipDirective } from '@shared/components/tooltip/tooltip.directive';
 
 @Component({
   selector: 'app-cart-modal',
   standalone: true,
-  imports: [CommonModule, FormsModule, ButtonComponent, IconComponent, TranslatePipe, CurrencyPipe],
+  imports: [CommonModule, FormsModule, ButtonComponent, IconComponent, TranslatePipe, CurrencyPipe, TooltipDirective],
   templateUrl: './cart-modal.component.html',
   styles: [
     `

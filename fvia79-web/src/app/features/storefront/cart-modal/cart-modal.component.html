@@ -6,7 +6,10 @@
         class="bg-slate-50/50 dark:bg-slate-900/10 border border-slate-100 dark:border-slate-800/60 p-4 rounded-xl flex items-center justify-between gap-4"
       >
         <div class="flex-1 min-w-0">
-          <p class="text-sm font-bold text-slate-800 dark:text-slate-200 truncate">
+          <p
+            class="text-sm font-bold text-slate-800 dark:text-slate-200 truncate cursor-pointer hover:text-[var(--color-primary)] transition-colors"
+            [appTooltip]="item.name"
+          >
             {{ item.name }}
           </p>
           <p class="text-xs font-bold text-[var(--color-primary)] mt-1">

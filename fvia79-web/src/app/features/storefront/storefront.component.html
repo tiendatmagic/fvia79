@@ -262,7 +262,8 @@
                     <div class="flex items-start gap-2.5 min-w-0 flex-1">
                       <app-product-icon [productName]="p.name" [productId]="p.id" size="md" class="mt-0.5" />
                       <h4
-                        class="text-base font-extrabold text-slate-800 dark:text-white line-clamp-2"
+                        class="text-base font-extrabold text-slate-800 dark:text-white line-clamp-2 cursor-pointer hover:text-[var(--color-primary)] transition-colors"
+                        [appTooltip]="p.name"
                       >
                         {{ p.name }}
                       </h4>
@@ -450,7 +451,10 @@
                   <div class="flex items-start gap-2.5 min-w-0 flex-1">
                     <app-product-icon [productName]="p.name" [productId]="p.id" size="sm" class="mt-0.5" />
                     <div class="space-y-1 min-w-0 flex-1">
-                      <h4 class="text-sm font-extrabold text-slate-800 dark:text-white break-words">
+                      <h4
+                        class="text-sm font-extrabold text-slate-800 dark:text-white break-words cursor-pointer hover:text-[var(--color-primary)] transition-colors"
+                        [appTooltip]="p.name"
+                      >
                         {{ p.name }}
                       </h4>
                       <p
