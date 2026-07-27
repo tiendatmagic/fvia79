@@ -19,6 +19,23 @@
 
 ## 📋 NHẬT KÝ THAY ĐỔI DỰ ÁN
 
+### [2026-07-27] Chuẩn hóa phương thức nạp tiền Demo ở khối Lịch sử nạp gần đây (Chỉ hiển thị USDT BEP20 và BINANCE PAY với tỷ lệ 8/10)
+- **Mô tả**: Cập nhật dữ liệu khởi tạo và logic tạo dữ liệu ngẫu nhiên thời gian thực ở chế độ **Demo** cho khối **Lịch sử nạp gần đây** trên Storefront:
+  1. Loại bỏ phương thức nạp TRC20 (`usdt_trc20`).
+  2. Chỉ cho phép 2 phương thức nạp: **USDT (BEP20)** (`usdt_bep20`) và **BINANCE PAY** (`binance_pay`).
+  3. Áp dụng tỷ lệ xuất hiện **8/10** (80% ưu tiên `USDT (BEP20)` và 20% `BINANCE PAY`).
+- **Thực hiện**:
+  - `storefront.component.ts`: Cập nhật `seedInitialDeposits()` và `startDemoActivitiesTimer()` sinh dữ liệu demo chuẩn tỷ lệ 80:20.
+  - Biên dịch: Chạy `npx ng build --configuration production` thành công **100% BUILD SUCCESS**.
+
+### [2026-07-27] Đồng bộ tệp ảnh social_image.png tại thư mục fvia79-web/public/assets/image
+- **Mô tả**: Thay thế tệp ảnh cũ `social_image.png` trong thư mục `public/assets/image/` bằng tệp ảnh social/OG Image mới được sinh từ bộ nhận diện thương hiệu `fvia79-logo`. Đồng thời bổ sung các định dạng tên biến thể (`social-image.png`, `social_image.jpg`, `social-image.jpg`) để đảm bảo không bị lỗi 404 khi truy cập bất kỳ đường dẫn ảnh social nào.
+- **Thực hiện**:
+  - `fvia79-web/public/assets/image/`: Cập nhật `social_image.png`, `social-image.png`, `social_image.jpg`, `social-image.jpg`.
+  - Biên dịch: Chạy `npx ng build --configuration production` thành công **100% BUILD SUCCESS**.
+
+
+
 ### [2026-07-27] Đồng bộ tỷ giá mặc định USDT/VND thành 26.500 trên cả 3 dự án (fvia79, isocalmarket, adsbm79)
 - **Mô tả**: Cập nhật giá trị tỷ giá mặc định (fallback) cho toàn bộ 3 dự án từ các con số cũ (`25.400`, `26.276`) sang tỷ giá mặc định mới **`26.500`** theo yêu cầu.
 - **Thực hiện**:

@@ -282,10 +282,13 @@ export class StorefrontComponent implements OnInit, OnDestroy {
 
     this.recentDeposits.set([
       { id: 'seed_d1', username: getUniqueName(), amount_usdt: 15.5, method: 'usdt_bep20', created_at: new Date(Date.now() - 30000).toISOString() },
-      { id: 'seed_d2', username: getUniqueName(), amount_usdt: 2.5, method: 'binance_pay', created_at: new Date(Date.now() - 90000).toISOString() },
-      { id: 'seed_d3', username: getUniqueName(), amount_usdt: 180, method: 'usdt_trc20', created_at: new Date(Date.now() - 180000).toISOString() },
-      { id: 'seed_d4', username: getUniqueName(), amount_usdt: 0.5, method: 'usdt_bep20', created_at: new Date(Date.now() - 300000).toISOString() },
-      { id: 'seed_d5', username: getUniqueName(), amount_usdt: 295, method: 'binance_pay', created_at: new Date(Date.now() - 600000).toISOString() }
+      { id: 'seed_d2', username: getUniqueName(), amount_usdt: 2.5, method: 'usdt_bep20', created_at: new Date(Date.now() - 90000).toISOString() },
+      { id: 'seed_d3', username: getUniqueName(), amount_usdt: 180, method: 'usdt_bep20', created_at: new Date(Date.now() - 180000).toISOString() },
+      { id: 'seed_d4', username: getUniqueName(), amount_usdt: 0.5, method: 'binance_pay', created_at: new Date(Date.now() - 300000).toISOString() },
+      { id: 'seed_d5', username: getUniqueName(), amount_usdt: 295, method: 'usdt_bep20', created_at: new Date(Date.now() - 420000).toISOString() },
+      { id: 'seed_d6', username: getUniqueName(), amount_usdt: 50, method: 'usdt_bep20', created_at: new Date(Date.now() - 600000).toISOString() },
+      { id: 'seed_d7', username: getUniqueName(), amount_usdt: 75, method: 'usdt_bep20', created_at: new Date(Date.now() - 850000).toISOString() },
+      { id: 'seed_d8', username: getUniqueName(), amount_usdt: 25.5, method: 'binance_pay', created_at: new Date(Date.now() - 1200000).toISOString() }
     ]);
   }
 
@@ -341,8 +344,8 @@ export class StorefrontComponent implements OnInit, OnDestroy {
         const randomName = this.getRandomDemoUsername();
         const demoUsdtAmounts = [0.1, 0.5, 1.2, 2.5, 5, 8.5, 10, 15, 25.5, 45, 50, 75, 120, 180.5, 250, 295, 300];
         const randomUsdt = demoUsdtAmounts[Math.floor(Math.random() * demoUsdtAmounts.length)];
-        const demoMethods = ['usdt_bep20', 'binance_pay', 'usdt_trc20'];
-        const randomMethod = demoMethods[Math.floor(Math.random() * demoMethods.length)];
+        // Tỷ lệ xuất hiện: 80% (8/10) là USDT (BEP20), 20% (2/10) là BINANCE PAY
+        const randomMethod = Math.random() < 0.8 ? 'usdt_bep20' : 'binance_pay';
 
         const newItem = {
           id: 'live_dep_' + Date.now(),
