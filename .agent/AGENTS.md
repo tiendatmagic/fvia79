@@ -24,8 +24,8 @@
 - **Thực hiện**:
   - `fvia79-web/src/app/app.routes.ts`: Bổ sung guard `canActivate: [AuthGuard]` trực tiếp cho route `'storefront'`. Khi khách chưa đăng nhập truy cập vào `/storefront`, Angular Router sẽ ngăn truy cập, hiển thị thông báo toast yêu cầu đăng nhập và tự động chuyển hướng đến `/login` kèm tham số `returnUrl=/storefront`.
   - `SidebarComponent` (`sidebar.component.ts/html`) & `App` (`app.ts/html`): Bổ sung kiểm tra `stateService.isAuthenticated()`. Khi khách chưa đăng nhập nhấn vào submenu **"Mua hàng"** (hoặc truy cập danh mục sản phẩm), hệ thống sẽ hiển thị thông báo yêu cầu đăng nhập và tự động chuyển hướng đến trang `/login`.
-  - `auth.interceptor.ts`: Khắc phục lỗi khi khách chưa đăng nhập (Guest) truy cập các trang công khai (`/check-uid`, `/faq`, `/contact`), API `/auth/me` trả về `401 Unauthorized` khiến HTTP Interceptor tự động chuyển hướng khách về `/login`. Đã bổ sung `/check-uid`, `/faq`, `/contact` vào `isPublicRoute` để duy trì quyền truy cập công khai bình thường.
-  - Biên dịch & Kiểm thử: Chạy `npx ng build --configuration production` thành công **100% BUILD SUCCESS**.
+  - `auth.interceptor.ts`: Khắc phục lỗi khi khách chưa đăng nhập (Guest) truy cập các trang công khai (`/check-uid`, `/faq`, `/contact`), API `/auth/me` trả về `401 Unauthorized` khiến HTTP Interceptor tự động chuyển hướng khách về `/login`. Đã bổ sung `/check-uid`, `/faq`, `/contact` vào `isPublicRoute` đồng bộ trên 3 nguồn dự án (`fvia79`, `adsbm79`, `isocalmarket`), đảm bảo duy trì quyền truy cập công khai bình thường mà không bị văng ra trang đăng nhập.
+  - Biên dịch & Kiểm thử: Chạy `npx ng build --configuration production` thành công **100% BUILD SUCCESS** cho cả 3 dự án.
 
 ### [2026-07-27] Lọc chỉ hiển thị các danh mục đang hoạt động (is_active) ở submenu Mua hàng trên 3 nguồn (fvia79, adsbm79, isocalmarket)
 - **Mô tả**: Sửa lỗi submenu **"Mua hàng"** (cả Sidebar desktop và Mobile menu) và bộ lọc danh mục trang Storefront hiển thị các danh mục đã bị ẩn (`is_active = false`). Cấu hình chỉ lọc và hiển thị danh mục đang hoạt động (`is_active !== false`).
