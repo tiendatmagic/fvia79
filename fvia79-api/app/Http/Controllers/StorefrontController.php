@@ -36,6 +36,9 @@ class StorefrontController extends Controller
                     ? substr($username, 0, 1).'****'
                     : substr($username, 0, min(max(1, strlen($username) - 4), 6)).'****';
 
+                $totalVnd = (float) $order->total_amount;
+                $totalUsd = (float) ($order->total_amount_usd ?? ($totalVnd > 1000 ? round($totalVnd / 26276, 2) : $totalVnd));
+
                 $data[] = [
                     'id' => $order->id,
                     'username' => $maskedUsername,
@@ -43,7 +46,8 @@ class StorefrontController extends Controller
                     'product_name_vi' => $product ? ($product->name_vi ?? $product->name) : 'Via Ngoại',
                     'product_name_en' => $product ? ($product->name_en ?? $product->name) : 'Via Foreign',
                     'product_name' => $product ? $product->name : 'Foreign account',
-                    'total_price' => (float) $order->total_amount,
+                    'total_price' => $totalVnd,
+                    'total_usd' => $totalUsd,
                     'created_at' => $order->created_at ? $order->created_at->toIso8601String() : now()->toIso8601String(),
                 ];
             }
@@ -76,7 +80,10 @@ class StorefrontController extends Controller
                     : substr($username, 0, min(max(1, strlen($username) - 4), 6)).'****';
 
                 $amountVnd = (float) $deposit->amount;
-                $amountUsdt = (float) ($deposit->amount_usdt ?? round($amountVnd / 25400, 2));
+                $rawUsdt = $deposit->amount_usdt;
+                $amountUsdt = ($rawUsdt !== null && (float)$rawUsdt > 0 && (float)$rawUsdt <= 1000)
+                    ? (float)$rawUsdt
+                    : round($amountVnd / 25400, 2);
 
                 $data[] = [
                     'id' => $deposit->id,

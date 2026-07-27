@@ -149,6 +149,27 @@
   - `php -l`: Kiểm tra toàn bộ file PHP backend không có lỗi cú pháp (**0 ERRORS**).
   - `npx ng build --configuration production`: Biên dịch Angular frontend thành công **100% BUILD SUCCESS**.
 
+### [2026-07-27] Cập nhật hạn mức nạp tiền demo từ 0.1 đến 300 USDT cho khối Lịch sử nạp gần đây
+- **Mô tả**: Điều chỉnh dữ liệu mẫu khởi tạo (`seedInitialDeposits`) và trình tạo nạp tiền ngẫu nhiên theo thời gian thực (`startDemoActivitiesTimer`) ở chế độ Demo trên Storefront để chỉ tạo các số tiền nạp vừa phải trong khoảng từ **0.1 đến 300 USDT**.
+- **Thực hiện**:
+  - `storefront.component.ts`: Cập nhật `seedInitialDeposits` với các mức nạp USDT thực tế từ `0.5`, `2.5`, `15.5`, `180`, `295`.
+  - `storefront.component.ts`: Cập nhật mảng `demoUsdtAmounts = [0.1, 0.5, 1.2, 2.5, 5, 8.5, 10, 15, 25.5, 45, 50, 75, 120, 180.5, 250, 295, 300]` đảm bảo hạn mức nạp tối đa là 300 USDT.
+- **Biên dịch & Kiểm thử**: Chạy `npx ng build --configuration production` thành công.
 
+### [2026-07-27] Chuẩn hóa tạo Tên Người Dùng (Username) ngẫu nhiên tự nhiên ở chế độ Demo
+- **Mô tả**: Thay thế logic lấy tên username cố định bằng phương thức khởi tạo tên ngẫu nhiên đa dạng (`getRandomDemoUsername()`) cho cả 2 khối "Đơn hàng vừa mua" và "Lịch sử nạp gần đây" ở chế độ Demo trên Storefront. Tên được chọn ngẫu nhiên từ kho danh xưng tự nhiên (MMO, Facebook Ads, Crypto, tên phong phú...) và tự động được che mượt dạng `minh****`, `tuand****`.
+- **Thực hiện**:
+  - `storefront.component.ts`: Thêm hàm `getRandomDemoUsername()` sinh tên ngẫu nhiên đa dạng từ danh sách gần 40 tiền tố username thực tế.
+  - `storefront.component.ts`: Đồng bộ `seedInitialPurchases`, `seedInitialDeposits` và `startDemoActivitiesTimer` sử dụng `this.getRandomDemoUsername()`.
+- **Biên dịch & Kiểm thử**: Chạy `npx ng build --configuration production` thành công **100% BUILD SUCCESS**.
 
-
+### [2026-07-27] Khắc phục lỗi ưu tiên chế độ Demo và chuẩn hóa quy đổi USDT ở chế độ Real
+- **Mô tả**:
+  1. Khắc phục triệt để lỗi trang Storefront khi ở chế độ Demo nhưng vẫn hiển thị dữ liệu thật từ DB (gây ra hiện tượng hiển thị `10,000 USDT` hoặc `$0.00` của các user `a****` từ CSDL).
+  2. Chuẩn hóa kiểm tra `mode === 'demo'` ưu tiên hàng đầu trước khi dùng `res.data` từ API.
+  3. Chuẩn hóa hàm quy đổi USDT ở `StorefrontController.php` cho chế độ Real nếu số tiền trong DB lớn hơn 1000 (tránh lấy nhầm số VND gán cho USDT).
+  4. Chuẩn hóa bộ phát sinh username ngẫu nhiên không trùng lặp cho các hàng khởi tạo ban đầu.
+- **Thực hiện**:
+  - `storefront.component.ts`: Đưa điều kiện `if (mode === 'demo')` lên trước `else if (res.data && res.data.length > 0)` trong `loadRecentActivities()`. Đảm bảo `getRandomDemoUsername()` kiểm tra trùng lặp trong `excludeList`.
+  - `StorefrontController.php`: Bổ sung tính toán `total_usd` cho đơn mua và tự động quy đổi `$amountVnd / 25400` cho lượt nạp tiền nếu `amount_usdt > 1000`.
+- **Kiểm thử**: `php -l` thành công, Angular build thành công **100% BUILD SUCCESS**.

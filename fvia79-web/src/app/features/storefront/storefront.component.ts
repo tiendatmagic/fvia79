@@ -198,10 +198,10 @@ export class StorefrontComponent implements OnInit, OnDestroy {
           this.recentPurchasesEnabled.set(Boolean(res.enabled));
           const mode = res.mode || 'demo';
           this.recentPurchasesMode.set(mode);
-          if (res.data && res.data.length > 0) {
-            this.recentPurchases.set(res.data);
-          } else if (mode === 'demo') {
+          if (mode === 'demo') {
             this.seedInitialPurchases();
+          } else if (res.data && res.data.length > 0) {
+            this.recentPurchases.set(res.data);
           } else {
             this.recentPurchases.set([]);
           }
@@ -222,10 +222,10 @@ export class StorefrontComponent implements OnInit, OnDestroy {
           this.recentDepositsEnabled.set(Boolean(res.enabled));
           const mode = res.mode || 'demo';
           this.recentDepositsMode.set(mode);
-          if (res.data && res.data.length > 0) {
-            this.recentDeposits.set(res.data);
-          } else if (mode === 'demo') {
+          if (mode === 'demo') {
             this.seedInitialDeposits();
+          } else if (res.data && res.data.length > 0) {
+            this.recentDeposits.set(res.data);
           } else {
             this.recentDeposits.set([]);
           }
@@ -243,22 +243,62 @@ export class StorefrontComponent implements OnInit, OnDestroy {
     this.startDemoActivitiesTimer();
   }
 
+  private getRandomDemoUsername(excludeList: string[] = []): string {
+    const sampleUsernames = [
+      'minhtran99', 'tuandat_ads', 'crypto_king', 'trieu_phu_via', 'nguyen_van_a',
+      'trinhphuong', 'viamaster99', 'ads79_agent', 'bm_pro_2026', 'alex_smith',
+      'johnny_crypto', 'duy_fb_ads', 'hoang_long_via', 'khoa_mmo', 'trung_clone',
+      'david_trader', 'son_via_v7', 'phan_tan_dinh', 'emilio_ads', 'lisa_beauty',
+      'toetkool_99', 'quoc_viet_ads', 'lam_via_co', 'phong_clone_bm', 'charlie_trx',
+      'tony_bep20', 'quang_huy_mmo', 'nam_ads_fb', 'hung_bm50', 'trinh_le_98',
+      'xuan_bach', 'truong_giang', 'bao_long_via', 'dang_khoa_ads', 'gaooblu88',
+      'havy_mmo', 'le_van_thanh', 'bui_cong_minh', 'vo_dinh_phong'
+    ];
+
+    let candidate = '';
+    let attempts = 0;
+    do {
+      const name = sampleUsernames[Math.floor(Math.random() * sampleUsernames.length)];
+      const clean = name.trim();
+      const len = clean.length;
+      const prefixLen = len <= 4 ? 2 : Math.min(Math.max(2, len - 4), 6);
+      candidate = clean.substring(0, prefixLen) + '****';
+      attempts++;
+    } while (excludeList.includes(candidate) && attempts < 20);
+
+    return candidate;
+  }
+
   private seedInitialPurchases(): void {
+    const used: string[] = [];
+    const getUniqueName = () => {
+      const name = this.getRandomDemoUsername(used);
+      used.push(name);
+      return name;
+    };
+
     this.recentPurchases.set([
-      { id: 'seed_p1', username: 'gao****', quantity: 5, product_name_vi: 'Via Ngoại Cổ (No2FA)', product_name_en: 'Via Foreign Old (No2FA)', total_price: 9.15, total_usd: 9.15, created_at: new Date(Date.now() - 45000).toISOString() },
-      { id: 'seed_p2', username: 'es****', quantity: 4, product_name_vi: 'Via Indonesia Cổ 500-3K Friend (No2FA)', product_name_en: 'Via Indonesia Old 500-3K Friend (No2FA)', total_price: 20.55, total_usd: 20.55, created_at: new Date(Date.now() - 120000).toISOString() },
-      { id: 'seed_p3', username: 'tranph****', quantity: 4, product_name_vi: 'BM50$ Ngâm', product_name_en: 'BM50$ Aged', total_price: 5.18, total_usd: 5.18, created_at: new Date(Date.now() - 240000).toISOString() },
-      { id: 'seed_p4', username: 'crypto****', quantity: 1, product_name_vi: 'Via Colombia Cổ Kháng 902', product_name_en: 'Via Colombia Old 902 Restored', total_price: 3.08, total_usd: 3.08, created_at: new Date(Date.now() - 400000).toISOString() }
+      { id: 'seed_p1', username: getUniqueName(), quantity: 5, product_name_vi: 'Via Ngoại Cổ (No2FA)', product_name_en: 'Via Foreign Old (No2FA)', total_price: 9.15, total_usd: 9.15, created_at: new Date(Date.now() - 45000).toISOString() },
+      { id: 'seed_p2', username: getUniqueName(), quantity: 4, product_name_vi: 'Via Indonesia Cổ 500-3K Friend (No2FA)', product_name_en: 'Via Indonesia Old 500-3K Friend (No2FA)', total_price: 20.55, total_usd: 20.55, created_at: new Date(Date.now() - 120000).toISOString() },
+      { id: 'seed_p3', username: getUniqueName(), quantity: 4, product_name_vi: 'BM50$ Ngâm', product_name_en: 'BM50$ Aged', total_price: 5.18, total_usd: 5.18, created_at: new Date(Date.now() - 240000).toISOString() },
+      { id: 'seed_p4', username: getUniqueName(), quantity: 1, product_name_vi: 'Via Colombia Cổ Kháng 902', product_name_en: 'Via Colombia Old 902 Restored', total_price: 3.08, total_usd: 3.08, created_at: new Date(Date.now() - 400000).toISOString() }
     ]);
   }
 
   private seedInitialDeposits(): void {
+    const used: string[] = [];
+    const getUniqueName = () => {
+      const name = this.getRandomDemoUsername(used);
+      used.push(name);
+      return name;
+    };
+
     this.recentDeposits.set([
-      { id: 'seed_d1', username: 'gao****', amount_usdt: 50, method: 'usdt_bep20', created_at: new Date(Date.now() - 30000).toISOString() },
-      { id: 'seed_d2', username: 't****', amount_usdt: 25, method: 'binance_pay', created_at: new Date(Date.now() - 90000).toISOString() },
-      { id: 'seed_d3', username: '1****', amount_usdt: 100, method: 'usdt_trc20', created_at: new Date(Date.now() - 180000).toISOString() },
-      { id: 'seed_d4', username: 'es****', amount_usdt: 10, method: 'usdt_bep20', created_at: new Date(Date.now() - 300000).toISOString() },
-      { id: 'seed_d5', username: 'viama****', amount_usdt: 75, method: 'binance_pay', created_at: new Date(Date.now() - 600000).toISOString() }
+      { id: 'seed_d1', username: getUniqueName(), amount_usdt: 15.5, method: 'usdt_bep20', created_at: new Date(Date.now() - 30000).toISOString() },
+      { id: 'seed_d2', username: getUniqueName(), amount_usdt: 2.5, method: 'binance_pay', created_at: new Date(Date.now() - 90000).toISOString() },
+      { id: 'seed_d3', username: getUniqueName(), amount_usdt: 180, method: 'usdt_trc20', created_at: new Date(Date.now() - 180000).toISOString() },
+      { id: 'seed_d4', username: getUniqueName(), amount_usdt: 0.5, method: 'usdt_bep20', created_at: new Date(Date.now() - 300000).toISOString() },
+      { id: 'seed_d5', username: getUniqueName(), amount_usdt: 295, method: 'binance_pay', created_at: new Date(Date.now() - 600000).toISOString() }
     ]);
   }
 
@@ -274,20 +314,6 @@ export class StorefrontComponent implements OnInit, OnDestroy {
 
       if (!isPurchasesDemo && !isDepositsDemo) return;
 
-      const sampleUsernames = [
-        'havy1', 'gaooblu', 'sar', 'tran', 'chu', 'toetkoolh', 'pm', 'long',
-        'essech', 'thanhchun', 's', 'tranphandan', 'emiliot', 'lisa', 'viamaster',
-        'ads79pro', 'bmking', 'crypto_user', 'alex', 'johnny'
-      ];
-
-      const maskName = (name: string) => {
-        const clean = name.trim();
-        const len = clean.length;
-        if (len <= 4) return clean.substring(0, 1) + '****';
-        const prefixLen = Math.min(Math.max(1, len - 4), 6);
-        return clean.substring(0, prefixLen) + '****';
-      };
-
       if (isPurchasesDemo && Math.random() > 0.3) {
         const groups = this.groupedProductsState();
         let availableProds: any[] = [];
@@ -297,7 +323,7 @@ export class StorefrontComponent implements OnInit, OnDestroy {
           }
         });
 
-        const randomName = sampleUsernames[Math.floor(Math.random() * sampleUsernames.length)];
+        const randomName = this.getRandomDemoUsername();
         const qty = Math.floor(Math.random() * 5) + 1;
         const prod = availableProds.length > 0
           ? availableProds[Math.floor(Math.random() * availableProds.length)]
@@ -311,7 +337,7 @@ export class StorefrontComponent implements OnInit, OnDestroy {
 
         const newItem = {
           id: 'live_purch_' + Date.now(),
-          username: maskName(randomName),
+          username: randomName,
           quantity: qty,
           product_name_vi: prodNameVi,
           product_name_en: prodNameEn,
@@ -325,15 +351,15 @@ export class StorefrontComponent implements OnInit, OnDestroy {
       }
 
       if (isDepositsDemo && Math.random() > 0.3) {
-        const randomName = sampleUsernames[Math.floor(Math.random() * sampleUsernames.length)];
-        const demoUsdtAmounts = [2, 5, 10, 15, 20, 25, 30, 45, 50, 65, 75, 80, 95, 100];
+        const randomName = this.getRandomDemoUsername();
+        const demoUsdtAmounts = [0.1, 0.5, 1.2, 2.5, 5, 8.5, 10, 15, 25.5, 45, 50, 75, 120, 180.5, 250, 295, 300];
         const randomUsdt = demoUsdtAmounts[Math.floor(Math.random() * demoUsdtAmounts.length)];
         const demoMethods = ['usdt_bep20', 'binance_pay', 'usdt_trc20'];
         const randomMethod = demoMethods[Math.floor(Math.random() * demoMethods.length)];
 
         const newItem = {
           id: 'live_dep_' + Date.now(),
-          username: maskName(randomName),
+          username: randomName,
           amount_usdt: randomUsdt,
           amount_vnd: randomUsdt * 25400,
           method: randomMethod,
