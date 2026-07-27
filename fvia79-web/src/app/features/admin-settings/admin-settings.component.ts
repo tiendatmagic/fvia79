@@ -111,6 +111,8 @@ export class AdminSettingsComponent implements OnInit, OnDestroy {
     announcement_text_en: '',
     announcement_text: '',
     announcement_effect: 'marquee',
+    membership_tiers_enabled: true,
+    coupons_enabled: true,
     recent_purchases_enabled: true,
     recent_purchases_mode: 'demo',
     recent_deposits_enabled: true,

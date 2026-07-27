@@ -22,6 +22,7 @@ export interface SystemSettingsPayload {
   announcement_text?: string;
   announcement_effect?: 'marquee' | 'fade' | 'slide' | 'bounce' | string;
   membership_tiers_enabled?: boolean | string;
+  coupons_enabled?: boolean | string;
   payment_bep20_enabled?: boolean | string;
   payment_binance_enabled?: boolean | string;
   recent_purchases_enabled?: boolean | string;

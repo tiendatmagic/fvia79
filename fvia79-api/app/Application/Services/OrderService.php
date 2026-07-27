@@ -134,6 +134,15 @@ class OrderService
                 $couponId = null;
                 $appliedCouponCode = null;
 
+                $couponsEnvFeatureEnabled = filter_var(config('app.feature_coupons_enabled', true), FILTER_VALIDATE_BOOLEAN);
+                $couponsEnabled = $couponsEnvFeatureEnabled
+                    ? filter_var(app(\App\Application\Services\SystemSettingService::class)->getSetting('coupons_enabled', '1'), FILTER_VALIDATE_BOOLEAN)
+                    : false;
+
+                if (! $couponsEnabled) {
+                    $couponCode = null;
+                }
+
                 if ($couponCode !== null && trim($couponCode) !== '') {
                     $coupon = $this->couponRepository->findByCode(trim($couponCode));
                     if (! $coupon) {

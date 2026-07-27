@@ -30,6 +30,7 @@ class SystemSettingController extends Controller
 
         $settings['payment_bep20_enabled'] = filter_var($settings['payment_bep20_enabled'] ?? '1', FILTER_VALIDATE_BOOLEAN);
         $settings['payment_binance_enabled'] = filter_var($settings['payment_binance_enabled'] ?? '1', FILTER_VALIDATE_BOOLEAN);
+        $settings['coupons_enabled'] = filter_var($settings['coupons_enabled'] ?? '1', FILTER_VALIDATE_BOOLEAN);
 
         return response()->json($settings);
     }
@@ -55,6 +56,7 @@ class SystemSettingController extends Controller
             'announcement_text_en' => 'sometimes|nullable|string|max:1000',
             'announcement_effect' => 'sometimes|nullable|string|in:marquee,fade,slide,bounce',
             'membership_tiers_enabled' => 'sometimes|nullable',
+            'coupons_enabled' => 'sometimes|nullable',
             'payment_bep20_enabled' => 'sometimes|nullable',
             'payment_binance_enabled' => 'sometimes|nullable',
             'recent_purchases_enabled' => 'sometimes|nullable',
@@ -125,6 +127,9 @@ class SystemSettingController extends Controller
         if ($request->has('membership_tiers_enabled')) {
             $settingsToSave['membership_tiers_enabled'] = filter_var($request->input('membership_tiers_enabled'), FILTER_VALIDATE_BOOLEAN) ? '1' : '0';
         }
+        if ($request->has('coupons_enabled')) {
+            $settingsToSave['coupons_enabled'] = filter_var($request->input('coupons_enabled'), FILTER_VALIDATE_BOOLEAN) ? '1' : '0';
+        }
         if ($request->has('payment_bep20_enabled')) {
             $settingsToSave['payment_bep20_enabled'] = filter_var($request->input('payment_bep20_enabled'), FILTER_VALIDATE_BOOLEAN) ? '1' : '0';
         }
@@ -170,6 +175,13 @@ class SystemSettingController extends Controller
             ? filter_var($this->settingService->getSetting('membership_tiers_enabled', '1'), FILTER_VALIDATE_BOOLEAN)
             : false;
 
+        $couponsEnvFeatureEnabled = filter_var(config('app.feature_coupons_enabled', true), FILTER_VALIDATE_BOOLEAN);
+        $couponsFeatureEnabled = filter_var($couponsEnvFeatureEnabled, FILTER_VALIDATE_BOOLEAN);
+
+        $couponsEnabled = $couponsFeatureEnabled
+            ? filter_var($this->settingService->getSetting('coupons_enabled', '1'), FILTER_VALIDATE_BOOLEAN)
+            : false;
+
         $paymentBep20Enabled = filter_var($this->settingService->getSetting('payment_bep20_enabled', '1'), FILTER_VALIDATE_BOOLEAN);
         $paymentBinanceEnabled = filter_var($this->settingService->getSetting('payment_binance_enabled', '1'), FILTER_VALIDATE_BOOLEAN);
 
@@ -183,6 +195,8 @@ class SystemSettingController extends Controller
             'telegram_bot_username' => (string) $telegramBotUsername,
             'membership_tiers_feature_enabled' => $membershipTiersFeatureEnabled,
             'membership_tiers_enabled' => $membershipTiersEnabled,
+            'coupons_feature_enabled' => $couponsFeatureEnabled,
+            'coupons_enabled' => $couponsEnabled,
             'payment_bep20_enabled' => $paymentBep20Enabled,
             'payment_binance_enabled' => $paymentBinanceEnabled,
         ]);

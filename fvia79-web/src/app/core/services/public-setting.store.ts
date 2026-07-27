@@ -13,6 +13,8 @@ export interface PublicSettings {
   telegram_bot_username: string;
   membership_tiers_feature_enabled: boolean;
   membership_tiers_enabled: boolean;
+  coupons_feature_enabled: boolean;
+  coupons_enabled: boolean;
   payment_bep20_enabled: boolean;
   payment_binance_enabled: boolean;
 }
@@ -35,6 +37,8 @@ export class PublicSettingStore {
     telegram_bot_username: 'adsbm79noti_bot',
     membership_tiers_feature_enabled: true,
     membership_tiers_enabled: true,
+    coupons_feature_enabled: true,
+    coupons_enabled: true,
     payment_bep20_enabled: true,
     payment_binance_enabled: true
   });
@@ -82,6 +86,8 @@ export class PublicSettingStore {
             telegram_bot_username: res.telegram_bot_username || 'adsbm79noti_bot',
             membership_tiers_feature_enabled: res.membership_tiers_feature_enabled !== undefined ? Boolean(res.membership_tiers_feature_enabled) : true,
             membership_tiers_enabled: res.membership_tiers_enabled !== undefined ? Boolean(res.membership_tiers_enabled) : true,
+            coupons_feature_enabled: res.coupons_feature_enabled !== undefined ? Boolean(res.coupons_feature_enabled) : true,
+            coupons_enabled: res.coupons_enabled !== undefined ? Boolean(res.coupons_enabled) : true,
             payment_bep20_enabled: res.payment_bep20_enabled !== undefined ? Boolean(res.payment_bep20_enabled) : true,
             payment_binance_enabled: res.payment_binance_enabled !== undefined ? Boolean(res.payment_binance_enabled) : true
           };

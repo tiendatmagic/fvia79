@@ -40,39 +40,41 @@
       </div>
     </div>
 
-    <div app-card class="space-y-3">
-      <div class="form-field">
-        <div class="flex items-center justify-between">
-          <label class="text-xs font-black !text-slate-800 dark:!text-slate-100 uppercase tracking-wider">
-            {{ 'coupon.code' | translate }}
-          </label>
-          <span *ngIf="appliedCoupon()" class="text-[10px] font-extrabold uppercase bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 px-2 py-0.5 rounded-md border border-emerald-500/20">
-            {{ 'coupon.applied' | translate }}
-          </span>
-        </div>
-        <div class="relative w-full">
-          <input
-            type="text"
-            [(ngModel)]="couponCode"
-            (ngModelChange)="onCouponInput($event)"
-            [placeholder]="'cart.promo_placeholder' | translate"
-            class="form-input !pr-10 font-extrabold uppercase tracking-wider"
-          />
-          <div *ngIf="isValidatingCoupon()" class="absolute right-3.5 top-1/2 -translate-y-1/2 flex items-center justify-center pointer-events-none">
-            <span class="w-4 h-4 rounded-full border-2 border-slate-200 border-t-[var(--color-primary)] dark:border-slate-700 dark:border-t-[var(--color-primary)] animate-spin"></span>
+    @if (publicSettingStore.settings().coupons_enabled) {
+      <div app-card class="space-y-3">
+        <div class="form-field">
+          <div class="flex items-center justify-between">
+            <label class="text-xs font-black !text-slate-800 dark:!text-slate-100 uppercase tracking-wider">
+              {{ 'coupon.code' | translate }}
+            </label>
+            <span *ngIf="appliedCoupon()" class="text-[10px] font-extrabold uppercase bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 px-2 py-0.5 rounded-md border border-emerald-500/20">
+              {{ 'coupon.applied' | translate }}
+            </span>
+          </div>
+          <div class="relative w-full">
+            <input
+              type="text"
+              [(ngModel)]="couponCode"
+              (ngModelChange)="onCouponInput($event)"
+              [placeholder]="'cart.promo_placeholder' | translate"
+              class="form-input !pr-10 font-extrabold uppercase tracking-wider"
+            />
+            <div *ngIf="isValidatingCoupon()" class="absolute right-3.5 top-1/2 -translate-y-1/2 flex items-center justify-center pointer-events-none">
+              <span class="w-4 h-4 rounded-full border-2 border-slate-200 border-t-[var(--color-primary)] dark:border-slate-700 dark:border-t-[var(--color-primary)] animate-spin"></span>
+            </div>
           </div>
         </div>
-      </div>
 
-      <div *ngIf="couponSuccess()" class="text-xs font-bold text-emerald-600 dark:text-emerald-400 flex items-center gap-1.5 pt-0.5">
-        <app-icon name="check-circle" class="w-4 h-4 shrink-0" />
-        <span>{{ couponSuccess() }}</span>
+        <div *ngIf="couponSuccess()" class="text-xs font-bold text-emerald-600 dark:text-emerald-400 flex items-center gap-1.5 pt-0.5">
+          <app-icon name="check-circle" class="w-4 h-4 shrink-0" />
+          <span>{{ couponSuccess() }}</span>
+        </div>
+        <div *ngIf="couponError()" class="text-xs font-bold text-rose-500 flex items-center gap-1.5 pt-0.5">
+          <app-icon name="warning" class="w-4 h-4 shrink-0" />
+          <span>{{ couponError() }}</span>
+        </div>
       </div>
-      <div *ngIf="couponError()" class="text-xs font-bold text-rose-500 flex items-center gap-1.5 pt-0.5">
-        <app-icon name="warning" class="w-4 h-4 shrink-0" />
-        <span>{{ couponError() }}</span>
-      </div>
-    </div>
+    }
 
     <div
       class="bg-slate-50/50 dark:bg-slate-900/10 border border-slate-100 dark:border-slate-800/60 p-4 rounded-xl space-y-2"

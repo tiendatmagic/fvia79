@@ -23,6 +23,54 @@
     </ng-container>
   </app-page-header>
 
+  @if (!publicSettingStore.settings().coupons_feature_enabled) {
+    <!-- Warning Banner when feature is disabled in .env -->
+    <div class="p-4 rounded-2xl bg-rose-500/10 border border-rose-500/20 flex items-start gap-3.5">
+      <div class="p-2 rounded-xl bg-rose-500/20 text-rose-600 dark:text-rose-400 shrink-0">
+        <app-icon name="warning" class="w-5 h-5" />
+      </div>
+      <div class="space-y-1">
+        <h4 class="text-sm font-extrabold text-rose-800 dark:text-rose-300">
+          {{ 'common.feature_disabled' | translate }}
+        </h4>
+        <p class="text-xs text-rose-700/90 dark:text-rose-400/90 leading-relaxed">
+          {{ 'admin.coupons_feature_disabled_env_notice' | translate }}
+        </p>
+      </div>
+    </div>
+  }
+
+  @if (publicSettingStore.settings().coupons_feature_enabled) {
+    <!-- Global Feature Switch Card -->
+    <div class="p-5 rounded-2xl bg-white dark:bg-slate-900 border border-slate-200/60 dark:border-slate-800/60 shadow-sm flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+      <div class="space-y-1">
+        <div class="flex items-center gap-2">
+          <h3 class="text-sm font-black text-slate-800 dark:text-white">{{ 'admin.system_coupons_enable_title' | translate }}</h3>
+          <span
+            class="px-2.5 py-0.5 rounded-full text-[10px] font-black uppercase tracking-wider"
+            [ngClass]="{
+              'bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 border border-emerald-500/20': publicSettingStore.settings().coupons_enabled,
+              'bg-rose-500/10 text-rose-600 dark:text-rose-400 border border-rose-500/20': !publicSettingStore.settings().coupons_enabled
+            }"
+          >
+            {{ (publicSettingStore.settings().coupons_enabled ? 'common.status_active' : 'common.status_inactive') | translate }}
+          </span>
+        </div>
+        <p class="text-xs text-slate-500 dark:text-slate-400 max-w-3xl">
+          {{ 'admin.system_coupons_enable_desc' | translate }}
+        </p>
+      </div>
+
+      <div class="flex items-center gap-3 shrink-0">
+        <app-custom-switch
+          [checked]="publicSettingStore.settings().coupons_enabled"
+          [disabled]="isUpdatingSystemSetting()"
+          (checkedChange)="toggleSystemEnable($event)"
+        />
+      </div>
+    </div>
+  }
+
   <div
     class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 bg-slate-50/50 dark:bg-slate-950/20 border border-slate-200/30 dark:border-slate-800/30 rounded-2xl p-4 sm:p-5"
   >

@@ -29,6 +29,7 @@ return [
     'env' => env('APP_ENV', 'production'),
 
     'feature_membership_tiers_enabled' => (bool) env('FEATURE_MEMBERSHIP_TIERS_ENABLED', false),
+    'feature_coupons_enabled' => (bool) env('FEATURE_COUPONS_ENABLED', true),
 
     /*
     |--------------------------------------------------------------------------

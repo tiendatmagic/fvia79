@@ -130,7 +130,25 @@
   - **CSS Variables & Splash Screen**:
     - `styles.scss`: Cập nhật `--color-primary` và `--dynamic-primary` thành `#0066FF`, `--color-secondary` và `--dynamic-secondary` thành `#0B193C`.
     - `index.html`: Cập nhật `--splash-brand` (`#0066FF`) và `--splash-primary` (`#0B193C`).
-  - **Kiểm thử**: Biên dịch thành công 100% `npx ng build --configuration production` (0 errors).
+### [2026-07-27] Bổ sung cơ chế Bật/Tắt Quản lý mã giảm giá qua env (FEATURE_COUPONS_ENABLED) & Cấu hình hệ thống
+- **Mô tả**: Thiết lập cơ chế bật/tắt toàn bộ tính năng **Quản lý mã giảm giá (Coupons)** từ cấu hình `.env` (`FEATURE_COUPONS_ENABLED`, mặc định là `true`) kết hợp với Cấu hình Hệ thống (`coupons_enabled`). Khi tính năng bị tắt:
+  1. Backend tự động bỏ qua (ignore) mã giảm giá khi tạo đơn hàng mà không gây ra bất kỳ lỗi hay ảnh hưởng nào đến quy trình thanh toán, đồng thời chặn API kiểm tra mã giảm giá (`/coupons/validate`).
+  2. Frontend tự động ẩn menu **Quản lý mã giảm giá** (`/admin/coupons`) trên Sidebar điều hướng Admin và ẩn toàn bộ ô nhập Mã giảm giá trong Modal Xác Nhận Đơn Hàng (Cart Modal).
+  3. Trang quản trị Mã giảm giá bổ sung thẻ công tắc/thông báo bật/tắt trực quan cho Admin.
+- **Thực hiện**:
+  - `config/app.php` & `.env` / `.env.example`: Khai báo `'feature_coupons_enabled' => (bool) env('FEATURE_COUPONS_ENABLED', true)`. Mặc định luôn là `true` nếu không khai báo.
+  - `SystemSettingController.php`: Bổ sung `coupons_enabled` & `coupons_feature_enabled` vào `index()`, `update()`, và `publicSettings()`.
+  - `OrderService.php`: Kiểm tra `coupons_enabled`, nếu bị tắt tự động set `$couponCode = null;` để bỏ qua mã giảm giá an toàn.
+  - `CouponController.php`: Kiểm tra `coupons_enabled`, nếu bị tắt trả về thông báo lỗi 400.
+  - `public-setting.store.ts` & `system-setting.store.ts`: Khai báo các trường cấu hình `coupons_enabled` và `coupons_feature_enabled`.
+  - `sidebar.component.html`: Bọc link `/admin/coupons` bằng `@if (publicSettingStore.settings().coupons_enabled)`.
+  - `cart-modal.component.html`: Bọc thẻ nhập mã giảm giá bằng `@if (publicSettingStore.settings().coupons_enabled)`.
+  - `admin-coupons.component.ts` & `admin-coupons.component.html`: Bổ sung công tắc bật/tắt trạng thái hệ thống ngay phần đầu trang quản lý mã giảm giá.
+  - `vi.ts`, `en.ts`: Bổ sung các string dịch tương ứng.
+- **Kiểm thử**:
+  - `php -l`: Kiểm tra toàn bộ file PHP backend không có lỗi cú pháp (**0 ERRORS**).
+  - `npx ng build --configuration production`: Biên dịch Angular frontend thành công **100% BUILD SUCCESS**.
+
 
 
 

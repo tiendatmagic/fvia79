@@ -18,6 +18,15 @@ class CouponController extends Controller
     public function validateCoupon(Request $request)
     {
         try {
+            $couponsEnvFeatureEnabled = filter_var(config('app.feature_coupons_enabled', true), FILTER_VALIDATE_BOOLEAN);
+            $couponsEnabled = $couponsEnvFeatureEnabled
+                ? filter_var(app(\App\Application\Services\SystemSettingService::class)->getSetting('coupons_enabled', '1'), FILTER_VALIDATE_BOOLEAN)
+                : false;
+
+            if (! $couponsEnabled) {
+                return response()->json(['message' => 'Tính năng mã giảm giá đang bị tạm khóa.'], 400);
+            }
+
             $request->validate([
                 'code' => 'required|string',
                 'cart_total' => 'required|numeric|min:0'

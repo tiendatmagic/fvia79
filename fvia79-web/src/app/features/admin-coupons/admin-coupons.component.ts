@@ -17,6 +17,9 @@ import { BadgeComponent } from '@shared/components/badge/badge.component';
 import { TableComponent, TableCellDirective, TableColumn } from '@shared/components/table/table.component';
 import { TranslatePipe } from '@shared/pipes/translate.pipe';
 import { CurrencyPipe } from '@shared/pipes/currency.pipe';
+import { PublicSettingStore } from '@core/services/public-setting.store';
+import { SystemSettingStore } from '../admin-settings/system-setting.store';
+import { CustomSwitchComponent } from '@shared/components/custom-switch/custom-switch.component';
 import { CouponStore } from './coupon.store';
 
 @Component({
@@ -33,6 +36,7 @@ import { CouponStore } from './coupon.store';
     CustomSearchInputComponent,
     TooltipDirective,
     CustomSelectComponent,
+    CustomSwitchComponent,
     PaginationComponent,
     TableComponent,
     TableCellDirective,
@@ -48,9 +52,13 @@ import { CouponStore } from './coupon.store';
 })
 export class AdminCouponsComponent implements OnInit {
   public readonly couponStore = inject(CouponStore);
+  public readonly publicSettingStore = inject(PublicSettingStore);
+  public readonly systemSettingStore = inject(SystemSettingStore);
   private readonly modalService = inject(ModalService);
   private readonly toast = inject(ToastService);
   public readonly lang = inject(LanguageService);
+
+  public readonly isUpdatingSystemSetting = signal<boolean>(false);
 
   public readonly columns = computed<TableColumn[]>(() => {
     this.lang.currentLang();
@@ -98,7 +106,29 @@ export class AdminCouponsComponent implements OnInit {
   });
 
   ngOnInit() {
+    this.publicSettingStore.fetchPublicSettings().subscribe();
     this.fetchCoupons();
+  }
+
+  public toggleSystemEnable(enabled: boolean): void {
+    if (this.isUpdatingSystemSetting()) return;
+    this.isUpdatingSystemSetting.set(true);
+
+    this.systemSettingStore.updateSettings({ coupons_enabled: enabled }).subscribe({
+      next: () => {
+        this.publicSettingStore.clearCache();
+        this.publicSettingStore.fetchPublicSettings().subscribe({
+          next: () => this.isUpdatingSystemSetting.set(false),
+          error: () => this.isUpdatingSystemSetting.set(false),
+        });
+        const statusText = this.lang.translate(enabled ? 'common.status_active' : 'common.status_inactive');
+        this.toast.showToast(this.lang.translate('toast.system_coupons_feature_toggled', { status: statusText }), 'success');
+      },
+      error: () => {
+        this.isUpdatingSystemSetting.set(false);
+        this.toast.showToast(this.lang.translate('toast.action_failed'), 'error');
+      }
+    });
   }
 
   public fetchCoupons() {
