@@ -14,6 +14,10 @@
 > Khi triển khai (deploy) hoặc thay đổi file `.env` trên VPS, **LUÔN LUÔN phải thực hiện chuỗi xóa và tái tạo cache cấu hình**:
 > `php artisan config:clear && php artisan config:cache && php artisan route:cache && php artisan view:cache`
 > để đảm bảo Laravel cập nhật ngay lập tức 100% các biến môi trường tươi mới nhất từ tệp `.env`, tuyệt đối không được bỏ qua bước `config:clear` để tránh tình trạng dính cache đệm tĩnh cũ.
+>
+> **QUY TẮC BẮT BUỘC CRONJOB & PHÂN QUYỀN CACHE STORAGE**:
+> 1. Cronjob Scheduler (`schedule:run`) **CHỈ ĐƯỢC CHẠY DƯỚI USER `www-data`** (`crontab -u www-data -e`). **TUYỆT ĐỐI KHÔNG cài dưới `root`** vì sẽ gây ra lỗi `500 Permission denied` khi người dùng thực hiện thao tác Web/API.
+> 2. Luôn cấp quyền `chmod -R 777` và `chown -R www-data:www-data` cho `storage` & `bootstrap/cache`. Khi gõ lệnh CLI thủ công trên VPS, luôn chạy dưới quyền `www-data` (`su -s /bin/bash www-data -c "php artisan <cmd>"`).
 
 ---
 
@@ -323,3 +327,15 @@
   - Sản phẩm xóa mềm còn lại: **0** sản phẩm.
   - Sản phẩm active còn lại: **128** sản phẩm.
   - Danh mục còn lại: **14** danh mục.
+
+### [2026-07-27] Cập nhật toàn bộ thông tin triển khai (deploy.md) cho VPS Ubuntu, FTP Server & Passwords Bảo Mật Dài
+- **Mô tả**: Cập nhật tệp hướng dẫn triển khai `deploy.md` theo thông số hạ tầng VPS mới, bổ sung cài đặt FTP Server (vsftpd), phpMyAdmin với bộ mật khẩu bảo mật độ dài cao.
+- **Thực hiện**:
+  - `deploy.md`:
+    - Cập nhật thông tin truy cập VPS SSH: IP `38.180.150.246`, User `root`, Pass `skK6T2hVKm`.
+    - Thêm thông tin cài đặt FTP Server (`vsftpd`): Host `38.180.150.246` (Port 21), User `fvia79_ftp`, Password bảo mật ngẫu nhiên `H4wQ9mX2pK6zN8vR3yT5bC1vF7gJ9kL4`, thư mục root `/var/www`.
+    - Thêm thông tin CSDL & phpMyAdmin (`https://fvia79.com/phpmyadmin/`): MySQL Root Pass `K9vX7pL2wQ8zN4yR6bT1cX5zP8qW3mK9`, DB User `fvia79_user`, DB Pass `Z8xW5mN7qR4yT1cB6vK9aL2pD4fH8jK3`.
+    - Bổ sung các bước chi tiết cấu hình vsftpd (`/etc/vsftpd.conf`), phân quyền `chown www-data:www-data`, cài đặt phpMyAdmin, cấp SSL Certbot, import CSDL `fvia79-20260727-193735.sql`.
+    - Bổ sung lệnh fix tiếng Việt `php artisan supplier:fix-vi-names` và Cronjob tự động `schedule:run`.
+
+
