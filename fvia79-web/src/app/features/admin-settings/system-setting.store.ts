@@ -17,6 +17,8 @@ export interface SystemSettingsPayload {
   telegram_bot_token?: string;
   telegram_bot_username?: string;
   telegram_support_username?: string;
+  telegram_support_enabled?: boolean | string;
+  telegram_bot_contact_enabled?: boolean | string;
   telegram_bot_enabled?: boolean | string;
   announcement_enabled?: boolean | string;
   announcement_text_vi?: string;
@@ -62,6 +64,8 @@ export class SystemSettingStore {
     telegram_bot_token: '',
     telegram_bot_username: 'fvia79noti_bot',
     telegram_support_username: 'emmy203012',
+    telegram_support_enabled: true,
+    telegram_bot_contact_enabled: true,
     telegram_bot_enabled: true,
     announcement_enabled: true,
     announcement_text_vi: '',
@@ -103,6 +107,8 @@ export class SystemSettingStore {
           }
           res.payment_bep20_enabled = res.payment_bep20_enabled !== undefined ? Boolean(res.payment_bep20_enabled) : true;
           res.payment_binance_enabled = res.payment_binance_enabled !== undefined ? Boolean(res.payment_binance_enabled) : true;
+          res.telegram_support_enabled = res.telegram_support_enabled !== undefined ? (String(res.telegram_support_enabled) === 'true' || String(res.telegram_support_enabled) === '1') : true;
+          res.telegram_bot_contact_enabled = res.telegram_bot_contact_enabled !== undefined ? (String(res.telegram_bot_contact_enabled) === 'true' || String(res.telegram_bot_contact_enabled) === '1') : true;
           this.cachedSettings = res;
           this.lastFetchTime = Date.now();
           this.settings.set(res);

@@ -51,6 +51,8 @@ class SystemSettingController extends Controller
             'telegram_bot_token' => 'sometimes|nullable|string|max:500',
             'telegram_bot_username' => 'sometimes|nullable|string|max:100',
             'telegram_support_username' => 'sometimes|nullable|string|max:200',
+            'telegram_support_enabled' => 'sometimes|nullable',
+            'telegram_bot_contact_enabled' => 'sometimes|nullable',
             'telegram_bot_enabled' => 'sometimes|nullable',
             'announcement_enabled' => 'sometimes|nullable',
             'announcement_text' => 'sometimes|nullable|string|max:1000',
@@ -110,6 +112,12 @@ class SystemSettingController extends Controller
         }
         if ($request->has('telegram_support_username')) {
             $settingsToSave['telegram_support_username'] = (string) $request->input('telegram_support_username');
+        }
+        if ($request->has('telegram_support_enabled')) {
+            $settingsToSave['telegram_support_enabled'] = filter_var($request->input('telegram_support_enabled'), FILTER_VALIDATE_BOOLEAN) ? '1' : '0';
+        }
+        if ($request->has('telegram_bot_contact_enabled')) {
+            $settingsToSave['telegram_bot_contact_enabled'] = filter_var($request->input('telegram_bot_contact_enabled'), FILTER_VALIDATE_BOOLEAN) ? '1' : '0';
         }
         if ($request->has('telegram_bot_enabled')) {
             $settingsToSave['telegram_bot_enabled'] = filter_var($request->input('telegram_bot_enabled'), FILTER_VALIDATE_BOOLEAN) ? '1' : '0';
@@ -181,6 +189,8 @@ class SystemSettingController extends Controller
         }
         $telegramBotUsername = $this->settingService->getSetting('telegram_bot_username', 'fvia79noti_bot');
         $telegramSupportUsername = $this->settingService->getSetting('telegram_support_username', 'emmy203012');
+        $telegramSupportEnabled = filter_var($this->settingService->getSetting('telegram_support_enabled', '1'), FILTER_VALIDATE_BOOLEAN);
+        $telegramBotContactEnabled = filter_var($this->settingService->getSetting('telegram_bot_contact_enabled', '1'), FILTER_VALIDATE_BOOLEAN);
 
         $envFeatureEnabled = filter_var(config('app.feature_membership_tiers_enabled', false), FILTER_VALIDATE_BOOLEAN);
         $membershipTiersFeatureEnabled = filter_var($envFeatureEnabled, FILTER_VALIDATE_BOOLEAN);
@@ -208,6 +218,8 @@ class SystemSettingController extends Controller
             'usdt_exchange_rate' => (float) $usdtRate,
             'telegram_bot_username' => (string) $telegramBotUsername,
             'telegram_support_username' => (string) $telegramSupportUsername,
+            'telegram_support_enabled' => $telegramSupportEnabled,
+            'telegram_bot_contact_enabled' => $telegramBotContactEnabled,
             'membership_tiers_feature_enabled' => $membershipTiersFeatureEnabled,
             'membership_tiers_enabled' => $membershipTiersEnabled,
             'coupons_feature_enabled' => $couponsFeatureEnabled,

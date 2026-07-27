@@ -139,6 +139,8 @@ export const VI_TRANSLATIONS: Record<string, string> = {
   'admin_settings.telegram_card_subtitle': 'Gửi thông báo tự động khi có hàng mới và đơn hàng vừa mua qua Bot chính thức.',
   'admin_settings.telegram_card_title': 'Cấu Hình Bot Telegram Thông Báo',
   'admin_settings.telegram_enable_label': 'Kích hoạt Bot Telegram',
+  'admin_settings.telegram_support_show_contact': 'Hiển thị ở trang Liên hệ',
+  'admin_settings.telegram_bot_show_contact': 'Hiển thị ở trang Liên hệ',
   'admin_settings.telegram_test_failed': 'Kiểm tra kết nối Bot Telegram thất bại.',
   'admin_settings.telegram_test_success': 'Kiểm tra kết nối Bot Telegram thành công!',
   'admin_settings.telegram_token_label': 'Bot API Token (Mã hóa CSDL)',

@@ -34,6 +34,18 @@ export class ContactComponent implements OnInit {
     this.publicSettingStore.fetchPublicSettings().subscribe();
   }
 
+  public get showTelegramSupport(): boolean {
+    const val = this.publicSettingStore.settings().telegram_support_enabled;
+    return String(val) === 'true' || String(val) === '1';
+  }
+
+  public get showTelegramBot(): boolean {
+    const settings = this.publicSettingStore.settings();
+    const val = settings.telegram_bot_contact_enabled;
+    const isEnabled = String(val) === 'true' || String(val) === '1';
+    return isEnabled && !!this.telegramBotUrl;
+  }
+
   public get telegramSupportUrl(): string {
     const raw = this.publicSettingStore.settings().telegram_support_username;
     const username = (raw && raw.trim()) ? raw.trim() : 'emmy203012';

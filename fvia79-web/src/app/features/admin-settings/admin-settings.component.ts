@@ -183,6 +183,8 @@ export class AdminSettingsComponent implements OnInit, OnDestroy {
             binance_api_secret: '',
             telegram_bot_token: '',
             telegram_bot_username: settings.telegram_bot_username || 'fvia79noti_bot',
+            telegram_support_enabled: settings.telegram_support_enabled !== undefined ? (String(settings.telegram_support_enabled) === 'true' || String(settings.telegram_support_enabled) === '1') : true,
+            telegram_bot_contact_enabled: settings.telegram_bot_contact_enabled !== undefined ? (String(settings.telegram_bot_contact_enabled) === 'true' || String(settings.telegram_bot_contact_enabled) === '1') : true,
             telegram_bot_enabled: settings.telegram_bot_enabled !== undefined ? Boolean(Number(settings.telegram_bot_enabled)) : true,
             announcement_enabled: settings.announcement_enabled !== undefined ? Boolean(Number(settings.announcement_enabled)) : true,
             recent_purchases_enabled: settings.recent_purchases_enabled !== undefined ? Boolean(Number(settings.recent_purchases_enabled)) : true,

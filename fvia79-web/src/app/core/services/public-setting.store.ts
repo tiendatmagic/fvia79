@@ -13,6 +13,8 @@ export interface PublicSettings {
   usdt_exchange_rate: number;
   telegram_bot_username: string;
   telegram_support_username?: string;
+  telegram_support_enabled: boolean;
+  telegram_bot_contact_enabled: boolean;
   membership_tiers_feature_enabled: boolean;
   membership_tiers_enabled: boolean;
   coupons_feature_enabled: boolean;
@@ -39,6 +41,8 @@ export class PublicSettingStore {
     usdt_exchange_rate: 26500,
     telegram_bot_username: 'fvia79noti_bot',
     telegram_support_username: 'emmy203012',
+    telegram_support_enabled: true,
+    telegram_bot_contact_enabled: true,
     membership_tiers_feature_enabled: true,
     membership_tiers_enabled: true,
     coupons_feature_enabled: true,
@@ -89,6 +93,8 @@ export class PublicSettingStore {
             usdt_exchange_rate: Number(res.usdt_exchange_rate) || 26500,
             telegram_bot_username: res.telegram_bot_username || 'fvia79noti_bot',
             telegram_support_username: res.telegram_support_username || 'emmy203012',
+            telegram_support_enabled: res.telegram_support_enabled !== undefined ? (String(res.telegram_support_enabled) === 'true' || String(res.telegram_support_enabled) === '1') : true,
+            telegram_bot_contact_enabled: res.telegram_bot_contact_enabled !== undefined ? (String(res.telegram_bot_contact_enabled) === 'true' || String(res.telegram_bot_contact_enabled) === '1') : true,
             membership_tiers_feature_enabled: res.membership_tiers_feature_enabled !== undefined ? Boolean(res.membership_tiers_feature_enabled) : true,
             membership_tiers_enabled: res.membership_tiers_enabled !== undefined ? Boolean(res.membership_tiers_enabled) : true,
             coupons_feature_enabled: res.coupons_feature_enabled !== undefined ? Boolean(res.coupons_feature_enabled) : true,

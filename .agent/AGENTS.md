@@ -19,6 +19,17 @@
 > 1. Cronjob Scheduler (`schedule:run`) **CHỈ ĐƯỢC CHẠY DƯỚI USER `www-data`** (`crontab -u www-data -e`). **TUYỆT ĐỐI KHÔNG cài dưới `root`** vì sẽ gây ra lỗi `500 Permission denied` khi người dùng thực hiện thao tác Web/API.
 > 2. Luôn cấp quyền `chmod -R 777` và `chown -R www-data:www-data` cho `storage` & `bootstrap/cache`. Khi gõ lệnh CLI thủ công trên VPS, luôn chạy dưới quyền `www-data` (`su -s /bin/bash www-data -c "php artisan <cmd>"`).
 
+### [2026-07-28] Bổ sung Công tắc Bật/Tắt hiển thị Telegram Hỗ Trợ & Telegram Bot trên trang Contact đồng bộ 3 dự án (FVIA79, ADSBM79, ISOCALMARKET)
+- **Mô tả yêu cầu**: Bổ sung các công tắc (switch) trong Cài đặt Admin (`/admin/settings/general`) cho phép Admin chủ động Bật hoặc Tắt hiển thị từng thẻ Telegram (Hỗ Trợ Trực Tiếp & Bot Thông Báo) độc lập trên trang Liên hệ (`/contact`).
+- **Thực hiện xử lý**:
+  - **Backend API (`fvia79-api`, `adsbm79-api`, `isocalmarket-api`)**: `SystemSettingController.php` bổ sung luật validate và lưu cài đặt `telegram_support_enabled` & `telegram_bot_contact_enabled` (boolean '1'/'0'), đồng thời trả về trong API công khai `publicSettings()`.
+  - **Frontend Web (`fvia79-web`, `adsbm79-web`, `isocalmarket-web`)**:
+    - `public-setting.store.ts` & `system-setting.store.ts`: Khai báo 2 thuộc tính `telegram_support_enabled` và `telegram_bot_contact_enabled` (mặc định `true`).
+    - `admin-settings.component.html`: Tích hợp các nút công tắc `<app-custom-switch>` tương ứng bên cạnh ô nhập Telegram Support và Telegram Bot Username.
+    - `contact.component.ts/html`: Thêm cờ `showTelegramSupport` & `showTelegramBot` ẩn/hiện linh hoạt các thẻ Telegram tương ứng trên trang Contact theo cấu hình Admin.
+    - `vi.ts` & `en.ts`: Bổ sung từ khóa i18n `'admin_settings.telegram_support_show_contact'` & `'admin_settings.telegram_bot_show_contact'`.
+- **Kiểm thử**: PHP syntax check `php -l` đạt 0 lỗi trên 3 API. Biên dịch Angular production `npx ng build --configuration production` thành công 100%.
+
 ### [2026-07-28] Phát triển Cấu hình Telegram (Hỗ Trợ Trực Tiếp & Bot Thông Báo) trong Admin Settings & Trang Contact đồng bộ 3 dự án (FVIA79, ADSBM79, ISOCALMARKET)
 - **Mô tả yêu cầu**: Bổ sung ô cấu hình Admin cho phép thay đổi Telegram Hỗ Trợ Trực Tiếp (`telegram_support_username`) độc lập bên cạnh Telegram Bot Thông Báo (`telegram_bot_username`) tại trang Quản lý hệ thống Admin (`/admin/settings/general`), hiển thị linh hoạt các kênh Telegram tại trang Liên hệ (`/contact`) kèm hỗ trợ đa ngôn ngữ i18n chuẩn hóa.
 - **Thực hiện xử lý**:
