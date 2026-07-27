@@ -23,6 +23,14 @@
 
 ## 📋 NHẬT KÝ THAY ĐỔI DỰ ÁN
 
+### [2026-07-27] Triển khai (Deploy) thành công cả 3 dự án (fvia79, adsbm79, isocalmarket) lên hệ thống VPS sản xuất
+- **Mô tả**: Triển khai hoàn chỉnh bản cập nhật Frontend Angular & Backend Laravel mới nhất bao gồm các tính năng vừa phát triển (Modal Phóng to Mã QR Binance Pay & USDT BEP20 kế thừa ModalWrapperComponent hệ thống, Tải trực tiếp ảnh QR từ Admin, Hỗ trợ i18n Đa ngôn ngữ đầy đủ) lên 3 hệ thống VPS độc lập.
+- **Thực hiện**:
+  - **FVIA79 VPS (`38.180.150.246`)**: Upload & giải nén bản build production FE `/var/www/fvia79-web` và BE `/var/www/fvia79-api`. Áp dụng migration safe `php artisan migrate`, xóa sạch cache và tái tạo cache tĩnh (`config:clear && config:cache && route:cache && view:cache`), phân quyền `www-data:www-data` và khởi động lại `php8.3-fpm` & `nginx`.
+  - **ADSBM79 VPS (`192.34.100.128`)**: Deploy đồng bộ FE `/var/www/adsbm79-web` & BE `/var/www/adsbm79-api`. Tối ưu cache, kiểm tra migration thành công.
+  - **ISOCALMARKET VPS (`103.68.109.109`)**: Deploy đồng bộ FE `/var/www/isocalmarket-web` & BE `/var/www/isocalmarket-api`. Tối ưu cache và khởi động lại dịch vụ web.
+  - **Nghiệm thu**: Trạng thái HTTP của cả 3 tên miền sản xuất (`https://fvia79.com`, `https://adsbm79.com`, `https://isocalmarket.com`) trả về **HTTP 200 OK** hoạt động mượt mà 100%, bảo tồn tuyệt đối toàn bộ dữ liệu CSDL hiện có.
+
 ### [2026-07-27] Phát triển Modal Phóng to Mã QR (Binance Pay & USDT BEP20) kế thừa ModalWrapperComponent chuẩn 3 dự án (fvia79, adsbm79, isocalmarket)
 - **Mô tả**: Phát triển tính năng cho phép người dùng click vào mã QR (hoặc ảnh QR Binance Pay) tại hóa đơn thanh toán để phóng to mã QR trong cửa sổ Popup Modal chuẩn hệ thống.
 - **Thực hiện**:

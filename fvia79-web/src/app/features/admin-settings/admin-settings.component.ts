@@ -98,17 +98,17 @@ export class AdminSettingsComponent implements OnInit, OnDestroy {
     this.isUploadingBinanceQr.set(true);
 
     this.store.uploadBinanceQrImage(file).subscribe({
-      next: (res) => {
+      next: (res: { success: boolean; url: string; message?: string }) => {
         this.isUploadingBinanceQr.set(false);
         if (res && res.url) {
           this.form.admin_binance_pay_link = res.url;
-          this.toast.showToast(this.lang.translate('toast.saved_successfully') || 'Đã tải ảnh QR Binance Pay thành công!', 'success');
+          this.toast.showToast(this.lang.translate('toast.binance_qr_uploaded'), 'success');
         }
         input.value = '';
       },
-      error: (err) => {
+      error: (err: { error?: { message?: string } }) => {
         this.isUploadingBinanceQr.set(false);
-        this.toast.showToast(err?.error?.message || 'Không thể tải ảnh lên. Vui lòng thử lại!', 'error');
+        this.toast.showToast(err?.error?.message || this.lang.translate('toast.binance_qr_upload_failed'), 'error');
         input.value = '';
       }
     });
