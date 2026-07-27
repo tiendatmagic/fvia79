@@ -9,8 +9,8 @@
   --font-display:
     'Quicksand', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
 
-  --color-primary: var(--dynamic-primary, #0066FF);
-  --color-secondary: var(--dynamic-secondary, #0B193C);
+  --color-primary: var(--dynamic-primary, #0066ff);
+  --color-secondary: var(--dynamic-secondary, #0b193c);
 
   --radius-xl: 15px;
   --radius-2xl: 15px;
@@ -19,8 +19,8 @@
 }
 
 :root {
-  --dynamic-primary: #0066FF;
-  --dynamic-secondary: #0B193C;
+  --dynamic-primary: #0066ff;
+  --dynamic-secondary: #3c5fb7;
 }
 
 html {
