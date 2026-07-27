@@ -21,16 +21,19 @@
 
 ---
 
-## 📋 NHẬT KÝ THAY ĐỔI DỰ ÁN
-
-### [2026-07-27] Khắc phục triệt để lỗi giới hạn 20 sản phẩm/danh mục ở trang Storefront (`QueryLimitMiddleware`) đồng bộ 3 dự án (fvia79, adsbm79, isocalmarket)
-- **Mô tả**: Phát hiện và khắc phục nguyên nhân khiến Storefront chỉ hiển thị tối đa 20 sản phẩm cho mỗi danh mục (ví dụ danh mục *Via Ngoại Live Ads (No2FA)* có 32 sản phẩm nhưng chỉ hiển thị 20 sản phẩm).
-- **Nguyên nhân**: `QueryLimitMiddleware` ở Backend Laravel giới hạn cứng `min((int)$limit, 20)` khi client truyền tham số `limit`, khiến yêu cầu `limit=100` từ Frontend bị ép về `limit=20`.
+### [2026-07-28] Triển khai (Deploy) hoàn chỉnh FE & BE cho 3 dự án (fvia79, adsbm79, isocalmarket) giữ nguyên CSDL & làm sạch cache
+- **Mô tả**: Biên dịch bản production Frontend Angular và đóng gói Backend Laravel cho cả 3 dự án, triển khai đồng bộ lên 3 VPS tương ứng, thực thi migration an toàn (giữ nguyên dữ liệu CSDL) và xóa/tái tạo toàn bộ cache tĩnh.
 - **Thực hiện**:
-  - `fvia79-api/app/Http/Middleware/QueryLimitMiddleware.php`: Nâng mức giới hạn tối đa của `limit` từ `20` lên **`100`** (`min((int)$limit, 100)`).
-  - `adsbm79-api/app/Http/Middleware/QueryLimitMiddleware.php`: Nâng lên `100` và cập nhật unit test `QueryLimitMiddlewareTest.php` đồng bộ.
-  - `isocalmarket-api/app/Http/Middleware/QueryLimitMiddleware.php`: Nâng lên `100` và cập nhật unit test `QueryLimitMiddlewareTest.php` đồng bộ.
-  - **Kiểm thử**: Đã kiểm tra cú pháp PHP `php -l` đạt **0 errors** và chạy test thành công. Giờ đây toàn bộ 32 sản phẩm của danh mục *Via Ngoại Live Ads (No2FA)* hiển thị trọn vẹn 100% trên Storefront.
+  - **Biên dịch FE**: Build Angular thành công 100% cho `fvia79-web`, `adsbm79-web` và `isocalmarket-web`.
+  - **Deploy & Cache Clearance**: Đã upload và giải nén đè mã nguồn mới vào thư mục `/var/www/*-web` và `/var/www/*-api` trên VPS. Chạy `php artisan migrate --force` an toàn, thực thi chuỗi lệnh dọn dẹp cache bắt buộc `php artisan config:clear && php artisan config:cache && php artisan route:cache && php artisan view:cache`, cấp quyền `www-data:www-data` và khởi động lại `php8.3-fpm` & `nginx`.
+  - **Kiểm thử nghiệm thu**: Cả 3 tên miền (`https://fvia79.com`, `https://adsbm79.com`, `https://isocalmarket.com`) và các endpoint API (`/api/v1/categories`) đều trả về **HTTP 200 OK**, bảo tồn 100% CSDL MySQL.
+
+### [2026-07-28] Cấu hình 12 sản phẩm/trang & Kích hoạt phân trang mượt mà cho ADSBM79 & ISOCALMARKET (FVIA79 duy trì 100 sản phẩm/trang)
+- **Mô tả**: Sửa triệt để bug không hiện phân trang và cấu hình chuẩn số lượng sản phẩm trên mỗi trang ở Storefront:
+  - **Dự án FVIA79**: Hiển thị **100 sản phẩm / trang** (`fvia79-web` cài đặt `limit = 100`, `QueryLimitMiddleware` cho phép tối đa 100).
+  - **Dự án ADSBM79 & ISOCALMARKET**: Cấu hình chuẩn **12 sản phẩm / trang** (`adsbm79-web` & `isocalmarket-web` cài đặt `limit = 12`).
+  - **Sửa bug lọc out-of-stock (`ProductRepository.php`)**: Sửa điều kiện lọc sản phẩm hết hàng từ `if ($isSearching && !$includeOutOfStock && $availableCount <= 0)` thành `if (!$includeOutOfStock && $availableCount <= 0)`. Nhờ đó khi ở chế độ mặc định ("Hiện SP hết hàng" = OFF), hệ thống tính đúng tổng số sản phẩm còn hàng (`total`), kích hoạt phân trang chuẩn xác (`16 > 12` -> Trang 1: 12 sản phẩm, Trang 2: 4 sản phẩm; hoặc `32 > 12` -> 3 trang khi bật nút hiện SP hết hàng).
+- **Kiểm thử**: Đã kiểm tra cú pháp PHP `php -l` đạt 0 lỗi trên cả 3 dự án API, biên dịch Angular thành công.
 
 ### [2026-07-27] Triển khai (Deploy) thành công cả 3 dự án (fvia79, adsbm79, isocalmarket) lên hệ thống VPS sản xuất
 - **Mô tả**: Triển khai hoàn chỉnh bản cập nhật Frontend Angular & Backend Laravel mới nhất bao gồm các tính năng vừa phát triển (Modal Phóng to Mã QR Binance Pay & USDT BEP20 kế thừa ModalWrapperComponent hệ thống, Tải trực tiếp ảnh QR từ Admin, Hỗ trợ i18n Đa ngôn ngữ đầy đủ) lên 3 hệ thống VPS độc lập.

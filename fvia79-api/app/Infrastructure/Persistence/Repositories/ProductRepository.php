@@ -126,7 +126,7 @@ class ProductRepository implements ProductRepositoryInterface
         $filtered = [];
         foreach ($models as $model) {
             $availableCount = $this->getAvailableCount($model);
-            if ($isSearching && !$includeOutOfStock && $availableCount <= 0) {
+            if (!$includeOutOfStock && $availableCount <= 0) {
                 continue;
             }
             $filtered[] = ProductMapper::toDomain($model, $availableCount);
@@ -228,7 +228,7 @@ class ProductRepository implements ProductRepositoryInterface
         foreach ($allActiveProducts as $model) {
             $availableCount = $this->getAvailableCount($model);
 
-            if ($isSearching && !$includeOutOfStock && $availableCount <= 0) {
+            if (!$includeOutOfStock && $availableCount <= 0) {
                 continue;
             }
 
