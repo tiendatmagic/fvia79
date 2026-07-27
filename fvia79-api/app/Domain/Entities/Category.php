@@ -26,6 +26,8 @@ class Category
 
     private ?string $descriptionEn;
 
+    private int $sortOrder;
+
     public function __construct(
         ?string $id,
         string $name,
@@ -37,7 +39,8 @@ class Category
         ?string $nameVi = null,
         ?string $nameEn = null,
         ?string $descriptionVi = null,
-        ?string $descriptionEn = null
+        ?string $descriptionEn = null,
+        int $sortOrder = 0
     ) {
         $this->id = $id;
         $this->name = $name;
@@ -50,6 +53,7 @@ class Category
         $this->nameEn = $nameEn;
         $this->descriptionVi = $descriptionVi;
         $this->descriptionEn = $descriptionEn;
+        $this->sortOrder = $sortOrder;
     }
 
     public function getId(): ?string
@@ -119,5 +123,10 @@ class Category
     public function getProductsCount(): ?int
     {
         return $this->productsCount;
+    }
+
+    public function getSortOrder(): int
+    {
+        return $this->sortOrder;
     }
 }

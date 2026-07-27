@@ -20,7 +20,8 @@ class CategoryMapper
             $model->name_vi,
             $model->name_en,
             $model->description_vi,
-            $model->description_en
+            $model->description_en,
+            (int) ($model->sort_order ?? 0)
         );
     }
 
@@ -39,6 +40,7 @@ class CategoryMapper
         $model->description_vi = $entity->getDescriptionVi();
         $model->description_en = $entity->getDescriptionEn();
         $model->is_active = $entity->getIsActive();
+        $model->sort_order = $entity->getSortOrder();
 
         return $model;
     }

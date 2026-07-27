@@ -25,13 +25,14 @@ class CategoryService
         ?string $nameEn = null,
         ?string $descriptionVi = null,
         ?string $descriptionEn = null,
+        int $sortOrder = 0,
     ): Category {
         $baseSlug = $slug ? Str::slug($slug) : Str::slug($name);
         $finalSlug = $this->generateUniqueSlug($baseSlug);
 
         $category = new Category(
             null, $name, $finalSlug, $description, $isActive, null, null,
-            $nameVi, $nameEn, $descriptionVi, $descriptionEn
+            $nameVi, $nameEn, $descriptionVi, $descriptionEn, $sortOrder
         );
 
         return $this->categoryRepository->save($category);
@@ -47,6 +48,7 @@ class CategoryService
         ?string $nameEn = null,
         ?string $descriptionVi = null,
         ?string $descriptionEn = null,
+        int $sortOrder = 0,
     ): Category {
         $category = $this->categoryRepository->findById($id);
         if (! $category) {
@@ -58,7 +60,7 @@ class CategoryService
 
         $updatedCategory = new Category(
             $id, $name, $finalSlug, $description, $isActive, null, null,
-            $nameVi, $nameEn, $descriptionVi, $descriptionEn
+            $nameVi, $nameEn, $descriptionVi, $descriptionEn, $sortOrder
         );
 
         return $this->categoryRepository->save($updatedCategory);
@@ -96,5 +98,22 @@ class CategoryService
     public function getCategoriesPaginated(int $page, int $limit, ?string $search = null): array
     {
         return $this->categoryRepository->findAllPaginated($page, $limit, $search);
+    }
+
+    public function reorderCategories(array $items): void
+    {
+        foreach ($items as $index => $item) {
+            $id = is_array($item) ? ($item['id'] ?? null) : (is_string($item) ? $item : null);
+            if (! empty($id)) {
+                $categoryModel = CategoryModel::find($id);
+                if ($categoryModel) {
+                    $order = (is_array($item) && isset($item['sort_order']))
+                        ? max(0, (int) $item['sort_order'])
+                        : $index;
+                    $categoryModel->sort_order = $order;
+                    $categoryModel->save();
+                }
+            }
+        }
     }
 }

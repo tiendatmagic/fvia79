@@ -19,6 +19,25 @@
 
 ## 📋 NHẬT KÝ THAY ĐỔI DỰ ÁN
 
+### [2026-07-27] Phát triển tính năng Tùy chỉnh vị trí/thứ tự hiển thị danh mục ở trang chủ Storefront & Modal Sắp xếp vị trí thông minh (fvia79)
+- **Mô tả**: Phát triển hoàn chỉnh tính năng cho phép Admin tùy chỉnh thứ tự (vị trí) sắp xếp của các danh mục hiển thị trên trang chủ Storefront (`/storefront`), giúp sắp xếp vị trí danh mục linh hoạt theo mong muốn (ví dụ đưa danh mục *"Ad account Limit 50$"* xếp dưới *"BM3 Limit 50$"* và *"BM50$"*).
+- **Thực hiện**:
+  - **Backend (`fvia79-api`)**:
+    - Tạo migration `2026_07_27_200000_add_sort_order_to_categories_table.php` bổ sung cột `sort_order` (mặc định 0) vào bảng `categories`.
+    - Tạo migration `2026_07_27_210000_normalize_categories_sort_order.php` tự động chuẩn hóa đánh số thứ tự tuần tự `0, 1, 2, 3, 4...` cho toàn bộ danh mục hiện tại.
+    - Cập nhật `CategoryModel`, `Category` entity, `CategoryMapper`, `CreateCategoryRequest`, `CategoryRepository`, `ProductRepository` sắp xếp danh mục theo `sort_order ASC`, `name ASC`.
+    - Cập nhật `CategoryService` & `CategoryController` hỗ trợ lưu `sort_order` và thêm API `POST /categories/reorder` cập nhật thứ tự hàng loạt.
+    - Cập nhật `SupplierCatalogSyncService`: Đảm bảo khi đồng bộ sản phẩm/danh mục từ nhà cung cấp (Supplier), vị trí `sort_order` đã cài đặt của danh mục cũ giữ nguyên **100% không bị thay đổi hay ghi đè**. Nếu có danh mục mới hoàn toàn từ NCC sẽ được tự động xếp vào cuối danh sách.
+  - **Frontend (`fvia79-web`)**:
+    - `product.store.ts`: Bổ sung hàm `reorderCategories()`.
+    - `category-reorder-modal.component.ts/html`: Tạo mới modal **"Sắp Xếp Vị Trí Trang Chủ"** giúp Admin di chuyển danh mục Lên ▲ / Xuống ▼ hoặc Đưa lên đầu/cuối trực quan 100%, không lo bị nhảy xuống trang 2.
+    - `category-form-modal.component.ts/html`: Thêm ô nhập "Thứ tự hiển thị (`sort_order`)".
+    - `admin-categories.component.ts/html`: Thêm nút hành động **"Sắp Xếp Vị Trí Trang Chủ 🔀"** và cột "Thứ tự hiển thị" trên bảng danh mục.
+    - `storefront.component.ts`: Đổi `categorySort` mặc định sang `'default'` để hiển thị chính xác theo vị trí cấu hình từ Admin.
+  - **Kiểm thử**: Đã chạy 2 migration thành công, kiểm tra cú pháp PHP `php -l` đạt **0 errors**, và build Angular production (`npx ng build --configuration production`) thành công **100% BUILD SUCCESS**.
+
+
+
 ### [2026-07-27] Khắc phục triệt để lỗi khớp nhầm quốc kỳ (Colombia, Nigeria) & Bổ sung nhận diện tên tiếng Việt không dấu (Úc -> uc) cho ProductIconComponent trên cả 2 nguồn (fvia79 & adsbm79)
 - **Mô tả**: Sửa lỗi nhận diện quốc kỳ của sản phẩm (`ProductIconComponent`):
   1. Loại bỏ việc cho phép các mã quốc gia 2 ký tự tự do (như `co`, `ng`, `in`, `ca`, `my`, `no`, `de`...) khớp với các từ tiếng Việt 1 âm tiết ngắn hoặc đã bị loại bỏ dấu (ví dụ: `Cổ`, `Có` bị dính cờ Colombia 🇨🇴, `Ngâm`, `Ngoại` bị dính cờ Nigeria 🇳🇬).

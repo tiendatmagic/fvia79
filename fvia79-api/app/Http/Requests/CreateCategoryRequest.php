@@ -47,6 +47,7 @@ class CreateCategoryRequest extends FormRequest
             'description_vi' => 'nullable|string',
             'description_en' => 'nullable|string',
             'is_active' => 'nullable|boolean',
+            'sort_order' => 'nullable|integer|min:0',
         ];
     }
 }

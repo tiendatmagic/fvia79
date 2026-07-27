@@ -45,6 +45,7 @@ export class CategoryFormModalComponent implements OnInit {
   public descriptionVi = '';
   public descriptionEn = '';
   public isActive = true;
+  public sortOrder = 0;
   public readonly isSubmitting = signal(false);
 
   ngOnInit() {
@@ -59,6 +60,7 @@ export class CategoryFormModalComponent implements OnInit {
       this.descriptionVi = this.modalData.description_vi || this.modalData.description || '';
       this.descriptionEn = this.modalData.description_en || this.modalData.description || '';
       this.isActive = this.modalData.is_active ?? true;
+      this.sortOrder = this.modalData.sort_order ?? 0;
     }
   }
 
@@ -86,7 +88,8 @@ export class CategoryFormModalComponent implements OnInit {
       description: finalDescEn,
       description_en: finalDescEn,
       description_vi: finalDescVi,
-      is_active: this.isActive
+      is_active: this.isActive,
+      sort_order: Number(this.sortOrder) || 0
     };
 
     this.isSubmitting.set(true);

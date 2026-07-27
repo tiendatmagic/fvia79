@@ -418,6 +418,7 @@ export class ProductStore {
     return this.api.delete<any>(`v1/categories/${id}`).pipe(
       tap(() => {
         this.clearCache();
+        this.invalidateCategories();
         this.toast.showToast(this.lang.translate('toast.category_deleted'), 'success');
       }),
       catchError((err) => {
@@ -429,6 +430,23 @@ export class ProductStore {
         ) {
           msg = this.lang.translate('toast.category_has_products');
         }
+        this.toast.showToast(msg, 'error');
+        return of(null);
+      }),
+      finalize(() => this.loading.set(false))
+    );
+  }
+
+  public reorderCategories(items: { id: string; sort_order: number }[]) {
+    this.loading.set(true);
+    return this.api.post<any>('v1/categories/reorder', { items }).pipe(
+      tap(() => {
+        this.clearCache();
+        this.invalidateCategories();
+        this.toast.showToast(this.lang.translate('cat.reorder_success'), 'success');
+      }),
+      catchError((err) => {
+        const msg = err.error?.message || this.lang.translate('cat.reorder_failed');
         this.toast.showToast(msg, 'error');
         return of(null);
       }),

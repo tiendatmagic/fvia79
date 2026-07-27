@@ -22,14 +22,26 @@
     </div>
   </div>
 
-  <div class="form-field">
-    <label class="text-xs font-black text-slate-400 uppercase tracking-wider block mb-2">{{ 'cat.slug' | translate }}</label>
-    <app-custom-input
-      [placeholder]="'cat.slug' | translate"
-      [(ngModel)]="slug"
-      name="slug"
-      type="text"
-    />
+  <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+    <div class="form-field">
+      <label class="text-xs font-black text-slate-400 uppercase tracking-wider block mb-2">{{ 'cat.slug' | translate }}</label>
+      <app-custom-input
+        [placeholder]="'cat.slug' | translate"
+        [(ngModel)]="slug"
+        name="slug"
+        type="text"
+      />
+    </div>
+
+    <div class="form-field">
+      <label class="text-xs font-black text-slate-400 uppercase tracking-wider block mb-2">{{ 'cat.sort_order' | translate }}</label>
+      <app-custom-input
+        placeholder="0"
+        [(ngModel)]="sortOrder"
+        name="sortOrder"
+        type="number"
+      />
+    </div>
   </div>
 
   <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">

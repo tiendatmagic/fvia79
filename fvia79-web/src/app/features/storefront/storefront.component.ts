@@ -461,7 +461,7 @@ export class StorefrontComponent implements OnInit, OnDestroy {
   public readonly limit = 100;
   public readonly categoryPages = signal<{ [catId: string]: number }>({});
   public readonly viewMode = signal<'card' | 'list'>(this.getInitialViewMode());
-  public readonly categorySort = signal<'az' | 'za' | 'default'>('az');
+  public readonly categorySort = signal<'az' | 'za' | 'default'>('default');
 
   public setViewMode(mode: 'card' | 'list') {
     this.viewMode.set(mode);
@@ -531,9 +531,9 @@ export class StorefrontComponent implements OnInit, OnDestroy {
   public readonly groupedProductsState = signal<any[]>([]);
 
   public readonly sortOptions = computed(() => [
+    { label: this.lang.translate('storefront.sort_default'), value: 'default' },
     { label: this.lang.translate('storefront.sort_az'), value: 'az' },
     { label: this.lang.translate('storefront.sort_za'), value: 'za' },
-    { label: this.lang.translate('storefront.sort_default'), value: 'default' },
   ]);
 
   public readonly groupedProducts = computed(() => {

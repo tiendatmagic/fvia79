@@ -21,7 +21,7 @@ class CategoryRepository implements CategoryRepositoryInterface
                     ->orWhere('name_vi', 'like', "%{$search}%");
             });
         }
-        $models = $query->orderBy('name', 'asc')->get();
+        $models = $query->orderBy('sort_order', 'asc')->orderBy('name', 'asc')->get();
         $categories = [];
         foreach ($models as $model) {
             $categories[] = CategoryMapper::toDomain($model);
@@ -43,7 +43,8 @@ class CategoryRepository implements CategoryRepositoryInterface
             });
         }
         $total = $query->count();
-        $models = $query->orderBy('name', 'asc')
+        $models = $query->orderBy('sort_order', 'asc')
+            ->orderBy('name', 'asc')
             ->skip(($page - 1) * $limit)
             ->take($limit)
             ->get();

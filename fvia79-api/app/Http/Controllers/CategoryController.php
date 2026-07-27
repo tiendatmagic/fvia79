@@ -74,6 +74,7 @@ class CategoryController extends Controller
     {
         try {
             $isActive = $request->has('is_active') ? $request->boolean('is_active') : true;
+            $sortOrder = (int) $request->input('sort_order', 0);
             $category = $this->categoryService->createCategory(
                 $request->name,
                 $request->slug,
@@ -83,6 +84,7 @@ class CategoryController extends Controller
                 $request->name_en,
                 $request->description_vi,
                 $request->description_en,
+                $sortOrder,
             );
 
             $this->forgetCategoryCaches();
@@ -100,6 +102,7 @@ class CategoryController extends Controller
     {
         try {
             $isActive = $request->has('is_active') ? $request->boolean('is_active') : true;
+            $sortOrder = (int) $request->input('sort_order', 0);
             $category = $this->categoryService->updateCategory(
                 $id,
                 $request->name,
@@ -110,6 +113,7 @@ class CategoryController extends Controller
                 $request->name_en,
                 $request->description_vi,
                 $request->description_en,
+                $sortOrder,
             );
 
             $this->forgetCategoryCaches();
@@ -182,6 +186,23 @@ class CategoryController extends Controller
         }
     }
 
+    public function reorder(Request $request)
+    {
+        try {
+            $items = $request->input('items', []);
+            if (! is_array($items)) {
+                return response()->json(['message' => 'Invalid items format.'], 400);
+            }
+
+            $this->categoryService->reorderCategories($items);
+            $this->forgetCategoryCaches();
+
+            return response()->json(['message' => 'Category order updated successfully.']);
+        } catch (\Throwable $e) {
+            return $this->serverError($e, 'Failed to reorder categories.');
+        }
+    }
+
     private function resolveLanguage(Request $request): string
     {
         $lang = strtolower(trim((string) ($request->query('lang') ?? $request->header('Accept-Language') ?? 'en')));
@@ -202,6 +223,7 @@ class CategoryController extends Controller
             'description_vi' => $category->getDescriptionVi(),
             'description_en' => $category->getDescriptionEn(),
             'is_active' => $category->getIsActive(),
+            'sort_order' => $category->getSortOrder(),
             'products_count' => $category->getProductsCount() ?? 0,
             'created_at' => $category->getCreatedAt()?->format('Y-m-d H:i:s'),
         ];
@@ -212,5 +234,6 @@ class CategoryController extends Controller
         Cache::forget('categories_active_storefront');
         Cache::forget('categories_active_storefront_en');
         Cache::forget('categories_active_storefront_vi');
+        Cache::forget('products_active_storefront');
     }
 }

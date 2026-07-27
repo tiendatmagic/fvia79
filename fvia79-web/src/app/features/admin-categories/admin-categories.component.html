@@ -22,6 +22,14 @@
       </button>
       <button
         app-button
+        (click)="openReorderModal()"
+        class="flex items-center gap-1.5 py-2.5 px-4 rounded-xl bg-indigo-600 hover:bg-indigo-700 text-white font-extrabold shadow-sm active:scale-95 transition-all text-sm cursor-pointer"
+      >
+        <app-icon name="arrows-up-down" class="w-4 h-4" />
+        Sắp Xếp Vị Trí Trang Chủ
+      </button>
+      <button
+        app-button
         (click)="openCreateModal()"
         variant="primary"
         class="flex items-center gap-2 py-2.5 px-4 rounded-xl bg-gradient-to-r from-[var(--color-primary)] to-[var(--color-secondary)] text-white font-extrabold shadow-md shadow-[var(--color-primary)]/15 active:scale-95 transition-all text-sm cursor-pointer"
@@ -85,6 +93,36 @@
           >
             #{{ row.id | slice: 0 : 8 }}...{{ row.id | slice: -4 }}
           </span>
+        </div>
+      </ng-template>
+
+      <ng-template appTableCell="sort_order" let-row="row">
+        <div class="flex items-center justify-center gap-1">
+          <button
+            type="button"
+            (click)="updateCategorySortOrder(row, (row.sort_order || 0) - 1)"
+            [disabled]="(row.sort_order || 0) <= 0 || updatingCategoryId() === row.id"
+            class="w-6 h-6 rounded-md bg-slate-100 dark:bg-slate-800 hover:bg-slate-200 dark:hover:bg-slate-700 text-slate-600 dark:text-slate-300 flex items-center justify-center text-xs font-black disabled:opacity-30 disabled:cursor-not-allowed cursor-pointer transition-all active:scale-95"
+            [appTooltip]="'Gợi ý: Bấm giảm thứ tự (ưu tiên xuất hiện trước)'"
+          >
+            ▲
+          </button>
+          <input
+            type="number"
+            min="0"
+            [ngModel]="row.sort_order || 0"
+            (change)="updateCategorySortOrder(row, $any($event.target).value)"
+            class="w-12 h-7 text-center font-extrabold text-xs rounded-lg border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-900 text-slate-800 dark:text-slate-100 focus:border-[var(--color-primary)] focus:outline-none"
+          />
+          <button
+            type="button"
+            (click)="updateCategorySortOrder(row, (row.sort_order || 0) + 1)"
+            [disabled]="updatingCategoryId() === row.id"
+            class="w-6 h-6 rounded-md bg-slate-100 dark:bg-slate-800 hover:bg-slate-200 dark:hover:bg-slate-700 text-slate-600 dark:text-slate-300 flex items-center justify-center text-xs font-black disabled:opacity-30 disabled:cursor-not-allowed cursor-pointer transition-all active:scale-95"
+            [appTooltip]="'Gợi ý: Bấm tăng thứ tự (xuất hiện sau)'"
+          >
+            ▼
+          </button>
         </div>
       </ng-template>
 

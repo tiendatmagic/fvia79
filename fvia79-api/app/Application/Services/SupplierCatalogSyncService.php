@@ -212,6 +212,11 @@ class SupplierCatalogSyncService
 
         $attributes['raw_name'] = $rawName;
 
+        if (! $category->exists && (! isset($category->sort_order) || $category->sort_order === 0)) {
+            $maxOrder = (int) CategoryModel::max('sort_order');
+            $category->sort_order = $maxOrder + 1;
+        }
+
         $category->fill([
             'name' => $rawName,
             'name_en' => $nameEn,

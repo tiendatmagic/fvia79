@@ -198,7 +198,7 @@ class ProductRepository implements ProductRepositoryInterface
     public function findGroupedActiveProducts(int $limit, ?string $search = null, bool $includeOutOfStock = false): array
     {
         $limit = max(1, $limit);
-        $categories = CategoryModel::where('is_active', true)->orderBy('name', 'asc')->get();
+        $categories = CategoryModel::where('is_active', true)->orderBy('sort_order', 'asc')->orderBy('name', 'asc')->get();
 
         $productQuery = ProductModel::query()
             ->where('status', 'active')

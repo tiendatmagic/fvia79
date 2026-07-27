@@ -131,6 +131,7 @@ Route::prefix('v1')->group(function () {
             Route::post('/products/{id}/restore', ['App\Http\Controllers\ProductController', 'restore']);
 
             Route::post('/categories', ['App\Http\Controllers\CategoryController', 'store']);
+            Route::post('/categories/reorder', ['App\Http\Controllers\CategoryController', 'reorder']);
             Route::post('/categories/deactivate-out-of-stock', ['App\Http\Controllers\CategoryController', 'deactivateOutOfStockCategories']);
             Route::put('/categories/{id}', ['App\Http\Controllers\CategoryController', 'update']);
             Route::delete('/categories/{id}', ['App\Http\Controllers\CategoryController', 'destroy']);

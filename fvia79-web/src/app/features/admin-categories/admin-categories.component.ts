@@ -12,6 +12,7 @@ import { TooltipDirective } from '@shared/components/tooltip/tooltip.directive';
 import { ModalService } from '@core/services/modal.service';
 import { LanguageService } from '@core/services/language.service';
 import { CategoryFormModalComponent } from './category-form-modal/category-form-modal.component';
+import { CategoryReorderModalComponent } from './category-reorder-modal/category-reorder-modal.component';
 import { CustomSelectComponent } from '@shared/components/custom-select/custom-select.component';
 import { CustomDateTimeRangeComponent } from '@shared/components/custom-date-time-range/custom-date-time-range.component';
 import { PaginationComponent } from '@shared/components/pagination/pagination.component';
@@ -62,6 +63,7 @@ export class AdminCategoriesComponent implements OnInit {
     this.lang.currentLang();
     return [
       { key: 'id', label: this.lang.translate('common.id'), sortable: true },
+      { key: 'sort_order', label: this.lang.translate('cat.sort_order'), sortable: true, align: 'center' },
       { key: 'name', label: this.lang.translate('category.name'), sortable: true },
       { key: 'slug', label: this.lang.translate('cat.slug'), sortable: true },
       { key: 'description', label: this.lang.translate('common.description'), sortable: true },
@@ -75,13 +77,14 @@ export class AdminCategoriesComponent implements OnInit {
   public searchQuery = '';
   private readonly _searchQuery = signal('');
 
-  public readonly selectedSort = signal<string>('name-asc');
+  public readonly selectedSort = signal<string>('sort_order-asc');
   public readonly selectedDateRange = signal<{ startDate: string; endDate: string }>({ startDate: '', endDate: '' });
   public readonly currentPage = signal<number>(1);
   public readonly limit = 10;
 
   public get sortOptions() {
     return [
+      { label: this.lang.translate('cat.sort_order_asc'), value: 'sort_order-asc' },
       { label: this.lang.translate('category.name_az'), value: 'name-asc' },
       { label: this.lang.translate('category.name_za'), value: 'name-desc' },
       { label: this.lang.translate('common.newest'), value: 'date-desc' },
@@ -109,7 +112,12 @@ export class AdminCategoriesComponent implements OnInit {
     }
 
     list = [...list].sort((a, b) => {
-      if (sort === 'name-asc') {
+      if (sort === 'sort_order-asc') {
+        const o1 = a.sort_order ?? 0;
+        const o2 = b.sort_order ?? 0;
+        if (o1 !== o2) return o1 - o2;
+        return (a.name || '').localeCompare(b.name || '', 'vi');
+      } else if (sort === 'name-asc') {
         return (a.name || '').localeCompare(b.name || '', 'vi');
       } else if (sort === 'name-desc') {
         return (b.name || '').localeCompare(a.name || '', 'vi');
@@ -156,6 +164,17 @@ export class AdminCategoriesComponent implements OnInit {
       title: this.lang.translate('cat.add'),
       size: 'lg',
       data: null
+    }).afterClosed$.subscribe((success) => {
+      if (success) {
+        this.fetchCategories();
+      }
+    });
+  }
+
+  public openReorderModal() {
+    this.modalService.open(CategoryReorderModalComponent, {
+      title: 'Sắp Xếp Vị Trí Danh Mục Trang Chủ',
+      size: 'lg'
     }).afterClosed$.subscribe((success) => {
       if (success) {
         this.fetchCategories();
@@ -252,6 +271,47 @@ export class AdminCategoriesComponent implements OnInit {
           'error',
         );
       },
+    });
+  }
+
+  public updateCategorySortOrder(category: any, newOrder: number) {
+    if (!category || this.updatingCategoryId() === category.id) return;
+    const targetOrder = Math.max(0, Math.floor(newOrder));
+    if (targetOrder === (category.sort_order ?? 0)) return;
+
+    // Optimistic local update - no skeleton loading
+    this.updatingCategoryId.set(category.id);
+    const oldOrder = category.sort_order ?? 0;
+    this.state.productStore.paginatedCategories.update(list =>
+      list.map(c => c.id === category.id ? { ...c, sort_order: targetOrder } : c)
+    );
+
+    const data = {
+      name: category.name,
+      name_vi: category.name_vi || category.name,
+      name_en: category.name_en || category.name,
+      slug: category.slug,
+      description: category.description,
+      description_vi: category.description_vi,
+      description_en: category.description_en,
+      is_active: category.is_active,
+      sort_order: targetOrder
+    };
+
+    // Silent API call - no loading.set(true)
+    this.api.put<any>(`v1/categories/${category.id}`, data).subscribe({
+      next: () => {
+        this.updatingCategoryId.set(null);
+        this.state.productStore.clearCache();
+      },
+      error: () => {
+        // Rollback on failure
+        this.updatingCategoryId.set(null);
+        this.state.productStore.paginatedCategories.update(list =>
+          list.map(c => c.id === category.id ? { ...c, sort_order: oldOrder } : c)
+        );
+        this.state.showToast(this.lang.translate('toast.category_update_failed'), 'error');
+      }
     });
   }
 }
