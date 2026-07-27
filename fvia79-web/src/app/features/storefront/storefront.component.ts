@@ -68,7 +68,7 @@ import { PublicSettingStore } from '@core/services/public-setting.store';
         display: block;
       }
       @keyframes marqueeScroll {
-        0% { transform: translateX(100%); }
+        0% { transform: translateX(0%); }
         100% { transform: translateX(-100%); }
       }
       @keyframes fadePulse {
@@ -83,7 +83,8 @@ import { PublicSettingStore } from '@core/services/public-setting.store';
       .announcement-marquee-track {
         display: inline-block;
         white-space: nowrap;
-        animation: marqueeScroll 18s linear infinite;
+        padding-left: 100%;
+        animation: marqueeScroll 40s linear infinite;
         will-change: transform;
       }
       .announcement-marquee-track:hover {

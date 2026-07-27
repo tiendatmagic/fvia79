@@ -19,6 +19,17 @@
 > 1. Cronjob Scheduler (`schedule:run`) **CHỈ ĐƯỢC CHẠY DƯỚI USER `www-data`** (`crontab -u www-data -e`). **TUYỆT ĐỐI KHÔNG cài dưới `root`** vì sẽ gây ra lỗi `500 Permission denied` khi người dùng thực hiện thao tác Web/API.
 > 2. Luôn cấp quyền `chmod -R 777` và `chown -R www-data:www-data` cho `storage` & `bootstrap/cache`. Khi gõ lệnh CLI thủ công trên VPS, luôn chạy dưới quyền `www-data` (`su -s /bin/bash www-data -c "php artisan <cmd>"`).
 
+### [2026-07-28] Điều chỉnh tốc độ & keyframe chữ chạy ngang (Marquee) mượt mà đồng bộ 3 dự án (FVIA79, ADSBM79, ISOCALMARKET)
+- **Mô tả yêu cầu**: Sửa lỗi thông báo Marquee chạy quá nhanh trên trang Storefront và xem trước Cài đặt Admin, điều chỉnh tốc độ chạy chậm lại cố định và mượt mà.
+- **Thực hiện xử lý**:
+  - **`storefront.component.ts` (`fvia79-web`, `adsbm79-web`, `isocalmarket-web`)**:
+    - Thêm `padding-left: 100%` vào `.announcement-marquee-track` để đẩy văn bản bắt đầu ngay từ lề phải của khung thông báo.
+    - Cập nhật `@keyframes marqueeScroll` chạy từ `transform: translateX(0%)` đến `transform: translateX(-100%)`.
+    - Tăng thời gian chuyển động `animation` từ `18s` lên **`40s`** giúp tốc độ cuộn chữ chậm rãi, legible, mượt mà và duy trì tính năng tạm dừng khi rê chuột (`:hover { animation-play-state: paused; }`).
+  - **`admin-settings.component.ts` (`fvia79-web`, `adsbm79-web`, `isocalmarket-web`)**:
+    - Cập nhật `.effect-marquee-preview` với `padding-left: 100%` và tăng thời gian từ `14s` lên **`35s`** cho khung xem trước cấu hình.
+- **Kiểm thử**: Biên dịch bản build production Angular `npx ng build --configuration production` thành công 100% trên cả 3 dự án.
+
 ### [2026-07-28] Triển khai (Deploy) hoàn chỉnh FE & BE cho 3 dự án (FVIA79, ADSBM79, ISOCALMARKET) giữ nguyên CSDL & làm sạch cache
 - **Mô tả**: Biên dịch bản production Frontend Angular và đóng gói Backend Laravel cho cả 3 dự án, triển khai đồng bộ lên 3 VPS tương ứng, thực thi migration an toàn (bảo tồn 100% dữ liệu CSDL) và xóa/tái tạo toàn bộ cache tĩnh.
 - **Thực hiện**:

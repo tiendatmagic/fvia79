@@ -43,7 +43,7 @@ import { DatabaseBackupPanelComponent } from './database-backup-panel/database-b
       text-security: disc !important;
     }
     @keyframes marqueeScroll {
-      0% { transform: translateX(100%); }
+      0% { transform: translateX(0%); }
       100% { transform: translateX(-100%); }
     }
     @keyframes fadePulse {
@@ -58,7 +58,8 @@ import { DatabaseBackupPanelComponent } from './database-backup-panel/database-b
     .effect-marquee-preview {
       display: inline-block;
       white-space: nowrap;
-      animation: marqueeScroll 14s linear infinite;
+      padding-left: 100%;
+      animation: marqueeScroll 35s linear infinite;
     }
     .effect-fade-preview {
       animation: fadePulse 2s ease-in-out infinite;
