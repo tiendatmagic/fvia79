@@ -23,15 +23,25 @@
 
 ## 📋 NHẬT KÝ THAY ĐỔI DỰ ÁN
 
+### [2026-07-27] Phát triển Modal Phóng to Mã QR (Binance Pay & USDT BEP20) kế thừa ModalWrapperComponent chuẩn 3 dự án (fvia79, adsbm79, isocalmarket)
+- **Mô tả**: Phát triển tính năng cho phép người dùng click vào mã QR (hoặc ảnh QR Binance Pay) tại hóa đơn thanh toán để phóng to mã QR trong cửa sổ Popup Modal chuẩn hệ thống.
+- **Thực hiện**:
+  - **Standalone Modal Component (`QrZoomModalComponent`)**: Tạo component modal mới `QrZoomModalComponent` độc lập trên 3 dự án web (`fvia79-web`, `adsbm79-web`, `isocalmarket-web`).
+  - **Hệ thống Modal chuẩn (`modalService.open`)**: Gọi mở modal thông qua `this.modalService.open(QrZoomModalComponent, { title: '...', size: 'md' })`, kế thừa 100% giao diện `ModalWrapperComponent` của hệ thống (lớp phủ nền `bg-black/40`, bo góc `rounded-[15px]`, thanh tiêu đề, nút đóng icon `close` SVG và tự động đóng khi click outside hoặc ấn phím Esc).
+  - **Kiểm thử**: Đã chạy build Angular production thành công **100% BUILD SUCCESS** không xuất hiện lỗi syntax hay compiler warnings.
+
 ### [2026-07-27] Khắc phục triệt để lỗi hiển thị mã QR sai khi nạp tiền bằng Binance ID đồng bộ 3 dự án (fvia79, adsbm79, isocalmarket)
-- **Mô tả**: Sửa lỗi khi tạo hóa đơn nạp tiền bằng Binance Pay (`paymentMethod === 'binance'`), hệ thống tạo mã QR chứa chuỗi số thuần túy (như `123456789`) khiến App Binance quét báo lỗi "Mã QR không hợp lệ".
-- **Giải pháp & Thực hiện**:
-  1. **Bổ sung trường Cấu hình `admin_binance_pay_link`**: Thêm trường nhập "Link QR Binance Pay Admin" trong Cấu hình hệ thống Admin cho phép Admin dán Link QR / Payload Binance Pay (dạng `https://s.binance.com/...` hoặc `https://app.binance.com/qr/...`).
-  2. **Render Mã QR thông minh (`DepositInvoiceComponent`)**:
-     - Khi có Link QR Binance Pay (`admin_binance_pay_link` hoặc URL): Hiển thị mã QR chuẩn 100% để quét trực tiếp bằng App Binance.
-     - Khi chỉ có Binance ID dạng số (`admin_binance_id` thuần số): Ẩn mã QR số thừa gây lỗi quét, thay bằng Khối hướng dẫn chuyển tiền thủ công *"Vào App Binance -> Ví Pay -> Gửi (Send) -> Nhập Binance ID (UID)"*.
-  3. **Đồng bộ 3 dự án**: Đã cập nhật 100% ở Backend API (`SystemSettingController`, `DepositService`, `DepositController`, `AdminDepositController`) và Frontend Angular (`SystemSettingStore`, `PublicSettingStore`, `AdminSettingsComponent`, `DepositInvoiceComponent`, `i18n vi.ts/en.ts`) trên cả 3 dự án `fvia79`, `adsbm79`, `isocalmarket`.
-  4. **Kiểm thử**: Đã chạy kiểm tra cú pháp PHP `php -l` đạt **0 errors** và chạy `npx ng build --configuration production` thành công **100% BUILD SUCCESS** cho cả 3 dự án.
+  1. **Tải tệp ảnh trực tiếp từ Client lên Server (`SystemSettingController` & `SystemSettingStore`)**:
+     - Thêm API `POST /api/v1/admin/settings/upload-binance-qr` cho phép Admin chọn và tải tệp ảnh mã QR Binance Pay (hỗ trợ JPG, PNG, WEBP, GIF, SVG, tối đa 5MB) trực tiếp từ máy tính/điện thoại lên Server.
+     - Backend tự động xử lý lưu tệp vào `storage/app/public/settings/` và đồng thời nhân bản an toàn sang `public/storage/settings/` để phục vụ mượt mà 100% kể cả khi VPS chưa chạy `storage:link`.
+  2. **Giao diện Admin chọn tệp & Xem trước ảnh (`AdminSettingsComponent`)**:
+     - Loại bỏ hoàn toàn dòng chữ hướng dẫn dán link Imgur bên thứ ba.
+     - Thay thế bằng Khối nút bấm **"Tải tệp ảnh QR từ thiết bị"** kèm nút **"Xóa ảnh"** và ô Xem trước ảnh QR thu nhỏ (Thumbnail preview 96x96px) có thẻ tag *"Đã có ảnh"*.
+  3. **Render Ảnh thanh toán trực tiếp (`DepositInvoiceComponent`)**:
+     - Khi có ảnh QR đã tải lên, giao diện hóa đơn hiển thị trực tiếp bức ảnh qua thẻ `<img [src]="binancePayRawLink">`.
+     - Nếu chưa tải ảnh, hệ thống tự động hiển thị Khối hướng dẫn chuyển tiền thủ công qua Binance ID.
+  4. **Đồng bộ 3 dự án**: Đã hoàn thành 100% ở Backend API (`fvia79-api`, `adsbm79-api`, `isocalmarket-api`) và Frontend Angular (`fvia79-web`, `adsbm79-web`, `isocalmarket-web`).
+  5. **Kiểm thử**: Đã chạy kiểm tra cú pháp PHP `php -l` đạt **0 errors** và chạy `npx ng build --configuration production` đạt **100% BUILD SUCCESS** cho cả 3 dự án.
 
 ### [2026-07-27] Bổ sung khối Tuyên bố miễn trừ trách nhiệm ở trang Đăng nhập / Đăng ký (fvia79-web)
 - **Mô tả**: Bổ sung thẻ thông báo Tuyên bố miễn trừ trách nhiệm (`notice.disclaimer_title` & `notice.disclaimer_body`) vào giao diện trang Đăng nhập / Đăng ký (`AuthLayoutComponent`) tại vị trí phía trên điều khoản dịch vụ (cả trên Desktop và Mobile).

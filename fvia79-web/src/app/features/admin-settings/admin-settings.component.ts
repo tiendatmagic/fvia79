@@ -88,6 +88,46 @@ export class AdminSettingsComponent implements OnInit, OnDestroy {
 
   public readonly activeTab = signal<'general' | 'activities' | 'announcement' | 'maintenance' | 'backup'>('general');
   public readonly tokenCleanupDays = signal<number>(7);
+  public readonly isUploadingBinanceQr = signal<boolean>(false);
+
+  public onBinanceQrFileSelected(event: Event): void {
+    const input = event.target as HTMLInputElement;
+    if (!input.files || input.files.length === 0) return;
+
+    const file = input.files[0];
+    this.isUploadingBinanceQr.set(true);
+
+    this.store.uploadBinanceQrImage(file).subscribe({
+      next: (res) => {
+        this.isUploadingBinanceQr.set(false);
+        if (res && res.url) {
+          this.form.admin_binance_pay_link = res.url;
+          this.toast.showToast(this.lang.translate('toast.saved_successfully') || 'Đã tải ảnh QR Binance Pay thành công!', 'success');
+        }
+        input.value = '';
+      },
+      error: (err) => {
+        this.isUploadingBinanceQr.set(false);
+        this.toast.showToast(err?.error?.message || 'Không thể tải ảnh lên. Vui lòng thử lại!', 'error');
+        input.value = '';
+      }
+    });
+  }
+
+  public removeBinanceQrImage(): void {
+    this.form.admin_binance_pay_link = '';
+  }
+
+  public formatQrUrl(url: string | undefined): string {
+    if (!url) return '';
+    const raw = url.trim();
+    if (raw.startsWith('/storage/')) {
+      if (typeof window !== 'undefined' && window.location.hostname === 'localhost') {
+        return `http://localhost:8000${raw}`;
+      }
+    }
+    return raw;
+  }
 
   public readonly effectOptions = computed(() => [
     { label: this.lang.translate('settings.effect_marquee'), value: 'marquee' },

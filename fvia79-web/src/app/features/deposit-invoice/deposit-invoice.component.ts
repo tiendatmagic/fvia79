@@ -1,4 +1,4 @@
-import { Component, inject, OnInit, OnDestroy, signal } from '@angular/core';
+import { Component, inject, OnInit, OnDestroy, signal, HostListener } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { ActivatedRoute, Router, RouterModule } from '@angular/router';
 import { StateService } from '@core/services/state.service';
@@ -12,6 +12,8 @@ import { TranslatePipe } from '@shared/pipes/translate.pipe';
 import { LanguageService } from '@core/services/language.service';
 import { Subscription, interval, timer } from 'rxjs';
 import { finalize } from 'rxjs/operators';
+
+import { QrZoomModalComponent } from './qr-zoom-modal.component';
 
 const DEPOSIT_EXPIRATION_MS = 15 * 60 * 1000;
 
@@ -47,6 +49,23 @@ export class DepositInvoiceComponent implements OnInit, OnDestroy {
 
   public readonly isLoadingInvoice = signal(true);
   public readonly invoiceError = signal<string | null>(null);
+  public readonly imageLoadError = signal(false);
+  public openQrZoom(): void {
+    this.modalService.open(QrZoomModalComponent, {
+      title: this.invoice?.paymentMethod === 'binance' ? this.lang.translate('invoice.qr_zoom_binance_title') : this.lang.translate('invoice.qr_zoom_bep20_title'),
+      size: 'lg',
+      data: {
+        paymentMethod: this.invoice?.paymentMethod,
+        binancePayRawLink: this.binancePayRawLink,
+        adminWalletAddress: this.adminWalletAddress(),
+        imageLoadError: this.imageLoadError()
+      }
+    });
+  }
+
+  public onImageError(): void {
+    this.imageLoadError.set(true);
+  }
 
   public readonly timeLeft = signal(900);
   public readonly countdownText = signal('15:00');
@@ -61,16 +80,15 @@ export class DepositInvoiceComponent implements OnInit, OnDestroy {
     return this.state.authStore.currentUser()?.role === 'admin';
   }
 
-  public get binanceQrValue(): string {
-    if (!this.invoice) return '';
-    const payLink = this.invoice.adminBinancePayLink?.trim();
-    if (payLink) return payLink;
-
-    const binanceId = (this.invoice.adminBinanceId || '').trim();
-    if (binanceId.startsWith('http://') || binanceId.startsWith('https://') || binanceId.startsWith('bnc://') || binanceId.startsWith('binance://')) {
-      return binanceId;
+  public get binancePayRawLink(): string {
+    const raw = (this.invoice?.adminBinancePayLink || '').trim();
+    if (!raw) return '';
+    if (raw.startsWith('/storage/')) {
+      if (typeof window !== 'undefined' && window.location.hostname === 'localhost') {
+        return `http://localhost:8000${raw}`;
+      }
     }
-    return '';
+    return raw;
   }
 
   private visibilityHandler = () => {

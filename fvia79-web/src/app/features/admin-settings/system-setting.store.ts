@@ -159,4 +159,21 @@ export class SystemSettingStore {
   public testTelegramBot(token?: string): Observable<any> {
     return this.api.post<any>('v1/admin/settings/telegram/test', { telegram_bot_token: token });
   }
+
+  public uploadBinanceQrImage(file: File): Observable<{ success: boolean; url: string; message?: string }> {
+    const formData = new FormData();
+    formData.append('image', file);
+    return this.api.postFormData<{ success: boolean; url: string; message?: string }>('v1/admin/settings/upload-binance-qr', formData).pipe(
+      tap(res => {
+        if (res && res.url) {
+          this.clearCache();
+          const current = this.settings();
+          this.settings.set({
+            ...current,
+            admin_binance_pay_link: res.url
+          });
+        }
+      })
+    );
+  }
 }

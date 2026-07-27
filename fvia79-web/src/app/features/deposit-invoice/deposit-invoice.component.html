@@ -146,12 +146,21 @@
         }
 
         @if (invoice.paymentMethod === 'binance') {
-          @if (binanceQrValue) {
-            <div class="bg-white p-3 rounded-2xl border border-slate-200/50 shadow-md flex flex-col items-center gap-2">
-              <qr-code [value]="binanceQrValue" [size]="200" />
-              <span class="text-[11px] font-bold text-slate-500 flex items-center gap-1">
-                <app-icon name="check-circle" class="w-3.5 h-3.5 text-emerald-500 shrink-0" />
-                {{ 'invoice.binance_qr_scannable' | translate }}
+          @if (binancePayRawLink && !imageLoadError()) {
+            <div
+              (click)="openQrZoom()"
+              class="bg-white p-3 rounded-2xl border border-slate-200/50 shadow-md flex flex-col items-center gap-2 cursor-pointer transition-transform hover:scale-[1.02] active:scale-[0.98] group relative"
+              title="{{ 'invoice.click_to_zoom' | translate }}"
+            >
+              <img
+                [src]="binancePayRawLink"
+                alt="Binance Pay QR Code"
+                (error)="onImageError()"
+                class="w-[200px] h-[200px] object-contain rounded-xl border border-slate-100"
+              />
+              <span class="text-[11px] font-bold text-slate-500 flex items-center gap-1 group-hover:text-[var(--color-primary)] transition-colors">
+                <app-icon name="search" class="w-3.5 h-3.5 text-amber-500 shrink-0" />
+                {{ 'invoice.binance_qr_scannable' | translate }} ({{ 'invoice.click_to_zoom' | translate }})
               </span>
             </div>
           } @else {
@@ -168,8 +177,16 @@
             </div>
           }
         } @else {
-          <div class="bg-white p-3 rounded-2xl border border-slate-200/50 shadow-md">
+          <div
+            (click)="openQrZoom()"
+            class="bg-white p-3 rounded-2xl border border-slate-200/50 shadow-md flex flex-col items-center gap-2 cursor-pointer transition-transform hover:scale-[1.02] active:scale-[0.98] group relative"
+            title="{{ 'invoice.click_to_zoom' | translate }}"
+          >
             <qr-code [value]="adminWalletAddress()" [size]="200" />
+            <span class="text-[11px] font-bold text-slate-500 flex items-center gap-1 group-hover:text-[var(--color-primary)] transition-colors">
+              <app-icon name="search" class="w-3.5 h-3.5 text-blue-500 shrink-0" />
+              {{ 'invoice.scan_qr_click_zoom' | translate }}
+            </span>
           </div>
         }
 

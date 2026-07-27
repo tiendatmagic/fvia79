@@ -75,6 +75,7 @@ Route::prefix('v1')->group(function () {
 
             Route::get('/admin/settings', ['App\Http\Controllers\SystemSettingController', 'index']);
             Route::put('/admin/settings', ['App\Http\Controllers\SystemSettingController', 'update']);
+            Route::post('/admin/settings/upload-binance-qr', ['App\Http\Controllers\SystemSettingController', 'uploadBinanceQr']);
             Route::post('/admin/settings/telegram/test', ['App\Http\Controllers\SystemSettingController', 'testTelegramBot']);
             Route::get('/admin/database-backup/status', ['App\Http\Controllers\DatabaseBackupController', 'status']);
             Route::post('/admin/database-backup/export', ['App\Http\Controllers\DatabaseBackupController', 'export'])

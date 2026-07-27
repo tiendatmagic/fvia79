@@ -336,4 +336,38 @@ class SystemSettingController extends Controller
             'message' => 'Successfully revoked all active tokens and sessions. All users logged out.',
         ]);
     }
+
+    public function uploadBinanceQr(Request $request)
+    {
+        $request->validate([
+            'image' => 'required|image|mimes:jpeg,png,jpg,gif,svg,webp|max:5120',
+        ]);
+
+        if ($request->hasFile('image')) {
+            $file = $request->file('image');
+            $ext = strtolower($file->getClientOriginalExtension() ?: 'png');
+            $filename = 'binance_qr_' . time() . '_' . substr(md5(mt_rand()), 0, 8) . '.' . $ext;
+
+            $path = $file->storeAs('settings', $filename, 'public');
+
+            $publicSettingsDir = public_path('storage/settings');
+            if (!File::exists($publicSettingsDir)) {
+                File::makeDirectory($publicSettingsDir, 0755, true, true);
+            }
+            @File::copy(storage_path('app/public/' . $path), $publicSettingsDir . '/' . $filename);
+
+            $url = url('/storage/settings/' . $filename);
+
+            $this->settingService->setSetting('admin_binance_pay_link', $url);
+
+            return response()->json([
+                'success' => true,
+                'message' => 'Binance Pay QR image uploaded successfully',
+                'url' => $url,
+                'admin_binance_pay_link' => $url,
+            ]);
+        }
+
+        return response()->json(['message' => 'No image file uploaded'], 400);
+    }
 }

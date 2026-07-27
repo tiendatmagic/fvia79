@@ -284,21 +284,68 @@
               </p>
             </div>
 
-            <div class="form-field">
-              <label>{{ 'settings.binance_pay_link_label' | translate }}</label>
-              <div class="relative mt-1">
-                <input
-                  type="text"
-                  name="admin_binance_pay_link"
-                  class="form-input w-full"
-                  [placeholder]="'settings.binance_pay_link_placeholder' | translate"
-                  [(ngModel)]="form.admin_binance_pay_link"
-                  [disabled]="isLocked()"
-                />
+            <div class="form-field md:col-span-2">
+              <label class="block text-xs font-semibold text-slate-600 dark:text-slate-400 mb-1.5">
+                {{ 'settings.binance_pay_link_label' | translate }}
+              </label>
+
+              <div class="flex flex-col sm:flex-row items-start sm:items-center gap-4 p-4 rounded-xl border border-slate-200 dark:border-slate-800 bg-slate-50/50 dark:bg-slate-900/40">
+                <div class="flex-1 space-y-2">
+                  <input
+                    #qrFileInput
+                    type="file"
+                    accept="image/*"
+                    class="hidden"
+                    (change)="onBinanceQrFileSelected($event)"
+                  />
+
+                  <div class="flex items-center gap-2">
+                    <button
+                      type="button"
+                      class="btn btn-secondary text-xs py-2 px-3 flex items-center gap-1.5 font-medium"
+                      [disabled]="isLocked() || isUploadingBinanceQr()"
+                      (click)="qrFileInput.click()"
+                    >
+                      @if (isUploadingBinanceQr()) {
+                        <app-icon name="loader" class="w-4 h-4 animate-spin text-amber-500" />
+                        <span>Đang tải ảnh...</span>
+                      } @else {
+                        <app-icon name="upload" class="w-4 h-4 text-amber-500" />
+                        <span>{{ form.admin_binance_pay_link ? 'Thay đổi ảnh QR' : 'Tải tệp ảnh QR từ thiết bị' }}</span>
+                      }
+                    </button>
+
+                    @if (form.admin_binance_pay_link) {
+                      <button
+                        type="button"
+                        class="btn btn-ghost text-xs text-rose-500 hover:bg-rose-500/10 py-2 px-3 flex items-center gap-1"
+                        [disabled]="isLocked()"
+                        (click)="removeBinanceQrImage()"
+                      >
+                        <app-icon name="trash" class="w-3.5 h-3.5" />
+                        <span>Xóa ảnh</span>
+                      </button>
+                    }
+                  </div>
+
+                  <p class="text-[11px] text-slate-500 dark:text-slate-400 leading-relaxed">
+                    {{ 'settings.binance_pay_link_hint' | translate }}
+                  </p>
+                </div>
+
+                @if (form.admin_binance_pay_link) {
+                  <div class="relative shrink-0 group">
+                    <img
+                      [src]="formatQrUrl(form.admin_binance_pay_link)"
+                      alt="Binance QR Preview"
+                      class="w-24 h-24 object-contain rounded-lg border border-slate-200 dark:border-slate-700 bg-white p-1 shadow-sm"
+                    />
+                    <span class="absolute -top-2 -right-2 bg-emerald-500 text-white text-[10px] font-bold px-1.5 py-0.5 rounded-full shadow">
+                      Đã có ảnh
+                    </span>
+                  </div>
+                }
               </div>
-              <p class="mt-1.5 text-xs text-slate-400 dark:text-slate-500">
-                {{ 'settings.binance_pay_link_hint' | translate }}
-              </p>
             </div>
 
             <div class="form-field md:col-span-2">
