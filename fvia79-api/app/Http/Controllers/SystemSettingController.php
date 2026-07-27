@@ -50,6 +50,7 @@ class SystemSettingController extends Controller
             'binance_api_host' => 'sometimes|nullable|string|max:500',
             'telegram_bot_token' => 'sometimes|nullable|string|max:500',
             'telegram_bot_username' => 'sometimes|nullable|string|max:100',
+            'telegram_support_username' => 'sometimes|nullable|string|max:200',
             'telegram_bot_enabled' => 'sometimes|nullable',
             'announcement_enabled' => 'sometimes|nullable',
             'announcement_text' => 'sometimes|nullable|string|max:1000',
@@ -106,6 +107,9 @@ class SystemSettingController extends Controller
         }
         if ($request->has('telegram_bot_username')) {
             $settingsToSave['telegram_bot_username'] = (string) $request->input('telegram_bot_username');
+        }
+        if ($request->has('telegram_support_username')) {
+            $settingsToSave['telegram_support_username'] = (string) $request->input('telegram_support_username');
         }
         if ($request->has('telegram_bot_enabled')) {
             $settingsToSave['telegram_bot_enabled'] = filter_var($request->input('telegram_bot_enabled'), FILTER_VALIDATE_BOOLEAN) ? '1' : '0';
@@ -176,6 +180,7 @@ class SystemSettingController extends Controller
             $usdtRate = app(\App\Application\Services\DepositService::class)->getUsdtToVndRate();
         }
         $telegramBotUsername = $this->settingService->getSetting('telegram_bot_username', 'fvia79noti_bot');
+        $telegramSupportUsername = $this->settingService->getSetting('telegram_support_username', 'emmy203012');
 
         $envFeatureEnabled = filter_var(config('app.feature_membership_tiers_enabled', false), FILTER_VALIDATE_BOOLEAN);
         $membershipTiersFeatureEnabled = filter_var($envFeatureEnabled, FILTER_VALIDATE_BOOLEAN);
@@ -202,6 +207,7 @@ class SystemSettingController extends Controller
             'announcement_effect' => (string) $effect,
             'usdt_exchange_rate' => (float) $usdtRate,
             'telegram_bot_username' => (string) $telegramBotUsername,
+            'telegram_support_username' => (string) $telegramSupportUsername,
             'membership_tiers_feature_enabled' => $membershipTiersFeatureEnabled,
             'membership_tiers_enabled' => $membershipTiersEnabled,
             'coupons_feature_enabled' => $couponsFeatureEnabled,

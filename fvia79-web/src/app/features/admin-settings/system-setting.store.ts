@@ -16,6 +16,7 @@ export interface SystemSettingsPayload {
   binance_api_secret?: string;
   telegram_bot_token?: string;
   telegram_bot_username?: string;
+  telegram_support_username?: string;
   telegram_bot_enabled?: boolean | string;
   announcement_enabled?: boolean | string;
   announcement_text_vi?: string;
@@ -60,6 +61,7 @@ export class SystemSettingStore {
     binance_api_secret: '',
     telegram_bot_token: '',
     telegram_bot_username: 'fvia79noti_bot',
+    telegram_support_username: 'emmy203012',
     telegram_bot_enabled: true,
     announcement_enabled: true,
     announcement_text_vi: '',

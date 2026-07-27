@@ -19,6 +19,18 @@
 > 1. Cronjob Scheduler (`schedule:run`) **CHỈ ĐƯỢC CHẠY DƯỚI USER `www-data`** (`crontab -u www-data -e`). **TUYỆT ĐỐI KHÔNG cài dưới `root`** vì sẽ gây ra lỗi `500 Permission denied` khi người dùng thực hiện thao tác Web/API.
 > 2. Luôn cấp quyền `chmod -R 777` và `chown -R www-data:www-data` cho `storage` & `bootstrap/cache`. Khi gõ lệnh CLI thủ công trên VPS, luôn chạy dưới quyền `www-data` (`su -s /bin/bash www-data -c "php artisan <cmd>"`).
 
+### [2026-07-28] Phát triển Cấu hình Telegram (Hỗ Trợ Trực Tiếp & Bot Thông Báo) trong Admin Settings & Trang Contact đồng bộ 3 dự án (FVIA79, ADSBM79, ISOCALMARKET)
+- **Mô tả yêu cầu**: Bổ sung ô cấu hình Admin cho phép thay đổi Telegram Hỗ Trợ Trực Tiếp (`telegram_support_username`) độc lập bên cạnh Telegram Bot Thông Báo (`telegram_bot_username`) tại trang Quản lý hệ thống Admin (`/admin/settings/general`), hiển thị linh hoạt các kênh Telegram tại trang Liên hệ (`/contact`) kèm hỗ trợ đa ngôn ngữ i18n chuẩn hóa.
+- **Thực hiện xử lý**:
+  - **Backend API (`fvia79-api`, `adsbm79-api`, `isocalmarket-api`)**:
+    - `SystemSettingController.php`: Bổ sung luật validate `'telegram_support_username' => 'sometimes|nullable|string|max:200'` trong phương thức `update()`, lưu cài đặt vào CSDL MySQL và trả về `'telegram_support_username'` trong API công khai `publicSettings()`.
+  - **Frontend Web (`fvia79-web`, `adsbm79-web`, `isocalmarket-web`)**:
+    - `public-setting.store.ts` & `system-setting.store.ts`: Bổ sung trường `telegram_support_username` vào interface và giá trị mặc định cho từng dự án (`emmy203012` cho FVIA79, `adsbm79` cho ADSBM79, `isocalmarket` cho ISOCALMARKET).
+    - `admin-settings.component.html`: Bổ sung ô nhập liệu **Telegram Hỗ Trợ Trực Tiếp** tại tab General Settings của Admin.
+    - `contact.component.ts/html`: Đọc dữ liệu từ `PublicSettingStore`, tự động chuẩn hóa liên kết `https://t.me/...` và hiển thị thẻ **Telegram Hỗ Trợ Trực Tiếp** & thẻ **Telegram Bot Thông Báo** (khi có cấu hình bot) kèm các nút bấm "Mở Telegram" và "Sao chép liên kết".
+    - `vi.ts` & `en.ts`: Bổ sung đầy đủ 100% các từ khóa i18n cho cả Tiếng Việt và Tiếng Anh (`admin_settings.telegram_support_label`, `contact.bot_channel_title`,...).
+- **Kiểm thử**: PHP syntax check `php -l` đạt 0 lỗi trên 3 API.
+
 ### [2026-07-28] Xử lý hiển thị thu gọn & cắt dòng dấu 3 chấm (...) cho Thuộc tính động (Dynamic Attributes) đồng bộ 3 dự án (FVIA79, ADSBM79, ISOCALMARKET)
 - **Mô tả yêu cầu**: Sửa lỗi các thẻ Thuộc tính động (Dynamic Attributes như `raw_desc`, `raw_name`,...) có nội dung văn bản quá dài bị văng/xuống nhiều dòng tràn khung giao diện trên trang Storefront (Grid view, Table view, Mobile view) và trang Quản lý sản phẩm Admin.
 - **Thực hiện xử lý**:

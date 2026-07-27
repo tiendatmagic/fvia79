@@ -1821,5 +1821,14 @@ export const EN_TRANSLATIONS: Record<string, string> = {
   'storefront.time_hours_ago': '{{count}} hours ago',
   'storefront.time_days_ago': '{{count}} days ago',
   'web3.unsupported_network': 'Unsupported Network',
-  'web3.wallet_not_connected': 'Wallet is not connected'
+  'web3.wallet_not_connected': 'Wallet is not connected',
+  'admin_settings.telegram_support_label': 'Direct Support Telegram',
+  'admin_settings.telegram_support_placeholder': 'emmy203012 or https://t.me/emmy203012',
+  'admin_settings.telegram_support_hint': 'Telegram username or link displayed on Contact page for customer support.',
+  'admin_settings.telegram_bot_label': 'Notification Telegram Bot',
+  'admin_settings.telegram_bot_hint': 'Telegram Bot username or link for automated notifications.',
+  'contact.bot_channel_title': 'Notification Telegram Bot',
+  'contact.bot_channel_subtitle': 'Automated notification bot',
+  'contact.bot_channel_desc': 'Receive instant automated notifications about balance updates, orders, and deposits 24/7.',
+  'contact.btn_open_bot': 'Open Telegram Bot'
 };
