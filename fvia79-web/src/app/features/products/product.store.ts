@@ -3,8 +3,8 @@ import { HttpParams } from '@angular/common/http';
 import { ApiService } from '@core/services/api.service';
 import { ToastService } from '@core/services/toast.service';
 import { LanguageService } from '@core/services/language.service';
-import { tap, catchError, finalize } from 'rxjs/operators';
-import { of, Subscription, Subject } from 'rxjs';
+import { tap, catchError, finalize, shareReplay } from 'rxjs/operators';
+import { of, Subscription, Subject, Observable } from 'rxjs';
 
 @Injectable({
   providedIn: 'root'
@@ -19,6 +19,9 @@ export class ProductStore {
  
   private readonly productsCache = new Map<string, { data: any; timestamp: number }>();
   private readonly categoriesPaginatedCache = new Map<string, { data: any; timestamp: number }>();
+
+  private categoriesFetched = false;
+  private categoriesInFlight$: Observable<any[]> | null = null;
 
   constructor() {
     effect(() => {
@@ -35,6 +38,11 @@ export class ProductStore {
   public clearCache() {
     this.productsCache.clear();
     this.categoriesPaginatedCache.clear();
+  }
+
+  public invalidateCategories() {
+    this.categoriesFetched = false;
+    this.categoriesInFlight$ = null;
   }
 
   private localizeItems(items: any[], language = this.lang.currentLang()): any[] {
@@ -129,31 +137,40 @@ export class ProductStore {
     return subject.asObservable();
   }
 
-  public fetchCategories(search?: string) {
-    if (!search && this.categories().length > 0) {
-      this.api.get<any[]>('v1/categories').subscribe({
-        next: (res) => {
-          if (res) this.categories.set(res);
-        }
-      });
+  public fetchCategories(search?: string): Observable<any[]> {
+    if (search) {
+      let params = new HttpParams().set('search', search);
+      return this.api.get<any[]>('v1/categories', params).pipe(
+        catchError(() => of([]))
+      );
+    }
+
+    if (this.categoriesFetched && this.categories().length > 0) {
       return of(this.categories());
     }
 
-    let params = new HttpParams();
-    if (search) {
-      params = params.set('search', search);
+    if (this.categoriesInFlight$) {
+      return this.categoriesInFlight$;
     }
-    return this.api.get<any[]>('v1/categories', params).pipe(
+
+    this.categoriesInFlight$ = this.api.get<any[]>('v1/categories').pipe(
       tap((res) => {
-        if (res) {
+        if (res && Array.isArray(res)) {
           this.categories.set(res);
+          this.categoriesFetched = true;
         }
       }),
       catchError((err) => {
         this.toast.showToast(this.lang.translate('toast.error_load_categories'), 'error');
         return of([]);
-      })
+      }),
+      finalize(() => {
+        this.categoriesInFlight$ = null;
+      }),
+      shareReplay(1)
     );
+
+    return this.categoriesInFlight$;
   }
 
   public getProductsRaw(page?: number, limit?: number, categoryId?: string, search?: string, status?: string, filterDeleted?: string, includeOutOfStock?: boolean) {

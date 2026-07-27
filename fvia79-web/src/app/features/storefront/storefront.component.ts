@@ -161,23 +161,10 @@ export class StorefrontComponent implements OnInit, OnDestroy {
     this.state.productStore.clearCache();
     this.loadAllGroupedProducts();
     this.loadRecentActivities();
-    this.fetchCategoriesList();
 
     this.route.queryParams.subscribe((params) => {
       const cat = params['category'];
       this.selectedCategory.set(cat ? String(cat) : 'all');
-    });
-  }
-
-  public readonly allCategoriesList = signal<any[]>([]);
-
-  public fetchCategoriesList() {
-    this.state.productStore.fetchCategories().subscribe({
-      next: (cats) => {
-        if (cats && Array.isArray(cats)) {
-          this.allCategoriesList.set(cats);
-        }
-      },
     });
   }
 
@@ -512,7 +499,7 @@ export class StorefrontComponent implements OnInit, OnDestroy {
       { id: 'all', name: allLabel },
     ];
 
-    const fetchedCats = this.allCategoriesList();
+    const fetchedCats = this.state.productStore.categories();
     if (fetchedCats && fetchedCats.length > 0) {
       for (const cat of fetchedCats) {
         const catName = language === 'vi'
@@ -574,7 +561,7 @@ export class StorefrontComponent implements OnInit, OnDestroy {
       groups = groups.filter((g) => String(g.id) === String(selectedCat));
 
       if (groups.length === 0) {
-        const catInfo = this.allCategoriesList().find((c) => String(c.id) === String(selectedCat));
+        const catInfo = this.state.productStore.categories().find((c: any) => String(c.id) === String(selectedCat));
         if (catInfo) {
           groups = [
             {
