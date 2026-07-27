@@ -67,15 +67,15 @@
               <button
                 type="button"
                 (click)="toggleBuyMenu()"
-                class="w-full flex items-center justify-between gap-3.5 px-4 py-3 rounded-xl hover:bg-slate-100 dark:hover:bg-slate-800/50 text-slate-600 dark:text-slate-400 font-semibold text-sm transition-colors duration-200 cursor-pointer select-none"
+                class="w-full flex items-center justify-between gap-3.5 px-4 py-3 rounded-xl hover:bg-slate-100 dark:hover:bg-slate-800/50 text-slate-600 dark:text-slate-400 font-semibold text-sm transition-colors duration-200 cursor-pointer select-none border-0 bg-transparent"
               >
-                <div class="flex items-center gap-3.5">
-                  <app-icon name="pos" class="w-5 h-5 flex-shrink-0" />
-                  <span>{{ 'nav.buy' | translate }}</span>
+                <div class="flex items-center gap-3.5 text-slate-600 dark:text-slate-400 font-semibold text-sm">
+                  <app-icon name="pos" class="w-5 h-5 flex-shrink-0 text-slate-600 dark:text-slate-400" />
+                  <span class="text-slate-600 dark:text-slate-400 font-semibold text-sm leading-none">{{ 'nav.buy' | translate }}</span>
                 </div>
                 <app-icon
                   name="chevron-down"
-                  class="w-4 h-4 flex-shrink-0 transition-transform duration-200"
+                  class="w-4 h-4 flex-shrink-0 text-slate-500 dark:text-slate-400 transition-transform duration-200"
                   [class.rotate-180]="isBuyMenuOpen()"
                 />
               </button>
