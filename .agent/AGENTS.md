@@ -19,15 +19,23 @@
 
 ## 📋 NHẬT KÝ THAY ĐỔI DỰ ÁN
 
-### [2026-07-27] Điều chỉnh khoảng thời gian hiển thị & Số tiền nạp ngẫu nhiên ở chế độ Demo cho 2 khối Đơn hàng vừa mua & Lịch sử nạp gần đây
-- **Mô tả**:
-  1. **Đơn hàng vừa mua**: Cụm thời gian hiển thị (`created_at`) ở chế độ Demo được điều chỉnh để hiển thị trong khoảng từ **5 đến 15 phút trước** (ví dụ: *5 phút trước*, *8 phút trước*, *12 phút trước*, *15 phút trước*). Giữ nguyên tần suất chạy timer định kỳ.
-  2. **Lịch sử nạp gần đây**:
-     - Cụm thời gian hiển thị ở chế độ Demo được điều chỉnh để hiển thị trong khoảng từ **20 đến 40 phút trước** (ví dụ: *20 phút trước*, *28 phút trước*, *35 phút trước*, *40 phút trước*).
-     - Số tiền nạp ngẫu nhiên ở chế độ Demo được điều chỉnh giới hạn nghiêm ngặt chỉ trong khoảng **0.1 đến 100 USDT** (loại bỏ hoàn toàn các con số nạp lớn 180, 295, 300 USDT).
+### [2026-07-27] Kiểm tra và cập nhật cấu hình .gitignore cho thư mục storage/framework/views
+- **Mô tả**: Rà soát và cấu hình loại trừ các tệp view compiled cache (`/storage/framework/views`) khỏi hệ thống quản lý phiên bản Git để tránh tình trạng commit nhầm các file Blade view cache tạm thời.
 - **Thực hiện**:
-  - `storefront.component.ts`: Cập nhật `seedInitialPurchases()`, `seedInitialDeposits()` và `startDemoActivitiesTimer()`.
+  - `fvia79-api/.gitignore`: Bổ sung `/storage/framework/views`, `/storage/framework/sessions`, `/storage/framework/testing`.
+  - `.gitignore` (gốc): Bổ sung quy tắc `/fvia79-api/storage/framework/views/*`, `/fvia79-api/storage/framework/cache/*`, `/fvia79-api/storage/framework/sessions/*`, `/fvia79-api/storage/framework/testing/*` và ngoại lệ `!/fvia79-api/storage/framework/**/.gitignore`.
+  - `storage/framework/views/.gitignore`: Đã có sẵn quy tắc `*` và `!.gitignore` giữ lại folder views sạch trong Git repository.
+
+### [2026-07-27] Chuẩn hóa thứ tự thời gian từ mới nhất (trên) đến cũ nhất (dưới) & Số tiền nạp ngẫu nhiên ở chế độ Demo cho Storefront
+- **Mô tả**:
+  1. **Tự động căn chỉnh thứ tự thời gian chuẩn theo logic dòng thời gian**:
+     - **Đơn hàng vừa mua**: Đơn hàng nằm trên cùng luôn có số phút nhỏ nhất (**5 phút trước**) và giảm dần xuống dòng dưới cùng (**15 phút trước**). Khi có đơn hàng demo mới được đẩy vào trên cùng, toàn bộ danh sách tự động giãn khoảng thời gian mượt mà từ **5 đến 15 phút trước**.
+     - **Lịch sử nạp gần đây**: Dòng trên cùng luôn có số phút nhỏ nhất (**20 phút trước**) và giảm dần xuống dòng dưới cùng (**40 phút trước**). Khi có giao dịch nạp demo mới đẩy vào trên cùng, danh sách tự động giãn thời gian từ **20 đến 40 phút trước**.
+  2. **Số tiền nạp ngẫu nhiên ở chế độ Demo**: Giới hạn nghiêm ngặt từ **0.1 đến 100 USDT** (loại bỏ hoàn toàn các con số nạp trên 100 USDT).
+- **Thực hiện**:
+  - `storefront.component.ts`: Xây dựng hàm helper `rescaleDemoTimestamps(list, minMinutes, maxMinutes)` để tính toán mốc thời gian tăng dần đều từ trên xuống dưới, áp dụng cho `seedInitialPurchases()`, `seedInitialDeposits()` và `startDemoActivitiesTimer()`.
   - Biên dịch: Chạy `npx ng build --configuration production` thành công **100% BUILD SUCCESS**.
+
 
 
 ### [2026-07-27] Bổ sung quy tắc nhận diện logo quốc kỳ cho Ecuador, Timor-Leste, Congo, Mexico và các quốc gia trên thế giới (fvia79 & adsbm79)

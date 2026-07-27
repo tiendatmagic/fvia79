@@ -23,6 +23,11 @@ storage/*.key
 npm-debug.log*
 yarn-debug.log*
 yarn-error.log*
+/fvia79-api/storage/framework/cache/*
+/fvia79-api/storage/framework/sessions/*
+/fvia79-api/storage/framework/testing/*
+/fvia79-api/storage/framework/views/*
+!/fvia79-api/storage/framework/**/.gitignore
 
 # IDEs & Editors
 .idea/

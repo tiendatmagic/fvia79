@@ -4,6 +4,7 @@ namespace App\Application\Services;
 
 use App\Domain\Entities\Category;
 use App\Domain\Repositories\CategoryRepositoryInterface;
+use App\Infrastructure\Persistence\Eloquent\CategoryModel;
 use App\Infrastructure\Persistence\Eloquent\ProductModel;
 use Illuminate\Support\Str;
 
