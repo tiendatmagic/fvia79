@@ -19,6 +19,14 @@
 
 ## 📋 NHẬT KÝ THAY ĐỔI DỰ ÁN
 
+### [2026-07-27] Lọc chỉ hiển thị các danh mục đang hoạt động (is_active) ở submenu Mua hàng trên 3 nguồn (fvia79, adsbm79, isocalmarket)
+- **Mô tả**: Sửa lỗi submenu **"Mua hàng"** (cả Sidebar desktop và Mobile menu) và bộ lọc danh mục trang Storefront hiển thị các danh mục đã bị ẩn (`is_active = false`). Cấu hình chỉ lọc và hiển thị danh mục đang hoạt động (`is_active !== false`).
+- **Thực hiện**:
+  - `fvia79-web`: Cập nhật `SidebarComponent`, `App` (mobile menu), và `StorefrontComponent` lọc `is_active !== false && is_active !== 0 && is_active !== '0'`.
+  - `adsbm79-web`: Cập nhật `SidebarComponent`, `App` (mobile menu), và `StorefrontComponent` đồng bộ 100%.
+  - `isocalmarket-web`: Cập nhật `SidebarComponent`, `App` (mobile menu), và `StorefrontComponent` đồng bộ 100%.
+  - Biên dịch & Kiểm thử: Đã chạy `npx ng build --configuration production` thành công **100% BUILD SUCCESS** cho cả 3 dự án.
+
 ### [2026-07-27] Kiểm tra và cập nhật cấu hình .gitignore cho thư mục storage/framework/views
 - **Mô tả**: Rà soát và cấu hình loại trừ các tệp view compiled cache (`/storage/framework/views`) khỏi hệ thống quản lý phiên bản Git để tránh tình trạng commit nhầm các file Blade view cache tạm thời.
 - **Thực hiện**:

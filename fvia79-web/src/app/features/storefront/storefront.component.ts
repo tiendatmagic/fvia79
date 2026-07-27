@@ -527,7 +527,8 @@ export class StorefrontComponent implements OnInit, OnDestroy {
       { id: 'all', name: allLabel },
     ];
 
-    const fetchedCats = this.state.productStore.categories();
+    const fetchedCats = (this.state.productStore.categories() || [])
+      .filter((c: any) => c.is_active !== false && c.is_active !== 0 && c.is_active !== '0');
     if (fetchedCats && fetchedCats.length > 0) {
       for (const cat of fetchedCats) {
         const catName = language === 'vi'

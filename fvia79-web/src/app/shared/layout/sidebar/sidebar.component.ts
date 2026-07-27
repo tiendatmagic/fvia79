@@ -37,7 +37,8 @@ export class SidebarComponent implements OnInit {
   public isBuyMenuOpen = signal<boolean>(false);
 
   public readonly sortedCategories = computed(() => {
-    const cats = this.stateService.productStore.categories() || [];
+    const cats = (this.stateService.productStore.categories() || [])
+      .filter((c: any) => c.is_active !== false && c.is_active !== 0 && c.is_active !== '0');
     const currentLang = this.lang.currentLang();
     return [...cats].sort((a, b) => {
       const nameA = (currentLang === 'vi' ? (a.name_vi || a.name_en || a.name) : (a.name_en || a.name_vi || a.name)) || '';
