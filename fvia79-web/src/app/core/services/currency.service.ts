@@ -32,7 +32,7 @@ export class CurrencyService {
 
   private getInitialUsdToVndRate(): number {
     const savedRate = Number(localStorage.getItem('usd_to_vnd_rate'));
-    return Number.isFinite(savedRate) && savedRate > 0 ? savedRate : 26276;
+    return Number.isFinite(savedRate) && savedRate > 0 ? savedRate : 26500;
   }
 
   public format(amount: number | string | null | undefined, decimals?: number): string {

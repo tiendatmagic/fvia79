@@ -581,7 +581,7 @@
                     <span class="text-emerald-600 dark:text-emerald-400 font-bold font-mono">{{ item.username }}</span>
                     <span class="text-slate-500 mx-1">:</span>
                     <span class="text-rose-600 dark:text-rose-400 font-medium">
-                      {{ 'storefront.bought' | translate }} <strong class="font-black">{{ item.quantity }}</strong> {{ getProductName(item) }} - <span class="font-bold">${{ (item.total_usd || item.total_price_usd || (item.total_price > 1000 ? item.total_price / 26276 : item.total_price) || 0) | number:'1.2-2' }}</span>
+                      {{ 'storefront.bought' | translate }} <strong class="font-black">{{ item.quantity }}</strong> {{ getProductName(item) }} - <span class="font-bold">${{ (item.total_usd || item.total_price_usd || (item.total_price > 1000 ? item.total_price / 26500 : item.total_price) || 0) | number:'1.2-2' }}</span>
                     </span>
                   </div>
 

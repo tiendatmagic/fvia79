@@ -19,6 +19,15 @@
 
 ## 📋 NHẬT KÝ THAY ĐỔI DỰ ÁN
 
+### [2026-07-27] Đồng bộ tỷ giá mặc định USDT/VND thành 26.500 trên cả 3 dự án (fvia79, isocalmarket, adsbm79)
+- **Mô tả**: Cập nhật giá trị tỷ giá mặc định (fallback) cho toàn bộ 3 dự án từ các con số cũ (`25.400`, `26.276`) sang tỷ giá mặc định mới **`26.500`** theo yêu cầu.
+- **Thực hiện**:
+  - `fvia79`: Cập nhật `26.500` cho Backend (`SystemSettingController`, `StorefrontController`) và Frontend (`currency.service.ts`, `public-setting.store.ts`, `storefront.component.ts/html`).
+  - `isocalmarket`: Cập nhật `26.500` cho Backend và Frontend.
+  - `adsbm79`: Cập nhật `26.500` cho Backend và Frontend.
+  - Biên dịch: Chạy `npx ng build --configuration production` thành công **100% BUILD SUCCESS**.
+
+
 ### [2026-07-27] Khắc phục lỗi giá trị mặc định telegram_bot_username bị dính tên dự án cũ (adsbm79noti_bot)
 - **Mô tả**: Phát hiện và khắc phục lỗi giá trị mặc định (fallback) của `telegram_bot_username` ở `public-setting.store.ts` và `system-setting.store.ts` bị dính tên mặc định của dự án cũ `adsbm79noti_bot` trên cả 2 nguồn `fvia79` và `isocalmarket`.
 - **Thực hiện**:

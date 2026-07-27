@@ -37,7 +37,7 @@ class StorefrontController extends Controller
                     : substr($username, 0, min(max(1, strlen($username) - 4), 6)).'****';
 
                 $totalVnd = (float) $order->total_amount;
-                $totalUsd = (float) ($order->total_amount_usd ?? ($totalVnd > 1000 ? round($totalVnd / 26276, 2) : $totalVnd));
+                $totalUsd = (float) ($order->total_amount_usd ?? ($totalVnd > 1000 ? round($totalVnd / 26500, 2) : $totalVnd));
 
                 $data[] = [
                     'id' => $order->id,
@@ -83,7 +83,7 @@ class StorefrontController extends Controller
                 $rawUsdt = $deposit->amount_usdt;
                 $amountUsdt = ($rawUsdt !== null && (float)$rawUsdt > 0 && (float)$rawUsdt <= 1000)
                     ? (float)$rawUsdt
-                    : round($amountVnd / 25400, 2);
+                    : round($amountVnd / 26500, 2);
 
                 $data[] = [
                     'id' => $deposit->id,

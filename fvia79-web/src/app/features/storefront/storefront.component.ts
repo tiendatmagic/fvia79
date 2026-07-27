@@ -319,7 +319,7 @@ export class StorefrontComponent implements OnInit, OnDestroy {
         const prodNameVi = prod ? (prod.name_vi || prod.name) : 'Via Ngoại New';
         const prodNameEn = prod ? (prod.name_en || prod.name) : 'Via Foreign New';
         const rawUnitPrice = prod ? Number(prod.price) : 2.50;
-        const unitPriceUsd = rawUnitPrice > 1000 ? rawUnitPrice / 26276 : rawUnitPrice;
+        const unitPriceUsd = rawUnitPrice > 1000 ? rawUnitPrice / 26500 : rawUnitPrice;
         const totalUsd = Math.round(unitPriceUsd * qty * 100) / 100;
 
         const newItem = {
@@ -348,7 +348,7 @@ export class StorefrontComponent implements OnInit, OnDestroy {
           id: 'live_dep_' + Date.now(),
           username: randomName,
           amount_usdt: randomUsdt,
-          amount_vnd: randomUsdt * 25400,
+          amount_vnd: randomUsdt * 26500,
           method: randomMethod,
           created_at: new Date().toISOString()
         };
