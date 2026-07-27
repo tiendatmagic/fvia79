@@ -1826,9 +1826,5 @@ export const VI_TRANSLATIONS: Record<string, string> = {
   'admin_settings.telegram_support_placeholder': 'emmy203012 hoặc https://t.me/emmy203012',
   'admin_settings.telegram_support_hint': 'Username hoặc liên kết Telegram hiển thị trên trang Liên hệ cho khách hàng.',
   'admin_settings.telegram_bot_label': 'Telegram Bot Thông Báo',
-  'admin_settings.telegram_bot_hint': 'Username hoặc liên kết Telegram Bot thông báo tự động.',
-  'contact.bot_channel_title': 'Telegram Bot Thông Báo',
-  'contact.bot_channel_subtitle': 'Kênh thông báo tự động',
-  'contact.bot_channel_desc': 'Nhận thông báo tự động về biến động số dư, đơn hàng và nạp tiền 24/7.',
-  'contact.btn_open_bot': 'Mở Telegram Bot'
+  'admin_settings.telegram_bot_hint': 'Username hoặc liên kết Telegram Bot thông báo tự động.'
 };

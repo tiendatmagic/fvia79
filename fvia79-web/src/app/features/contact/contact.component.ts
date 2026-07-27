@@ -4,6 +4,7 @@ import { PageHeaderComponent } from '@shared/components/page-header/page-header.
 import { CardComponent } from '@shared/components/card/card.component';
 import { ButtonComponent } from '@shared/components/button/button.component';
 import { IconComponent } from '@shared/components/icon/icon.component';
+import { SkeletonLoaderComponent } from '@shared/components/skeleton-loader/skeleton-loader.component';
 import { LanguageService } from '@core/services/language.service';
 import { TranslatePipe } from '@shared/pipes/translate.pipe';
 import { ToastService } from '@core/services/toast.service';
@@ -18,6 +19,7 @@ import { PublicSettingStore } from '@core/services/public-setting.store';
     CardComponent,
     ButtonComponent,
     IconComponent,
+    SkeletonLoaderComponent,
     TranslatePipe
   ],
   templateUrl: './contact.component.html',
@@ -29,12 +31,12 @@ export class ContactComponent implements OnInit {
   public readonly publicSettingStore = inject(PublicSettingStore);
 
   ngOnInit(): void {
-    this.publicSettingStore.loadSettings().subscribe();
+    this.publicSettingStore.fetchPublicSettings().subscribe();
   }
 
   public get telegramSupportUrl(): string {
-    const username = (this.publicSettingStore.settings().telegram_support_username || 'emmy203012').trim();
-    if (!username) return 'https://t.me/emmy203012';
+    const raw = this.publicSettingStore.settings().telegram_support_username;
+    const username = (raw && raw.trim()) ? raw.trim() : 'emmy203012';
     if (username.startsWith('http://') || username.startsWith('https://')) {
       return username;
     }
@@ -43,8 +45,8 @@ export class ContactComponent implements OnInit {
   }
 
   public get telegramSupportDisplay(): string {
-    const username = (this.publicSettingStore.settings().telegram_support_username || 'emmy203012').trim();
-    if (!username) return '@emmy203012';
+    const raw = this.publicSettingStore.settings().telegram_support_username;
+    const username = (raw && raw.trim()) ? raw.trim() : 'emmy203012';
     if (username.startsWith('http://') || username.startsWith('https://')) {
       const parts = username.split('/');
       const last = parts[parts.length - 1] || username;

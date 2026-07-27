@@ -497,12 +497,12 @@
                   <input
                     type="text"
                     name="telegram_support_username"
-                    class="form-input w-full pl-9"
+                    class="form-input w-full !pl-10"
                     [placeholder]="'admin_settings.telegram_support_placeholder' | translate"
                     [(ngModel)]="form.telegram_support_username"
                     [disabled]="isLocked()"
                   />
-                  <div class="absolute left-3 top-1/2 -translate-y-1/2 text-slate-400 font-bold text-sm">
+                  <div class="absolute left-3.5 top-1/2 -translate-y-1/2 text-slate-400 font-bold text-sm pointer-events-none select-none">
                     @
                   </div>
                 </div>
@@ -520,12 +520,12 @@
                   <input
                     type="text"
                     name="telegram_bot_username"
-                    class="form-input w-full pl-9"
+                    class="form-input w-full !pl-10"
                     placeholder="fvia79noti_bot"
                     [(ngModel)]="form.telegram_bot_username"
                     [disabled]="isLocked()"
                   />
-                  <div class="absolute left-3 top-1/2 -translate-y-1/2 text-slate-400 font-bold text-sm">
+                  <div class="absolute left-3.5 top-1/2 -translate-y-1/2 text-slate-400 font-bold text-sm pointer-events-none select-none">
                     @
                   </div>
                 </div>
