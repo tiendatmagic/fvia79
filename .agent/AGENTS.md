@@ -19,6 +19,15 @@
 > 1. Cronjob Scheduler (`schedule:run`) **CHỈ ĐƯỢC CHẠY DƯỚI USER `www-data`** (`crontab -u www-data -e`). **TUYỆT ĐỐI KHÔNG cài dưới `root`** vì sẽ gây ra lỗi `500 Permission denied` khi người dùng thực hiện thao tác Web/API.
 > 2. Luôn cấp quyền `chmod -R 777` và `chown -R www-data:www-data` cho `storage` & `bootstrap/cache`. Khi gõ lệnh CLI thủ công trên VPS, luôn chạy dưới quyền `www-data` (`su -s /bin/bash www-data -c "php artisan <cmd>"`).
 
+### [2026-07-28] Cấu hình làm tròn ngàn RIÊNG CHO GIÁ BÁN GỐC SẢN PHẨM trên dự án FVIA79
+- **Mô tả yêu cầu**: Chỉ áp dụng làm tròn ngàn (`Math.round(vndAmount / 1000) * 1000`) đối với **Giá gốc / Giá bán sản phẩm** trên trang Storefront/Quản lý sản phẩm cho riêng dự án `FVIA79`. Tất cả các mục khác như **Giá sau chiết khấu (giảm giá VIP/Coupon)**, **Số dư tài khoản**, **Hóa đơn nạp tiền**, **Tổng tiền giỏ hàng/đơn hàng** đều giữ nguyên giá trị quy đổi chuẩn xác không làm tròn ngàn.
+- **Thực hiện xử lý**:
+  - `CurrencyService.ts` (`fvia79-web`): Hàm `format()` chấp nhận cờ `roundToThousands`. Mặc định `roundToThousands = false` (không làm tròn). Khi `roundToThousands = true`, mới áp dụng `Math.round(vndAmount / 1000) * 1000`.
+  - `CurrencyPipe.ts` (`fvia79-web`): Hỗ trợ cú pháp pipe `value | appCurrency: true` cho giá bán gốc sản phẩm.
+  - `storefront.component.html` & `products.component.html` (`fvia79-web`): Truyền `appCurrency: true` cho Giá gốc bán sản phẩm (ví dụ `$1.5` -> `39.000 ₫`), và truyền `appCurrency` mặc định cho Giá sau chiết khấu (ví dụ `35.495 ₫`), Số dư tài khoản (`26.293 ₫`), và Hóa đơn nạp (`26,293 VND`).
+  - Các dự án `adsbm79` & `isocalmarket`: Giữ nguyên cấu hình mặc định không bị ảnh hưởng.
+- **Kiểm thử**: Biên dịch Angular `npx ng build --configuration production` thành công 100%.
+
 ### [2026-07-28] Rà soát & Khắc phục triệt để lỗi i18n / hiển thị Tiếng Anh trên cả 3 dự án (fvia79, adsbm79, isocalmarket)
 - **Mô tả**: Rà soát tự động 100% các tệp HTML/TS trên cả 3 nguồn dự án Web để phát hiện các key dịch bị viết cứng hoặc thiếu trong từ điển `vi.ts`.
 - **Phát hiện & Xử lý**:

@@ -320,7 +320,7 @@
                         <span
                           class="text-xs text-slate-400 dark:text-slate-500 line-through font-mono"
                         >
-                          {{ p.price | appCurrency }}
+                          {{ p.price | appCurrency: true }}
                         </span>
                         <span
                           class="text-[10px] font-extrabold px-1.5 py-0.5 rounded bg-sky-500/10 text-sky-600 dark:text-sky-400 border border-sky-500/20"
@@ -330,7 +330,7 @@
                         </span>
                       </div>
                       <p class="text-lg font-black text-[var(--color-primary)]">
-                        {{ getDiscountedPrice(p.price) | appCurrency }}
+                        {{ (tierDiscountPercent > 0 ? getDiscountedPrice(p.price) : p.price) | appCurrency: (tierDiscountPercent === 0) }}
                       </p>
                     </div>
                   </div>
@@ -394,7 +394,7 @@
                       <span
                         class="text-xs text-slate-400 dark:text-slate-500 line-through font-mono"
                       >
-                        {{ row.price | appCurrency }}
+                        {{ row.price | appCurrency: true }}
                       </span>
                       <span
                         class="text-[9px] font-extrabold px-1 py-0.2 rounded bg-sky-500/10 text-sky-600 dark:text-sky-400 border border-sky-500/20"
@@ -403,7 +403,7 @@
                       </span>
                     </div>
                     <span class="font-black text-[var(--color-primary)] text-sm whitespace-nowrap">
-                      {{ getDiscountedPrice(row.price) | appCurrency }}
+                      {{ (tierDiscountPercent > 0 ? getDiscountedPrice(row.price) : row.price) | appCurrency: (tierDiscountPercent === 0) }}
                     </span>
                   </div>
                 </ng-template>
@@ -504,7 +504,7 @@
                         <span
                           class="text-[11px] text-slate-400 dark:text-slate-500 line-through font-mono"
                         >
-                          {{ p.price | appCurrency }}
+                          {{ p.price | appCurrency: true }}
                         </span>
                         <span
                           class="text-[9px] font-extrabold px-1 py-0.2 rounded bg-sky-500/10 text-sky-600 dark:text-sky-400 border border-sky-500/20"
@@ -513,7 +513,7 @@
                         </span>
                       </div>
                       <div class="text-sm font-black text-[var(--color-primary)] whitespace-nowrap">
-                        {{ getDiscountedPrice(p.price) | appCurrency }}
+                        {{ (tierDiscountPercent > 0 ? getDiscountedPrice(p.price) : p.price) | appCurrency: (tierDiscountPercent === 0) }}
                       </div>
                     </div>
                   </div>

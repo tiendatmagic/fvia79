@@ -147,7 +147,7 @@
       <ng-template appTableCell="price" let-row="row">
         <span
           [ngClass]="{ 'line-through opacity-40 text-slate-400 dark:text-slate-500': row.is_deleted }"
-          >{{ row.price | appCurrency }}</span
+          >{{ row.price | appCurrency: true }}</span
         >
       </ng-template>
 

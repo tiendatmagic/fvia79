@@ -35,9 +35,26 @@ export class CurrencyService {
     return Number.isFinite(savedRate) && savedRate > 0 ? savedRate : 26500;
   }
 
-  public format(amount: number | string | null | undefined, decimals?: number): string {
+  public format(
+    amount: number | string | null | undefined,
+    decimalsOrOptions?: number | { roundToThousands?: boolean; decimals?: number } | boolean,
+    roundToThousandsParam?: boolean
+  ): string {
     const numericAmount = Number(amount) || 0;
     const curr = this.currentCurrency();
+
+    let roundToThousands = false;
+    let decimals: number | undefined = undefined;
+
+    if (typeof decimalsOrOptions === 'boolean') {
+      roundToThousands = decimalsOrOptions;
+    } else if (typeof decimalsOrOptions === 'number') {
+      decimals = decimalsOrOptions;
+      roundToThousands = !!roundToThousandsParam;
+    } else if (typeof decimalsOrOptions === 'object' && decimalsOrOptions !== null) {
+      roundToThousands = !!decimalsOrOptions.roundToThousands;
+      decimals = decimalsOrOptions.decimals;
+    }
 
     if (curr === 'USD') {
       let minDigits = 2;
@@ -61,7 +78,7 @@ export class CurrencyService {
       }).format(numericAmount);
     } else {
       let vndAmount = numericAmount * this.usdToVndRate();
-      if (vndAmount >= 1000) {
+      if (roundToThousands && vndAmount >= 1000) {
         vndAmount = Math.round(vndAmount / 1000) * 1000;
       }
       return new Intl.NumberFormat('vi-VN', {
@@ -72,7 +89,11 @@ export class CurrencyService {
     }
   }
 
+  public formatBasePrice(amount: number | string | null | undefined): string {
+    return this.format(amount, { roundToThousands: true });
+  }
+
   public formatBalance(amount: number | string | null | undefined): string {
-    return this.format(amount, 4);
+    return this.format(amount, { roundToThousands: false, decimals: 4 });
   }
 }
