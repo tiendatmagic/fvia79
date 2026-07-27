@@ -19,6 +19,16 @@
 
 ## 📋 NHẬT KÝ THAY ĐỔI DỰ ÁN
 
+### [2026-07-27] Khắc phục triệt để lỗi khớp nhầm quốc kỳ (Colombia, Nigeria) & Bổ sung nhận diện tên tiếng Việt không dấu (Úc -> uc) cho ProductIconComponent trên cả 2 nguồn (fvia79 & adsbm79)
+- **Mô tả**: Sửa lỗi nhận diện quốc kỳ của sản phẩm (`ProductIconComponent`):
+  1. Loại bỏ việc cho phép các mã quốc gia 2 ký tự tự do (như `co`, `ng`, `in`, `ca`, `my`, `no`, `de`...) khớp với các từ tiếng Việt 1 âm tiết ngắn hoặc đã bị loại bỏ dấu (ví dụ: `Cổ`, `Có` bị dính cờ Colombia 🇨🇴, `Ngâm`, `Ngoại` bị dính cờ Nigeria 🇳🇬).
+  2. Mã 2 ký tự chỉ được khớp khi viết trong ngoặc vuông/ngoặc tròn (như `[US]`, `(VN)`, `[CO]`, `[NG]`) hoặc khi viết IN HOA đứng độc lập (`US`, `VN`, `TH`, `PH`, `AU`, `CO`, `NG`...).
+  3. Bổ sung hỗ trợ đầy đủ các từ tên nước tiếng Việt không dấu (như `Úc` -> `uc`, `Đức` -> `duc`, `Pháp` -> `phap`, `Hàn` -> `han`, `Nhật` -> `nhat`, `Ý` -> `y`, `Lào` -> `lao`...).
+- **Thực hiện**:
+  - `fvia79-web`: Cập nhật `product-icon.component.ts`.
+  - `adsbm79-web`: Cập nhật `product-icon.component.ts` đồng bộ 100%.
+  - Biên dịch: Đã kiểm tra build Angular production thành công.
+
 ### [2026-07-27] Chuẩn hóa phương thức nạp tiền Demo ở khối Lịch sử nạp gần đây (Chỉ hiển thị USDT BEP20 và BINANCE PAY với tỷ lệ 8/10)
 - **Mô tả**: Cập nhật dữ liệu khởi tạo và logic tạo dữ liệu ngẫu nhiên thời gian thực ở chế độ **Demo** cho khối **Lịch sử nạp gần đây** trên Storefront:
   1. Loại bỏ phương thức nạp TRC20 (`usdt_trc20`).

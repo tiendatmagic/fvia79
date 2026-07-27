@@ -13,101 +13,96 @@ export interface GenericIconSpec {
   borderColor: string;
 }
 
-const COUNTRY_RULES: { code: string; name: string; pattern: RegExp }[] = [
-  // Multi-word / Specific names first
-  { code: 'us', name: 'United States', pattern: /\b(united\s*states|usa|mỹ|my|american|\bus\b)\b/i },
-  { code: 'id', name: 'Indonesia', pattern: /\b(indonesia|indo|\bid\b)\b/i },
-  { code: 'ph', name: 'Philippines', pattern: /\b(philippines|phillippines|philippine|phils|phil|\bph\b)\b/i },
-  { code: 'cd', name: 'Congo', pattern: /\b(congo|\bcd\b)\b/i },
-  { code: 'vn', name: 'Vietnam', pattern: /\b(vietnam|viet\s*nam|việt\s*nam|\bvn\b)\b/i },
-  { code: 'th', name: 'Thailand', pattern: /\b(thailand|thai\s*lan|thái\s*lan|thai|thái|\bth\b)\b/i },
-  { code: 'tl', name: 'Timor-Leste', pattern: /\b(timor\s*leste|east\s*timor|đông\s*timor|dong\s*timor|timor|\btl\b)\b/i },
-  { code: 'ec', name: 'Ecuador', pattern: /\b(ecuador|\bec\b)\b/i },
-  { code: 'br', name: 'Brazil', pattern: /\b(brazil|brasil|\bbr\b)\b/i },
-  { code: 'in', name: 'India', pattern: /\b(india|ấn\s*độ|an\s*do|\bin\b)\b/i },
-  { code: 'mx', name: 'Mexico', pattern: /\b(mexico|méxico|\bmx\b)\b/i },
-  { code: 'de', name: 'Germany', pattern: /\b(germany|đức|duc|\bde\b)\b/i },
-  { code: 'fr', name: 'France', pattern: /\b(france|pháp|phap|\bfr\b)\b/i },
-  { code: 'gb', name: 'United Kingdom', pattern: /\b(united\s*kingdom|uk|britain|england|anh|\bgb\b)\b/i },
-  { code: 'es', name: 'Spain', pattern: /\b(spain|tây\s*ban\s*nha|tay\s*ban\s*nha|\bes\b)\b/i },
-  { code: 'it', name: 'Italy', pattern: /\b(italy|italia|ý|y|\bit\b)\b/i },
-  { code: 'jp', name: 'Japan', pattern: /\b(japan|nhật\s*bản|nhat\s*ban|nhật|nhat|\bjp\b)\b/i },
-  { code: 'kr', name: 'South Korea', pattern: /\b(korea|south\s*korea|hàn\s*quốc|han\s*quoc|hàn|han|\bkr\b)\b/i },
-  { code: 'tw', name: 'Taiwan', pattern: /\b(taiwan|đài\s*loan|dai\s*loan|\btw\b)\b/i },
-  { code: 'ru', name: 'Russia', pattern: /\b(russia|nga|\bru\b)\b/i },
-  { code: 'au', name: 'Australia', pattern: /\b(australia|úc|\bau\b)\b/i },
-  { code: 'ca', name: 'Canada', pattern: /\b(canada|\bca\b)\b/i },
-  { code: 'kh', name: 'Cambodia', pattern: /\b(cambodia|campuchia|\bkh\b)\b/i },
-  { code: 'la', name: 'Laos', pattern: /\b(laos|lào|\bla\b)\b/i },
-  { code: 'mm', name: 'Myanmar', pattern: /\b(myanmar|burma|\bmm\b)\b/i },
-  { code: 'my', name: 'Malaysia', pattern: /\b(malaysia|malay|\bmy\b)\b/i },
-  { code: 'sg', name: 'Singapore', pattern: /\b(singapore|sing|\bsg\b)\b/i },
-  { code: 'ua', name: 'Ukraine', pattern: /\b(ukraine|\bua\b)\b/i },
-  { code: 'pk', name: 'Pakistan', pattern: /\b(pakistan|\bpk\b)\b/i },
-  { code: 'bd', name: 'Bangladesh', pattern: /\b(bangladesh|\bbd\b)\b/i },
-  { code: 'nl', name: 'Netherlands', pattern: /\b(netherlands|hà\s*lan|holland|\bnl\b)\b/i },
-  { code: 'pl', name: 'Poland', pattern: /\b(poland|ba\s*lan|\bpl\b)\b/i },
-  { code: 'tr', name: 'Turkey', pattern: /\b(turkey|thổ\s*nhĩ\s*kỳ|\btr\b)\b/i },
-  { code: 'sa', name: 'Saudi Arabia', pattern: /\b(saudi\s*arabia|saudi|\bsa\b)\b/i },
-  { code: 'ae', name: 'United Arab Emirates', pattern: /\b(uae|emirates|dubai|\bae\b)\b/i },
-  { code: 'ar', name: 'Argentina', pattern: /\b(argentina|\bar\b)\b/i },
-  { code: 'co', name: 'Colombia', pattern: /\b(colombia|\bco\b)\b/i },
-  { code: 'pe', name: 'Peru', pattern: /\b(peru|\bpe\b)\b/i },
-  { code: 'cl', name: 'Chile', pattern: /\b(chile|\bcl\b)\b/i },
-  { code: 'bo', name: 'Bolivia', pattern: /\b(bolivia|\bbo\b)\b/i },
-  { code: 've', name: 'Venezuela', pattern: /\b(venezuela|\bve\b)\b/i },
-  { code: 'uy', name: 'Uruguay', pattern: /\b(uruguay|\buy\b)\b/i },
-  { code: 'py', name: 'Paraguay', pattern: /\b(paraguay|\bpy\b)\b/i },
-  { code: 'gt', name: 'Guatemala', pattern: /\b(guatemala|\bgt\b)\b/i },
-  { code: 'hn', name: 'Honduras', pattern: /\b(honduras|\bhn\b)\b/i },
-  { code: 'sv', name: 'El Salvador', pattern: /\b(el\s*salvador|\bsv\b)\b/i },
-  { code: 'ni', name: 'Nicaragua', pattern: /\b(nicaragua|\bni\b)\b/i },
-  { code: 'cr', name: 'Costa Rica', pattern: /\b(costa\s*rica|\bcr\b)\b/i },
-  { code: 'pa', name: 'Panama', pattern: /\b(panama|panamá|\bpa\b)\b/i },
-  { code: 'do', name: 'Dominican Republic', pattern: /\b(dominican|\bdo\b)\b/i },
-  { code: 'pr', name: 'Puerto Rico', pattern: /\b(puerto\s*rico|\bpr\b)\b/i },
-  { code: 'jm', name: 'Jamaica', pattern: /\b(jamaica|\bjm\b)\b/i },
-  { code: 'cu', name: 'Cuba', pattern: /\b(cuba|\bcu\b)\b/i },
-  { code: 'cn', name: 'China', pattern: /\b(china|trung\s*quốc|\bcn\b)\b/i },
-  { code: 'hk', name: 'Hong Kong', pattern: /\b(hong\s*kong|\bhk\b)\b/i },
-  { code: 'mo', name: 'Macao', pattern: /\b(macao|macau|\bmo\b)\b/i },
-  { code: 'nz', name: 'New Zealand', pattern: /\b(new\s*zealand|\bnz\b)\b/i },
-  { code: 'eg', name: 'Egypt', pattern: /\b(egypt|ai\s*cập|\beg\b)\b/i },
-  { code: 'ng', name: 'Nigeria', pattern: /\b(nigeria|\bng\b)\b/i },
-  { code: 'za', name: 'South Africa', pattern: /\b(south\s*africa|nam\s*phi|\bza\b)\b/i },
-  { code: 'ke', name: 'Kenya', pattern: /\b(kenya|\bke\b)\b/i },
-  { code: 'gh', name: 'Ghana', pattern: /\b(ghana|\bgh\b)\b/i },
-  { code: 'ma', name: 'Morocco', pattern: /\b(morocco|ma\s*rốc|\bma\b)\b/i },
-  { code: 'dz', name: 'Algeria', pattern: /\b(algeria|\bdz\b)\b/i },
-  { code: 'tn', name: 'Tunisia', pattern: /\b(tunisia|\btn\b)\b/i },
-  { code: 'se', name: 'Sweden', pattern: /\b(sweden|thụy\s*điển|\bse\b)\b/i },
-  { code: 'no', name: 'Norway', pattern: /\b(norway|na\s*uy|\bno\b)\b/i },
-  { code: 'dk', name: 'Denmark', pattern: /\b(denmark|đan\s*mạch|\bdk\b)\b/i },
-  { code: 'fi', name: 'Finland', pattern: /\b(finland|phần\s*lan|\bfi\b)\b/i },
-  { code: 'is', name: 'Iceland', pattern: /\b(iceland|\bis\b)\b/i },
-  { code: 'pt', name: 'Portugal', pattern: /\b(portugal|bồ\s*đào\s*nha|\bpt\b)\b/i },
-  { code: 'gr', name: 'Greece', pattern: /\b(greece|hy\s*lạp|\bgr\b)\b/i },
-  { code: 'ro', name: 'Romania', pattern: /\b(romania|\bro\b)\b/i },
-  { code: 'bg', name: 'Bulgaria', pattern: /\b(bulgaria|\bbg\b)\b/i },
-  { code: 'cz', name: 'Czechia', pattern: /\b(czech|séc|\bcz\b)\b/i },
-  { code: 'sk', name: 'Slovakia', pattern: /\b(slovakia|\bsk\b)\b/i },
-  { code: 'hu', name: 'Hungary', pattern: /\b(hungary|\bhu\b)\b/i },
-  { code: 'at', name: 'Austria', pattern: /\b(austria|áo|\bat\b)\b/i },
-  { code: 'ch', name: 'Switzerland', pattern: /\b(switzerland|thụy\s*sĩ|\bch\b)\b/i },
-  { code: 'be', name: 'Belgium', pattern: /\b(belgium|bỉ|\bbe\b)\b/i },
-  { code: 'ie', name: 'Ireland', pattern: /\b(ireland|\bie\b)\b/i },
-  { code: 'lt', name: 'Lithuania', pattern: /\b(lithuania|\blt\b)\b/i },
-  { code: 'lv', name: 'Latvia', pattern: /\b(latvia|\blv\b)\b/i },
-  { code: 'ee', name: 'Estonia', pattern: /\b(estonia|\bee\b)\b/i },
-  { code: 'by', name: 'Belarus', pattern: /\b(belarus|\bby\b)\b/i },
-  { code: 'ge', name: 'Georgia', pattern: /\b(georgia|\bge\b)\b/i },
-  { code: 'am', name: 'Armenia', pattern: /\b(armenia|\bam\b)\b/i },
-  { code: 'az', name: 'Azerbaijan', pattern: /\b(azerbaijan|\baz\b)\b/i },
-  { code: 'kz', name: 'Kazakhstan', pattern: /\b(kazakhstan|\bkz\b)\b/i },
-  { code: 'uz', name: 'Uzbekistan', pattern: /\b(uzbekistan|\buz\b)\b/i },
-  { code: 'hr', name: 'Croatia', pattern: /\b(croatia|\bhr\b)\b/i },
-  { code: 'rs', name: 'Serbia', pattern: /\b(serbia|\brs\b)\b/i },
-  { code: 'si', name: 'Slovenia', pattern: /\b(slovenia|\bsi\b)\b/i }
+const COUNTRY_RULES: { code: string; name: string; keywords?: RegExp }[] = [
+  { code: 'us', name: 'United States', keywords: /\b(united\s*states|usa|mỹ|american)\b/i },
+  { code: 'vn', name: 'Vietnam', keywords: /\b(vietnam|viet\s*nam|việt\s*nam|viet)\b/i },
+  { code: 'th', name: 'Thailand', keywords: /\b(thailand|thai\s*lan|thái\s*lan|thái|thai)\b/i },
+  { code: 'ph', name: 'Philippines', keywords: /\b(philippines|phillippines|philippine|phils|phil)\b/i },
+  { code: 'id', name: 'Indonesia', keywords: /\b(indonesia|indo)\b/i },
+  { code: 'gb', name: 'United Kingdom', keywords: /\b(united\s*kingdom|britain|england)\b/i },
+  { code: 'jp', name: 'Japan', keywords: /\b(japan|nhật\s*bản|nhat\s*ban|nhật|nhat)\b/i },
+  { code: 'kr', name: 'South Korea', keywords: /\b(korea|south\s*korea|hàn\s*quốc|han\s*quoc|hàn|han)\b/i },
+  { code: 'tw', name: 'Taiwan', keywords: /\b(taiwan|đài\s*loan|dai\s*loan)\b/i },
+  { code: 'br', name: 'Brazil', keywords: /\b(brazil|brasil)\b/i },
+  { code: 'in', name: 'India', keywords: /\b(india|ấn\s*độ|an\s*do)\b/i },
+  { code: 'de', name: 'Germany', keywords: /\b(germany|đức|duc)\b/i },
+  { code: 'fr', name: 'France', keywords: /\b(france|pháp|phap)\b/i },
+  { code: 'es', name: 'Spain', keywords: /\b(spain|tây\s*ban\s*nha|tay\s*ban\s*nha)\b/i },
+  { code: 'it', name: 'Italy', keywords: /\b(italy|italia|ý)\b/i },
+  { code: 'ru', name: 'Russia', keywords: /\b(russia|nga)\b/i },
+  { code: 'au', name: 'Australia', keywords: /\b(australia|úc|uc)\b/i },
+  { code: 'ca', name: 'Canada', keywords: /\b(canada)\b/i },
+  { code: 'kh', name: 'Cambodia', keywords: /\b(cambodia|campuchia)\b/i },
+  { code: 'la', name: 'Laos', keywords: /\b(laos|lào|lao)\b/i },
+  { code: 'mm', name: 'Myanmar', keywords: /\b(myanmar|burma)\b/i },
+  { code: 'my', name: 'Malaysia', keywords: /\b(malaysia|malay)\b/i },
+  { code: 'sg', name: 'Singapore', keywords: /\b(singapore|sing)\b/i },
+  { code: 'ua', name: 'Ukraine', keywords: /\b(ukraine)\b/i },
+  { code: 'pk', name: 'Pakistan', keywords: /\b(pakistan)\b/i },
+  { code: 'bd', name: 'Bangladesh', keywords: /\b(bangladesh)\b/i },
+  { code: 'nl', name: 'Netherlands', keywords: /\b(netherlands|hà\s*lan|ha\s*lan|holland)\b/i },
+  { code: 'pl', name: 'Poland', keywords: /\b(poland|ba\s*lan)\b/i },
+  { code: 'tr', name: 'Turkey', keywords: /\b(turkey|thổ\s*nhĩ\s*kỳ|tho\s*nhi\s*ky)\b/i },
+  { code: 'sa', name: 'Saudi Arabia', keywords: /\b(saudi\s*arabia|saudi)\b/i },
+  { code: 'ae', name: 'United Arab Emirates', keywords: /\b(uae|emirates|dubai)\b/i },
+  { code: 'ar', name: 'Argentina', keywords: /\b(argentina)\b/i },
+  { code: 'co', name: 'Colombia', keywords: /\b(colombia)\b/i },
+  { code: 'pe', name: 'Peru', keywords: /\b(peru)\b/i },
+  { code: 'cl', name: 'Chile', keywords: /\b(chile)\b/i },
+  { code: 'bo', name: 'Bolivia', keywords: /\b(bolivia)\b/i },
+  { code: 've', name: 'Venezuela', keywords: /\b(venezuela)\b/i },
+  { code: 'uy', name: 'Uruguay', keywords: /\b(uruguay)\b/i },
+  { code: 'py', name: 'Paraguay', keywords: /\b(paraguay)\b/i },
+  { code: 'gt', name: 'Guatemala', keywords: /\b(guatemala)\b/i },
+  { code: 'hn', name: 'Honduras', keywords: /\b(honduras)\b/i },
+  { code: 'sv', name: 'El Salvador', keywords: /\b(el\s*salvador)\b/i },
+  { code: 'ni', name: 'Nicaragua', keywords: /\b(nicaragua)\b/i },
+  { code: 'cr', name: 'Costa Rica', keywords: /\b(costa\s*rica)\b/i },
+  { code: 'pa', name: 'Panama', keywords: /\b(panama|panamá)\b/i },
+  { code: 'do', name: 'Dominican Republic', keywords: /\b(dominican)\b/i },
+  { code: 'pr', name: 'Puerto Rico', keywords: /\b(puerto\s*rico)\b/i },
+  { code: 'jm', name: 'Jamaica', keywords: /\b(jamaica)\b/i },
+  { code: 'cu', name: 'Cuba', keywords: /\b(cuba)\b/i },
+  { code: 'cn', name: 'China', keywords: /\b(china|trung\s*quốc|trung\s*quoc|trung)\b/i },
+  { code: 'hk', name: 'Hong Kong', keywords: /\b(hong\s*kong)\b/i },
+  { code: 'mo', name: 'Macao', keywords: /\b(macao|macau)\b/i },
+  { code: 'nz', name: 'New Zealand', keywords: /\b(new\s*zealand)\b/i },
+  { code: 'eg', name: 'Egypt', keywords: /\b(egypt|ai\s*cập|ai\s*cap)\b/i },
+  { code: 'ng', name: 'Nigeria', keywords: /\b(nigeria)\b/i },
+  { code: 'za', name: 'South Africa', keywords: /\b(south\s*africa|nam\s*phi)\b/i },
+  { code: 'ke', name: 'Kenya', keywords: /\b(kenya)\b/i },
+  { code: 'gh', name: 'Ghana', keywords: /\b(ghana)\b/i },
+  { code: 'ma', name: 'Morocco', keywords: /\b(morocco|ma\s*rốc|ma\s*roc)\b/i },
+  { code: 'dz', name: 'Algeria', keywords: /\b(algeria)\b/i },
+  { code: 'tn', name: 'Tunisia', keywords: /\b(tunisia)\b/i },
+  { code: 'se', name: 'Sweden', keywords: /\b(sweden|thụy\s*điển|thuy\s*dien)\b/i },
+  { code: 'no', name: 'Norway', keywords: /\b(norway|na\s*uy|na\s*ui)\b/i },
+  { code: 'dk', name: 'Denmark', keywords: /\b(denmark|đan\s*mạch|dan\s*mach)\b/i },
+  { code: 'fi', name: 'Finland', keywords: /\b(finland|phần\s*lan|phan\s*lan)\b/i },
+  { code: 'is', name: 'Iceland', keywords: /\b(iceland)\b/i },
+  { code: 'pt', name: 'Portugal', keywords: /\b(portugal|bồ\s*đào\s*nha|bo\s*dao\s*nha)\b/i },
+  { code: 'gr', name: 'Greece', keywords: /\b(greece|hy\s*lạp|hy\s*lap)\b/i },
+  { code: 'ro', name: 'Romania', keywords: /\b(romania)\b/i },
+  { code: 'bg', name: 'Bulgaria', keywords: /\b(bulgaria)\b/i },
+  { code: 'cz', name: 'Czechia', keywords: /\b(czech|séc|sec)\b/i },
+  { code: 'sk', name: 'Slovakia', keywords: /\b(slovakia)\b/i },
+  { code: 'hu', name: 'Hungary', keywords: /\b(hungary)\b/i },
+  { code: 'at', name: 'Austria', keywords: /\b(austria|áo|ao)\b/i },
+  { code: 'ch', name: 'Switzerland', keywords: /\b(switzerland|thụy\s*sĩ|thuy\s*si)\b/i },
+  { code: 'be', name: 'Belgium', keywords: /\b(belgium)\b/i },
+  { code: 'ie', name: 'Ireland', keywords: /\b(ireland)\b/i },
+  { code: 'lt', name: 'Lithuania', keywords: /\b(lithuania)\b/i },
+  { code: 'lv', name: 'Latvia', keywords: /\b(latvia)\b/i },
+  { code: 'ee', name: 'Estonia', keywords: /\b(estonia)\b/i },
+  { code: 'by', name: 'Belarus', keywords: /\b(belarus)\b/i },
+  { code: 'ge', name: 'Georgia', keywords: /\b(georgia)\b/i },
+  { code: 'am', name: 'Armenia', keywords: /\b(armenia)\b/i },
+  { code: 'az', name: 'Azerbaijan', keywords: /\b(azerbaijan)\b/i },
+  { code: 'kz', name: 'Kazakhstan', keywords: /\b(kazakhstan)\b/i },
+  { code: 'uz', name: 'Uzbekistan', keywords: /\b(uzbekistan)\b/i },
+  { code: 'hr', name: 'Croatia', keywords: /\b(croatia)\b/i },
+  { code: 'rs', name: 'Serbia', keywords: /\b(serbia)\b/i },
+  { code: 'si', name: 'Slovenia', keywords: /\b(slovenia)\b/i }
 ];
 
 const GENERIC_ICONS: GenericIconSpec[] = [
@@ -172,13 +167,33 @@ export class ProductIconComponent implements OnChanges {
 
   private findCountryMatch(title: string): CountryMatch | null {
     if (!title) return null;
-    const normalized = this.removeAccents(title.toLowerCase());
 
+    // 1. Check bracketed 2-letter codes: [US], (US), [VN], [CN], [LU], etc.
+    const bracketMatch = title.match(/(?:\[|\()([a-zA-Z]{2})(?:\]|\))/);
+    if (bracketMatch) {
+      const code = bracketMatch[1].toLowerCase();
+      const rule = COUNTRY_RULES.find(r => r.code === code);
+      if (rule) return { code: rule.code, name: rule.name };
+      // Fallback for any valid ISO 2-letter country code on Earth
+      return { code, name: code.toUpperCase() };
+    }
+
+    // 2. Check full country names / unambiguous keywords (testing both raw title and normalized accent-removed string)
+    const normalized = this.removeAccents(title.toLowerCase());
     for (const rule of COUNTRY_RULES) {
-      if (rule.pattern.test(title) || rule.pattern.test(normalized)) {
+      if (rule.keywords && (rule.keywords.test(title) || rule.keywords.test(normalized))) {
         return { code: rule.code, name: rule.name };
       }
     }
+
+    // 3. Check standalone UPPERCASE 2-letter codes in raw title (e.g., "BM50 US", "VIA VN", "PROXY CN")
+    const rawTokens = title.split(/[^a-zA-Z]/).filter(t => t.length === 2 && t === t.toUpperCase());
+    for (const token of rawTokens) {
+      const code = token.toLowerCase();
+      const rule = COUNTRY_RULES.find(r => r.code === code);
+      if (rule) return { code: rule.code, name: rule.name };
+    }
+
     return null;
   }
 
