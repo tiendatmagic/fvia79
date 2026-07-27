@@ -19,6 +19,13 @@
 > 1. Cronjob Scheduler (`schedule:run`) **CHỈ ĐƯỢC CHẠY DƯỚI USER `www-data`** (`crontab -u www-data -e`). **TUYỆT ĐỐI KHÔNG cài dưới `root`** vì sẽ gây ra lỗi `500 Permission denied` khi người dùng thực hiện thao tác Web/API.
 > 2. Luôn cấp quyền `chmod -R 777` và `chown -R www-data:www-data` cho `storage` & `bootstrap/cache`. Khi gõ lệnh CLI thủ công trên VPS, luôn chạy dưới quyền `www-data` (`su -s /bin/bash www-data -c "php artisan <cmd>"`).
 
+### [2026-07-28] Triển khai (Deploy) hoàn chỉnh FE & BE cho 3 dự án (FVIA79, ADSBM79, ISOCALMARKET) giữ nguyên CSDL & làm sạch cache
+- **Mô tả**: Biên dịch bản production Frontend Angular và đóng gói Backend Laravel cho cả 3 dự án, triển khai đồng bộ lên 3 VPS tương ứng, thực thi migration an toàn (bảo tồn 100% dữ liệu CSDL) và xóa/tái tạo toàn bộ cache tĩnh.
+- **Thực hiện**:
+  - **Biên dịch FE**: Build Angular production `npx ng build --configuration production` thành công 100% cho `fvia79-web`, `adsbm79-web` và `isocalmarket-web`.
+  - **Deploy & Cache Clearance**: Upload và giải nén đè mã nguồn mới vào thư mục `/var/www/*-web` và `/var/www/*-api` trên 3 VPS (`38.180.150.246`, `192.34.100.128`, `103.68.109.109`). Chạy `php artisan migrate --force` an toàn, thực thi chuỗi lệnh dọn dẹp cache bắt buộc `php artisan config:clear && php artisan config:cache && php artisan route:cache && php artisan view:cache`, cấp quyền `www-data:www-data` và `775` cho storage/cache, khởi động lại `php8.3-fpm` & `nginx`.
+  - **Nghiệm thu**: Trạng thái HTTP của cả 3 tên miền sản xuất (`https://fvia79.com`, `https://adsbm79.com`, `https://isocalmarket.com`) và các endpoint API (`/api/v1/categories`) đều trả về **HTTP 200 OK**, bảo tồn 100% CSDL MySQL.
+
 ### [2026-07-28] Phát triển tính năng "Bật tất cả sản phẩm còn hàng từ Nhà cung cấp" đồng bộ 3 dự án (FVIA79, ADSBM79, ISOCALMARKET)
 - **Mô tả yêu cầu**: Bổ sung tính năng cho phép Admin bật lại trạng thái **Hoạt động (`active`)** cho tất cả sản phẩm của một nhà cung cấp nếu có số lượng tồn kho (`stock > 0`), ghi đè cả việc sản phẩm từng bị tắt thủ công trước đó.
 - **Thực hiện xử lý**:
