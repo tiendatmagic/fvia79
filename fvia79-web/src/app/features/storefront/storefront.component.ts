@@ -256,6 +256,25 @@ export class StorefrontComponent implements OnInit, OnDestroy {
     return candidate;
   }
 
+  private rescaleDemoTimestamps(list: any[], minMinutes: number, maxMinutes: number): any[] {
+    if (!list || list.length === 0) return list;
+    const now = Date.now();
+    const count = list.length;
+    return list.map((item, index) => {
+      let minutesAgo: number;
+      if (count === 1) {
+        minutesAgo = minMinutes;
+      } else {
+        const step = (maxMinutes - minMinutes) / (count - 1);
+        minutesAgo = Math.round((minMinutes + index * step) * 10) / 10;
+      }
+      return {
+        ...item,
+        created_at: new Date(now - minutesAgo * 60 * 1000).toISOString()
+      };
+    });
+  }
+
   private seedInitialPurchases(): void {
     const used: string[] = [];
     const getUniqueName = () => {
@@ -264,12 +283,18 @@ export class StorefrontComponent implements OnInit, OnDestroy {
       return name;
     };
 
-    this.recentPurchases.set([
-      { id: 'seed_p1', username: getUniqueName(), quantity: 5, product_name_vi: 'Via Ngoại Cổ (No2FA)', product_name_en: 'Via Foreign Old (No2FA)', total_price: 9.15, total_usd: 9.15, created_at: new Date(Date.now() - 45000).toISOString() },
-      { id: 'seed_p2', username: getUniqueName(), quantity: 4, product_name_vi: 'Via Indonesia Cổ 500-3K Friend (No2FA)', product_name_en: 'Via Indonesia Old 500-3K Friend (No2FA)', total_price: 20.55, total_usd: 20.55, created_at: new Date(Date.now() - 120000).toISOString() },
-      { id: 'seed_p3', username: getUniqueName(), quantity: 4, product_name_vi: 'BM50$ Ngâm', product_name_en: 'BM50$ Aged', total_price: 5.18, total_usd: 5.18, created_at: new Date(Date.now() - 240000).toISOString() },
-      { id: 'seed_p4', username: getUniqueName(), quantity: 1, product_name_vi: 'Via Colombia Cổ Kháng 902', product_name_en: 'Via Colombia Old 902 Restored', total_price: 3.08, total_usd: 3.08, created_at: new Date(Date.now() - 400000).toISOString() }
-    ]);
+    const initial = [
+      { id: 'seed_p1', username: getUniqueName(), quantity: 2, product_name_vi: 'Via Poland Cổ', product_name_en: 'Via Poland Old', total_price: 18.18, total_usd: 18.18 },
+      { id: 'seed_p2', username: getUniqueName(), quantity: 5, product_name_vi: 'Via United States Cổ', product_name_en: 'Via United States Old', total_price: 85.57, total_usd: 85.57 },
+      { id: 'seed_p3', username: getUniqueName(), quantity: 4, product_name_vi: 'Via Egypt New (No2FA)', product_name_en: 'Via Egypt New (No2FA)', total_price: 11.41, total_usd: 11.41 },
+      { id: 'seed_p4', username: getUniqueName(), quantity: 1, product_name_vi: 'Via Ngoại Cổ DIE ADS (No2FA)', product_name_en: 'Via Foreign Old DIE ADS (No2FA)', total_price: 1.45, total_usd: 1.45 },
+      { id: 'seed_p5', username: getUniqueName(), quantity: 3, product_name_vi: 'Via Indonesia Cổ (No2FA)', product_name_en: 'Via Indonesia Old (No2FA)', total_price: 10.27, total_usd: 10.27 },
+      { id: 'seed_p6', username: getUniqueName(), quantity: 2, product_name_vi: 'Via Indonesia Cổ', product_name_en: 'Via Indonesia Old', total_price: 11.41, total_usd: 11.41 },
+      { id: 'seed_p7', username: getUniqueName(), quantity: 5, product_name_vi: 'Via Czech Republic Cổ', product_name_en: 'Via Czech Republic Old', total_price: 45.45, total_usd: 45.45 },
+      { id: 'seed_p8', username: getUniqueName(), quantity: 2, product_name_vi: 'Via Congo New (No2FA)', product_name_en: 'Via Congo New (No2FA)', total_price: 5.70, total_usd: 5.70 }
+    ];
+
+    this.recentPurchases.set(this.rescaleDemoTimestamps(initial, 5, 15));
   }
 
   private seedInitialDeposits(): void {
@@ -280,16 +305,18 @@ export class StorefrontComponent implements OnInit, OnDestroy {
       return name;
     };
 
-    this.recentDeposits.set([
-      { id: 'seed_d1', username: getUniqueName(), amount_usdt: 15.5, method: 'usdt_bep20', created_at: new Date(Date.now() - 30000).toISOString() },
-      { id: 'seed_d2', username: getUniqueName(), amount_usdt: 2.5, method: 'usdt_bep20', created_at: new Date(Date.now() - 90000).toISOString() },
-      { id: 'seed_d3', username: getUniqueName(), amount_usdt: 180, method: 'usdt_bep20', created_at: new Date(Date.now() - 180000).toISOString() },
-      { id: 'seed_d4', username: getUniqueName(), amount_usdt: 0.5, method: 'binance_pay', created_at: new Date(Date.now() - 300000).toISOString() },
-      { id: 'seed_d5', username: getUniqueName(), amount_usdt: 295, method: 'usdt_bep20', created_at: new Date(Date.now() - 420000).toISOString() },
-      { id: 'seed_d6', username: getUniqueName(), amount_usdt: 50, method: 'usdt_bep20', created_at: new Date(Date.now() - 600000).toISOString() },
-      { id: 'seed_d7', username: getUniqueName(), amount_usdt: 75, method: 'usdt_bep20', created_at: new Date(Date.now() - 850000).toISOString() },
-      { id: 'seed_d8', username: getUniqueName(), amount_usdt: 25.5, method: 'binance_pay', created_at: new Date(Date.now() - 1200000).toISOString() }
-    ]);
+    const initial = [
+      { id: 'seed_d1', username: getUniqueName(), amount_usdt: 10, method: 'usdt_bep20' },
+      { id: 'seed_d2', username: getUniqueName(), amount_usdt: 85, method: 'usdt_bep20' },
+      { id: 'seed_d3', username: getUniqueName(), amount_usdt: 15, method: 'usdt_bep20' },
+      { id: 'seed_d4', username: getUniqueName(), amount_usdt: 75, method: 'binance_pay' },
+      { id: 'seed_d5', username: getUniqueName(), amount_usdt: 5, method: 'binance_pay' },
+      { id: 'seed_d6', username: getUniqueName(), amount_usdt: 8.5, method: 'binance_pay' },
+      { id: 'seed_d7', username: getUniqueName(), amount_usdt: 1.2, method: 'usdt_bep20' },
+      { id: 'seed_d8', username: getUniqueName(), amount_usdt: 2.5, method: 'binance_pay' }
+    ];
+
+    this.recentDeposits.set(this.rescaleDemoTimestamps(initial, 20, 40));
   }
 
   private startDemoActivitiesTimer(): void {
@@ -333,16 +360,15 @@ export class StorefrontComponent implements OnInit, OnDestroy {
           product_name_en: prodNameEn,
           product_name: prodNameVi,
           total_price: totalUsd,
-          total_usd: totalUsd,
-          created_at: new Date().toISOString()
+          total_usd: totalUsd
         };
 
-        this.recentPurchases.update(list => [newItem, ...list].slice(0, 10));
+        this.recentPurchases.update(list => this.rescaleDemoTimestamps([newItem, ...list].slice(0, 10), 5, 15));
       }
 
       if (isDepositsDemo && Math.random() > 0.3) {
         const randomName = this.getRandomDemoUsername();
-        const demoUsdtAmounts = [0.1, 0.5, 1.2, 2.5, 5, 8.5, 10, 15, 25.5, 45, 50, 75, 120, 180.5, 250, 295, 300];
+        const demoUsdtAmounts = [0.1, 0.5, 1.2, 2.5, 5, 8.5, 10, 15, 25.5, 35, 45, 50, 65, 75, 80, 85.5, 95, 100];
         const randomUsdt = demoUsdtAmounts[Math.floor(Math.random() * demoUsdtAmounts.length)];
         // Tỷ lệ xuất hiện: 80% (8/10) là USDT (BEP20), 20% (2/10) là BINANCE PAY
         const randomMethod = Math.random() < 0.8 ? 'usdt_bep20' : 'binance_pay';
@@ -352,11 +378,10 @@ export class StorefrontComponent implements OnInit, OnDestroy {
           username: randomName,
           amount_usdt: randomUsdt,
           amount_vnd: randomUsdt * 26500,
-          method: randomMethod,
-          created_at: new Date().toISOString()
+          method: randomMethod
         };
 
-        this.recentDeposits.update(list => [newItem, ...list].slice(0, 10));
+        this.recentDeposits.update(list => this.rescaleDemoTimestamps([newItem, ...list].slice(0, 10), 20, 40));
       }
     }, 12000);
   }

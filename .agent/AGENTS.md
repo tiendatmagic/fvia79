@@ -19,6 +19,17 @@
 
 ## 📋 NHẬT KÝ THAY ĐỔI DỰ ÁN
 
+### [2026-07-27] Điều chỉnh khoảng thời gian hiển thị & Số tiền nạp ngẫu nhiên ở chế độ Demo cho 2 khối Đơn hàng vừa mua & Lịch sử nạp gần đây
+- **Mô tả**:
+  1. **Đơn hàng vừa mua**: Cụm thời gian hiển thị (`created_at`) ở chế độ Demo được điều chỉnh để hiển thị trong khoảng từ **5 đến 15 phút trước** (ví dụ: *5 phút trước*, *8 phút trước*, *12 phút trước*, *15 phút trước*). Giữ nguyên tần suất chạy timer định kỳ.
+  2. **Lịch sử nạp gần đây**:
+     - Cụm thời gian hiển thị ở chế độ Demo được điều chỉnh để hiển thị trong khoảng từ **20 đến 40 phút trước** (ví dụ: *20 phút trước*, *28 phút trước*, *35 phút trước*, *40 phút trước*).
+     - Số tiền nạp ngẫu nhiên ở chế độ Demo được điều chỉnh giới hạn nghiêm ngặt chỉ trong khoảng **0.1 đến 100 USDT** (loại bỏ hoàn toàn các con số nạp lớn 180, 295, 300 USDT).
+- **Thực hiện**:
+  - `storefront.component.ts`: Cập nhật `seedInitialPurchases()`, `seedInitialDeposits()` và `startDemoActivitiesTimer()`.
+  - Biên dịch: Chạy `npx ng build --configuration production` thành công **100% BUILD SUCCESS**.
+
+
 ### [2026-07-27] Bổ sung quy tắc nhận diện logo quốc kỳ cho Ecuador, Timor-Leste, Congo, Mexico và các quốc gia trên thế giới (fvia79 & adsbm79)
 - **Mô tả**: Bổ sung đầy đủ quy tắc nhận diện tên quốc gia cho `ProductIconComponent` đối với các sản phẩm chưa hiển thị đúng cờ (như Ecuador 🇪🇨, Timor-Leste 🇹🇱, Congo 🇨🇬, Mexico 🇲🇽, Luxembourg 🇱🇺, Belgium 🇧🇪...):
   - Ecuador (`ec`): `/\b(ecuador)\b/i`
