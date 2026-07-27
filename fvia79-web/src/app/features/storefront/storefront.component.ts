@@ -33,6 +33,7 @@ import {
 import { TooltipDirective } from '@shared/components/tooltip/tooltip.directive';
 import { TranslatePipe } from '@shared/pipes/translate.pipe';
 import { CurrencyPipe } from '@shared/pipes/currency.pipe';
+import { ProductIconComponent } from '@shared/components/product-icon/product-icon.component';
 
 import { PublicSettingStore } from '@core/services/public-setting.store';
 
@@ -52,6 +53,7 @@ import { PublicSettingStore } from '@core/services/public-setting.store';
     BadgeComponent,
     CardComponent,
     IconComponent,
+    ProductIconComponent,
     PaginationComponent,
     TableComponent,
     TableCellDirective,

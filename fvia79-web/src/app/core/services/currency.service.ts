@@ -16,7 +16,7 @@ export class CurrencyService {
     if (saved === 'VND' || saved === 'USD') {
       return saved;
     }
-    return 'USD';
+    return 'VND';
   }
 
   public setCurrency(currency: SupportedCurrency): void {

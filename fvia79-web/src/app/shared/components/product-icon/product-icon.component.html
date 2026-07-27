@@ -1,0 +1,75 @@
+@if (countryMatch && !imageError) {
+  <div
+    [class]="containerClasses"
+    class="relative overflow-hidden flex items-center justify-center bg-slate-100 dark:bg-slate-800 border border-slate-200/80 dark:border-slate-700/80 shadow-xs group cursor-default shrink-0"
+    [title]="countryMatch.name"
+  >
+    <img
+      [src]="flagUrl"
+      [alt]="countryMatch.name"
+      (error)="onImageError()"
+      class="w-full h-full object-cover rounded-[inherit] transition-transform duration-200 group-hover:scale-110"
+    />
+  </div>
+} @else {
+  <div
+    [class]="containerClasses + ' bg-gradient-to-br ' + genericIcon.bgGradient + ' ' + genericIcon.borderColor"
+    class="relative flex items-center justify-center border shadow-xs group cursor-default shrink-0"
+  >
+    <svg
+      [class]="iconClasses + ' ' + genericIcon.textColor"
+      xmlns="http://www.w3.org/2000/svg"
+      viewBox="0 0 24 24"
+      fill="none"
+      stroke="currentColor"
+      stroke-width="2"
+      stroke-linecap="round"
+      stroke-linejoin="round"
+    >
+      @switch (genericIcon.id) {
+        @case ('globe') {
+          <circle cx="12" cy="12" r="10" />
+          <line x1="2" y1="12" x2="22" y2="12" />
+          <path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z" />
+        }
+        @case ('shield') {
+          <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z" />
+          <path d="m9 12 2 2 4-4" />
+        }
+        @case ('sparkles') {
+          <path d="m12 3-1.912 5.813a2 2 0 0 1-1.275 1.275L3 12l5.813 1.912a2 2 0 0 1 1.275 1.275L12 21l1.912-5.813a2 2 0 0 1 1.275-1.275L21 12l-5.813-1.912a2 2 0 0 1-1.275-1.275L12 3z" />
+        }
+        @case ('lightning') {
+          <polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2" />
+        }
+        @case ('box') {
+          <path d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z" />
+          <polyline points="3.27 6.96 12 12.01 20.73 6.96" />
+          <line x1="12" y1="22.08" x2="12" y2="12" />
+        }
+        @case ('key') {
+          <circle cx="7.5" cy="15.5" r="5.5" />
+          <path d="m21 2-9.6 9.6" />
+          <path d="m15.5 7.5 3 3" />
+        }
+        @case ('fire') {
+          <path d="M8.5 14.5A2.5 2.5 0 0 0 11 12c0-1.38-.5-2-1-3-1.072-2.143-.224-4.054 2-6 .5 2.5 2 4.9 4 6.5 2 1.6 3 3.5 3 5.5a7 7 0 1 1-14 0c0-1.153.433-2.294 1-3a2.5 2.5 0 0 0 2.5 3.5z" />
+        }
+        @case ('diamond') {
+          <path d="M6 3h12l4 6-10 12L2 9z" />
+          <path d="M11 3v18" />
+          <path d="M2 9h20" />
+        }
+        @case ('rocket') {
+          <path d="M4.5 16.5c-1.5 1.26-2 5-2 5s3.74-.5 5-2c.71-.71.19-1.81-.47-2.47l-.06-.06c-.66-.66-1.76-1.18-2.47-.47z" />
+          <path d="M12 15l-3-3 7.5-7.5c1.66-1.66 4.34-1.66 6 0 1.66 1.66 1.66 4.34 0 6L12 15z" />
+          <path d="M9 18l-4.5 4.5" />
+          <path d="M19.5 8.5l-4.5 4.5" />
+        }
+        @case ('crown') {
+          <path d="m2 4 3 12h14l3-12-6 7-4-7-4 7-6-7zm3 16h14" />
+        }
+      }
+    </svg>
+  </div>
+}

@@ -114,3 +114,10 @@
     - Web Root BE: `/var/www/fvia79-api`
 - **Xác nhận**: Biên dịch Angular build và triển khai 100% thành công.
 
+### [2026-07-27] Đồng bộ Background & Badge khối "Đơn hàng vừa mua" và "Lịch sử nạp gần đây" theo màu chủ đạo (Primary Theme)
+- **Mô tả**: Chuyển đổi màu nền header và badge thời gian của 2 thẻ "Đơn hàng vừa mua" & "Lịch sử nạp gần đây" từ màu gradient cố định (blue-600, indigo-600, purple-600) sang màu chủ đạo động (`from-[var(--color-primary)] to-[var(--color-secondary)]` và `bg-[var(--color-primary)]`).
+- **Thực hiện**:
+  - `storefront.component.html`: Thay thế class gradient header 2 thẻ bằng `bg-gradient-to-r from-[var(--color-primary)] to-[var(--color-secondary)]`, đổi class badge thời gian từ `bg-blue-500/90` sang `bg-[var(--color-primary)]`.
+  - Biên dịch & Kiểm thử: Chạy `npx ng build --configuration production` thành công **100% BUILD SUCCESS** (0 errors).
+
+

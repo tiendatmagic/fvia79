@@ -258,12 +258,15 @@
                 class="p-5 space-y-4 flex flex-col justify-between !bg-white/80 dark:!bg-slate-900/80 border border-slate-200/40 dark:border-slate-800/40"
               >
                 <div class="space-y-2">
-                  <div class="flex items-start justify-between gap-4">
-                    <h4
-                      class="text-base font-extrabold text-slate-800 dark:text-white line-clamp-2"
-                    >
-                      {{ p.name }}
-                    </h4>
+                  <div class="flex items-start justify-between gap-3">
+                    <div class="flex items-start gap-2.5 min-w-0 flex-1">
+                      <app-product-icon [productName]="p.name" [productId]="p.id" size="md" class="mt-0.5" />
+                      <h4
+                        class="text-base font-extrabold text-slate-800 dark:text-white line-clamp-2"
+                      >
+                        {{ p.name }}
+                      </h4>
+                    </div>
                     <app-badge
                       [variant]="p.available_count > 0 ? 'success' : 'danger'"
                       size="sm"
@@ -352,32 +355,35 @@
                 emptyText="No products available."
               >
                 <ng-template appTableCell="name" let-row="row">
-                  <div class="space-y-1.5 py-1">
-                    <div
-                      class="text-sm font-extrabold text-slate-800 dark:text-white"
-                      [appTooltip]="row.name"
-                    >
-                      {{ row.name }}
-                    </div>
-                    <p
-                      *ngIf="row.description"
-                      class="text-xs text-slate-400 dark:text-slate-500 font-semibold line-clamp-1 max-w-xl"
-                      [appTooltip]="row.description"
-                    >
-                      {{ row.description }}
-                    </p>
-                    @if (row.attributes && row.attributes.length > 0) {
-                      <div class="flex flex-wrap gap-1">
-                        @for (attr of row.attributes; track $index) {
-                          <span
-                            class="inline-flex items-center text-xs font-extrabold px-1.5 py-0.5 rounded bg-[var(--color-primary)]/5 dark:bg-[var(--color-primary)]/10 text-[var(--color-primary)] border border-[var(--color-primary)]/10"
-                            [appTooltip]="attr.label + ': ' + attr.value"
-                          >
-                            {{ attr.value }}
-                          </span>
-                        }
+                  <div class="flex items-start gap-3 py-1">
+                    <app-product-icon [productName]="row.name" [productId]="row.id" size="md" class="mt-0.5 shrink-0" />
+                    <div class="space-y-1.5 min-w-0 flex-1">
+                      <div
+                        class="text-sm font-extrabold text-slate-800 dark:text-white"
+                        [appTooltip]="row.name"
+                      >
+                        {{ row.name }}
                       </div>
-                    }
+                      <p
+                        *ngIf="row.description"
+                        class="text-xs text-slate-400 dark:text-slate-500 font-semibold line-clamp-1 max-w-xl"
+                        [appTooltip]="row.description"
+                      >
+                        {{ row.description }}
+                      </p>
+                      @if (row.attributes && row.attributes.length > 0) {
+                        <div class="flex flex-wrap gap-1">
+                          @for (attr of row.attributes; track $index) {
+                            <span
+                              class="inline-flex items-center text-xs font-extrabold px-1.5 py-0.5 rounded bg-[var(--color-primary)]/5 dark:bg-[var(--color-primary)]/10 text-[var(--color-primary)] border border-[var(--color-primary)]/10"
+                              [appTooltip]="attr.label + ': ' + attr.value"
+                            >
+                              {{ attr.value }}
+                            </span>
+                          }
+                        </div>
+                      }
+                    </div>
                   </div>
                 </ng-template>
 
@@ -441,16 +447,19 @@
             >
               <div *ngFor="let p of group.products" class="p-4 space-y-3">
                 <div class="flex items-start justify-between gap-3">
-                  <div class="space-y-1 min-w-0 flex-1">
-                    <h4 class="text-sm font-extrabold text-slate-800 dark:text-white break-words">
-                      {{ p.name }}
-                    </h4>
-                    <p
-                      *ngIf="p.description"
-                      class="text-xs text-slate-400 dark:text-slate-500 font-semibold line-clamp-2"
-                    >
-                      {{ p.description }}
-                    </p>
+                  <div class="flex items-start gap-2.5 min-w-0 flex-1">
+                    <app-product-icon [productName]="p.name" [productId]="p.id" size="sm" class="mt-0.5" />
+                    <div class="space-y-1 min-w-0 flex-1">
+                      <h4 class="text-sm font-extrabold text-slate-800 dark:text-white break-words">
+                        {{ p.name }}
+                      </h4>
+                      <p
+                        *ngIf="p.description"
+                        class="text-xs text-slate-400 dark:text-slate-500 font-semibold line-clamp-2"
+                      >
+                        {{ p.description }}
+                      </p>
+                    </div>
                   </div>
                   <app-badge
                     [variant]="p.available_count > 0 ? 'success' : 'danger'"
@@ -539,8 +548,8 @@
       <!-- Recent Purchases Card -->
       @if (recentPurchasesEnabled()) {
         <div class="bg-white dark:bg-slate-900 border border-slate-200/80 dark:border-slate-800/80 rounded-2xl overflow-hidden shadow-sm flex flex-col">
-          <!-- Card Header with Gradient -->
-          <div class="bg-gradient-to-r from-blue-600 via-indigo-600 to-purple-600 px-5 py-3.5 flex items-center justify-between">
+          <!-- Card Header with Primary Gradient -->
+          <div class="bg-gradient-to-r from-[var(--color-primary)] to-[var(--color-secondary)] px-5 py-3.5 flex items-center justify-between">
             <h3 class="text-base font-bold text-white flex items-center gap-2">
               <app-icon name="shopping-bag" class="w-5 h-5 text-white/90" />
               <span>{{ 'storefront.recent_purchases_title' | translate }}</span>
@@ -576,7 +585,7 @@
                     </span>
                   </div>
 
-                  <span class="px-2.5 py-1 text-[11px] font-bold italic rounded-md bg-blue-500/90 text-white shadow-sm shrink-0 whitespace-nowrap ml-2">
+                  <span class="px-2.5 py-1 text-[11px] font-bold italic rounded-md bg-[var(--color-primary)] text-white shadow-sm shrink-0 whitespace-nowrap ml-2">
                     {{ formatRelativeTime(item.created_at) }}
                   </span>
                 </div>
@@ -589,8 +598,8 @@
       <!-- Recent Deposits Card -->
       @if (recentDepositsEnabled()) {
         <div class="bg-white dark:bg-slate-900 border border-slate-200/80 dark:border-slate-800/80 rounded-2xl overflow-hidden shadow-sm flex flex-col">
-          <!-- Card Header with Gradient -->
-          <div class="bg-gradient-to-r from-purple-600 via-indigo-600 to-blue-600 px-5 py-3.5 flex items-center justify-between">
+          <!-- Card Header with Primary Gradient -->
+          <div class="bg-gradient-to-r from-[var(--color-primary)] to-[var(--color-secondary)] px-5 py-3.5 flex items-center justify-between">
             <h3 class="text-base font-bold text-white flex items-center gap-2">
               <app-icon name="credit-card" class="w-5 h-5 text-white/90" />
               <span>{{ 'storefront.recent_deposits_title' | translate }}</span>
@@ -626,7 +635,7 @@
                     </span>
                   </div>
 
-                  <span class="px-2.5 py-1 text-[11px] font-bold italic rounded-md bg-blue-500/90 text-white shadow-sm shrink-0 whitespace-nowrap ml-2">
+                  <span class="px-2.5 py-1 text-[11px] font-bold italic rounded-md bg-[var(--color-primary)] text-white shadow-sm shrink-0 whitespace-nowrap ml-2">
                     {{ formatRelativeTime(item.created_at) }}
                   </span>
                 </div>

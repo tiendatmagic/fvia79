@@ -24,7 +24,7 @@ export class LanguageService {
     if (saved === 'vi' || saved === 'en') {
       return saved;
     }
-    return 'en';
+    return 'vi';
   }
 
   public setLanguage(lang: SupportedLanguage): void {
@@ -35,8 +35,8 @@ export class LanguageService {
 
   public translate(key: string, params?: Record<string, any>): string {
     const lang = this.currentLang();
-    const dictionary = TRANSLATIONS[lang] || TRANSLATIONS.en;
-    let text = dictionary[key] ?? TRANSLATIONS.en[key] ?? key;
+    const dictionary = TRANSLATIONS[lang] || TRANSLATIONS.vi;
+    let text = dictionary[key] ?? TRANSLATIONS.vi[key] ?? TRANSLATIONS.en[key] ?? key;
 
     if (params) {
       Object.keys(params).forEach((param) => {
