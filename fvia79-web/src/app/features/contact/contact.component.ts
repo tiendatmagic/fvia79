@@ -26,8 +26,7 @@ export class ContactComponent {
   public readonly lang = inject(LanguageService);
   private readonly toast = inject(ToastService);
 
-  public readonly telegramSupportUrl = 'https://t.me/fvia79';
-  public readonly telegramBotUrl = 'https://t.me/fvia79noti_bot';
+  public readonly telegramSupportUrl = 'https://t.me/emmy203012';
 
   public copyLink(url: string): void {
     if (navigator.clipboard) {

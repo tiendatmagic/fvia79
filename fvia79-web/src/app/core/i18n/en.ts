@@ -1027,7 +1027,7 @@ export const EN_TRANSLATIONS: Record<string, string> = {
   'nav.suppliers': 'Supplier Management',
   'nav.user_api': 'User API',
   'nav.users': 'Users',
-  'notice.disclaimer_body': 'System provides digital resources for legitimate purposes only. Please comply with applicable laws.',
+  'notice.disclaimer_body': 'Scope of legitimate use: FVIA79 products and services are provided solely for legitimate advertising, marketing, and campaign management activities. Customers are responsible for complying with applicable laws and platform terms of service. FVIA79 assumes no liability for any illegal product use, fraud, scams, or third-party policy violations.',
   'notice.disclaimer_title': 'Disclaimer',
   'notice.prohibited': 'Illegal activities or fraudulent acts are strictly prohibited.',
   'notice.remember': 'Do not ask again for 7 days',

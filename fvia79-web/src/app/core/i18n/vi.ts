@@ -1027,7 +1027,7 @@ export const VI_TRANSLATIONS: Record<string, string> = {
   'nav.suppliers': 'Quản lý nhà cung cấp',
   'nav.user_api': 'User API',
   'nav.users': 'Người dùng',
-  'notice.disclaimer_body': 'Hệ thống chỉ cung cấp tài nguyên cho mục đích hợp pháp. Vui lòng tuân thủ pháp luật.',
+  'notice.disclaimer_body': 'Phạm vi sử dụng hợp pháp: Sản phẩm và dịch vụ của FVIA79 chỉ được cung cấp nhằm phục vụ các hoạt động quảng cáo, marketing và quản lý chiến dịch hợp pháp. Khách hàng có trách nhiệm tuân thủ pháp luật hiện hành và điều khoản sử dụng của từng nền tảng. FVIA79 không chịu trách nhiệm đối với mọi hành vi sử dụng sản phẩm trái pháp luật, gian lận, lừa đảo hoặc vi phạm chính sách của bên thứ ba.',
   'notice.disclaimer_title': 'Tuyên bố miễn trừ trách nhiệm',
   'notice.prohibited': 'Nghiêm cấm các hành vi vi phạm pháp luật hoặc lừa đảo.',
   'notice.remember': 'Không hỏi lại trong 7 ngày',

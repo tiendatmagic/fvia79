@@ -19,6 +19,22 @@
 
 ## 📋 NHẬT KÝ THAY ĐỔI DỰ ÁN
 
+### [2026-07-27] Cập nhật nội dung Tuyên bố miễn trừ trách nhiệm ở Popup Thông Báo Hệ Thống (fvia79-web)
+- **Mô tả**: Cập nhật văn bản miễn trừ trách nhiệm pháp lý trong popup Thông báo Hệ thống (`WelcomeNoticeModalComponent`), áp dụng hỗ trợ đa ngôn ngữ (Tiếng Việt & Tiếng Anh).
+- **Thực hiện**:
+  - `fvia79-web/src/app/core/i18n/vi.ts`: Cập nhật `notice.disclaimer_body` thành văn bản quy định phạm vi sử dụng hợp pháp dịch vụ FVIA79 và miễn trừ trách nhiệm đối với các hành vi vi phạm pháp luật / chính sách bên thứ 3.
+  - `fvia79-web/src/app/core/i18n/en.ts`: Cập nhật bản dịch tiếng Anh tương ứng cho `notice.disclaimer_body`.
+  - Biên dịch & Kiểm thử: Chạy `npx ng build --configuration production` thành công **100% BUILD SUCCESS**.
+
+
+### [2026-07-27] Loại bỏ khối Telegram Bot Thông Báo & Cập nhật link Telegram Hỗ trợ trực tiếp (fvia79-web)
+- **Mô tả**: Loại bỏ thẻ (card) "Telegram Bot Thông Báo" khỏi trang Liên hệ (`/contact`) của `fvia79-web`, cập nhật đường dẫn Telegram Support thành `https://t.me/emmy203012` (@emmy203012) và chuyển bố cục thẻ Telegram Support thành 1 thẻ tràn viền (full-width) giao diện giống nguồn `adsbm79-web`.
+- **Thực hiện**:
+  - `fvia79-web/src/app/features/contact/contact.component.ts`: Cập nhật `telegramSupportUrl = 'https://t.me/emmy203012'`, xóa biến `telegramBotUrl`.
+  - `fvia79-web/src/app/features/contact/contact.component.html`: Loại bỏ lưới 2 cột (`grid-cols-2`), xóa thẻ Telegram Bot Thông Báo, cập nhật thẻ Telegram Support thành bố cục hàng ngang responsive full-width đồng bộ 100% với `adsbm79-web`.
+  - Biên dịch & Kiểm thử: Chạy `npx ng build --configuration production` thành công **100% BUILD SUCCESS**.
+
+
 ### [2026-07-27] Phân quyền bắt buộc đăng nhập để xem sản phẩm & danh mục sản phẩm ở trang Storefront (fvia79-web)
 - **Mô tả**: Cấu hình phân quyền đối với trang Storefront (`/storefront`) và submenu **"Mua hàng"** (Danh mục sản phẩm), yêu cầu khách truy cập (Guest) chưa đăng nhập phải thực hiện đăng nhập tài khoản trước mới có thể xem danh sách sản phẩm và danh mục sản phẩm. Các API khác như B2B hoàn toàn giữ nguyên không bị ảnh hưởng.
 - **Thực hiện**:
