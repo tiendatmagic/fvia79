@@ -18,6 +18,15 @@
 > **QUY TẮC BẮT BUỘC CRONJOB & PHÂN QUYỀN CACHE STORAGE**:
 > 1. Cronjob Scheduler (`schedule:run`) **CHỈ ĐƯỢC CHẠY DƯỚI USER `www-data`** (`crontab -u www-data -e`). **TUYỆT ĐỐI KHÔNG cài dưới `root`** vì sẽ gây ra lỗi `500 Permission denied` khi người dùng thực hiện thao tác Web/API.
 > 2. Luôn cấp quyền `chmod -R 777` và `chown -R www-data:www-data` cho `storage` & `bootstrap/cache`. Khi gõ lệnh CLI thủ công trên VPS, luôn chạy dưới quyền `www-data` (`su -s /bin/bash www-data -c "php artisan <cmd>"`).
+### [2026-07-28] Ghi chú cấu hình .env & Quy trình xóa Cache trên VPS vào file deploy.md đồng bộ 3 dự án (FVIA79, ADSBM79, ISOCALMARKET)
+- **Mô tả yêu cầu**:
+  Bổ sung phần ghi chú chi tiết `## ⚙️ 5. Cấu Hình Biến Môi Trường (.env) & Quy Trình Cache VPS` vào tệp hướng dẫn triển khai `deploy.md` của cả 3 dự án (`FVIA79`, `ADSBM79`, `ISOCALMARKET`), ghi rõ cấu hình bắt buộc `FEATURE_MEMBERSHIP_TIERS_ENABLED=true` cho `FVIA79` và `ISOCALMARKET` và chuỗi lệnh xóa cache đệm Laravel bắt buộc sau khi deploy hoặc sửa `.env`.
+- **Thực hiện xử lý**:
+  - `d:\git\fvia79\deploy.md`: Bổ sung mục 5 hướng dẫn chi tiết cờ `.env` và lệnh `config:clear && config:cache && route:cache && view:cache`.
+  - `d:\git\isocalmarket\deploy.md`: Bổ sung mục 5 hướng dẫn chi tiết cờ `.env` và lệnh cache.
+  - `d:\git\adsbm79\deploy.md`: Bổ sung mục 5 hướng dẫn chi tiết cờ `.env` và lệnh cache.
+- **Kiểm thử**: Đã cập nhật tệp thành công 100%.
+
 ### [2026-07-28] Khắc phục lỗi vị trí cụm Light/Dark mode & Ngôn ngữ bị che phủ Form Đăng nhập / Đăng ký đồng bộ 3 dự án (FVIA79, ADSBM79, ISOCALMARKET)
 - **Mô tả yêu cầu**:
   Khắc phục lỗi cụm điều khiển Chế độ sáng/tối (Light/Dark mode) và Chọn ngôn ngữ bị vị trí tuyệt đối (`absolute top-3 right-6 z-20`) đặt đè lên trên tiêu đề & thanh Tab "Đăng nhập | Đăng ký" của form gây che khuất nội dung khi xem trên màn hình nhỏ/mobile hoặc khi khung form nằm gần sát đỉnh trang.
