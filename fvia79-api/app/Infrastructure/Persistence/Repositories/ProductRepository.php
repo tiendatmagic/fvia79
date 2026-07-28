@@ -91,16 +91,32 @@ class ProductRepository implements ProductRepositoryInterface
         }
 
         if ($status) {
-            $query->where('status', $status);
+            if ($status === 'active' && $includeOutOfStock) {
+                $query->where(function ($q) {
+                    $q->where('status', 'active')
+                        ->orWhere('supplier_out_of_stock_hidden', true);
+                });
+            } else {
+                $query->where('status', $status);
+            }
         } elseif ($filterDeleted !== 'deleted') {
-            $query->where('status', 'active');
+            if ($includeOutOfStock) {
+                $query->where(function ($q) {
+                    $q->where('status', 'active')
+                        ->orWhere('supplier_out_of_stock_hidden', true);
+                });
+            } else {
+                $query->where('status', 'active');
+            }
         }
 
-        if ($status === 'active') {
-            $query->where(function ($q) {
+        if ($status === 'active' || ($status === null && $filterDeleted !== 'deleted')) {
+            $query->where(function ($q) use ($includeOutOfStock) {
                 $q->whereNull('category_id')
-                    ->orWhereHas('category', function ($catQ) {
-                        $catQ->where('is_active', true);
+                    ->orWhereHas('category', function ($catQ) use ($includeOutOfStock) {
+                        if (! $includeOutOfStock) {
+                            $catQ->where('is_active', true);
+                        }
                     });
             });
         }
@@ -198,14 +214,25 @@ class ProductRepository implements ProductRepositoryInterface
     public function findGroupedActiveProducts(int $limit, ?string $search = null, bool $includeOutOfStock = false): array
     {
         $limit = max(1, $limit);
-        $categories = CategoryModel::where('is_active', true)->orderBy('sort_order', 'asc')->orderBy('name', 'asc')->get();
+        $categoriesQuery = CategoryModel::query();
+        if (! $includeOutOfStock) {
+            $categoriesQuery->where('is_active', true);
+        }
+        $categories = $categoriesQuery->orderBy('sort_order', 'asc')->orderBy('name', 'asc')->get();
 
         $productQuery = ProductModel::query()
-            ->where('status', 'active')
-            ->where(function ($q) {
+            ->where(function ($q) use ($includeOutOfStock) {
+                $q->where('status', 'active');
+                if ($includeOutOfStock) {
+                    $q->orWhere('supplier_out_of_stock_hidden', true);
+                }
+            })
+            ->where(function ($q) use ($includeOutOfStock) {
                 $q->whereNull('category_id')
-                    ->orWhereHas('category', function ($catQ) {
-                        $catQ->where('is_active', true);
+                    ->orWhereHas('category', function ($catQ) use ($includeOutOfStock) {
+                        if (! $includeOutOfStock) {
+                            $catQ->where('is_active', true);
+                        }
                     });
             });
 

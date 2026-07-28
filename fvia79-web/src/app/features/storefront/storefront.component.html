@@ -183,7 +183,7 @@
 
   <div class="space-y-10">
     <app-skeleton-loader
-      *ngIf="state.productStore.loading() && groupedProducts().length === 0"
+      *ngIf="state.productStore.loading()"
       [type]="viewMode() === 'card' ? 'card-grid' : 'table'"
       [cards]="8"
       [cols]="4"
