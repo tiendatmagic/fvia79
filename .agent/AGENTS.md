@@ -19,6 +19,13 @@
 > 1. Cronjob Scheduler (`schedule:run`) **CHỈ ĐƯỢC CHẠY DƯỚI USER `www-data`** (`crontab -u www-data -e`). **TUYỆT ĐỐI KHÔNG cài dưới `root`** vì sẽ gây ra lỗi `500 Permission denied` khi người dùng thực hiện thao tác Web/API.
 > 2. Luôn cấp quyền `chmod -R 777` và `chown -R www-data:www-data` cho `storage` & `bootstrap/cache`. Khi gõ lệnh CLI thủ công trên VPS, luôn chạy dưới quyền `www-data` (`su -s /bin/bash www-data -c "php artisan <cmd>"`).
 
+### [2026-07-28] Ẩn/Xóa Card "Tài nguyên đã phân phối" định dạng thô/JSON cũ riêng dự án FVIA79
+- **Mô tả yêu cầu**: Xóa bỏ Card hiển thị dữ liệu tài nguyên dạng thô/JSON cũ ở phía trên tại trang Chi tiết đơn hàng (`order-detail`), chỉ giữ lại duy nhất 1 Card **"TÀI NGUYÊN ĐÃ PHÂN PHỐI (FORMAT |)"** giúp giao diện gọn gàng và dễ nhìn. Chỉ áp dụng cho riêng dự án `FVIA79` (`fvia79-web`).
+- **Thực hiện xử lý**:
+  - **Frontend Web (`fvia79-web`)**:
+    - `order-detail.component.html`: Đã xóa khối HTML Card "Tài nguyên đã phân phối" chuẩn thô cũ (lines 177 - 226), giữ lại duy nhất Card Tài nguyên Định dạng Pipe.
+- **Kiểm thử**: Đã chạy `npx ng build --configuration production` trên `fvia79-web`.
+
 ### [2026-07-28] Thêm Card "Tài nguyên đã phân phối (Định dạng |)" tại trang Chi tiết đơn hàng đồng bộ 3 dự án (FVIA79, ADSBM79, ISOCALMARKET)
 - **Mô tả yêu cầu**: Hiển thị thêm 1 Card mới định dạng các chuỗi dữ liệu tài nguyên đã phân phối (JSON Object/Array hay text thô) về dạng phân cách bởi dấu pipe `val1|val2|val3...` giúp người dùng dễ dàng sao chép và đưa vào các công cụ tự động.
 - **Thực hiện xử lý**:
