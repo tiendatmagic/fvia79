@@ -18,6 +18,15 @@
 > **QUY TẮC BẮT BUỘC CRONJOB & PHÂN QUYỀN CACHE STORAGE**:
 > 1. Cronjob Scheduler (`schedule:run`) **CHỈ ĐƯỢC CHẠY DƯỚI USER `www-data`** (`crontab -u www-data -e`). **TUYỆT ĐỐI KHÔNG cài dưới `root`** vì sẽ gây ra lỗi `500 Permission denied` khi người dùng thực hiện thao tác Web/API.
 > 2. Luôn cấp quyền `chmod -R 777` và `chown -R www-data:www-data` cho `storage` & `bootstrap/cache`. Khi gõ lệnh CLI thủ công trên VPS, luôn chạy dưới quyền `www-data` (`su -s /bin/bash www-data -c "php artisan <cmd>"`).
+### [2026-07-28] Khắc phục lỗi vị trí cụm Light/Dark mode & Ngôn ngữ bị che phủ Form Đăng nhập / Đăng ký đồng bộ 3 dự án (FVIA79, ADSBM79, ISOCALMARKET)
+- **Mô tả yêu cầu**:
+  Khắc phục lỗi cụm điều khiển Chế độ sáng/tối (Light/Dark mode) và Chọn ngôn ngữ bị vị trí tuyệt đối (`absolute top-3 right-6 z-20`) đặt đè lên trên tiêu đề & thanh Tab "Đăng nhập | Đăng ký" của form gây che khuất nội dung khi xem trên màn hình nhỏ/mobile hoặc khi khung form nằm gần sát đỉnh trang.
+- **Thực hiện xử lý**:
+  - **Frontend Web (`fvia79-web`, `adsbm79-web`, `isocalmarket-web`)**:
+    - `auth-layout.component.html`: Thay đổi container cột phải từ `flex items-center justify-center ... relative` sang `flex flex-col justify-between ... relative`. Đưa cụm `app-theme-switcher` và nút dropdown chọn ngôn ngữ vào thanh header top riêng biệt trong luồng flex chuẩn (`flex items-center justify-between lg:justify-end w-full shrink-0 z-20 mb-4 sm:mb-6`), đồng thời tích hợp thêm Logo & tên thương hiệu cho giao diện mobile (`lg:hidden`).
+    - Bọc khung Form đăng nhập/đăng ký `max-w-[460px]` vào lớp `<div class="flex-1 flex items-center justify-center w-full my-auto py-2 sm:py-4">` giúp card luôn được căn giữa dọc hoàn hảo mà không bao giờ bị đè đè hay che khuất bởi cụm theme/lang ở trên.
+    - `login.component.html` & `register.component.html`: Chuyển vị trí cụm theme/lang từ `absolute top-3 right-6` sang top header flex item (`flex items-center justify-end w-full mb-4 shrink-0 z-20`) giúp giao diện độc lập không bị che khuất.
+- **Kiểm thử**: Đã thực thi biên dịch Angular production `npx ng build --configuration production` thành công 100% trên cả 3 dự án.
 
 ### [2026-07-28] Xây dựng trang "Điều Khoản Sử Dụng" (/terms), Căn chỉnh Layout & Xử lý truy cập công khai đồng bộ 3 dự án (FVIA79, ADSBM79, ISOCALMARKET)
 - **Mô tả yêu cầu**:

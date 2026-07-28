@@ -103,11 +103,18 @@
     </div>
 
     <div
-      class="col-span-1 flex items-center justify-center p-6 md:p-10 bg-slate-50 dark:bg-slate-950 transition-colors min-h-screen relative"
+      class="col-span-1 flex flex-col justify-between p-4 sm:p-6 md:p-10 bg-slate-50 dark:bg-slate-950 transition-colors min-h-screen relative"
     >
-      <div class="absolute top-3 right-6 z-20">
+      <div class="flex items-center justify-between lg:justify-end w-full shrink-0 z-20 mb-4 sm:mb-6">
+        <div class="flex lg:hidden items-center gap-2.5">
+          <app-logo class="w-8 h-8 text-slate-900 dark:text-white" />
+          <span class="text-base font-black tracking-wider uppercase text-slate-900 dark:text-white"
+            >Fvia79</span
+          >
+        </div>
+
         <div
-          class="flex items-center gap-3 bg-white dark:bg-slate-900 border border-slate-200/50 dark:border-slate-800/50 px-3 py-1.5 rounded-full shadow-sm transition-colors"
+          class="flex items-center gap-3 bg-white dark:bg-slate-900 border border-slate-200/50 dark:border-slate-800/50 px-3 py-1.5 rounded-full shadow-sm transition-colors ml-auto lg:ml-0"
         >
           <app-theme-switcher [showLabels]="false" [showAuto]="true" />
           <div class="w-[1px] h-3.5 bg-slate-200 dark:bg-slate-800"></div>
@@ -231,9 +238,10 @@
         </div>
       </div>
 
-      <div
-        class="w-full max-w-[460px] bg-white dark:bg-slate-900 rounded-2xl shadow-xl shadow-slate-200/80 dark:shadow-slate-950/80 border border-slate-200/60 dark:border-slate-800/60 overflow-hidden"
-      >
+      <div class="flex-1 flex items-center justify-center w-full my-auto py-2 sm:py-4">
+        <div
+          class="w-full max-w-[460px] bg-white dark:bg-slate-900 rounded-2xl shadow-xl shadow-slate-200/80 dark:shadow-slate-950/80 border border-slate-200/60 dark:border-slate-800/60 overflow-hidden"
+        >
         <div class="flex border-b border-slate-200 dark:border-slate-800">
           <button
             type="button"
@@ -538,6 +546,7 @@
           </div>
         </div>
       </div>
+    </div>
     </div>
   </div>
 </div>
