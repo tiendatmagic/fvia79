@@ -18,6 +18,16 @@
 > **QUY TẮC BẮT BUỘC CRONJOB & PHÂN QUYỀN CACHE STORAGE**:
 > 1. Cronjob Scheduler (`schedule:run`) **CHỈ ĐƯỢC CHẠY DƯỚI USER `www-data`** (`crontab -u www-data -e`). **TUYỆT ĐỐI KHÔNG cài dưới `root`** vì sẽ gây ra lỗi `500 Permission denied` khi người dùng thực hiện thao tác Web/API.
 > 2. Luôn cấp quyền `chmod -R 777` và `chown -R www-data:www-data` cho `storage` & `bootstrap/cache`. Khi gõ lệnh CLI thủ công trên VPS, luôn chạy dưới quyền `www-data` (`su -s /bin/bash www-data -c "php artisan <cmd>"`).
+### [2026-07-28] Bổ Sung Ghi Chú Lưu Ý Khi Đã Chuyển Tiền & Liên Kết Hỗ Trợ Admin Đồng Bộ 3 Dự Án (FVIA79, ADSBM79, ISOCALMARKET)
+- **Mô tả yêu cầu**:
+  Bổ sung khối ghi chú hướng dẫn màu xanh dương nổi bật trên trang Hóa đơn nạp tiền (`/deposit/invoice/:id`): nhắc nhở người dùng nếu đã chuyển tiền thì KHÔNG hủy lệnh, và tích hợp liên kết trực tiếp sang trang Liên hệ (`[routerLink]="['/contact']"`) để hỗ trợ người dùng liên hệ Admin ngay nếu sau khoảng thời gian hệ thống chưa ghi nhận.
+- **Thực hiện xử lý**:
+  - **Frontend Web (`fvia79-web`, `adsbm79-web`, `isocalmarket-web`)**:
+    - `deposit-invoice.component.html`: Bổ sung khối Card Alert `bg-blue-500/5 dark:bg-blue-500/10 border border-blue-500/20` chứa icon `info`, tiêu đề `invoice.paid_notice_title` và nội dung `invoice.paid_notice_desc` kèm thẻ `<a [routerLink]="['/contact']">` mở trang liên hệ mượt mà.
+    - `vi.ts` & `en.ts`: Bổ sung từ khóa i18n đa ngôn ngữ (`invoice.paid_notice_title`, `invoice.paid_notice_desc`, `invoice.contact_admin_link`).
+- **Kiểm thử**: Đã biên dịch Angular production `npx ng build --configuration production` thành công 100%.
+
+
 ### [2026-07-28] Rà Soát & Chuẩn Hóa Toàn Bộ Nút Sao Chép Icon (Copy Button) Thành Hình Vuông Căn Giữa Đồng Bộ 3 Dự Án (FVIA79, ADSBM79, ISOCALMARKET)
 - **Mô tả yêu cầu**:
   Rà soát toàn bộ tệp giao diện HTML trên cả 3 dự án (`FVIA79`, `ADSBM79`, `ISOCALMARKET`), tìm kiếm và chuẩn hóa tất cả các nút sao chép biểu tượng (icon-only copy buttons) ở mọi trang (Nạp tiền, Đơn hàng, Kho tài nguyên, Quản lý người dùng, Mã giảm giá, Tài khoản API) để đảm bảo nút luôn có tỉ lệ hình vuông 100% (`w-* h-*`), căn giữa icon tuyệt đối cả 2 chiều và không bao giờ bị lệch hay méo khung.
