@@ -27,6 +27,23 @@
 - **Kiểm thử**: Biên dịch Angular production `npx ng build --configuration production` thành công 100%.
 
 
+### [2026-07-28] Khởi Tạo Tài Khoản SSH Deploy Riêng Ngang Quyền Root (NOPASSWD Sudo) Cho 3 VPS (FVIA79, ADSBM79, ISOCALMARKET)
+- **Mô tả yêu cầu**:
+  Tạo tài khoản người dùng SSH riêng biệt cho công việc deploy code (FE, BE, Database) trên cả 3 máy chủ VPS với mật khẩu ngẫu nhiên bảo mật cao, được cấp quyền NOPASSWD Sudo (ngang quyền `root`) và thuộc nhóm `sudo` & `www-data` để sau này không cần đăng nhập trực tiếp bằng tài khoản `root`.
+- **Thực hiện xử lý**:
+  - **ADSBM79** (`103.68.109.73`):
+    - SSH User: `deployer_ads79`
+    - SSH Pass: `Ads79_SudoDeploy_9f8a7b6c5d4e!`
+  - **FVIA79** (`38.180.150.246`):
+    - SSH User: `deployer_fvia79`
+    - SSH Pass: `Fvia79_SudoDeploy_3x9y8z7w6v5u!`
+  - **ISOCALMARKET** (`103.68.109.109`):
+    - SSH User: `deployer_isocal`
+    - SSH Pass: `IsoCal_SudoDeploy_8a7b6c5d4e3f!`
+  - Đã thêm cấu hình `/etc/sudoers.d/<user>` (`NOPASSWD:ALL`), gán user vào mảng nhóm `sudo,www-data`, cấp quyền `775` cho `/var/www` và cập nhật thông tin tài khoản vào phần 1 của cả 3 tệp `deploy.md`.
+- **Kiểm thử**: Đăng nhập trực tiếp bằng các tài khoản mới qua SSH và thực thi `sudo whoami` thành công 100% (xác nhận quyền `root`).
+
+
 ### [2026-07-28] Triển Khai (Deploy) FE & BE Hoàn Chỉnh 3 Dự Án Lên VPS & Kiểm Tra API Thành Công (FVIA79, ADSBM79, ISOCALMARKET)
 - **Mô tả yêu cầu**:
   Triển khai (deploy) toàn bộ Frontend Angular mới nhất và Backend Laravel mới nhất cho 3 dự án (`FVIA79`, `ADSBM79`, `ISOCALMARKET`) lên 3 máy chủ VPS độc lập tương ứng theo thông tin cấu hình tại file `deploy.md` của mỗi dự án. Yêu cầu giữ nguyên CSDL hiện có (không xóa hay migrate fresh/seed), dọn dẹp và tái tạo bộ nhớ đệm (cache) hoàn toàn sau khi deploy, và thực hiện kiểm tra hoạt động API của cả 3 trang web sau khi hoàn tất.
