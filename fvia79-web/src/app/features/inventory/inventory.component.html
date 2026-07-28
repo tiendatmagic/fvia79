@@ -23,15 +23,18 @@
   </app-page-header>
 
   <div
-    class="flex items-center border-b border-slate-200 dark:border-slate-800 space-x-2 overflow-x-auto scrollbar-none pb-1"
+    class="flex items-center border-b border-slate-200 dark:border-slate-800 space-x-2 overflow-x-auto scrollbar-none"
   >
     <button
       (click)="setTab('batches')"
-      class="px-4 sm:px-5 py-3 text-sm font-extrabold border-b-2 transition-all cursor-pointer flex items-center gap-2 whitespace-nowrap shrink-0"
+      class="px-4 sm:px-5 pb-3 text-sm font-bold border-b-2 transition-all cursor-pointer flex items-center gap-2 whitespace-nowrap shrink-0 -mb-px"
       [class.border-[var(--color-primary)]]="activeTab() === 'batches'"
       [class.text-[var(--color-primary)]]="activeTab() === 'batches'"
       [class.border-transparent]="activeTab() !== 'batches'"
-      [class.text-slate-500]="activeTab() !== 'batches'"
+      [class.text-slate-600]="activeTab() !== 'batches'"
+      [class.dark:text-slate-400]="activeTab() !== 'batches'"
+      [class.hover:text-slate-900]="activeTab() !== 'batches'"
+      [class.dark:hover:text-slate-100]="activeTab() !== 'batches'"
       [appTooltip]="'inventory.batch_tab_tooltip' | translate"
     >
       <app-icon name="package" class="w-4 h-4 shrink-0" />
@@ -40,11 +43,14 @@
 
     <button
       (click)="setTab('resources')"
-      class="px-4 sm:px-5 py-3 text-sm font-extrabold border-b-2 transition-all cursor-pointer flex items-center gap-2 whitespace-nowrap shrink-0"
+      class="px-4 sm:px-5 pb-3 text-sm font-bold border-b-2 transition-all cursor-pointer flex items-center gap-2 whitespace-nowrap shrink-0 -mb-px"
       [class.border-[var(--color-primary)]]="activeTab() === 'resources'"
       [class.text-[var(--color-primary)]]="activeTab() === 'resources'"
       [class.border-transparent]="activeTab() !== 'resources'"
-      [class.text-slate-500]="activeTab() !== 'resources'"
+      [class.text-slate-600]="activeTab() !== 'resources'"
+      [class.dark:text-slate-400]="activeTab() !== 'resources'"
+      [class.hover:text-slate-900]="activeTab() !== 'resources'"
+      [class.dark:hover:text-slate-100]="activeTab() !== 'resources'"
       [appTooltip]="'inventory.resource_tab_tooltip' | translate"
     >
       <app-icon name="key" class="w-4 h-4 shrink-0" />

@@ -238,30 +238,30 @@
           <button
             type="button"
             (click)="switchTab('login')"
-            class="flex-1 text-center py-4 text-sm font-bold border-b-2 transition-colors duration-200"
+            class="flex-1 text-center pb-3 pt-4 text-sm font-bold border-b-2 transition-all cursor-pointer -mb-px"
             [class.border-primary]="isLogin()"
-            [class.text-slate-900]="isLogin()"
-            [class.dark:text-white]="isLogin()"
+            [class.text-primary]="isLogin()"
             [class.border-transparent]="!isLogin()"
-            [class.text-slate-500]="!isLogin()"
+            [class.text-slate-600]="!isLogin()"
             [class.dark:text-slate-400]="!isLogin()"
-            [class.font-medium]="!isLogin()"
+            [class.hover:text-slate-900]="!isLogin()"
+            [class.dark:hover:text-slate-100]="!isLogin()"
           >
             {{ 'nav.login' | translate }}
           </button>
           <button
             type="button"
             (click)="switchTab('register')"
-            class="flex-1 text-center py-4 text-sm font-bold border-b-2 transition-colors duration-200"
+            class="flex-1 text-center pb-3 pt-4 text-sm font-bold border-b-2 transition-all cursor-pointer -mb-px"
             [class.border-primary]="!isLogin()"
-            [class.text-slate-900]="!isLogin()"
-            [class.dark:text-white]="!isLogin()"
+            [class.text-primary]="!isLogin()"
             [class.border-transparent]="isLogin()"
-            [class.text-slate-500]="isLogin()"
+            [class.text-slate-600]="isLogin()"
             [class.dark:text-slate-400]="isLogin()"
-            [class.font-medium]="isLogin()"
+            [class.hover:text-slate-900]="isLogin()"
+            [class.dark:hover:text-slate-100]="isLogin()"
           >
-            {{ 'auth.register_now' | translate }}
+            {{ 'nav.register' | translate }}
           </button>
         </div>
 

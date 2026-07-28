@@ -19,6 +19,18 @@
 > 1. Cronjob Scheduler (`schedule:run`) **CHỈ ĐƯỢC CHẠY DƯỚI USER `www-data`** (`crontab -u www-data -e`). **TUYỆT ĐỐI KHÔNG cài dưới `root`** vì sẽ gây ra lỗi `500 Permission denied` khi người dùng thực hiện thao tác Web/API.
 > 2. Luôn cấp quyền `chmod -R 777` và `chown -R www-data:www-data` cho `storage` & `bootstrap/cache`. Khi gõ lệnh CLI thủ công trên VPS, luôn chạy dưới quyền `www-data` (`su -s /bin/bash www-data -c "php artisan <cmd>"`).
 
+### [2026-07-28] Tối ưu hóa Tab Group hiển thị chữ đậm nét & Cảnh báo chi tiết nạp tiền USDT BEP-20 (Ví Web3 vs CEX) đồng bộ 3 dự án (FVIA79, ADSBM79, ISOCALMARKET)
+- **Mô tả yêu cầu**:
+  1. Tối ưu tất cả các Tab group trong FE (USDT BEP-20 / Binance Pay, Admin Settings, Inventory, User Form Modal, Admin FAQs, Auth Login/Register) về giao diện thanh phẳng chuẩn ban đầu (`flex border-b border-slate-200 dark:border-slate-800`), khôi phục kích thước `text-sm pb-3 -mb-px border-b-2`, thiết lập font chữ **`font-bold`** tương phản rõ nét (thay vì `medium` cũ).
+  2. Bổ sung khung cảnh báo rõ ràng trên trang Nạp tiền (`/deposit`): Giải thích Cổng USDT BEP-20 chỉ dành cho Ví Web3 Tự Quản (MetaMask, Trust Wallet, OKX Wallet, Phantom...); Cảnh báo **TUYỆT ĐỐI KHÔNG** rút tiền trực tiếp từ các sàn CEX (Binance, Bybit, OKX...) vì sàn tự động trừ phí rút làm hụt số dư nạp dẫn đến hệ thống không thể tự động khớp đơn!
+  3. Cấu hình màu nền Slate xám nhẹ (`bg-slate-50 dark:bg-slate-900/50`) tương thích hoàn hảo Light mode & Dark mode; Loại bỏ toàn bộ emoji thô, thay bằng SVG icon vuông vắn tỉ lệ 1:1 (`w-5 h-5 min-w-[20px] min-h-[20px]` và `check-circle`/`x-circle`).
+- **Thực hiện xử lý**:
+  - **Frontend Web (`fvia79-web`, `adsbm79-web`, `isocalmarket-web`)**:
+    - `vi.ts` & `en.ts`: Bổ sung các từ khóa i18n `'deposit.important_notice_bep20'`, `'deposit.bep20_notice_web3_title'`, `'deposit.bep20_notice_web3_desc'`, `'deposit.bep20_notice_cex_title'`, `'deposit.bep20_notice_cex_desc'`.
+    - `deposit.component.html`, `auth-layout.component.html`, `admin-settings.component.html`, `inventory.component.html`, `user-form-modal.component.html`, `admin-faqs.component.html`: Đồng bộ cấu trúc thanh tab phẳng `border-b-2 font-bold text-sm -mb-px pb-3`.
+    - `admin-settings.component.ts`: Sửa lỗi kiểu dữ liệu `changeTab(tab: 'general' | 'activities' | ...)` trên `adsbm79-web` và `isocalmarket-web`.
+- **Kiểm thử**: Đã chạy kiểm thử build Angular production `npx ng build --configuration production` trên cả 3 dự án thành công 100%.
+
 ### [2026-07-28] Ẩn/Xóa Card "Tài nguyên đã phân phối" định dạng thô/JSON cũ riêng dự án FVIA79
 - **Mô tả yêu cầu**: Xóa bỏ Card hiển thị dữ liệu tài nguyên dạng thô/JSON cũ ở phía trên tại trang Chi tiết đơn hàng (`order-detail`), chỉ giữ lại duy nhất 1 Card **"TÀI NGUYÊN ĐÃ PHÂN PHỐI (FORMAT |)"** giúp giao diện gọn gàng và dễ nhìn. Chỉ áp dụng cho riêng dự án `FVIA79` (`fvia79-web`).
 - **Thực hiện xử lý**:

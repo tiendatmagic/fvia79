@@ -56,9 +56,10 @@
       [class.border-primary]="activeTab() === 'categories'"
       [class.text-primary]="activeTab() === 'categories'"
       [class.border-transparent]="activeTab() !== 'categories'"
-      [class.text-slate-500]="activeTab() !== 'categories'"
-      [class.hover:text-slate-800]="activeTab() !== 'categories'"
-      [class.dark:hover:text-slate-200]="activeTab() !== 'categories'"
+      [class.text-slate-600]="activeTab() !== 'categories'"
+      [class.dark:text-slate-400]="activeTab() !== 'categories'"
+      [class.hover:text-slate-900]="activeTab() !== 'categories'"
+      [class.dark:hover:text-slate-100]="activeTab() !== 'categories'"
       [appTooltip]="'admin_faq.manage_categories_tooltip' | translate"
     >
       <app-icon name="package" class="w-4 h-4" />
@@ -72,9 +73,10 @@
       [class.border-primary]="activeTab() === 'policies'"
       [class.text-primary]="activeTab() === 'policies'"
       [class.border-transparent]="activeTab() !== 'policies'"
-      [class.text-slate-500]="activeTab() !== 'policies'"
-      [class.hover:text-slate-800]="activeTab() !== 'policies'"
-      [class.dark:hover:text-slate-200]="activeTab() !== 'policies'"
+      [class.text-slate-600]="activeTab() !== 'policies'"
+      [class.dark:text-slate-400]="activeTab() !== 'policies'"
+      [class.hover:text-slate-900]="activeTab() !== 'policies'"
+      [class.dark:hover:text-slate-100]="activeTab() !== 'policies'"
       [appTooltip]="'admin_faq.manage_policies_tooltip' | translate"
     >
       <app-icon name="shield" class="w-4 h-4" />
@@ -88,13 +90,14 @@
       [class.border-primary]="activeTab() === 'faqs'"
       [class.text-primary]="activeTab() === 'faqs'"
       [class.border-transparent]="activeTab() !== 'faqs'"
-      [class.text-slate-500]="activeTab() !== 'faqs'"
-      [class.hover:text-slate-800]="activeTab() !== 'faqs'"
-      [class.dark:hover:text-slate-200]="activeTab() !== 'faqs'"
+      [class.text-slate-600]="activeTab() !== 'faqs'"
+      [class.dark:text-slate-400]="activeTab() !== 'faqs'"
+      [class.hover:text-slate-900]="activeTab() !== 'faqs'"
+      [class.dark:hover:text-slate-100]="activeTab() !== 'faqs'"
       [appTooltip]="'admin_faq.manage_faqs_tooltip' | translate"
     >
       <app-icon name="faq" class="w-4 h-4" />
-      <span>{{ 'faq.tab_faqs' | translate }}</span>
+      <span>{{ 'admin_faq.tab_faqs' | translate }}</span>
     </button>
   </div>
 
