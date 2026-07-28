@@ -86,12 +86,19 @@ class DepositController extends Controller
             ->where(function ($q) {
                 $q->where('user_notified', false)->orWhereNull('user_notified');
             })
-            ->orderBy('updated_at', 'desc')
+            ->orderBy('created_at', 'desc')
             ->first();
 
         if (! $depositModel) {
             return response()->json(['deposit' => null]);
         }
+
+        \App\Infrastructure\Persistence\Eloquent\DepositModel::where('user_id', $userId)
+            ->where('status', 'completed')
+            ->where(function ($q) {
+                $q->where('user_notified', false)->orWhereNull('user_notified');
+            })
+            ->update(['user_notified' => true]);
 
         $deposit = \App\Infrastructure\Persistence\Mappers\DepositMapper::toDomain($depositModel);
 

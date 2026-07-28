@@ -57,6 +57,9 @@ export class DepositStore {
       tap(res => {
         if (res && res.invoice) {
           this.currentInvoice.set(res.invoice);
+          if (typeof localStorage !== 'undefined') {
+            localStorage.setItem('has_pending_deposit', 'true');
+          }
         }
       })
     );

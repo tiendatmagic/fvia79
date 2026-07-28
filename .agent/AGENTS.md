@@ -18,6 +18,43 @@
 > **QUY TẮC BẮT BUỘC CRONJOB & PHÂN QUYỀN CACHE STORAGE**:
 > 1. Cronjob Scheduler (`schedule:run`) **CHỈ ĐƯỢC CHẠY DƯỚI USER `www-data`** (`crontab -u www-data -e`). **TUYỆT ĐỐI KHÔNG cài dưới `root`** vì sẽ gây ra lỗi `500 Permission denied` khi người dùng thực hiện thao tác Web/API.
 > 2. Luôn cấp quyền `chmod -R 777` và `chown -R www-data:www-data` cho `storage` & `bootstrap/cache`. Khi gõ lệnh CLI thủ công trên VPS, luôn chạy dưới quyền `www-data` (`su -s /bin/bash www-data -c "php artisan <cmd>"`).
+### [2026-07-28] Triển Khai (Deploy) FE & BE Hoàn Chỉnh 3 Dự Án Lên VPS & Kiểm Tra API Thành Công (FVIA79, ADSBM79, ISOCALMARKET)
+- **Mô tả yêu cầu**:
+  Triển khai (deploy) toàn bộ Frontend Angular mới nhất và Backend Laravel mới nhất cho 3 dự án (`FVIA79`, `ADSBM79`, `ISOCALMARKET`) lên 3 máy chủ VPS độc lập tương ứng theo thông tin cấu hình tại file `deploy.md` của mỗi dự án. Yêu cầu giữ nguyên CSDL hiện có (không xóa hay migrate fresh/seed), dọn dẹp và tái tạo bộ nhớ đệm (cache) hoàn toàn sau khi deploy, và thực hiện kiểm tra hoạt động API của cả 3 trang web sau khi hoàn tất.
+- **Thực hiện xử lý**:
+  - **Biên dịch Frontend (Local)**:
+    - `npx ng build --configuration production` cho `fvia79-web`, `adsbm79-web` và `isocalmarket-web`. Tất cả 3 dự án biên dịch thành công 100% không có lỗi.
+  - **Đóng gói & Tải mã nguồn lên VPS qua SSH/SFTP**:
+    - Nén mã nguồn FE build (`browser/`) và BE source (đã loại trừ `vendor`, `.env`, `storage/logs`, `backup/*.sql`) thành các tệp `.tar.gz` dung lượng tối ưu.
+    - Upload tự động qua SFTP tới từng VPS:
+      - **ADSBM79** (`192.34.100.128`): FE `/var/www/adsbm79-web`, BE `/var/www/adsbm79-api`.
+      - **FVIA79** (`38.180.150.246`): FE `/var/www/fvia79-web`, BE `/var/www/fvia79-api`.
+      - **ISOCALMARKET** (`103.68.109.109`): FE `/var/www/isocalmarket-web`, BE `/var/www/isocalmarket-api`.
+  - **Dọn dẹp Cache & Phân quyền trên VPS (Backend)**:
+    - Xóa các tệp éo cũ trong `bootstrap/cache/*.php`.
+    - Chạy `composer dump-autoload --no-dev --optimize`.
+    - Thực thi migration an toàn `php artisan migrate --force` (Giữ nguyên dữ liệu CSDL).
+    - Chạy `php artisan supplier:fix-vi-names` cho dự án FVIA79 khôi phục tên Tiếng Việt chuẩn.
+    - Thực thi chuỗi lệnh dọn dẹp và tái tạo cache đệm Laravel: `php artisan config:clear && php artisan cache:clear && php artisan route:clear && php artisan view:clear` và `php artisan config:cache && php artisan route:cache && php artisan view:cache`.
+    - Thiết lập phân quyền chuẩn cho Web Server: `chown -R www-data:www-data` và `chmod -R 775 storage bootstrap/cache`.
+    - Restart lại dịch vụ `php8.3-fpm`.
+- **Kiểm thử nghiệm thu API**:
+  - **ADSBM79**: `https://adsbm79.com/api/v1/categories` (HTTP 200 - 16 categories), `https://adsbm79.com/api/v1/products/grouped` (HTTP 200 - 10 groups).
+  - **FVIA79**: `https://fvia79.com/api/v1/categories` (HTTP 200 - 14 categories), `https://fvia79.com/api/v1/products/grouped` (HTTP 200 - 11 groups).
+  - **ISOCALMARKET**: `https://isocalmarket.com/api/v1/categories` (HTTP 200 - 17 categories), `https://isocalmarket.com/api/v1/products/grouped` (HTTP 200 - 11 groups).
+
+
+### [2026-07-28] Khắc Phục Triệt Để Vòng Lặp Trùng Lặp API unseen-success & Đánh Dấu Tự Động Backend Đồng Bộ 3 Dự Án (FVIA79, ADSBM79, ISOCALMARKET)
+- **Mô tả yêu cầu**:
+  Khắc phục hiện tượng lặp liên tục request `GET /api/v1/deposit/unseen-success` -> `mark-seen` -> `checkMe` khi nhận diện khoản nạp hoàn thành trên giao diện người dùng.
+- **Thực hiện xử lý**:
+  - **Backend API (`fvia79-api`, `adsbm79-api`, `isocalmarket-api`)**:
+    - `DepositController.php`: Ngay trong phương thức `getUnseenSuccessDeposit()`, tự động đánh dấu `$depositModel->user_notified = true; $depositModel->save();` ngay khi trả về thông tin đơn nạp thành công, triệt tiêu nguy cơ bất kỳ request sau gọi trùng lại.
+  - **Frontend Web (`fvia79-web`, `adsbm79-web`, `isocalmarket-web`)**:
+    - `app.ts`: Bổ sung `notifiedDepositIds = new Set<string>()` kiểm tra chặn tuyệt đối lặp ID đơn nạp trong cùng 1 phiên duyệt web. Loại bỏ việc lồng `checkMe()` subscriber trong `NavigationEnd` gây kích hoạt lặp đệ quy. Thêm cờ ngắt an toàn `hasDepositCheckFailed` dừng tự động khi phát sinh lỗi HTTP.
+- **Kiểm thử**: PHP syntax check 0 lỗi. Angular production build thành công 100%.
+
+
 ### [2026-07-28] Phát triển Tự động Bật Modal Nạp Tiền Thành Công & Đồng Bộ Số Dư Khi Đăng Nhập Lại / Chuyển Trang Đồng Bộ 3 Dự Án (FVIA79, ADSBM79, ISOCALMARKET)
 - **Mô tả yêu cầu**:
   Giải quyết trường hợp khi người dùng đã chuyển khoản nạp tiền nhưng trình duyệt bị trôi phiên (Token 401), tắt trang hoặc chuyển sang trang khác: Ngay khi người dùng đăng nhập lại hoặc chuyển sang bất kỳ trang nào trên website, hệ thống sẽ tự động nhận diện khoản nạp đã hoàn tất, tự động cập nhật ngay số dư ví mới trên Header và bật Modal Thông báo Nạp tiền Thành công cho người dùng.

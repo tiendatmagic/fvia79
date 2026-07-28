@@ -52,6 +52,7 @@ export class App implements OnInit, OnDestroy {
   public isBuyMenuOpen = signal<boolean>(false);
   private isCheckingUnseenDeposit = false;
   private hasDepositCheckFailed = false;
+  private notifiedDepositIds = new Set<string>();
   private unseenDepositTimerSub: Subscription | null = null;
   private visibilityHandler = () => {
     if (typeof document !== 'undefined' && !document.hidden) {
@@ -117,19 +118,13 @@ export class App implements OnInit, OnDestroy {
     this.router.events.pipe(
       filter(event => event instanceof NavigationEnd)
     ).subscribe((event: any) => {
-      this.stateService.authStore.checkMe().subscribe({
-        next: (user) => {
-          if (user) {
-            this.checkUnseenDeposit();
-          }
-        }
-      });
       const url = event.urlAfterRedirects || event.url || '';
       const authPage = url.includes('/login') || url.includes('/register');
       this.isAuthPage.set(authPage);
       if (!authPage && this.stateService.productStore.categories().length === 0) {
         this.stateService.productStore.fetchCategories().subscribe();
       }
+      this.checkUnseenDeposit();
     });
   }
 
@@ -143,29 +138,56 @@ export class App implements OnInit, OnDestroy {
     }
   }
 
+  private isDepositModalOpen = false;
+
   public checkUnseenDeposit() {
-    if (!this.stateService.authStore.currentUser() || this.isCheckingUnseenDeposit || this.hasDepositCheckFailed) return;
+    if (!this.stateService.authStore.currentUser() || this.isCheckingUnseenDeposit || this.hasDepositCheckFailed || this.isDepositModalOpen) return;
+    
+    // Nếu người dùng không tạo / không có lệnh nạp nào thì đừng gọi API unseen-success
+    if (typeof localStorage !== 'undefined' && !localStorage.getItem('has_pending_deposit')) {
+      return;
+    }
+
     this.isCheckingUnseenDeposit = true;
     this.stateService.depositStore.checkUnseenSuccessDeposit().subscribe({
       next: (res) => {
         this.isCheckingUnseenDeposit = false;
         if (res && res.deposit) {
-          const deposit = res.deposit;
+          const deposit: any = res.deposit;
+          if (typeof localStorage !== 'undefined') {
+            localStorage.removeItem('has_pending_deposit');
+          }
+
+          if (this.notifiedDepositIds.has(deposit.id)) return;
+          this.notifiedDepositIds.add(deposit.id);
+
           this.stateService.depositStore.markDepositSeen(deposit.id).subscribe();
           this.stateService.authStore.checkMe(true).subscribe();
 
+          const amountVal = deposit.amountUsdt || deposit.amountToPay || deposit.amount_usdt || deposit.amount_to_pay || '';
+          const amountDisplay = amountVal ? `${amountVal}` : '';
+
+          this.isDepositModalOpen = true;
           this.modalService.confirm({
             title: this.lang.translate('modal.deposit_success_title'),
             variant: 'success',
-            description: this.lang.translate('modal.deposit_success_desc'),
+            description: this.lang.translate('modal.deposit_success_desc', { amount: amountDisplay }),
             confirmText: this.lang.translate('modal.deposit_success_confirm'),
             cancelText: this.lang.translate('common.close'),
             confirmButtonClass: 'btn-primary'
           }).afterClosed$.subscribe((viewHistory?: boolean) => {
+            this.isDepositModalOpen = false;
             if (viewHistory) {
               this.router.navigate(['/deposit/history']);
             }
           });
+        } else {
+          // Nếu không còn đơn completed chưa báo và người dùng không ở trang hóa đơn nạp thì dọn flag
+          if (typeof window !== 'undefined' && !window.location.pathname.includes('/deposit/invoice')) {
+            if (typeof localStorage !== 'undefined') {
+              localStorage.removeItem('has_pending_deposit');
+            }
+          }
         }
       },
       error: (err) => {

@@ -102,6 +102,9 @@ export class DepositInvoiceComponent implements OnInit, OnDestroy {
   private routeSub: Subscription | null = null;
 
   ngOnInit() {
+    if (typeof localStorage !== 'undefined') {
+      localStorage.setItem('has_pending_deposit', 'true');
+    }
     this.state.depositStore.fetchRate().subscribe();
     this.routeSub = this.route.paramMap.subscribe(params => {
       const id = params.get('id');

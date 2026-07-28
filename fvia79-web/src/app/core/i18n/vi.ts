@@ -1009,7 +1009,7 @@ export const VI_TRANSLATIONS: Record<string, string> = {
   'modal.delete_user_title': 'Xác nhận xóa thành viên',
   'modal.deposit_detail_title': 'Chi tiết lệnh nạp tiền',
   'modal.deposit_success_confirm': 'Xem lịch sử nạp',
-  'modal.deposit_success_desc': 'Nạp tiền thành công! Số dư đã được cộng vào tài khoản của bạn.',
+  'modal.deposit_success_desc': 'Khoản nạp {{amount}} USDT đã được hệ thống ghi nhận và cộng vào tài khoản của bạn.',
   'modal.deposit_success_title': 'Nạp tiền thành công!',
   'modal.disable_2fa_confirm_btn': 'Tắt 2FA',
   'modal.disable_2fa_confirm_desc_prefix': 'Bạn có chắc chắn muốn tắt bảo mật 2FA cho người dùng ',

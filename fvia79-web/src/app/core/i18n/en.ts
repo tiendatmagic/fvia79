@@ -1009,7 +1009,7 @@ export const EN_TRANSLATIONS: Record<string, string> = {
   'modal.delete_user_title': 'Delete User Account',
   'modal.deposit_detail_title': 'Deposit Order Details',
   'modal.deposit_success_confirm': 'View Deposit History',
-  'modal.deposit_success_desc': 'Deposit successful! Funds have been credited to your account.',
+  'modal.deposit_success_desc': 'Your deposit of {{amount}} USDT has been credited to your account balance.',
   'modal.deposit_success_title': 'Deposit Successful!',
   'modal.disable_2fa_confirm_btn': 'Disable 2FA',
   'modal.disable_2fa_confirm_desc_prefix': 'Are you sure you want to disable 2FA security for user ',
