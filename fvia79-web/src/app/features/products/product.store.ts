@@ -276,6 +276,9 @@ export class ProductStore {
     if (filterDeleted) {
       params = params.set('filter_deleted', filterDeleted);
     }
+    if (!isStorefrontLoad) {
+      params = params.set('include_out_of_stock', '1');
+    }
  
     const subject = new Subject<any>();
  
@@ -325,7 +328,8 @@ export class ProductStore {
         this.toast.showToast(this.lang.translate('toast.product_created'), 'success');
       }),
       catchError((err) => {
-        const msg = err.error?.message || this.lang.translate('toast.product_create_failed');
+        const errorDetails = err.error?.errors ? Object.values(err.error.errors).flat().join(', ') : null;
+        const msg = errorDetails || err.error?.message || this.lang.translate('toast.product_create_failed');
         this.toast.showToast(msg, 'error');
         return of(null);
       }),
@@ -336,12 +340,13 @@ export class ProductStore {
   public updateProduct(id: string, data: any) {
     this.loading.set(true);
     return this.api.put<any>(`v1/products/${id}`, data).pipe(
-      tap(() => {
+      tap((res) => {
         this.clearCache();
         this.toast.showToast(this.lang.translate('toast.product_updated'), 'success');
       }),
       catchError((err) => {
-        const msg = err.error?.message || this.lang.translate('toast.product_update_failed');
+        const errorDetails = err.error?.errors ? Object.values(err.error.errors).flat().join(', ') : null;
+        const msg = errorDetails || err.error?.message || this.lang.translate('toast.product_update_failed');
         this.toast.showToast(msg, 'error');
         return of(null);
       }),

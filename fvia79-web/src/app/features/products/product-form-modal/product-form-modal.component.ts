@@ -130,7 +130,8 @@ export class ProductFormModalComponent implements OnInit {
   public onSubmit() {
     if (this.isSubmitting()) return;
     const finalNameEn = this.nameEn.trim() || this.nameVi.trim() || this.name.trim();
-    if (!finalNameEn || this.price < 0) {
+    const numPrice = Number(this.price);
+    if (!finalNameEn || this.price === null || this.price === undefined || isNaN(numPrice) || numPrice < 0) {
       this.state.showToast(this.lang.translate('toast.invalid_info'), 'error');
       return;
     }
@@ -143,11 +144,11 @@ export class ProductFormModalComponent implements OnInit {
       name: finalNameEn,
       name_en: finalNameEn,
       name_vi: finalNameVi,
-      slug: this.slug || undefined,
+      slug: this.slug?.trim() || undefined,
       description: finalDescEn,
       description_en: finalDescEn,
       description_vi: finalDescVi,
-      price: this.price,
+      price: numPrice,
       status: this.status,
       category_id: this.categoryId || null,
       attributes: this.attributes.filter(attr => attr.label.trim() !== '' && attr.value.trim() !== '')

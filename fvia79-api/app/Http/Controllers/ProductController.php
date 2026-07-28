@@ -28,8 +28,6 @@ class ProductController extends Controller
             $search = $request->query('search');
             $status = $request->query('status');
             $filterDeleted = $request->query('filter_deleted', 'active');
-            $includeOutOfStock = $request->boolean('include_out_of_stock', false);
-
             $user = $this->getAuthenticatedUser($request);
 
             $isAdmin = $user && $user->role === 'admin';
@@ -39,6 +37,10 @@ class ProductController extends Controller
                     $status = 'active';
                 }
             }
+
+            $includeOutOfStock = $request->has('include_out_of_stock')
+                ? $request->boolean('include_out_of_stock')
+                : $isAdmin;
 
             $lang = $this->resolveLanguage($request);
 
@@ -166,24 +168,36 @@ class ProductController extends Controller
                 return response()->json(['message' => 'Cannot update a soft-deleted product.'], 400);
             }
 
-            $product = $this->productService->updateProduct(
+            $name = $request->input('name', $product->getName());
+            $nameEn = $request->input('name_en', $product->getNameEn() ?: $name);
+            $nameVi = $request->input('name_vi', $product->getNameVi() ?: $name);
+            $slug = $request->input('slug', $product->getSlug());
+            $desc = $request->input('description', $product->getDescription());
+            $descEn = $request->input('description_en', $product->getDescriptionEn() ?: $desc);
+            $descVi = $request->input('description_vi', $product->getDescriptionVi() ?: $desc);
+            $price = $request->has('price') ? (float) $request->input('price') : $product->getPrice();
+            $status = $request->input('status', $product->getStatus());
+            $categoryId = $request->has('category_id') ? $request->input('category_id') : $product->getCategoryId();
+            $attributes = $request->has('attributes') ? $request->input('attributes') : $product->getAttributes();
+
+            $updatedProduct = $this->productService->updateProduct(
                 $id,
-                $request->name,
-                $request->slug,
-                $request->description,
-                (float) $request->price,
-                $request->status,
-                $request->input('attributes'),
-                $request->category_id,
-                $request->name_vi,
-                $request->name_en,
-                $request->description_vi,
-                $request->description_en,
+                $nameEn,
+                $slug,
+                $descEn,
+                $price,
+                $status,
+                $attributes,
+                $categoryId,
+                $nameVi,
+                $nameEn,
+                $descVi,
+                $descEn,
             );
 
             return response()->json([
                 'message' => 'Product updated successfully.',
-                'product' => $this->serializeProduct($product, false, $this->resolveLanguage($request)),
+                'product' => $this->serializeProduct($updatedProduct, false, $this->resolveLanguage($request)),
             ]);
         } catch (\Throwable $e) {
             return $this->serverError($e, 'Failed to update product.');
@@ -220,6 +234,10 @@ class ProductController extends Controller
 
     private function getAuthenticatedUser(Request $request)
     {
+        if ($request->user() instanceof UserModel) {
+            return $request->user();
+        }
+
         $token = $request->cookie('access_token');
         if (! $token) {
             $authHeader = $request->header('Authorization');
