@@ -60,10 +60,26 @@ export class AdminDashboardComponent implements OnInit {
     { key: 'actions', label: this.langService.translate('common.actions'), sortable: false, align: 'right' }
   ]);
 
+  public readonly Math = Math;
   public readonly stats = signal<any>(null);
   public readonly loading = signal<boolean>(true);
   public readonly lowStockLoading = signal<boolean>(true);
+  public readonly visibleDailyCount = signal<number>(6);
   public selectedDateRange: DateTimeRangeValue = { startDate: '', endDate: '' };
+
+  public readonly dailyProfitList = computed(() => this.stats()?.financial_chart || []);
+
+  public readonly displayedDailyProfit = computed(() => {
+    return this.dailyProfitList().slice(0, this.visibleDailyCount());
+  });
+
+  public loadMoreDailyProfit() {
+    this.visibleDailyCount.update((c) => Math.min(c + 12, this.dailyProfitList().length));
+  }
+
+  public resetDailyProfitCount() {
+    this.visibleDailyCount.set(6);
+  }
 
   public readonly selectedCategory = signal<string>('');
   public readonly lowStockSearch = signal<string>('');

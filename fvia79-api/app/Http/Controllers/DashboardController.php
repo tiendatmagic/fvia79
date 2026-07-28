@@ -53,7 +53,8 @@ class DashboardController extends Controller
                     ->where('orders.status', 'paid')
                     ->selectRaw('DATE(orders.created_at) as date, SUM(order_items.quantity * order_items.price) as revenue, SUM(order_items.quantity * order_items.cost_price) as cogs')
                     ->groupBy(\Illuminate\Support\Facades\DB::raw('DATE(orders.created_at)'))
-                    ->orderBy('date', 'asc');
+                    ->orderBy('date', 'desc')
+                    ->take(60);
 
                 if ($startDate) {
                     $start = strlen($startDate) === 10 ? $startDate . ' 00:00:00' : $startDate;

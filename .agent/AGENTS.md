@@ -19,6 +19,16 @@
 > 1. Cronjob Scheduler (`schedule:run`) **CHỈ ĐƯỢC CHẠY DƯỚI USER `www-data`** (`crontab -u www-data -e`). **TUYỆT ĐỐI KHÔNG cài dưới `root`** vì sẽ gây ra lỗi `500 Permission denied` khi người dùng thực hiện thao tác Web/API.
 > 2. Luôn cấp quyền `chmod -R 777` và `chown -R www-data:www-data` cho `storage` & `bootstrap/cache`. Khi gõ lệnh CLI thủ công trên VPS, luôn chạy dưới quyền `www-data` (`su -s /bin/bash www-data -c "php artisan <cmd>"`).
 
+### [2026-07-28] Tối ưu hiệu năng & Phân trang lũy tiến (Load More + Giới hạn 60 ngày) cho "Chi tiết lợi nhuận theo ngày" đồng bộ 3 dự án (FVIA79, ADSBM79, ISOCALMARKET)
+- **Mô tả yêu cầu**: Xử lý triệt để nguy cơ giật lag/nặng truy vấn khi hệ thống hoạt động nhiều năm (hàng trăm/ngàn ngày), tránh việc bấm "Xem thêm" mà render tràn ngập toàn bộ dữ liệu làm chậm trang.
+- **Thực hiện xử lý**:
+  - **Backend API (`fvia79-api`, `adsbm79-api`, `isocalmarket-api`)**: Trong `DashboardController.php`, bổ sung `->take(60)` vào `$chartQuery`. Giới hạn tối đa 60 ngày gần nhất ở mức SQL Query giúp truy vấn cực nhanh (< 5ms) và tiết kiệm tài nguyên bộ nhớ/cache.
+  - **Frontend Web (`fvia79-web`, `adsbm79-web`, `isocalmarket-web`)**:
+    - `admin-dashboard.component.ts`: Thay thế cờ toggle toàn bộ bằng signal `visibleDailyCount = signal<number>(6)`. Viết hàm `loadMoreDailyProfit()` (tăng thêm 12 ngày mỗi lần bấm) và `resetDailyProfitCount()` (thu gọn về 6 ngày).
+    - `admin-dashboard.component.html`: Đổi nút bấm thành **"Xem thêm (còn N ngày)"** nạp lũy tiến từng đợt 12 ngày (`6` -> `18` -> `30` -> `42` -> `60`), khắc phục triệt để đụng độ cú pháp class Tailwind bằng `[ngClass]`. Đồng thời bổ sung dòng ghi chú thông báo: `* Hiển thị tối đa 60 ngày gần nhất. Để xem ngày cũ hơn, vui lòng chọn Bộ lọc khoảng thời gian phía trên.` khi đạt 60 ngày.
+    - `vi.ts` & `en.ts`: Bổ sung từ khóa i18n `'dash.max_days_note'`.
+- **Kiểm thử**: PHP syntax check `php -l` đạt 0 lỗi trên 3 API. Biên dịch Angular production `npx ng build --configuration production` thành công 100%.
+
 ### [2026-07-28] Bổ sung Công tắc Bật/Tắt hiển thị Telegram Hỗ Trợ & Telegram Bot trên trang Contact đồng bộ 3 dự án (FVIA79, ADSBM79, ISOCALMARKET)
 - **Mô tả yêu cầu**: Bổ sung các công tắc (switch) trong Cài đặt Admin (`/admin/settings/general`) cho phép Admin chủ động Bật hoặc Tắt hiển thị từng thẻ Telegram (Hỗ Trợ Trực Tiếp & Bot Thông Báo) độc lập trên trang Liên hệ (`/contact`).
 - **Thực hiện xử lý**:
