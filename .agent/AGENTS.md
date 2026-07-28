@@ -18,6 +18,15 @@
 > **QUY TẮC BẮT BUỘC CRONJOB & PHÂN QUYỀN CACHE STORAGE**:
 > 1. Cronjob Scheduler (`schedule:run`) **CHỈ ĐƯỢC CHẠY DƯỚI USER `www-data`** (`crontab -u www-data -e`). **TUYỆT ĐỐI KHÔNG cài dưới `root`** vì sẽ gây ra lỗi `500 Permission denied` khi người dùng thực hiện thao tác Web/API.
 > 2. Luôn cấp quyền `chmod -R 777` và `chown -R www-data:www-data` cho `storage` & `bootstrap/cache`. Khi gõ lệnh CLI thủ công trên VPS, luôn chạy dưới quyền `www-data` (`su -s /bin/bash www-data -c "php artisan <cmd>"`).
+### [2026-07-28] Vô Hiệu Hóa Tạm Thời API & Modal Thông Báo Nạp Tiền unseen-success Phía FE Đồng Bộ 3 Dự Án (FVIA79, ADSBM79, ISOCALMARKET)
+- **Mô tả yêu cầu**:
+  Tạm thời vô hiệu hóa tính năng tự động gọi API `unseen-success` và bật Modal thông báo nạp tiền thành công ở phía Frontend (FE) trên cả 3 dự án theo yêu cầu trực tiếp từ khách hàng.
+- **Thực hiện xử lý**:
+  - **Frontend Web (`fvia79-web`, `adsbm79-web`, `isocalmarket-web`)**:
+    - `app.ts`: Đặt lệnh `return;` ngay đầu phương thức `checkUnseenDeposit()`. Đảm bảo 0% request `unseen-success` được khởi tạo và 0 Modal thông báo bật lên trên toàn bộ giao diện người dùng.
+- **Kiểm thử**: Biên dịch Angular production `npx ng build --configuration production` thành công 100%.
+
+
 ### [2026-07-28] Triển Khai (Deploy) FE & BE Hoàn Chỉnh 3 Dự Án Lên VPS & Kiểm Tra API Thành Công (FVIA79, ADSBM79, ISOCALMARKET)
 - **Mô tả yêu cầu**:
   Triển khai (deploy) toàn bộ Frontend Angular mới nhất và Backend Laravel mới nhất cho 3 dự án (`FVIA79`, `ADSBM79`, `ISOCALMARKET`) lên 3 máy chủ VPS độc lập tương ứng theo thông tin cấu hình tại file `deploy.md` của mỗi dự án. Yêu cầu giữ nguyên CSDL hiện có (không xóa hay migrate fresh/seed), dọn dẹp và tái tạo bộ nhớ đệm (cache) hoàn toàn sau khi deploy, và thực hiện kiểm tra hoạt động API của cả 3 trang web sau khi hoàn tất.
