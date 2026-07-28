@@ -19,6 +19,15 @@
 > 1. Cronjob Scheduler (`schedule:run`) **CHỈ ĐƯỢC CHẠY DƯỚI USER `www-data`** (`crontab -u www-data -e`). **TUYỆT ĐỐI KHÔNG cài dưới `root`** vì sẽ gây ra lỗi `500 Permission denied` khi người dùng thực hiện thao tác Web/API.
 > 2. Luôn cấp quyền `chmod -R 777` và `chown -R www-data:www-data` cho `storage` & `bootstrap/cache`. Khi gõ lệnh CLI thủ công trên VPS, luôn chạy dưới quyền `www-data` (`su -s /bin/bash www-data -c "php artisan <cmd>"`).
 
+### [2026-07-28] Thêm Card "Tài nguyên đã phân phối (Định dạng |)" tại trang Chi tiết đơn hàng đồng bộ 3 dự án (FVIA79, ADSBM79, ISOCALMARKET)
+- **Mô tả yêu cầu**: Hiển thị thêm 1 Card mới định dạng các chuỗi dữ liệu tài nguyên đã phân phối (JSON Object/Array hay text thô) về dạng phân cách bởi dấu pipe `val1|val2|val3...` giúp người dùng dễ dàng sao chép và đưa vào các công cụ tự động.
+- **Thực hiện xử lý**:
+  - **Frontend Web (`fvia79-web`, `adsbm79-web`, `isocalmarket-web`)**:
+    - `order-detail.component.ts`: Viết hàm `formatPipeData(data: string)` tự động bóc tách các giá trị từ JSON object/array thành chuỗi `val1|val2|...` (nếu là chuỗi thường thì giữ nguyên). Bổ sung phương thức `downloadAccountsPipe()` (tải xuống file `.txt` chứa các dòng tài nguyên dạng Pipe) và `copyAllPipeAccounts()` (sao chép toàn bộ tài nguyên dạng Pipe vào bộ nhớ tạm).
+    - `order-detail.component.html`: Bổ sung Card thứ 2 **"TÀI NGUYÊN ĐÃ PHÂN PHỐI (ĐỊNH DẠNG |)"** với viền viền màu ngọc emerald nổi bật, tích hợp nút "Tải file Pipe (.txt)", nút "Sao chép tất cả" và nút "Sao chép" riêng biệt cho từng dòng tài nguyên.
+    - `vi.ts` & `en.ts`: Bổ sung các từ khóa i18n đa ngôn ngữ cho tính năng mới (`orders.distributed_resources_pipe`, `orders.download_txt_pipe`, `orders.copy_all`, `orders.copy_pipe_tooltip`,...).
+- **Kiểm thử**: Đã biên dịch thành công Angular production `npx ng build --configuration production` đạt 0 lỗi.
+
 ### [2026-07-28] Phát triển Thống kê Tổng Nạp Tiền (Hôm nay, Tháng này & Bộ lọc theo Ngày/Tháng/Năm) tại Admin Dashboard dự án FVIA79
 - **Mô tả yêu cầu**: Bổ sung hiển thị tổng tiền nạp hôm nay, tổng tiền nạp cả tháng và tổng tiền nạp có thể tra cứu theo bất kỳ khoảng thời gian nào (ngày, tháng, năm) với bộ lọc thời gian tại trang Admin Dashboard của dự án FVIA79.
 - **Thực hiện xử lý**:

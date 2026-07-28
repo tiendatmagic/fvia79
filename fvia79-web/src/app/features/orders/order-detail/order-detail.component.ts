@@ -102,5 +102,57 @@ export class OrderDetailComponent implements OnInit {
     URL.revokeObjectURL(url);
     this.state.showToast(this.lang.translate('toast.accounts_downloaded'), 'success');
   }
+
+  public formatPipeData(data: string): string {
+    if (!data) return '';
+    const trimmed = data.trim();
+    if ((trimmed.startsWith('{') && trimmed.endsWith('}')) || (trimmed.startsWith('[') && trimmed.endsWith(']'))) {
+      try {
+        const parsed = JSON.parse(trimmed);
+        if (Array.isArray(parsed)) {
+          return parsed
+            .map((item) =>
+              typeof item === 'object' && item !== null ? Object.values(item).join('|') : String(item)
+            )
+            .join('|');
+        }
+        if (typeof parsed === 'object' && parsed !== null) {
+          return Object.values(parsed)
+            .map((val) => (typeof val === 'object' && val !== null ? JSON.stringify(val) : String(val)))
+            .join('|');
+        }
+      } catch (e) {
+        // Fallback to original string if not valid JSON
+      }
+    }
+    return data;
+  }
+
+  public downloadAccountsPipe() {
+    const detail = this.orderDetails();
+    if (!detail || !detail.accounts || detail.accounts.length === 0) return;
+
+    const content = detail.accounts.map((acc: any) => this.formatPipeData(acc.data)).join('\n');
+    const blob = new Blob([content], { type: 'text/plain;charset=utf-8' });
+    const url = URL.createObjectURL(blob);
+
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = `fvia79_${detail.order_code}_accounts_pipe.txt`;
+    document.body.appendChild(a);
+    a.click();
+
+    document.body.removeChild(a);
+    URL.revokeObjectURL(url);
+    this.state.showToast(this.lang.translate('toast.accounts_downloaded'), 'success');
+  }
+
+  public copyAllPipeAccounts() {
+    const detail = this.orderDetails();
+    if (!detail || !detail.accounts || detail.accounts.length === 0) return;
+
+    const content = detail.accounts.map((acc: any) => this.formatPipeData(acc.data)).join('\n');
+    this.copyToClipboard(content);
+  }
 }
 
