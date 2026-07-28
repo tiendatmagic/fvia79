@@ -19,6 +19,16 @@
 > 1. Cronjob Scheduler (`schedule:run`) **CHỈ ĐƯỢC CHẠY DƯỚI USER `www-data`** (`crontab -u www-data -e`). **TUYỆT ĐỐI KHÔNG cài dưới `root`** vì sẽ gây ra lỗi `500 Permission denied` khi người dùng thực hiện thao tác Web/API.
 > 2. Luôn cấp quyền `chmod -R 777` và `chown -R www-data:www-data` cho `storage` & `bootstrap/cache`. Khi gõ lệnh CLI thủ công trên VPS, luôn chạy dưới quyền `www-data` (`su -s /bin/bash www-data -c "php artisan <cmd>"`).
 
+### [2026-07-28] Phát triển Thống kê Tổng Nạp Tiền (Hôm nay, Tháng này & Bộ lọc theo Ngày/Tháng/Năm) tại Admin Dashboard dự án FVIA79
+- **Mô tả yêu cầu**: Bổ sung hiển thị tổng tiền nạp hôm nay, tổng tiền nạp cả tháng và tổng tiền nạp có thể tra cứu theo bất kỳ khoảng thời gian nào (ngày, tháng, năm) với bộ lọc thời gian tại trang Admin Dashboard của dự án FVIA79.
+- **Thực hiện xử lý**:
+  - **Backend API (`fvia79-api`)**:
+    - `DashboardController.php`: Import `DepositModel`, tính toán tổng nạp tiền hoàn tất (`status = 'completed'`) cho 3 mốc: `$totalDepositToday` (hôm nay), `$totalDepositMonth` (tháng hiện tại) và `$totalDepositFiltered` (theo khoảng thời gian lọc `$startDate` đến `$endDate`). Trả về cả 3 thuộc tính trong JSON API `/api/v1/admin/dashboard-stats`.
+  - **Frontend Web (`fvia79-web`)**:
+    - `vi.ts` & `en.ts`: Thêm đầy đủ từ khóa i18n đa ngôn ngữ cho 3 thẻ nạp tiền (`dash.total_deposit_today`, `dash.total_deposit_month`, `dash.total_deposit_filtered`,...).
+    - `admin-dashboard.component.html`: Thiết kế 3 thẻ Card hiển thị số liệu nạp tiền sắc nét (Cyan, Violet, Rose) với icon `wallet`, `calendar`, `cash` và badge tương ứng. Bổ sung 3 thẻ Skeleton Loading mượt mà khi dữ liệu đang tải.
+- **Kiểm thử**: PHP syntax check `php -l` đạt 0 lỗi. Biên dịch Angular production `npx ng build --configuration production` thành công 100%.
+
 ### [2026-07-28] Tối ưu hiệu năng & Phân trang lũy tiến (Load More + Giới hạn 60 ngày) cho "Chi tiết lợi nhuận theo ngày" đồng bộ 3 dự án (FVIA79, ADSBM79, ISOCALMARKET)
 - **Mô tả yêu cầu**: Xử lý triệt để nguy cơ giật lag/nặng truy vấn khi hệ thống hoạt động nhiều năm (hàng trăm/ngàn ngày), tránh việc bấm "Xem thêm" mà render tràn ngập toàn bộ dữ liệu làm chậm trang.
 - **Thực hiện xử lý**:

@@ -6,6 +6,7 @@ use App\Infrastructure\Persistence\Eloquent\OrderModel;
 use App\Infrastructure\Persistence\Eloquent\ProductModel;
 use App\Infrastructure\Persistence\Eloquent\InventoryBatchModel;
 use App\Infrastructure\Persistence\Eloquent\UserModel;
+use App\Infrastructure\Persistence\Eloquent\DepositModel;
 use Illuminate\Http\Request;
 
 class DashboardController extends Controller
@@ -43,6 +44,32 @@ class DashboardController extends Controller
                 $totalOrders = $ordersQuery->count();
                 $totalProducts = ProductModel::where('status', 'active')->count();
                 $totalUsers = UserModel::count();
+
+                // Calculate completed deposits stats in base USDT/USD currency (Today, Month, Filtered range)
+                $todayStart = \Carbon\Carbon::now()->startOfDay()->toDateTimeString();
+                $todayEnd = \Carbon\Carbon::now()->endOfDay()->toDateTimeString();
+                $totalDepositToday = (float) DepositModel::where('status', 'completed')
+                    ->where('created_at', '>=', $todayStart)
+                    ->where('created_at', '<=', $todayEnd)
+                    ->sum('amount_usdt');
+
+                $monthStart = \Carbon\Carbon::now()->startOfMonth()->toDateTimeString();
+                $monthEnd = \Carbon\Carbon::now()->endOfMonth()->toDateTimeString();
+                $totalDepositMonth = (float) DepositModel::where('status', 'completed')
+                    ->where('created_at', '>=', $monthStart)
+                    ->where('created_at', '<=', $monthEnd)
+                    ->sum('amount_usdt');
+
+                $depositQuery = DepositModel::where('status', 'completed');
+                if ($startDate) {
+                    $start = strlen($startDate) === 10 ? $startDate . ' 00:00:00' : $startDate;
+                    $depositQuery->where('created_at', '>=', $start);
+                }
+                if ($endDate) {
+                    $end = strlen($endDate) === 10 ? $endDate . ' 23:59:59' : $endDate;
+                    $depositQuery->where('created_at', '<=', $end);
+                }
+                $totalDepositFiltered = (float) $depositQuery->sum('amount_usdt');
 
                 $cogsQuery = \App\Infrastructure\Persistence\Eloquent\OrderItemModel::query()
                     ->join('orders', 'order_items.order_id', '=', 'orders.id')
@@ -149,6 +176,9 @@ class DashboardController extends Controller
                     'total_products' => $totalProducts,
                     'total_available_inventory' => $totalAvailableInventory,
                     'total_users' => $totalUsers,
+                    'total_deposit_today' => $totalDepositToday,
+                    'total_deposit_month' => $totalDepositMonth,
+                    'total_deposit_filtered' => $totalDepositFiltered,
                     'low_stock_products' => [
                         'data' => $lowStockProducts,
                         'current_page' => $paginator->currentPage(),

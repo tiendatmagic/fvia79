@@ -37,19 +37,131 @@
 
   <div
     *ngIf="loading()"
-    class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 2xl:grid-cols-6 gap-4"
+    class="space-y-4"
+  >
+    <div class="grid grid-cols-1 sm:grid-cols-3 gap-4">
+      <app-card
+        *ngFor="let i of [1, 2, 3]"
+        class="flex flex-col justify-between min-h-[136px] h-auto p-4 md:p-5 overflow-hidden"
+      >
+        <div class="flex items-center justify-between">
+          <div class="h-2.5 bg-slate-200 dark:bg-slate-800 rounded-md w-24 animate-pulse"></div>
+          <div class="w-9 h-9 shrink-0 aspect-square rounded-full bg-slate-200 dark:bg-slate-800 animate-pulse"></div>
+        </div>
+        <div class="space-y-2 mt-2 animate-pulse">
+          <div class="h-6 bg-slate-200 dark:bg-slate-800 rounded-lg w-2/3"></div>
+          <div class="h-5 bg-slate-200 dark:bg-slate-800 rounded-md w-16"></div>
+        </div>
+      </app-card>
+    </div>
+    <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 2xl:grid-cols-6 gap-4">
+      <app-card
+        *ngFor="let i of [1, 2, 3, 4, 5, 6]"
+        class="flex flex-col justify-between min-h-[136px] h-auto p-4 md:p-5 overflow-hidden"
+      >
+        <div class="flex items-center justify-between">
+          <div class="h-2.5 bg-slate-200 dark:bg-slate-800 rounded-md w-24 animate-pulse"></div>
+          <div class="w-9 h-9 shrink-0 aspect-square rounded-full bg-slate-200 dark:bg-slate-800 animate-pulse"></div>
+        </div>
+        <div class="space-y-2 mt-2 animate-pulse">
+          <div class="h-6 bg-slate-200 dark:bg-slate-800 rounded-lg w-2/3"></div>
+          <div class="h-5 bg-slate-200 dark:bg-slate-800 rounded-md w-16"></div>
+        </div>
+      </app-card>
+    </div>
+  </div>
+
+  <div
+    *ngIf="!loading() && stats()"
+    class="grid grid-cols-1 sm:grid-cols-3 gap-4"
   >
     <app-card
-      *ngFor="let i of [1, 2, 3, 4, 5, 6]"
-      class="flex flex-col justify-between min-h-[136px] h-auto p-4 md:p-5 overflow-hidden"
+      class="flex flex-col justify-between min-h-[136px] h-auto p-4 md:p-5 overflow-hidden border-l-4 border-l-cyan-500"
     >
       <div class="flex items-center justify-between">
-        <div class="h-2.5 bg-slate-200 dark:bg-slate-800 rounded-md w-24 animate-pulse"></div>
-        <div class="w-9 h-9 shrink-0 aspect-square rounded-full bg-slate-200 dark:bg-slate-800 animate-pulse"></div>
+        <span class="text-xs font-bold text-slate-400 dark:text-slate-500 uppercase tracking-wider">
+          {{ 'dash.total_deposit_today' | translate }}
+        </span>
+        <div
+          class="w-9 h-9 shrink-0 aspect-square rounded-full bg-cyan-50 dark:bg-cyan-950/30 flex items-center justify-center text-cyan-500"
+        >
+          <app-icon name="wallet" class="w-4.5 h-4.5" />
+        </div>
       </div>
-      <div class="space-y-2 mt-2 animate-pulse">
-        <div class="h-6 bg-slate-200 dark:bg-slate-800 rounded-lg w-2/3"></div>
-        <div class="h-5 bg-slate-200 dark:bg-slate-800 rounded-md w-16"></div>
+      <div class="space-y-1.5 mt-2">
+        <h2
+          class="text-lg md:text-xl font-black text-cyan-600 dark:text-cyan-400 tracking-tight leading-none whitespace-nowrap"
+        >
+          {{ stats()?.total_deposit_today | appCurrency }}
+        </h2>
+        <app-badge
+          variant="primary"
+          class="!bg-cyan-500/10 dark:!bg-cyan-500/20 !text-cyan-600 dark:!text-cyan-400"
+          size="sm"
+          rounded="md"
+        >
+          {{ 'dash.deposit_today_badge' | translate }}
+        </app-badge>
+      </div>
+    </app-card>
+
+    <app-card
+      class="flex flex-col justify-between min-h-[136px] h-auto p-4 md:p-5 overflow-hidden border-l-4 border-l-violet-500"
+    >
+      <div class="flex items-center justify-between">
+        <span class="text-xs font-bold text-slate-400 dark:text-slate-500 uppercase tracking-wider">
+          {{ 'dash.total_deposit_month' | translate }}
+        </span>
+        <div
+          class="w-9 h-9 shrink-0 aspect-square rounded-full bg-violet-50 dark:bg-violet-950/30 flex items-center justify-center text-violet-500"
+        >
+          <app-icon name="calendar" class="w-4.5 h-4.5" />
+        </div>
+      </div>
+      <div class="space-y-1.5 mt-2">
+        <h2
+          class="text-lg md:text-xl font-black text-violet-600 dark:text-violet-400 tracking-tight leading-none whitespace-nowrap"
+        >
+          {{ stats()?.total_deposit_month | appCurrency }}
+        </h2>
+        <app-badge
+          variant="primary"
+          class="!bg-violet-500/10 dark:!bg-violet-500/20 !text-violet-600 dark:!text-violet-400"
+          size="sm"
+          rounded="md"
+        >
+          {{ 'dash.deposit_month_badge' | translate }}
+        </app-badge>
+      </div>
+    </app-card>
+
+    <app-card
+      class="flex flex-col justify-between min-h-[136px] h-auto p-4 md:p-5 overflow-hidden border-l-4 border-l-rose-500"
+    >
+      <div class="flex items-center justify-between">
+        <span class="text-xs font-bold text-slate-400 dark:text-slate-500 uppercase tracking-wider">
+          {{ 'dash.total_deposit_filtered' | translate }}
+        </span>
+        <div
+          class="w-9 h-9 shrink-0 aspect-square rounded-full bg-rose-50 dark:bg-rose-950/30 flex items-center justify-center text-rose-500"
+        >
+          <app-icon name="cash" class="w-4.5 h-4.5" />
+        </div>
+      </div>
+      <div class="space-y-1.5 mt-2">
+        <h2
+          class="text-lg md:text-xl font-black text-rose-600 dark:text-rose-400 tracking-tight leading-none whitespace-nowrap"
+        >
+          {{ stats()?.total_deposit_filtered | appCurrency }}
+        </h2>
+        <app-badge
+          variant="primary"
+          class="!bg-rose-500/10 dark:!bg-rose-500/20 !text-rose-600 dark:!text-rose-400"
+          size="sm"
+          rounded="md"
+        >
+          {{ 'dash.deposit_filtered_badge' | translate }}
+        </app-badge>
       </div>
     </app-card>
   </div>
