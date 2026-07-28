@@ -209,10 +209,10 @@
             <button
               type="button"
               (click)="copyText(invoice.amountToPay.toString(), lang.translate('invoice.amount_to_send'))"
-              class="p-1.5 rounded-lg hover:bg-slate-200/50 dark:hover:bg-slate-800 text-slate-400 hover:text-[var(--color-primary)] active:scale-95 transition-all shrink-0 cursor-pointer"
+              class="w-7 h-7 sm:w-8 sm:h-8 rounded-lg flex items-center justify-center bg-slate-200/60 dark:bg-slate-800 hover:bg-slate-300/80 dark:hover:bg-slate-700 text-slate-500 dark:text-slate-400 hover:text-[var(--color-primary)] active:scale-95 transition-all shrink-0 cursor-pointer"
               [title]="'invoice.copy_amount' | translate"
             >
-              <app-icon name="copy" class="w-4 h-4" />
+              <app-icon name="copy" class="w-4 h-4 shrink-0" />
             </button>
           </div>
         </div>

@@ -91,10 +91,10 @@
         <button
           type="button"
           (click)="copyText(invoice.adminWalletAddress, lang.translate('deposit.wallet_label'))"
-          class="text-[var(--color-primary)] hover:text-primary-dark transition-colors p-1"
+          class="w-6 h-6 rounded flex items-center justify-center text-[var(--color-primary)] hover:bg-slate-100 dark:hover:bg-slate-800 transition-colors shrink-0 cursor-pointer"
           [title]="'deposit.copy_platform_wallet' | translate"
         >
-          <app-icon name="copy" class="w-3.5 h-3.5" />
+          <app-icon name="copy" class="w-3.5 h-3.5 shrink-0" />
         </button>
       </div>
     </div>
@@ -109,11 +109,11 @@
           <div class="flex gap-1.5">
             <button
               type="button"
-          (click)="copyText(invoice.txHash, lang.translate('deposit.tx_hash_label'))"
-              class="text-emerald-600 dark:text-emerald-400 p-1 hover:scale-105"
-          [title]="'deposit.copy_tx_hash' | translate"
+              (click)="copyText(invoice.txHash, lang.translate('deposit.tx_hash_label'))"
+              class="w-6 h-6 rounded flex items-center justify-center text-emerald-600 dark:text-emerald-400 hover:bg-emerald-500/10 transition-colors shrink-0 cursor-pointer"
+              [title]="'deposit.copy_tx_hash' | translate"
             >
-              <app-icon name="copy" class="w-3.5 h-3.5" />
+              <app-icon name="copy" class="w-3.5 h-3.5 shrink-0" />
             </button>
             <a
               [href]="'https://bscscan.com/tx/' + invoice.txHash"

@@ -18,6 +18,23 @@
 > **QUY TẮC BẮT BUỘC CRONJOB & PHÂN QUYỀN CACHE STORAGE**:
 > 1. Cronjob Scheduler (`schedule:run`) **CHỈ ĐƯỢC CHẠY DƯỚI USER `www-data`** (`crontab -u www-data -e`). **TUYỆT ĐỐI KHÔNG cài dưới `root`** vì sẽ gây ra lỗi `500 Permission denied` khi người dùng thực hiện thao tác Web/API.
 > 2. Luôn cấp quyền `chmod -R 777` và `chown -R www-data:www-data` cho `storage` & `bootstrap/cache`. Khi gõ lệnh CLI thủ công trên VPS, luôn chạy dưới quyền `www-data` (`su -s /bin/bash www-data -c "php artisan <cmd>"`).
+### [2026-07-28] Rà Soát & Chuẩn Hóa Toàn Bộ Nút Sao Chép Icon (Copy Button) Thành Hình Vuông Căn Giữa Đồng Bộ 3 Dự Án (FVIA79, ADSBM79, ISOCALMARKET)
+- **Mô tả yêu cầu**:
+  Rà soát toàn bộ tệp giao diện HTML trên cả 3 dự án (`FVIA79`, `ADSBM79`, `ISOCALMARKET`), tìm kiếm và chuẩn hóa tất cả các nút sao chép biểu tượng (icon-only copy buttons) ở mọi trang (Nạp tiền, Đơn hàng, Kho tài nguyên, Quản lý người dùng, Mã giảm giá, Tài khoản API) để đảm bảo nút luôn có tỉ lệ hình vuông 100% (`w-* h-*`), căn giữa icon tuyệt đối cả 2 chiều và không bao giờ bị lệch hay méo khung.
+- **Thực hiện xử lý**:
+  - **Frontend Web (`fvia79-web`, `adsbm79-web`, `isocalmarket-web`)**:
+    - `deposit-invoice.component.html`: Chuẩn hóa nút sao chép số tiền nạp sang `w-7 h-7 sm:w-8 sm:h-8 rounded-lg flex items-center justify-center bg-slate-200/60 dark:bg-slate-800 hover:bg-slate-300/80 dark:hover:bg-slate-700 text-slate-500 dark:text-slate-400 hover:text-[var(--color-primary)] active:scale-95 transition-all shrink-0 cursor-pointer`.
+    - `deposit-detail-modal.component.html`: Chuẩn hóa các nút copy địa chỉ ví & TxHash thành `w-6 h-6 rounded flex items-center justify-center ... shrink-0 cursor-pointer`.
+    - `order-detail.component.html`: Chuẩn hóa nút copy mã đơn hàng thành `w-6 h-6 rounded flex items-center justify-center ... shrink-0 cursor-pointer`.
+    - `orders.component.html` & `admin-orders.component.html`: Chuẩn hóa nút copy mã đơn hàng trong bảng thành `w-6 h-6 rounded flex items-center justify-center ... shrink-0 cursor-pointer`.
+    - `products.component.html`: Chuẩn hóa nút copy ID sản phẩm trong bảng thành `w-6 h-6 rounded flex items-center justify-center ... shrink-0 cursor-pointer`.
+    - `inventory.component.html`: Chuẩn hóa các nút copy ID tài nguyên & chuỗi secret thành `w-6 h-6 rounded flex items-center justify-center ... shrink-0 cursor-pointer`.
+    - `admin-users.component.html`: Chuẩn hóa các nút copy UID người dùng & API Key thành `w-6 h-6 rounded flex items-center justify-center ... shrink-0 cursor-pointer`.
+    - `admin-coupons.component.html`: Chuẩn hóa nút copy mã giảm giá thành `w-6 h-6 rounded flex items-center justify-center ... shrink-0 cursor-pointer`.
+    - `user-api.component.html`: Chuẩn hóa nút copy API Key thành `w-7 h-7 rounded-lg flex items-center justify-center ... shrink-0 cursor-pointer`.
+- **Kiểm thử**: Đã chạy build Angular production thành công 100% không có lỗi.
+
+
 ### [2026-07-28] Ghi chú cấu hình .env & Quy trình xóa Cache trên VPS vào file deploy.md đồng bộ 3 dự án (FVIA79, ADSBM79, ISOCALMARKET)
 - **Mô tả yêu cầu**:
   Bổ sung phần ghi chú chi tiết `## ⚙️ 5. Cấu Hình Biến Môi Trường (.env) & Quy Trình Cache VPS` vào tệp hướng dẫn triển khai `deploy.md` của cả 3 dự án (`FVIA79`, `ADSBM79`, `ISOCALMARKET`), ghi rõ cấu hình bắt buộc `FEATURE_MEMBERSHIP_TIERS_ENABLED=true` cho `FVIA79` và `ISOCALMARKET`, riêng `FVIA79` bổ sung `FEATURE_COUPONS_ENABLED=false` và chuỗi lệnh xóa cache đệm Laravel bắt buộc sau khi deploy hoặc sửa `.env`.

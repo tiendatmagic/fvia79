@@ -135,10 +135,10 @@
             </span>
             <button
               (click)="copyToClipboard(row.id); $event.stopPropagation()"
-              class="p-1 hover:bg-slate-100 dark:hover:bg-slate-800 rounded transition-colors text-slate-400 hover:text-slate-600 cursor-pointer"
+              class="w-6 h-6 rounded flex items-center justify-center hover:bg-slate-100 dark:hover:bg-slate-800 transition-colors text-slate-400 hover:text-slate-600 cursor-pointer shrink-0"
               [appTooltip]="'common.copy_id' | translate"
             >
-              <app-icon name="copy" class="w-3.5 h-3.5" />
+              <app-icon name="copy" class="w-3.5 h-3.5 shrink-0" />
             </button>
           </div>
         </ng-template>
@@ -267,10 +267,10 @@
             </span>
             <button
               (click)="copyToClipboard(row.id); $event.stopPropagation()"
-              class="p-1 hover:bg-slate-100 dark:hover:bg-slate-800 rounded transition-colors text-slate-400 hover:text-slate-600 cursor-pointer"
+              class="w-6 h-6 rounded flex items-center justify-center hover:bg-slate-100 dark:hover:bg-slate-800 transition-colors text-slate-400 hover:text-slate-600 cursor-pointer shrink-0"
               [appTooltip]="'common.copy_id' | translate"
             >
-              <app-icon name="copy" class="w-3.5 h-3.5" />
+              <app-icon name="copy" class="w-3.5 h-3.5 shrink-0" />
             </button>
           </div>
         </ng-template>
@@ -314,10 +314,10 @@
             </button>
             <button
               (click)="copyToClipboard(row.secret_data, 'toast.resource_copied')"
-              class="p-1 hover:bg-slate-100 dark:hover:bg-slate-800 rounded transition-colors text-slate-400 hover:text-slate-600 shrink-0 cursor-pointer"
+              class="w-6 h-6 rounded flex items-center justify-center hover:bg-slate-100 dark:hover:bg-slate-800 transition-colors text-slate-400 hover:text-slate-600 shrink-0 cursor-pointer"
               [appTooltip]="'inventory.copy_resource_tooltip' | translate"
             >
-              <app-icon name="copy" class="w-3.5 h-3.5" />
+              <app-icon name="copy" class="w-3.5 h-3.5 shrink-0" />
             </button>
           </div>
         </ng-template>
