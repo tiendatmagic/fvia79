@@ -37,6 +37,14 @@ export class DepositStore {
     );
   }
 
+  public checkUnseenSuccessDeposit(): Observable<{ deposit: DepositHistoryItem | null }> {
+    return this.api.get<{ deposit: DepositHistoryItem | null }>('v1/deposit/unseen-success');
+  }
+
+  public markDepositSeen(id: string): Observable<{ success: boolean }> {
+    return this.api.post<{ success: boolean }>(`v1/deposit/mark-seen/${id}`, {});
+  }
+
   public createDeposit(amountUsdt: number, paymentMethod: string = 'bep20', payerBinanceId?: string): Observable<{ message: string; invoice: DepositHistoryItem }> {
     const body: any = {
       amount_usdt: amountUsdt,

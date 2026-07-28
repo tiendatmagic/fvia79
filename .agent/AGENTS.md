@@ -18,6 +18,20 @@
 > **QUY TẮC BẮT BUỘC CRONJOB & PHÂN QUYỀN CACHE STORAGE**:
 > 1. Cronjob Scheduler (`schedule:run`) **CHỈ ĐƯỢC CHẠY DƯỚI USER `www-data`** (`crontab -u www-data -e`). **TUYỆT ĐỐI KHÔNG cài dưới `root`** vì sẽ gây ra lỗi `500 Permission denied` khi người dùng thực hiện thao tác Web/API.
 > 2. Luôn cấp quyền `chmod -R 777` và `chown -R www-data:www-data` cho `storage` & `bootstrap/cache`. Khi gõ lệnh CLI thủ công trên VPS, luôn chạy dưới quyền `www-data` (`su -s /bin/bash www-data -c "php artisan <cmd>"`).
+### [2026-07-28] Phát triển Tự động Bật Modal Nạp Tiền Thành Công & Đồng Bộ Số Dư Khi Đăng Nhập Lại / Chuyển Trang Đồng Bộ 3 Dự Án (FVIA79, ADSBM79, ISOCALMARKET)
+- **Mô tả yêu cầu**:
+  Giải quyết trường hợp khi người dùng đã chuyển khoản nạp tiền nhưng trình duyệt bị trôi phiên (Token 401), tắt trang hoặc chuyển sang trang khác: Ngay khi người dùng đăng nhập lại hoặc chuyển sang bất kỳ trang nào trên website, hệ thống sẽ tự động nhận diện khoản nạp đã hoàn tất, tự động cập nhật ngay số dư ví mới trên Header và bật Modal Thông báo Nạp tiền Thành công cho người dùng.
+- **Thực hiện xử lý**:
+  - **Backend API (`fvia79-api`, `adsbm79-api`, `isocalmarket-api`)**:
+    - Migration: Tạo tệp migration `2026_07_28_210000_add_user_notified_to_deposits_table.php` bổ sung cột `user_notified` (`boolean`, mặc định `false`).
+    - `routes/api.php`: Bổ sung 2 tuyến đường API `GET /api/v1/deposit/unseen-success` và `POST /api/v1/deposit/mark-seen/{id}`.
+    - `DepositController.php`: Viết 2 phương thức `getUnseenSuccessDeposit()` và `markDepositSeen($id)`. Tích hợp đánh dấu `user_notified = true` khi người dùng xem hóa đơn hoàn tất trực tiếp hoặc khi check thành công trên trang Hóa đơn.
+  - **Frontend Web (`fvia79-web`, `adsbm79-web`, `isocalmarket-web`)**:
+    - `deposit.store.ts`: Thêm 2 phương thức `checkUnseenSuccessDeposit()` và `markDepositSeen(id)`.
+    - `app.ts`: Viết hàm `checkUnseenDeposit()` gọi tự động khi khởi tạo hoặc chuyển trang (`NavigationEnd`). Khi có đơn nạp hoàn tất chưa thông báo: tự động gọi `checkMe(true)` đồng bộ số dư tươi, gọi `markDepositSeen` và kích hoạt `modalService.confirm` hiển thị Modal thông báo Nạp thành công.
+- **Kiểm thử**: PHP syntax check `php -l` đạt 0 lỗi trên 3 API. Biên dịch Angular production `npx ng build --configuration production` thành công 100%.
+
+
 ### [2026-07-28] Bổ Sung Ghi Chú Lưu Ý Khi Đã Chuyển Tiền & Liên Kết Hỗ Trợ Admin Đồng Bộ 3 Dự Án (FVIA79, ADSBM79, ISOCALMARKET)
 - **Mô tả yêu cầu**:
   Bổ sung khối ghi chú hướng dẫn màu xanh dương nổi bật trên trang Hóa đơn nạp tiền (`/deposit/invoice/:id`): nhắc nhở người dùng nếu đã chuyển tiền thì KHÔNG hủy lệnh, và tích hợp liên kết trực tiếp sang trang Liên hệ (`[routerLink]="['/contact']"`) để hỗ trợ người dùng liên hệ Admin ngay nếu sau khoảng thời gian hệ thống chưa ghi nhận.

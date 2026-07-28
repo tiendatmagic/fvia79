@@ -1,7 +1,8 @@
-import { Component, inject, OnInit, effect, signal, computed } from '@angular/core';
+import { Component, inject, OnInit, OnDestroy, effect, signal, computed } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { RouterOutlet, RouterModule, Router, NavigationEnd } from '@angular/router';
 import { filter } from 'rxjs/operators';
+import { Subscription, timer } from 'rxjs';
 import { HeaderComponent } from '@shared/layout/header/header.component';
 import { ToastComponent } from '@shared/components/toast/toast.component';
 import { IconComponent } from '@shared/components/icon/icon.component';
@@ -10,6 +11,7 @@ import { LogoComponent } from '@shared/components/logo/logo.component';
 import { ThemeSwitcherComponent } from '@shared/components/theme-switcher/theme-switcher.component';
 import { StateService } from '@core/services/state.service';
 import { LanguageService } from '@core/services/language.service';
+import { ModalService } from '@core/services/modal.service';
 import { MaintenanceComponent } from '@features/maintenance/maintenance.component';
 import { TranslatePipe } from '@shared/pipes/translate.pipe';
 
@@ -34,10 +36,11 @@ import { PublicSettingStore } from '@core/services/public-setting.store';
   templateUrl: './app.html',
   styleUrl: './app.scss'
 })
-export class App implements OnInit {
+export class App implements OnInit, OnDestroy {
   public stateService = inject(StateService);
   public publicSettingStore = inject(PublicSettingStore);
   public lang = inject(LanguageService);
+  private modalService = inject(ModalService);
   private router = inject(Router);
   public hasBeenOpened = signal<boolean>(false);
   public activeMenuState = signal<boolean>(false);
@@ -47,6 +50,14 @@ export class App implements OnInit {
   );
 
   public isBuyMenuOpen = signal<boolean>(false);
+  private isCheckingUnseenDeposit = false;
+  private hasDepositCheckFailed = false;
+  private unseenDepositTimerSub: Subscription | null = null;
+  private visibilityHandler = () => {
+    if (typeof document !== 'undefined' && !document.hidden) {
+      this.checkUnseenDeposit();
+    }
+  };
 
   public readonly sortedCategories = computed(() => {
     const cats = (this.stateService.productStore.categories() || [])
@@ -80,7 +91,25 @@ export class App implements OnInit {
 
   ngOnInit() {
     this.publicSettingStore.fetchPublicSettings().subscribe();
-    this.stateService.authStore.checkMe().subscribe();
+    this.stateService.authStore.checkMe().subscribe({
+      next: (user) => {
+        if (user) {
+          this.checkUnseenDeposit();
+        }
+      }
+    });
+
+    // Check periodically every 30 seconds ngầm
+    this.unseenDepositTimerSub = timer(15000, 30000).subscribe(() => {
+      if (typeof document !== 'undefined' && !document.hidden) {
+        this.checkUnseenDeposit();
+      }
+    });
+
+    if (typeof document !== 'undefined') {
+      document.addEventListener('visibilitychange', this.visibilityHandler);
+    }
+
     if (!this.isAuthPage()) {
       this.stateService.productStore.fetchCategories().subscribe();
     }
@@ -88,12 +117,60 @@ export class App implements OnInit {
     this.router.events.pipe(
       filter(event => event instanceof NavigationEnd)
     ).subscribe((event: any) => {
-      this.stateService.authStore.checkMe().subscribe();
+      this.stateService.authStore.checkMe().subscribe({
+        next: (user) => {
+          if (user) {
+            this.checkUnseenDeposit();
+          }
+        }
+      });
       const url = event.urlAfterRedirects || event.url || '';
       const authPage = url.includes('/login') || url.includes('/register');
       this.isAuthPage.set(authPage);
       if (!authPage && this.stateService.productStore.categories().length === 0) {
         this.stateService.productStore.fetchCategories().subscribe();
+      }
+    });
+  }
+
+  ngOnDestroy() {
+    if (this.unseenDepositTimerSub) {
+      this.unseenDepositTimerSub.unsubscribe();
+      this.unseenDepositTimerSub = null;
+    }
+    if (typeof document !== 'undefined') {
+      document.removeEventListener('visibilitychange', this.visibilityHandler);
+    }
+  }
+
+  public checkUnseenDeposit() {
+    if (!this.stateService.authStore.currentUser() || this.isCheckingUnseenDeposit || this.hasDepositCheckFailed) return;
+    this.isCheckingUnseenDeposit = true;
+    this.stateService.depositStore.checkUnseenSuccessDeposit().subscribe({
+      next: (res) => {
+        this.isCheckingUnseenDeposit = false;
+        if (res && res.deposit) {
+          const deposit = res.deposit;
+          this.stateService.depositStore.markDepositSeen(deposit.id).subscribe();
+          this.stateService.authStore.checkMe(true).subscribe();
+
+          this.modalService.confirm({
+            title: this.lang.translate('modal.deposit_success_title'),
+            variant: 'success',
+            description: this.lang.translate('modal.deposit_success_desc'),
+            confirmText: this.lang.translate('modal.deposit_success_confirm'),
+            cancelText: this.lang.translate('common.close'),
+            confirmButtonClass: 'btn-primary'
+          }).afterClosed$.subscribe((viewHistory?: boolean) => {
+            if (viewHistory) {
+              this.router.navigate(['/deposit/history']);
+            }
+          });
+        }
+      },
+      error: (err) => {
+        this.isCheckingUnseenDeposit = false;
+        this.hasDepositCheckFailed = true;
       }
     });
   }

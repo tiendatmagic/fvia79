@@ -152,6 +152,11 @@ class DepositService
         }
 
         return DB::transaction(function () use ($userId, $amountUsdt, $paymentMethod, $payerBinanceId, $adminBinanceIdSetting) {
+            DepositModel::where('user_id', $userId)
+                ->where('status', 'pending_payment')
+                ->where('created_at', '<=', now()->subMinutes(16))
+                ->update(['status' => 'expired']);
+
             $hasPending = DepositModel::where('user_id', $userId)
                 ->where('status', 'pending_payment')
                 ->lockForUpdate()
@@ -565,6 +570,14 @@ class DepositService
 
     public function checkAllPendingDeposits(?\Closure $logCallback = null): void
     {
+        $bulkExpired = DepositModel::where('status', 'pending_payment')
+            ->where('created_at', '<=', now()->subMinutes(16))
+            ->update(['status' => 'expired']);
+
+        if ($bulkExpired > 0 && $logCallback) {
+            $logCallback('info', "Auto-expired {$bulkExpired} pending deposit(s) older than 16 minutes.");
+        }
+
         $pendingDeposits = DepositModel::where('status', 'pending_payment')->get();
 
         if ($pendingDeposits->isEmpty()) {

@@ -69,8 +69,46 @@ class DepositController extends Controller
             ], 404);
         }
 
+        if ($deposit->getStatus() === 'completed' && $deposit->getUserId() === $user->id) {
+            \App\Infrastructure\Persistence\Eloquent\DepositModel::where('id', $id)->update(['user_notified' => true]);
+        }
+
         return response()->json([
             'invoice' => $this->formatDeposit($deposit)
+        ]);
+    }
+
+    public function getUnseenSuccessDeposit(): JsonResponse
+    {
+        $userId = Auth::id();
+        $depositModel = \App\Infrastructure\Persistence\Eloquent\DepositModel::where('user_id', $userId)
+            ->where('status', 'completed')
+            ->where(function ($q) {
+                $q->where('user_notified', false)->orWhereNull('user_notified');
+            })
+            ->orderBy('updated_at', 'desc')
+            ->first();
+
+        if (! $depositModel) {
+            return response()->json(['deposit' => null]);
+        }
+
+        $deposit = \App\Infrastructure\Persistence\Mappers\DepositMapper::toDomain($depositModel);
+
+        return response()->json([
+            'deposit' => $this->formatDeposit($deposit)
+        ]);
+    }
+
+    public function markDepositSeen(string $id): JsonResponse
+    {
+        $userId = Auth::id();
+        $updated = \App\Infrastructure\Persistence\Eloquent\DepositModel::where('id', $id)
+            ->where('user_id', $userId)
+            ->update(['user_notified' => true]);
+
+        return response()->json([
+            'success' => $updated > 0
         ]);
     }
 
@@ -152,6 +190,7 @@ class DepositController extends Controller
         }
 
         if ($matched) {
+            \App\Infrastructure\Persistence\Eloquent\DepositModel::where('id', $id)->update(['user_notified' => true]);
             return response()->json([
                 'success' => true,
                 'message' => 'Matched transaction on BSC block chain. Balance updated.'
