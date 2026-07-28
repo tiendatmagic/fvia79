@@ -108,11 +108,13 @@ function handle401Error(
 
         const currentUrl = router.url || '';
         const isPublicRoute = currentUrl === '/' || 
+                              currentUrl.startsWith('/storefront') ||
                               currentUrl.startsWith('/login') || 
                               currentUrl.startsWith('/register') ||
                               currentUrl.startsWith('/check-uid') ||
                               currentUrl.startsWith('/faq') ||
-                              currentUrl.startsWith('/contact');
+                              currentUrl.startsWith('/contact') ||
+                              currentUrl.startsWith('/terms');
         if (!isPublicRoute) {
           router.navigate(['/login']);
         }

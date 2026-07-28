@@ -30,7 +30,7 @@ export class LoginComponent {
 
   public email = '';
   public password = '';
-  public rememberMe = false;
+  public rememberMe = true;
   
   public requires2Fa = signal<boolean>(false);
   public showPassword = signal<boolean>(false);

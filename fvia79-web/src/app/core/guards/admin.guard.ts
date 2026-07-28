@@ -13,7 +13,7 @@ export const AdminGuard: CanActivateFn = (route, state) => {
     return true;
   }
 
-  return stateService.authStore.checkMe(false, true).pipe(
+  return stateService.authStore.checkMe().pipe(
     map(user => {
       if (user && user.role === 'admin') {
         return true;

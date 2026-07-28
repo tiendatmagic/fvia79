@@ -19,6 +19,34 @@
 > 1. Cronjob Scheduler (`schedule:run`) **CHỈ ĐƯỢC CHẠY DƯỚI USER `www-data`** (`crontab -u www-data -e`). **TUYỆT ĐỐI KHÔNG cài dưới `root`** vì sẽ gây ra lỗi `500 Permission denied` khi người dùng thực hiện thao tác Web/API.
 > 2. Luôn cấp quyền `chmod -R 777` và `chown -R www-data:www-data` cho `storage` & `bootstrap/cache`. Khi gõ lệnh CLI thủ công trên VPS, luôn chạy dưới quyền `www-data` (`su -s /bin/bash www-data -c "php artisan <cmd>"`).
 
+### [2026-07-28] Xây dựng trang "Điều Khoản Sử Dụng" (/terms), Căn chỉnh Layout & Xử lý truy cập công khai đồng bộ 3 dự án (FVIA79, ADSBM79, ISOCALMARKET)
+- **Mô tả yêu cầu**:
+  1. Tạo mới trang Điều khoản sử dụng (`/terms`) cho cả 3 dự án dựa trên nội dung chuẩn từ `https://ads7979.com/terms` với thiết kế giao diện hiện đại (glassmorphism card, gradient banner, icon minh họa, responsive và hỗ trợ dark/light mode).
+  2. Gắn liên kết mở trang `/terms` trực tiếp trên cụm từ *"điều khoản sử dụng"* tại ô checkbox đồng ý cam kết tuân thủ ở trang Đăng nhập / Đăng ký (`/login`, `/register`).
+  3. Căn chỉnh lại thẻ khung layout `max-w-[1530px] mx-auto w-full px-4 sm:px-6 py-6 space-y-6` giúp khoảng cách margin/padding và tiêu đề căn thẳng hàng tuyệt đối với Sidebar & Header.
+  4. Cấu hình Card Header Banner thích ứng hoàn hảo cả Light mode (gradient xanh dịu `from-blue-50/80 via-slate-50 to-indigo-50/40`) lẫn Dark mode (`dark:from-slate-900 dark:via-slate-900 dark:to-slate-950`).
+  5. Loại bỏ tiền tố số bị lặp (`1. `, `2. `) trong các chuỗi từ điển i18n (`vi.ts` & `en.ts`), giúp tiêu đề hiển thị đẹp mắt và không bị trùng lặp với huy hiệu chỉ số tròn phía trước.
+  6. Khắc phục triệt để lỗi khi người dùng chưa đăng nhập (guest) nhấn F5/refresh trang `/terms` bị chuyển hướng về `/login`: Bổ sung `currentUrl.startsWith('/terms')` và `currentUrl.startsWith('/storefront')` vào `isPublicRoute` trong `auth.interceptor.ts`.
+  7. Tối ưu hóa triệt để yêu cầu API xác thực: Loại bỏ cờ ép buộc `verifyWithoutMarker = true` trong `checkMe()` tại `app.ts`, `storefront.component.ts`, `auth.guard.ts` và `admin.guard.ts`. Đối với người dùng chưa đăng nhập (`!hasLoggedInMarker()`), hệ thống lập tức trả về `null` mà **KHÔNG gọi vô ích API `/v1/auth/me` và `/v1/auth/refresh`**, tiết kiệm 100% request rác.
+  8. Tối ưu hóa API danh mục (`/v1/categories`) tại trang Đăng nhập / Đăng ký (`/login`, `/register`): Kiểm tra `if (!this.isAuthPage())` trước khi gọi `fetchCategories()`. Vì các trang xác thực không có Sidebar hay menu danh mục, việc bỏ qua lệnh gọi API này tiết kiệm 100% request rác khi mở trang Đăng nhập.
+  9. Áp dụng chuẩn đa ngôn ngữ i18n 100% cho cả Tiếng Việt và Tiếng Anh (`vi.ts` & `en.ts`).
+- **Thực hiện xử lý**:
+  - **Frontend Web (`fvia79-web`, `adsbm79-web`, `isocalmarket-web`)**:
+    - `src/app/features/terms/terms.component.ts` & `terms.component.html`: Tạo mới component Điều khoản sử dụng với container chuẩn `max-w-[1530px]`.
+    - `auth.interceptor.ts`: Bổ sung `/terms` vào mảng `isPublicRoute` tránh đẩy về `/login` khi truy cập công khai.
+    - `app.routes.ts`: Đăng ký tuyến đường công khai `path: 'terms'`.
+    - `vi.ts` & `en.ts`: Bổ sung 30+ từ khóa i18n cho toàn bộ các mục điều khoản (`terms.title`, `terms.sec1_title`, `auth.terms_prefix`, `auth.terms_link`, `auth.terms_suffix`,...).
+    - `login.component.html` & `auth-layout.component.html`: Cập nhật nhãn checkbox lồng liên kết `<a [routerLink]="['/terms']" target="_blank" (click)="$event.stopPropagation()">` mở tab mới mượt mà.
+- **Kiểm thử**: Đã thực thi biên dịch Angular production `npx ng build --configuration production` thành công 100%.
+
+### [2026-07-28] Cấu hình mặc định tự động chọn (Auto check) checkbox "Điều khoản sử dụng & Cam kết tuân thủ" đồng bộ 3 dự án (FVIA79, ADSBM79, ISOCALMARKET)
+- **Mô tả yêu cầu**: Cấu hình ô checkbox *"Tôi đồng ý với điều khoản sử dụng và cam kết tuân thủ quy định hệ thống"* (`terms_commitment`) tại trang Đăng nhập / Đăng ký (`/login`, `/register`) mặc định luôn được tự động chọn (`rememberMe = true`) khi tải trang trên cả 3 dự án.
+- **Thực hiện xử lý**:
+  - **Frontend Web (`fvia79-web`, `adsbm79-web`, `isocalmarket-web`)**:
+    - `login.component.ts`: Cập nhật biến khởi tạo `public rememberMe = true;` (mặc định ban đầu là `false`).
+    - `auth-layout.component.ts`: Cập nhật biến khởi tạo `public rememberMe = true;` (mặc định ban đầu là `false`).
+- **Kiểm thử**: Đã thực thi biên dịch Angular production `npx ng build --configuration production` thành công 100%.
+
 ### [2026-07-28] Tối ưu hóa Tab Group hiển thị chữ đậm nét & Cảnh báo chi tiết nạp tiền USDT BEP-20 (Ví Web3 vs CEX) đồng bộ 3 dự án (FVIA79, ADSBM79, ISOCALMARKET)
 - **Mô tả yêu cầu**:
   1. Tối ưu tất cả các Tab group trong FE (USDT BEP-20 / Binance Pay, Admin Settings, Inventory, User Form Modal, Admin FAQs, Auth Login/Register) về giao diện thanh phẳng chuẩn ban đầu (`flex border-b border-slate-200 dark:border-slate-800`), khôi phục kích thước `text-sm pb-3 -mb-px border-b-2`, thiết lập font chữ **`font-bold`** tương phản rõ nét (thay vì `medium` cũ).

@@ -157,7 +157,7 @@ export class StorefrontComponent implements OnInit, OnDestroy {
 
   ngOnInit(): void {
     this.publicSettingStore.fetchPublicSettings().subscribe();
-    this.state.authStore.checkMe(true, true).subscribe();
+    this.state.authStore.checkMe(true).subscribe();
     this.state.depositStore.fetchRate().subscribe({ error: () => undefined });
     this.state.productStore.clearCache();
     this.loadAllGroupedProducts();

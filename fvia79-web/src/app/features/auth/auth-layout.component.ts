@@ -51,7 +51,7 @@ export class AuthLayoutComponent {
   public readonly isLogin = signal(true);
   public loginEmail = '';
   public loginPassword = '';
-  public rememberMe = false;
+  public rememberMe = true;
   public requires2Fa = signal(false);
   public showLoginPassword = signal(false);
   public otpCode = '';

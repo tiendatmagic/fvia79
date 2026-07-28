@@ -80,15 +80,21 @@ export class App implements OnInit {
 
   ngOnInit() {
     this.publicSettingStore.fetchPublicSettings().subscribe();
-    this.stateService.authStore.checkMe(false, true).subscribe();
-    this.stateService.productStore.fetchCategories().subscribe();
+    this.stateService.authStore.checkMe().subscribe();
+    if (!this.isAuthPage()) {
+      this.stateService.productStore.fetchCategories().subscribe();
+    }
 
     this.router.events.pipe(
       filter(event => event instanceof NavigationEnd)
     ).subscribe((event: any) => {
       this.stateService.authStore.checkMe().subscribe();
       const url = event.urlAfterRedirects || event.url || '';
-      this.isAuthPage.set(url.includes('/login') || url.includes('/register'));
+      const authPage = url.includes('/login') || url.includes('/register');
+      this.isAuthPage.set(authPage);
+      if (!authPage && this.stateService.productStore.categories().length === 0) {
+        this.stateService.productStore.fetchCategories().subscribe();
+      }
     });
   }
 

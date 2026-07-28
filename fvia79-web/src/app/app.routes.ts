@@ -62,6 +62,10 @@ export const routes: Routes = [
     loadComponent: () => import('@features/contact/contact.component').then(m => m.ContactComponent)
   },
   {
+    path: 'terms',
+    loadComponent: () => import('@features/terms/terms.component').then(m => m.TermsComponent)
+  },
+  {
     path: 'deposit',
     canActivate: [AuthGuard],
     children: [
