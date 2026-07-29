@@ -921,7 +921,18 @@ curl -X GET "{{ siteUrl() }}/api/v1/b2b/me" -H "X-API-KEY: {{
   "email": "admin@gmail.com",
   "phone": "0987654321",
   "role": "admin",
-  "balance": 97.50
+  "balance": 97.50,
+  "total_deposited": 120.00,
+  "membership_tier": {{ '{' }}
+    "id": "019f6699-e6d2-70f2-89bd-d3b93946a77d",
+    "level": 2,
+    "name_vi": "Bạc",
+    "name_en": "Silver",
+    "min_deposit": 100.00,
+    "discount_percent": 1.50,
+    "color": "#94a3b8",
+    "icon": "shield"
+  {{ '}' }}
 {{ '}' }}</pre>
             </div>
           </div>

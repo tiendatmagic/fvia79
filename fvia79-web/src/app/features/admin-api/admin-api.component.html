@@ -300,26 +300,6 @@ curl -X GET "{{ siteUrl() }}/api/v1/admin/b2b/users" -H "X-API-KEY: {{
                 class="flex flex-col sm:flex-row items-start gap-2 sm:gap-4 text-xs font-semibold border-b border-slate-100 dark:border-slate-800/60 pb-3"
               >
                 <div class="min-w-[120px] text-[var(--color-primary)] font-bold">
-                  lang
-                </div>
-                <div class="flex-1 space-y-1">
-                  <div class="flex items-center gap-1.5">
-                    <span
-                      class="text-xs font-black uppercase bg-slate-100 dark:bg-slate-800 text-slate-500 px-1.5 py-0.5 rounded"
-                      >{{ 'api.optional' | translate }}</span
-                    >
-                    <span class="text-slate-400 dark:text-slate-500 text-xs">string (en | vi)</span>
-                  </div>
-                  <p class="text-slate-500 dark:text-slate-400 font-semibold leading-relaxed">
-                    {{ 'api.lang_desc' | translate }}
-                  </p>
-                </div>
-              </div>
-
-              <div
-                class="flex flex-col sm:flex-row items-start gap-2 sm:gap-4 text-xs font-semibold border-b border-slate-100 dark:border-slate-800/60 pb-3"
-              >
-                <div class="min-w-[120px] text-[var(--color-primary)] font-bold">
                   role
                 </div>
                 <div class="flex-1 space-y-1">
@@ -704,7 +684,7 @@ curl -X GET "{{ siteUrl() }}/api/v1/admin/b2b/orders?page=1&limit=10" -H "X-API-
                       >{{ 'api.required' | translate }}</span
                     >
                     <span class="text-slate-400 dark:text-slate-500 text-xs"
-                      >{{ 'api.type_string_url' | translate }}</span
+                      >{{ 'api.type_string_uuid' | translate }}</span
                     >
                   </div>
                   <p class="text-slate-500 dark:text-slate-400 font-semibold leading-relaxed">
@@ -781,6 +761,29 @@ curl -X GET "{{ siteUrl() }}/api/v1/admin/b2b/orders?page=1&limit=10" -H "X-API-
               </div>
 
               <div
+                class="flex flex-col sm:flex-row items-start gap-2 sm:gap-4 text-xs font-semibold border-b border-slate-100 dark:border-slate-800/60 pb-3"
+              >
+                <div class="min-w-[120px] text-[var(--color-primary)] font-bold">
+                  raw_data
+                </div>
+                <div class="flex-1 space-y-1">
+                  <div class="flex items-center gap-1.5">
+                    <span
+                      class="text-xs font-black uppercase bg-amber-500/10 text-amber-600 px-1.5 py-0.5 rounded"
+                      >{{ 'api.required_cond' | translate }}</span
+                    >
+                    <span class="text-slate-400 dark:text-slate-500 text-xs"
+                      >{{ 'api.type_string_body' | translate }}</span
+                    >
+                  </div>
+                  <p class="text-slate-500 dark:text-slate-400 font-semibold leading-relaxed">
+                    {{ 'api.admin_ep3_content_desc' | translate }}
+                    {{ 'api.admin_ep3_content_note' | translate }}
+                  </p>
+                </div>
+              </div>
+
+              <div
                 class="flex flex-col sm:flex-row items-start gap-2 sm:gap-4 text-xs font-semibold"
               >
                 <div class="min-w-[120px] text-[var(--color-primary)] font-bold">
@@ -852,10 +855,7 @@ curl -X POST "{{ siteUrl() }}/api/v1/admin/b2b/products/PRODUCT_UUID/inventory" 
   -d '{{ '{' }}"batch_name": "New Batch", "content": "account_1\naccount_2"{{ '}' }}'</pre>
                   } @else {
                     <pre class="whitespace-pre">
-curl -X POST "{{ siteUrl() }}/api/v1/admin/b2b/products/PRODUCT_UUID/inventory" \
-  -H "Content-Type: application/json" \
-  -H "X-API-KEY: {{ apiKey() || 'YOUR_API_KEY' }}" \
-  -d "{{
+curl.exe -X POST "{{ siteUrl() }}/api/v1/admin/b2b/products/PRODUCT_UUID/inventory" -H "Content-Type: application/json" -H "X-API-KEY: {{ apiKey() || 'YOUR_API_KEY' }}" -d "{{
                         '{'
                       }}\\\"batch_name\\\": \\\"New Batch\\\", \\\"content\\\": \\\"account_1\\\\naccount_2\\\"{{
                         '}'
