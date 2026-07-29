@@ -18,6 +18,24 @@
 > **QUY TẮC BẮT BUỘC CRONJOB & PHÂN QUYỀN CACHE STORAGE**:
 > 1. Cronjob Scheduler (`schedule:run`) **CHỈ ĐƯỢC CHẠY DƯỚI USER `www-data`** (`crontab -u www-data -e`). **TUYỆT ĐỐI KHÔNG cài dưới `root`** vì sẽ gây ra lỗi `500 Permission denied` khi người dùng thực hiện thao tác Web/API.
 > 2. Luôn cấp quyền `chmod -R 777` và `chown -R www-data:www-data` cho `storage` & `bootstrap/cache`. Khi gõ lệnh CLI thủ công trên VPS, luôn chạy dưới quyền `www-data` (`su -s /bin/bash www-data -c "php artisan <cmd>"`).
+### [2026-07-29] Kiểm Tra & Khắc Phục Triệt Để Lỗi Truy Cập phpMyAdmin Đồng Bộ 3 Dự Án (FVIA79, ADSBM79, ISOCALMARKET)
+- **Mô tả yêu cầu**:
+  Rà soát tệp `deploy.md` của cả 3 dự án (`ADSBM79`, `FVIA79`, `ISOCALMARKET`) để tổng hợp thông tin VPS. Kiểm tra nguyên nhân vì sao dự án **FVIA79** và **ISOCALMARKET** không truy cập được `phpMyAdmin` và tiến hành sửa lỗi triệt để.
+- **Nguyên nhân sự cố**:
+  - **ISOCALMARKET** (`103.68.109.109`): Chưa cài đặt phpMyAdmin tại `/var/www/phpmyadmin` và tệp Nginx chưa khai báo khối `location /phpmyadmin`, dẫn đến khi truy cập bị Angular SPA fallback cướp route.
+  - **FVIA79** (`38.180.150.246`): Dùng gói `phpmyadmin` apt cũ và symlink `/usr/share/phpmyadmin`. Cấu hình Nginx thiếu toán tử `^~` (`location ^~ /phpmyadmin`), dẫn đến khi load các file JS/CSS/PNG static của phpMyAdmin bị quy tắc `location ~* \.(js|css|png|...)` ở dưới cướp request và tìm file tại `/var/www/fvia79-web/phpmyadmin/...` gây lỗi 404 Not Found (vỡ giao diện, không bấm được nút đăng nhập).
+- **Thực hiện xử lý**:
+  - Tự động tải và cài đặt bản phpMyAdmin v5.2.3 Standalone chính thức từ tarball vào `/var/www/phpmyadmin` cho cả **FVIA79** và **ISOCALMARKET** (đồng bộ chuẩn 100% với **ADSBM79**).
+  - Khởi tạo tệp `config.inc.php` với `blowfish_secret` ngẫu nhiên bảo mật cao và thư mục đệm `/var/www/phpmyadmin/tmp`.
+  - Phân quyền `chown -R www-data:www-data /var/www/phpmyadmin` và `chmod -R 775`.
+  - Cập nhật Nginx site config cho cả `fvia79.com` và `isocalmarket.com` sử dụng khối `location ^~ /phpmyadmin` (ngăn tuyệt đối các quy tắc regex static files cướp request).
+  - Tái tạo cấu hình và khởi động lại `php8.3-fpm` & `nginx`.
+  - Cập nhật tài liệu hướng dẫn triển khai `deploy.md` trên cả 3 dự án.
+- **Kiểm thử nghiệm thu (HTTP 200 OK)**:
+  - `https://adsbm79.com/phpmyadmin/` (HTTP 200 OK - phpMyAdmin 5.2.3).
+  - `https://fvia79.com/phpmyadmin/` (HTTP 200 OK - phpMyAdmin 5.2.3).
+  - `https://isocalmarket.com/phpmyadmin/` (HTTP 200 OK - phpMyAdmin 5.2.3).
+
 ### [2026-07-29] Triển Khai (Deploy) Đồng Bộ FE & BE (Giữ Nguyên CSDL, Tái Tạo Cache & Kiểm Tra Cronjob) 3 Dự Án (FVIA79, ADSBM79, ISOCALMARKET)
 - **Mô tả yêu cầu**:
   Triển khai (deploy) bản nâng cấp mã nguồn Frontend Angular và Backend Laravel mới nhất cho 3 dự án (**ADSBM79**, **FVIA79**, **ISOCALMARKET**) lên 3 máy chủ VPS độc lập tương ứng theo thông tin tại tệp `deploy.md`. Yêu cầu giữ nguyên CSDL hiện tại (không xóa hay fresh/seed), tái tạo cache Laravel hoàn toàn, đảm bảo Cronjob tự động hoạt động ngay cả khi restart VPS, và kiểm tra hoạt động các endpoint API nghiệm thu sau khi hoàn tất.
