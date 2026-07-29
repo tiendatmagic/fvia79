@@ -19,6 +19,16 @@
 > 1. Cronjob Scheduler (`schedule:run`) **CHỈ ĐƯỢC CHẠY DƯỚI USER `www-data`** (`crontab -u www-data -e`). **TUYỆT ĐỐI KHÔNG cài dưới `root`** vì sẽ gây ra lỗi `500 Permission denied` khi người dùng thực hiện thao tác Web/API.
 > 2. Luôn cấp quyền `chmod -R 777` và `chown -R www-data:www-data` cho `storage` & `bootstrap/cache`. Khi gõ lệnh CLI thủ công trên VPS, luôn chạy dưới quyền `www-data` (`su -s /bin/bash www-data -c "php artisan <cmd>"`).
 
+### [2026-07-30] Cập Nhật Nội Dung Ghi Chú Hướng Dẫn Nạp Tiền (5 - 10 Phút) Trên Trang Hóa Đơn Nạp Tiền Đồng Bộ 3 Dự Án (FVIA79, ADSBM79, ISOCALMARKET)
+- **Mô tả yêu cầu**:
+  Cập nhật câu văn ghi chú liên hệ Admin tại trang Hóa đơn nạp tiền (`/deposit/invoice/:id`) cho cả 2 phương thức Binance Pay và USDT BEP-20 từ `"Nếu sau một khoảng thời gian..."` thành `"Nếu sau 5 - 10 phút mà hệ thống chưa ghi nhận khoản nạp, vui lòng liên hệ Admin để được hỗ trợ"` trên cả 3 dự án.
+- **Thực hiện xử lý**:
+  - **Frontend Web (`fvia79-web`, `adsbm79-web`, `isocalmarket-web`)**:
+    - `vi.ts`: Cập nhật key `'invoice.paid_notice_desc'`: `'Nếu bạn đã chuyển tiền thành công, vui lòng KHÔNG hủy lệnh. Nếu sau 5 - 10 phút mà hệ thống chưa ghi nhận khoản nạp, vui lòng'`.
+    - `en.ts`: Cập nhật key `'invoice.paid_notice_desc'`: `'If you have already sent the payment, please DO NOT cancel the order. If the system does not record your deposit after 5 - 10 minutes, please'`.
+- **Kiểm thử**:
+  - Biên dịch Angular production thành công 100% trên cả 3 dự án Web.
+
 ### [2026-07-30] Khắc Phục Lỗi Icon Con Mắt (Eye Icon) Lệch Không Bằng Ngang Với Icon Sao Chép (Copy Icon) Đồng Bộ 3 Dự Án (FVIA79, ADSBM79, ISOCALMARKET)
 - **Mô tả yêu cầu**:
   Sửa lỗi hiển thị icon con mắt (`eye`/`eye-slash`/`eye-off`) bị lệch cao/thấp hơn so với icon sao chép (`copy`) tại các ô hiển thị B2B API Key (`/profile/api`, `/admin/api`) và bảng Kho hàng (`/inventory`). Nguyên nhân: Thẻ nút bấm icon con mắt cũ dùng padding tự do `p-1 cursor-pointer` (hoặc thiếu flex box centering) trong khi nút sao chép dùng `w-7 h-7 rounded-lg flex items-center justify-center shrink-0` (hoặc `w-6 h-6 rounded flex items-center justify-center`), làm 2 icon có kích thước box và baseline khác nhau dẫn đến xộc xệch và không đồng bộ hiệu ứng hover.

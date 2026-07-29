@@ -964,7 +964,7 @@ export const VI_TRANSLATIONS: Record<string, string> = {
   'invoice.wallet_warning': 'Vui lòng gửi đúng chính xác địa chỉ ví nhận và số tiền nạp (bao gồm cả các chữ số lẻ đằng sau: {{amount}}) trên đúng mạng lưới được chỉ định.',
   'invoice.warning_title': 'LƯU Ý ĐẶC BIỆT QUAN TRỌNG:',
   'invoice.paid_notice_title': 'LƯU Ý KHI ĐÃ CHUYỂN TIỀN:',
-  'invoice.paid_notice_desc': 'Nếu bạn đã chuyển tiền thành công, vui lòng KHÔNG hủy lệnh. Nếu sau một khoảng thời gian mà hệ thống chưa tự động ghi nhận khoản nạp, vui lòng',
+  'invoice.paid_notice_desc': 'Nếu bạn đã chuyển tiền thành công, vui lòng KHÔNG hủy lệnh. Nếu sau 5 - 10 phút mà hệ thống chưa ghi nhận khoản nạp, vui lòng',
   'invoice.contact_admin_link': 'liên hệ Admin để được hỗ trợ',
   'maintenance.config_cleared': 'Xóa bộ nhớ đệm cấu hình thành công!',
   'maintenance.description': 'Hệ thống đang trong quá trình bảo trì định kỳ. Vui lòng quay lại sau.',

@@ -964,7 +964,7 @@ export const EN_TRANSLATIONS: Record<string, string> = {
   'invoice.wallet_warning': 'Please send the exact receiving wallet address and deposit amount (including all trailing decimal digits: {{amount}}) on the specified network.',
   'invoice.warning_title': 'IMPORTANT NOTICE:',
   'invoice.paid_notice_title': 'NOTICE IF PAYMENT HAS BEEN SENT:',
-  'invoice.paid_notice_desc': 'If you have already sent the payment, please DO NOT cancel the order. If the system does not automatically record your deposit after some time, please',
+  'invoice.paid_notice_desc': 'If you have already sent the payment, please DO NOT cancel the order. If the system does not record your deposit after 5 - 10 minutes, please',
   'invoice.contact_admin_link': 'contact Admin for support',
   'maintenance.config_cleared': 'Configuration cache cleared successfully!',
   'maintenance.description': 'System is undergoing scheduled maintenance. Please check back later.',
