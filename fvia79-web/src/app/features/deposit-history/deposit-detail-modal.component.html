@@ -51,6 +51,15 @@
     <div
       class="flex justify-between items-center py-0.5 border-t border-slate-100 dark:border-slate-800/40 pt-2"
     >
+      <span class="text-slate-400 font-semibold">{{ 'invoice.target_account' | translate }}:</span>
+      <span class="font-black text-slate-800 dark:text-white">
+        {{ (invoice.userUid ? 'UID ' + invoice.userUid : '') + (invoice.userName ? ' (' + invoice.userName + ')' : (invoice.userEmail ? ' (' + invoice.userEmail + ')' : '')) || (invoice.userId ? 'ID ' + invoice.userId : '') }}
+      </span>
+    </div>
+
+    <div
+      class="flex justify-between items-center py-0.5 border-t border-slate-100 dark:border-slate-800/40 pt-2"
+    >
       <span class="text-slate-400 font-semibold">{{ 'deposit.original_amount' | translate }}</span>
       <span class="font-bold text-slate-800 dark:text-white">{{ invoice.amountUsdt }} USDT</span>
     </div>

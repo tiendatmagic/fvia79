@@ -34,6 +34,9 @@ export interface DepositHistoryItem {
   payerBinanceId?: string;
   adminBinanceId?: string;
   adminBinancePayLink?: string;
+  userEmail?: string;
+  userName?: string;
+  userUid?: string;
 }
 
 @Component({

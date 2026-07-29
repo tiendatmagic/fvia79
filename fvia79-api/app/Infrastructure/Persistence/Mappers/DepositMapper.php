@@ -9,9 +9,10 @@ class DepositMapper
 {
     public static function toDomain(DepositModel $model): Deposit
     {
-        $userEmail = $model->relationLoaded('user') && $model->user ? $model->user->email : null;
-        $userName = $model->relationLoaded('user') && $model->user ? ($model->user->name ?: $model->user->username) : null;
-        $userUid = $model->relationLoaded('user') && $model->user ? $model->user->uid : null;
+        $user = $model->relationLoaded('user') && $model->user ? $model->user : $model->user;
+        $userEmail = $user ? $user->email : null;
+        $userName = $user ? ($user->name ?: $user->username) : null;
+        $userUid = $user ? $user->uid : null;
 
         return new Deposit(
             $model->id,

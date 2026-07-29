@@ -228,6 +228,9 @@ class DepositController extends Controller
             'createdAt' => $deposit->getCreatedAt() ? $deposit->getCreatedAt()->format('c') : null,
             'updatedAt' => $deposit->getUpdatedAt() ? $deposit->getUpdatedAt()->format('c') : null,
             'adminWalletAddress' => $deposit->getAdminWalletAddress() ?: $this->depositService->getAdminWalletAddress(),
+            'userEmail' => $deposit->getUserEmail(),
+            'userName' => $deposit->getUserName(),
+            'userUid' => $deposit->getUserUid(),
         ];
     }
 }

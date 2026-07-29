@@ -131,21 +131,50 @@
             </div>
           } @else if (paymentMethod === 'binance') {
             <div
-              class="bg-amber-50 dark:bg-amber-950/20 border border-amber-200/50 dark:border-amber-800/40 rounded-xl p-4 flex gap-3"
+              class="bg-slate-50 dark:bg-slate-900/50 border border-slate-200 dark:border-slate-800/80 rounded-xl p-4 space-y-3"
             >
-              <app-icon
-                name="warning"
-                class="w-5 h-5 text-amber-500 dark:text-amber-400 shrink-0 mt-0.5"
-              />
-              <div class="space-y-1">
-                <h4
-                  class="text-xs font-black text-amber-800 dark:text-amber-300 uppercase tracking-wider"
+              <div class="flex items-start gap-2.5">
+                <app-icon
+                  name="warning"
+                  class="w-5 h-5 min-w-[20px] min-h-[20px] text-amber-500 dark:text-amber-400 shrink-0 mt-0.5"
+                />
+                <div>
+                  <h4
+                    class="text-xs sm:text-sm font-bold text-slate-800 dark:text-slate-200"
+                  >
+                    {{ 'deposit.important_notice_binance' | translate }}
+                  </h4>
+                </div>
+              </div>
+
+              <div class="space-y-2 text-xs leading-relaxed">
+                <div
+                  class="flex items-start gap-2.5 bg-emerald-50/90 dark:bg-emerald-950/50 p-2.5 rounded-lg border border-emerald-200/60 dark:border-emerald-800/40 text-emerald-950 dark:text-emerald-200"
                 >
-                  {{ 'deposit.binance_notice' | translate }}
-                </h4>
-                <p class="text-xs text-amber-700 dark:text-amber-400 leading-relaxed font-semibold">
-                  {{ 'deposit.binance_warning' | translate }}
-                </p>
+                  <app-icon name="check-circle" class="w-4 h-4 min-w-[16px] min-h-[16px] text-emerald-600 dark:text-emerald-400 shrink-0 mt-0.5" />
+                  <div>
+                    <span class="font-bold text-emerald-950 dark:text-emerald-100 block mb-0.5">
+                      {{ 'deposit.binance_notice_id_title' | translate }}
+                    </span>
+                    <span class="font-medium text-emerald-800 dark:text-emerald-300">
+                      {{ 'deposit.binance_notice_id_desc' | translate }}
+                    </span>
+                  </div>
+                </div>
+
+                <div
+                  class="flex items-start gap-2.5 bg-amber-50/90 dark:bg-amber-950/40 p-2.5 rounded-lg border border-amber-200/70 dark:border-amber-800/50 text-amber-950 dark:text-amber-200"
+                >
+                  <app-icon name="warning" class="w-4 h-4 min-w-[16px] min-h-[16px] text-amber-600 dark:text-amber-400 shrink-0 mt-0.5" />
+                  <div>
+                    <span class="font-bold text-amber-950 dark:text-amber-100 block mb-0.5">
+                      {{ 'deposit.binance_notice_amount_title' | translate }}
+                    </span>
+                    <span class="font-medium text-amber-900 dark:text-amber-300">
+                      {{ 'deposit.binance_notice_amount_desc' | translate }}
+                    </span>
+                  </div>
+                </div>
               </div>
             </div>
           }

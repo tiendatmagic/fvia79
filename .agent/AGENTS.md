@@ -18,6 +18,21 @@
 > **QUY TẮC BẮT BUỘC CRONJOB & PHÂN QUYỀN CACHE STORAGE**:
 > 1. Cronjob Scheduler (`schedule:run`) **CHỈ ĐƯỢC CHẠY DƯỚI USER `www-data`** (`crontab -u www-data -e`). **TUYỆT ĐỐI KHÔNG cài dưới `root`** vì sẽ gây ra lỗi `500 Permission denied` khi người dùng thực hiện thao tác Web/API.
 > 2. Luôn cấp quyền `chmod -R 777` và `chown -R www-data:www-data` cho `storage` & `bootstrap/cache`. Khi gõ lệnh CLI thủ công trên VPS, luôn chạy dưới quyền `www-data` (`su -s /bin/bash www-data -c "php artisan <cmd>"`).
+### [2026-07-29] Bổ Sung Mục "Nạp Cho Tài Khoản (UID)" Trên Trang Chi Tiết Nạp Tiền & Hóa Đơn (BEP20 & Binance Pay) Đồng Bộ 3 Dự Án (FVIA79, ADSBM79, ISOCALMARKET)
+- **Mô tả yêu cầu**:
+  Bổ sung hiển thị thông tin tài khoản người nạp (**UID + Username / Email**, ví dụ: `Nạp cho tài khoản: UID 27521044 (admin)`) trực tiếp trên trang Hóa đơn nạp tiền (`/deposit/invoice/:id`) và Modal chi tiết nạp tiền cho cả 2 phương thức USDT BEP-20 và Binance Pay trên cả 3 dự án, giúp người dùng và Admin khi chụp ảnh màn hình giao diện hóa đơn sẽ biết chính xác đơn nạp dành cho tài khoản nào.
+- **Thực hiện xử lý**:
+  - **Backend API (`fvia79-api`, `adsbm79-api`, `isocalmarket-api`)**:
+    - `DepositMapper.php`: Tự động tải quan hệ `user` để trích xuất đầy đủ `userUid`, `userName`, `userEmail`.
+    - `DepositController.php`: Bổ sung `userEmail`, `userName`, `userUid` vào phương thức `formatDeposit()` trả về cho các endpoint API người dùng.
+  - **Frontend Web (`fvia79-web`, `adsbm79-web`, `isocalmarket-web`)**:
+    - `deposit-history.component.ts`: Cập nhật interface `DepositHistoryItem` thêm `userEmail?: string; userName?: string; userUid?: string;`.
+    - `vi.ts` & `en.ts`: Bổ sung từ khóa `invoice.target_account` ("Nạp cho tài khoản").
+    - `deposit-invoice.component.html`: Bổ sung khung thông tin `Nạp cho tài khoản: UID <userUid> (<userName>)` nổi bật ngay dưới tiêu đề hóa đơn.
+    - `deposit-detail-modal.component.html`: Bổ sung dòng chỉ số `Nạp cho tài khoản` trong modal xem chi tiết đơn nạp.
+- **Kiểm thử**: Biên dịch Angular production `npx ng build --configuration production` thành công 100% trên cả 3 dự án.
+
+
 ### [2026-07-28] Vô Hiệu Hóa Tạm Thời API & Modal Thông Báo Nạp Tiền unseen-success Phía FE Đồng Bộ 3 Dự Án (FVIA79, ADSBM79, ISOCALMARKET)
 - **Mô tả yêu cầu**:
   Tạm thời vô hiệu hóa tính năng tự động gọi API `unseen-success` và bật Modal thông báo nạp tiền thành công ở phía Frontend (FE) trên cả 3 dự án theo yêu cầu trực tiếp từ khách hàng.
