@@ -47,22 +47,6 @@
           </div>
         } @else {
           <div class="flex border-b border-slate-200 dark:border-slate-800">
-            @if (state.publicSettingStore.settings().payment_bep20_enabled) {
-              <button
-                type="button"
-                (click)="paymentMethod = 'bep20'"
-                [class.border-[var(--color-primary)]]="paymentMethod === 'bep20'"
-                [class.text-[var(--color-primary)]]="paymentMethod === 'bep20'"
-                [class.border-transparent]="paymentMethod !== 'bep20'"
-                [class.text-slate-600]="paymentMethod !== 'bep20'"
-                [class.dark:text-slate-400]="paymentMethod !== 'bep20'"
-                [class.hover:text-slate-900]="paymentMethod !== 'bep20'"
-                [class.dark:hover:text-slate-200]="paymentMethod !== 'bep20'"
-                class="flex-1 pb-3 text-sm sm:text-base font-black border-b-2 transition-all cursor-pointer -mb-px text-center"
-              >
-                USDT BEP-20
-              </button>
-            }
             @if (state.publicSettingStore.settings().payment_binance_enabled) {
               <button
                 type="button"
@@ -77,6 +61,22 @@
                 class="flex-1 pb-3 text-sm sm:text-base font-black border-b-2 transition-all cursor-pointer -mb-px text-center"
               >
                 Binance Pay (Binance ID)
+              </button>
+            }
+            @if (state.publicSettingStore.settings().payment_bep20_enabled) {
+              <button
+                type="button"
+                (click)="paymentMethod = 'bep20'"
+                [class.border-[var(--color-primary)]]="paymentMethod === 'bep20'"
+                [class.text-[var(--color-primary)]]="paymentMethod === 'bep20'"
+                [class.border-transparent]="paymentMethod !== 'bep20'"
+                [class.text-slate-600]="paymentMethod !== 'bep20'"
+                [class.dark:text-slate-400]="paymentMethod !== 'bep20'"
+                [class.hover:text-slate-900]="paymentMethod !== 'bep20'"
+                [class.dark:hover:text-slate-200]="paymentMethod !== 'bep20'"
+                class="flex-1 pb-3 text-sm sm:text-base font-black border-b-2 transition-all cursor-pointer -mb-px text-center"
+              >
+                USDT BEP-20
               </button>
             }
           </div>

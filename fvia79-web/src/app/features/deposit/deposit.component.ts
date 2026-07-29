@@ -44,7 +44,7 @@ export class DepositComponent implements OnInit {
   public amountUsdt: number | null = null;
   public vndEquivalent = 0;
   public selectedNetwork = 'BEP20';
-  public paymentMethod = 'bep20';
+  public paymentMethod = 'binance';
   public payerBinanceId = '';
   public readonly isSubmitting = signal(false);
 
@@ -53,10 +53,10 @@ export class DepositComponent implements OnInit {
     this.state.publicSettingStore.fetchPublicSettings().subscribe({
       next: (settings) => {
         if (settings) {
-          if (settings.payment_bep20_enabled) {
-            this.paymentMethod = 'bep20';
-          } else if (settings.payment_binance_enabled) {
+          if (settings.payment_binance_enabled) {
             this.paymentMethod = 'binance';
+          } else if (settings.payment_bep20_enabled) {
+            this.paymentMethod = 'bep20';
           } else {
             this.paymentMethod = '';
           }

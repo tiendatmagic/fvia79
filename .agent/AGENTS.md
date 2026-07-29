@@ -18,6 +18,16 @@
 > **QUY TẮC BẮT BUỘC CRONJOB & PHÂN QUYỀN CACHE STORAGE**:
 > 1. Cronjob Scheduler (`schedule:run`) **CHỈ ĐƯỢC CHẠY DƯỚI USER `www-data`** (`crontab -u www-data -e`). **TUYỆT ĐỐI KHÔNG cài dưới `root`** vì sẽ gây ra lỗi `500 Permission denied` khi người dùng thực hiện thao tác Web/API.
 > 2. Luôn cấp quyền `chmod -R 777` và `chown -R www-data:www-data` cho `storage` & `bootstrap/cache`. Khi gõ lệnh CLI thủ công trên VPS, luôn chạy dưới quyền `www-data` (`su -s /bin/bash www-data -c "php artisan <cmd>"`).
+### [2026-07-29] Thay Đổi Vị Trí Tab Nạp Tiền (Binance Pay Bên Trái, USDT BEP-20 Bên Phải) Trên Dự Án FVIA79
+- **Mô tả yêu cầu**:
+  Chỉnh sửa riêng dự án FVIA79, thay đổi thứ tự hiển thị của các tab chọn phương thức nạp tiền: đưa tab **Binance Pay (Binance ID)** sang bên trái và tab **USDT BEP-20** sang bên phải, đồng thời thiết lập mặc định chọn Binance Pay khi khởi tạo trang nạp tiền.
+- **Thực hiện xử lý**:
+  - **Frontend Web (`fvia79-web`)**:
+    - `deposit.component.html`: Đảo vị trí các nút tab, đặt button `Binance Pay (Binance ID)` trước button `USDT BEP-20`.
+    - `deposit.component.ts`: Đặt biến `paymentMethod = 'binance'` mặc định ban đầu và ưu tiên chọn Binance Pay trong `ngOnInit()` khi cả 2 phương thức đều được bật.
+- **Kiểm thử**: Đã chạy kiểm tra biên dịch Angular production `npx ng build --configuration production`.
+
+
 ### [2026-07-29] Bổ Sung Mục "Nạp Cho Tài Khoản (UID)" Trên Trang Chi Tiết Nạp Tiền & Hóa Đơn (BEP20 & Binance Pay) Đồng Bộ 3 Dự Án (FVIA79, ADSBM79, ISOCALMARKET)
 - **Mô tả yêu cầu**:
   Bổ sung hiển thị thông tin tài khoản người nạp (**UID + Username / Email**, ví dụ: `Nạp cho tài khoản: UID 27521044 (admin)`) trực tiếp trên trang Hóa đơn nạp tiền (`/deposit/invoice/:id`) và Modal chi tiết nạp tiền cho cả 2 phương thức USDT BEP-20 và Binance Pay trên cả 3 dự án, giúp người dùng và Admin khi chụp ảnh màn hình giao diện hóa đơn sẽ biết chính xác đơn nạp dành cho tài khoản nào.
