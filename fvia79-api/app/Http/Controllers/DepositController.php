@@ -157,6 +157,7 @@ class DepositController extends Controller
         $limit = (int) $request->query('limit', 10);
         $search = $request->query('search');
         $status = $request->query('status');
+        $paymentMethod = $request->query('payment_method') ?? $request->query('method');
         $startDate = $request->query('start_date');
         $endDate = $request->query('end_date');
 
@@ -166,6 +167,7 @@ class DepositController extends Controller
             $limit,
             $search,
             $status,
+            $paymentMethod,
             $startDate,
             $endDate
         );

@@ -11,6 +11,99 @@
     </ng-container>
   </app-page-header>
 
+  @if (supplierStore.loading()) {
+    <div class="animate-pulse space-y-6">
+      <!-- Skeleton: Tab buttons -->
+      <div class="flex flex-wrap items-center gap-2">
+        <div class="h-10 w-32 bg-slate-200 dark:bg-slate-800 rounded-lg"></div>
+        <div class="h-10 w-28 bg-slate-200 dark:bg-slate-800 rounded-lg"></div>
+        <div class="h-10 w-24 bg-slate-100 dark:bg-slate-800/60 rounded-lg"></div>
+      </div>
+
+      <!-- Skeleton: Card content -->
+      <app-card>
+        <!-- Header area -->
+        <div class="flex flex-col sm:flex-row sm:items-start justify-between gap-4 mb-6">
+          <div class="space-y-3 flex-1">
+            <div class="flex items-center gap-2">
+              <div class="h-6 w-40 bg-slate-200 dark:bg-slate-800 rounded-lg"></div>
+              <div class="h-5 w-16 bg-slate-100 dark:bg-slate-800/60 rounded-md"></div>
+            </div>
+            <div class="h-4 w-72 bg-slate-100 dark:bg-slate-800/60 rounded-md"></div>
+            <div class="h-3.5 w-56 bg-slate-100 dark:bg-slate-800/40 rounded-md"></div>
+            <!-- Balance box skeleton -->
+            <div class="mt-4 max-w-2xl rounded-xl border border-emerald-200/40 bg-emerald-50/30 dark:border-emerald-900/30 dark:bg-emerald-950/10 px-4 py-3 space-y-2">
+              <div class="h-3 w-28 bg-emerald-200/60 dark:bg-emerald-800/40 rounded-md"></div>
+              <div class="h-6 w-36 bg-emerald-200/80 dark:bg-emerald-800/60 rounded-lg"></div>
+            </div>
+          </div>
+          <div class="flex flex-col items-stretch gap-3 sm:items-end">
+            <div class="h-8 w-32 bg-slate-200 dark:bg-slate-800 rounded-lg"></div>
+            <div class="h-10 w-28 bg-slate-200 dark:bg-slate-800 rounded-xl"></div>
+          </div>
+        </div>
+
+        <!-- Switch toggles skeleton -->
+        <div class="space-y-5 mb-5">
+          @for (i of [1, 2, 3]; track i) {
+            <div class="flex items-center justify-between p-3 rounded-xl border border-slate-100 dark:border-slate-800">
+              <div class="space-y-1.5 flex-1">
+                <div class="h-4 w-44 bg-slate-200 dark:bg-slate-800 rounded-md"></div>
+                <div class="h-3 w-64 bg-slate-100 dark:bg-slate-800/50 rounded-md"></div>
+              </div>
+              <div class="h-6 w-11 bg-slate-200 dark:bg-slate-800 rounded-full shrink-0"></div>
+            </div>
+          }
+        </div>
+
+        <!-- Action banners skeleton -->
+        <div class="space-y-3 mb-5">
+          @for (i of [1, 2, 3]; track i) {
+            <div class="flex flex-col gap-3 rounded-xl border border-slate-200/60 dark:border-slate-800/60 bg-slate-50/50 dark:bg-slate-900/30 p-4 sm:flex-row sm:items-center sm:justify-between">
+              <div class="min-w-0 flex-1 space-y-1.5">
+                <div class="h-4 w-48 bg-slate-200 dark:bg-slate-800 rounded-md"></div>
+                <div class="h-3 w-72 bg-slate-100 dark:bg-slate-800/50 rounded-md"></div>
+              </div>
+              <div class="h-9 w-36 bg-slate-200 dark:bg-slate-800 rounded-xl shrink-0"></div>
+            </div>
+          }
+        </div>
+
+        <!-- Form fields skeleton -->
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+          @for (i of [1, 2]; track i) {
+            <div class="space-y-2">
+              <div class="h-4 w-24 bg-slate-200 dark:bg-slate-800 rounded-md"></div>
+              <div class="h-10 bg-slate-100 dark:bg-slate-800/50 rounded-xl w-full"></div>
+            </div>
+          }
+          <div class="space-y-2 md:col-span-2">
+            <div class="h-4 w-20 bg-slate-200 dark:bg-slate-800 rounded-md"></div>
+            <div class="h-10 bg-slate-100 dark:bg-slate-800/50 rounded-xl w-full"></div>
+            <div class="h-3 w-48 bg-slate-100 dark:bg-slate-800/40 rounded-md"></div>
+          </div>
+          @for (i of [1, 2, 3, 4]; track i) {
+            <div class="space-y-2">
+              <div class="h-4 w-28 bg-slate-200 dark:bg-slate-800 rounded-md"></div>
+              <div class="h-10 bg-slate-100 dark:bg-slate-800/50 rounded-xl w-full"></div>
+            </div>
+          }
+        </div>
+
+        <!-- Price example box skeleton -->
+        <div class="mt-6 rounded-xl border border-slate-200 bg-slate-50 dark:border-slate-800 dark:bg-slate-900/50 p-4 space-y-2">
+          <div class="h-4 w-32 bg-slate-200 dark:bg-slate-800 rounded-md"></div>
+          <div class="h-3.5 w-80 bg-slate-100 dark:bg-slate-800/50 rounded-md"></div>
+        </div>
+
+        <!-- Footer buttons skeleton -->
+        <div class="flex justify-end items-center gap-3 pt-4 mt-6 border-t border-slate-200/50 dark:border-slate-800/50">
+          <div class="h-10 w-28 bg-slate-200 dark:bg-slate-800 rounded-xl"></div>
+          <div class="h-10 w-24 bg-slate-300 dark:bg-slate-700 rounded-xl"></div>
+        </div>
+      </app-card>
+    </div>
+  } @else {
   <div class="flex flex-wrap items-center gap-2">
     @for (supplier of supplierStore.suppliers(); track supplier.code) {
       <button
@@ -475,6 +568,7 @@
       </div>
     </form>
   </app-card>
+  }
 </div>
 
 @if (isDeactivateModalOpen()) {

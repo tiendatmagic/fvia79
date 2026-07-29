@@ -40,9 +40,11 @@ export class LanguageService {
 
     if (params) {
       Object.keys(params).forEach((param) => {
-        text = text.replace(new RegExp(`{+\\s*${param}\\s*}+`, 'g'), params[param]);
+        text = text.replace(new RegExp(`{+\\s*${param}\\s*}+`, 'g'), params[param] != null ? params[param] : '');
       });
     }
+
+    text = text.replace(/\{+\s*\w+\s*\}+/g, '').replace(/\s{2,}/g, ' ');
 
     return text;
   }

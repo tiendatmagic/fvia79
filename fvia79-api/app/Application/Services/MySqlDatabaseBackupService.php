@@ -97,7 +97,7 @@ class MySqlDatabaseBackupService
                 ]);
 
                 return [
-                    'message' => __('messages.database_restore_success'),
+                    'message' => 'Database restored successfully. A safety backup was retained on the server.',
                     'safety_backup' => basename($preRestorePath),
                 ];
             } catch (Throwable $restoreException) {
@@ -127,7 +127,7 @@ class MySqlDatabaseBackupService
                     ]);
 
                     throw new RuntimeException(
-                        __('messages.database_safety_backup_failed'),
+                        'Restore was cancelled because the safety backup could not be created. The current database was not changed.',
                         previous: $restoreException
                     );
                 }
@@ -140,8 +140,8 @@ class MySqlDatabaseBackupService
 
                 throw new RuntimeException(
                     $rollbackSucceeded
-                        ? __('messages.database_restore_failed_rolled_back')
-                        : __('messages.database_restore_failed_manual_recovery'),
+                        ? 'The SQL import failed. The database was automatically restored to its previous state.'
+                        : 'The SQL import failed and automatic recovery was unsuccessful. Manual recovery is required.',
                     previous: $restoreException
                 );
             } finally {
@@ -365,7 +365,7 @@ class MySqlDatabaseBackupService
             if (is_resource($handle)) {
                 fclose($handle);
             }
-            throw new RuntimeException(__('messages.database_backup_busy'));
+            throw new RuntimeException('Another database backup or restore operation is already running.');
         }
 
         try {

@@ -15,7 +15,7 @@
   </app-page-header>
 
   <div
-    class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 bg-slate-50/50 dark:bg-slate-950/20 border border-slate-200/30 dark:border-slate-800/30 rounded-2xl p-4 sm:p-5"
+    class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 bg-slate-50/50 dark:bg-slate-950/20 border border-slate-200/30 dark:border-slate-800/30 rounded-2xl p-4 sm:p-5"
   >
     <div class="form-field">
       <label
@@ -44,6 +44,21 @@
         labelKey="label"
         [(value)]="selectedStatusFilter"
         (valueChange)="selectedStatusFilter = $event; fetchPage(1)"
+      />
+    </div>
+
+    <div class="form-field">
+      <label
+        class="text-xs font-bold text-slate-400 dark:text-slate-500 uppercase tracking-wider block mb-1"
+      >
+        {{ 'deposit.method' | translate }}
+      </label>
+      <app-custom-select
+        [options]="methodOptions"
+        valueKey="value"
+        labelKey="label"
+        [(value)]="selectedMethodFilter"
+        (valueChange)="selectedMethodFilter = $event; fetchPage(1)"
       />
     </div>
 
@@ -104,6 +119,15 @@
           class="font-bold text-emerald-600 dark:text-emerald-400 text-sm"
         >
           {{ row.amountVnd | number }} {{ 'currency.vnd_symbol' | translate }}
+        </span>
+      </ng-template>
+
+      <ng-template appTableCell="paymentMethod" let-row="row">
+        <span
+          class="text-xs font-bold text-slate-600 dark:text-slate-400"
+          [appTooltip]="getMethodText(row.paymentMethod)"
+        >
+          {{ getMethodText(row.paymentMethod) }}
         </span>
       </ng-template>
 

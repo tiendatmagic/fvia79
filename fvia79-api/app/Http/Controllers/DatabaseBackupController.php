@@ -41,7 +41,7 @@ class DatabaseBackupController extends Controller
         } catch (RuntimeException $exception) {
             Log::error('Unable to prepare database export.', ['exception' => $exception->getMessage()]);
 
-            return response()->json(['message' => __('messages.database_backup_unavailable')], 500);
+            return response()->json(['message' => 'The database backup service is currently unavailable. Check the MySQL client configuration on the server.'], 500);
         }
     }
 

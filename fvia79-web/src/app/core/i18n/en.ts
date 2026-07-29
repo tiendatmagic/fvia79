@@ -595,6 +595,8 @@ export const EN_TRANSLATIONS: Record<string, string> = {
   'database_backup.safety_backup_failed': 'Restore was cancelled because the safety backup could not be created. Current database was not changed.',
   'database_backup.restore_failed_manual': 'The SQL import failed and automatic recovery was unsuccessful. Manual recovery is required.',
   'database_backup.busy': 'Another database backup or restore operation is already running.',
+  'database_backup.export_rate_limited': 'Too many database export attempts. Please wait one minute and try again.',
+  'database_backup.restore_rate_limited': 'Too many database restore attempts. Please wait ten minutes and try again.',
   'database_backup.restore_safety_notice': 'The system creates a safety backup first and automatically rolls back if the import fails.',
   'database_backup.restore_success': 'Database restored successfully.',
   'database_backup.restore_title': 'Restore database',

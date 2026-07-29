@@ -47,6 +47,8 @@ export class SupplierStore {
   private readonly balanceRequests = new Map<string, Observable<SupplierBalance>>();
   private balanceRequestCode: string | null = null;
 
+  private loaded = false;
+
   public readonly suppliers = signal<SupplierSettings[]>([]);
   public readonly loading = signal(false);
   public readonly saving = signal(false);
@@ -55,7 +57,11 @@ export class SupplierStore {
   public readonly balance = signal<SupplierBalance | null>(null);
   public readonly exchangeRate = signal(0);
 
-  public fetchSuppliers(): Observable<SupplierSettings[]> {
+  public fetchSuppliers(force = false): Observable<SupplierSettings[]> {
+    if (this.loaded && !force) {
+      return of(this.suppliers());
+    }
+
     this.loading.set(true);
     return forkJoin({
       suppliers: this.api.get<SupplierSettings[]>('v1/admin/suppliers'),
@@ -67,7 +73,10 @@ export class SupplierStore {
         this.exchangeRate.set(Number(rate.rate));
         return suppliers;
       }),
-      tap((suppliers) => this.suppliers.set(suppliers)),
+      tap((suppliers) => {
+        this.suppliers.set(suppliers);
+        this.loaded = true;
+      }),
       finalize(() => this.loading.set(false)),
     );
   }

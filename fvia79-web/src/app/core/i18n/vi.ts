@@ -595,6 +595,8 @@ export const VI_TRANSLATIONS: Record<string, string> = {
   'database_backup.safety_backup_failed': 'Đã hủy khôi phục vì không thể tạo bản sao lưu an toàn. Cơ sở dữ liệu hiện tại chưa bị thay đổi.',
   'database_backup.restore_failed_manual': 'Nhập file SQL thất bại và không thể tự động phục hồi. Cần phục hồi thủ công.',
   'database_backup.busy': 'Một tác vụ sao lưu hoặc khôi phục cơ sở dữ liệu khác đang chạy.',
+  'database_backup.export_rate_limited': 'Bạn đã xuất cơ sở dữ liệu quá nhiều lần. Vui lòng chờ một phút rồi thử lại.',
+  'database_backup.restore_rate_limited': 'Bạn đã khôi phục cơ sở dữ liệu quá nhiều lần. Vui lòng chờ mười phút rồi thử lại.',
   'database_backup.restore_safety_notice': 'Hệ thống sẽ tạo bản sao lưu an toàn trước và tự động hoàn tác nếu nhập thất bại.',
   'database_backup.restore_success': 'Khôi phục cơ sở dữ liệu thành công.',
   'database_backup.restore_title': 'Khôi phục cơ sở dữ liệu',

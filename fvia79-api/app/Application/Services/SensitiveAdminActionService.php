@@ -13,7 +13,7 @@ class SensitiveAdminActionService
     {
         if (! Hash::check($password, $user->password)) {
             throw ValidationException::withMessages([
-                'password' => [__('messages.invalid_password')],
+                'password' => ['The current password is incorrect.'],
             ]);
         }
 
@@ -23,7 +23,7 @@ class SensitiveAdminActionService
 
         if (! $otpCode || ! Google2FA::verifyCode((string) $user->google2fa_secret, $otpCode)) {
             throw ValidationException::withMessages([
-                'otp_code' => [__('messages.invalid_otp')],
+                'otp_code' => ['The two-factor authentication code is invalid.'],
             ]);
         }
     }

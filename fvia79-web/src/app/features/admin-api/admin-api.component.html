@@ -80,20 +80,20 @@
           }}
         </span>
         @if (apiKey()) {
-          <div class="absolute right-3.5 top-1/2 -translate-y-1/2 flex items-center gap-2">
+          <div class="absolute right-3.5 top-1/2 -translate-y-1/2 flex items-center gap-1.5">
             <button
               (click)="toggleShowApiKey()"
-              class="text-slate-400 dark:text-slate-500 hover:text-[var(--color-primary)] dark:hover:text-white active:scale-95 transition-all p-1 cursor-pointer"
+              class="w-7 h-7 rounded-lg flex items-center justify-center text-slate-400 dark:text-slate-500 hover:text-[var(--color-primary)] dark:hover:text-white hover:bg-slate-200/50 dark:hover:bg-slate-800 active:scale-95 transition-all shrink-0 cursor-pointer"
               [title]="showApiKey() ? ('api.hide_key' | translate) : ('api.show_key' | translate)"
             >
-              <app-icon [name]="showApiKey() ? 'eye-slash' : 'eye'" class="w-4 h-4" />
+              <app-icon [name]="showApiKey() ? 'eye-slash' : 'eye'" class="w-4 h-4 shrink-0" />
             </button>
             <button
               (click)="copyToClipboard(apiKey()!, lang.translate('api.admin_key_label'))"
-              class="text-slate-400 dark:text-slate-500 hover:text-[var(--color-primary)] dark:hover:text-white active:scale-95 transition-all p-1 cursor-pointer"
+              class="w-7 h-7 rounded-lg flex items-center justify-center text-slate-400 dark:text-slate-500 hover:text-[var(--color-primary)] dark:hover:text-white hover:bg-slate-200/50 dark:hover:bg-slate-800 active:scale-95 transition-all shrink-0 cursor-pointer"
               [title]="'orders.copy' | translate"
             >
-              <app-icon name="copy" class="w-4 h-4" />
+              <app-icon name="copy" class="w-4 h-4 shrink-0" />
             </button>
           </div>
         }

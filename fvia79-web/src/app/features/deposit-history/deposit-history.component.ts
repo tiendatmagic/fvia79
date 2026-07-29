@@ -77,6 +77,7 @@ export class DepositHistoryComponent implements OnInit {
     const columns: TableColumn[] = [
       { key: 'code', label: this.lang.translate('deposit.code'), sortable: true },
       { key: 'amountUsdt', label: this.lang.translate('deposit.amount_usdt'), sortable: true, align: 'right' },
+      { key: 'paymentMethod', label: this.lang.translate('deposit.method'), sortable: true, align: 'center' },
       { key: 'status', label: this.lang.translate('common.status'), sortable: true, align: 'center' },
       { key: 'createdAt', label: this.lang.translate('common.created_at'), sortable: true },
       { key: 'actions', label: this.lang.translate('common.actions'), sortable: false, align: 'right' }
@@ -101,6 +102,7 @@ export class DepositHistoryComponent implements OnInit {
   private readonly _searchQuery = signal('');
 
   public selectedStatusFilter = '';
+  public selectedMethodFilter = '';
   public selectedDateRange: DateTimeRangeValue = { startDate: '', endDate: '' };
 
   public get statusOptions() {
@@ -111,6 +113,23 @@ export class DepositHistoryComponent implements OnInit {
       { label: this.lang.translate('status.expired'), value: 'expired' },
       { label: this.lang.translate('status.failed'), value: 'failed' }
     ];
+  }
+
+  public get methodOptions() {
+    return [
+      { label: this.lang.translate('deposit.all_methods'), value: '' },
+      { label: 'USDT BEP20', value: 'bep20' },
+      { label: 'Binance Pay', value: 'binance' }
+    ];
+  }
+
+  public getMethodText(method?: string): string {
+    if (!method) return '';
+    switch (method) {
+      case 'bep20': return 'USDT BEP20';
+      case 'binance': return 'Binance Pay';
+      default: return method;
+    }
   }
 
   ngOnInit() {
@@ -125,6 +144,7 @@ export class DepositHistoryComponent implements OnInit {
       this.itemsPerPage,
       this._searchQuery().trim() || undefined,
       this.selectedStatusFilter || undefined,
+      this.selectedMethodFilter || undefined,
       this.selectedDateRange.startDate || undefined,
       this.selectedDateRange.endDate || undefined
     ).subscribe({

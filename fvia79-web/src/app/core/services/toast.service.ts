@@ -178,7 +178,30 @@ const API_MESSAGE_KEYS: Record<string, string> = {
   'Cannot delete user because they have existing transactions (deposits or orders). Please ban the user instead.': 'error.cannot_delete_has_transactions',
   'Cannot delete user(s) because they have existing transactions (deposits or orders). Please ban the user instead.': 'error.cannot_delete_has_transactions',
   'Your account has been banned.': 'error.account_banned',
-  'Your account has been banned. Please contact administrator.': 'error.account_banned'
+  'Your account has been banned. Please contact administrator.': 'error.account_banned',
+  'The current password is incorrect.': 'error.current_password',
+  'The two-factor authentication code is invalid.': 'toast.otp_invalid',
+  'Database restored successfully. A safety backup was retained on the server.': 'database_backup.restore_success',
+  'Restore was cancelled because the safety backup could not be created. The current database was not changed.': 'database_backup.safety_backup_failed',
+  'The SQL import failed. The database was automatically restored to its previous state.': 'database_backup.restore_failed_rolled_back',
+  'The SQL import failed and automatic recovery was unsuccessful. Manual recovery is required.': 'database_backup.restore_failed_manual',
+  'Another database backup or restore operation is already running.': 'database_backup.busy',
+  'The database backup service is currently unavailable. Check the MySQL client configuration on the server.': 'database_backup.unavailable_title',
+  'Too many database export attempts. Please wait one minute and try again.': 'database_backup.export_rate_limited',
+  'Too many database restore attempts. Please wait ten minutes and try again.': 'database_backup.restore_rate_limited'
+};
+
+const LARAVEL_KEY_FALLBACK: Record<string, string> = {
+  'messages.invalid_password': 'error.current_password',
+  'messages.invalid_otp': 'toast.otp_invalid',
+  'messages.database_restore_success': 'database_backup.restore_success',
+  'messages.database_safety_backup_failed': 'database_backup.safety_backup_failed',
+  'messages.database_restore_failed_rolled_back': 'database_backup.restore_failed_rolled_back',
+  'messages.database_restore_failed_manual_recovery': 'database_backup.restore_failed_manual',
+  'messages.database_backup_busy': 'database_backup.busy',
+  'messages.database_backup_unavailable': 'database_backup.unavailable_title',
+  'messages.database_backup_rate_limited': 'database_backup.export_rate_limited',
+  'messages.database_restore_rate_limited': 'database_backup.restore_rate_limited'
 };
 
 const VI_TRANSLATION_VALUES = new Set(Object.values(TRANSLATIONS.vi));
@@ -195,6 +218,8 @@ export class ToastService {
   public resolveApiMessage(message: string, status = 0, fallback = ''): string {
     const normalized = message?.trim() || '';
     if (/^[a-z0-9_.]+$/i.test(normalized)) {
+      const laravelFallback = LARAVEL_KEY_FALLBACK[normalized];
+      if (laravelFallback) return this.languageService.translate(laravelFallback);
       return this.languageService.translate(normalized);
     }
     const key = API_MESSAGE_KEYS[normalized];

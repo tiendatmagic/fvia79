@@ -302,7 +302,7 @@
             </code>
             <button
               (click)="toggleSecretVisibility(row.id)"
-              class="p-1 hover:bg-slate-100 dark:hover:bg-slate-800 rounded transition-colors text-slate-400 hover:text-slate-600 shrink-0 cursor-pointer"
+              class="w-6 h-6 rounded flex items-center justify-center hover:bg-slate-100 dark:hover:bg-slate-800 transition-colors text-slate-400 hover:text-slate-600 shrink-0 cursor-pointer"
               [appTooltip]="
                 (visibleSecrets().has(row.id)
                   ? 'inventory.hide_secret'
@@ -310,7 +310,7 @@
                 ) | translate
               "
             >
-              <app-icon [name]="visibleSecrets().has(row.id) ? 'eye-off' : 'eye'" class="w-4 h-4" />
+              <app-icon [name]="visibleSecrets().has(row.id) ? 'eye-off' : 'eye'" class="w-3.5 h-3.5 shrink-0" />
             </button>
             <button
               (click)="copyToClipboard(row.secret_data, 'toast.resource_copied')"

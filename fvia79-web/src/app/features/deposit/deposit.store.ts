@@ -70,6 +70,7 @@ export class DepositStore {
     limit: number,
     search?: string,
     status?: string,
+    paymentMethod?: string,
     startDate?: string,
     endDate?: string
   ): Observable<{ items: DepositHistoryItem[]; total: number; last_page: number; current_page: number }> {
@@ -88,6 +89,9 @@ export class DepositStore {
     }
     if (status) {
       params = params.set('status', status);
+    }
+    if (paymentMethod) {
+      params = params.set('payment_method', paymentMethod);
     }
     if (startDate) {
       params = params.set('start_date', startDate);

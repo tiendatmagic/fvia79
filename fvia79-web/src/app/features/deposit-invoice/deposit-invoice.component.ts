@@ -412,10 +412,13 @@ export class DepositInvoiceComponent implements OnInit, OnDestroy {
     this.stopStatusPolling();
     this.state.authStore.checkMe(true).subscribe();
 
+    const amountVal = this.invoice?.amountUsdt ?? this.invoice?.amountToPay;
+    const formattedAmount = amountVal != null ? (amountVal % 1 === 0 ? amountVal.toLocaleString('en-US') : String(amountVal)) : '';
+
     this.modalService.confirm({
       title: this.lang.translate('modal.deposit_success_title'),
       variant: 'success',
-      description: this.lang.translate('modal.deposit_success_desc'),
+      description: this.lang.translate('modal.deposit_success_desc', { amount: formattedAmount }),
       confirmText: this.lang.translate('modal.deposit_success_confirm'),
       cancelText: this.lang.translate('common.close'),
       confirmButtonClass: 'btn-primary'

@@ -287,6 +287,7 @@ class DepositService
         int $limit = 10,
         ?string $search = null,
         ?string $status = null,
+        ?string $paymentMethod = null,
         ?string $startDate = null,
         ?string $endDate = null
     ): array {
@@ -294,6 +295,10 @@ class DepositService
 
         if ($status) {
             $query->where('status', $status);
+        }
+
+        if ($paymentMethod) {
+            $query->where('payment_method', $paymentMethod);
         }
 
         if ($startDate) {

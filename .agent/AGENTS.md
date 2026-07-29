@@ -18,6 +18,78 @@
 > **QUY TẮC BẮT BUỘC CRONJOB & PHÂN QUYỀN CACHE STORAGE**:
 > 1. Cronjob Scheduler (`schedule:run`) **CHỈ ĐƯỢC CHẠY DƯỚI USER `www-data`** (`crontab -u www-data -e`). **TUYỆT ĐỐI KHÔNG cài dưới `root`** vì sẽ gây ra lỗi `500 Permission denied` khi người dùng thực hiện thao tác Web/API.
 > 2. Luôn cấp quyền `chmod -R 777` và `chown -R www-data:www-data` cho `storage` & `bootstrap/cache`. Khi gõ lệnh CLI thủ công trên VPS, luôn chạy dưới quyền `www-data` (`su -s /bin/bash www-data -c "php artisan <cmd>"`).
+
+### [2026-07-30] Khắc Phục Lỗi Icon Con Mắt (Eye Icon) Lệch Không Bằng Ngang Với Icon Sao Chép (Copy Icon) Đồng Bộ 3 Dự Án (FVIA79, ADSBM79, ISOCALMARKET)
+- **Mô tả yêu cầu**:
+  Sửa lỗi hiển thị icon con mắt (`eye`/`eye-slash`/`eye-off`) bị lệch cao/thấp hơn so với icon sao chép (`copy`) tại các ô hiển thị B2B API Key (`/profile/api`, `/admin/api`) và bảng Kho hàng (`/inventory`). Nguyên nhân: Thẻ nút bấm icon con mắt cũ dùng padding tự do `p-1 cursor-pointer` (hoặc thiếu flex box centering) trong khi nút sao chép dùng `w-7 h-7 rounded-lg flex items-center justify-center shrink-0` (hoặc `w-6 h-6 rounded flex items-center justify-center`), làm 2 icon có kích thước box và baseline khác nhau dẫn đến xộc xệch và không đồng bộ hiệu ứng hover.
+- **Thực hiện xử lý**:
+  - Đồng bộ chuẩn hóa toàn bộ nút chứa icon con mắt và nút sao chép trên cả 3 dự án (`fvia79-web`, `adsbm79-web`, `isocalmarket-web`):
+    - `user-api.component.html` & `admin-api.component.html`: Đổi nút con mắt sang `w-7 h-7 rounded-lg flex items-center justify-center text-slate-400 dark:text-slate-500 hover:text-[var(--color-primary)] dark:hover:text-white hover:bg-slate-200/50 dark:hover:bg-slate-800 active:scale-95 transition-all shrink-0 cursor-pointer` và `<app-icon class="w-4 h-4 shrink-0" />`. Đặt khoảng cách `gap-1.5` đồng nhất.
+    - `inventory.component.html`: Đổi nút con mắt sang `w-6 h-6 rounded flex items-center justify-center hover:bg-slate-100 dark:hover:bg-slate-800 transition-colors text-slate-400 hover:text-slate-600 shrink-0 cursor-pointer` và `<app-icon class="w-3.5 h-3.5 shrink-0" />` khớp 100% với nút copy kề bên.
+- **Kiểm thử**:
+  - Biên dịch Angular production thành công 100% trên cả 3 dự án Web.
+
+### [2026-07-30] Khắc Phục Toast Hiển Thị Raw Key Laravel (messages.invalid_password) Chưa Dịch i18n Đồng Bộ 3 Dự Án (FVIA79, ADSBM79, ISOCALMARKET)
+- **Mô tả yêu cầu**:
+  Sửa lỗi toast thông báo hiển thị raw key `messages.invalid_password` (và các key `messages.*` khác) thay vì nội dung đã dịch đa ngôn ngữ trên giao diện người dùng. Nguyên nhân: Backend Laravel dùng `__('messages.xxx')` nhưng khi VPS bị dính cache locale hoặc config sai, hàm `__()` trả về raw key thay vì text EN đã dịch → FE toast service không map được.
+- **Thực hiện xử lý**:
+  - **Backend API (`fvia79-api`, `adsbm79-api`, `isocalmarket-api`)**:
+    - `SensitiveAdminActionService.php`: Bỏ `__('messages.invalid_password')` và `__('messages.invalid_otp')`, thay bằng EN string trực tiếp (`'The current password is incorrect.'`, `'The two-factor authentication code is invalid.'`).
+    - `MySqlDatabaseBackupService.php`: Bỏ tất cả `__('messages.database_*')`, thay bằng EN string trực tiếp cho 5 message (restore_success, safety_backup_failed, restore_failed_rolled_back, restore_failed_manual_recovery, database_backup_busy).
+    - `AppServiceProvider.php`: Bỏ `__('messages.database_backup_rate_limited')` và `__('messages.database_restore_rate_limited')`, thay bằng EN string trực tiếp.
+    - `DatabaseBackupController.php`: Bỏ `__('messages.database_backup_unavailable')`, thay bằng EN string trực tiếp.
+  - **Frontend Web (`fvia79-web`, `adsbm79-web`, `isocalmarket-web`)**:
+    - `toast.service.ts`: Bổ sung 12 mapping EN message mới vào `API_MESSAGE_KEYS`. Thêm bảng `LARAVEL_KEY_FALLBACK` (10 entries) map raw Laravel key `messages.xxx` sang FE translation key tương ứng. Cập nhật `resolveApiMessage()` kiểm tra `LARAVEL_KEY_FALLBACK` trước khi gọi `translate()` trực tiếp.
+    - `vi.ts` & `en.ts`: Bổ sung 2 translation keys mới `database_backup.export_rate_limited` và `database_backup.restore_rate_limited`.
+- **Kiểm thử**:
+  - PHP syntax check `php -l` đạt 0 lỗi trên cả 3 dự án API.
+  - Biên dịch Angular production `npx ng build --configuration production` thành công 100% trên cả 3 dự án Web.
+
+### [2026-07-30] Bổ Sung Skeleton Loading & Cache FE Cho Trang Quản Lý Nhà Cung Cấp (Admin Suppliers) Đồng Bộ 3 Dự Án (FVIA79, ADSBM79, ISOCALMARKET)
+- **Mô tả yêu cầu**:
+  Thêm skeleton loading animation cho trang `/admin/suppliers` trên cả 3 dự án. Khi đang tải dữ liệu suppliers từ API, giao diện hiển thị skeleton placeholder mô phỏng bố cục thực tế (tabs, header, balance box, switch toggles, action banners, form fields, price example, footer buttons) thay vì trang trắng. Đồng thời bổ sung cơ chế cache FE trong `SupplierStore` để tránh gọi lại API khi admin chuyển tab menu qua lại.
+- **Thực hiện xử lý**:
+  - **Frontend Web (`fvia79-web`, `adsbm79-web`, `isocalmarket-web`)**:
+    - `admin-suppliers.component.ts`: Import `SkeletonLoaderComponent` vào danh sách `imports`.
+    - `admin-suppliers.component.html`: Bọc toàn bộ nội dung tabs + card trong `@if (supplierStore.loading()) { skeleton } @else { nội dung thực }`. Skeleton tùy chỉnh inline với `animate-pulse` mô phỏng đầy đủ layout gồm: tab buttons, card header + balance box, switch toggles (3 items), action banners (3 items), form fields grid (2 cols), API key field (full width), price example box, footer buttons.
+    - `supplier.store.ts`: Thêm cờ `private loaded = false` và logic cache trong `fetchSuppliers(force = false)`. Nếu `loaded === true && force === false` → trả về `of(this.suppliers())` ngay (không gọi API, không trigger skeleton). Các method `create()`, `update()`, `sync()` đã cập nhật trực tiếp store nên không cần invalidate.
+- **Kiểm thử**:
+  - Biên dịch Angular production `npx ng build --configuration production` thành công 100% trên cả 3 dự án (`fvia79-web`, `adsbm79-web`, `isocalmarket-web`).
+
+### [2026-07-30] Bổ Sung Bộ Lọc Phương Thức Nạp Tiền & Chuẩn Hóa 4 Bộ Lọc Trên Trang Lịch Sử Nạp Tiền (Deposit History) Đồng Bộ 3 Dự Án (FVIA79, ADSBM79, ISOCALMARKET)
+- **Mô tả yêu cầu**:
+  Bổ sung bộ lọc "Phương thức" (USDT BEP20, Binance Pay) và đồng bộ khung 4 bộ lọc ("Bộ lọc khoảng thời gian", "Trạng thái", "Phương thức", "Tìm kiếm") tại trang Lịch sử Nạp tiền (`/deposit/history`) của người dùng giống hệt giao diện Quản lý Nạp tiền Admin (`/admin/deposits`).
+- **Thực hiện xử lý**:
+  - **Backend API (`fvia79-api`, `adsbm79-api`, `isocalmarket-api`)**:
+    - `DepositController.php`: Nhận tham số `payment_method` (hoặc `method`) từ query string và truyền vào service.
+    - `DepositService.php`: Bổ sung tham số `?string $paymentMethod = null` cho phương thức `getHistoryPaginated()` và lọc điều kiện `where('payment_method', $paymentMethod)` vào Eloquent query.
+  - **Frontend Web (`fvia79-web`, `adsbm79-web`, `isocalmarket-web`)**:
+    - `deposit.store.ts`: Cập nhật `fetchHistory()` tiếp nhận và truyền tham số `payment_method` qua HTTP params.
+    - `deposit-history.component.ts`: Khai báo `selectedMethodFilter`, `methodOptions`, hàm `getMethodText()` và thêm cột `paymentMethod` ("Phương thức") vào danh sách cột bảng.
+    - `deposit-history.component.html`: Cập nhật layout lưới từ `grid-cols-1 sm:grid-cols-2 lg:grid-cols-3` sang `grid-cols-1 sm:grid-cols-2 lg:grid-cols-4`, bổ sung ô chọn `deposit.method` và `ng-template appTableCell="paymentMethod"`.
+- **Kiểm thử**:
+  - Kiểm tra cú pháp PHP `php -l` đạt 0 lỗi trên cả 3 dự án API.
+  - Biên dịch Angular production `npx ng build --configuration production` thành công 100% không có lỗi trên cả 3 dự án Web.
+
+### [2026-07-30] Khắc Phục Lỗi Hiển Thị Literal {{amount}} Trên Modal Thông Báo Nạp Tiền Thành Công Đồng Bộ 3 Dự Án (FVIA79, ADSBM79, ISOCALMARKET)
+- **Mô tả yêu cầu**:
+  Sửa lỗi hiển thị chuỗi biến raw `Khoản nạp {{amount}} USDT đã được hệ thống ghi nhận...` trên Modal Thông báo Nạp tiền Thành công tại trang Hóa đơn nạp tiền.
+- **Nguyên nhân sự cố**:
+  - Tại `deposit-invoice.component.ts`, phương thức `showSuccessModal()` gọi `this.lang.translate('modal.deposit_success_desc')` mà không truyền object tham số `{ amount: formattedAmount }`.
+- **Thực hiện xử lý**:
+  - Định dạng số tiền `amountUsdt` / `amountToPay` từ `this.invoice` và truyền vào `this.lang.translate('modal.deposit_success_desc', { amount: formattedAmount })`.
+  - Bổ sung cơ chế tự động xóa các thẻ biến không truyền dư thừa trong `LanguageService.ts` (`text.replace(/\{+\s*\w+\s*\}+/g, '')`) làm lớp bảo vệ phòng ngừa rò rỉ biến thô trên giao diện.
+- **Kiểm thử**:
+  - Đã chạy `npx ng build --configuration production` thành công 100% không có lỗi trên cả 3 dự án (`fvia79-web`, `adsbm79-web`, `isocalmarket-web`).
+
+### [2026-07-30] Khắc Phục Vỡ Khung Icon Shield Trang Bảo Mật Profile Security (w-10 h-10 flex items-center justify-center) Đồng Bộ 3 Dự Án (FVIA79, ADSBM79, ISOCALMARKET)
+- **Mô tả yêu cầu**:
+  Sửa lỗi hiển thị thẻ chứa icon `shield-check` tại trang Bảo mật (`/profile/security`) trên cả 3 dự án (`FVIA79`, `ADSBM79`, `ISOCALMARKET`). Thẻ chứa cũ bị thiếu kích thước width/height cố định (`p-2 rounded-lg shrink-0`) dẫn đến vỡ/bị kéo dài thành hình chữ nhật đứng.
+- **Thực hiện xử lý**:
+  - Cập nhật tệp `profile-security.component.html` của cả 3 dự án: thay thế class thẻ chứa icon sang `w-10 h-10 rounded-xl flex items-center justify-center shrink-0` chuẩn mực.
+- **Kiểm thử**:
+  - Đã thực thi lệnh `npx ng build --configuration production` thành công 100% trên cả 3 dự án (`fvia79-web`, `adsbm79-web`, `isocalmarket-web`).
+
 ### [2026-07-29] Kiểm Tra & Khắc Phục Triệt Để Lỗi Truy Cập phpMyAdmin Đồng Bộ 3 Dự Án (FVIA79, ADSBM79, ISOCALMARKET)
 - **Mô tả yêu cầu**:
   Rà soát tệp `deploy.md` của cả 3 dự án (`ADSBM79`, `FVIA79`, `ISOCALMARKET`) để tổng hợp thông tin VPS. Kiểm tra nguyên nhân vì sao dự án **FVIA79** và **ISOCALMARKET** không truy cập được `phpMyAdmin` và tiến hành sửa lỗi triệt để.
