@@ -18,6 +18,23 @@
 > **QUY TẮC BẮT BUỘC CRONJOB & PHÂN QUYỀN CACHE STORAGE**:
 > 1. Cronjob Scheduler (`schedule:run`) **CHỈ ĐƯỢC CHẠY DƯỚI USER `www-data`** (`crontab -u www-data -e`). **TUYỆT ĐỐI KHÔNG cài dưới `root`** vì sẽ gây ra lỗi `500 Permission denied` khi người dùng thực hiện thao tác Web/API.
 > 2. Luôn cấp quyền `chmod -R 777` và `chown -R www-data:www-data` cho `storage` & `bootstrap/cache`. Khi gõ lệnh CLI thủ công trên VPS, luôn chạy dưới quyền `www-data` (`su -s /bin/bash www-data -c "php artisan <cmd>"`).
+### [2026-07-29] Triển Khai (Deploy) Đồng Bộ FE & BE (Giữ Nguyên CSDL, Tái Tạo Cache & Kiểm Tra Cronjob) 3 Dự Án (FVIA79, ADSBM79, ISOCALMARKET)
+- **Mô tả yêu cầu**:
+  Triển khai (deploy) bản nâng cấp mã nguồn Frontend Angular và Backend Laravel mới nhất cho 3 dự án (**ADSBM79**, **FVIA79**, **ISOCALMARKET**) lên 3 máy chủ VPS độc lập tương ứng theo thông tin tại tệp `deploy.md`. Yêu cầu giữ nguyên CSDL hiện tại (không xóa hay fresh/seed), tái tạo cache Laravel hoàn toàn, đảm bảo Cronjob tự động hoạt động ngay cả khi restart VPS, và kiểm tra hoạt động các endpoint API nghiệm thu sau khi hoàn tất.
+- **Thực hiện xử lý**:
+  - **Frontend Build**: Biên dịch sản phẩm production thành công `npx ng build --configuration production` cho cả 3 dự án `adsbm79-web`, `fvia79-web`, `isocalmarket-web`.
+  - **Tải lên & Giải nén VPS**: Nén mã nguồn FE build (`browser/`) và BE source (đã loại trừ `vendor`, `.env`, `storage/logs`, `backup/*.sql`) thành các gói `.tar.gz` dung lượng tối ưu, tải tự động qua SFTP và giải nén vào `/var/www/`.
+  - **Backend Operations**:
+    - Thực thi `php artisan migrate --force` an toàn giữ nguyên dữ liệu CSDL.
+    - Chạy `php artisan supplier:fix-vi-names` cho dự án FVIA79.
+    - Xóa và tái tạo toàn bộ cache đệm Laravel dưới quyền `www-data`: `config:clear`, `config:cache`, `route:cache`, `view:cache`.
+    - Phân quyền chuẩn: `chown -R www-data:www-data` và `chmod -R 777` cho `storage` & `bootstrap/cache`.
+  - **Cronjob Check**: Xác nhận Crontab của `www-data` đã cấu hình `schedule:run` và dịch vụ `cron` đã được `enable` tự động khởi chạy cùng hệ thống trên cả 3 VPS.
+- **Kiểm thử nghiệm thu API (HTTP 200 OK)**:
+  - **ADSBM79**: `https://adsbm79.com/api/v1/categories` (200 OK - 16 danh mục), `https://adsbm79.com/api/v1/products/grouped` (200 OK - 10 nhóm).
+  - **FVIA79**: `https://fvia79.com/api/v1/categories` (200 OK - 14 danh mục), `https://fvia79.com/api/v1/products/grouped` (200 OK - 11 nhóm).
+  - **ISOCALMARKET**: `https://isocalmarket.com/api/v1/categories` (200 OK - 17 danh mục), `https://isocalmarket.com/api/v1/products/grouped` (200 OK - 11 nhóm).
+
 ### [2026-07-29] Thay Đổi Vị Trí Tab Nạp Tiền (Binance Pay Bên Trái, USDT BEP-20 Bên Phải) Trên Dự Án FVIA79
 - **Mô tả yêu cầu**:
   Chỉnh sửa riêng dự án FVIA79, thay đổi thứ tự hiển thị của các tab chọn phương thức nạp tiền: đưa tab **Binance Pay (Binance ID)** sang bên trái và tab **USDT BEP-20** sang bên phải, đồng thời thiết lập mặc định chọn Binance Pay khi khởi tạo trang nạp tiền.
