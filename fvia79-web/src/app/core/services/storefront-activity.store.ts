@@ -94,6 +94,9 @@ export class StorefrontActivityStore {
     force: boolean
   ): Observable<T> {
     const now = Date.now();
+    if (!force && state.entry && (state.entry.response as any)?.enabled === false) {
+      return of(state.entry.response);
+    }
     if (!force && state.entry && now - state.entry.fetchedAt < this.cacheTtlMs) {
       return of(state.entry.response);
     }

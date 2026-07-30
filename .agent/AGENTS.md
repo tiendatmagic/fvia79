@@ -19,6 +19,41 @@
 > 1. Cronjob Scheduler (`schedule:run`) **CHỈ ĐƯỢC CHẠY DƯỚI USER `www-data`** (`crontab -u www-data -e`). **TUYỆT ĐỐI KHÔNG cài dưới `root`** vì sẽ gây ra lỗi `500 Permission denied` khi người dùng thực hiện thao tác Web/API.
 > 2. Luôn cấp quyền `chmod -R 777` và `chown -R www-data:www-data` cho `storage` & `bootstrap/cache`. Khi gõ lệnh CLI thủ công trên VPS, luôn chạy dưới quyền `www-data` (`su -s /bin/bash www-data -c "php artisan <cmd>"`).
 
+### [2026-07-30] Chuyển Mặc Định Tắt Chế Độ "Đơn Hàng Vừa Mua" & "Lịch Sử Nạp Gần Đây", Chặn Polling Khi Disabled & Thêm SVG Icon Chuẩn Cho 3 Dự Án (FVIA79, ADSBM79, ISOCALMARKET)
+- **Mô tả yêu cầu**:
+  Chuyển trạng thái mặc định của 2 tính năng "Đơn hàng vừa mua" (`recent-purchases`) và "Lịch sử nạp gần đây" (`recent-deposits`) từ bật (`enabled = true`) sang TẮT (`enabled = false`) khi chưa có cấu hình trong hệ thống. Nếu `enabled = false`, frontend dừng hoàn toàn các yêu cầu API refetch/polling tiếp theo. Đồng thời bổ sung/sửa đổi SVG icon chuẩn (`shopping-bag` và `credit-card`) cho cả 2 khối tính năng, khắc phục triệt để lỗi hiển thị icon nghi vấn/chấm hỏi `(?)` trên giao diện `ISOCALMARKET` và `ADSBM79`.
+- **Thực hiện xử lý**:
+  - **Backend API (`fvia79-api`, `adsbm79-api`, `isocalmarket-api`)**:
+    - `StorefrontController.php`: Đổi fallback giá trị ngầm định trong `getSetting('recent_purchases_enabled', '0')` và `getSetting('recent_deposits_enabled', '0')` từ `'1'` sang `'0'`.
+    - `StorefrontRecentActivityTest.php`: Bổ sung test case `test_default_state_is_disabled_when_settings_unconfigured()` kiểm thử trạng thái ngầm định trả về `enabled: false`.
+  - **Frontend Web (`fvia79-web`, `adsbm79-web`, `isocalmarket-web`)**:
+    - `admin-settings.component.ts`: Đổi giá trị khởi tạo `recent_purchases_enabled: false`, `recent_deposits_enabled: false` và giá trị fallback khi fetch settings chưa cấu hình về `false`.
+    - `storefront-activity.store.ts`: Bổ sung điều kiện kiểm tra trong `fetchCached()`: Nếu `state.entry?.response?.enabled === false` và không gọi cưỡng chế (`!force`), trả về ngay `of(state.entry.response)` mà không phát bất kỳ HTTP API request nào lên server.
+    - `icon.component.html`: Bổ sung 2 case `@case ('shopping-bag')` và `@case ('credit-card')` vào `icon.component.html` trên `isocalmarket-web` và `adsbm79-web` đồng bộ SVG với `fvia79-web`.
+    - `storefront.component.html`: Chuẩn hóa icon `<app-icon name="shopping-bag" class="w-5 h-5 text-white/90" />` và `<app-icon name="credit-card" class="w-5 h-5 text-white/90" />`.
+- **Kiểm thử**:
+  - `php artisan test --filter=StorefrontRecentActivityTest`: Đạt 2/2 tests passed (100%) trên cả 3 dự án API.
+  - `npx ng build --configuration production`: Đạt 100% thành công không có lỗi trên cả 3 dự án Web.
+
+### [2026-07-30] Triển Khai (Deploy) Đồng Bộ FE & BE (Giữ Nguyên CSDL, Bật Bảo Trì, Cấu Hình Telegram Secret & Tái Tạo Cache) Cho 3 Dự Án (FVIA79, ADSBM79, ISOCALMARKET)
+- **Mô tả yêu cầu**:
+  Triển khai (deploy) bản nâng cấp mã nguồn Frontend Angular và Backend Laravel mới nhất cho 3 dự án (**ADSBM79**, **FVIA79**, **ISOCALMARKET**) lên 3 máy chủ VPS tương ứng theo thông tin tệp `deploy.md`. Trước khi upload code, bật chế độ bảo trì `php artisan down`. Giữ nguyên dữ liệu CSDL (chỉ chạy `php artisan migrate --force`), bổ sung/cấu hình `TELEGRAM_WEBHOOK_SECRET` nếu thiếu, tái tạo toàn bộ cache đệm Laravel, kiểm tra cronjob của `www-data`, tắt chế độ bảo trì `php artisan up` và tuyệt đối không tác động đến phpMyAdmin.
+- **Thực hiện xử lý**:
+  - **Biên dịch Frontend (Local)**: Chạy `npx ng build --configuration production` thành công 100% cho cả 3 dự án `fvia79-web`, `adsbm79-web`, `isocalmarket-web`.
+  - **Triển khai VPS**:
+    1. Đưa ứng dụng về chế độ bảo trì: `su -s /bin/bash www-data -c "php artisan down"`.
+    2. Upload mã nguồn FE build (`browser/`) và BE source (đã loại trừ `.env`, `storage`, `vendor`, `.git`, `backup`) qua gói nén `.tar.gz`.
+    3. Cấu hình `TELEGRAM_WEBHOOK_SECRET` trong `.env` trên VPS cho cả 3 dự án.
+    4. Thực thi `composer install --no-dev --optimize-autoloader` và migration an toàn `php artisan migrate --force`.
+    5. Xóa và tái tạo cache đệm tĩnh dưới quyền `www-data`: `config:clear`, `config:cache`, `route:cache`, `view:cache`.
+    6. Khởi tạo thư mục và phân quyền: `chown -R www-data:www-data` và `chmod -R 775` cho `storage` & `bootstrap/cache`.
+    7. Tắt bảo trì đưa hệ thống hoạt động: `su -s /bin/bash www-data -c "php artisan up"`.
+    8. Đảm bảo Cronjob Scheduler (`schedule:run`) hoạt động tự động dưới user `www-data`.
+- **Kiểm thử nghiệm thu API (HTTP 200 OK)**:
+  - **FVIA79**: `https://fvia79.com/` (200 OK), `https://fvia79.com/api/v1/categories` (200 OK).
+  - **ADSBM79**: `https://adsbm79.com/` (200 OK), `https://adsbm79.com/api/v1/categories` (200 OK).
+  - **ISOCALMARKET**: `https://isocalmarket.com/` (200 OK), `https://isocalmarket.com/api/v1/categories` (200 OK).
+
 ### [2026-07-30] Tách Template Inline HTML Thành File HTML Riêng Cho MiniPurchaseNotificationComponent Đồng Bộ 3 Dự Án (FVIA79, ADSBM79, ISOCALMARKET)
 - **Mô tả yêu cầu**:
   Tách phần template HTML inline trong `mini-purchase-notification.component.ts` thành tệp template riêng `mini-purchase-notification.component.html` nhằm giúp mã nguồn sạch sẽ, dễ bảo trì và mở rộng đồng bộ trên cả 3 dự án (`FVIA79`, `ADSBM79`, `ISOCALMARKET`).

@@ -21,7 +21,7 @@ class StorefrontController extends Controller
     public function recentPurchases(Request $request)
     {
         $payload = StorefrontActivityCache::rememberRecentPurchases(function (): array {
-            $enabled = filter_var($this->settingService->getSetting('recent_purchases_enabled', '1'), FILTER_VALIDATE_BOOLEAN);
+            $enabled = filter_var($this->settingService->getSetting('recent_purchases_enabled', '0'), FILTER_VALIDATE_BOOLEAN);
             $mode = $this->settingService->getSetting('recent_purchases_mode', 'demo');
 
             $data = [];
@@ -37,8 +37,8 @@ class StorefrontController extends Controller
                     $product = $firstItem ? $firstItem->product : null;
                     $username = $order->user ? ($order->user->username ?? 'user') : 'user';
                     $maskedUsername = strlen($username) <= 4
-                        ? substr($username, 0, 1).'****'
-                        : substr($username, 0, min(max(1, strlen($username) - 4), 6)).'****';
+                        ? substr($username, 0, 1) . '****'
+                        : substr($username, 0, min(max(1, strlen($username) - 4), 6)) . '****';
 
                     $totalUsd = (float) $order->total_price;
 
@@ -88,7 +88,7 @@ class StorefrontController extends Controller
 
                     $data[] = [
                         'id' => $order->id,
-                        'username' => Str::substr($username, 0, $visibleLength).'***',
+                        'username' => Str::substr($username, 0, $visibleLength) . '***',
                         'quantity' => $firstItem ? $firstItem->quantity : 1,
                         'product_name_vi' => $product ? ($product->name_vi ?? $product->name) : 'Sản phẩm',
                         'product_name_en' => $product ? ($product->name_en ?? $product->name) : 'Product',
@@ -111,7 +111,7 @@ class StorefrontController extends Controller
     public function recentDeposits(Request $request)
     {
         $payload = StorefrontActivityCache::rememberRecentDeposits(function (): array {
-            $enabled = filter_var($this->settingService->getSetting('recent_deposits_enabled', '1'), FILTER_VALIDATE_BOOLEAN);
+            $enabled = filter_var($this->settingService->getSetting('recent_deposits_enabled', '0'), FILTER_VALIDATE_BOOLEAN);
             $mode = $this->settingService->getSetting('recent_deposits_mode', 'demo');
 
             $data = [];
@@ -125,8 +125,8 @@ class StorefrontController extends Controller
                 foreach ($deposits as $deposit) {
                     $username = $deposit->user ? ($deposit->user->username ?? 'user') : 'user';
                     $maskedUsername = strlen($username) <= 4
-                        ? substr($username, 0, 1).'****'
-                        : substr($username, 0, min(max(1, strlen($username) - 4), 6)).'****';
+                        ? substr($username, 0, 1) . '****'
+                        : substr($username, 0, min(max(1, strlen($username) - 4), 6)) . '****';
 
                     $amountVnd = (float) $deposit->amount_vnd;
                     $amountUsdt = (float) $deposit->amount_usdt;
