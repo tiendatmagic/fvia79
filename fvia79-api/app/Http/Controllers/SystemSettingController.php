@@ -67,6 +67,8 @@ class SystemSettingController extends Controller
             'recent_purchases_mode' => 'sometimes|nullable|string|in:demo,real',
             'recent_deposits_enabled' => 'sometimes|nullable',
             'recent_deposits_mode' => 'sometimes|nullable|string|in:demo,real',
+            'mini_recent_purchases_enabled' => 'sometimes|nullable',
+            'mini_recent_purchases_mode' => 'sometimes|nullable|string|in:demo,real',
         ], [
             'admin_wallet_address.regex' => 'The admin wallet address must be a valid BEP20/EVM address starting with 0x followed by 40 hex characters.',
         ]);
@@ -163,6 +165,12 @@ class SystemSettingController extends Controller
         }
         if ($request->has('recent_deposits_mode')) {
             $settingsToSave['recent_deposits_mode'] = (string) $request->input('recent_deposits_mode');
+        }
+        if ($request->has('mini_recent_purchases_enabled')) {
+            $settingsToSave['mini_recent_purchases_enabled'] = filter_var($request->input('mini_recent_purchases_enabled'), FILTER_VALIDATE_BOOLEAN) ? '1' : '0';
+        }
+        if ($request->has('mini_recent_purchases_mode')) {
+            $settingsToSave['mini_recent_purchases_mode'] = (string) $request->input('mini_recent_purchases_mode');
         }
 
         if (! empty($settingsToSave)) {

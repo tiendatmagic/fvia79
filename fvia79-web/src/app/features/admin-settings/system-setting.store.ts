@@ -33,6 +33,8 @@ export interface SystemSettingsPayload {
   recent_purchases_mode?: 'demo' | 'real' | string;
   recent_deposits_enabled?: boolean | string;
   recent_deposits_mode?: 'demo' | 'real' | string;
+  mini_recent_purchases_enabled?: boolean | string;
+  mini_recent_purchases_mode?: 'demo' | 'real' | string;
   has_scanner_api_key?: boolean;
   has_binance_api_key?: boolean;
   has_binance_api_secret?: boolean;

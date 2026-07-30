@@ -158,7 +158,9 @@ export class AdminSettingsComponent implements OnInit, OnDestroy {
     recent_purchases_enabled: true,
     recent_purchases_mode: 'demo',
     recent_deposits_enabled: true,
-    recent_deposits_mode: 'demo'
+    recent_deposits_mode: 'demo',
+    mini_recent_purchases_enabled: false,
+    mini_recent_purchases_mode: 'demo'
   };
 
   public readonly previewLang = signal<'vi' | 'en'>('vi');
@@ -191,6 +193,8 @@ export class AdminSettingsComponent implements OnInit, OnDestroy {
             recent_purchases_mode: settings.recent_purchases_mode || 'demo',
             recent_deposits_enabled: settings.recent_deposits_enabled !== undefined ? Boolean(Number(settings.recent_deposits_enabled)) : true,
             recent_deposits_mode: settings.recent_deposits_mode || 'demo',
+            mini_recent_purchases_enabled: settings.mini_recent_purchases_enabled !== undefined ? Boolean(Number(settings.mini_recent_purchases_enabled)) : false,
+            mini_recent_purchases_mode: settings.mini_recent_purchases_mode || 'demo',
             announcement_text_vi: settings.announcement_text_vi ?? settings.announcement_text ?? '',
             announcement_text_en: settings.announcement_text_en ?? '',
             announcement_text: settings.announcement_text ?? '',

@@ -44,6 +44,8 @@ Route::prefix('v1')->group(function () {
     Route::middleware(['jwt.auth'])->group(function () {
         Route::post('/auth/logout', ['App\Http\Controllers\AuthController', 'logout']);
         Route::get('/auth/me', ['App\Http\Controllers\AuthController', 'me']);
+        Route::get('/storefront/mini-recent-purchases', ['App\Http\Controllers\StorefrontController', 'miniRecentPurchases'])
+            ->middleware('throttle:30,1');
 
         Route::put('/profile', ['App\Http\Controllers\ProfileController', 'update']);
         Route::put('/profile/password', ['App\Http\Controllers\ProfileController', 'changePassword']);

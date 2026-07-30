@@ -5,6 +5,7 @@ import { filter } from 'rxjs/operators';
 import { Subscription, timer } from 'rxjs';
 import { HeaderComponent } from '@shared/layout/header/header.component';
 import { ToastComponent } from '@shared/components/toast/toast.component';
+import { MiniPurchaseNotificationComponent } from '@shared/components/mini-purchase-notification/mini-purchase-notification.component';
 import { IconComponent } from '@shared/components/icon/icon.component';
 import { SidebarComponent } from '@shared/layout/sidebar/sidebar.component';
 import { LogoComponent } from '@shared/components/logo/logo.component';
@@ -27,6 +28,7 @@ import { PublicSettingStore } from '@core/services/public-setting.store';
     HeaderComponent,
     SidebarComponent,
     ToastComponent,
+    MiniPurchaseNotificationComponent,
     IconComponent,
     LogoComponent,
     ThemeSwitcherComponent,

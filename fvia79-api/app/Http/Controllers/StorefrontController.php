@@ -6,6 +6,7 @@ use App\Application\Services\SystemSettingService;
 use App\Infrastructure\Persistence\Eloquent\DepositModel;
 use App\Infrastructure\Persistence\Eloquent\OrderModel;
 use Illuminate\Http\Request;
+use Illuminate\Support\Str;
 
 class StorefrontController extends Controller
 {
@@ -48,6 +49,44 @@ class StorefrontController extends Controller
                     'product_name' => $product ? $product->name : 'Foreign account',
                     'total_price' => $totalUsd,
                     'total_usd' => $totalUsd,
+                    'created_at' => $order->created_at ? $order->created_at->toIso8601String() : now()->toIso8601String(),
+                ];
+            }
+        }
+
+        return response()->json([
+            'enabled' => $enabled,
+            'mode' => $mode,
+            'data' => $data,
+        ]);
+    }
+
+    public function miniRecentPurchases(Request $request)
+    {
+        $enabled = filter_var($this->settingService->getSetting('mini_recent_purchases_enabled', '0'), FILTER_VALIDATE_BOOLEAN);
+        $mode = $this->settingService->getSetting('mini_recent_purchases_mode', 'demo');
+
+        $data = [];
+        if ($enabled && $mode === 'real') {
+            $orders = OrderModel::with(['items.product', 'user'])
+                ->where('status', 'paid')
+                ->latest()
+                ->take(10)
+                ->get();
+
+            foreach ($orders as $order) {
+                $firstItem = $order->items->first();
+                $product = $firstItem ? $firstItem->product : null;
+                $username = $order->user ? ($order->user->username ?? 'user') : 'user';
+                $visibleLength = min(max(1, Str::length($username) - 3), 6);
+
+                $data[] = [
+                    'id' => $order->id,
+                    'username' => Str::substr($username, 0, $visibleLength).'***',
+                    'quantity' => $firstItem ? $firstItem->quantity : 1,
+                    'product_name_vi' => $product ? ($product->name_vi ?? $product->name) : 'Sản phẩm',
+                    'product_name_en' => $product ? ($product->name_en ?? $product->name) : 'Product',
+                    'product_name' => $product ? $product->name : 'Product',
                     'created_at' => $order->created_at ? $order->created_at->toIso8601String() : now()->toIso8601String(),
                 ];
             }
