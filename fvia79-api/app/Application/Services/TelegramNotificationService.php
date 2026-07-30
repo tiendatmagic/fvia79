@@ -113,8 +113,6 @@ class TelegramNotificationService
         $productId = $product->getId();
         $sixMonthsAgo = now()->subMonths(6);
 
-        // Get users who purchased this product within the last 6 months,
-        // have a linked Telegram chat ID, and enabled notifications.
         $users = UserModel::whereNotNull('telegram_chat_id')
             ->where('telegram_chat_id', '!=', '')
             ->where('telegram_notifications_enabled', true)

@@ -10,7 +10,6 @@ import { FaqService, WarrantyPolicyItem, FaqItem, PolicyCategoryItem } from '@co
 import { StateService } from '@core/services/state.service';
 
 const DEFAULT_FALLBACK_POLICIES: WarrantyPolicyItem[] = [
-  // BM Accepted
   {
     id: 1,
     category: 'bm',
@@ -59,7 +58,6 @@ const DEFAULT_FALLBACK_POLICIES: WarrantyPolicyItem[] = [
     sort_order: 4,
     is_active: true
   },
-  // BM Rejected
   {
     id: 5,
     category: 'bm',
@@ -108,7 +106,6 @@ const DEFAULT_FALLBACK_POLICIES: WarrantyPolicyItem[] = [
     sort_order: 4,
     is_active: true
   },
-  // Via Accepted
   {
     id: 9,
     category: 'via',
@@ -159,7 +156,6 @@ const DEFAULT_FALLBACK_POLICIES: WarrantyPolicyItem[] = [
     sort_order: 4,
     is_active: true
   },
-  // Via Rejected
   {
     id: 13,
     category: 'via',

@@ -11,12 +11,12 @@ return new class extends Migration
         Schema::create('coupons', function (Blueprint $table) {
             $table->uuid('id')->primary();
             $table->string('code')->unique();
-            $table->string('type')->default('percentage'); // percentage, fixed
+            $table->string('type')->default('percentage');
             $table->decimal('value', 15, 2)->default(10.00);
             $table->decimal('min_spend', 15, 2)->default(0.00);
             $table->dateTime('start_date');
             $table->dateTime('end_date');
-            $table->integer('usage_limit')->default(1); // 0 = unlimited
+            $table->integer('usage_limit')->default(1);
             $table->integer('used_count')->default(0);
             $table->timestamps();
             $table->softDeletes();

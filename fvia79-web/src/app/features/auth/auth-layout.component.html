@@ -97,7 +97,23 @@
 
       <div class="relative z-10 pt-6 border-t border-slate-200 dark:border-slate-900">
         <p class="text-xs text-slate-600 dark:text-slate-300 leading-relaxed font-medium">
-          {{ 'auth.legal_disclaimer' | translate }}
+          {{ 'auth.legal_disclaimer_prefix' | translate }}
+          <a
+            [routerLink]="['/terms']"
+            target="_blank"
+            class="text-primary hover:underline font-bold"
+          >
+            {{ 'auth.terms_service_link' | translate }}
+          </a>
+          {{ 'auth.legal_disclaimer_and' | translate }}
+          <a
+            [routerLink]="['/privacy']"
+            target="_blank"
+            class="text-primary hover:underline font-bold"
+          >
+            {{ 'auth.privacy_policy_link' | translate }}
+          </a>
+          {{ 'auth.legal_disclaimer_suffix' | translate }}
         </p>
       </div>
     </div>
@@ -105,7 +121,9 @@
     <div
       class="col-span-1 flex flex-col justify-between p-4 sm:p-6 md:p-10 bg-slate-50 dark:bg-slate-950 transition-colors min-h-screen relative"
     >
-      <div class="flex items-center justify-between lg:justify-end w-full shrink-0 z-20 mb-4 sm:mb-6">
+      <div
+        class="flex items-center justify-between lg:justify-end w-full shrink-0 z-20 mb-4 sm:mb-6"
+      >
         <div class="flex lg:hidden items-center gap-2.5">
           <app-logo class="w-8 h-8 text-slate-900 dark:text-white" />
           <span class="text-base font-black tracking-wider uppercase text-slate-900 dark:text-white"
@@ -242,72 +260,225 @@
         <div
           class="w-full max-w-[460px] bg-white dark:bg-slate-900 rounded-2xl shadow-xl shadow-slate-200/80 dark:shadow-slate-950/80 border border-slate-200/60 dark:border-slate-800/60 overflow-hidden"
         >
-        <div class="flex border-b border-slate-200 dark:border-slate-800">
-          <button
-            type="button"
-            (click)="switchTab('login')"
-            class="flex-1 text-center pb-3 pt-4 text-sm font-bold border-b-2 transition-all cursor-pointer -mb-px"
-            [class.border-primary]="isLogin()"
-            [class.text-primary]="isLogin()"
-            [class.border-transparent]="!isLogin()"
-            [class.text-slate-600]="!isLogin()"
-            [class.dark:text-slate-400]="!isLogin()"
-            [class.hover:text-slate-900]="!isLogin()"
-            [class.dark:hover:text-slate-100]="!isLogin()"
-          >
-            {{ 'nav.login' | translate }}
-          </button>
-          <button
-            type="button"
-            (click)="switchTab('register')"
-            class="flex-1 text-center pb-3 pt-4 text-sm font-bold border-b-2 transition-all cursor-pointer -mb-px"
-            [class.border-primary]="!isLogin()"
-            [class.text-primary]="!isLogin()"
-            [class.border-transparent]="isLogin()"
-            [class.text-slate-600]="isLogin()"
-            [class.dark:text-slate-400]="isLogin()"
-            [class.hover:text-slate-900]="isLogin()"
-            [class.dark:hover:text-slate-100]="isLogin()"
-          >
-            {{ 'nav.register' | translate }}
-          </button>
-        </div>
+          <div class="flex border-b border-slate-200 dark:border-slate-800">
+            <button
+              type="button"
+              (click)="switchTab('login')"
+              class="flex-1 text-center pb-3 pt-4 text-sm font-bold border-b-2 transition-all cursor-pointer -mb-px"
+              [class.border-primary]="isLogin()"
+              [class.text-primary]="isLogin()"
+              [class.border-transparent]="!isLogin()"
+              [class.text-slate-600]="!isLogin()"
+              [class.dark:text-slate-400]="!isLogin()"
+              [class.hover:text-primary]="!isLogin()"
+              [class.hover:underline]="!isLogin()"
+            >
+              {{ 'nav.login' | translate }}
+            </button>
+            <button
+              type="button"
+              (click)="switchTab('register')"
+              class="flex-1 text-center pb-3 pt-4 text-sm font-bold border-b-2 transition-all cursor-pointer -mb-px"
+              [class.border-primary]="!isLogin()"
+              [class.text-primary]="!isLogin()"
+              [class.border-transparent]="isLogin()"
+              [class.text-slate-600]="isLogin()"
+              [class.dark:text-slate-400]="isLogin()"
+              [class.hover:text-primary]="isLogin()"
+              [class.hover:underline]="isLogin()"
+            >
+              {{ 'nav.register' | translate }}
+            </button>
+          </div>
 
-        <div class="p-7 md:p-8">
-          @if (isLogin()) {
-            <div class="mb-7">
-              <h2 class="text-2xl font-black text-slate-900 dark:text-white tracking-tight mb-1.5">
-                {{ 'auth.welcome_back' | translate }}
-              </h2>
-              <p class="text-sm font-medium text-slate-600 dark:text-slate-300">
-                {{ 'auth.welcome_back_desc' | translate }}
-              </p>
-            </div>
-
-            @if (state.authStore.loginError()) {
-              <div
-                class="flex items-start gap-3 p-3.5 rounded-xl bg-red-50 dark:bg-red-950/40 border border-red-200 dark:border-red-900/60 mb-5"
-              >
-                <app-icon name="warning" class="w-4 h-4 text-red-500 shrink-0 mt-0.5" />
-                <p class="text-xs font-bold text-red-600 dark:text-red-400 leading-relaxed">
-                  {{ state.authStore.loginError() }}
+          <div class="p-6">
+            @if (isLogin()) {
+              <div class="mb-7">
+                <h2
+                  class="text-2xl font-black text-slate-900 dark:text-white tracking-tight mb-1.5"
+                >
+                  {{ 'auth.welcome_back' | translate }}
+                </h2>
+                <p class="text-sm font-medium text-slate-600 dark:text-slate-300">
+                  {{ 'auth.welcome_back_desc' | translate }}
                 </p>
               </div>
+
+              @if (state.authStore.loginError()) {
+                <div
+                  class="flex items-start gap-3 p-3.5 rounded-xl bg-red-50 dark:bg-red-950/40 border border-red-200 dark:border-red-900/60 mb-5"
+                >
+                  <app-icon name="warning" class="w-4 h-4 text-red-500 shrink-0 mt-0.5" />
+                  <p class="text-xs font-bold text-red-600 dark:text-red-400 leading-relaxed">
+                    {{ state.authStore.loginError() }}
+                  </p>
+                </div>
+              }
+
+              <form (ngSubmit)="onLoginSubmit()" class="space-y-5">
+                @if (!requires2Fa()) {
+                  <div class="form-field">
+                    <label
+                      >{{ 'auth.email_or_username' | translate }}
+                      <span class="text-red-500">*</span></label
+                    >
+                    <app-custom-input
+                      [(ngModel)]="loginEmail"
+                      (ngModelChange)="state.authStore.loginError.set('')"
+                      name="loginEmail"
+                      type="text"
+                      [placeholder]="'auth.email_or_username_placeholder' | translate"
+                      required
+                    />
+                  </div>
+
+                  <div class="form-field">
+                    <label
+                      >{{ 'auth.password' | translate }} <span class="text-red-500">*</span></label
+                    >
+                    <app-custom-input
+                      type="password"
+                      [(ngModel)]="loginPassword"
+                      (ngModelChange)="state.authStore.loginError.set('')"
+                      name="loginPassword"
+                      [placeholder]="'auth.password_placeholder' | translate"
+                      required
+                    />
+                  </div>
+
+                  <app-custom-checkbox [(ngModel)]="rememberMe" name="remember">
+                    <span
+                      class="text-xs font-medium text-slate-600 dark:text-slate-300 leading-snug block"
+                    >
+                      {{ 'auth.terms_prefix' | translate }}
+                      <a
+                        [routerLink]="['/terms']"
+                        target="_blank"
+                        (click)="$event.stopPropagation()"
+                        class="text-primary hover:underline font-bold"
+                      >
+                        {{ 'auth.terms_link' | translate }}
+                      </a>
+                      {{ 'auth.legal_disclaimer_and' | translate }}
+                      <a
+                        [routerLink]="['/privacy']"
+                        target="_blank"
+                        (click)="$event.stopPropagation()"
+                        class="text-primary hover:underline font-bold"
+                      >
+                        {{ 'auth.privacy_policy_link' | translate }}
+                      </a>
+                      {{ 'auth.terms_suffix' | translate }}
+                    </span>
+                  </app-custom-checkbox>
+
+                  <div class="pt-1">
+                    <button
+                      app-button
+                      [variant]="'primary'"
+                      [loading]="state.authStore.authLoading()"
+                      class="w-full py-3.5 text-sm rounded-xl bg-gradient-to-r from-primary to-secondary hover:opacity-95 text-white font-extrabold shadow-md shadow-primary/15 active:scale-[0.98] transition-all hover:scale-[1.01]"
+                      type="submit"
+                    >
+                      {{ 'nav.login' | translate }}
+                    </button>
+                  </div>
+
+                  <div class="text-center text-xs font-medium text-slate-600 dark:text-slate-300">
+                    {{ 'auth.dont_have_account' | translate }}
+                    <a
+                      href="javascript:void(0)"
+                      (click)="switchTab('register'); $event.preventDefault()"
+                      class="text-primary hover:underline ml-1 font-bold cursor-pointer transition-colors"
+                    >
+                      {{ 'auth.register_now' | translate }}
+                    </a>
+                  </div>
+                } @else {
+                  <div class="text-center pb-2">
+                    <p class="text-sm font-medium text-slate-600 dark:text-slate-300">
+                      {{ 'auth.otp_instruction' | translate }}
+                    </p>
+                  </div>
+                  <div class="form-field">
+                    <label>
+                      {{ 'auth.otp_code' | translate }} <span class="text-red-500">*</span>
+                    </label>
+                    <app-custom-input
+                      [(ngModel)]="otpCode"
+                      name="otpCode"
+                      [placeholder]="'auth.otp_placeholder' | translate"
+                      required
+                    />
+                  </div>
+                  <div class="pt-2 flex gap-3">
+                    <button
+                      app-button
+                      type="button"
+                      [variant]="'secondary'"
+                      (click)="requires2Fa.set(false); otpCode = ''"
+                      class="flex-1 py-3 text-sm rounded-xl font-bold transition-all"
+                    >
+                      {{ 'action.cancel' | translate }}
+                    </button>
+                    <button
+                      app-button
+                      [variant]="'primary'"
+                      [loading]="state.authStore.authLoading()"
+                      class="flex-[2] py-3 text-sm rounded-xl bg-gradient-to-r from-primary to-secondary hover:opacity-95 text-white font-extrabold shadow-md shadow-primary/15 active:scale-[0.98] transition-all hover:scale-[1.01]"
+                      type="submit"
+                    >
+                      {{ 'action.confirm' | translate }}
+                    </button>
+                  </div>
+                }
+              </form>
             }
 
-            <form (ngSubmit)="onLoginSubmit()" class="space-y-5">
-              @if (!requires2Fa()) {
+            @if (!isLogin()) {
+              <div class="mb-6">
+                <h2
+                  class="text-2xl font-black text-slate-900 dark:text-white tracking-tight mb-1.5"
+                >
+                  {{ 'auth.register_title' | translate }}
+                </h2>
+                <p class="text-sm font-medium text-slate-600 dark:text-slate-300">
+                  {{ 'auth.register_subtitle' | translate }}
+                </p>
+              </div>
+
+              @if (state.authStore.registerError()) {
+                <div
+                  class="flex items-start gap-3 p-3.5 rounded-xl bg-red-50 dark:bg-red-950/40 border border-red-200 dark:border-red-900/60 mb-5"
+                >
+                  <app-icon name="warning" class="w-4 h-4 text-red-500 shrink-0 mt-0.5" />
+                  <p class="text-xs font-bold text-red-600 dark:text-red-400 leading-relaxed">
+                    {{ state.authStore.registerError() }}
+                  </p>
+                </div>
+              }
+
+              <form (ngSubmit)="onRegisterSubmit()" class="space-y-4">
                 <div class="form-field">
                   <label
-                    >{{ 'auth.email_or_username' | translate }}
-                    <span class="text-red-500">*</span></label
+                    >{{ 'auth.username' | translate }} <span class="text-red-500">*</span></label
                   >
                   <app-custom-input
-                    [(ngModel)]="loginEmail"
-                    (ngModelChange)="state.authStore.loginError.set('')"
-                    name="loginEmail"
+                    [(ngModel)]="regUsername"
+                    name="regUsername"
                     type="text"
-                    [placeholder]="'auth.email_or_username_placeholder' | translate"
+                    [placeholder]="'auth.username_placeholder' | translate"
+                    required
+                  />
+                </div>
+
+                <div class="form-field">
+                  <label>{{ 'auth.email' | translate }} <span class="text-red-500">*</span></label>
+                  <app-custom-input
+                    [(ngModel)]="regEmail"
+                    name="regEmail"
+                    type="email"
+                    [placeholder]="'auth.email_placeholder' | translate"
                     required
                   />
                 </div>
@@ -318,32 +489,28 @@
                   >
                   <app-custom-input
                     type="password"
-                    [(ngModel)]="loginPassword"
-                    (ngModelChange)="state.authStore.loginError.set('')"
-                    name="loginPassword"
+                    [(ngModel)]="regPassword"
+                    name="regPassword"
                     [placeholder]="'auth.password_placeholder' | translate"
                     required
                   />
                 </div>
 
-                <app-custom-checkbox [(ngModel)]="rememberMe" name="remember">
-                  <span
-                    class="text-xs font-medium text-slate-600 dark:text-slate-300 leading-snug block"
+                <div class="form-field">
+                  <label
+                    >{{ 'auth.confirm_password' | translate }}
+                    <span class="text-red-500">*</span></label
                   >
-                    {{ 'auth.terms_prefix' | translate }}
-                    <a
-                      [routerLink]="['/terms']"
-                      target="_blank"
-                      (click)="$event.stopPropagation()"
-                      class="text-primary hover:underline font-bold"
-                    >
-                      {{ 'auth.terms_link' | translate }}
-                    </a>
-                    {{ 'auth.terms_suffix' | translate }}
-                  </span>
-                </app-custom-checkbox>
+                  <app-custom-input
+                    type="password"
+                    [(ngModel)]="regPasswordConfirmation"
+                    name="regPasswordConfirmation"
+                    [placeholder]="'auth.confirm_password_placeholder' | translate"
+                    required
+                  />
+                </div>
 
-                <div class="pt-1">
+                <div class="pt-2">
                   <button
                     app-button
                     [variant]="'primary'"
@@ -351,202 +518,72 @@
                     class="w-full py-3.5 text-sm rounded-xl bg-gradient-to-r from-primary to-secondary hover:opacity-95 text-white font-extrabold shadow-md shadow-primary/15 active:scale-[0.98] transition-all hover:scale-[1.01]"
                     type="submit"
                   >
-                    {{ 'nav.login' | translate }}
+                    {{ 'auth.register_submit' | translate }}
                   </button>
                 </div>
 
-                <div class="text-center text-xs font-medium text-slate-600 dark:text-slate-300">
-                  {{ 'auth.dont_have_account' | translate }}
-                  <button
-                    type="button"
-                    (click)="switchTab('register')"
-                    class="text-primary hover:underline ml-1 font-bold bg-transparent border-none p-0 cursor-pointer"
+                <div
+                  class="text-center text-xs font-medium text-slate-600 dark:text-slate-300 pt-1"
+                >
+                  {{ 'auth.already_have_account' | translate }}
+                  <a
+                    href="javascript:void(0)"
+                    (click)="switchTab('login'); $event.preventDefault()"
+                    class="text-primary hover:underline ml-1 font-bold cursor-pointer transition-colors"
                   >
-                    {{ 'auth.register_now' | translate }}
-                  </button>
+                    {{ 'auth.login_now' | translate }}
+                  </a>
                 </div>
-              } @else {
-                <div class="text-center pb-2">
-                  <p class="text-sm font-medium text-slate-600 dark:text-slate-300">
-                    {{ 'auth.otp_instruction' | translate }}
-                  </p>
-                </div>
-                <div class="form-field">
-                  <label>
-                    {{ 'auth.otp_code' | translate }} <span class="text-red-500">*</span>
-                  </label>
-                  <app-custom-input
-                    [(ngModel)]="otpCode"
-                    name="otpCode"
-                    [placeholder]="'auth.otp_placeholder' | translate"
-                    required
-                  />
-                </div>
-                <div class="pt-2 flex gap-3">
-                  <button
-                    app-button
-                    type="button"
-                    [variant]="'secondary'"
-                    (click)="requires2Fa.set(false); otpCode = ''"
-                    class="flex-1 py-3 text-sm rounded-xl font-bold transition-all"
-                  >
-                    {{ 'action.cancel' | translate }}
-                  </button>
-                  <button
-                    app-button
-                    [variant]="'primary'"
-                    [loading]="state.authStore.authLoading()"
-                    class="flex-[2] py-3 text-sm rounded-xl bg-gradient-to-r from-primary to-secondary hover:opacity-95 text-white font-extrabold shadow-md shadow-primary/15 active:scale-[0.98] transition-all hover:scale-[1.01]"
-                    type="submit"
-                  >
-                    {{ 'action.confirm' | translate }}
-                  </button>
-                </div>
-              }
-            </form>
-          }
-
-          @if (!isLogin()) {
-            <div class="mb-6">
-              <h2 class="text-2xl font-black text-slate-900 dark:text-white tracking-tight mb-1.5">
-                {{ 'auth.register_title' | translate }}
-              </h2>
-              <p class="text-sm font-medium text-slate-600 dark:text-slate-300">
-                {{ 'auth.register_subtitle' | translate }}
-              </p>
-            </div>
-
-            @if (state.authStore.registerError()) {
-              <div
-                class="flex items-start gap-3 p-3.5 rounded-xl bg-red-50 dark:bg-red-950/40 border border-red-200 dark:border-red-900/60 mb-5"
-              >
-                <app-icon name="warning" class="w-4 h-4 text-red-500 shrink-0 mt-0.5" />
-                <p class="text-xs font-bold text-red-600 dark:text-red-400 leading-relaxed">
-                  {{ state.authStore.registerError() }}
-                </p>
-              </div>
+              </form>
             }
 
-            <form (ngSubmit)="onRegisterSubmit()" class="space-y-4">
-              <div class="form-field">
-                <label>{{ 'auth.username' | translate }} <span class="text-red-500">*</span></label>
-                <app-custom-input
-                  [(ngModel)]="regUsername"
-                  name="regUsername"
-                  type="text"
-                  [placeholder]="'auth.username_placeholder' | translate"
-                  required
-                />
-              </div>
-
-              <div class="form-field">
-                <label>{{ 'auth.email' | translate }} <span class="text-red-500">*</span></label>
-                <app-custom-input
-                  [(ngModel)]="regEmail"
-                  name="regEmail"
-                  type="email"
-                  [placeholder]="'auth.email_placeholder' | translate"
-                  required
-                />
-              </div>
-
-              <div class="form-field">
-                <label>{{ 'auth.password' | translate }} <span class="text-red-500">*</span></label>
-                <app-custom-input
-                  type="password"
-                  [(ngModel)]="regPassword"
-                  name="regPassword"
-                  [placeholder]="'auth.password_placeholder' | translate"
-                  required
-                />
-              </div>
-
-              <div class="form-field">
-                <label
-                  >{{ 'auth.confirm_password' | translate }}
-                  <span class="text-red-500">*</span></label
-                >
-                <app-custom-input
-                  type="password"
-                  [(ngModel)]="regPasswordConfirmation"
-                  name="regPasswordConfirmation"
-                  [placeholder]="'auth.confirm_password_placeholder' | translate"
-                  required
-                />
-              </div>
-
-              <div class="pt-2">
-                <button
-                  app-button
-                  [variant]="'primary'"
-                  [loading]="state.authStore.authLoading()"
-                  class="w-full py-3.5 text-sm rounded-xl bg-gradient-to-r from-primary to-secondary hover:opacity-95 text-white font-extrabold shadow-md shadow-primary/15 active:scale-[0.98] transition-all hover:scale-[1.01]"
-                  type="submit"
-                >
-                  {{ 'auth.register_submit' | translate }}
-                </button>
-              </div>
-
-              <div class="text-center text-xs font-medium text-slate-600 dark:text-slate-300 pt-1">
-                {{ 'auth.already_have_account' | translate }}
-                <button
-                  type="button"
-                  (click)="switchTab('login')"
-                  class="text-primary hover:underline ml-1 font-bold bg-transparent border-none p-0 cursor-pointer"
-                >
-                  {{ 'auth.login_now' | translate }}
-                </button>
-              </div>
-            </form>
-          }
-
-          <div class="mt-6 pt-5 border-t border-slate-100 dark:border-slate-800 space-y-3">
-            <div
-              class="lg:hidden flex items-start gap-2.5 p-3 rounded-2xl bg-slate-100/70 dark:bg-slate-900/50 border border-slate-200/70 dark:border-slate-800/70 text-xs leading-relaxed"
-            >
-              <app-icon name="shield" class="w-4 h-4 text-primary shrink-0 mt-0.5" />
-              <div class="space-y-0.5">
-                <strong class="font-bold block text-slate-800 dark:text-slate-200">
-                  {{ 'notice.disclaimer_title' | translate }}
-                </strong>
-                <p class="text-slate-500 dark:text-slate-400 font-medium">
-                  {{ 'notice.disclaimer_body' | translate }}
-                </p>
-              </div>
-            </div>
-
-            <div
-              class="flex flex-wrap sm:flex-nowrap items-center justify-center sm:justify-between gap-y-2 gap-x-3 sm:gap-x-1.5 px-3 py-2.5 bg-slate-100/80 dark:bg-slate-900/80 border border-slate-200/50 dark:border-slate-800/60 rounded-xl transition-colors duration-300 justify-start flex-col items-start sm:flex-row"
-            >
+            <div class="mt-6 pt-5 border-t border-slate-100 dark:border-slate-800 space-y-3">
               <div
-                class="flex items-center gap-1 sm:gap-1.5 text-[10px] sm:text-[11px] font-bold uppercase tracking-wider text-slate-600 dark:text-slate-300 whitespace-nowrap"
+                class="lg:hidden flex items-start gap-2.5 p-3 rounded-2xl bg-slate-100/70 dark:bg-slate-900/50 border border-slate-200/70 dark:border-slate-800/70 text-xs leading-relaxed"
               >
-                <app-icon name="shield" class="w-3.5 h-3.5 text-primary shrink-0" />
-                <span>{{ 'auth.ssl_encryption' | translate }}</span>
+                <app-icon name="shield" class="w-4 h-4 text-primary shrink-0 mt-0.5" />
+                <div class="space-y-0.5">
+                  <strong class="font-bold block text-slate-800 dark:text-slate-200">
+                    {{ 'notice.disclaimer_title' | translate }}
+                  </strong>
+                  <p class="text-slate-500 dark:text-slate-400 font-medium">
+                    {{ 'notice.disclaimer_body' | translate }}
+                  </p>
+                </div>
               </div>
+
               <div
-                class="hidden sm:block w-[1px] h-3 bg-slate-200 dark:bg-slate-800 shrink-0"
-              ></div>
-              <div
-                class="flex items-center gap-1 sm:gap-1.5 text-[10px] sm:text-[11px] font-bold uppercase tracking-wider text-slate-600 dark:text-slate-300 whitespace-nowrap"
+                class="flex flex-wrap sm:flex-nowrap items-center justify-center sm:justify-between gap-y-2 gap-x-3 sm:gap-x-1.5 px-3 py-2.5 bg-slate-100/80 dark:bg-slate-900/80 border border-slate-200/50 dark:border-slate-800/60 rounded-xl transition-colors duration-300 justify-start flex-col items-start sm:flex-row"
               >
-                <app-icon name="clock" class="w-3.5 h-3.5 text-primary shrink-0" />
-                <span>{{ 'auth.operation_247' | translate }}</span>
-              </div>
-              <div
-                class="hidden sm:block w-[1px] h-3 bg-slate-200 dark:bg-slate-800 shrink-0"
-              ></div>
-              <div
-                class="flex items-center gap-1 sm:gap-1.5 text-[10px] sm:text-[11px] font-bold uppercase tracking-wider text-slate-600 dark:text-slate-300 whitespace-nowrap"
-              >
-                <app-icon name="check-circle" class="w-3.5 h-3.5 text-primary shrink-0" />
-                <span>{{ 'auth.security_2fa' | translate }}</span>
+                <div
+                  class="flex items-center gap-1 sm:gap-1.5 text-[10px] sm:text-[11px] font-bold uppercase tracking-wider text-slate-600 dark:text-slate-300 whitespace-nowrap"
+                >
+                  <app-icon name="shield" class="w-3.5 h-3.5 text-primary shrink-0" />
+                  <span>{{ 'auth.ssl_encryption' | translate }}</span>
+                </div>
+                <div
+                  class="hidden sm:block w-[1px] h-3 bg-slate-200 dark:bg-slate-800 shrink-0"
+                ></div>
+                <div
+                  class="flex items-center gap-1 sm:gap-1.5 text-[10px] sm:text-[11px] font-bold uppercase tracking-wider text-slate-600 dark:text-slate-300 whitespace-nowrap"
+                >
+                  <app-icon name="clock" class="w-3.5 h-3.5 text-primary shrink-0" />
+                  <span>{{ 'auth.operation_247' | translate }}</span>
+                </div>
+                <div
+                  class="hidden sm:block w-[1px] h-3 bg-slate-200 dark:bg-slate-800 shrink-0"
+                ></div>
+                <div
+                  class="flex items-center gap-1 sm:gap-1.5 text-[10px] sm:text-[11px] font-bold uppercase tracking-wider text-slate-600 dark:text-slate-300 whitespace-nowrap"
+                >
+                  <app-icon name="check-circle" class="w-3.5 h-3.5 text-primary shrink-0" />
+                  <span>{{ 'auth.security_2fa' | translate }}</span>
+                </div>
               </div>
             </div>
           </div>
         </div>
       </div>
-    </div>
     </div>
   </div>
 </div>

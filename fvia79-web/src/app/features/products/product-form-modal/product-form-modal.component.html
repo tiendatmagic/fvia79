@@ -3,7 +3,7 @@
     <div class="form-field">
       <label class="text-xs font-black text-slate-400 uppercase tracking-wider block mb-2">{{ 'product.name_en_label' | translate }} <span class="text-red-500">*</span></label>
       <app-custom-input
-        placeholder="e.g. Premium Account (Default EN)"
+        [placeholder]="'product.name_en_placeholder' | translate"
         [(ngModel)]="nameEn"
         name="nameEn"
         type="text"
@@ -109,7 +109,7 @@
           <div class="flex items-center gap-3">
             <div class="flex-1">
               <app-custom-input
-                [placeholder]="'Attribute name (e.g., Country)'"
+          [placeholder]="'product.attribute_name_placeholder' | translate"
                 [(ngModel)]="attr.label"
                 name="attrLabel_{{$index}}"
                 type="text"
@@ -118,7 +118,7 @@
             </div>
             <div class="flex-1">
               <app-custom-input
-                [placeholder]="'Value (e.g., US)'"
+          [placeholder]="'product.attribute_value_placeholder' | translate"
                 [(ngModel)]="attr.value"
                 name="attrValue_{{$index}}"
                 type="text"

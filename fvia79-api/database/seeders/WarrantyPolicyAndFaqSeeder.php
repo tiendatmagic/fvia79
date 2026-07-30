@@ -9,9 +9,7 @@ use Illuminate\Database\Seeder;
 
 class WarrantyPolicyAndFaqSeeder extends Seeder
 {
-    /**
-     * Run the database seeds.
-     */
+
     public function run(): void
     {
         if (PolicyCategoryModel::count() === 0) {
@@ -35,7 +33,6 @@ class WarrantyPolicyAndFaqSeeder extends Seeder
         }
         if (WarrantyPolicyModel::count() === 0) {
             $policies = [
-                // BM Accepted
                 [
                     'category' => 'bm',
                     'type' => 'accepted',
@@ -81,7 +78,6 @@ class WarrantyPolicyAndFaqSeeder extends Seeder
                     'is_active' => true,
                 ],
 
-                // BM Rejected
                 [
                     'category' => 'bm',
                     'type' => 'rejected',
@@ -127,7 +123,6 @@ class WarrantyPolicyAndFaqSeeder extends Seeder
                     'is_active' => true,
                 ],
 
-                // Via Accepted
                 [
                     'category' => 'via',
                     'type' => 'accepted',
@@ -175,7 +170,6 @@ class WarrantyPolicyAndFaqSeeder extends Seeder
                     'is_active' => true,
                 ],
 
-                // Via Rejected
                 [
                     'category' => 'via',
                     'type' => 'rejected',

@@ -32,7 +32,6 @@
       <span>{{ 'nav.home' | translate }}</span>
     </a>
 
-    <!-- Mua hàng (Submenu Danh mục) -->
     <div>
       <button
         type="button"
@@ -50,7 +49,6 @@
         />
       </button>
 
-      <!-- Danh sách danh mục sản phẩm (xếp theo thứ tự bảng chữ cái A-Z) -->
       @if (stateService.isAuthenticated() && isBuyMenuOpen()) {
         <div class="mt-1 ml-4 pl-3.5 space-y-1 border-l-2 border-slate-200/60 dark:border-slate-800/60">
           @for (cat of sortedCategories(); track cat.id) {

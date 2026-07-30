@@ -62,7 +62,6 @@
               <span>{{ 'nav.home' | translate }}</span>
             </a>
 
-            <!-- Mua hàng (Mobile Submenu Danh mục) -->
             <div>
               <button
                 type="button"
@@ -80,7 +79,6 @@
                 />
               </button>
 
-              <!-- Danh sách danh mục sản phẩm (xếp A-Z) -->
               @if (stateService.isAuthenticated() && isBuyMenuOpen()) {
                 <div class="mt-1 ml-4 pl-3.5 space-y-1 border-l-2 border-slate-200/60 dark:border-slate-800/60">
                   @for (cat of sortedCategories(); track cat.id) {
@@ -185,7 +183,6 @@
               <span>{{ 'nav.contact' | translate }}</span>
             </a>
 
-            <!-- ADMIN SECTION HEADER -->
             <div *ngIf="stateService.isAdmin()" class="pt-4 pb-2 my-2 border-t border-slate-200/60 dark:border-slate-800/60">
               <div class="px-4 mb-2">
                 <span class="text-xs font-bold text-slate-500 dark:text-slate-400 uppercase tracking-wider">

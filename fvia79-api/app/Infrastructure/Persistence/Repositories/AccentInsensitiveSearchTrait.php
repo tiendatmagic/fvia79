@@ -37,11 +37,11 @@ trait AccentInsensitiveSearchTrait
     private function normalizeSearchKeyword(string $search): string
     {
         if (empty($search)) return '';
-        
+
         if (class_exists('\Normalizer')) {
             $search = \Normalizer::normalize($search, \Normalizer::FORM_C);
         }
-        
+
         $text = mb_strtolower($search, 'UTF-8');
 
         $accentMap = [

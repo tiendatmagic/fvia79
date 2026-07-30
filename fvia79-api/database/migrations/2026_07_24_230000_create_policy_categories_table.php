@@ -7,9 +7,7 @@ use Illuminate\Support\Facades\Schema;
 
 return new class extends Migration
 {
-    /**
-     * Run the migrations.
-     */
+
     public function up(): void
     {
         Schema::create('policy_categories', function (Blueprint $table) {
@@ -25,7 +23,6 @@ return new class extends Migration
             $table->index(['is_active', 'sort_order']);
         });
 
-        // Insert default policy categories
         DB::table('policy_categories')->insert([
             [
                 'key' => 'bm',
@@ -50,9 +47,6 @@ return new class extends Migration
         ]);
     }
 
-    /**
-     * Reverse the migrations.
-     */
     public function down(): void
     {
         Schema::dropIfExists('policy_categories');

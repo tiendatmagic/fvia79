@@ -65,7 +65,6 @@ class AuthService
 
     public function createSession(User $user, ?string $ip = null, ?string $userAgent = null): UserSessionModel
     {
-        // Auto-prune old sessions if user has 10 or more active sessions
         $userSessions = UserSessionModel::where('user_id', $user->getId())
             ->orderBy('last_activity_at', 'asc')
             ->get();
@@ -129,7 +128,6 @@ class AuthService
             return null;
         }
 
-        // If session ID is provided, verify session still exists
         if ($sessionId) {
             $session = UserSessionModel::where('id', $sessionId)
                 ->where('user_id', $userModel->id)
@@ -141,7 +139,6 @@ class AuthService
 
             $session->update(['last_activity_at' => now()]);
         } else {
-            // Re-use existing session for this user to prevent duplicate record creation
             $user = UserMapper::toDomain($userModel);
             $session = UserSessionModel::where('user_id', $userModel->id)
                 ->orderByDesc('last_activity_at')

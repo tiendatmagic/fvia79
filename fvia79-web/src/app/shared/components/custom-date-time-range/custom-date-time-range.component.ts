@@ -88,7 +88,7 @@ export class CustomDateTimeRangeComponent implements ControlValueAccessor, After
 
   public readonly hoursArray = Array.from({ length: 24 }, (_, i) => String(i).padStart(2, '0'));
   public readonly minutesArray = Array.from({ length: 60 }, (_, i) => String(i).padStart(2, '0'));
-  
+
   public readonly startHour = signal<string>('00');
   public readonly startMinute = signal<string>('00');
   public readonly endHour = signal<string>('23');
@@ -124,13 +124,13 @@ export class CustomDateTimeRangeComponent implements ControlValueAccessor, After
   public readonly displayValue = computed(() => {
     const val = this.value();
     if (!val.startDate) return '';
-    
+
     const formatStr = (str: string) => {
       if (!str) return '';
       const parts = str.split(' ');
       const datePart = parts[0];
       const timePart = parts[1] || '';
-      
+
       const dParts = datePart.split('-');
       if (dParts.length === 3) {
         const dateFormatted = `${dParts[2]}/${dParts[1]}/${dParts[0]}`;
@@ -204,7 +204,7 @@ export class CustomDateTimeRangeComponent implements ControlValueAccessor, After
         this.startHour.set('00');
         this.startMinute.set('00');
       }
-      
+
       if (val.endDate) {
         const endParts = val.endDate.split(' ');
         this.tempEndDate.set(endParts[0]);
@@ -369,7 +369,7 @@ export class CustomDateTimeRangeComponent implements ControlValueAccessor, After
 
   public toggleDropdown(type: 'startHour' | 'startMinute' | 'endHour' | 'endMinute', event: Event): void {
     event.stopPropagation();
-    
+
     const showSH = this.showStartHourDropdown();
     const showSM = this.showStartMinuteDropdown();
     const showEH = this.showEndHourDropdown();
@@ -396,7 +396,7 @@ export class CustomDateTimeRangeComponent implements ControlValueAccessor, After
     if (type === 'startMinute') this.startMinute.set(val);
     if (type === 'endHour') this.endHour.set(val);
     if (type === 'endMinute') this.endMinute.set(val);
-    
+
     this.onTimeChange();
     this.closeAllTimeDropdowns();
   }
@@ -411,7 +411,7 @@ export class CustomDateTimeRangeComponent implements ControlValueAccessor, After
 
     const start = this.tempStartDate();
     let end = this.tempEndDate();
-    
+
     if (!start) return;
     if (!end) end = start;
 
@@ -452,7 +452,7 @@ export class CustomDateTimeRangeComponent implements ControlValueAccessor, After
     this.valueChange.emit(emptyValue);
     this.onChange(emptyValue);
     this.onTouched();
-    
+
     this.tempStartDate.set('');
     this.tempEndDate.set('');
     this.closeAllTimeDropdowns();
@@ -520,7 +520,7 @@ export class CustomDateTimeRangeComponent implements ControlValueAccessor, After
 
     this.tempStartDate.set(this.formatDate(start));
     this.tempEndDate.set(this.formatDate(end));
-    
+
     this.apply();
   }
 
@@ -602,17 +602,17 @@ export class CustomDateTimeRangeComponent implements ControlValueAccessor, After
     const start = this.tempStartDate();
     const end = this.tempEndDate();
     const hover = this.hoveredDate();
-    
+
     if (!start) return 'hidden';
-    
+
     const dTime = this.clearTime(date).getTime();
     const sTime = this.parseDate(start)!.getTime();
     const eTime = end ? this.parseDate(end)!.getTime() : null;
     const hTime = hover ? this.clearTime(hover).getTime() : null;
-    
+
     let rangeStart = sTime;
     let rangeEnd = eTime;
-    
+
     if (!end && hTime !== null) {
       if (hTime >= sTime) {
         rangeEnd = hTime;
@@ -621,25 +621,25 @@ export class CustomDateTimeRangeComponent implements ControlValueAccessor, After
         rangeEnd = sTime;
       }
     }
-    
+
     if (rangeEnd === null) {
       if (dTime !== sTime) return 'hidden';
     } else {
       if (dTime < rangeStart || dTime > rangeEnd) return 'hidden';
     }
-    
+
     if (rangeEnd === null || rangeStart === rangeEnd) {
       return 'rounded-full w-full';
     }
-    
+
     if (dTime === rangeStart) {
       return 'rounded-l-full w-full';
     }
-    
+
     if (dTime === rangeEnd) {
       return 'rounded-r-full w-full';
     }
-    
+
     return 'w-full';
   }
 

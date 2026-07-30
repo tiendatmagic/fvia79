@@ -20,7 +20,7 @@ export class StateService {
   private readonly themeService = inject(ThemeService);
   private readonly toastService = inject(ToastService);
   private readonly lang = inject(LanguageService);
-  
+
   public readonly authStore = inject(AuthStore);
   public readonly productStore = inject(ProductStore);
   public readonly inventoryStore = inject(InventoryStore);
@@ -28,18 +28,18 @@ export class StateService {
   public readonly depositStore = inject(DepositStore);
   public readonly userStore = inject(UserStore);
   public readonly publicSettingStore = inject(PublicSettingStore);
-  
+
   private readonly web3Service = inject(Web3Service);
 
   public readonly showMobileMenu = this.uiStateService.showMobileMenu;
   public readonly showDropdown = this.uiStateService.showDropdown;
   public readonly showNetworkDropdown = this.uiStateService.showNetworkDropdown;
   public readonly isMaintenance = this.uiStateService.isMaintenance;
-  public readonly isLoading = computed(() => 
-    this.uiStateService.isLoading() || 
-    this.authStore.authLoading() || 
-    this.productStore.loading() || 
-    this.inventoryStore.loading() || 
+  public readonly isLoading = computed(() =>
+    this.uiStateService.isLoading() ||
+    this.authStore.authLoading() ||
+    this.productStore.loading() ||
+    this.inventoryStore.loading() ||
     this.orderStore.loading() ||
     this.depositStore.loading() ||
     this.userStore.loading()

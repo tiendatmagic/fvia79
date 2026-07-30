@@ -124,7 +124,7 @@ export class Web3Service {
 
         if (accountState.isConnected && accountState.address) {
           await this.updateBalanceAndNetwork();
-          
+
           const currentChainId = this.chainId();
           if (currentChainId) {
             this.checkAndUpdateNetworkState(currentChainId, false);
@@ -159,7 +159,7 @@ export class Web3Service {
   private checkAndUpdateNetworkState(chainId: number, showToastAlert = true) {
     const prevChainId = this.chainId();
     const prevWrongChain = this.isWrongChain();
-    
+
     this.chainId.set(chainId);
 
     const supportedChain = this.supportedChains.find(c => Number(c.id) === chainId);
@@ -193,7 +193,7 @@ export class Web3Service {
       const popular = POPULAR_CHAINS.find(c => Number(c.chainId) === chainId);
       this.networkName.set(popular ? popular.name : this.lang.translate('web3.unsupported_network'));
       this.chainSymbol.set('ETH');
-      
+
       if (this.isConnected()) {
         this.showWrongChainModal.set(true);
         if (showToastAlert && (!prevWrongChain || prevChainId !== chainId)) {
@@ -203,7 +203,7 @@ export class Web3Service {
         this.showWrongChainModal.set(false);
       }
 
-      const isTestnet = popular 
+      const isTestnet = popular
         ? popular.name.toLowerCase().includes('sepolia') || popular.name.toLowerCase().includes('testnet')
         : (chainId === 421614 || chainId === 97 || chainId === 11155111);
       if (isTestnet) {
@@ -335,7 +335,7 @@ export class Web3Service {
       }
       const provider = currentSigner.provider;
       if (!provider) return overrides;
-      
+
       const feeData = await provider.getFeeData();
       const speed = this.txSpeed();
       if (speed !== 'default') {

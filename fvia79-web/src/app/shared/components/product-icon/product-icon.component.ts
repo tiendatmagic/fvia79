@@ -205,17 +205,14 @@ export class ProductIconComponent implements OnChanges {
   private findCountryMatch(title: string): CountryMatch | null {
     if (!title) return null;
 
-    // 1. Check bracketed 2-letter codes: [US], (US), [VN], [CN], [LU], etc.
     const bracketMatch = title.match(/(?:\[|\()([a-zA-Z]{2})(?:\]|\))/);
     if (bracketMatch) {
       const code = bracketMatch[1].toLowerCase();
       const rule = COUNTRY_RULES.find(r => r.code === code);
       if (rule) return { code: rule.code, name: rule.name };
-      // Fallback for any valid ISO 2-letter country code on Earth
       return { code, name: code.toUpperCase() };
     }
 
-    // 2. Check full country names / unambiguous keywords (testing both raw title and normalized accent-removed string)
     const normalized = this.removeAccents(title.toLowerCase());
     for (const rule of COUNTRY_RULES) {
       if (rule.keywords && (rule.keywords.test(title) || rule.keywords.test(normalized))) {
@@ -223,7 +220,6 @@ export class ProductIconComponent implements OnChanges {
       }
     }
 
-    // 3. Check standalone UPPERCASE 2-letter codes in raw title (e.g., "BM50 US", "VIA VN", "PROXY CN")
     const rawTokens = title.split(/[^a-zA-Z]/).filter(t => t.length === 2 && t === t.toUpperCase());
     for (const token of rawTokens) {
       const code = token.toLowerCase();

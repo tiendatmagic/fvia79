@@ -8,9 +8,7 @@ use Illuminate\Support\Str;
 
 class MembershipTierService
 {
-    /**
-     * Recalculate and update the user's membership tier based on their cumulative deposit.
-     */
+
     public function recalculateUserTier(UserModel $user): ?MembershipTierModel
     {
         $enabled = filter_var(config('app.feature_membership_tiers_enabled', false), FILTER_VALIDATE_BOOLEAN);
@@ -25,7 +23,6 @@ class MembershipTierService
 
         $totalDeposited = (float) ($user->total_deposited ?? 0);
 
-        // Find the active tier with the highest min_deposit requirement that the user meets
         $matchingTier = MembershipTierModel::where('is_active', true)
             ->where('min_deposit', '<=', $totalDeposited)
             ->orderBy('min_deposit', 'desc')
@@ -42,9 +39,6 @@ class MembershipTierService
         return $matchingTier;
     }
 
-    /**
-     * Get all active membership tiers for public display (Storefront & User Profile).
-     */
     public function getPublicTiers(): array
     {
         return MembershipTierModel::where('is_active', true)
@@ -64,9 +58,6 @@ class MembershipTierService
             ->toArray();
     }
 
-    /**
-     * Get all membership tiers for Admin management.
-     */
     public function getAllTiersForAdmin(): array
     {
         return MembershipTierModel::orderBy('min_deposit', 'asc')
@@ -89,9 +80,6 @@ class MembershipTierService
             ->toArray();
     }
 
-    /**
-     * Create a new membership tier.
-     */
     public function createTier(array $data): MembershipTierModel
     {
         $tier = new MembershipTierModel();
@@ -111,9 +99,6 @@ class MembershipTierService
         return $tier;
     }
 
-    /**
-     * Update an existing membership tier.
-     */
     public function updateTier(string $id, array $data): MembershipTierModel
     {
         $tier = MembershipTierModel::findOrFail($id);
@@ -148,9 +133,6 @@ class MembershipTierService
         return $tier;
     }
 
-    /**
-     * Delete a membership tier.
-     */
     public function deleteTier(string $id): bool
     {
         $tier = MembershipTierModel::findOrFail($id);
@@ -163,9 +145,6 @@ class MembershipTierService
         return $deleted;
     }
 
-    /**
-     * Sync/Recalculate membership tier for all users in the system.
-     */
     public function syncAllUserTiers(): void
     {
         UserModel::chunk(100, function ($users) {

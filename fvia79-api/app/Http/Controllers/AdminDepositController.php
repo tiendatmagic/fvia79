@@ -66,7 +66,6 @@ class AdminDepositController extends Controller
     public function approve(Request $request, string $id): JsonResponse
     {
         $request->validate([
-            // Leave room for the manual_approved_by_admin_ storage prefix.
             'tx_hash' => 'required|string|max:230',
         ]);
 

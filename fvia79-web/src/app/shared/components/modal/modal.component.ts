@@ -4,9 +4,9 @@ import { IconComponent } from '@shared/components/icon/icon.component';
 
 @Component({
   selector: 'app-modal',
-  
+
   imports: [CommonModule, IconComponent],
-  
+
   templateUrl: './modal.component.html'})
 export class ModalComponent {
   @Input() isOpen = false;

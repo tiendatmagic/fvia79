@@ -43,7 +43,6 @@ class CheckUidController extends Controller
             ], 422);
         }
 
-        // Limit maximum 500 UIDs per request for server stability
         if (count($items) > 500) {
             return response()->json([
                 'message' => 'Maximum 500 UIDs allowed per request.',
@@ -61,7 +60,6 @@ class CheckUidController extends Controller
             ];
         }
 
-        // Execute concurrent HTTP requests using Laravel Http Pool
         $responses = Http::pool(function (Pool $pool) use ($parsedList) {
             $requests = [];
             foreach ($parsedList as $index => $item) {

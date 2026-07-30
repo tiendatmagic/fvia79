@@ -17,7 +17,7 @@ class JwtService
     public function generateToken(array $payload, int $expirationSeconds): string
     {
         $header = json_encode(['alg' => 'HS256', 'typ' => 'JWT']);
-        
+
         $payload['iat'] = time();
         $payload['exp'] = time() + $expirationSeconds;
         $payload = json_encode($payload);

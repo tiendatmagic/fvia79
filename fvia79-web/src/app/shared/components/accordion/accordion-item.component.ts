@@ -26,7 +26,7 @@ export class AccordionItemComponent {
 
   public toggle(): void {
     if (this.disabled) return;
-    
+
     if (this.accordion) {
       this.accordion.toggleItem(this);
     } else {

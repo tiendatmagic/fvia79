@@ -24,7 +24,7 @@
     </div>
   } @else {
     <div class="grid grid-cols-1 gap-6">
-      <!-- Telegram Direct Support Card -->
+
       @if (showTelegramSupport) {
         <div
           app-card
@@ -97,7 +97,6 @@
         </div>
       }
 
-      <!-- Telegram Bot Card (If Configured & Enabled) -->
       @if (showTelegramBot) {
         <div
           app-card

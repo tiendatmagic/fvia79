@@ -4,19 +4,29 @@
     [description]="'terms.subtitle' | translate"
   >
     <ng-container actions>
-      <a
-        app-button
-        [variant]="'secondary'"
-        [routerLink]="['/login']"
-        class="text-xs sm:text-sm font-bold flex items-center gap-1.5"
-      >
-        <app-icon name="arrow-left" class="w-4 h-4" />
-        <span>{{ 'terms.back_to_login' | translate }}</span>
-      </a>
+      <div class="flex items-center gap-2">
+        <a
+          app-button
+          [variant]="'secondary'"
+          [routerLink]="['/privacy']"
+          class="text-xs sm:text-sm font-bold flex items-center gap-1.5"
+        >
+          <app-icon name="shield-check" class="w-4 h-4 text-primary" />
+          <span>{{ 'terms.view_privacy' | translate }}</span>
+        </a>
+        <a
+          app-button
+          [variant]="'secondary'"
+          [routerLink]="['/login']"
+          class="text-xs sm:text-sm font-bold flex items-center gap-1.5"
+        >
+          <app-icon name="arrow-left" class="w-4 h-4" />
+          <span>{{ 'terms.back_to_login' | translate }}</span>
+        </a>
+      </div>
     </ng-container>
   </app-page-header>
 
-  <!-- Header Banner Card -->
   <app-card class="p-6 sm:p-8 space-y-3 relative overflow-hidden bg-gradient-to-br from-blue-50/80 via-slate-50 to-indigo-50/40 dark:from-slate-900 dark:via-slate-900 dark:to-slate-950 border border-blue-200/50 dark:border-slate-800/80 shadow-md">
     <div class="absolute -right-10 -bottom-10 w-48 h-48 bg-primary/10 dark:bg-primary/20 rounded-full blur-3xl pointer-events-none"></div>
     <div class="space-y-3 relative z-10">
@@ -33,7 +43,6 @@
     </div>
   </app-card>
 
-  <!-- Section 1 -->
   <app-card class="p-6 sm:p-8 space-y-4">
     <div class="flex items-center gap-3 border-b border-slate-200 dark:border-slate-800 pb-3">
       <div class="w-9 h-9 rounded-xl bg-cyan-500/10 text-cyan-500 flex items-center justify-center font-bold text-base shrink-0">
@@ -48,7 +57,6 @@
     </p>
   </app-card>
 
-  <!-- Section 2 -->
   <app-card class="p-6 sm:p-8 space-y-4 border-l-4 border-l-red-500">
     <div class="flex items-center gap-3 border-b border-slate-200 dark:border-slate-800 pb-3">
       <div class="w-9 h-9 rounded-xl bg-red-500/10 text-red-500 flex items-center justify-center font-bold text-base shrink-0">
@@ -93,7 +101,6 @@
     </ul>
   </app-card>
 
-  <!-- Section 3 -->
   <app-card class="p-6 sm:p-8 space-y-4">
     <div class="flex items-center gap-3 border-b border-slate-200 dark:border-slate-800 pb-3">
       <div class="w-9 h-9 rounded-xl bg-amber-500/10 text-amber-500 flex items-center justify-center font-bold text-base shrink-0">
@@ -119,7 +126,6 @@
     </ul>
   </app-card>
 
-  <!-- Section 4 -->
   <app-card class="p-6 sm:p-8 space-y-4">
     <div class="flex items-center gap-3 border-b border-slate-200 dark:border-slate-800 pb-3">
       <div class="w-9 h-9 rounded-xl bg-purple-500/10 text-purple-500 flex items-center justify-center font-bold text-base shrink-0">
@@ -145,7 +151,6 @@
     </ul>
   </app-card>
 
-  <!-- Section 5 -->
   <app-card class="p-6 sm:p-8 space-y-4">
     <div class="flex items-center gap-3 border-b border-slate-200 dark:border-slate-800 pb-3">
       <div class="w-9 h-9 rounded-xl bg-rose-500/10 text-rose-500 flex items-center justify-center font-bold text-base shrink-0">
@@ -160,7 +165,6 @@
     </p>
   </app-card>
 
-  <!-- Section 6 -->
   <app-card class="p-6 sm:p-8 space-y-4 bg-emerald-50/50 dark:bg-emerald-950/20 border-emerald-200 dark:border-emerald-900/40">
     <div class="flex items-center gap-3 border-b border-emerald-200 dark:border-emerald-900/40 pb-3">
       <div class="w-9 h-9 rounded-xl bg-emerald-500/10 text-emerald-500 flex items-center justify-center font-bold text-base shrink-0">
@@ -189,24 +193,34 @@
     </ul>
   </app-card>
 
-  <!-- Bottom Actions -->
   <div class="flex flex-wrap items-center justify-between gap-4 pt-2">
     <a
       app-button
       [variant]="'secondary'"
-      [routerLink]="['/storefront']"
+      [routerLink]="['/privacy']"
       class="text-xs sm:text-sm font-bold flex items-center gap-1.5"
     >
-      <app-icon name="arrow-left" class="w-4 h-4" />
-      <span>{{ 'terms.back_to_home' | translate }}</span>
+      <app-icon name="shield-check" class="w-4 h-4 text-primary" />
+      <span>{{ 'terms.view_privacy' | translate }}</span>
     </a>
-    <a
-      app-button
-      [variant]="'primary'"
-      [routerLink]="['/login']"
-      class="text-xs sm:text-sm font-bold px-6 py-2.5"
-    >
-      <span>{{ 'terms.back_to_login' | translate }}</span>
-    </a>
+    <div class="flex items-center gap-3">
+      <a
+        app-button
+        [variant]="'secondary'"
+        [routerLink]="['/storefront']"
+        class="text-xs sm:text-sm font-bold flex items-center gap-1.5"
+      >
+        <app-icon name="arrow-left" class="w-4 h-4" />
+        <span>{{ 'terms.back_to_home' | translate }}</span>
+      </a>
+      <a
+        app-button
+        [variant]="'primary'"
+        [routerLink]="['/login']"
+        class="text-xs sm:text-sm font-bold px-6 py-2.5"
+      >
+        <span>{{ 'terms.back_to_login' | translate }}</span>
+      </a>
+    </div>
   </div>
 </div>

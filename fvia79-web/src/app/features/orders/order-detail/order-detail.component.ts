@@ -122,7 +122,6 @@ export class OrderDetailComponent implements OnInit {
             .join('|');
         }
       } catch (e) {
-        // Fallback to original string if not valid JSON
       }
     }
     return data;
@@ -155,4 +154,3 @@ export class OrderDetailComponent implements OnInit {
     this.copyToClipboard(content);
   }
 }
-

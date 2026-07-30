@@ -19,6 +19,20 @@
 > 1. Cronjob Scheduler (`schedule:run`) **CHỈ ĐƯỢC CHẠY DƯỚI USER `www-data`** (`crontab -u www-data -e`). **TUYỆT ĐỐI KHÔNG cài dưới `root`** vì sẽ gây ra lỗi `500 Permission denied` khi người dùng thực hiện thao tác Web/API.
 > 2. Luôn cấp quyền `chmod -R 777` và `chown -R www-data:www-data` cho `storage` & `bootstrap/cache`. Khi gõ lệnh CLI thủ công trên VPS, luôn chạy dưới quyền `www-data` (`su -s /bin/bash www-data -c "php artisan <cmd>"`).
 
+### [2026-07-30] Bổ Sung Liên Kết & Trang Chính Sách Bảo Mật (/privacy) Đồng Bộ 3 Dự Án (FVIA79, ADSBM79, ISOCALMARKET)
+- **Mô tả yêu cầu**:
+  Bổ sung liên kết nhấp được cho "Điều khoản dịch vụ" (`/terms`) và "Chính sách bảo mật" (`/privacy`) tại câu văn thông báo miễn trừ pháp lý và ô checkbox đồng ý điều khoản ở giao diện Đăng nhập / Đăng ký. Chuẩn hóa liên kết "Đăng ký ngay" / "Đăng nhập" bằng thẻ `<a>` nguyên bản (`font-bold text-primary hover:underline cursor-pointer transition-colors`) đồng bộ 100% với liên kết Điều khoản dịch vụ & Chính sách bảo mật. Đồng thời khởi tạo trang Chính sách bảo mật (`/privacy`) chuẩn đa ngôn ngữ 100% (Việt - Anh) với bố cục, layout, gradient và color scheme đồng bộ 100% với trang `/terms` trên cả 3 dự án.
+- **Thực hiện xử lý**:
+  - **Frontend Web (`fvia79-web`, `adsbm79-web`, `isocalmarket-web`)**:
+    - `privacy.component.ts` & `privacy.component.html`: Tạo mới component trang Chính sách bảo mật gồm 6 mục nội dung chi tiết (Thu thập thông tin, Mục đích sử dụng, Bảo mật dữ liệu SSL/2FA, Chia sẻ bên thứ ba, Quyền người dùng, Thay đổi chính sách) tích hợp nút chuyển đổi qua lại giữa `/terms` và `/privacy`.
+    - `app.routes.ts`: Đăng ký route public `path: 'privacy'`.
+    - `auth.interceptor.ts`: Thêm `currentUrl.startsWith('/privacy')` vào danh sách `isPublicRoute`.
+    - `auth-layout.component.html`, `login.component.html`, `register.component.html`: Thay thế thẻ `<button>` bằng thẻ `<a>` liên kết (`font-bold text-primary hover:underline cursor-pointer transition-colors`) cho "Đăng ký ngay" và "Đăng nhập", khớp 100% font rendering, baseline và hover state với liên kết `/terms` và `/privacy`.
+    - `terms.component.html`: Bổ sung nút "Xem Chính sách bảo mật" ở cả header actions và footer bottom actions.
+    - `vi.ts` & `en.ts`: Bổ sung đầy đủ 100% translation keys cho cả 2 ngôn ngữ (Việt - Anh): `auth.legal_disclaimer_*`, `auth.terms_service_link`, `auth.privacy_policy_link`, `terms.view_privacy` và toàn bộ mảng `privacy.*`.
+- **Kiểm thử**:
+  - Biên dịch Angular production `npx ng build --configuration production` thành công 100% trên cả 3 dự án Web.
+
 ### [2026-07-30] Cập Nhật Nội Dung Ghi Chú Hướng Dẫn Nạp Tiền (5 - 10 Phút) Trên Trang Hóa Đơn Nạp Tiền Đồng Bộ 3 Dự Án (FVIA79, ADSBM79, ISOCALMARKET)
 - **Mô tả yêu cầu**:
   Cập nhật câu văn ghi chú liên hệ Admin tại trang Hóa đơn nạp tiền (`/deposit/invoice/:id`) cho cả 2 phương thức Binance Pay và USDT BEP-20 từ `"Nếu sau một khoảng thời gian..."` thành `"Nếu sau 5 - 10 phút mà hệ thống chưa ghi nhận khoản nạp, vui lòng liên hệ Admin để được hỗ trợ"` trên cả 3 dự án.

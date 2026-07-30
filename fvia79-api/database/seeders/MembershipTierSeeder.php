@@ -8,9 +8,7 @@ use Illuminate\Support\Str;
 
 class MembershipTierSeeder extends Seeder
 {
-    /**
-     * Run the database seeds.
-     */
+
     public function run(): void
     {
         $tiers = [
@@ -21,7 +19,7 @@ class MembershipTierSeeder extends Seeder
                 'min_deposit' => 0.0,
                 'discount_percent' => 0.0,
                 'icon' => 'shield',
-                'color' => '#94a3b8', // slate-400
+                'color' => '#94a3b8',
                 'is_active' => true,
             ],
             [
@@ -31,7 +29,7 @@ class MembershipTierSeeder extends Seeder
                 'min_deposit' => 100.0,
                 'discount_percent' => 2.0,
                 'icon' => 'shield-check',
-                'color' => '#38bdf8', // sky-400
+                'color' => '#38bdf8',
                 'is_active' => true,
             ],
             [
@@ -41,7 +39,7 @@ class MembershipTierSeeder extends Seeder
                 'min_deposit' => 300.0,
                 'discount_percent' => 5.0,
                 'icon' => 'sparkles',
-                'color' => '#eab308', // yellow-500
+                'color' => '#eab308',
                 'is_active' => true,
             ],
             [
@@ -51,7 +49,7 @@ class MembershipTierSeeder extends Seeder
                 'min_deposit' => 500.0,
                 'discount_percent' => 8.0,
                 'icon' => 'trophy',
-                'color' => '#a855f7', // purple-500
+                'color' => '#a855f7',
                 'is_active' => true,
             ],
             [
@@ -61,7 +59,7 @@ class MembershipTierSeeder extends Seeder
                 'min_deposit' => 1000.0,
                 'discount_percent' => 10.0,
                 'icon' => 'diamond',
-                'color' => '#06b6d4', // cyan-500
+                'color' => '#06b6d4',
                 'is_active' => true,
             ],
         ];

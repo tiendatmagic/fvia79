@@ -19,7 +19,7 @@ import { PublicSettingStore } from '@core/services/public-setting.store';
 
 @Component({
   selector: 'app-root',
-  
+
   imports: [
     CommonModule,
     RouterOutlet,
@@ -45,7 +45,7 @@ export class App implements OnInit, OnDestroy {
   public hasBeenOpened = signal<boolean>(false);
   public activeMenuState = signal<boolean>(false);
   public isAuthPage = signal<boolean>(
-    typeof window !== 'undefined' && 
+    typeof window !== 'undefined' &&
     (window.location.pathname.includes('/login') || window.location.pathname.includes('/register'))
   );
 
@@ -100,7 +100,6 @@ export class App implements OnInit, OnDestroy {
       }
     });
 
-    // Check periodically every 30 seconds ngầm
     this.unseenDepositTimerSub = timer(15000, 30000).subscribe(() => {
       if (typeof document !== 'undefined' && !document.hidden) {
         this.checkUnseenDeposit();
@@ -162,4 +161,3 @@ export class App implements OnInit, OnDestroy {
     return (currentLang === 'vi' ? (cat.name_vi || cat.name_en || cat.name) : (cat.name_en || cat.name_vi || cat.name)) || '';
   }
 }
-

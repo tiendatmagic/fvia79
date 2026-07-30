@@ -3,7 +3,7 @@ import { CommonModule } from '@angular/common';
 
 @Component({
   selector: 'button[app-button], a[app-button]',
-  
+
   imports: [CommonModule],
   template: `
     @if (loading) {
@@ -13,7 +13,7 @@ import { CommonModule } from '@angular/common';
     }
     <ng-content></ng-content>
   `,
-  
+
   host: {
     '[class]': 'hostClasses',
     '[attr.disabled]': '(disabled || loading) ? "" : null',

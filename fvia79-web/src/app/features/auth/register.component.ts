@@ -30,7 +30,7 @@ export class RegisterComponent {
   public email = '';
   public password = '';
   public passwordConfirmation = '';
-  
+
   public showPassword = signal(false);
   public showConfirmPassword = signal(false);
 

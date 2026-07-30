@@ -36,20 +36,20 @@ class Google2FA
         for ($i = -1; $i <= 1; $i++) {
             $slice = $timeSlice + $i;
             $time = pack('N*', 0) . pack('N*', $slice);
-            
+
             $hmac = hash_hmac('sha1', $time, $key, true);
-            
+
             $offset = ord(substr($hmac, -1)) & 0x0F;
-            
+
             $hashpart = substr($hmac, $offset, 4);
             $value = unpack('N', $hashpart);
             $value = $value[1];
-            
+
             $value = $value & 0x7FFFFFFF;
-            
+
             $modulo = pow(10, 6);
             $calcCode = str_pad((string)($value % $modulo), 6, '0', STR_PAD_LEFT);
-            
+
             if (hash_equals($calcCode, $code)) {
                 return true;
             }
@@ -62,14 +62,14 @@ class Google2FA
     {
         $chars = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ234567';
         $map = array_flip(str_split($chars));
-        
+
         $secret = strtoupper($secret);
         $secret = str_replace('=', '', $secret);
-        
+
         $buf = '';
         $val = 0;
         $bits = 0;
-        
+
         for ($i = 0; $i < strlen($secret); $i++) {
             $c = $secret[$i];
             if (!isset($map[$c])) {

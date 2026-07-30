@@ -13,10 +13,10 @@ export class ProductStore {
   private readonly api = inject(ApiService);
   private readonly toast = inject(ToastService);
   private readonly lang = inject(LanguageService);
- 
+
   private activeFetchCategoriesPaginatedSub?: Subscription;
   private activeFetchProductsSub?: Subscription;
- 
+
   private readonly productsCache = new Map<string, { data: any; timestamp: number }>();
   private readonly categoriesPaginatedCache = new Map<string, { data: any; timestamp: number }>();
 
@@ -34,7 +34,7 @@ export class ProductStore {
       });
     });
   }
- 
+
   public clearCache() {
     this.productsCache.clear();
     this.categoriesPaginatedCache.clear();
@@ -86,22 +86,22 @@ export class ProductStore {
       }
       return of(res);
     }
- 
+
     if (this.activeFetchCategoriesPaginatedSub) {
       this.activeFetchCategoriesPaginatedSub.unsubscribe();
     }
- 
+
     this.loading.set(true);
     let params = new HttpParams()
       .set('page', page.toString())
       .set('limit', limit.toString());
- 
+
     if (search) {
       params = params.set('search', search);
     }
- 
+
     const subject = new Subject<any>();
- 
+
     const req$ = this.api.get<any>('v1/categories', params).pipe(
       tap((res) => {
         this.categoriesPaginatedCache.set(cacheKey, { data: res, timestamp: Date.now() });
@@ -123,7 +123,7 @@ export class ProductStore {
       }),
       finalize(() => this.loading.set(false))
     );
- 
+
     this.activeFetchCategoriesPaginatedSub = req$.subscribe({
       next: (res) => {
         subject.next(res);
@@ -133,7 +133,7 @@ export class ProductStore {
         subject.error(err);
       }
     });
- 
+
     return subject.asObservable();
   }
 
@@ -234,11 +234,11 @@ export class ProductStore {
         return of(res);
       }
     }
- 
+
     if (this.activeFetchProductsSub) {
       this.activeFetchProductsSub.unsubscribe();
     }
- 
+
     if (isStorefrontLoad && this.products().length > 0) {
       let params = new HttpParams();
       if (status) {
@@ -255,7 +255,7 @@ export class ProductStore {
       });
       return of(this.products());
     }
- 
+
     this.loading.set(true);
     let params = new HttpParams();
     if (page !== undefined) {
@@ -279,9 +279,9 @@ export class ProductStore {
     if (!isStorefrontLoad) {
       params = params.set('include_out_of_stock', '1');
     }
- 
+
     const subject = new Subject<any>();
- 
+
     const req$ = this.api.get<any>('v1/products', params).pipe(
       tap((res) => {
         if (!isStorefrontLoad) {
@@ -306,7 +306,7 @@ export class ProductStore {
       }),
       finalize(() => this.loading.set(false))
     );
- 
+
     this.activeFetchProductsSub = req$.subscribe({
       next: (res) => {
         subject.next(res);
@@ -316,7 +316,7 @@ export class ProductStore {
         subject.error(err);
       }
     });
- 
+
     return subject.asObservable();
   }
 
@@ -336,7 +336,7 @@ export class ProductStore {
       finalize(() => this.loading.set(false))
     );
   }
- 
+
   public updateProduct(id: string, data: any) {
     this.loading.set(true);
     return this.api.put<any>(`v1/products/${id}`, data).pipe(
@@ -353,7 +353,7 @@ export class ProductStore {
       finalize(() => this.loading.set(false))
     );
   }
- 
+
   public deleteProduct(id: string) {
     this.loading.set(true);
     return this.api.delete<any>(`v1/products/${id}`).pipe(
@@ -369,7 +369,7 @@ export class ProductStore {
       finalize(() => this.loading.set(false))
     );
   }
- 
+
   public restoreProduct(id: string) {
     this.loading.set(true);
     return this.api.post<any>(`v1/products/${id}/restore`, {}).pipe(
@@ -401,7 +401,7 @@ export class ProductStore {
       finalize(() => this.loading.set(false))
     );
   }
- 
+
   public updateCategory(id: string, data: any) {
     this.loading.set(true);
     return this.api.put<any>(`v1/categories/${id}`, data).pipe(
@@ -417,7 +417,7 @@ export class ProductStore {
       finalize(() => this.loading.set(false))
     );
   }
- 
+
   public deleteCategory(id: string) {
     this.loading.set(true);
     return this.api.delete<any>(`v1/categories/${id}`).pipe(

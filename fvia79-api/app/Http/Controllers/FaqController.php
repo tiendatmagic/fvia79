@@ -11,9 +11,7 @@ use Illuminate\Support\Str;
 
 class FaqController extends Controller
 {
-    /**
-     * Public API: Get active warranty policies, categories and FAQs
-     */
+
     public function indexPublic(): JsonResponse
     {
         $categories = PolicyCategoryModel::where('is_active', true)
@@ -39,9 +37,6 @@ class FaqController extends Controller
         ]);
     }
 
-    /**
-     * Admin API: Get all warranty policies, categories and FAQs (including inactive)
-     */
     public function indexAdmin(): JsonResponse
     {
         $categories = PolicyCategoryModel::orderBy('sort_order', 'asc')
@@ -64,9 +59,6 @@ class FaqController extends Controller
         ]);
     }
 
-    /**
-     * Admin API: Store Policy Category
-     */
     public function storePolicyCategory(Request $request): JsonResponse
     {
         $validated = $request->validate([
@@ -83,7 +75,6 @@ class FaqController extends Controller
             $key = 'cat_' . time();
         }
 
-        // Ensure key uniqueness if generated
         $originalKey = $key;
         $counter = 1;
         while (PolicyCategoryModel::where('key', $key)->exists()) {
@@ -106,9 +97,6 @@ class FaqController extends Controller
         ], 201);
     }
 
-    /**
-     * Admin API: Update Policy Category
-     */
     public function updatePolicyCategory(Request $request, int $id): JsonResponse
     {
         $category = PolicyCategoryModel::find($id);
@@ -148,9 +136,6 @@ class FaqController extends Controller
         ]);
     }
 
-    /**
-     * Admin API: Delete Policy Category
-     */
     public function destroyPolicyCategory(int $id): JsonResponse
     {
         $category = PolicyCategoryModel::find($id);
@@ -178,9 +163,6 @@ class FaqController extends Controller
         ]);
     }
 
-    /**
-     * Admin API: Store warranty policy
-     */
     public function storePolicy(Request $request): JsonResponse
     {
         $validated = $request->validate([
@@ -218,9 +200,6 @@ class FaqController extends Controller
         ], 201);
     }
 
-    /**
-     * Admin API: Update warranty policy
-     */
     public function updatePolicy(Request $request, int $id): JsonResponse
     {
         $policy = WarrantyPolicyModel::find($id);
@@ -255,9 +234,6 @@ class FaqController extends Controller
         ]);
     }
 
-    /**
-     * Admin API: Delete warranty policy
-     */
     public function destroyPolicy(int $id): JsonResponse
     {
         $policy = WarrantyPolicyModel::find($id);
@@ -277,9 +253,6 @@ class FaqController extends Controller
         ]);
     }
 
-    /**
-     * Admin API: Store FAQ
-     */
     public function storeFaq(Request $request): JsonResponse
     {
         $validated = $request->validate([
@@ -307,9 +280,6 @@ class FaqController extends Controller
         ], 201);
     }
 
-    /**
-     * Admin API: Update FAQ
-     */
     public function updateFaq(Request $request, int $id): JsonResponse
     {
         $faq = FaqModel::find($id);
@@ -339,9 +309,6 @@ class FaqController extends Controller
         ]);
     }
 
-    /**
-     * Admin API: Delete FAQ
-     */
     public function destroyFaq(int $id): JsonResponse
     {
         $faq = FaqModel::find($id);
@@ -361,4 +328,3 @@ class FaqController extends Controller
         ]);
     }
 }
-

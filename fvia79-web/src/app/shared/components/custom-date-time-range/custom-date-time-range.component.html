@@ -107,14 +107,14 @@
                 (mouseenter)="onDateHover(day)"
                 [disabled]="isDateDisabled(day)"
                 class="relative z-10 w-full h-full flex items-center justify-center text-sm font-bold rounded-full transition-all"
-                
+
                 [class.text-slate-300]="
                   !isCurrentMonth(day) && !isStart(day) && !isEnd(day) && !isDateDisabled(day)
                 "
                 [class.dark:text-slate-600]="
                   !isCurrentMonth(day) && !isStart(day) && !isEnd(day) && !isDateDisabled(day)
                 "
-                
+
                 [class.text-slate-700]="
                   isCurrentMonth(day) &&
                   !isStart(day) &&
@@ -129,7 +129,7 @@
                   !isToday(day) &&
                   !isDateDisabled(day)
                 "
-                
+
                 [class.hover:bg-slate-50]="
                   !isStart(day) &&
                   !isEnd(day) &&
@@ -147,7 +147,7 @@
                   !isDateDisabled(day)
                 "
                 [class.cursor-pointer]="!isDateDisabled(day)"
-                
+
                 [class.bg-[var(--color-primary)]/15]="
                   isToday(day) &&
                   !isStart(day) &&
@@ -156,7 +156,7 @@
                   !isHoverRange(day)
                 "
                 [class.!text-[var(--color-primary)]]="isToday(day) && !isStart(day) && !isEnd(day)"
-                
+
                 [class.!text-[var(--color-primary)]]="
                   (isInRange(day) || isHoverRange(day)) && !isStart(day) && !isEnd(day)
                 "
@@ -165,7 +165,7 @@
                 [class.shadow-md]="isStart(day) || isEnd(day)"
                 [class.shadow-[var(--color-primary)]/30]="isStart(day) || isEnd(day)"
                 [class.font-extrabold]="isStart(day) || isEnd(day) || isToday(day)"
-                
+
                 [class.opacity-30]="isDateDisabled(day)"
                 [class.cursor-not-allowed]="isDateDisabled(day)"
                 [class.pointer-events-none]="isDateDisabled(day)"

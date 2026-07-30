@@ -10,7 +10,7 @@ import { FormsModule, ControlValueAccessor, NG_VALUE_ACCESSOR } from '@angular/f
 
 @Component({
   selector: 'app-custom-radio',
-  
+
   imports: [CommonModule, FormsModule],
   templateUrl: './custom-radio.component.html',
   providers: [
@@ -19,7 +19,7 @@ import { FormsModule, ControlValueAccessor, NG_VALUE_ACCESSOR } from '@angular/f
       useExisting: forwardRef(() => CustomRadioComponent),
       multi: true},
   ],
-  
+
   styles: [
     `
       :host {

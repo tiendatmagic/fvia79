@@ -82,7 +82,7 @@ export class CheckUidComponent {
     this.resetResults();
     this.totalCount.set(lines.length);
 
-    const batchSize = 30; // 30 concurrent checks per batch
+    const batchSize = 30;
     const liveList: string[] = [];
     const dieList: string[] = [];
 

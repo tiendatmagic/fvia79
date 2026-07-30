@@ -3,9 +3,9 @@ import { CommonModule } from '@angular/common';
 
 @Component({
   selector: 'app-skeleton-loader',
-  
+
   imports: [CommonModule],
-  
+
   templateUrl: './skeleton-loader.component.html'})
 export class SkeletonLoaderComponent {
   @Input() type:

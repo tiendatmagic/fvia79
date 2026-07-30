@@ -4,10 +4,10 @@ import { FormsModule } from '@angular/forms';
 
 @Component({
   selector: 'app-custom-switch',
-  
+
   imports: [CommonModule, FormsModule],
   templateUrl: './custom-switch.component.html',
-  
+
   styles: [
     `
       :host {

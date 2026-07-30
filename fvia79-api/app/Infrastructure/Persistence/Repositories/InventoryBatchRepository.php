@@ -59,7 +59,6 @@ class InventoryBatchRepository implements InventoryBatchRepositoryInterface
 
         $existingAvailableSecrets = $availableItems->pluck('secret_data')->toArray();
 
-        // 1. Mark items as sold if they are no longer in keysPool
         foreach ($availableItems as $item) {
             if (!in_array($item->secret_data, $cleanLines, true)) {
                 $item->status = 'sold';
@@ -68,7 +67,6 @@ class InventoryBatchRepository implements InventoryBatchRepositoryInterface
             }
         }
 
-        // 2. Add new items if cleanLines contains new secrets not currently available
         $now = now();
         $itemsToInsert = [];
         foreach ($cleanLines as $line) {

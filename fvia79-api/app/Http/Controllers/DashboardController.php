@@ -45,7 +45,6 @@ class DashboardController extends Controller
                 $totalProducts = ProductModel::where('status', 'active')->count();
                 $totalUsers = UserModel::count();
 
-                // Calculate completed deposits stats in base USDT/USD currency (Today, Month, Filtered range)
                 $todayStart = \Carbon\Carbon::now()->startOfDay()->toDateTimeString();
                 $todayEnd = \Carbon\Carbon::now()->endOfDay()->toDateTimeString();
                 $totalDepositToday = (float) DepositModel::where('status', 'completed')

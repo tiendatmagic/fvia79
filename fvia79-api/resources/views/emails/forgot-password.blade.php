@@ -54,7 +54,6 @@
         <p style="margin-top:0;color: #000;"><strong>Mã xác thực là</strong>
         </p>
 
-
         <p style="font-size:28px;margin-top:20px;margin-bottom:20px;color:#ff2f6a;font-weight:600;">{{ $code }}</p>
         <p style="margin-top:0;margin-bottom:28px;color: #000;">Nếu bạn gặp bất cứ vấn đề gì, vui lòng liên hệ với chúng tôi qua
           Telegram hoặc Fanpage, trên nền tảng web hoặc ứng dụng <span>Chic Farm</span>.</p>

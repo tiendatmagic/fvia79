@@ -29,10 +29,10 @@ export interface TabOption {
   host: {
     '(window:resize)': 'onResize()'
   },
-  
+
   imports: [CommonModule, IconComponent],
   templateUrl: './tab-group.component.html',
-  
+
   styles: [
     `
       :host {

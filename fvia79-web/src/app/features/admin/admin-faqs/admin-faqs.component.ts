@@ -54,7 +54,6 @@ export class AdminFaqsComponent implements OnInit {
   public policies = signal<WarrantyPolicyItem[]>([]);
   public faqs = signal<FaqItem[]>([]);
 
-  // Pagination states
   public categoryPage = signal<number>(1);
   public readonly categoryPageSize = 10;
   public readonly categoryTotalPages = computed(() => Math.ceil(this.categories().length / this.categoryPageSize) || 1);
@@ -83,7 +82,6 @@ export class AdminFaqsComponent implements OnInit {
   public updatingPolicyId = signal<number | null>(null);
   public updatingFaqId = signal<number | null>(null);
 
-  // Policy Category Modal State
   public isCategoryModalOpen = signal<boolean>(false);
   public editingCategory = signal<PolicyCategoryItem | null>(null);
   public categoryForm = signal<{
@@ -102,7 +100,6 @@ export class AdminFaqsComponent implements OnInit {
     is_active: true,
   });
 
-  // Policy Modal state
   public isPolicyModalOpen = signal<boolean>(false);
   public editingPolicy = signal<WarrantyPolicyItem | null>(null);
   public policyForm = signal<{
@@ -131,7 +128,6 @@ export class AdminFaqsComponent implements OnInit {
     is_active: true,
   });
 
-  // FAQ Modal state
   public isFaqModalOpen = signal<boolean>(false);
   public editingFaq = signal<FaqItem | null>(null);
   public faqForm = signal<{
@@ -150,7 +146,6 @@ export class AdminFaqsComponent implements OnInit {
     is_active: true,
   });
 
-  // Delete modal state
   public isDeleteModalOpen = signal<boolean>(false);
   public itemToDelete = signal<{ type: 'policy' | 'faq' | 'category'; id: number; title: string } | null>(null);
 
@@ -269,7 +264,6 @@ export class AdminFaqsComponent implements OnInit {
     return key;
   }
 
-  // --- Category Handlers ---
   public openCreateCategoryModal(): void {
     this.editingCategory.set(null);
     this.categoryForm.set({
@@ -353,7 +347,6 @@ export class AdminFaqsComponent implements OnInit {
     });
   }
 
-  // --- Policy Handlers ---
   public openCreatePolicyModal(): void {
     this.editingPolicy.set(null);
     const defaultCatKey = this.categories().length > 0 ? this.categories()[0].key : 'bm';
@@ -448,7 +441,6 @@ export class AdminFaqsComponent implements OnInit {
     });
   }
 
-  // --- FAQ Handlers ---
   public openCreateFaqModal(): void {
     this.editingFaq.set(null);
     this.faqForm.set({
@@ -532,7 +524,6 @@ export class AdminFaqsComponent implements OnInit {
     });
   }
 
-  // --- Delete Handler ---
   public confirmDelete(type: 'policy' | 'faq' | 'category', id: number, title: string): void {
     this.itemToDelete.set({ type, id, title });
     this.isDeleteModalOpen.set(true);

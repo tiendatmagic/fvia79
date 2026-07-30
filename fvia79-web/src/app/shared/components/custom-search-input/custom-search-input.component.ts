@@ -16,7 +16,7 @@ import { debounceTime } from 'rxjs/operators';
 
 @Component({
   selector: 'app-custom-search-input',
-  
+
   imports: [CommonModule, FormsModule, IconComponent, TranslatePipe],
   templateUrl: './custom-search-input.component.html',
   providers: [
@@ -25,7 +25,7 @@ import { debounceTime } from 'rxjs/operators';
       useExisting: forwardRef(() => CustomSearchInputComponent),
       multi: true},
   ],
-  
+
   styles: [
     `
       :host {

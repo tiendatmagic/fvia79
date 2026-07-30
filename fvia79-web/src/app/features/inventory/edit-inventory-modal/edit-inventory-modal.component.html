@@ -43,7 +43,7 @@
         ><span>{{ 'inv.cost_price' | translate }}</span> <span class="text-[10px] text-slate-500 dark:text-slate-400 font-medium">({{ 'common.optional' | translate }})</span></label
       >
       <app-custom-input
-        [placeholder]="'VD: 1.50 (USD/USDT)'"
+      [placeholder]="'inventory.cost_price_placeholder' | translate"
         [(ngModel)]="costPrice"
         name="costPrice"
         type="number"
@@ -56,7 +56,7 @@
       <label class="text-xs font-black text-slate-600 dark:text-slate-300 uppercase tracking-wider"
         >{{ 'inv.resource_data' | translate }}</label
       >
-      <!-- Hidden file input for TXT import -->
+
       <input
         #txtFileInput
         type="file"

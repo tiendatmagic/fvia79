@@ -102,7 +102,7 @@ export class ProductsComponent implements OnInit {
   public fetchFilteredProducts(page: number = 1) {
     this.currentPage.set(page);
     const statusVal = this.selectedStatusFilter();
-    
+
     let filterDeleted = 'active';
     let actualStatus: string | undefined = undefined;
 

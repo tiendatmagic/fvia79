@@ -4,7 +4,7 @@ import { CurrencyService } from '@core/services/currency.service';
 @Pipe({
   name: 'appCurrency',
   standalone: true,
-  pure: false // Re-evaluate when the active currency signal changes.
+  pure: false
 })
 export class CurrencyPipe implements PipeTransform {
   private readonly currencyService = inject(CurrencyService);

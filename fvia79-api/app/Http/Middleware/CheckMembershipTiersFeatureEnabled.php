@@ -8,9 +8,7 @@ use Symfony\Component\HttpFoundation\Response;
 
 class CheckMembershipTiersFeatureEnabled
 {
-    /**
-     * Handle an incoming request.
-     */
+
     public function handle(Request $request, Closure $next): Response
     {
         $enabled = filter_var(config('app.feature_membership_tiers_enabled', false), FILTER_VALIDATE_BOOLEAN);

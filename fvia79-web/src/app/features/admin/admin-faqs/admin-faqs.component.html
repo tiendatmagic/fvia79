@@ -1,5 +1,5 @@
 <div class="max-w-[1530px] mx-auto w-full p-4 sm:p-6 space-y-6">
-  <!-- Page Header -->
+
   <app-page-header
     [title]="'faq.admin_title' | translate"
     [description]="'faq.admin_subtitle' | translate"
@@ -45,7 +45,6 @@
     </ng-container>
   </app-page-header>
 
-  <!-- Main Tabs Switcher (Matching Admin Settings tab design) -->
   <div
     class="flex items-center gap-2 border-b border-slate-200/50 dark:border-slate-800/50 overflow-x-auto scrollbar-none whitespace-nowrap flex-nowrap"
   >
@@ -101,10 +100,9 @@
     </button>
   </div>
 
-  <!-- TAB 0: POLICY CATEGORIES TABLE -->
   <div *ngIf="activeTab() === 'categories'" app-card class="overflow-hidden !p-0">
     <app-table [columns]="categoryColumns" [data]="paginatedCategories()" [loading]="isLoading()">
-      <!-- Key -->
+
       <ng-template appTableCell="key" let-row="row">
         <span
           class="px-2.5 py-1 rounded-lg text-xs font-black uppercase inline-block whitespace-nowrap bg-purple-100 text-purple-700 dark:bg-purple-950/80 dark:text-purple-300"
@@ -114,7 +112,6 @@
         </span>
       </ng-template>
 
-      <!-- Name VI -->
       <ng-template appTableCell="name_vi" let-row="row">
         <span
           class="text-xs font-bold text-slate-800 dark:text-slate-200"
@@ -124,7 +121,6 @@
         </span>
       </ng-template>
 
-      <!-- Name EN -->
       <ng-template appTableCell="name_en" let-row="row">
         <span
           class="text-xs font-bold text-slate-600 dark:text-slate-400"
@@ -134,7 +130,6 @@
         </span>
       </ng-template>
 
-      <!-- Icon -->
       <ng-template appTableCell="icon" let-row="row">
         <div
           class="flex items-center justify-center"
@@ -144,7 +139,6 @@
         </div>
       </ng-template>
 
-      <!-- Sort Order -->
       <ng-template appTableCell="sort_order" let-row="row">
         <span
           class="font-extrabold text-xs text-slate-700 dark:text-slate-300"
@@ -154,7 +148,6 @@
         </span>
       </ng-template>
 
-      <!-- Active Status Switch -->
       <ng-template appTableCell="is_active" let-row="row">
         <div
           class="flex items-center justify-center gap-2"
@@ -173,7 +166,6 @@
         </div>
       </ng-template>
 
-      <!-- Actions -->
       <ng-template appTableCell="actions" let-row="row">
         <div class="flex items-center justify-end gap-2 whitespace-nowrap">
           <button
@@ -196,7 +188,6 @@
       </ng-template>
     </app-table>
 
-    <!-- Pagination for Policy Categories -->
     <div
       *ngIf="categories().length > categoryPageSize"
       class="p-4 border-t border-slate-100 dark:border-slate-800"
@@ -212,10 +203,9 @@
     </div>
   </div>
 
-  <!-- TAB 1: WARRANTY POLICIES TABLE -->
   <div *ngIf="activeTab() === 'policies'" app-card class="overflow-hidden !p-0">
     <app-table [columns]="policyColumns" [data]="paginatedPolicies()" [loading]="isLoading()">
-      <!-- Category -->
+
       <ng-template appTableCell="category" let-row="row">
         <span
           class="px-2.5 py-1 rounded-lg text-xs font-black uppercase inline-block whitespace-nowrap bg-indigo-100 text-indigo-700 dark:bg-indigo-950/80 dark:text-indigo-300"
@@ -225,7 +215,6 @@
         </span>
       </ng-template>
 
-      <!-- Type -->
       <ng-template appTableCell="type" let-row="row">
         <span
           [class]="
@@ -242,7 +231,6 @@
         </span>
       </ng-template>
 
-      <!-- Content VI -->
       <ng-template appTableCell="content_vi" let-row="row">
         <div class="max-w-xs sm:max-w-md">
           <p
@@ -257,7 +245,6 @@
         </div>
       </ng-template>
 
-      <!-- Content EN -->
       <ng-template appTableCell="content_en" let-row="row">
         <div class="max-w-xs sm:max-w-md">
           <p
@@ -269,7 +256,6 @@
         </div>
       </ng-template>
 
-      <!-- Tag -->
       <ng-template appTableCell="tag" let-row="row">
         <div *ngIf="row.tag_vi" class="flex flex-col gap-1">
           <span
@@ -289,7 +275,6 @@
         <span *ngIf="!row.tag_vi" class="text-slate-400 text-xs">—</span>
       </ng-template>
 
-      <!-- Sort Order -->
       <ng-template appTableCell="sort_order" let-row="row">
         <span
           class="font-extrabold text-xs text-slate-700 dark:text-slate-300"
@@ -299,7 +284,6 @@
         </span>
       </ng-template>
 
-      <!-- Active Status Switch -->
       <ng-template appTableCell="is_active" let-row="row">
         <div
           class="flex items-center justify-center gap-2"
@@ -314,7 +298,6 @@
         </div>
       </ng-template>
 
-      <!-- Actions -->
       <ng-template appTableCell="actions" let-row="row">
         <div class="flex items-center justify-end gap-2 whitespace-nowrap">
           <button
@@ -337,7 +320,6 @@
       </ng-template>
     </app-table>
 
-    <!-- Pagination for Warranty Policies -->
     <div
       *ngIf="policies().length > policyPageSize"
       class="p-4 border-t border-slate-100 dark:border-slate-800"
@@ -353,10 +335,9 @@
     </div>
   </div>
 
-  <!-- TAB 2: FAQS TABLE -->
   <div *ngIf="activeTab() === 'faqs'" app-card class="overflow-hidden !p-0">
     <app-table [columns]="faqColumns" [data]="paginatedFaqs()" [loading]="isLoading()">
-      <!-- Question VI -->
+
       <ng-template appTableCell="question_vi" let-row="row">
         <div class="max-w-md">
           <p
@@ -371,7 +352,6 @@
         </div>
       </ng-template>
 
-      <!-- Question EN -->
       <ng-template appTableCell="question_en" let-row="row">
         <div class="max-w-md">
           <p
@@ -386,7 +366,6 @@
         </div>
       </ng-template>
 
-      <!-- Sort Order -->
       <ng-template appTableCell="sort_order" let-row="row">
         <span
           class="font-extrabold text-xs text-slate-700 dark:text-slate-300"
@@ -396,7 +375,6 @@
         </span>
       </ng-template>
 
-      <!-- Active Status Switch -->
       <ng-template appTableCell="is_active" let-row="row">
         <div
           class="flex items-center justify-center gap-2"
@@ -411,7 +389,6 @@
         </div>
       </ng-template>
 
-      <!-- Actions -->
       <ng-template appTableCell="actions" let-row="row">
         <div class="flex items-center justify-end gap-2 whitespace-nowrap">
           <button
@@ -434,7 +411,6 @@
       </ng-template>
     </app-table>
 
-    <!-- Pagination for FAQs -->
     <div
       *ngIf="faqs().length > faqPageSize"
       class="p-4 border-t border-slate-100 dark:border-slate-800"
@@ -450,7 +426,6 @@
     </div>
   </div>
 
-  <!-- POLICY CATEGORY EDIT / CREATE MODAL -->
   <div
     *ngIf="isCategoryModalOpen()"
     (click)="isCategoryModalOpen.set(false)"
@@ -460,7 +435,7 @@
       (click)="$event.stopPropagation()"
       class="bg-white dark:bg-slate-900 rounded-2xl border border-slate-200 dark:border-slate-800 w-full max-w-lg overflow-hidden shadow-2xl animate-in fade-in zoom-in duration-200 cursor-default"
     >
-      <!-- Modal Header -->
+
       <div
         class="px-6 py-4 border-b border-slate-100 dark:border-slate-800 flex items-center justify-between bg-slate-50/50 dark:bg-slate-950/30"
       >
@@ -481,9 +456,8 @@
         </button>
       </div>
 
-      <!-- Modal Body -->
       <div class="p-6 space-y-4 max-h-[75vh] overflow-y-auto">
-        <!-- Name VI -->
+
         <div class="space-y-1.5">
           <label
             class="text-xs font-bold text-slate-700 dark:text-slate-300 uppercase tracking-wider block flex items-center justify-between"
@@ -499,7 +473,6 @@
           />
         </div>
 
-        <!-- Name EN -->
         <div class="space-y-1.5">
           <label
             class="text-xs font-bold text-slate-700 dark:text-slate-300 uppercase tracking-wider block flex items-center justify-between"
@@ -510,13 +483,13 @@
           <input
             type="text"
             [(ngModel)]="categoryForm().name_en"
-            placeholder="e.g. Business Manager (BM), Gmail Accounts..."
+            [placeholder]="'admin_faq.category_name_en_placeholder' | translate"
             class="w-full px-3.5 py-2.5 text-xs sm:text-sm font-bold bg-slate-50 dark:bg-slate-950 border border-slate-200 dark:border-slate-800 rounded-xl focus:outline-hidden focus:border-primary transition-all text-slate-800 dark:text-slate-100"
           />
         </div>
 
         <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
-          <!-- Key -->
+
           <div class="space-y-1.5">
             <label
               class="text-xs font-bold text-slate-600 dark:text-slate-300 uppercase tracking-wider block"
@@ -526,29 +499,28 @@
             <input
               type="text"
               [(ngModel)]="categoryForm().key"
-              placeholder="e.g. bm, via, mail"
+              [placeholder]="'admin_faq.slug_placeholder' | translate"
               class="w-full px-3.5 py-2.5 text-xs sm:text-sm font-semibold bg-slate-50 dark:bg-slate-950 border border-slate-200 dark:border-slate-800 rounded-xl focus:outline-hidden focus:border-primary transition-all text-slate-800 dark:text-slate-100"
             />
           </div>
 
-          <!-- Icon -->
           <div class="space-y-1.5">
             <label
               class="text-xs font-bold text-slate-600 dark:text-slate-300 uppercase tracking-wider block"
             >
-              SVG Icon Name
+              {{ 'admin_faq.icon_name' | translate }}
             </label>
             <input
               type="text"
               [(ngModel)]="categoryForm().icon"
-              placeholder="e.g. package, customers, shield"
+              [placeholder]="'admin_faq.icon_placeholder' | translate"
               class="w-full px-3.5 py-2.5 text-xs sm:text-sm font-semibold bg-slate-50 dark:bg-slate-950 border border-slate-200 dark:border-slate-800 rounded-xl focus:outline-hidden focus:border-primary transition-all text-slate-800 dark:text-slate-100"
             />
           </div>
         </div>
 
         <div class="grid grid-cols-1 sm:grid-cols-2 gap-4 items-center pt-2">
-          <!-- Sort Order -->
+
           <div class="space-y-1.5">
             <label
               class="text-xs font-bold text-slate-600 dark:text-slate-300 uppercase tracking-wider block"
@@ -562,7 +534,6 @@
             />
           </div>
 
-          <!-- Active Switch -->
           <div class="flex items-center gap-3 pt-5">
             <app-custom-switch
               [checked]="categoryForm().is_active"
@@ -575,7 +546,6 @@
         </div>
       </div>
 
-      <!-- Modal Footer -->
       <div
         class="px-6 py-4 border-t border-slate-100 dark:border-slate-800 flex items-center justify-end gap-3 bg-slate-50/50 dark:bg-slate-950/30"
       >
@@ -600,7 +570,6 @@
     </div>
   </div>
 
-  <!-- POLICY EDIT / CREATE MODAL -->
   <div
     *ngIf="isPolicyModalOpen()"
     (click)="isPolicyModalOpen.set(false)"
@@ -610,7 +579,7 @@
       (click)="$event.stopPropagation()"
       class="bg-white dark:bg-slate-900 rounded-2xl border border-slate-200 dark:border-slate-800 w-full max-w-2xl overflow-hidden shadow-2xl animate-in fade-in zoom-in duration-200 cursor-default"
     >
-      <!-- Modal Header -->
+
       <div
         class="px-6 py-4 border-b border-slate-100 dark:border-slate-800 flex items-center justify-between bg-slate-50/50 dark:bg-slate-950/30"
       >
@@ -633,10 +602,9 @@
         </button>
       </div>
 
-      <!-- Modal Body -->
       <div class="p-6 space-y-4 max-h-[75vh] overflow-y-auto">
         <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
-          <!-- Category Select -->
+
           <div class="space-y-1.5">
             <label
               class="text-xs font-bold text-slate-600 dark:text-slate-300 uppercase tracking-wider block"
@@ -652,7 +620,6 @@
             />
           </div>
 
-          <!-- Type Select -->
           <div class="space-y-1.5">
             <label
               class="text-xs font-bold text-slate-600 dark:text-slate-300 uppercase tracking-wider block"
@@ -669,7 +636,6 @@
           </div>
         </div>
 
-        <!-- Content VI -->
         <div class="space-y-1.5">
           <label
             class="text-xs font-bold text-slate-700 dark:text-slate-300 uppercase tracking-wider block flex items-center justify-between"
@@ -685,7 +651,6 @@
           ></textarea>
         </div>
 
-        <!-- Content EN -->
         <div class="space-y-1.5">
           <label
             class="text-xs font-bold text-slate-700 dark:text-slate-300 uppercase tracking-wider block flex items-center justify-between"
@@ -696,13 +661,13 @@
           <textarea
             [(ngModel)]="policyForm().content_en"
             rows="2"
-            placeholder="Enter policy content in English..."
+            [placeholder]="'admin_faq.content_en_placeholder' | translate"
             class="w-full px-3.5 py-2.5 text-xs sm:text-sm font-medium bg-slate-50 dark:bg-slate-950 border border-slate-200 dark:border-slate-800 rounded-xl focus:outline-hidden focus:border-primary transition-all text-slate-800 dark:text-slate-100"
           ></textarea>
         </div>
 
         <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
-          <!-- Sub Content VI -->
+
           <div class="space-y-1.5">
             <label
               class="text-xs font-bold text-slate-600 dark:text-slate-300 uppercase tracking-wider block"
@@ -717,7 +682,6 @@
             />
           </div>
 
-          <!-- Sub Content EN -->
           <div class="space-y-1.5">
             <label
               class="text-xs font-bold text-slate-600 dark:text-slate-300 uppercase tracking-wider block"
@@ -727,14 +691,14 @@
             <input
               type="text"
               [(ngModel)]="policyForm().sub_content_en"
-              placeholder="(e.g. Email unchanged)"
+              [placeholder]="'admin_faq.sub_content_en_placeholder' | translate"
               class="w-full px-3.5 py-2.5 text-xs sm:text-sm font-medium bg-slate-50 dark:bg-slate-950 border border-slate-200 dark:border-slate-800 rounded-xl focus:outline-hidden focus:border-primary transition-all text-slate-800 dark:text-slate-100"
             />
           </div>
         </div>
 
         <div class="grid grid-cols-1 sm:grid-cols-3 gap-4">
-          <!-- Tag VI -->
+
           <div class="space-y-1.5">
             <label
               class="text-xs font-bold text-slate-600 dark:text-slate-300 uppercase tracking-wider block"
@@ -749,7 +713,6 @@
             />
           </div>
 
-          <!-- Tag EN -->
           <div class="space-y-1.5">
             <label
               class="text-xs font-bold text-slate-600 dark:text-slate-300 uppercase tracking-wider block"
@@ -759,12 +722,11 @@
             <input
               type="text"
               [(ngModel)]="policyForm().tag_en"
-              placeholder="e.g. 24 hours / Rejected"
+              [placeholder]="'admin_faq.tag_en_placeholder' | translate"
               class="w-full px-3.5 py-2.5 text-xs sm:text-sm font-medium bg-slate-50 dark:bg-slate-950 border border-slate-200 dark:border-slate-800 rounded-xl focus:outline-hidden focus:border-primary transition-all text-slate-800 dark:text-slate-100"
             />
           </div>
 
-          <!-- Tag Color -->
           <div class="space-y-1.5">
             <label
               class="text-xs font-bold text-slate-600 dark:text-slate-300 uppercase tracking-wider block"
@@ -782,7 +744,7 @@
         </div>
 
         <div class="grid grid-cols-1 sm:grid-cols-2 gap-4 items-center pt-2">
-          <!-- Sort Order -->
+
           <div class="space-y-1.5">
             <label
               class="text-xs font-bold text-slate-600 dark:text-slate-300 uppercase tracking-wider block"
@@ -796,7 +758,6 @@
             />
           </div>
 
-          <!-- Active Switch -->
           <div class="flex items-center gap-3 pt-5">
             <app-custom-switch
               [checked]="policyForm().is_active"
@@ -809,7 +770,6 @@
         </div>
       </div>
 
-      <!-- Modal Footer -->
       <div
         class="px-6 py-4 border-t border-slate-100 dark:border-slate-800 flex items-center justify-end gap-3 bg-slate-50/50 dark:bg-slate-950/30"
       >
@@ -834,7 +794,6 @@
     </div>
   </div>
 
-  <!-- FAQ EDIT / CREATE MODAL -->
   <div
     *ngIf="isFaqModalOpen()"
     (click)="isFaqModalOpen.set(false)"
@@ -844,7 +803,7 @@
       (click)="$event.stopPropagation()"
       class="bg-white dark:bg-slate-900 rounded-2xl border border-slate-200 dark:border-slate-800 w-full max-w-2xl overflow-hidden shadow-2xl animate-in fade-in zoom-in duration-200 cursor-default"
     >
-      <!-- Modal Header -->
+
       <div
         class="px-6 py-4 border-b border-slate-100 dark:border-slate-800 flex items-center justify-between bg-slate-50/50 dark:bg-slate-950/30"
       >
@@ -865,9 +824,8 @@
         </button>
       </div>
 
-      <!-- Modal Body -->
       <div class="p-6 space-y-4 max-h-[75vh] overflow-y-auto">
-        <!-- Question VI -->
+
         <div class="space-y-1.5">
           <label
             class="text-xs font-bold text-slate-700 dark:text-slate-300 uppercase tracking-wider block flex items-center justify-between"
@@ -883,7 +841,6 @@
           />
         </div>
 
-        <!-- Answer VI -->
         <div class="space-y-1.5">
           <label
             class="text-xs font-bold text-slate-700 dark:text-slate-300 uppercase tracking-wider block flex items-center justify-between"
@@ -899,7 +856,6 @@
           ></textarea>
         </div>
 
-        <!-- Question EN -->
         <div class="space-y-1.5">
           <label
             class="text-xs font-bold text-slate-700 dark:text-slate-300 uppercase tracking-wider block flex items-center justify-between"
@@ -910,12 +866,11 @@
           <input
             type="text"
             [(ngModel)]="faqForm().question_en"
-            placeholder="Enter question in English..."
+            [placeholder]="'admin_faq.question_en_placeholder' | translate"
             class="w-full px-3.5 py-2.5 text-xs sm:text-sm font-bold bg-slate-50 dark:bg-slate-950 border border-slate-200 dark:border-slate-800 rounded-xl focus:outline-hidden focus:border-primary transition-all text-slate-800 dark:text-slate-100"
           />
         </div>
 
-        <!-- Answer EN -->
         <div class="space-y-1.5">
           <label
             class="text-xs font-bold text-slate-700 dark:text-slate-300 uppercase tracking-wider block flex items-center justify-between"
@@ -926,13 +881,13 @@
           <textarea
             [(ngModel)]="faqForm().answer_en"
             rows="3"
-            placeholder="Enter answer explanation in English..."
+            [placeholder]="'admin_faq.answer_en_placeholder' | translate"
             class="w-full px-3.5 py-2.5 text-xs sm:text-sm font-medium bg-slate-50 dark:bg-slate-950 border border-slate-200 dark:border-slate-800 rounded-xl focus:outline-hidden focus:border-primary transition-all text-slate-800 dark:text-slate-100"
           ></textarea>
         </div>
 
         <div class="grid grid-cols-1 sm:grid-cols-2 gap-4 items-center pt-2">
-          <!-- Sort Order -->
+
           <div class="space-y-1.5">
             <label
               class="text-xs font-bold text-slate-600 dark:text-slate-300 uppercase tracking-wider block"
@@ -946,7 +901,6 @@
             />
           </div>
 
-          <!-- Active Switch -->
           <div class="flex items-center gap-3 pt-5">
             <app-custom-switch
               [checked]="faqForm().is_active"
@@ -959,7 +913,6 @@
         </div>
       </div>
 
-      <!-- Modal Footer -->
       <div
         class="px-6 py-4 border-t border-slate-100 dark:border-slate-800 flex items-center justify-end gap-3 bg-slate-50/50 dark:bg-slate-950/30"
       >
@@ -984,7 +937,6 @@
     </div>
   </div>
 
-  <!-- DELETE CONFIRMATION MODAL -->
   <div
     *ngIf="isDeleteModalOpen()"
     (click)="isDeleteModalOpen.set(false)"

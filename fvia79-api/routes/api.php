@@ -156,7 +156,6 @@ Route::prefix('v1')->group(function () {
             Route::post('/admin/deposits/{id}/reject', ['App\Http\Controllers\AdminDepositController', 'reject']);
             Route::post('/admin/deposits/{id}/revoke', ['App\Http\Controllers\AdminDepositController', 'revoke']);
 
-            // Admin FAQ & Warranty Management Routes
             Route::get('/admin/faqs', ['App\Http\Controllers\FaqController', 'indexAdmin']);
             Route::post('/admin/policy-categories', ['App\Http\Controllers\FaqController', 'storePolicyCategory']);
             Route::put('/admin/policy-categories/{id}', ['App\Http\Controllers\FaqController', 'updatePolicyCategory']);

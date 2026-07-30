@@ -105,8 +105,6 @@ export class HeaderComponent {
     this.showCurrencyDropdown.set(false);
   }
 
-
-
   public getUserInitial(): string {
     const name = this.stateService.currentUser()?.name || '';
     return name.charAt(0).toUpperCase();
@@ -131,4 +129,3 @@ export class HeaderComponent {
     return this.currencyService.formatBalance(balance || 0);
   }
 }
-

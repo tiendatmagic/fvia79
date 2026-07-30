@@ -25,7 +25,6 @@
     </ng-container>
   </app-page-header>
 
-  <!-- ENV Disabled Feature Notice Banner -->
   <div
     *ngIf="!publicSettingStore.settings().membership_tiers_feature_enabled"
     class="p-6 rounded-2xl bg-rose-500/10 border border-rose-500/20 text-rose-700 dark:text-rose-400 text-sm flex flex-col sm:flex-row items-start sm:items-center gap-4 shadow-sm"
@@ -44,7 +43,7 @@
   </div>
 
   <ng-container *ngIf="publicSettingStore.settings().membership_tiers_feature_enabled">
-    <!-- Global Feature Switch Card -->
+
     <div class="p-5 rounded-2xl bg-white dark:bg-slate-900 border border-slate-200/60 dark:border-slate-800/60 shadow-sm flex flex-col sm:flex-row sm:items-center justify-between gap-4">
       <div class="space-y-1">
         <div class="flex items-center gap-2">
@@ -73,7 +72,6 @@
       </div>
     </div>
 
-    <!-- Search & Filter Bar -->
     <div
       class="grid grid-cols-1 sm:grid-cols-2 gap-4 bg-slate-50 dark:bg-slate-900/40 border border-slate-200/30 dark:border-slate-800/30 rounded-2xl p-4 sm:p-5"
     >
@@ -101,7 +99,6 @@
       </div>
     </div>
 
-    <!-- Table Card -->
     <div app-card class="overflow-hidden !p-0">
       <app-table
         [columns]="columns()"

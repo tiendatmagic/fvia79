@@ -12,16 +12,12 @@ interface DepositRepositoryInterface
 
     public function findByCode(string $code): ?Deposit;
 
-    /** Return a user's deposits with pagination. */
     public function findByUserIdPaginated(string $userId, int $page = 1, int $limit = 10): array;
 
-    /** Find a pending deposit by its unique fractional amount. */
     public function findPendingByAmountToPay(float $amountToPay): ?Deposit;
 
-    /** Determine whether a transaction hash has already been reconciled. */
     public function isTxHashUsed(string $txHash): bool;
 
-    /** Return all deposits with admin filters and pagination. */
     public function findAllPaginated(
         int $page = 1,
         int $limit = 10,

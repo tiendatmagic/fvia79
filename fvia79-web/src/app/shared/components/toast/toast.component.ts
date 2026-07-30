@@ -5,9 +5,9 @@ import { IconComponent } from '@shared/components/icon/icon.component';
 
 @Component({
   selector: 'app-toast',
-  
+
   imports: [CommonModule, IconComponent],
-  
+
   templateUrl: './toast.component.html',
   styleUrl: './toast.component.scss'
 })

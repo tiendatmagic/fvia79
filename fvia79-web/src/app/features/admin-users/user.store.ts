@@ -13,10 +13,10 @@ export class UserStore {
   private readonly api = inject(ApiService);
   private readonly toast = inject(ToastService);
   public readonly lang = inject(LanguageService);
- 
+
   private activeFetchUsersSub?: Subscription;
   private readonly usersCache = new Map<string, { data: any; timestamp: number }>();
- 
+
   public readonly users = signal<any[]>([]);
   public readonly totalItems = signal<number>(0);
   public readonly lastPage = signal<number>(1);

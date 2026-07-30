@@ -18,8 +18,6 @@ import { ModalService } from '@core/services/modal.service';
 import { AdjustBalanceModalComponent } from '../adjust-balance-modal/adjust-balance-modal.component';
 import { AdjustCumulativeDepositModalComponent } from '../adjust-cumulative-deposit-modal/adjust-cumulative-deposit-modal.component';
 
-
-
 type TabId = 'info' | 'permissions' | 'security';
 
 @Component({

@@ -48,7 +48,6 @@ class RecalculateProfitCommand extends Command
                         $updatedCount++;
                     }
                 } else {
-                    // Fallback: Check active or completed batches for product
                     $latestBatch = InventoryBatchModel::where('product_id', $item->product_id)
                         ->whereNotNull('cost_price')
                         ->orderBy('created_at', 'desc')

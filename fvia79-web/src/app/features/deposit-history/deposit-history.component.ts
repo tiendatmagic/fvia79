@@ -97,7 +97,7 @@ export class DepositHistoryComponent implements OnInit {
 
   public readonly currentPage = signal<number>(1);
   public readonly itemsPerPage = 10;
-  
+
   public searchQuery = '';
   private readonly _searchQuery = signal('');
 

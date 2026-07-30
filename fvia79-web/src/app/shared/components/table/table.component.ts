@@ -55,7 +55,7 @@ export class TableComponent {
   @Input() emptyIcon: string = 'search';
   @Input() hoverable: boolean = true;
   @Input() localSort: boolean = true;
-  
+
   @Input() set data(value: any[]) {
     this._data.set(value || []);
   }
@@ -105,8 +105,8 @@ export class TableComponent {
         const strA = String(valA).toLowerCase();
         const strB = String(valB).toLowerCase();
 
-        return dir === 'asc' 
-          ? strA.localeCompare(strB, 'vi', { numeric: true }) 
+        return dir === 'asc'
+          ? strA.localeCompare(strB, 'vi', { numeric: true })
           : strB.localeCompare(strA, 'vi', { numeric: true });
       });
     }

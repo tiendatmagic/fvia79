@@ -1,11 +1,12 @@
 import { Component, Input } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { RouterModule } from '@angular/router';
+import { TranslatePipe } from '@shared/pipes/translate.pipe';
 
 @Component({
   selector: 'app-logo',
   standalone: true,
-  imports: [CommonModule, RouterModule],
+  imports: [CommonModule, RouterModule, TranslatePipe],
   template: `
     <a
       [routerLink]="link ? link : null"
@@ -17,12 +18,12 @@ import { RouterModule } from '@angular/router';
     >
       <img
         src="assets/logo-dark.png"
-        alt="Fvia79 Logo"
+        [alt]="'app.logo_alt' | translate"
         class="w-full h-full object-contain scale-110 relative z-10 transition-transform duration-300 group-hover:scale-115 dark:hidden"
       />
       <img
         src="assets/logo-light.png"
-        alt="Fvia79 Logo"
+        [alt]="'app.logo_alt' | translate"
         class="w-full h-full object-contain scale-110 relative z-10 transition-transform duration-300 group-hover:scale-115 hidden dark:block"
       />
     </a>

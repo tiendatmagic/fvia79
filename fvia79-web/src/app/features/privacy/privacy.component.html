@@ -1,0 +1,206 @@
+<div class="max-w-[1530px] mx-auto w-full px-4 sm:px-6 py-6 space-y-6">
+  <app-page-header
+    [title]="'privacy.title' | translate"
+    [description]="'privacy.subtitle' | translate"
+  >
+    <ng-container actions>
+      <div class="flex items-center gap-2">
+        <a
+          app-button
+          [variant]="'secondary'"
+          [routerLink]="['/terms']"
+          class="text-xs sm:text-sm font-bold flex items-center gap-1.5"
+        >
+          <app-icon name="shield" class="w-4 h-4 text-primary" />
+          <span>{{ 'privacy.back_to_terms' | translate }}</span>
+        </a>
+        <a
+          app-button
+          [variant]="'secondary'"
+          [routerLink]="['/login']"
+          class="text-xs sm:text-sm font-bold flex items-center gap-1.5"
+        >
+          <app-icon name="arrow-left" class="w-4 h-4" />
+          <span>{{ 'privacy.back_to_login' | translate }}</span>
+        </a>
+      </div>
+    </ng-container>
+  </app-page-header>
+
+  <app-card class="p-6 sm:p-8 space-y-3 relative overflow-hidden bg-gradient-to-br from-emerald-50/80 via-slate-50 to-teal-50/40 dark:from-slate-900 dark:via-slate-900 dark:to-slate-950 border border-emerald-200/50 dark:border-slate-800/80 shadow-md">
+    <div class="absolute -right-10 -bottom-10 w-48 h-48 bg-primary/10 dark:bg-primary/20 rounded-full blur-3xl pointer-events-none"></div>
+    <div class="space-y-3 relative z-10">
+      <div class="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-emerald-500/10 text-emerald-600 dark:bg-primary/20 dark:text-primary text-xs font-bold border border-emerald-500/20 dark:border-primary/30">
+        <app-icon name="shield" class="w-3.5 h-3.5" />
+        <span>{{ 'notice.disclaimer_title' | translate }}</span>
+      </div>
+      <h1 class="text-xl sm:text-2xl font-black uppercase text-emerald-600 dark:text-emerald-400 tracking-wide">
+        {{ 'privacy.header_heading' | translate }}
+      </h1>
+      <p class="text-xs sm:text-sm text-slate-600 dark:text-slate-300 leading-relaxed font-medium">
+        {{ 'privacy.header_desc' | translate }}
+      </p>
+    </div>
+  </app-card>
+
+  <app-card class="p-6 sm:p-8 space-y-4">
+    <div class="flex items-center gap-3 border-b border-slate-200 dark:border-slate-800 pb-3">
+      <div class="w-9 h-9 rounded-xl bg-blue-500/10 text-blue-500 flex items-center justify-center font-bold text-base shrink-0">
+        1
+      </div>
+      <h2 class="text-base sm:text-lg font-bold text-blue-600 dark:text-blue-400">
+        {{ 'privacy.sec1_title' | translate }}
+      </h2>
+    </div>
+    <p class="text-xs sm:text-sm text-slate-600 dark:text-slate-300 leading-relaxed sm:pl-12">
+      {{ 'privacy.sec1_desc' | translate }}
+    </p>
+  </app-card>
+
+  <app-card class="p-6 sm:p-8 space-y-4">
+    <div class="flex items-center gap-3 border-b border-slate-200 dark:border-slate-800 pb-3">
+      <div class="w-9 h-9 rounded-xl bg-indigo-500/10 text-indigo-500 flex items-center justify-center font-bold text-base shrink-0">
+        2
+      </div>
+      <h2 class="text-base sm:text-lg font-bold text-indigo-600 dark:text-indigo-400">
+        {{ 'privacy.sec2_title' | translate }}
+      </h2>
+    </div>
+    <p class="text-xs sm:text-sm text-slate-600 dark:text-slate-300 leading-relaxed font-semibold sm:pl-12">
+      {{ 'privacy.sec2_desc' | translate }}
+    </p>
+    <ul class="space-y-2.5 sm:pl-12">
+      <li class="flex items-start gap-2.5 text-xs sm:text-sm text-slate-600 dark:text-slate-300">
+        <app-icon name="check-circle" class="w-4 h-4 text-indigo-500 shrink-0 mt-0.5" />
+        <span>{{ 'privacy.sec2_item1' | translate }}</span>
+      </li>
+      <li class="flex items-start gap-2.5 text-xs sm:text-sm text-slate-600 dark:text-slate-300">
+        <app-icon name="check-circle" class="w-4 h-4 text-indigo-500 shrink-0 mt-0.5" />
+        <span>{{ 'privacy.sec2_item2' | translate }}</span>
+      </li>
+      <li class="flex items-start gap-2.5 text-xs sm:text-sm text-slate-600 dark:text-slate-300">
+        <app-icon name="check-circle" class="w-4 h-4 text-indigo-500 shrink-0 mt-0.5" />
+        <span>{{ 'privacy.sec2_item3' | translate }}</span>
+      </li>
+      <li class="flex items-start gap-2.5 text-xs sm:text-sm text-slate-600 dark:text-slate-300">
+        <app-icon name="check-circle" class="w-4 h-4 text-indigo-500 shrink-0 mt-0.5" />
+        <span>{{ 'privacy.sec2_item4' | translate }}</span>
+      </li>
+    </ul>
+  </app-card>
+
+  <app-card class="p-6 sm:p-8 space-y-4 border-l-4 border-l-emerald-500">
+    <div class="flex items-center gap-3 border-b border-slate-200 dark:border-slate-800 pb-3">
+      <div class="w-9 h-9 rounded-xl bg-emerald-500/10 text-emerald-500 flex items-center justify-center font-bold text-base shrink-0">
+        3
+      </div>
+      <h2 class="text-base sm:text-lg font-bold text-emerald-600 dark:text-emerald-400">
+        {{ 'privacy.sec3_title' | translate }}
+      </h2>
+    </div>
+    <p class="text-xs sm:text-sm text-slate-600 dark:text-slate-300 leading-relaxed font-semibold sm:pl-12">
+      {{ 'privacy.sec3_desc' | translate }}
+    </p>
+    <ul class="space-y-2.5 sm:pl-12">
+      <li class="flex items-start gap-2.5 text-xs sm:text-sm text-slate-600 dark:text-slate-300">
+        <app-icon name="check-circle" class="w-4 h-4 text-emerald-500 shrink-0 mt-0.5" />
+        <span>{{ 'privacy.sec3_item1' | translate }}</span>
+      </li>
+      <li class="flex items-start gap-2.5 text-xs sm:text-sm text-slate-600 dark:text-slate-300">
+        <app-icon name="check-circle" class="w-4 h-4 text-emerald-500 shrink-0 mt-0.5" />
+        <span>{{ 'privacy.sec3_item2' | translate }}</span>
+      </li>
+      <li class="flex items-start gap-2.5 text-xs sm:text-sm text-slate-600 dark:text-slate-300">
+        <app-icon name="check-circle" class="w-4 h-4 text-emerald-500 shrink-0 mt-0.5" />
+        <span>{{ 'privacy.sec3_item3' | translate }}</span>
+      </li>
+    </ul>
+  </app-card>
+
+  <app-card class="p-6 sm:p-8 space-y-4">
+    <div class="flex items-center gap-3 border-b border-slate-200 dark:border-slate-800 pb-3">
+      <div class="w-9 h-9 rounded-xl bg-amber-500/10 text-amber-500 flex items-center justify-center font-bold text-base shrink-0">
+        4
+      </div>
+      <h2 class="text-base sm:text-lg font-bold text-amber-600 dark:text-amber-400">
+        {{ 'privacy.sec4_title' | translate }}
+      </h2>
+    </div>
+    <p class="text-xs sm:text-sm text-slate-600 dark:text-slate-300 leading-relaxed sm:pl-12">
+      {{ 'privacy.sec4_desc' | translate }}
+    </p>
+    <ul class="space-y-2.5 sm:pl-12">
+      <li class="flex items-start gap-2.5 text-xs sm:text-sm text-slate-600 dark:text-slate-300">
+        <app-icon name="check-circle" class="w-4 h-4 text-amber-500 shrink-0 mt-0.5" />
+        <span>{{ 'privacy.sec4_item1' | translate }}</span>
+      </li>
+      <li class="flex items-start gap-2.5 text-xs sm:text-sm text-slate-600 dark:text-slate-300">
+        <app-icon name="check-circle" class="w-4 h-4 text-amber-500 shrink-0 mt-0.5" />
+        <span>{{ 'privacy.sec4_item2' | translate }}</span>
+      </li>
+      <li class="flex items-start gap-2.5 text-xs sm:text-sm text-slate-600 dark:text-slate-300">
+        <app-icon name="check-circle" class="w-4 h-4 text-amber-500 shrink-0 mt-0.5" />
+        <span>{{ 'privacy.sec4_item3' | translate }}</span>
+      </li>
+    </ul>
+  </app-card>
+
+  <app-card class="p-6 sm:p-8 space-y-4">
+    <div class="flex items-center gap-3 border-b border-slate-200 dark:border-slate-800 pb-3">
+      <div class="w-9 h-9 rounded-xl bg-purple-500/10 text-purple-500 flex items-center justify-center font-bold text-base shrink-0">
+        5
+      </div>
+      <h2 class="text-base sm:text-lg font-bold text-purple-600 dark:text-purple-400">
+        {{ 'privacy.sec5_title' | translate }}
+      </h2>
+    </div>
+    <p class="text-xs sm:text-sm text-slate-600 dark:text-slate-300 leading-relaxed sm:pl-12">
+      {{ 'privacy.sec5_desc' | translate }}
+    </p>
+  </app-card>
+
+  <app-card class="p-6 sm:p-8 space-y-4 bg-cyan-50/50 dark:bg-cyan-950/20 border-cyan-200 dark:border-cyan-900/40">
+    <div class="flex items-center gap-3 border-b border-cyan-200 dark:border-cyan-900/40 pb-3">
+      <div class="w-9 h-9 rounded-xl bg-cyan-500/10 text-cyan-500 flex items-center justify-center font-bold text-base shrink-0">
+        6
+      </div>
+      <h2 class="text-base sm:text-lg font-bold text-cyan-600 dark:text-cyan-400">
+        {{ 'privacy.sec6_title' | translate }}
+      </h2>
+    </div>
+    <p class="text-xs sm:text-sm text-slate-700 dark:text-slate-200 leading-relaxed font-semibold sm:pl-12">
+      {{ 'privacy.sec6_desc' | translate }}
+    </p>
+  </app-card>
+
+  <div class="flex flex-wrap items-center justify-between gap-4 pt-2">
+    <a
+      app-button
+      [variant]="'secondary'"
+      [routerLink]="['/terms']"
+      class="text-xs sm:text-sm font-bold flex items-center gap-1.5"
+    >
+      <app-icon name="shield" class="w-4 h-4 text-primary" />
+      <span>{{ 'privacy.back_to_terms' | translate }}</span>
+    </a>
+    <div class="flex items-center gap-3">
+      <a
+        app-button
+        [variant]="'secondary'"
+        [routerLink]="['/storefront']"
+        class="text-xs sm:text-sm font-bold flex items-center gap-1.5"
+      >
+        <app-icon name="arrow-left" class="w-4 h-4" />
+        <span>{{ 'privacy.back_to_home' | translate }}</span>
+      </a>
+      <a
+        app-button
+        [variant]="'primary'"
+        [routerLink]="['/login']"
+        class="text-xs sm:text-sm font-bold px-6 py-2.5"
+      >
+        <span>{{ 'privacy.back_to_login' | translate }}</span>
+      </a>
+    </div>
+  </div>
+</div>

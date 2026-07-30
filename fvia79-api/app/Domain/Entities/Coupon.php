@@ -6,7 +6,7 @@ class Coupon
 {
     private ?string $id;
     private string $code;
-    private string $type; // percentage, fixed
+    private string $type;
     private float $value;
     private float $minSpend;
     private \DateTimeInterface $startDate;

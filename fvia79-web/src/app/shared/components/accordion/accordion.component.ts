@@ -40,7 +40,7 @@ export class AccordionComponent implements AfterContentInit {
       targetItem.expandedChange.emit(targetItem.expanded);
     } else {
       const isCurrentlyExpanded = targetItem.expanded;
-      
+
       this.items.forEach(item => {
         if (item === targetItem) {
           item.expanded = !isCurrentlyExpanded;

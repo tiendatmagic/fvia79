@@ -12,13 +12,13 @@ import { CurrencyService } from '@core/services/currency.service';
 export class DepositStore {
   private readonly api = inject(ApiService);
   private readonly currencyService = inject(CurrencyService);
- 
+
   private activeFetchHistorySub?: Subscription;
 
   public readonly loading = signal<boolean>(false);
   public readonly rate = signal<number>(26500);
   public readonly currentInvoice = signal<DepositHistoryItem | null>(null);
-  
+
   public readonly historyList = signal<DepositHistoryItem[]>([]);
   public readonly totalItems = signal<number>(0);
   public readonly lastPage = signal<number>(1);
@@ -77,13 +77,13 @@ export class DepositStore {
     if (this.activeFetchHistorySub) {
       this.activeFetchHistorySub.unsubscribe();
     }
- 
+
     this.loading.set(true);
-    
+
     let params = new HttpParams()
       .set('page', page.toString())
       .set('limit', limit.toString());
- 
+
     if (search) {
       params = params.set('search', search);
     }
@@ -99,9 +99,9 @@ export class DepositStore {
     if (endDate) {
       params = params.set('end_date', endDate);
     }
- 
+
     const subject = new Subject<any>();
- 
+
     const req$ = this.api.get<{ items: DepositHistoryItem[]; total: number; last_page: number; current_page: number }>('v1/deposit/history', params).pipe(
       tap(res => {
         if (res) {
@@ -113,7 +113,7 @@ export class DepositStore {
       }),
       finalize(() => this.loading.set(false))
     );
- 
+
     this.activeFetchHistorySub = req$.subscribe({
       next: (res) => {
         subject.next(res);
@@ -123,7 +123,7 @@ export class DepositStore {
         subject.error(err);
       }
     });
- 
+
     return subject.asObservable();
   }
 

@@ -13,11 +13,11 @@ export class OrderStore {
   private readonly api = inject(ApiService);
   private readonly toast = inject(ToastService);
   public readonly lang = inject(LanguageService);
- 
+
   private activeFetchOrdersSub?: Subscription;
- 
+
   private readonly ordersCache = new Map<string, { data: any; timestamp: number }>();
- 
+
   public clearCache() {
     this.ordersCache.clear();
   }
@@ -54,11 +54,11 @@ export class OrderStore {
       }
       return of(res);
     }
- 
+
     if (this.activeFetchOrdersSub) {
       this.activeFetchOrdersSub.unsubscribe();
     }
- 
+
     this.loading.set(true);
     let params = new HttpParams();
     if (page !== undefined) {
@@ -79,9 +79,9 @@ export class OrderStore {
     if (endDate) {
       params = params.set('end_date', endDate);
     }
- 
+
     const subject = new Subject<any>();
- 
+
     const req$ = this.api.get<any>('v1/orders', params).pipe(
       tap((res) => {
         this.ordersCache.set(cacheKey, { data: res, timestamp: Date.now() });
@@ -103,7 +103,7 @@ export class OrderStore {
       }),
       finalize(() => this.loading.set(false))
     );
- 
+
     this.activeFetchOrdersSub = req$.subscribe({
       next: (res) => {
         subject.next(res);
@@ -113,7 +113,7 @@ export class OrderStore {
         subject.error(err);
       }
     });
- 
+
     return subject.asObservable();
   }
 

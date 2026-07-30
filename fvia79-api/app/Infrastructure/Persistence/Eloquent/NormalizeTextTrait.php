@@ -7,11 +7,11 @@ trait NormalizeTextTrait
     protected static function normalizeText(?string $text): string
     {
         if (empty($text)) return '';
-        
+
         if (class_exists('\Normalizer')) {
             $text = \Normalizer::normalize($text, \Normalizer::FORM_C);
         }
-        
+
         $text = mb_strtolower($text, 'UTF-8');
 
         $accentMap = [

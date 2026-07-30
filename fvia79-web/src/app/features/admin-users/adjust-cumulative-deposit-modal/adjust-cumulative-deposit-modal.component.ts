@@ -55,11 +55,9 @@ export class AdjustCumulativeDepositModalComponent implements OnInit {
     if (this.cumulativeAmount === null || this.cumulativeAmount === undefined) {
       return true;
     }
-    // FE validation: For 'add' and 'subtract', amount MUST be > 0 (cannot be 0)
     if (this.cumulativeType === 'add' || this.cumulativeType === 'subtract') {
       return this.cumulativeAmount <= 0;
     }
-    // For 'set', amount can be >= 0 (e.g. set total_deposited to 0)
     return this.cumulativeAmount < 0;
   }
 

@@ -107,14 +107,15 @@ function handle401Error(
         }
 
         const currentUrl = router.url || '';
-        const isPublicRoute = currentUrl === '/' || 
+        const isPublicRoute = currentUrl === '/' ||
                               currentUrl.startsWith('/storefront') ||
-                              currentUrl.startsWith('/login') || 
+                              currentUrl.startsWith('/login') ||
                               currentUrl.startsWith('/register') ||
                               currentUrl.startsWith('/check-uid') ||
                               currentUrl.startsWith('/faq') ||
                               currentUrl.startsWith('/contact') ||
-                              currentUrl.startsWith('/terms');
+                              currentUrl.startsWith('/terms') ||
+                              currentUrl.startsWith('/privacy');
         if (!isPublicRoute) {
           router.navigate(['/login']);
         }

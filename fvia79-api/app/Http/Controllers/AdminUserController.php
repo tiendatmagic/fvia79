@@ -379,8 +379,8 @@ class AdminUserController extends Controller
                 $user->getRefreshTokenHash(),
                 $user->getRefreshTokenExpiredAt(),
                 $user->getPhone(),
-                null,  // google2fa_secret
-                false, // google2fa_enabled
+                null,
+                false,
                 $user->getApiKey(),
                 $user->getStatus(),
                 $user->getUid()
@@ -415,8 +415,8 @@ class AdminUserController extends Controller
                 $user->getRefreshTokenHash(),
                 $user->getRefreshTokenExpiredAt(),
                 $user->getPhone(),
-                $secret,  // google2fa_secret
-                true,     // google2fa_enabled
+                $secret,
+                true,
                 $user->getApiKey(),
                 $user->getStatus(),
                 $user->getUid()

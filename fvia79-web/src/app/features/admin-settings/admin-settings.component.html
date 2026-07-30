@@ -88,7 +88,7 @@
       <app-card>
         <form (ngSubmit)="onSubmit()" #settingsForm="ngForm" class="space-y-6">
           <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
-            <!-- Coupon System Enable Switch -->
+
             <div class="form-field md:col-span-2">
               <div class="flex items-center justify-between p-3.5 rounded-xl bg-slate-50 dark:bg-slate-900/60 border border-slate-200/50 dark:border-slate-800/40">
                 <div>
@@ -107,7 +107,6 @@
               </div>
             </div>
 
-            <!-- USDT BEP-20 Payment Method Enable Switch -->
             <div class="form-field md:col-span-2">
               <div class="flex items-center justify-between p-3.5 rounded-xl bg-slate-50 dark:bg-slate-900/60 border border-slate-200/50 dark:border-slate-800/40">
                 <div>
@@ -253,7 +252,6 @@
               </h4>
             </div>
 
-            <!-- Binance Pay Payment Method Enable Switch -->
             <div class="form-field md:col-span-2">
               <div class="flex items-center justify-between p-3.5 rounded-xl bg-slate-50 dark:bg-slate-900/60 border border-slate-200/50 dark:border-slate-800/40">
                 <div>
@@ -313,10 +311,13 @@
                     >
                       @if (isUploadingBinanceQr()) {
                         <app-icon name="loader" class="w-4 h-4 animate-spin text-amber-500" />
-                        <span>Đang tải ảnh...</span>
+                        <span>{{ 'settings.qr_uploading' | translate }}</span>
                       } @else {
                         <app-icon name="upload" class="w-4 h-4 text-amber-500" />
-                        <span>{{ form.admin_binance_pay_link ? 'Thay đổi ảnh QR' : 'Tải tệp ảnh QR từ thiết bị' }}</span>
+                        <span>{{
+                          (form.admin_binance_pay_link ? 'settings.qr_change_image' : 'settings.qr_upload_image')
+                            | translate
+                        }}</span>
                       }
                     </button>
 
@@ -328,7 +329,7 @@
                         (click)="removeBinanceQrImage()"
                       >
                         <app-icon name="trash" class="w-3.5 h-3.5" />
-                        <span>Xóa ảnh</span>
+                        <span>{{ 'settings.qr_remove_image' | translate }}</span>
                       </button>
                     }
                   </div>
@@ -342,11 +343,11 @@
                   <div class="relative shrink-0 group">
                     <img
                       [src]="formatQrUrl(form.admin_binance_pay_link)"
-                      alt="Binance QR Preview"
+                      [alt]="'settings.binance_qr_preview_alt' | translate"
                       class="w-24 h-24 object-contain rounded-lg border border-slate-200 dark:border-slate-700 bg-white p-1 shadow-sm"
                     />
                     <span class="absolute -top-2 -right-2 bg-emerald-500 text-white text-[10px] font-bold px-1.5 py-0.5 rounded-full shadow">
-                      Đã có ảnh
+                      {{ 'settings.qr_image_available' | translate }}
                     </span>
                   </div>
                 }
@@ -460,7 +461,7 @@
                 </div>
               </div>
             </div>
-          <!-- Telegram Bot Configuration Card -->
+
           <div class="md:col-span-2 space-y-6 pt-6 border-t border-slate-200/60 dark:border-slate-800/60">
             <div class="flex items-center justify-between gap-3">
               <div class="flex items-center gap-3">
@@ -493,7 +494,7 @@
             </div>
 
             <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-              <!-- Telegram Support Username / Link & Contact Display Toggle -->
+
               <div class="form-field md:col-span-2 space-y-2">
                 <div class="flex items-center justify-between gap-3">
                   <label class="text-xs font-bold text-slate-700 dark:text-slate-200 uppercase tracking-wider block">
@@ -528,7 +529,6 @@
                 </p>
               </div>
 
-              <!-- Bot Username & Contact Display Toggle -->
               <div class="form-field">
                 <div class="flex items-center justify-between gap-2 mb-1.5">
                   <label class="text-xs font-bold text-slate-700 dark:text-slate-200 uppercase tracking-wider block">
@@ -560,7 +560,6 @@
                 </div>
               </div>
 
-              <!-- Enable Switch -->
               <div class="form-field flex flex-col justify-end">
                 <div class="flex items-center justify-between p-3 rounded-xl bg-slate-50 dark:bg-slate-900/60 border border-slate-200/50 dark:border-slate-800/40">
                   <span class="text-xs font-bold text-slate-700 dark:text-slate-200">
@@ -574,7 +573,6 @@
                 </div>
               </div>
 
-              <!-- Bot API Token (Encrypted) -->
               <div class="form-field md:col-span-2">
                 <div class="flex items-center justify-between mb-1.5">
                   <label class="text-xs font-bold text-slate-400 dark:text-slate-500 uppercase tracking-wider">
@@ -662,7 +660,7 @@
           </div>
 
           <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
-            <!-- Recent Purchases Setting -->
+
             <div class="p-5 rounded-2xl bg-slate-50/80 dark:bg-slate-900/60 border border-slate-200/60 dark:border-slate-800/60 space-y-4 shadow-2xs">
               <div class="flex items-center justify-between">
                 <span class="text-sm font-bold text-slate-800 dark:text-white flex items-center gap-2">
@@ -692,7 +690,6 @@
               </div>
             </div>
 
-            <!-- Recent Deposits Setting -->
             <div class="p-5 rounded-2xl bg-slate-50/80 dark:bg-slate-900/60 border border-slate-200/60 dark:border-slate-800/60 space-y-4 shadow-2xs">
               <div class="flex items-center justify-between">
                 <span class="text-sm font-bold text-slate-800 dark:text-white flex items-center gap-2">
@@ -780,9 +777,9 @@
           </div>
 
           <div class="space-y-4">
-            <!-- Multi-language Announcement Fields -->
+
             <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-              <!-- Announcement Text (Vietnamese) -->
+
               <div class="form-field">
                 <label class="text-xs font-bold text-slate-400 dark:text-slate-500 uppercase tracking-wider block mb-1.5 flex items-center gap-1.5">
                   <span>🇻🇳</span>
@@ -798,7 +795,6 @@
                 ></textarea>
               </div>
 
-              <!-- Announcement Text (English) -->
               <div class="form-field">
                 <label class="text-xs font-bold text-slate-400 dark:text-slate-500 uppercase tracking-wider block mb-1.5 flex items-center gap-1.5">
                   <span>🇬🇧</span>
@@ -815,7 +811,6 @@
               </div>
             </div>
 
-            <!-- Effect Selector -->
             <div class="form-field max-w-xs">
               <label class="text-xs font-bold text-slate-400 dark:text-slate-500 uppercase tracking-wider block mb-1.5">
                 {{ 'settings.announcement_effect' | translate }}
@@ -829,7 +824,6 @@
             </div>
           </div>
 
-          <!-- Live Preview Banner -->
           @if (form.announcement_enabled && (form.announcement_text_vi || form.announcement_text_en)) {
             <div class="mt-4 p-4 rounded-xl bg-slate-50 dark:bg-slate-900/80 border border-slate-200 dark:border-slate-800/80 backdrop-blur-md">
               <div class="flex items-center justify-between mb-2">

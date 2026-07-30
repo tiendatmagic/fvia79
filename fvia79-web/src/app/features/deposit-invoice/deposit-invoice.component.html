@@ -166,7 +166,7 @@
             >
               <img
                 [src]="binancePayRawLink"
-                alt="Binance Pay QR Code"
+                [alt]="'invoice.binance_qr_alt' | translate"
                 (error)="onImageError()"
                 class="w-[200px] h-[200px] object-contain rounded-xl border border-slate-100"
               />

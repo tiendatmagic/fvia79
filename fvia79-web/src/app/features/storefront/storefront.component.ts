@@ -371,7 +371,6 @@ export class StorefrontComponent implements OnInit, OnDestroy {
         const randomName = this.getRandomDemoUsername();
         const demoUsdtAmounts = [0.1, 0.5, 1.2, 2.5, 5, 8.5, 10, 15, 25.5, 35, 45, 50, 65, 75, 80, 85.5, 95, 100];
         const randomUsdt = demoUsdtAmounts[Math.floor(Math.random() * demoUsdtAmounts.length)];
-        // Tỷ lệ xuất hiện: 80% (8/10) là USDT (BEP20), 20% (2/10) là BINANCE PAY
         const randomMethod = Math.random() < 0.8 ? 'usdt_bep20' : 'binance_pay';
 
         const newItem = {
@@ -479,7 +478,6 @@ export class StorefrontComponent implements OnInit, OnDestroy {
         return saved;
       }
     } catch {
-      // Ignore reading error
     }
     return 'card';
   }
@@ -494,7 +492,6 @@ export class StorefrontComponent implements OnInit, OnDestroy {
     try {
       localStorage.setItem('storefront_view_mode', mode);
     } catch {
-      // Ignore writing error
     }
   }
 
@@ -705,7 +702,6 @@ export class StorefrontComponent implements OnInit, OnDestroy {
         },
       });
   }
-
 
   public onSearch(query: string) {
     this.searchQuery = query;

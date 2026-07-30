@@ -98,7 +98,7 @@ export class DepositComponent implements OnInit {
     this.isSubmitting.set(true);
 
     this.state.depositStore.createDeposit(
-      this.amountUsdt, 
+      this.amountUsdt,
       this.paymentMethod
     ).subscribe({
       next: (res) => {

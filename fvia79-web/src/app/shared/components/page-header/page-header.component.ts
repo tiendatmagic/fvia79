@@ -3,9 +3,9 @@ import { CommonModule } from '@angular/common';
 
 @Component({
   selector: 'app-page-header',
-  
+
   imports: [CommonModule],
-  
+
   templateUrl: './page-header.component.html'})
 export class PageHeaderComponent {
   @Input() title = '';

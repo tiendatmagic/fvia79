@@ -69,7 +69,6 @@ class AdminMembershipTierController extends Controller
         $level = (int) $request->input('level');
         $minDeposit = (float) $request->input('min_deposit');
 
-        // Progressive Validation: Higher levels must have a larger min_deposit requirement
         $prevTier = MembershipTierModel::where('level', '<', $level)
             ->orderBy('level', 'desc')
             ->first();
@@ -136,7 +135,6 @@ class AdminMembershipTierController extends Controller
         $level = $request->has('level') ? (int) $request->input('level') : $existingTier->level;
         $minDeposit = $request->has('min_deposit') ? (float) $request->input('min_deposit') : (float) $existingTier->min_deposit;
 
-        // Progressive Validation: Higher levels must have a larger min_deposit requirement
         $prevTier = MembershipTierModel::where('id', '!=', $id)
             ->where('level', '<', $level)
             ->orderBy('level', 'desc')

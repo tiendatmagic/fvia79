@@ -183,7 +183,7 @@ class DepositController extends Controller
     public function checkTransaction(string $id): JsonResponse
     {
         $userId = Auth::id();
-        
+
         try {
             $matched = $this->depositService->checkTransaction($id, $userId);
         } catch (\RuntimeException $e) {

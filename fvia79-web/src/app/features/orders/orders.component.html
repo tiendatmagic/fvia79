@@ -48,7 +48,7 @@
         {{ 'action.search' | translate }}
       </label>
       <app-custom-search-input
-        [placeholder]="'Search orders...'"
+      [placeholder]="'orders.search_placeholder' | translate"
         [(ngModel)]="searchQuery"
         name="searchQuery"
         (valueChange)="onSearch($event)"
@@ -148,4 +148,3 @@
     />
   </div>
 </div>
-

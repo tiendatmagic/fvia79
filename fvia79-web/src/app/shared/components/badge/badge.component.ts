@@ -3,7 +3,7 @@ import { CommonModule } from '@angular/common';
 
 @Component({
   selector: 'app-badge, [app-badge]',
-  
+
   imports: [CommonModule],
   template: `<ng-content></ng-content>`,
   host: {
@@ -13,7 +13,7 @@ import { CommonModule } from '@angular/common';
     '[class.hover:opacity-85]': 'interactive',
     '[class.active:scale-95]': 'interactive',
     '[class.transition-all]': 'interactive'},
-  
+
   styles: [
     `
       :host {

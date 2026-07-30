@@ -1,5 +1,5 @@
 <div class="space-y-4 p-1">
-  <!-- Target User & Current Status Overview -->
+
   <div class="p-4 bg-slate-50 dark:bg-slate-900/60 border border-slate-200/50 dark:border-slate-800/40 rounded-2xl flex items-center justify-between gap-4">
     <div class="min-w-0">
       <span class="text-xs font-extrabold text-slate-400 dark:text-slate-500 uppercase tracking-wider block mb-0.5">
@@ -27,7 +27,6 @@
     </div>
   </div>
 
-  <!-- Balance Adjustment Form -->
   <form (ngSubmit)="onSubmit()" class="space-y-4">
     <div class="space-y-1.5">
       <label class="text-xs font-bold text-slate-400 dark:text-slate-500 uppercase tracking-wider block">
@@ -74,7 +73,6 @@
       />
     </div>
 
-    <!-- Affect Cumulative Checkbox -->
     <div class="p-3 bg-slate-50 dark:bg-slate-800/50 rounded-xl border border-slate-200 dark:border-slate-700 flex items-center gap-3">
       <app-custom-checkbox
         [(checked)]="affectCumulative"

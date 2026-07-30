@@ -16,11 +16,11 @@ export class InventoryStore {
   private readonly toast = inject(ToastService);
   private readonly lang = inject(LanguageService);
   private readonly productStore = inject(ProductStore);
- 
+
   private activeFetchItemsSub?: Subscription;
- 
+
   private readonly itemsCache = new Map<string, { data: any; timestamp: number }>();
- 
+
   public clearCache() {
     this.itemsCache.clear();
     this.productStore.clearCache();
@@ -50,11 +50,11 @@ export class InventoryStore {
       }
       return of(res);
     }
- 
+
     if (this.activeFetchItemsSub) {
       this.activeFetchItemsSub.unsubscribe();
     }
- 
+
     this.loading.set(true);
     let params = new HttpParams();
     if (filters.product_id) {
@@ -72,9 +72,9 @@ export class InventoryStore {
     if (limit !== undefined) {
       params = params.set('limit', limit.toString());
     }
- 
+
     const subject = new Subject<any>();
- 
+
     const req$ = this.api.get<any>('v1/inventory/items', params).pipe(
       tap((res) => {
         this.itemsCache.set(cacheKey, { data: res, timestamp: Date.now() });
@@ -96,7 +96,7 @@ export class InventoryStore {
       }),
       finalize(() => this.loading.set(false))
     );
- 
+
     this.activeFetchItemsSub = req$.subscribe({
       next: (res) => {
         subject.next(res);
@@ -106,7 +106,7 @@ export class InventoryStore {
         subject.error(err);
       }
     });
- 
+
     return subject.asObservable();
   }
 
@@ -130,11 +130,11 @@ export class InventoryStore {
       finalize(() => this.loading.set(false))
     );
   }
- 
+
   public fetchItemDetail(id: string) {
     return this.api.get<any>(`v1/inventory/items/${id}`);
   }
- 
+
   public updateItem(id: string, payload: { product_id: string; batch_name: string; cost_price?: number | null; keys_pool: string; status: string; last_updated_at?: string }) {
     this.loading.set(true);
     return this.api.put<any>(`v1/inventory/items/${id}`, payload).pipe(
@@ -150,7 +150,7 @@ export class InventoryStore {
       finalize(() => this.loading.set(false))
     );
   }
- 
+
   public deleteItem(id: string | number, productIdFilter?: string) {
     this.loading.set(true);
     return this.api.delete<any>(`v1/inventory/items/${id}`).pipe(

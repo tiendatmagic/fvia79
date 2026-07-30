@@ -97,7 +97,7 @@
       [columns]="columns()"
       [data]="state.userStore.users()"
       [loading]="state.userStore.loading()"
-      [emptyText]="'No users found.'"
+    [emptyText]="'common.no_data' | translate"
     >
       <ng-template appTableCell="select_header">
         <app-custom-checkbox

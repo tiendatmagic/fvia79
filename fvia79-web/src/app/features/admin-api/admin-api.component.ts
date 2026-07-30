@@ -30,7 +30,7 @@ import { TranslatePipe } from '@shared/pipes/translate.pipe';
 export class AdminApiComponent {
   public readonly state = inject(StateService);
   public readonly lang = inject(LanguageService);
-  
+
   public readonly importInventoryTab = signal<'bash' | 'cmd'>('bash');
   public readonly showApiKey = signal<boolean>(false);
 

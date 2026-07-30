@@ -5,9 +5,9 @@ import { Injectable, signal } from '@angular/core';
 })
 export class ThemeService {
   public readonly themeMode = signal<'light' | 'dark' | 'auto'>('auto');
-  
+
   public readonly isDarkMode = signal<boolean>(false);
-  
+
   private mediaQueryList: MediaQueryList | null = null;
 
   constructor() {
@@ -16,7 +16,7 @@ export class ThemeService {
 
   private initTheme() {
     if (typeof window === 'undefined') return;
-    
+
     const savedTheme = localStorage.getItem('theme_mode') as 'light' | 'dark' | 'auto' | null;
     if (typeof window.matchMedia !== 'function') {
       this.setThemeMode(savedTheme ?? 'auto');
@@ -24,7 +24,7 @@ export class ThemeService {
     }
 
     this.mediaQueryList = window.matchMedia('(prefers-color-scheme: dark)');
-    
+
     this.mediaQueryList.addEventListener('change', this.handleSystemThemeChange);
 
     if (savedTheme === 'light') {
@@ -40,7 +40,7 @@ export class ThemeService {
     if (typeof document !== 'undefined') {
       const htmlEl = document.documentElement;
       const bodyEl = document.body;
-      
+
       if (dark) {
         htmlEl.classList.add('dark');
         bodyEl.classList.add('dark');

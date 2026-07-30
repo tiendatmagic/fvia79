@@ -39,7 +39,7 @@
   <div>
     <div class="flex border-b border-slate-200 dark:border-slate-800/60 mb-8">
       <a
-        class="flex-1 text-center pb-4 text-sm font-medium border-b-2 border-transparent text-slate-500 dark:text-slate-400 hover:text-slate-700 dark:hover:text-slate-200"
+        class="flex-1 text-center pb-4 text-sm font-bold border-b-2 border-transparent text-slate-500 dark:text-slate-400 hover:text-primary hover:underline transition-all"
         routerLink="/login"
       >
         {{ 'nav.login' | translate }}
@@ -159,7 +159,7 @@
 
       <div class="text-center text-xs font-medium text-slate-600 dark:text-slate-300 pt-3">
         {{ 'auth.already_have_account' | translate }}
-        <a routerLink="/login" class="text-primary hover:underline ml-1 font-bold">
+        <a routerLink="/login" class="text-primary hover:underline ml-1 font-bold cursor-pointer transition-colors">
           {{ 'auth.login_now' | translate }}
         </a>
       </div>

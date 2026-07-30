@@ -8,7 +8,7 @@ class Order
     private string $userId;
     private string $orderCode;
     private float $totalPrice;
-    private string $status; // pending, paid, cancelled
+    private string $status;
     private array $items;
     private ?\DateTime $createdAt;
     private ?string $userEmail;

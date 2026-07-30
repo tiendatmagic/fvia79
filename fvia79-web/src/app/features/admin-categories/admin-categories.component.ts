@@ -173,7 +173,7 @@ export class AdminCategoriesComponent implements OnInit {
 
   public openReorderModal() {
     this.modalService.open(CategoryReorderModalComponent, {
-      title: 'Sắp Xếp Vị Trí Danh Mục Trang Chủ',
+      title: this.lang.translate('cat.reorder_title'),
       size: 'lg'
     }).afterClosed$.subscribe((success) => {
       if (success) {
@@ -279,7 +279,6 @@ export class AdminCategoriesComponent implements OnInit {
     const targetOrder = Math.max(0, Math.floor(newOrder));
     if (targetOrder === (category.sort_order ?? 0)) return;
 
-    // Optimistic local update - no skeleton loading
     this.updatingCategoryId.set(category.id);
     const oldOrder = category.sort_order ?? 0;
     this.state.productStore.paginatedCategories.update(list =>
@@ -298,14 +297,12 @@ export class AdminCategoriesComponent implements OnInit {
       sort_order: targetOrder
     };
 
-    // Silent API call - no loading.set(true)
     this.api.put<any>(`v1/categories/${category.id}`, data).subscribe({
       next: () => {
         this.updatingCategoryId.set(null);
         this.state.productStore.clearCache();
       },
       error: () => {
-        // Rollback on failure
         this.updatingCategoryId.set(null);
         this.state.productStore.paginatedCategories.update(list =>
           list.map(c => c.id === category.id ? { ...c, sort_order: oldOrder } : c)

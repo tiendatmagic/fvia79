@@ -28,7 +28,6 @@ class SupplierPriceService
             ? $priceVnd * (1 + $value / 100)
             : $priceVnd + $value;
 
-        // Round up to nearest 1,000 VND for clean thousand price if enabled for this supplier
         if (! empty($supplier->round_vnd_prices) && $adjusted > 0) {
             $adjusted = ceil($adjusted / 1000) * 1000;
         }

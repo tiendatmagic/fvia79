@@ -44,7 +44,6 @@ export class AdjustBalanceModalComponent implements OnInit {
   private readonly userStore = inject(UserStore);
   private readonly lang = inject(LanguageService);
 
-  // Balance Form
   public type: 'add' | 'subtract' = 'add';
   public amount: number | null = null;
   public affectCumulative = true;

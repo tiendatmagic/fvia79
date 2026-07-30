@@ -27,7 +27,7 @@ export interface QrZoomModalData {
           @if (data.binancePayRawLink && !data.imageLoadError) {
             <img
               [src]="data.binancePayRawLink"
-              alt="Binance Pay QR Code Zoom"
+              [alt]="'invoice.binance_qr_zoom_alt' | translate"
               class="w-[340px] h-[340px] sm:w-[420px] sm:h-[420px] object-contain rounded-xl"
             />
           }

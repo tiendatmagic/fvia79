@@ -58,7 +58,6 @@ export class AdminMembershipTiersComponent implements OnInit {
   isUpdatingSystemSetting = signal<boolean>(false);
   updatingTierId = signal<string | null>(null);
 
-  // Search & Filter
   searchQuery = '';
   private readonly _searchQuery = signal('');
   readonly selectedStatusFilter = signal<string>('all');
@@ -79,7 +78,6 @@ export class AdminMembershipTiersComponent implements OnInit {
 
     let list = this.tiers();
 
-    // Filter by search keyword
     if (q) {
       list = list.filter(t =>
         t.name_vi?.toLowerCase().includes(q) ||
@@ -87,14 +85,12 @@ export class AdminMembershipTiersComponent implements OnInit {
       );
     }
 
-    // Filter by active status
     if (status === 'active') {
       list = list.filter(t => t.is_active);
     } else if (status === 'inactive') {
       list = list.filter(t => !t.is_active);
     }
 
-    // Default sort by level ascending
     list = [...list].sort((a, b) => a.level - b.level);
 
     return list;

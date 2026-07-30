@@ -148,7 +148,7 @@ export class InventoryComponent implements OnInit {
     if (productId) {
       this.selectedProductFilter = productId;
     }
-    
+
     this.fetchData(1);
 
     this.state.productStore.fetchProducts().subscribe({

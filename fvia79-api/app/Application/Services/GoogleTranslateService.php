@@ -21,9 +21,6 @@ class GoogleTranslateService
         $this->memoryCache = [];
     }
 
-    /**
-     * Dịch văn bản từ ngôn ngữ tự động (sl=auto) sang ngôn ngữ đích (tl=$targetLang).
-     */
     public function translate(?string $text, string $targetLang = 'vi'): ?string
     {
         if ($text === null) {
@@ -107,7 +104,6 @@ class GoogleTranslateService
             $text = preg_replace($pattern, $replacement, $text);
         }
 
-        // Catch remaining "Co" standing right after country or Via
         $text = preg_replace('/\b(Via\s+[\w]+)\s+Co\b/ui', '$1 Aged', $text);
         $text = preg_replace('/\b(Foreign)\s+Co\b/ui', '$1 Aged', $text);
 

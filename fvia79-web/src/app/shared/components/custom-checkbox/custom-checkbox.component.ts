@@ -12,7 +12,7 @@ import { IconComponent } from '@shared/components/icon/icon.component';
 
 @Component({
   selector: 'app-custom-checkbox',
-  
+
   imports: [CommonModule, FormsModule, IconComponent],
   templateUrl: './custom-checkbox.component.html',
   providers: [
@@ -21,7 +21,7 @@ import { IconComponent } from '@shared/components/icon/icon.component';
       useExisting: forwardRef(() => CustomCheckboxComponent),
       multi: true},
   ],
-  
+
   styles: [
     `
       :host {

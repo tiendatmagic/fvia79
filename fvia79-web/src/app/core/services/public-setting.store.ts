@@ -53,9 +53,8 @@ export class PublicSettingStore {
 
   private cachedSettings: PublicSettings | null = null;
   private lastFetchTime = 0;
-  private readonly CACHE_TTL_MS = 600000; // 10 minutes cache FE
+  private readonly CACHE_TTL_MS = 600000;
 
-  /** In-flight request: share Observable among concurrent callers while request is pending */
   private inFlight$: Observable<PublicSettings> | null = null;
 
   public clearCache() {
@@ -66,7 +65,6 @@ export class PublicSettingStore {
   }
 
   public fetchPublicSettings(): Observable<PublicSettings> {
-    // 1. Valid cache -> return cached result directly without HTTP call
     const now = Date.now();
     if (this.cachedSettings && (now - this.lastFetchTime < this.CACHE_TTL_MS)) {
       this.settings.set(this.cachedSettings);
@@ -74,12 +72,10 @@ export class PublicSettingStore {
       return of(this.cachedSettings);
     }
 
-    // 2. In-flight request existing -> share Observable without creating new API request
     if (this.inFlight$) {
       return this.inFlight$;
     }
 
-    // 3. No existing request -> initialize new in-flight Observable
     this.loading.set(true);
     this.inFlight$ = this.api.get<PublicSettings>('v1/settings/public').pipe(
       tap(res => {
@@ -111,9 +107,9 @@ export class PublicSettingStore {
       }),
       finalize(() => {
         this.loading.set(false);
-        this.inFlight$ = null; // Clear in-flight reference after request settles (success or error)
+        this.inFlight$ = null;
       }),
-      shareReplay(1) // All subscribers receive same result from single HTTP call
+      shareReplay(1)
     );
 
     return this.inFlight$;

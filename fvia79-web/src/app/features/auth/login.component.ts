@@ -31,7 +31,7 @@ export class LoginComponent {
   public email = '';
   public password = '';
   public rememberMe = true;
-  
+
   public requires2Fa = signal<boolean>(false);
   public showPassword = signal<boolean>(false);
   public otpCode = '';
@@ -44,7 +44,7 @@ export class LoginComponent {
 
   constructor() {
     this.returnUrl = this.route.snapshot.queryParams['returnUrl'] || '/';
-    
+
     effect(() => {
       if (this.state.isAuthenticated()) {
         const dest = this.state.isAdmin() ? '/admin/dashboard' : this.returnUrl;

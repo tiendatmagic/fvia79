@@ -137,7 +137,6 @@ export class ImportInventoryModalComponent implements OnInit {
           return;
         }
 
-        // Append to existing rawData (add newline separator if rawData already has content)
         if (this.rawData.trim().length > 0) {
           this.rawData = this.rawData.trimEnd() + '\n' + lines.join('\n');
         } else {
@@ -151,7 +150,6 @@ export class ImportInventoryModalComponent implements OnInit {
           'success'
         );
 
-        // Reset file input so same file can be re-selected
         input.value = '';
         this.cdr.markForCheck();
       });

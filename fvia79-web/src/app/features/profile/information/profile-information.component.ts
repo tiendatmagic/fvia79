@@ -77,14 +77,12 @@ export class ProfileInformationComponent implements OnInit {
           const user = this.state.authStore.currentUser();
           const totalDeposited = user?.total_deposited || 0;
 
-          // Find next tier
           const next = publicTiers.find((t) => t.min_deposit > totalDeposited);
           if (next) {
             this.nextTier.set(next);
             const needed = next.min_deposit - totalDeposited;
             this.amountNeededForNext.set(needed);
 
-            // Calculate percentage based on previous tier min deposit vs next tier min deposit
             const currentTier = user?.membership_tier;
             const currentMin = currentTier?.min_deposit || 0;
             const range = next.min_deposit - currentMin;

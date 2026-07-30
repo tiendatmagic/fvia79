@@ -41,7 +41,7 @@ export class CouponFormModalComponent implements OnInit {
 
   public isEditMode = false;
   public editingId: any = null;
-  
+
   public code = '';
   public type = 'percentage';
   public value = 10;
@@ -49,7 +49,7 @@ export class CouponFormModalComponent implements OnInit {
   public startDate = '';
   public endDate = '';
   public usageLimit = 1;
-  
+
   public readonly isSubmitting = signal(false);
 
   public onGenerateCode(): void {

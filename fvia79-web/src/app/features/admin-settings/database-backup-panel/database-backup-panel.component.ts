@@ -167,7 +167,6 @@ export class DatabaseBackupPanelComponent implements OnInit {
           }
         }
       } catch {
-        // Keep the translated fallback for non-JSON download errors.
       }
     }
 

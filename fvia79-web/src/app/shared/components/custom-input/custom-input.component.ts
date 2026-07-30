@@ -65,7 +65,7 @@ export class CustomInputComponent implements ControlValueAccessor, AfterViewInit
   public onInput(event: Event): void {
     if (this.disabled) return;
     const rawValue = (event.target as HTMLInputElement | HTMLTextAreaElement).value;
-    
+
     let modelValue: any = rawValue;
     if (this.type === 'number') {
       if (rawValue === '') {
@@ -75,7 +75,7 @@ export class CustomInputComponent implements ControlValueAccessor, AfterViewInit
         modelValue = isNaN(parsed) ? rawValue : parsed;
       }
     }
-    
+
     this.updateValue(rawValue, modelValue);
   }
 
@@ -89,22 +89,22 @@ export class CustomInputComponent implements ControlValueAccessor, AfterViewInit
   public writeValue(value: any): void {
     const normalizedValue = value === null || value === undefined ? '' : value;
     this.innerValue = normalizedValue;
-    
+
     const inputEl = this.elementRef.nativeElement.querySelector('input, textarea') as HTMLInputElement | HTMLTextAreaElement;
     if (inputEl) {
       inputEl.value = normalizedValue;
     }
-    
+
     this.cdr.markForCheck();
   }
 
   private areValuesEquivalent(val1: any, val2: any): boolean {
     if (val1 === val2) return true;
-    
+
     const isEmpty1 = val1 === '' || val1 === null || val1 === undefined;
     const isEmpty2 = val2 === '' || val2 === null || val2 === undefined;
     if (isEmpty1 && isEmpty2) return true;
-    
+
     if (this.type === 'number') {
       const n1 = val1 !== '' ? Number(val1) : NaN;
       const n2 = val2 !== '' ? Number(val2) : NaN;
@@ -112,7 +112,7 @@ export class CustomInputComponent implements ControlValueAccessor, AfterViewInit
         return true;
       }
     }
-    
+
     return false;
   }
 

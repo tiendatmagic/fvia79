@@ -21,7 +21,7 @@ class SystemSettingMapper
     public static function toPersistence(SystemSetting $entity): SystemSettingModel
     {
         $model = SystemSettingModel::find($entity->getKey()) ?: new SystemSettingModel();
-        
+
         $model->key = $entity->getKey();
         $model->value = $entity->getValue();
         $model->description = $entity->getDescription();

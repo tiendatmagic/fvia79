@@ -4,7 +4,7 @@ import { LanguageService } from '@core/services/language.service';
 @Pipe({
   name: 'translate',
   standalone: true,
-  pure: false // Re-evaluate when the active language signal changes.
+  pure: false
 })
 export class TranslatePipe implements PipeTransform {
   private readonly langService = inject(LanguageService);

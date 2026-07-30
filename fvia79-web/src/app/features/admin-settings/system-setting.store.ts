@@ -51,7 +51,7 @@ export class SystemSettingStore {
   public readonly isSavingSettings = signal<boolean>(false);
   public readonly isCleaningTokens = signal<boolean>(false);
   public readonly runningMaintenance = signal<string>('');
-  
+
   public readonly settings = signal<SystemSettingsPayload>({
     admin_wallet_address: '',
     scanner_api_key: '',

@@ -22,7 +22,7 @@ export class AuthStore {
   private readonly router = inject(Router);
   private readonly modalService = inject(ModalService);
   public readonly lang = inject(LanguageService);
- 
+
   private readonly productStore = inject(ProductStore);
   private readonly inventoryStore = inject(InventoryStore);
   private readonly orderStore = inject(OrderStore);
@@ -157,7 +157,7 @@ export class AuthStore {
     this.orderStore.clearCache();
     this.userStore.clearCache();
     this.systemSettingStore.clearCache();
- 
+
     return this.api.post<any>('v1/auth/logout', {}).pipe(
       tap(() => {
         this.clearFrontendLoggedInCookie();
@@ -294,7 +294,7 @@ export class AuthStore {
     const show = shouldShowWelcomeNotice();
     console.log('[AuthStore] Checking welcome notice. Should show?', show);
     if (!show) return;
-    
+
     setTimeout(() => {
       console.log('[AuthStore] Opening welcome notice modal now...');
       try {

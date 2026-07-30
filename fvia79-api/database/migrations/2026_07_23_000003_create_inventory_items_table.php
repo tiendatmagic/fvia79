@@ -26,7 +26,6 @@ return new class extends Migration
             $table->index('normalized_secret_data');
         });
 
-        // Migrate existing keys_pool data from inventory_batches into inventory_items
         $batches = DB::table('inventory_batches')->get();
         foreach ($batches as $batch) {
             if (empty($batch->keys_pool)) {
