@@ -71,7 +71,7 @@ class StorefrontController extends Controller
             $orders = OrderModel::with(['items.product', 'user'])
                 ->where('status', 'paid')
                 ->latest()
-                ->take(10)
+                ->take(1)
                 ->get();
 
             foreach ($orders as $order) {

@@ -157,6 +157,9 @@ export class MiniPurchaseNotificationComponent implements OnDestroy {
         }
 
         if (startPollingWhenEnabled && this.pollTimer === null && typeof window !== 'undefined') {
+          if (response.mode === 'real') {
+            this.lastRealPurchaseId = response.data?.[0]?.id ?? null;
+          }
           this.pollTimer = window.setInterval(() => this.refresh(true), 60_000);
         }
 
@@ -180,7 +183,10 @@ export class MiniPurchaseNotificationComponent implements OnDestroy {
       return null;
     }
 
-    const purchase = purchases.find(item => item.id !== this.lastRealPurchaseId) || purchases[0];
+    const purchase = purchases[0];
+    if (purchase.id === this.lastRealPurchaseId) {
+      return null;
+    }
     this.lastRealPurchaseId = purchase.id;
     return purchase;
   }
