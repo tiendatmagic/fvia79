@@ -11,7 +11,26 @@ export interface ToastItem {
 const API_MESSAGE_KEYS: Record<string, string> = {
   'Invalid email/username or password.': 'error.invalid_credentials',
   'Unauthorized.': 'error.unauthorized',
+  'Unauthorized': 'error.unauthorized',
+  'Unauthenticated.': 'error.unauthorized',
+  'Unauthenticated': 'error.unauthorized',
+  'Forbidden.': 'error.forbidden',
+  'Forbidden': 'error.forbidden',
+  'Forbidden. Access denied.': 'error.forbidden',
+  'Forbidden. Admin access required.': 'toast.admin_required',
   'Too Many Attempts.': 'error.too_many_attempts',
+  'Too Many Attempts': 'error.too_many_attempts',
+  'Route [login] not defined.': 'error.unauthorized',
+  'Token has expired': 'error.unauthorized',
+  'Token has expired.': 'error.unauthorized',
+  'The token has been blacklisted': 'error.unauthorized',
+  'Token not provided': 'error.unauthorized',
+  'Bad Request': 'error.invalid_input',
+  'Bad Request.': 'error.invalid_input',
+  'Internal Server Error': 'error.server',
+  'Internal Server Error.': 'error.server',
+  'Service Unavailable': 'error.server',
+  'Service Unavailable.': 'error.server',
   'Email already registered.': 'error.email_taken',
   'Username already taken.': 'error.username_taken',
   'The email has already been taken.': 'error.email_taken',
@@ -86,6 +105,7 @@ const API_MESSAGE_KEYS: Record<string, string> = {
   'Category created successfully.': 'toast.category_created',
   'Category deleted successfully.': 'toast.category_deleted',
   'Category updated successfully.': 'toast.category_updated',
+  'Category order updated successfully.': 'toast.category_order_updated',
   'Coupon code is invalid or does not exist.': 'toast.coupon_invalid',
   'Coupon created successfully.': 'toast.coupon_created',
   'Coupon deleted successfully.': 'toast.coupon_deleted',
@@ -102,8 +122,6 @@ const API_MESSAGE_KEYS: Record<string, string> = {
   'Failed to approve deposit invoice.': 'toast.deposit_approve_failed',
   'Failed to reject deposit invoice.': 'toast.deposit_reject_failed',
   'Failed to revoke deposit invoice.': 'toast.revoke_failed',
-  'Forbidden. Access denied.': 'error.forbidden',
-  'Forbidden. Admin access required.': 'toast.admin_required',
   'Insufficient user balance. Cannot subtract more than current balance.': 'toast.user_balance_insufficient',
   'Login successful.': 'toast.login_success',
   'Logout successful.': 'toast.logout_success',
@@ -166,6 +184,13 @@ const API_MESSAGE_KEYS: Record<string, string> = {
   'Unauthorized. User not found.': 'error.unauthorized',
   'User account not found.': 'error.user_not_found',
   'User balance adjusted successfully.': 'toast.user_balance_adjusted',
+  'User cumulative deposit adjusted successfully.': 'toast.cumulative_deposit_adjusted',
+  'Membership tier created successfully.': 'toast.tier_created',
+  'Membership tier updated successfully.': 'toast.tier_updated',
+  'Membership tier deleted successfully.': 'toast.tier_deleted',
+  'The uids field must be a string or array.': 'toast.uids_format_invalid',
+  'Please provide at least one UID to check.': 'toast.uids_empty',
+  'Maximum 500 UIDs allowed per request.': 'toast.uids_max_limit',
   'User created successfully.': 'toast.user_created',
   'User deleted successfully.': 'toast.user_deleted',
   'User not found for this deposit.': 'error.user_not_found',
@@ -217,13 +242,26 @@ export class ToastService {
 
   public resolveApiMessage(message: string, status = 0, fallback = ''): string {
     const normalized = message?.trim() || '';
-    if (/^[a-z0-9_.]+$/i.test(normalized)) {
-      const laravelFallback = LARAVEL_KEY_FALLBACK[normalized];
-      if (laravelFallback) return this.languageService.translate(laravelFallback);
-      return this.languageService.translate(normalized);
+
+    if (!normalized) {
+      if (status === 401) return this.languageService.translate('error.invalid_credentials');
+      if (status === 403) return this.languageService.translate('error.forbidden');
+      if (status === 422) return this.languageService.translate('error.invalid_input');
+      if (status === 429) return this.languageService.translate('error.too_many_attempts');
+      if (status >= 500) return this.languageService.translate('error.server');
+      return fallback || (status === 0 ? this.languageService.translate('error.network') : '');
     }
+
     const key = API_MESSAGE_KEYS[normalized];
     if (key) return this.languageService.translate(key);
+
+    const laravelFallback = LARAVEL_KEY_FALLBACK[normalized];
+    if (laravelFallback) return this.languageService.translate(laravelFallback);
+
+    if (TRANSLATIONS.vi[normalized] !== undefined || TRANSLATIONS.en[normalized] !== undefined) {
+      return this.languageService.translate(normalized);
+    }
+
     const exactTranslationKey = EN_TRANSLATION_KEYS.get(normalized);
     if (exactTranslationKey) return this.languageService.translate(exactTranslationKey);
 
@@ -292,6 +330,11 @@ export class ToastService {
     const supplierSynchronized = normalized.match(/^(.+) catalog synchronized successfully\.$/i);
     if (supplierSynchronized) {
       return this.languageService.translate('supplier.synchronized_named', { name: supplierSynchronized[1] });
+    }
+
+    const categoryDeactivated = normalized.match(/^Deactivated (\d+) out-of-stock categories\.$/i);
+    if (categoryDeactivated) {
+      return this.languageService.translate('toast.categories_deactivated_count', { count: categoryDeactivated[1] });
     }
 
     if (/^Coupon '.+' already exists\.$/i.test(normalized)) {

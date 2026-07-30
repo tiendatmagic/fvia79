@@ -18,11 +18,14 @@ class UserSessionModel extends Model
         'ip_address',
         'user_agent',
         'device_name',
+        'refresh_token_hash',
+        'refresh_token_expired_at',
         'last_activity_at',
     ];
 
     protected $casts = [
         'last_activity_at' => 'datetime',
+        'refresh_token_expired_at' => 'datetime',
     ];
 
     public function user(): BelongsTo

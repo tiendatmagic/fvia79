@@ -182,6 +182,7 @@ class AdminUserController extends Controller
 
                 if ($isBanned) {
                     \App\Infrastructure\Persistence\Eloquent\UserModel::whereKey($id)->increment('token_version');
+                    \App\Infrastructure\Persistence\Eloquent\UserSessionModel::where('user_id', $id)->delete();
                 }
 
                 return response()->json([
@@ -464,6 +465,7 @@ class AdminUserController extends Controller
                         'refresh_token_expired_at' => null,
                     ]);
                     \App\Infrastructure\Persistence\Eloquent\UserModel::whereIn('id', $targetIds)->increment('token_version');
+                    \App\Infrastructure\Persistence\Eloquent\UserSessionModel::whereIn('user_id', $targetIds)->delete();
                 } else {
                     \App\Infrastructure\Persistence\Eloquent\UserModel::whereIn('id', $targetIds)->update([
                         'status' => 'active',

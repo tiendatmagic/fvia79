@@ -43,7 +43,7 @@ export class AuthStore {
   public readonly registerError = signal<string>('');
 
   private translateAuthError(err: any, fallback: string): string {
-    const raw: string = err?.error?.message || err?.message || '';
+    const raw: string = err?.error?.message || (typeof err?.error === 'string' ? err.error : '') || err?.message || err?.statusText || '';
     const status: number = err?.status || 0;
     if (status === 422) {
       const firstField = err?.error?.errors;

@@ -76,7 +76,7 @@ class ProfileController extends Controller
         }
 
         $accessToken = $this->authService->generateAccessToken($user, $currentSessionId);
-        $refreshToken = $this->authService->generateRefreshToken($user);
+        $refreshToken = $this->authService->generateRefreshToken($user, $currentSessionId);
 
         $isProduction = config('app.env') === 'production';
         $sameSite = $isProduction ? 'None' : 'Lax';

@@ -5,7 +5,6 @@ namespace App\Http\Controllers;
 use App\Application\Services\AuthService;
 use App\Http\Requests\LoginRequest;
 use App\Http\Requests\RegisterRequest;
-use App\Infrastructure\Persistence\Eloquent\UserSessionModel;
 use App\Infrastructure\Persistence\Mappers\UserMapper;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
@@ -66,7 +65,7 @@ class AuthController extends Controller
 
             $session = $this->authService->createSession($user, $request->ip(), $request->header('User-Agent'));
             $accessToken = $this->authService->generateAccessToken($user, $session->id);
-            $refreshToken = $this->authService->generateRefreshToken($user);
+            $refreshToken = $this->authService->generateRefreshToken($user, $session->id);
 
             $isProduction = config('app.env') === 'production';
             $sameSite = $isProduction ? 'None' : 'Lax';
@@ -150,7 +149,7 @@ class AuthController extends Controller
 
             $session = $this->authService->createSession($user, $request->ip(), $request->header('User-Agent'));
             $accessToken = $this->authService->generateAccessToken($user, $session->id);
-            $refreshToken = $this->authService->generateRefreshToken($user);
+            $refreshToken = $this->authService->generateRefreshToken($user, $session->id);
 
             $isProduction = config('app.env') === 'production';
             $sameSite = $isProduction ? 'None' : 'Lax';
@@ -289,14 +288,8 @@ class AuthController extends Controller
     {
         $user = Auth::user();
         if ($user) {
-            $this->authService->logout($user->id);
-
             $currentSessionId = $request->attributes->get('current_session_id');
-            if ($currentSessionId) {
-                UserSessionModel::where('id', $currentSessionId)
-                    ->where('user_id', $user->id)
-                    ->delete();
-            }
+            $this->authService->logout($user->id, $currentSessionId);
         }
 
         $isProduction = config('app.env') === 'production';

@@ -341,7 +341,10 @@ class SystemSettingController extends Controller
             'refresh_token_expired_at' => null,
         ]);
 
-        $deletedSessions = UserSessionModel::where('last_activity_at', '<', now()->subDays(30))->delete();
+        $deletedSessions = UserSessionModel::where(function ($query) {
+            $query->where('refresh_token_expired_at', '<', now())
+                ->orWhere('last_activity_at', '<', now()->subDays(30));
+        })->delete();
 
         return response()->json([
             'success' => true,

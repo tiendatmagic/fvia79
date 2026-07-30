@@ -19,6 +19,34 @@
 > 1. Cronjob Scheduler (`schedule:run`) **CHỈ ĐƯỢC CHẠY DƯỚI USER `www-data`** (`crontab -u www-data -e`). **TUYỆT ĐỐI KHÔNG cài dưới `root`** vì sẽ gây ra lỗi `500 Permission denied` khi người dùng thực hiện thao tác Web/API.
 > 2. Luôn cấp quyền `chmod -R 777` và `chown -R www-data:www-data` cho `storage` & `bootstrap/cache`. Khi gõ lệnh CLI thủ công trên VPS, luôn chạy dưới quyền `www-data` (`su -s /bin/bash www-data -c "php artisan <cmd>"`).
 
+### [2026-07-30] Khắc Phục Lỗi Toast Hiển Thị Raw Text "Unauthorized." & Chuẩn Hóa Cơ Chế Xử Lý i18n Đa Ngôn Ngữ Cho Toast Đồng Bộ 3 Dự Án (FVIA79, ADSBM79, ISOCALMARKET)
+- **Mô tả yêu cầu**:
+  Khắc phục lỗi toast thông báo trên giao diện hiển thị chuỗi tiếng Anh thô chưa qua dịch `"Unauthorized."` (hoặc các biến thể `"Unauthorized"`, `"Unauthenticated"`, `"Forbidden"`,...) khi API hoặc Interceptor trả về phản hồi không hợp lệ/hết hạn phiên làm việc. Đồng thời rà soát và bổ sung các từ khóa i18n đa ngôn ngữ (Việt - Anh) cho Toast trên cả 3 dự án Web (`fvia79-web`, `adsbm79-web`, `isocalmarket-web`).
+- **Nguyên nhân sự cố**:
+  - Trong `toast.service.ts`, phương thức `resolveApiMessage` kiểm tra biểu thức chính quy `/^[a-z0-9_.]+$/i.test(normalized)` trước khi tra cứu bảng dictionary `API_MESSAGE_KEYS`. Vì chuỗi `"Unauthorized."` chỉ bao gồm chữ cái và dấu chấm `.`, regex trên đánh giá `true` và ngầm hiểu `"Unauthorized."` là một key i18n. Khi gọi `languageService.translate("Unauthorized.")`, do key này không tồn tại trong từ điển `vi.ts`/`en.ts`, hàm trả về chính chuỗi thô `"Unauthorized."`.
+- **Thực hiện xử lý**:
+  - **Frontend Web (`fvia79-web`, `adsbm79-web`, `isocalmarket-web`)**:
+    - `toast.service.ts`:
+      1. Thay đổi thứ tự ưu tiên trong `resolveApiMessage`: Ưu tiên tra cứu trực tiếp trong `API_MESSAGE_KEYS` và `LARAVEL_KEY_FALLBACK` lên HÀNG ĐẦU.
+      2. Thay thế việc dùng regex phỏng đoán `/^[a-z0-9_.]+$/i` bằng việc kiểm tra sự tồn tại thực tế của key trong bộ dịch `TRANSLATIONS.vi[normalized] !== undefined || TRANSLATIONS.en[normalized] !== undefined`.
+      3. Bổ sung các biến thể của lỗi xác thực và phân quyền vào `API_MESSAGE_KEYS`: `'Unauthorized'`, `'Unauthorized.'`, `'Unauthenticated'`, `'Unauthenticated.'`, `'Forbidden'`, `'Forbidden.'`, `'Forbidden. Access denied.'`, `'Route [login] not defined.'`, `'Token has expired'`, `'Bad Request'`, `'Internal Server Error'`, `'Service Unavailable'`,...
+      4. Bổ sung các thông báo thao tác mới (`toast.category_order_updated`, `toast.categories_deactivated_count`, `toast.uids_format_invalid`, `toast.uids_empty`, `toast.uids_max_limit`, `toast.tier_created`, `toast.tier_updated`, `toast.tier_deleted`, `toast.cumulative_deposit_adjusted`).
+    - `auth.store.ts`:
+      - Cập nhật `translateAuthError` mở rộng trích xuất thông báo lỗi từ `err?.error?.message`, `(typeof err?.error === 'string' ? err.error : '')`, `err?.message` và `err?.statusText`.
+    - `toast.service.spec.ts`:
+      - Bổ sung bộ kiểm thử tự động (9/9 test cases) xác minh việc dịch đa ngôn ngữ chuẩn xác các dạng biến thể của `Unauthorized` và `Forbidden`.
+- **Kiểm thử**:
+  - Lệnh kiểm thử Angular `npx ng test --watch=false` đạt 13/13 test cases thành công (100% passed).
+  - Lệnh biên dịch Angular production `npx ng build --configuration production` thành công 100% không có lỗi trên cả 3 dự án Web.
+
+### [2026-07-30] Sửa Lỗi HTTP 500 Khi Hủy Hóa Đơn & Refresh Token Đa Phiên Đồng Bộ 3 Dự Án
+- **Backend API (`fvia79-api`, `adsbm79-api`, `isocalmarket-api`)**:
+  - Bổ sung facade `Log` cho `DepositController` để nhánh exception của thao tác hủy hóa đơn không phát sinh lỗi class và HTTP 500 thứ cấp.
+  - Chuyển refresh token từ bảng `users` sang từng bản ghi `user_sessions`; mỗi thiết bị có token và hạn dùng độc lập, đăng nhập thiết bị mới không vô hiệu hóa thiết bị cũ.
+  - Giữ tương thích một lần với refresh token cũ, đồng bộ logout, đổi mật khẩu, khóa user, dọn token và force logout với session token mới.
+  - Thêm migration `2026_07_30_100000_add_refresh_tokens_to_user_sessions_table.php`.
+- **Kiểm thử**: PHP lint thành công; 8/8 feature test auth/session đạt trên ADSBM79 và ISOCALMARKET.
+
 ### [2026-07-30] Bổ Sung Liên Kết & Trang Chính Sách Bảo Mật (/privacy) Đồng Bộ 3 Dự Án (FVIA79, ADSBM79, ISOCALMARKET)
 - **Mô tả yêu cầu**:
   Bổ sung liên kết nhấp được cho "Điều khoản dịch vụ" (`/terms`) và "Chính sách bảo mật" (`/privacy`) tại câu văn thông báo miễn trừ pháp lý và ô checkbox đồng ý điều khoản ở giao diện Đăng nhập / Đăng ký. Chuẩn hóa liên kết "Đăng ký ngay" / "Đăng nhập" bằng thẻ `<a>` nguyên bản (`font-bold text-primary hover:underline cursor-pointer transition-colors`) đồng bộ 100% với liên kết Điều khoản dịch vụ & Chính sách bảo mật. Đồng thời khởi tạo trang Chính sách bảo mật (`/privacy`) chuẩn đa ngôn ngữ 100% (Việt - Anh) với bố cục, layout, gradient và color scheme đồng bộ 100% với trang `/terms` trên cả 3 dự án.

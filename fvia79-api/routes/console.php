@@ -3,6 +3,7 @@
 use App\Application\Services\DepositService;
 use App\Application\Services\OrderService;
 use App\Infrastructure\Persistence\Eloquent\UserModel;
+use App\Infrastructure\Persistence\Eloquent\UserSessionModel;
 use Illuminate\Foundation\Inspiring;
 use Illuminate\Support\Facades\Schedule;
 
@@ -17,6 +18,7 @@ Artisan::command('auth:force-logout-all', function () {
         'refresh_token_hash' => null,
         'refresh_token_expired_at' => null,
     ]);
+    UserSessionModel::query()->delete();
     $this->comment("Cleared refresh tokens for {$affected} users in database.");
 
     $this->info('Successfully logged out all users and invalidated all active tokens!');

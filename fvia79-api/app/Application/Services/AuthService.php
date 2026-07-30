@@ -104,14 +104,24 @@ class AuthService
         return $this->jwtService->generateToken($payload, 1800);
     }
 
-    public function generateRefreshToken(User $user): string
+    public function generateRefreshToken(User $user, string $sessionId): string
     {
         $rawToken = Str::random(64);
         $hash = hash('sha256', $rawToken);
         $expiredAt = (new \DateTime)->modify('+7 days');
 
-        $user->setRefreshToken($hash, $expiredAt);
-        $this->userRepository->save($user);
+        $session = UserSessionModel::whereKey($sessionId)
+            ->where('user_id', $user->getId())
+            ->firstOrFail();
+        $session->update([
+            'refresh_token_hash' => $hash,
+            'refresh_token_expired_at' => $expiredAt,
+        ]);
+
+        UserModel::whereKey($user->getId())->update([
+            'refresh_token_hash' => null,
+            'refresh_token_expired_at' => null,
+        ]);
 
         return $rawToken;
     }
@@ -119,58 +129,78 @@ class AuthService
     public function refresh(string $refreshToken, ?string $sessionId = null, ?string $ip = null, ?string $userAgent = null): ?array
     {
         $hash = hash('sha256', $refreshToken);
+        $expiredAt = (new \DateTime)->modify('+7 days');
 
-        $userModel = UserModel::where('refresh_token_hash', $hash)
+        $session = UserSessionModel::with('user')
+            ->where('refresh_token_hash', $hash)
             ->where('refresh_token_expired_at', '>', now())
             ->first();
 
-        if (! $userModel || $userModel->status === 'banned') {
-            return null;
-        }
-
-        if ($sessionId) {
-            $session = UserSessionModel::where('id', $sessionId)
-                ->where('user_id', $userModel->id)
-                ->first();
-
-            if (! $session) {
+        if ($session) {
+            $userModel = $session->user;
+            if (! $userModel || $userModel->status === 'banned') {
                 return null;
             }
 
-            $session->update(['last_activity_at' => now()]);
+            $session->update([
+                'last_activity_at' => now(),
+                'refresh_token_expired_at' => $expiredAt,
+            ]);
         } else {
-            $user = UserMapper::toDomain($userModel);
-            $session = UserSessionModel::where('user_id', $userModel->id)
-                ->orderByDesc('last_activity_at')
+            // Backward-compatible one-time migration for refresh tokens issued
+            // before tokens were stored per user session.
+            $userModel = UserModel::where('refresh_token_hash', $hash)
+                ->where('refresh_token_expired_at', '>', now())
                 ->first();
+            if (! $userModel || $userModel->status === 'banned') {
+                return null;
+            }
+
+            $user = UserMapper::toDomain($userModel);
+            $session = $sessionId
+                ? UserSessionModel::whereKey($sessionId)->where('user_id', $userModel->id)->first()
+                : null;
+            $session ??= UserSessionModel::where('user_id', $userModel->id)
+                ->orderByDesc('last_activity_at')->first();
 
             if (! $session) {
                 $session = $this->createSession($user, $ip, $userAgent);
-            } else {
-                $session->update(['last_activity_at' => now()]);
             }
-            $sessionId = $session->id;
+
+            $session->update([
+                'last_activity_at' => now(),
+                'refresh_token_hash' => $hash,
+                'refresh_token_expired_at' => $expiredAt,
+            ]);
+            $userModel->update([
+                'refresh_token_hash' => null,
+                'refresh_token_expired_at' => null,
+            ]);
         }
 
         $user = UserMapper::toDomain($userModel);
 
-        $newAccessToken = $this->generateAccessToken($user, $sessionId);
-        $newRefreshToken = $this->generateRefreshToken($user);
+        $newAccessToken = $this->generateAccessToken($user, $session->id);
 
         return [
             'access_token' => $newAccessToken,
-            'refresh_token' => $newRefreshToken,
+            'refresh_token' => $refreshToken,
             'user' => $user,
         ];
     }
 
-    public function logout(string $userId): void
+    public function logout(string $userId, ?string $sessionId = null): void
     {
-        $user = $this->userRepository->findById($userId);
-        if ($user) {
-            $user->setRefreshToken(null, null);
-            $this->userRepository->save($user);
+        if ($sessionId) {
+            UserSessionModel::whereKey($sessionId)
+                ->where('user_id', $userId)
+                ->delete();
         }
+
+        UserModel::whereKey($userId)->update([
+            'refresh_token_hash' => null,
+            'refresh_token_expired_at' => null,
+        ]);
     }
 
     public function generateTemp2FaToken(User $user): string

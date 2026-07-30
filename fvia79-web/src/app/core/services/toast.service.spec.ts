@@ -8,7 +8,9 @@ describe('ToastService', () => {
   let toastService: ToastService;
 
   beforeEach(() => {
-    localStorage.clear();
+    if (typeof localStorage !== 'undefined') {
+      localStorage.clear();
+    }
     TestBed.configureTestingModule({});
     languageService = TestBed.inject(LanguageService);
     toastService = TestBed.inject(ToastService);
@@ -84,5 +86,22 @@ describe('ToastService', () => {
 
     expect(toastService.toasts()[0].message)
       .toBe(languageService.translate('toast.operation_success'));
+  });
+
+  it('translates Unauthorized and Forbidden variants into localized error messages', () => {
+    languageService.setLanguage('vi');
+
+    expect(toastService.resolveApiMessage('Unauthorized.'))
+      .toBe(languageService.translate('error.unauthorized'));
+    expect(toastService.resolveApiMessage('Unauthorized'))
+      .toBe(languageService.translate('error.unauthorized'));
+    expect(toastService.resolveApiMessage('Unauthenticated.'))
+      .toBe(languageService.translate('error.unauthorized'));
+    expect(toastService.resolveApiMessage('Unauthenticated'))
+      .toBe(languageService.translate('error.unauthorized'));
+    expect(toastService.resolveApiMessage('Forbidden.'))
+      .toBe(languageService.translate('error.forbidden'));
+    expect(toastService.resolveApiMessage('Forbidden'))
+      .toBe(languageService.translate('error.forbidden'));
   });
 });
