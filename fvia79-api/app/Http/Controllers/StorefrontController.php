@@ -24,6 +24,7 @@ class StorefrontController extends Controller
         $data = [];
         if ($mode === 'real') {
             $orders = OrderModel::with(['items.product', 'user'])
+                ->where('status', 'paid')
                 ->latest()
                 ->take(10)
                 ->get();
@@ -36,8 +37,7 @@ class StorefrontController extends Controller
                     ? substr($username, 0, 1).'****'
                     : substr($username, 0, min(max(1, strlen($username) - 4), 6)).'****';
 
-                $totalVnd = (float) $order->total_amount;
-                $totalUsd = (float) ($order->total_amount_usd ?? ($totalVnd > 1000 ? round($totalVnd / 26500, 2) : $totalVnd));
+                $totalUsd = (float) $order->total_price;
 
                 $data[] = [
                     'id' => $order->id,
@@ -46,7 +46,7 @@ class StorefrontController extends Controller
                     'product_name_vi' => $product ? ($product->name_vi ?? $product->name) : 'Via Ngoại',
                     'product_name_en' => $product ? ($product->name_en ?? $product->name) : 'Via Foreign',
                     'product_name' => $product ? $product->name : 'Foreign account',
-                    'total_price' => $totalVnd,
+                    'total_price' => $totalUsd,
                     'total_usd' => $totalUsd,
                     'created_at' => $order->created_at ? $order->created_at->toIso8601String() : now()->toIso8601String(),
                 ];
@@ -79,11 +79,8 @@ class StorefrontController extends Controller
                     ? substr($username, 0, 1).'****'
                     : substr($username, 0, min(max(1, strlen($username) - 4), 6)).'****';
 
-                $amountVnd = (float) $deposit->amount;
-                $rawUsdt = $deposit->amount_usdt;
-                $amountUsdt = ($rawUsdt !== null && (float)$rawUsdt > 0 && (float)$rawUsdt <= 1000)
-                    ? (float)$rawUsdt
-                    : round($amountVnd / 26500, 2);
+                $amountVnd = (float) $deposit->amount_vnd;
+                $amountUsdt = (float) $deposit->amount_usdt;
 
                 $data[] = [
                     'id' => $deposit->id,

@@ -674,17 +674,18 @@
                 />
               </div>
 
-              <div class="space-y-2 pt-2 border-t border-slate-200/50 dark:border-slate-800/50">
-                <label class="text-xs font-bold text-slate-600 dark:text-slate-400 uppercase tracking-wider block">{{ 'settings.recent_purchases_mode' | translate }}</label>
-                <app-custom-select
-                  [options]="[
-                    { label: ('settings.mode_demo' | translate), value: 'demo' },
-                    { label: ('settings.mode_real' | translate), value: 'real' }
-                  ]"
-                  valueKey="value"
-                  labelKey="label"
-                  [value]="form.recent_purchases_mode || 'demo'"
-                  (valueChange)="form.recent_purchases_mode = $event"
+              <div class="flex items-center justify-between gap-4 pt-4 border-t border-slate-200/50 dark:border-slate-800/50">
+                <div class="min-w-0">
+                  <label class="text-xs font-bold text-slate-600 dark:text-slate-400 uppercase tracking-wider block">
+                    {{ 'settings.recent_purchases_mode' | translate }}
+                  </label>
+                  <p class="mt-1 text-xs font-medium text-slate-500 dark:text-slate-400">
+                    {{ ((form.recent_purchases_mode || 'demo') === 'demo' ? 'settings.mode_demo' : 'settings.mode_real') | translate }}
+                  </p>
+                </div>
+                <app-custom-switch
+                  [checked]="(form.recent_purchases_mode || 'demo') === 'demo'"
+                  (checkedChange)="form.recent_purchases_mode = $event ? 'demo' : 'real'"
                   [disabled]="isLocked()"
                 />
               </div>
@@ -703,17 +704,18 @@
                 />
               </div>
 
-              <div class="space-y-2 pt-2 border-t border-slate-200/50 dark:border-slate-800/50">
-                <label class="text-xs font-bold text-slate-600 dark:text-slate-400 uppercase tracking-wider block">{{ 'settings.recent_deposits_mode' | translate }}</label>
-                <app-custom-select
-                  [options]="[
-                    { label: ('settings.mode_demo' | translate), value: 'demo' },
-                    { label: ('settings.mode_real' | translate), value: 'real' }
-                  ]"
-                  valueKey="value"
-                  labelKey="label"
-                  [value]="form.recent_deposits_mode || 'demo'"
-                  (valueChange)="form.recent_deposits_mode = $event"
+              <div class="flex items-center justify-between gap-4 pt-4 border-t border-slate-200/50 dark:border-slate-800/50">
+                <div class="min-w-0">
+                  <label class="text-xs font-bold text-slate-600 dark:text-slate-400 uppercase tracking-wider block">
+                    {{ 'settings.recent_deposits_mode' | translate }}
+                  </label>
+                  <p class="mt-1 text-xs font-medium text-slate-500 dark:text-slate-400">
+                    {{ ((form.recent_deposits_mode || 'demo') === 'demo' ? 'settings.mode_demo' : 'settings.mode_real') | translate }}
+                  </p>
+                </div>
+                <app-custom-switch
+                  [checked]="(form.recent_deposits_mode || 'demo') === 'demo'"
+                  (checkedChange)="form.recent_deposits_mode = $event ? 'demo' : 'real'"
                   [disabled]="isLocked()"
                 />
               </div>
