@@ -16,12 +16,13 @@ class ProductService
         $this->productRepository = $productRepository;
     }
 
-    public function getAllActiveProducts(?string $categoryId = null, ?string $status = null, ?string $search = null, ?string $filterDeleted = 'active'): array
+    public function getAllActiveProducts(?string $categoryId = null, ?string $status = null, ?string $search = null, ?string $filterDeleted = 'active', ?int $maxResults = null): array
     {
         $isStorefrontLoad = ! $categoryId && ($status === 'active' || ! $status) && ! $search && $filterDeleted === 'active';
         if ($isStorefrontLoad) {
-            $cached = Cache::remember('products_active_storefront', 600, function () use ($categoryId, $status, $search, $filterDeleted) {
-                $products = $this->productRepository->findAllActive($categoryId, $status, $search, $filterDeleted);
+            $cacheKey = 'products_active_storefront'.($maxResults === null ? '_all' : '_limit_'.$maxResults);
+            $cached = Cache::remember($cacheKey, 600, function () use ($categoryId, $status, $search, $filterDeleted, $maxResults) {
+                $products = $this->productRepository->findAllActive($categoryId, $status, $search, $filterDeleted, $maxResults);
 
                 return array_map(fn ($p) => [
                     'id' => $p->getId(),
@@ -73,7 +74,7 @@ class ProductService
             ), $cached);
         }
 
-        return $this->productRepository->findAllActive($categoryId, $status, $search, $filterDeleted);
+        return $this->productRepository->findAllActive($categoryId, $status, $search, $filterDeleted, $maxResults);
     }
 
     public function getActiveProductsPaginated(int $page, int $limit, ?string $categoryId = null, ?string $status = null, ?string $search = null, ?string $filterDeleted = 'active', bool $includeOutOfStock = false): array
@@ -194,6 +195,10 @@ class ProductService
     private function forgetCatalogCaches(): void
     {
         Cache::forget('products_active_storefront');
+        Cache::forget('products_active_storefront_all');
+        for ($limit = 1; $limit <= 100; $limit++) {
+            Cache::forget('products_active_storefront_limit_'.$limit);
+        }
         Cache::forget('categories_active_storefront');
         Cache::forget('categories_active_storefront_en');
         Cache::forget('categories_active_storefront_vi');

@@ -8,6 +8,7 @@ use App\Infrastructure\Persistence\Eloquent\CategoryModel;
 use App\Infrastructure\Persistence\Eloquent\InventoryBatchModel;
 use App\Infrastructure\Persistence\Eloquent\ProductModel;
 use App\Infrastructure\Persistence\Mappers\ProductMapper;
+use Illuminate\Database\Eloquent\Builder;
 
 class ProductRepository implements ProductRepositoryInterface
 {
@@ -15,15 +16,14 @@ class ProductRepository implements ProductRepositoryInterface
 
     private function getAvailableCount(ProductModel $model): int
     {
-        $batches = InventoryBatchModel::where('product_id', $model->id)
-            ->where('status', '!=', 'inactive')
-            ->select('id', 'product_id', 'initial_count', 'sold_count', 'status', 'created_at')
-            ->get();
-
-        $total = 0;
-        foreach ($batches as $batch) {
-            $total += max(0, (int) $batch->initial_count - (int) $batch->sold_count);
+        if (array_key_exists('calculated_available_count', $model->getAttributes())) {
+            return max(0, (int) $model->getAttribute('calculated_available_count'));
         }
+
+        $total = (int) InventoryBatchModel::where('product_id', $model->id)
+            ->where('status', '!=', 'inactive')
+            ->selectRaw('COALESCE(SUM(CASE WHEN initial_count > sold_count THEN initial_count - sold_count ELSE 0 END), 0) AS available_count')
+            ->value('available_count');
 
         $supplierEnabled = $model->supplier_id === null
             || ($model->relationLoaded('supplier')
@@ -33,7 +33,51 @@ class ProductRepository implements ProductRepositoryInterface
         return $total + ($supplierEnabled ? max(0, (int) ($model->supplier_stock ?? 0)) : 0);
     }
 
-    public function findAllActive(?string $categoryId = null, ?string $status = null, ?string $search = null, ?string $filterDeleted = 'active'): array
+    private function availableStockSql(): string
+    {
+        return <<<'SQL'
+            (
+                COALESCE((
+                    SELECT SUM(
+                        CASE
+                            WHEN inventory_batches.initial_count > inventory_batches.sold_count
+                            THEN inventory_batches.initial_count - inventory_batches.sold_count
+                            ELSE 0
+                        END
+                    )
+                    FROM inventory_batches
+                    WHERE inventory_batches.product_id = products.id
+                      AND inventory_batches.status != ?
+                ), 0)
+                +
+                CASE
+                    WHEN products.supplier_id IS NULL
+                      OR EXISTS (
+                          SELECT 1 FROM suppliers
+                          WHERE suppliers.id = products.supplier_id
+                            AND suppliers.enabled = 1
+                            AND suppliers.products_enabled = 1
+                      )
+                    THEN COALESCE(products.supplier_stock, 0)
+                    ELSE 0
+                END
+            )
+            SQL;
+    }
+
+    private function addCalculatedStock(Builder $query): Builder
+    {
+        return $query->select('products.*')
+            ->selectRaw($this->availableStockSql().' AS calculated_available_count', ['inactive'])
+            ->with('supplier:id,code,name,enabled,products_enabled');
+    }
+
+    private function requireAvailableStock(Builder $query): Builder
+    {
+        return $query->whereRaw($this->availableStockSql().' > 0', ['inactive']);
+    }
+
+    public function findAllActive(?string $categoryId = null, ?string $status = null, ?string $search = null, ?string $filterDeleted = 'active', ?int $maxResults = null): array
     {
         $query = ProductModel::query();
         if ($filterDeleted === 'deleted') {
@@ -69,7 +113,12 @@ class ProductRepository implements ProductRepositoryInterface
                     ->orWhere('name_vi', 'like', "%{$search}%");
             });
         }
-        $models = $query->with(['supplier:id,code,name,enabled,products_enabled', 'activeBatches:id,product_id,initial_count,sold_count,status,created_at'])->orderBy('created_at', 'desc')->get();
+        if ($maxResults !== null) {
+            $query->limit(max(1, $maxResults));
+        }
+        $models = $this->addCalculatedStock($query)
+            ->orderBy('created_at', 'desc')
+            ->get();
         $products = [];
         foreach ($models as $model) {
             $availableCount = $this->getAvailableCount($model);
@@ -137,19 +186,19 @@ class ProductRepository implements ProductRepositoryInterface
                     ->orWhere('name_vi', 'like', "%{$search}%");
             });
         }
-        $models = $query->with(['supplier:id,code,name,enabled,products_enabled', 'activeBatches:id,product_id,initial_count,sold_count,status,created_at'])->orderBy('created_at', 'desc')->get();
-
-        $filtered = [];
-        foreach ($models as $model) {
-            $availableCount = $this->getAvailableCount($model);
-            if (!$includeOutOfStock && $availableCount <= 0) {
-                continue;
-            }
-            $filtered[] = ProductMapper::toDomain($model, $availableCount);
+        if (! $includeOutOfStock) {
+            $this->requireAvailableStock($query);
         }
 
-        $total = count($filtered);
-        $paged = array_slice($filtered, ($page - 1) * $limit, $limit);
+        $total = (clone $query)->count('products.id');
+        $models = $this->addCalculatedStock($query)
+            ->orderBy('created_at', 'desc')
+            ->forPage($page, $limit)
+            ->get();
+
+        $paged = $models->map(
+            fn (ProductModel $model) => ProductMapper::toDomain($model, $this->getAvailableCount($model))
+        )->all();
 
         return [
             'items' => $paged,
@@ -159,7 +208,7 @@ class ProductRepository implements ProductRepositoryInterface
 
     public function findById(string $id): ?Product
     {
-        $model = ProductModel::withTrashed()->with(['supplier:id,code,name,enabled,products_enabled', 'activeBatches:id,product_id,initial_count,sold_count,status,created_at'])->find($id);
+        $model = $this->addCalculatedStock(ProductModel::withTrashed())->find($id);
         if (! $model) {
             return null;
         }
@@ -171,7 +220,9 @@ class ProductRepository implements ProductRepositoryInterface
 
     public function findBySlug(string $slug): ?Product
     {
-        $model = ProductModel::withTrashed()->with(['supplier:id,code,name,enabled,products_enabled', 'activeBatches:id,product_id,initial_count,sold_count,status,created_at'])->where('slug', $slug)->first();
+        $model = $this->addCalculatedStock(ProductModel::withTrashed())
+            ->where('slug', $slug)
+            ->first();
         if (! $model) {
             return null;
         }
@@ -246,73 +297,62 @@ class ProductRepository implements ProductRepositoryInterface
             });
         }
 
-        $allActiveProducts = (clone $productQuery)
-            ->with(['supplier:id,code,name,enabled,products_enabled', 'activeBatches:id,product_id,initial_count,sold_count,status,created_at'])
-            ->orderBy('created_at', 'desc')
-            ->get();
-
-        $filteredProducts = [];
-        foreach ($allActiveProducts as $model) {
-            $availableCount = $this->getAvailableCount($model);
-
-            if (!$includeOutOfStock && $availableCount <= 0) {
-                continue;
-            }
-
-            $filteredProducts[] = [
-                'model' => $model,
-                'available_count' => $availableCount,
-                'category_id' => (string) ($model->category_id ?? 'other'),
-            ];
+        if (! $includeOutOfStock) {
+            $this->requireAvailableStock($productQuery);
         }
-
-        $productsByCat = collect($filteredProducts)->groupBy('category_id');
 
         $grouped = [];
 
         foreach ($categories as $cat) {
             $catId = (string) $cat->id;
-            $catEntries = isset($productsByCat[$catId]) ? $productsByCat[$catId] : collect();
-            $total = $catEntries->count();
+            $categoryQuery = (clone $productQuery)->where('category_id', $cat->id);
+            $total = (clone $categoryQuery)->count('products.id');
 
             if ($isSearching && $total === 0) {
                 continue;
             }
 
-            $catProductsModels = $catEntries->take($limit);
-            $products = [];
-            foreach ($catProductsModels as $entry) {
-                $products[] = ProductMapper::toDomain($entry['model'], $entry['available_count']);
-            }
+            $products = $this->addCalculatedStock($categoryQuery)
+                ->orderBy('created_at', 'desc')
+                ->limit($limit)
+                ->get()
+                ->map(fn (ProductModel $model) => ProductMapper::toDomain($model, $this->getAvailableCount($model)))
+                ->all();
 
             $grouped[] = [
                 'id' => $cat->id,
                 'name' => $cat->name,
+                'name_vi' => $cat->name_vi,
+                'name_en' => $cat->name_en,
                 'description' => $cat->description,
+                'description_vi' => $cat->description_vi,
+                'description_en' => $cat->description_en,
                 'products' => $products,
                 'total' => $total,
             ];
         }
 
-        if (isset($productsByCat['other'])) {
-            $otherEntries = $productsByCat['other'];
-            $totalOther = $otherEntries->count();
+        $otherQuery = (clone $productQuery)->whereNull('category_id');
+        $totalOther = (clone $otherQuery)->count('products.id');
+        if ($totalOther > 0) {
+            $productsOther = $this->addCalculatedStock($otherQuery)
+                ->orderBy('created_at', 'desc')
+                ->limit($limit)
+                ->get()
+                ->map(fn (ProductModel $model) => ProductMapper::toDomain($model, $this->getAvailableCount($model)))
+                ->all();
 
-            if (!$isSearching || $totalOther > 0) {
-                $otherModels = $otherEntries->take($limit);
-                $productsOther = [];
-                foreach ($otherModels as $entry) {
-                    $productsOther[] = ProductMapper::toDomain($entry['model'], $entry['available_count']);
-                }
-
-                $grouped[] = [
-                    'id' => 'other',
-                    'name' => 'Other Products',
-                    'description' => 'Products that have not been assigned to a specific category.',
-                    'products' => $productsOther,
-                    'total' => $totalOther,
-                ];
-            }
+            $grouped[] = [
+                'id' => 'other',
+                'name' => 'Other Products',
+                'name_vi' => null,
+                'name_en' => null,
+                'description' => 'Products that have not been assigned to a specific category.',
+                'description_vi' => null,
+                'description_en' => null,
+                'products' => $productsOther,
+                'total' => $totalOther,
+            ];
         }
 
         return $grouped;

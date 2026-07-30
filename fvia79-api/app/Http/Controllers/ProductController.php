@@ -5,7 +5,6 @@ namespace App\Http\Controllers;
 use App\Application\Services\ProductService;
 use App\Domain\Entities\Product;
 use App\Http\Requests\CreateProductRequest;
-use App\Infrastructure\Persistence\Eloquent\CategoryModel;
 use App\Infrastructure\Persistence\Eloquent\UserModel;
 use App\Infrastructure\Security\JwtService;
 use Illuminate\Http\Request;
@@ -63,7 +62,7 @@ class ProductController extends Controller
                 ]);
             }
 
-            $products = $this->productService->getAllActiveProducts($categoryId, $status, $search, $filterDeleted);
+            $products = $this->productService->getAllActiveProducts($categoryId, $status, $search, $filterDeleted, $isAdmin ? null : $limit);
 
             $data = array_map(fn (Product $product) => $this->serializeProduct($product, true, $lang), $products);
 
@@ -76,7 +75,7 @@ class ProductController extends Controller
     public function indexGrouped(Request $request)
     {
         try {
-            $limit = min(100, max(1, (int) $request->query('limit', 8)));
+            $limit = min(100, max(1, (int) $request->query('limit', 100)));
             $search = $request->query('search');
             $includeOutOfStock = $request->boolean('include_out_of_stock', false);
             $lang = $this->resolveLanguage($request);
@@ -86,18 +85,21 @@ class ProductController extends Controller
             $result = array_map(function ($group) use ($lang) {
                 $mappedProducts = array_map(fn (Product $product) => $this->serializeProduct($product, false, $lang), $group['products']);
 
-                $catModel = CategoryModel::find($group['id']);
-                $groupName = $catModel ? $catModel->getLocalizedName($lang) : $group['name'];
-                $groupDesc = $catModel ? $catModel->getLocalizedDescription($lang) : $group['description'];
+                $groupName = $lang === 'en'
+                    ? ($group['name_en'] ?: $group['name'])
+                    : ($group['name_vi'] ?: $group['name']);
+                $groupDesc = $lang === 'en'
+                    ? ($group['description_en'] ?: $group['description'])
+                    : ($group['description_vi'] ?: $group['description']);
 
                 return [
                     'id' => $group['id'],
                     'name' => $groupName,
-                    'name_vi' => $catModel?->name_vi,
-                    'name_en' => $catModel?->name_en,
+                    'name_vi' => $group['name_vi'],
+                    'name_en' => $group['name_en'],
                     'description' => $groupDesc,
-                    'description_vi' => $catModel?->description_vi,
-                    'description_en' => $catModel?->description_en,
+                    'description_vi' => $group['description_vi'],
+                    'description_en' => $group['description_en'],
                     'products' => $mappedProducts,
                     'total' => $group['total'],
                 ];

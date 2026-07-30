@@ -6,7 +6,7 @@ use App\Domain\Entities\Product;
 
 interface ProductRepositoryInterface
 {
-    public function findAllActive(?string $categoryId = null, ?string $status = null, ?string $search = null, ?string $filterDeleted = 'active'): array;
+    public function findAllActive(?string $categoryId = null, ?string $status = null, ?string $search = null, ?string $filterDeleted = 'active', ?int $maxResults = null): array;
     public function findAllActivePaginated(int $page, int $limit, ?string $categoryId = null, ?string $status = null, ?string $search = null, ?string $filterDeleted = 'active', bool $includeOutOfStock = false): array;
     public function findById(string $id): ?Product;
     public function findBySlug(string $slug): ?Product;

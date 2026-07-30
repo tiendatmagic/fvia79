@@ -108,7 +108,7 @@ export class MiniPurchaseNotificationComponent implements OnDestroy {
           if (response.mode === 'real') {
             this.lastRealPurchaseId = response.data?.[0]?.id ?? null;
           }
-          this.pollTimer = window.setInterval(() => this.refresh(true), 60_000);
+          this.pollTimer = window.setInterval(() => this.refresh(true), 120_000);
         }
 
         if (shouldDisplay) {
