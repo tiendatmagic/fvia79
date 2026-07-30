@@ -4,6 +4,7 @@ import { tap, finalize } from 'rxjs/operators';
 import { Observable, of } from 'rxjs';
 
 import { PublicSettingStore } from '@core/services/public-setting.store';
+import { StorefrontActivityStore } from '@core/services/storefront-activity.store';
 
 export interface SystemSettingsPayload {
   admin_wallet_address?: string;
@@ -47,6 +48,7 @@ export interface SystemSettingsPayload {
 export class SystemSettingStore {
   private readonly api = inject(ApiService);
   private readonly publicSettingStore = inject(PublicSettingStore);
+  private readonly storefrontActivityStore = inject(StorefrontActivityStore);
 
   public readonly loading = signal<boolean>(false);
   public readonly submitting = signal<boolean>(false);
@@ -85,6 +87,7 @@ export class SystemSettingStore {
     this.cachedSettings = null;
     this.lastFetchTime = 0;
     this.publicSettingStore.clearCache();
+    this.storefrontActivityStore.clearCache();
   }
 
   public fetchSettings(): Observable<SystemSettingsPayload> {

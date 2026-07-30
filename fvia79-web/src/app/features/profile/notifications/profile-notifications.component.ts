@@ -97,7 +97,7 @@ export class ProfileNotificationsComponent implements OnInit {
       },
       error: (err) => {
         this.saving.set(false);
-        this.toast.showToast(err.error?.message || 'Failed to update Telegram settings', 'error');
+        this.toast.showToast(err.error?.message || this.lang.translate('profile.telegram_update_failed'), 'error');
         this.cdr.markForCheck();
       }
     });
@@ -130,7 +130,7 @@ export class ProfileNotificationsComponent implements OnInit {
       },
       error: (err) => {
         this.testing.set(false);
-        this.toast.showToast(err.error?.message || 'Failed to send test message', 'error');
+        this.toast.showToast(err.error?.message || this.lang.translate('profile.telegram_test_failed'), 'error');
         this.cdr.markForCheck();
       }
     });

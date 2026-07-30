@@ -19,6 +19,30 @@
 > 1. Cronjob Scheduler (`schedule:run`) **CHỈ ĐƯỢC CHẠY DƯỚI USER `www-data`** (`crontab -u www-data -e`). **TUYỆT ĐỐI KHÔNG cài dưới `root`** vì sẽ gây ra lỗi `500 Permission denied` khi người dùng thực hiện thao tác Web/API.
 > 2. Luôn cấp quyền `chmod -R 777` và `chown -R www-data:www-data` cho `storage` & `bootstrap/cache`. Khi gõ lệnh CLI thủ công trên VPS, luôn chạy dưới quyền `www-data` (`su -s /bin/bash www-data -c "php artisan <cmd>"`).
 
+### [2026-07-30] Tách Template Inline HTML Thành File HTML Riêng Cho MiniPurchaseNotificationComponent Đồng Bộ 3 Dự Án (FVIA79, ADSBM79, ISOCALMARKET)
+- **Mô tả yêu cầu**:
+  Tách phần template HTML inline trong `mini-purchase-notification.component.ts` thành tệp template riêng `mini-purchase-notification.component.html` nhằm giúp mã nguồn sạch sẽ, dễ bảo trì và mở rộng đồng bộ trên cả 3 dự án (`FVIA79`, `ADSBM79`, `ISOCALMARKET`).
+- **Thực hiện xử lý**:
+  - **Frontend Web (`fvia79-web`, `adsbm79-web`, `isocalmarket-web`)**:
+    - Tạo mới `mini-purchase-notification.component.html` lưu giữ cấu trúc template HTML hiển thị thông báo mua hàng nhỏ.
+    - Cập nhật `mini-purchase-notification.component.ts`: Đổi `template: \`...\`` thành `templateUrl: './mini-purchase-notification.component.html'`.
+- **Kiểm thử**:
+  - Lệnh biên dịch Angular production `npx ng build --configuration production` đạt kết quả thành công 100% không có lỗi trên cả 3 dự án Web.
+
+### [2026-07-30] Triển Khai Cơ Chế Cache Frontend TTL 45s & Gom Request API Storefront Activities (Recent Purchases, Recent Deposits, Mini Recent Purchases) Đồng Bộ 3 Dự Án (FVIA79, ADSBM79, ISOCALMARKET)
+- **Mô tả yêu cầu**:
+  Tối ưu hóa và giảm tải số lượng request API phát ra khi người dùng truy cập hoặc chuyển trang qua lại Storefront. Cụ thể: 3 API `v1/storefront/mini-recent-purchases`, `v1/storefront/recent-purchases` và `v1/storefront/recent-deposits` liên tục bị gọi lại nhiều lần mỗi khi render Storefront hoặc đổi route. Đồng thời sửa lỗi gọi trùng lặp API `v1/auth/me` tại Storefront.
+- **Thực hiện xử lý**:
+  - **Frontend Web (`fvia79-web`, `adsbm79-web`, `isocalmarket-web`)**:
+    - `storefront-activity.store.ts`: Xây dựng mới `StorefrontActivityStore` quản lý cache đệm trong memory với thời gian hết hạn TTL = 45 giây (45_000ms), kết hợp cơ chế khử trùng request song song (`shareReplay(1)` & in-flight observable deduplication) cho cả 3 API `mini-recent-purchases`, `recent-purchases` và `recent-deposits`. Bổ sung các phương thức `invalidatePurchases()`, `invalidateDeposits()`, `clearCache()`.
+    - `state.service.ts`: Khai báo và export `storefrontActivityStore` trong `StateService` dùng chung.
+    - `storefront.component.ts`:
+      1. Thay thế các lệnh gọi HTTP `api.get` trực tiếp bằng `this.state.storefrontActivityStore.fetchRecentPurchases()` và `fetchRecentDeposits()`.
+      2. Đổi `this.state.authStore.checkMe(true)` thành `this.state.authStore.checkMe()` (bỏ cờ `force`) để tận dụng thông tin `currentUser` sẵn có từ `app.ts`, loại bỏ 100% request `v1/auth/me` dư thừa.
+    - `mini-purchase-notification.component.ts`: Cập nhật `refresh()` sử dụng `this.state.storefrontActivityStore.fetchMiniRecentPurchases(forceFetch)`. Khi component init/start polling dùng cache sẵn có nếu còn hạn TTL (`forceFetch = false`), khi timer 60s trigger tự động mới cưỡng chế fetch dữ liệu thực tế mới nhất từ server (`forceFetch = true`).
+- **Kiểm thử**:
+  - Biên dịch sản phẩm Angular production `npx ng build --configuration production` thành công 100% không có lỗi trên cả 3 dự án Web.
+
 ### [2026-07-30] Khắc Phục Lỗi Toast Hiển Thị Raw Text "Unauthorized." & Chuẩn Hóa Cơ Chế Xử Lý i18n Đa Ngôn Ngữ Cho Toast Đồng Bộ 3 Dự Án (FVIA79, ADSBM79, ISOCALMARKET)
 - **Mô tả yêu cầu**:
   Khắc phục lỗi toast thông báo trên giao diện hiển thị chuỗi tiếng Anh thô chưa qua dịch `"Unauthorized."` (hoặc các biến thể `"Unauthorized"`, `"Unauthenticated"`, `"Forbidden"`,...) khi API hoặc Interceptor trả về phản hồi không hợp lệ/hết hạn phiên làm việc. Đồng thời rà soát và bổ sung các từ khóa i18n đa ngôn ngữ (Việt - Anh) cho Toast trên cả 3 dự án Web (`fvia79-web`, `adsbm79-web`, `isocalmarket-web`).

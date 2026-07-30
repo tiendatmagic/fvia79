@@ -373,7 +373,7 @@ class DepositService
                 throw new \RuntimeException('Unable to connect to blockchain scanner API. Please try again later.');
             });
 
-            return DB::transaction(function () use ($id, $userId, $adminWallet, $tokenContract, $transactions) {
+            $matched = DB::transaction(function () use ($id, $userId, $adminWallet, $tokenContract, $transactions) {
                 $depositModel = DepositModel::where('id', $id)
                     ->lockForUpdate()
                     ->first();
@@ -433,6 +433,11 @@ class DepositService
 
                 return false;
             });
+            if ($matched) {
+                StorefrontActivityCache::invalidateDeposits();
+            }
+
+            return $matched;
         } elseif ($paymentMethod === 'binance') {
             $binanceApiKey = $this->settingService->getSetting('binance_api_key', '');
             $binanceApiSecret = $this->settingService->getSetting('binance_api_secret', '');
@@ -513,7 +518,7 @@ class DepositService
                 throw new \RuntimeException('Unable to connect to Binance Pay API server.');
             });
 
-            return DB::transaction(function () use ($id, $userId, $transactions) {
+            $matched = DB::transaction(function () use ($id, $userId, $transactions) {
                 $depositModel = DepositModel::where('id', $id)
                     ->lockForUpdate()
                     ->first();
@@ -570,6 +575,11 @@ class DepositService
 
                 return false;
             });
+            if ($matched) {
+                StorefrontActivityCache::invalidateDeposits();
+            }
+
+            return $matched;
         }
     }
 
@@ -647,7 +657,7 @@ class DepositService
 
     public function approveDepositManually(string $id, string $txHash, string $adminId): bool
     {
-        return DB::transaction(function () use ($id, $txHash, $adminId) {
+        $approved = DB::transaction(function () use ($id, $txHash, $adminId) {
             $depositModel = DepositModel::where('id', $id)
                 ->lockForUpdate()
                 ->first();
@@ -686,6 +696,9 @@ class DepositService
 
             return true;
         });
+        StorefrontActivityCache::invalidateDeposits();
+
+        return $approved;
     }
 
     public function rejectDepositManually(string $id, string $adminId): bool
@@ -720,7 +733,7 @@ class DepositService
 
     public function revokeDepositManually(string $id, string $adminId, ?string $reason = null): bool
     {
-        return DB::transaction(function () use ($id, $adminId, $reason) {
+        $revoked = DB::transaction(function () use ($id, $adminId, $reason) {
             $depositModel = DepositModel::where('id', $id)
                 ->lockForUpdate()
                 ->first();
@@ -764,6 +777,9 @@ class DepositService
 
             return true;
         });
+        StorefrontActivityCache::invalidateDeposits();
+
+        return $revoked;
     }
 
     public function bulkRevokeDepositsManually(array $ids, string $adminId, ?string $reason = null): array
@@ -772,7 +788,7 @@ class DepositService
             throw new \RuntimeException('No deposit invoice IDs selected for bulk revocation.');
         }
 
-        return DB::transaction(function () use ($ids, $adminId, $reason) {
+        $result = DB::transaction(function () use ($ids, $adminId, $reason) {
             $depositModels = DepositModel::whereIn('id', $ids)
                 ->lockForUpdate()
                 ->get();
@@ -853,6 +869,11 @@ class DepositService
                 'message' => "Successfully revoked {$successCount} deposit(s).".($failedCount > 0 ? " {$failedCount} deposit(s) failed or skipped due to insufficient balance or invalid status." : ''),
             ];
         });
+        if ($result['success_count'] > 0) {
+            StorefrontActivityCache::invalidateDeposits();
+        }
+
+        return $result;
     }
 
     private function creditDepositToUser(Deposit $deposit): void

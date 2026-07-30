@@ -15,11 +15,11 @@ use App\Infrastructure\Persistence\Eloquent\OrderItemModel;
 use App\Infrastructure\Persistence\Eloquent\OrderModel;
 use App\Infrastructure\Persistence\Eloquent\ProductModel;
 use App\Infrastructure\Persistence\Eloquent\SupplierPurchaseModel;
+use App\Infrastructure\Persistence\Eloquent\UserModel;
 use App\Integrations\Suppliers\SupplierConnectorFactory;
 use App\Integrations\Suppliers\SupplierOrderPendingException;
 use App\Integrations\Suppliers\SupplierOutOfStockException;
 use App\Integrations\Suppliers\SupplierPurchaseRejectedException;
-use App\Infrastructure\Persistence\Eloquent\UserModel;
 use Illuminate\Database\QueryException;
 use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\DB;
@@ -135,7 +135,7 @@ class OrderService
 
                 $couponsEnvFeatureEnabled = filter_var(config('app.feature_coupons_enabled', true), FILTER_VALIDATE_BOOLEAN);
                 $couponsEnabled = $couponsEnvFeatureEnabled
-                    ? filter_var(app(\App\Application\Services\SystemSettingService::class)->getSetting('coupons_enabled', '1'), FILTER_VALIDATE_BOOLEAN)
+                    ? filter_var(app(SystemSettingService::class)->getSetting('coupons_enabled', '1'), FILTER_VALIDATE_BOOLEAN)
                     : false;
 
                 if (! $couponsEnabled) {
@@ -225,6 +225,7 @@ class OrderService
 
         try {
             $completedOrder = $this->fulfillPreparedOrder($preparedOrder);
+            StorefrontActivityCache::invalidatePurchases();
 
             try {
                 $userModel = UserModel::find($userId);
@@ -232,8 +233,8 @@ class OrderService
                 if ($userModel) {
                     $service->notifyOrderSuccess($completedOrder, $userModel);
                 }
-            } catch (\Throwable $e) {
-                Log::error('Telegram order notification error: ' . $e->getMessage());
+            } catch (Throwable $e) {
+                Log::error('Telegram order notification error: '.$e->getMessage());
             }
 
             return $completedOrder;

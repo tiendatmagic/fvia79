@@ -2,7 +2,10 @@
 
 namespace App\Http\Controllers;
 
+use App\Application\Services\DepositService;
+use App\Application\Services\StorefrontActivityCache;
 use App\Application\Services\SystemSettingService;
+use App\Application\Services\TelegramNotificationService;
 use App\Infrastructure\Persistence\Eloquent\UserModel;
 use App\Infrastructure\Persistence\Eloquent\UserSessionModel;
 use Illuminate\Http\Request;
@@ -175,6 +178,7 @@ class SystemSettingController extends Controller
 
         if (! empty($settingsToSave)) {
             $this->settingService->saveSettings($settingsToSave);
+            StorefrontActivityCache::clear();
         }
 
         return response()->json([
@@ -193,7 +197,7 @@ class SystemSettingController extends Controller
         if (! empty($usdtRateSetting) && (float) $usdtRateSetting > 0) {
             $usdtRate = (float) $usdtRateSetting;
         } else {
-            $usdtRate = app(\App\Application\Services\DepositService::class)->getUsdtToVndRate();
+            $usdtRate = app(DepositService::class)->getUsdtToVndRate();
         }
         $telegramBotUsername = $this->settingService->getSetting('telegram_bot_username', 'fvia79noti_bot');
         $telegramSupportUsername = $this->settingService->getSetting('telegram_support_username', 'emmy203012');
@@ -237,7 +241,7 @@ class SystemSettingController extends Controller
         ]);
     }
 
-    public function testTelegramBot(Request $request, \App\Application\Services\TelegramNotificationService $telegramService)
+    public function testTelegramBot(Request $request, TelegramNotificationService $telegramService)
     {
         $overrideToken = $request->input('telegram_bot_token');
         $result = $telegramService->testBotConnection($overrideToken ?: null);
@@ -294,7 +298,7 @@ class SystemSettingController extends Controller
                 $this->recursiveCleanDirectory($cacheDataPath);
             }
         } catch (\Throwable $e) {
-            Log::error('Failed to force-clear the cache data directory: ' . $e->getMessage());
+            Log::error('Failed to force-clear the cache data directory: '.$e->getMessage());
         }
 
         return response()->json(['success' => true, 'message' => 'All system caches were cleared and optimized successfully.']);
@@ -380,17 +384,17 @@ class SystemSettingController extends Controller
         if ($request->hasFile('image')) {
             $file = $request->file('image');
             $ext = strtolower($file->getClientOriginalExtension() ?: 'png');
-            $filename = 'binance_qr_' . time() . '_' . substr(md5(mt_rand()), 0, 8) . '.' . $ext;
+            $filename = 'binance_qr_'.time().'_'.substr(md5(mt_rand()), 0, 8).'.'.$ext;
 
             $path = $file->storeAs('settings', $filename, 'public');
 
             $publicSettingsDir = public_path('storage/settings');
-            if (!File::exists($publicSettingsDir)) {
+            if (! File::exists($publicSettingsDir)) {
                 File::makeDirectory($publicSettingsDir, 0755, true, true);
             }
-            @File::copy(storage_path('app/public/' . $path), $publicSettingsDir . '/' . $filename);
+            @File::copy(storage_path('app/public/'.$path), $publicSettingsDir.'/'.$filename);
 
-            $url = url('/storage/settings/' . $filename);
+            $url = url('/storage/settings/'.$filename);
 
             $this->settingService->setSetting('admin_binance_pay_link', $url);
 

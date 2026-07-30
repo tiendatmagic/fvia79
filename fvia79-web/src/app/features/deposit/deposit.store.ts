@@ -1,5 +1,6 @@
 import { Injectable, inject, signal } from '@angular/core';
 import { ApiService } from '@core/services/api.service';
+import { StorefrontActivityStore } from '@core/services/storefront-activity.store';
 import { HttpParams } from '@angular/common/http';
 import { tap, finalize } from 'rxjs/operators';
 import { Observable, Subscription, Subject } from 'rxjs';
@@ -11,6 +12,7 @@ import { CurrencyService } from '@core/services/currency.service';
 })
 export class DepositStore {
   private readonly api = inject(ApiService);
+  private readonly storefrontActivityStore = inject(StorefrontActivityStore);
   private readonly currencyService = inject(CurrencyService);
 
   private activeFetchHistorySub?: Subscription;
@@ -38,7 +40,13 @@ export class DepositStore {
   }
 
   public checkUnseenSuccessDeposit(): Observable<{ deposit: DepositHistoryItem | null }> {
-    return this.api.get<{ deposit: DepositHistoryItem | null }>('v1/deposit/unseen-success');
+    return this.api.get<{ deposit: DepositHistoryItem | null }>('v1/deposit/unseen-success').pipe(
+      tap((res) => {
+        if (res?.deposit) {
+          this.storefrontActivityStore.invalidateDeposits();
+        }
+      })
+    );
   }
 
   public markDepositSeen(id: string): Observable<{ success: boolean }> {
@@ -135,6 +143,9 @@ export class DepositStore {
       tap(res => {
         if (res && res.invoice) {
           this.currentInvoice.set(res.invoice);
+          if (res.invoice.status === 'completed') {
+            this.storefrontActivityStore.invalidateDeposits();
+          }
         }
       }),
       finalize(() => {
@@ -150,6 +161,12 @@ export class DepositStore {
   }
 
   public checkTransaction(id: string): Observable<{ success: boolean; message: string }> {
-    return this.api.post<{ success: boolean; message: string }>(`v1/deposit/invoice/${id}/check`, {});
+    return this.api.post<{ success: boolean; message: string }>(`v1/deposit/invoice/${id}/check`, {}).pipe(
+      tap((res) => {
+        if (res?.success) {
+          this.storefrontActivityStore.invalidateDeposits();
+        }
+      })
+    );
   }
 }

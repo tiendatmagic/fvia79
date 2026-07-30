@@ -157,7 +157,7 @@ export class StorefrontComponent implements OnInit, OnDestroy {
 
   ngOnInit(): void {
     this.publicSettingStore.fetchPublicSettings().subscribe();
-    this.state.authStore.checkMe(true).subscribe();
+    this.state.authStore.checkMe().subscribe();
     this.state.depositStore.fetchRate().subscribe({ error: () => undefined });
     this.state.productStore.clearCache();
     this.loadAllGroupedProducts();
@@ -180,11 +180,11 @@ export class StorefrontComponent implements OnInit, OnDestroy {
     this.recentPurchasesLoading.set(true);
     this.recentDepositsLoading.set(true);
 
-    this.api.get<any>('v1/storefront/recent-purchases').subscribe({
+    this.state.storefrontActivityStore.fetchRecentPurchases().subscribe({
       next: (res) => {
         if (res) {
           this.recentPurchasesEnabled.set(Boolean(res.enabled));
-          const mode = res.mode || 'demo';
+          const mode: 'demo' | 'real' = res.mode === 'real' ? 'real' : 'demo';
           this.recentPurchasesMode.set(mode);
           if (mode === 'demo') {
             this.seedInitialPurchases();
@@ -204,11 +204,11 @@ export class StorefrontComponent implements OnInit, OnDestroy {
       }
     });
 
-    this.api.get<any>('v1/storefront/recent-deposits').subscribe({
+    this.state.storefrontActivityStore.fetchRecentDeposits().subscribe({
       next: (res) => {
         if (res) {
           this.recentDepositsEnabled.set(Boolean(res.enabled));
-          const mode = res.mode || 'demo';
+          const mode: 'demo' | 'real' = res.mode === 'real' ? 'real' : 'demo';
           this.recentDepositsMode.set(mode);
           if (mode === 'demo') {
             this.seedInitialDeposits();

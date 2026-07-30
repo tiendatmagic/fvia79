@@ -9,6 +9,7 @@ import { OrderStore } from '../../features/orders/order.store';
 import { DepositStore } from '../../features/deposit/deposit.store';
 import { UserStore } from '../../features/admin-users/user.store';
 import { PublicSettingStore } from './public-setting.store';
+import { StorefrontActivityStore } from './storefront-activity.store';
 import { Web3Service } from './web3.service';
 import { LanguageService } from './language.service';
 
@@ -28,6 +29,7 @@ export class StateService {
   public readonly depositStore = inject(DepositStore);
   public readonly userStore = inject(UserStore);
   public readonly publicSettingStore = inject(PublicSettingStore);
+  public readonly storefrontActivityStore = inject(StorefrontActivityStore);
 
   private readonly web3Service = inject(Web3Service);
 

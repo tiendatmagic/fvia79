@@ -62,7 +62,6 @@ import { TranslatePipe } from '@shared/pipes/translate.pipe';
             {{ 'inventory.resource_content' | translate }}
             <span class="text-red-500">*</span>
           </label>
-          <!-- Hidden file input for TXT import -->
           <input
             #txtFileInput
             type="file"

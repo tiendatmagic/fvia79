@@ -1,6 +1,7 @@
 import { Injectable, inject, signal } from '@angular/core';
 import { HttpParams } from '@angular/common/http';
 import { ApiService } from '@core/services/api.service';
+import { StorefrontActivityStore } from '@core/services/storefront-activity.store';
 import { ToastService } from '@core/services/toast.service';
 import { LanguageService } from '@core/services/language.service';
 import { tap, catchError, finalize } from 'rxjs/operators';
@@ -11,6 +12,7 @@ import { of, Subscription, Subject } from 'rxjs';
 })
 export class OrderStore {
   private readonly api = inject(ApiService);
+  private readonly storefrontActivityStore = inject(StorefrontActivityStore);
   private readonly toast = inject(ToastService);
   public readonly lang = inject(LanguageService);
 
@@ -138,6 +140,7 @@ export class OrderStore {
     return this.api.post<any>('v1/orders', { items }).pipe(
       tap((res) => {
         this.clearCache();
+        this.storefrontActivityStore.invalidatePurchases();
         this.toast.showToast(this.lang.translate('cart.order_success'), 'success');
         this.fetchOrders().subscribe();
       }),

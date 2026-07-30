@@ -8,12 +8,6 @@ use Illuminate\Http\Client\Pool;
 
 class CheckUidController extends Controller
 {
-    /**
-     * Check list of Facebook UIDs for Live or Die status.
-     *
-     * @param Request $request
-     * @return \Illuminate\Http\JsonResponse
-     */
     public function check(Request $request)
     {
         $rawInput = $request->input('uids');

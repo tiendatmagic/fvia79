@@ -136,7 +136,7 @@ export class AdminMembershipTiersComponent implements OnInit {
         this.isLoading.set(false);
       },
       error: (err) => {
-        this.toast.showToast(err.error?.message || 'Failed to load membership tiers.', 'error');
+        this.toast.showToast(err.error?.message || this.lang.translate('admin.membership_tiers_load_failed'), 'error');
         this.isLoading.set(false);
       },
     });
