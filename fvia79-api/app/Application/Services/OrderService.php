@@ -2,7 +2,6 @@
 
 namespace App\Application\Services;
 
-use App\Domain\Entities\Coupon;
 use App\Domain\Entities\Order;
 use App\Domain\Entities\OrderItem;
 use App\Domain\Exceptions\OrderException;
@@ -169,19 +168,9 @@ class OrderService
                     $couponId = $coupon->getId();
                     $appliedCouponCode = $coupon->getCode();
 
-                    $updatedCoupon = new Coupon(
-                        $coupon->getId(),
-                        $coupon->getCode(),
-                        $coupon->getType(),
-                        $coupon->getValue(),
-                        $coupon->getMinSpend(),
-                        $coupon->getStartDate(),
-                        $coupon->getEndDate(),
-                        $coupon->getUsageLimit(),
-                        $coupon->getUsedCount() + 1,
-                        $coupon->getCreatedAt()
-                    );
-                    $this->couponRepository->save($updatedCoupon);
+                    if (! $this->couponRepository->reserveUsage($coupon->getId())) {
+                        throw new OrderException('This coupon has reached its usage limit.');
+                    }
                 }
 
                 $discountAmount = $tierDiscountAmount + $couponDiscountAmount;

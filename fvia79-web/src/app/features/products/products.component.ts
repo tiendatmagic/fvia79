@@ -1,6 +1,7 @@
 import { Component, OnInit, inject, signal, computed, ChangeDetectionStrategy } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
+import { RouterLink } from '@angular/router';
 import { StateService } from '@core/services/state.service';
 import { LanguageService } from '@core/services/language.service';
 import { ButtonComponent } from '@shared/components/button/button.component';
@@ -25,6 +26,7 @@ import { CurrencyPipe } from '@shared/pipes/currency.pipe';
   imports: [
     CommonModule,
     FormsModule,
+    RouterLink,
     ButtonComponent,
     BadgeComponent,
     CardComponent,

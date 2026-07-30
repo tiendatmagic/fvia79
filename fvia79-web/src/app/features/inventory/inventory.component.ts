@@ -145,9 +145,6 @@ export class InventoryComponent implements OnInit {
     }
 
     const productId = queryParams['product_id'] || queryParams['productId'];
-    if (productId) {
-      this.selectedProductFilter = productId;
-    }
 
     this.fetchData(1);
 

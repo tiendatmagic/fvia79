@@ -102,25 +102,37 @@ class Coupon
         return $this->deletedAt !== null;
     }
 
-    public function isValidForAmount(float $amount): bool
+    public function isActive(): bool
     {
         $now = new \DateTime();
         $start = (clone $this->startDate)->setTime(0, 0, 0);
+
+        return ! $this->isDeleted() && $now >= $start;
+    }
+
+    public function isExpired(): bool
+    {
         $end = (clone $this->endDate)->setTime(23, 59, 59);
 
-        if ($now < $start || $now > $end) {
-            return false;
-        }
+        return new \DateTime() > $end;
+    }
 
-        if ($this->usageLimit > 0 && $this->usedCount >= $this->usageLimit) {
-            return false;
-        }
+    public function isLimitReached(): bool
+    {
+        return $this->usageLimit > 0 && $this->usedCount >= $this->usageLimit;
+    }
 
-        if ($amount < $this->minSpend) {
-            return false;
-        }
+    public function isValidForCart(float $amount): bool
+    {
+        return $this->isActive()
+            && ! $this->isExpired()
+            && ! $this->isLimitReached()
+            && $amount >= $this->minSpend;
+    }
 
-        return true;
+    public function isValidForAmount(float $amount): bool
+    {
+        return $this->isValidForCart($amount);
     }
 
     public function calculateDiscount(float $amount): float

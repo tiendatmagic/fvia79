@@ -9,6 +9,7 @@ interface CouponRepositoryInterface
     public function save(Coupon $coupon): Coupon;
     public function findById(string $id): ?Coupon;
     public function findByCode(string $code): ?Coupon;
+    public function reserveUsage(string $id): bool;
     public function findAll(): array;
     public function findAllPaginated(
         int $page,

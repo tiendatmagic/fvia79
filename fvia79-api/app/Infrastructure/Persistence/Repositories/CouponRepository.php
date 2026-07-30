@@ -32,6 +32,19 @@ class CouponRepository implements CouponRepositoryInterface
         return CouponMapper::toDomain($model);
     }
 
+    public function reserveUsage(string $id): bool
+    {
+        $updated = CouponModel::query()
+            ->whereKey($id)
+            ->where(function ($query) {
+                $query->where('usage_limit', 0)
+                    ->orWhereColumn('used_count', '<', 'usage_limit');
+            })
+            ->increment('used_count');
+
+        return $updated === 1;
+    }
+
     public function findAll(): array
     {
         $models = CouponModel::orderBy('created_at', 'desc')->get();
