@@ -25,6 +25,10 @@ class DashboardController extends Controller
 
             $cacheKey = 'admin_dashboard_stats_' . md5($startDate . '_' . $endDate . '_' . $lowStockCategoryId . '_' . $lowStockSearch . '_' . $thresholdParam . '_' . $lowStockPage . '_' . $lowStockLimit);
 
+            if ($request->boolean('refresh')) {
+                \Illuminate\Support\Facades\Cache::forget($cacheKey);
+            }
+
             $data = \Illuminate\Support\Facades\Cache::remember($cacheKey, 10, function () use ($startDate, $endDate, $lowStockCategoryId, $lowStockSearch, $thresholdParam, $lowStockPage, $lowStockLimit) {
                 $revenueQuery = OrderModel::where('status', 'paid');
                 $ordersQuery = OrderModel::query();

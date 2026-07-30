@@ -127,6 +127,11 @@ export class ProductsComponent implements OnInit {
     ).subscribe();
   }
 
+  public onRefresh(): void {
+    this.state.productStore.clearCache();
+    this.fetchFilteredProducts(this.currentPage());
+  }
+
   public fetchPage(page: number) {
     this.fetchFilteredProducts(page);
   }

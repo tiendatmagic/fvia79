@@ -148,6 +148,12 @@ export class AdminCategoriesComponent implements OnInit {
     ).subscribe();
   }
 
+  public onRefresh(): void {
+    this.state.productStore.clearCache();
+    this.state.productStore.invalidateCategories();
+    this.fetchCategories();
+  }
+
   public fetchPage(page: number) {
     this.currentPage.set(page);
     this.fetchCategories();

@@ -114,6 +114,11 @@ export class AdminOrdersComponent implements OnInit {
     });
   }
 
+  public onRefresh(): void {
+    this.stateService.orderStore.clearCache();
+    this.fetchOrders(this.currentPage());
+  }
+
   public onSearch(query: string) {
     this._searchQuery.set(query);
     this.fetchOrders(1);

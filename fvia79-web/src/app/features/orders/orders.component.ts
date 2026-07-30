@@ -95,6 +95,11 @@ export class OrdersComponent implements OnInit {
     ).subscribe();
   }
 
+  public onRefresh(): void {
+    this.state.orderStore.clearCache();
+    this.fetchPage(this.currentPage());
+  }
+
   public onSearch(query: string) {
     this._searchQuery.set(query);
     this.fetchPage(1);

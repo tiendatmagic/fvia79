@@ -110,7 +110,7 @@ export class AdminDashboardComponent implements OnInit {
     this.loadStats();
   }
 
-  public loadStats(isLowStockFilter: boolean = false) {
+  public loadStats(isLowStockFilter: boolean = false, forceRefresh: boolean = false) {
     if (isLowStockFilter) {
       this.lowStockLoading.set(true);
     } else {
@@ -119,6 +119,9 @@ export class AdminDashboardComponent implements OnInit {
     }
 
     let params = new HttpParams();
+    if (forceRefresh) {
+      params = params.set('refresh', '1');
+    }
     if (this.selectedDateRange.startDate) {
       params = params.set('start_date', this.selectedDateRange.startDate);
     }
@@ -147,6 +150,13 @@ export class AdminDashboardComponent implements OnInit {
         this.lowStockLoading.set(false);
       }
     });
+  }
+
+  public onRefresh(): void {
+    this.stateService.productStore.clearCache();
+    this.stateService.productStore.invalidateCategories();
+    this.stateService.productStore.fetchCategories().subscribe();
+    this.loadStats(false, true);
   }
 
   public onSearchLowStock(query: string) {

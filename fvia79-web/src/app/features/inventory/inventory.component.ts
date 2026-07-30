@@ -207,6 +207,14 @@ export class InventoryComponent implements OnInit {
     }
   }
 
+  public onRefresh(): void {
+    this.state.inventoryStore.clearCache();
+    const currentPage = this.activeTab() === 'batches'
+      ? this.currentBatchPage()
+      : this.currentResourcePage();
+    this.fetchData(currentPage);
+  }
+
   public onSearch(query: string) {
     this._searchQuery.set(query);
     this.fetchData(1);
