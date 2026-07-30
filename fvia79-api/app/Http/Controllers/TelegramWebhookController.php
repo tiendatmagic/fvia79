@@ -2,8 +2,8 @@
 
 namespace App\Http\Controllers;
 
+use App\Application\Services\TelegramLinkService;
 use App\Application\Services\TelegramNotificationService;
-use App\Infrastructure\Persistence\Eloquent\UserModel;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Log;
@@ -11,59 +11,67 @@ use Illuminate\Support\Facades\Log;
 class TelegramWebhookController extends Controller
 {
     public function __construct(
-        private readonly TelegramNotificationService $telegramService
+        private readonly TelegramNotificationService $telegramService,
+        private readonly TelegramLinkService $telegramLinkService
     ) {}
 
     public function handleWebhook(Request $request): JsonResponse
     {
-        $update = $request->all();
-        Log::info('Telegram Webhook payload: ', $update);
+        $expectedSecret = (string) config('services.telegram.webhook_secret', '');
+        if (strlen($expectedSecret) < 32
+            || strlen($expectedSecret) > 256
+            || ! preg_match('/^[A-Za-z0-9_-]+$/', $expectedSecret)) {
+            Log::error('Telegram webhook rejected because TELEGRAM_WEBHOOK_SECRET is not configured.');
 
-        $message = $update['message'] ?? $update['edited_message'] ?? null;
-        if (!$message) {
+            return response()->json(['status' => 'unavailable'], 503);
+        }
+
+        $providedSecret = (string) $request->header('X-Telegram-Bot-Api-Secret-Token', '');
+        if ($providedSecret === '' || ! hash_equals($expectedSecret, $providedSecret)) {
+            return response()->json(['status' => 'forbidden'], 403);
+        }
+
+        $update = $request->all();
+        $message = $update['message'] ?? null;
+        if (! is_array($message)) {
             return response()->json(['status' => 'ignored']);
         }
 
         $chatId = (string) ($message['chat']['id'] ?? '');
-        $text = trim($message['text'] ?? '');
+        $senderId = (string) ($message['from']['id'] ?? '');
+        $chatType = (string) ($message['chat']['type'] ?? '');
+        $text = trim((string) ($message['text'] ?? ''));
 
-        if (empty($chatId) || empty($text)) {
+        if ($chatId === '' || $senderId !== $chatId || $chatType !== 'private' || $text === '') {
             return response()->json(['status' => 'ignored']);
         }
 
-        if (str_starts_with($text, '/start')) {
-            $parts = explode(' ', $text);
-            $uidParam = trim($parts[1] ?? '');
-
-            if (!empty($uidParam)) {
-                $user = UserModel::where('uid', $uidParam)
-                    ->orWhere('id', $uidParam)
-                    ->first();
-
-                if ($user) {
-                    $user->telegram_chat_id = $chatId;
-                    $user->telegram_notifications_enabled = true;
-                    $user->save();
-
-                    $replyText = "🎉 <b>Account Linked Successfully!</b>\n\n"
-                        . "👤 <b>Account Name:</b> {$user->name}\n"
-                        . "🆔 <b>UID:</b> <code>{$user->uid}</code>\n\n"
-                        . "You are now ready to receive instant notifications for <b>New Inventory</b> and <b>Successful Orders</b> 24/7 from FVIA79.";
-
-                    $this->telegramService->sendMessage($chatId, $replyText);
-
-                    return response()->json(['status' => 'connected', 'uid' => $user->uid]);
-                }
-            }
-
-            $replyText = "👋 <b>Welcome to FVIA79 Notification Bot!</b>\n\n"
-                . "To automatically link your account and receive instant updates, please visit your <b>User Profile</b> page on our website and click <b>Connect Telegram</b>, or send a message with the command:\n\n"
-                . "<code>/start YOUR_UID</code>\n\n"
-                . "Example: <code>/start 10000005</code>";
-
-            $this->telegramService->sendMessage($chatId, $replyText);
+        if (! preg_match('/^\/start(?:@\w+)?(?:\s+(\S+))?$/', $text, $matches)) {
+            return response()->json(['status' => 'ok']);
         }
 
-        return response()->json(['status' => 'ok']);
+        $plainToken = trim((string) ($matches[1] ?? ''));
+        $result = $plainToken !== ''
+            ? $this->telegramLinkService->consumeToken($plainToken, $chatId)
+            : ['status' => 'invalid'];
+
+        if ($result['status'] === 'connected') {
+            $this->telegramService->sendMessage(
+                $chatId,
+                "🎉 <b>Account Linked Successfully!</b>\n\n"
+                ."You can now receive inventory and successful order notifications from FVIA79."
+            );
+
+            return response()->json(['status' => 'connected']);
+        }
+
+        $messageByStatus = match ($result['status']) {
+            'already_connected' => 'This website account is already connected to another Telegram account. Disconnect it on the website first.',
+            'chat_in_use' => 'This Telegram account is already connected to another website account.',
+            default => 'This connection link is invalid, expired, or already used. Return to your profile and create a new link.',
+        };
+        $this->telegramService->sendMessage($chatId, "⚠️ <b>Unable to link account</b>\n\n".$messageByStatus);
+
+        return response()->json(['status' => 'rejected']);
     }
 }

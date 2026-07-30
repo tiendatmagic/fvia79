@@ -3,6 +3,8 @@
 namespace App\Http\Controllers;
 
 use App\Application\Services\TelegramNotificationService;
+use App\Application\Services\TelegramLinkService;
+use App\Infrastructure\Persistence\Eloquent\TelegramLinkTokenModel;
 use App\Infrastructure\Persistence\Eloquent\UserModel;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
@@ -10,7 +12,8 @@ use Illuminate\Http\Request;
 class UserTelegramController extends Controller
 {
     public function __construct(
-        private readonly TelegramNotificationService $telegramService
+        private readonly TelegramNotificationService $telegramService,
+        private readonly TelegramLinkService $telegramLinkService
     ) {}
 
     public function getStatus(Request $request): JsonResponse
@@ -26,7 +29,31 @@ class UserTelegramController extends Controller
                 'telegram_notifications_enabled' => (bool) $user->telegram_notifications_enabled,
                 'is_connected' => !empty($user->telegram_chat_id),
                 'bot_username' => $botUsername,
-                'connect_url' => "https://t.me/{$botUsername}?start={$user->uid}",
+            ],
+        ]);
+    }
+
+    public function createLinkToken(Request $request): JsonResponse
+    {
+        /** @var UserModel $user */
+        $user = UserModel::find($request->user()->id) ?? $request->user();
+
+        try {
+            $link = $this->telegramLinkService->createToken($user);
+        } catch (\DomainException $e) {
+            return response()->json([
+                'status' => 'error',
+                'message' => $e->getMessage(),
+            ], 409);
+        }
+
+        $botUsername = $this->telegramService->getBotUsername();
+
+        return response()->json([
+            'status' => 'success',
+            'data' => [
+                'connect_url' => "https://t.me/{$botUsername}?start={$link['token']}",
+                'expires_at' => $link['expires_at']->toIso8601String(),
             ],
         ]);
     }
@@ -37,13 +64,9 @@ class UserTelegramController extends Controller
         $user = UserModel::find($request->user()->id) ?? $request->user();
 
         $validated = $request->validate([
-            'telegram_chat_id' => 'nullable|string|max:100',
-            'telegram_notifications_enabled' => 'nullable|boolean',
+            'telegram_chat_id' => 'prohibited',
+            'telegram_notifications_enabled' => 'sometimes|boolean',
         ]);
-
-        if (array_key_exists('telegram_chat_id', $validated)) {
-            $user->telegram_chat_id = !empty($validated['telegram_chat_id']) ? trim($validated['telegram_chat_id']) : null;
-        }
 
         if (array_key_exists('telegram_notifications_enabled', $validated)) {
             $user->telegram_notifications_enabled = (bool) $validated['telegram_notifications_enabled'];
@@ -100,6 +123,9 @@ class UserTelegramController extends Controller
         $user = UserModel::find($request->user()->id) ?? $request->user();
         $user->telegram_chat_id = null;
         $user->save();
+        TelegramLinkTokenModel::where('user_id', $user->id)
+            ->whereNull('used_at')
+            ->delete();
 
         return response()->json([
             'status' => 'success',

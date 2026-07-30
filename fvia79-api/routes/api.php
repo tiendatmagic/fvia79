@@ -22,7 +22,8 @@ Route::prefix('v1')->group(function () {
     Route::get('/storefront/recent-deposits', ['App\Http\Controllers\StorefrontController', 'recentDeposits']);
     Route::get('/membership-tiers', ['App\Http\Controllers\AdminMembershipTierController', 'publicIndex']);
     Route::post('/tools/check-uid', ['App\Http\Controllers\CheckUidController', 'check'])->middleware('throttle:30,1');
-    Route::post('/telegram/webhook', ['App\Http\Controllers\TelegramWebhookController', 'handleWebhook']);
+    Route::post('/telegram/webhook', ['App\Http\Controllers\TelegramWebhookController', 'handleWebhook'])
+        ->middleware('throttle:60,1');
 
     Route::middleware(['b2b.auth'])->group(function () {
         Route::get('/b2b/products', ['App\Http\Controllers\B2bController', 'index']);
@@ -57,6 +58,8 @@ Route::prefix('v1')->group(function () {
         Route::delete('/user/sessions/others', ['App\Http\Controllers\UserSessionController', 'destroyOthers']);
         Route::delete('/user/sessions/{id}', ['App\Http\Controllers\UserSessionController', 'destroy']);
         Route::get('/user/telegram', ['App\Http\Controllers\UserTelegramController', 'getStatus']);
+        Route::post('/user/telegram/link-token', ['App\Http\Controllers\UserTelegramController', 'createLinkToken'])
+            ->middleware('throttle:5,1');
         Route::post('/user/telegram', ['App\Http\Controllers\UserTelegramController', 'updateStatus']);
         Route::post('/user/telegram/test', ['App\Http\Controllers\UserTelegramController', 'sendTestMessage']);
         Route::delete('/user/telegram', ['App\Http\Controllers\UserTelegramController', 'disconnect']);

@@ -32,4 +32,8 @@ return [
         'api_host' => env('BINANCE_API_HOST'),
     ],
 
+    'telegram' => [
+        'webhook_secret' => env('TELEGRAM_WEBHOOK_SECRET'),
+    ],
+
 ];
