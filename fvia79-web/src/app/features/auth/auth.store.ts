@@ -12,6 +12,7 @@ import { InventoryStore } from '../inventory/inventory.store';
 import { OrderStore } from '../orders/order.store';
 import { UserStore } from '../admin-users/user.store';
 import { SystemSettingStore } from '../admin-settings/system-setting.store';
+import { isDefinitiveAuthFailure } from '@core/utils/auth-error.utils';
 
 @Injectable({
   providedIn: 'root'
@@ -125,9 +126,14 @@ export class AuthStore {
           this.setFrontendLoggedInCookie();
         }
       }),
-      catchError(() => {
-        this.clearFrontendLoggedInCookie();
-        this.currentUser.set(null);
+      catchError((error) => {
+        // Reloading aborts in-flight HTTP requests with status 0. Network and
+        // server failures are also temporary, so only an explicit auth
+        // rejection is allowed to invalidate the local session marker.
+        if (isDefinitiveAuthFailure(error)) {
+          this.clearFrontendLoggedInCookie();
+          this.currentUser.set(null);
+        }
         return of(null);
       }),
       finalize(() => {

@@ -8,6 +8,7 @@ import { environment } from '@environments/environment';
 import { ToastService } from '@core/services/toast.service';
 import { UiStateService } from '@core/services/ui-state.service';
 import { AuthStore } from '../../features/auth/auth.store';
+import { isDefinitiveAuthFailure } from '@core/utils/auth-error.utils';
 
 let isRefreshing = false;
 const refreshDone$ = new BehaviorSubject<boolean | null>(null);
@@ -100,24 +101,29 @@ function handle401Error(
         isRefreshing = false;
         refreshDone$.next(false);
 
-        authStore.currentUser.set(null);
+        // An aborted refresh (status 0), timeout, rate limit, or server error
+        // does not prove that the refresh token is invalid. Preserve the
+        // session so a reload/retry can authenticate again.
+        if (isDefinitiveAuthFailure(refreshError)) {
+          authStore.currentUser.set(null);
 
-        if (typeof document !== 'undefined') {
-          document.cookie = 'auth_logged_in=; path=/; expires=Thu, 01 Jan 1970 00:00:00 GMT; SameSite=Lax';
-        }
+          if (typeof document !== 'undefined') {
+            document.cookie = 'auth_logged_in=; path=/; expires=Thu, 01 Jan 1970 00:00:00 GMT; SameSite=Lax';
+          }
 
-        const currentUrl = router.url || '';
-        const isPublicRoute = currentUrl === '/' ||
-                              currentUrl.startsWith('/storefront') ||
-                              currentUrl.startsWith('/login') ||
-                              currentUrl.startsWith('/register') ||
-                              currentUrl.startsWith('/check-uid') ||
-                              currentUrl.startsWith('/faq') ||
-                              currentUrl.startsWith('/contact') ||
-                              currentUrl.startsWith('/terms') ||
-                              currentUrl.startsWith('/privacy');
-        if (!isPublicRoute) {
-          router.navigate(['/login']);
+          const currentUrl = router.url || '';
+          const isPublicRoute = currentUrl === '/' ||
+                                currentUrl.startsWith('/storefront') ||
+                                currentUrl.startsWith('/login') ||
+                                currentUrl.startsWith('/register') ||
+                                currentUrl.startsWith('/check-uid') ||
+                                currentUrl.startsWith('/faq') ||
+                                currentUrl.startsWith('/contact') ||
+                                currentUrl.startsWith('/terms') ||
+                                currentUrl.startsWith('/privacy');
+          if (!isPublicRoute) {
+            router.navigate(['/login']);
+          }
         }
         return throwError(() => refreshError);
       })
