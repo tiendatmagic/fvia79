@@ -14,11 +14,13 @@ import { PaginationComponent } from '@shared/components/pagination/pagination.co
 import { ImportInventoryModalComponent } from './import-inventory-modal/import-inventory-modal.component';
 import { EditInventoryModalComponent } from './edit-inventory-modal/edit-inventory-modal.component';
 import { EditResourceItemModalComponent } from './edit-resource-item-modal/edit-resource-item-modal.component';
+import { CheckLiveResultsModalComponent } from './check-live-results-modal/check-live-results-modal.component';
 import { CustomSearchInputComponent } from '@shared/components/custom-search-input/custom-search-input.component';
 import { TooltipDirective } from '@shared/components/tooltip/tooltip.directive';
 import { ActivatedRoute, Router } from '@angular/router';
 import { TableComponent, TableCellDirective, TableColumn } from '@shared/components/table/table.component';
 import { TranslatePipe } from '@shared/pipes/translate.pipe';
+import { CustomCheckboxComponent } from '@shared/components/custom-checkbox/custom-checkbox.component';
 
 @Component({
   selector: 'app-inventory',
@@ -38,6 +40,7 @@ import { TranslatePipe } from '@shared/pipes/translate.pipe';
     PaginationComponent,
     TableComponent,
     TableCellDirective,
+    CustomCheckboxComponent,
     TranslatePipe
   ],
   templateUrl: './inventory.component.html',
@@ -56,10 +59,18 @@ export class InventoryComponent implements OnInit {
 
   public activeTab = signal<'batches' | 'resources'>('batches');
   public visibleSecrets = signal<Set<string>>(new Set());
+  public readonly selectedResourceIds = signal<Set<string>>(new Set<string>());
 
   public readonly resourceColumns = computed<TableColumn[]>(() => {
     this.lang.currentLang();
     return [
+      {
+        key: 'select',
+        label: '',
+        sortable: false,
+        headerClass: '!w-12 !px-4',
+        cellClass: '!w-12 !px-4',
+      },
       { key: 'id', label: this.lang.translate('common.id'), sortable: true },
       { key: 'product_name', label: this.lang.translate('modal.product_name'), sortable: true },
       { key: 'batch_name', label: this.lang.translate('inv.batch_name'), sortable: true },
@@ -138,7 +149,7 @@ export class InventoryComponent implements OnInit {
   ngOnInit() {
     const queryParams = this.route.snapshot.queryParams;
     const tabParam = queryParams['tab'];
-    if (tabParam === 'resources') {
+    if (tabParam === 'resources' || tabParam === 'resource') {
       this.activeTab.set('resources');
     } else {
       this.activeTab.set('batches');
@@ -157,7 +168,8 @@ export class InventoryComponent implements OnInit {
     });
 
     this.route.queryParams.subscribe(params => {
-      const currentTab = params['tab'] === 'resources' ? 'resources' : 'batches';
+      const currentTab =
+        params['tab'] === 'resources' || params['tab'] === 'resource' ? 'resources' : 'batches';
       if (currentTab !== this.activeTab()) {
         this.activeTab.set(currentTab);
         this.fetchData(1);
@@ -176,14 +188,15 @@ export class InventoryComponent implements OnInit {
     this.fetchData(1);
   }
 
-  public fetchData(page: number = 1) {
+  public fetchData(page: number = 1, silent: boolean = false) {
+    this.clearResourceSelection();
     if (this.activeTab() === 'resources') {
       this.currentResourcePage.set(page);
       this.state.inventoryStore.fetchResourceItems({
         product_id: this.selectedProductFilter || undefined,
         status: this.selectedStatusFilter || undefined,
         search: this._searchQuery().trim() || undefined
-      }, page, this.limit).subscribe();
+      }, page, this.limit, silent).subscribe();
     } else {
       this.currentBatchPage.set(page);
       this.state.inventoryStore.fetchItems({
@@ -211,6 +224,125 @@ export class InventoryComponent implements OnInit {
       current.add(id);
     }
     this.visibleSecrets.set(current);
+  }
+
+  public isResourceSelected(id: string): boolean {
+    return this.selectedResourceIds().has(id);
+  }
+
+  public toggleResourceSelection(id: string): void {
+    const selected = new Set(this.selectedResourceIds());
+    selected.has(id) ? selected.delete(id) : selected.add(id);
+    this.selectedResourceIds.set(selected);
+  }
+
+  public isAllResourcesOnPageSelected(): boolean {
+    const resources = this.state.inventoryStore.resourceItems();
+    return resources.length > 0 && resources.every(item => this.selectedResourceIds().has(item.id));
+  }
+
+  public toggleSelectAllResources(): void {
+    const selected = new Set(this.selectedResourceIds());
+    const resources = this.state.inventoryStore.resourceItems();
+
+    if (this.isAllResourcesOnPageSelected()) {
+      resources.forEach(item => selected.delete(item.id));
+    } else {
+      resources.forEach(item => selected.add(item.id));
+    }
+
+    this.selectedResourceIds.set(selected);
+  }
+
+  public clearResourceSelection(): void {
+    this.selectedResourceIds.set(new Set<string>());
+  }
+
+  public get selectedResources(): any[] {
+    const selectedIds = this.selectedResourceIds();
+    return this.state.inventoryStore.resourceItems().filter(item => selectedIds.has(item.id));
+  }
+
+  public selectedResourcesForStatus(status: 'available' | 'sold'): any[] {
+    return this.selectedResources.filter(item => item.status !== status);
+  }
+
+  public checkSelectedResourcesLive(): void {
+    const ids = Array.from(this.selectedResourceIds());
+    if (ids.length === 0) return;
+
+    if (ids.length > 10) {
+      this.state.showToast(this.lang.translate('inventory.check_live_max_error'), 'warning');
+      return;
+    }
+
+    this.state.inventoryStore.checkResourcesLive(ids).subscribe(response => {
+      if (!response?.data) return;
+
+      this.modalService.open(CheckLiveResultsModalComponent, {
+        title: this.lang.translate('inventory.check_live_results_title'),
+        size: '2xl',
+        data: response.data,
+      });
+    });
+  }
+
+  public bulkUpdateResourceStatus(status: 'available' | 'sold'): void {
+    const resources = this.selectedResourcesForStatus(status);
+    if (resources.length === 0) return;
+
+    const ids = resources.map(item => item.id);
+    if (this.state.inventoryStore.hasPendingResourceIds(ids)) return;
+
+    const statusLabel =
+      this.resourceStatusOptions.find(option => option.value === status)?.label || status;
+
+    this.modalService.confirm({
+      title: this.lang.translate('inventory.bulk_update_title'),
+      description: this.lang.translate('inventory.bulk_update_description', {
+        count: ids.length,
+        status: statusLabel,
+      }),
+      confirmText: this.lang.translate('inventory.bulk_update_status'),
+      cancelText: this.lang.translate('action.cancel'),
+    }).afterClosed$.subscribe((confirmed?: boolean) => {
+      if (!confirmed) return;
+
+      this.state.inventoryStore.bulkUpdateResourceStatus(ids, status).subscribe(res => {
+        if (res !== null) {
+          this.clearResourceSelection();
+          this.fetchData(this.currentResourcePage(), true);
+        }
+      });
+    });
+  }
+
+  public bulkDeleteResources(): void {
+    const ids = Array.from(this.selectedResourceIds());
+    if (ids.length === 0) return;
+    if (this.state.inventoryStore.hasPendingResourceIds(ids)) return;
+
+    this.modalService.confirm({
+      title: this.lang.translate('inventory.bulk_delete_title'),
+      description: this.lang.translate('inventory.bulk_delete_description', {
+        count: ids.length,
+      }),
+      confirmText: this.lang.translate('inventory.bulk_delete'),
+      cancelText: this.lang.translate('action.cancel'),
+      confirmButtonClass: 'btn-danger',
+    }).afterClosed$.subscribe((confirmed?: boolean) => {
+      if (!confirmed) return;
+
+      this.state.inventoryStore.bulkDeleteResources(ids).subscribe(res => {
+        if (res !== null) {
+          const remainingItems = this.state.inventoryStore.resourceTotalItems();
+          const lastRemainingPage = Math.max(1, Math.ceil(remainingItems / this.limit));
+          const targetPage = Math.min(this.currentResourcePage(), lastRemainingPage);
+          this.clearResourceSelection();
+          this.fetchData(targetPage, true);
+        }
+      });
+    });
   }
 
   public getMaskedSecret(secret: string, isVisible: boolean): string {
@@ -246,18 +378,22 @@ export class InventoryComponent implements OnInit {
   }
 
   public openEditResourceModal(item: any) {
+    if (this.state.inventoryStore.isResourcePending(item.id)) return;
+
     this.modalService.open(EditResourceItemModalComponent, {
       title: this.lang.translate('inventory.edit_resource_title'),
       size: 'lg',
       data: { item }
     }).afterClosed$.subscribe((success) => {
       if (success) {
-        this.fetchData(this.currentResourcePage());
+        this.fetchData(this.currentResourcePage(), true);
       }
     });
   }
 
   public confirmDeleteResourceItem(item: any) {
+    if (this.state.inventoryStore.isResourcePending(item.id)) return;
+
     const rawSecret = item?.secret_data || '';
     const uid = rawSecret.split('|')[0]?.trim() || rawSecret;
     const resourceDisplay = uid.length > 60 ? uid.substring(0, 60) + '...' : uid;
@@ -274,7 +410,11 @@ export class InventoryComponent implements OnInit {
       if (confirmed) {
         this.state.inventoryStore.deleteResourceItem(item.id).subscribe((res) => {
           if (res !== null) {
-            this.fetchData(this.currentResourcePage());
+            const lastRemainingPage = Math.max(
+              1,
+              Math.ceil(this.state.inventoryStore.resourceTotalItems() / this.limit)
+            );
+            this.fetchData(Math.min(this.currentResourcePage(), lastRemainingPage), true);
           }
         });
       }

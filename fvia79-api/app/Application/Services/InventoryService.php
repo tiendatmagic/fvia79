@@ -8,6 +8,9 @@ use App\Domain\Repositories\InventoryBatchRepositoryInterface;
 use App\Domain\Repositories\InventoryItemRepositoryInterface;
 use App\Domain\Repositories\ProductRepositoryInterface;
 use Illuminate\Support\Facades\Cache;
+use Illuminate\Support\Facades\DB;
+use App\Infrastructure\Persistence\Eloquent\InventoryBatchModel;
+use App\Infrastructure\Persistence\Eloquent\InventoryItemModel;
 
 class InventoryService
 {
@@ -228,5 +231,75 @@ class InventoryService
         }
 
         return $deleted;
+    }
+
+    public function bulkUpdateResourceItemStatus(array $resourceIds, string $status): int
+    {
+        return DB::transaction(function () use ($resourceIds, $status): int {
+            $items = InventoryItemModel::whereIn('id', array_unique($resourceIds))
+                ->lockForUpdate()
+                ->get(['id', 'batch_id']);
+
+            if ($items->isEmpty()) {
+                return 0;
+            }
+
+            $updates = ['status' => $status];
+            if ($status === 'available') {
+                $updates += ['order_id' => null, 'sold_at' => null];
+            } else {
+                $updates['sold_at'] = now();
+            }
+
+            $updatedCount = InventoryItemModel::whereIn('id', $items->pluck('id'))->update($updates);
+            $this->syncBatchCounters($items->pluck('batch_id')->all());
+            Cache::forget('products_active_storefront');
+
+            return $updatedCount;
+        });
+    }
+
+    public function bulkDeleteResourceItems(array $resourceIds): int
+    {
+        return DB::transaction(function () use ($resourceIds): int {
+            $items = InventoryItemModel::whereIn('id', array_unique($resourceIds))
+                ->lockForUpdate()
+                ->get(['id', 'batch_id']);
+
+            if ($items->isEmpty()) {
+                return 0;
+            }
+
+            $deletedCount = InventoryItemModel::whereIn('id', $items->pluck('id'))->delete();
+            $this->syncBatchCounters($items->pluck('batch_id')->all());
+            Cache::forget('products_active_storefront');
+
+            return $deletedCount;
+        });
+    }
+
+    private function syncBatchCounters(array $batchIds): void
+    {
+        foreach (array_unique(array_filter($batchIds)) as $batchId) {
+            $batch = InventoryBatchModel::whereKey($batchId)->lockForUpdate()->first();
+            if (! $batch) {
+                continue;
+            }
+
+            $items = InventoryItemModel::where('batch_id', $batchId);
+            $initialCount = (clone $items)->count();
+            $availableCount = (clone $items)->where('status', 'available')->count();
+            $soldCount = (clone $items)->where('status', 'sold')->count();
+
+            $updates = [
+                'initial_count' => $initialCount,
+                'sold_count' => $soldCount,
+            ];
+            if ($batch->status !== 'inactive') {
+                $updates['status'] = $availableCount > 0 ? 'active' : 'completed';
+            }
+
+            $batch->update($updates);
+        }
     }
 }

@@ -152,6 +152,9 @@ Route::prefix('v1')->group(function () {
             Route::delete('/inventory/items/{id}', ['App\Http\Controllers\InventoryController', 'destroy']);
 
             Route::get('/inventory/resource-items', ['App\Http\Controllers\InventoryController', 'listResourceItems']);
+            Route::post('/inventory/resource-items/check-live', ['App\Http\Controllers\InventoryController', 'checkResourceItemsLive']);
+            Route::post('/inventory/resource-items/bulk-status', ['App\Http\Controllers\InventoryController', 'bulkUpdateResourceItemStatus']);
+            Route::post('/inventory/resource-items/bulk-delete', ['App\Http\Controllers\InventoryController', 'bulkDestroyResourceItems']);
             Route::put('/inventory/resource-items/{id}', ['App\Http\Controllers\InventoryController', 'updateResourceItem']);
             Route::delete('/inventory/resource-items/{id}', ['App\Http\Controllers\InventoryController', 'destroyResourceItem']);
 

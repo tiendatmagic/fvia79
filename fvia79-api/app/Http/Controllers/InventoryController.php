@@ -4,16 +4,22 @@ namespace App\Http\Controllers;
 
 use App\Http\Requests\ImportInventoryRequest;
 use App\Http\Requests\UpdateInventoryRequest;
+use App\Application\Services\AccountCheckLiveService;
 use App\Application\Services\InventoryService;
+use App\Infrastructure\Persistence\Eloquent\InventoryItemModel;
 use Illuminate\Http\Request;
 
 class InventoryController extends Controller
 {
     private InventoryService $inventoryService;
+    private AccountCheckLiveService $accountCheckLiveService;
 
-    public function __construct(InventoryService $inventoryService)
-    {
+    public function __construct(
+        InventoryService $inventoryService,
+        AccountCheckLiveService $accountCheckLiveService
+    ) {
         $this->inventoryService = $inventoryService;
+        $this->accountCheckLiveService = $accountCheckLiveService;
     }
 
     public function import(ImportInventoryRequest $request)
@@ -248,6 +254,101 @@ class InventoryController extends Controller
             ]);
         } catch (\Throwable $e) {
             return $this->serverError($e, 'Failed to update resource item.');
+        }
+    }
+
+    public function checkResourceItemsLive(Request $request)
+    {
+        $validated = $request->validate([
+            'resource_ids' => ['required', 'array', 'min:1', 'max:10'],
+            'resource_ids.*' => ['required', 'uuid', 'distinct', 'exists:inventory_items,id'],
+        ]);
+
+        try {
+            $itemsById = InventoryItemModel::whereIn('id', $validated['resource_ids'])
+                ->get(['id', 'secret_data', 'status'])
+                ->keyBy(fn (InventoryItemModel $item) => (string) $item->id);
+
+            $items = collect($validated['resource_ids'])
+                ->map(fn (string $id) => $itemsById->get($id))
+                ->filter()
+                ->values();
+
+            $checkResults = $this->accountCheckLiveService->checkBatch(
+                $items->pluck('secret_data')->all()
+            );
+
+            $results = $items->map(function (InventoryItemModel $item, int $index) use ($checkResults) {
+                $result = $checkResults[$index] ?? [
+                    'status' => 'die',
+                    'uid' => null,
+                    'reason' => 'no_response',
+                ];
+
+                return [
+                    'resource_id' => (string) $item->id,
+                    'uid' => $result['uid'],
+                    'status' => $result['status'],
+                    'reason' => $result['reason'],
+                    'inventory_status' => $item->status,
+                ];
+            })->all();
+
+            return response()->json([
+                'message' => 'Resource live check completed.',
+                'data' => [
+                    'total' => count($results),
+                    'live_count' => collect($results)->where('status', 'live')->count(),
+                    'die_count' => collect($results)->where('status', 'die')->count(),
+                    'results' => $results,
+                ],
+            ]);
+        } catch (\Throwable $e) {
+            return $this->serverError($e, 'Failed to check resource live statuses.');
+        }
+    }
+
+    public function bulkUpdateResourceItemStatus(Request $request)
+    {
+        $validated = $request->validate([
+            'resource_ids' => ['required', 'array', 'min:1', 'max:500'],
+            'resource_ids.*' => ['required', 'uuid', 'distinct', 'exists:inventory_items,id'],
+            'status' => ['required', 'string', 'in:available,sold'],
+        ]);
+
+        try {
+            $updatedCount = $this->inventoryService->bulkUpdateResourceItemStatus(
+                $validated['resource_ids'],
+                $validated['status']
+            );
+
+            return response()->json([
+                'message' => 'Resource statuses updated successfully.',
+                'updated_count' => $updatedCount,
+            ]);
+        } catch (\Throwable $e) {
+            return $this->serverError($e, 'Failed to update resource statuses.');
+        }
+    }
+
+    public function bulkDestroyResourceItems(Request $request)
+    {
+        $validated = $request->validate([
+            'resource_ids' => ['required', 'array', 'min:1', 'max:500'],
+            'resource_ids.*' => ['required', 'uuid', 'distinct', 'exists:inventory_items,id'],
+        ]);
+
+        try {
+            $deletedCount = $this->inventoryService->bulkDeleteResourceItems(
+                $validated['resource_ids']
+            );
+
+            return response()->json([
+                'message' => 'Resources deleted successfully.',
+                'deleted_count' => $deletedCount,
+            ]);
+        } catch (\Throwable $e) {
+            return $this->serverError($e, 'Failed to delete resources.');
         }
     }
 

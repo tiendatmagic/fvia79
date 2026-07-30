@@ -1,9 +1,66 @@
 <div class="max-w-[1530px] mx-auto w-full px-4 sm:px-6 py-6 space-y-6">
-  <app-page-header [title]="'inv.title' | translate" [description]="'inv.description' | translate">
+  <app-page-header
+    [title]="'inv.title' | translate"
+    [description]="'inv.description' | translate"
+    [containerClass]="
+      selectedResourceIds().size > 0
+        ? 'flex flex-col justify-between gap-4 mb-6'
+        : 'flex flex-col xl:flex-row xl:items-center justify-between gap-4 mb-6'
+    "
+    actionsClass="grid grid-cols-1 sm:flex sm:items-center gap-2.5 sm:gap-3 shrink-0 sm:flex-wrap w-full xl:w-auto justify-start xl:justify-end"
+  >
     <ng-container actions>
       <button
+        *ngIf="activeTab() === 'resources' && selectedResourceIds().size > 0"
+        (click)="checkSelectedResourcesLive()"
+        [disabled]="state.inventoryStore.checkLiveLoading() || state.inventoryStore.hasPendingResourceIds(selectedResourceIds())"
+        class="px-4 py-2.5 text-sm font-extrabold text-violet-700 dark:text-violet-300 bg-violet-50 dark:bg-violet-950/30 border border-violet-200 dark:border-violet-800/80 rounded-xl hover:bg-violet-100 dark:hover:bg-violet-900/50 transition-all cursor-pointer disabled:opacity-60 disabled:cursor-wait flex items-center justify-center gap-1.5 whitespace-nowrap"
+        [appTooltip]="'inventory.check_live_max_hint' | translate"
+      >
+        <app-icon
+          [name]="state.inventoryStore.checkLiveLoading() ? 'sync' : 'check-uid'"
+          class="w-4 h-4"
+          [class.animate-spin]="state.inventoryStore.checkLiveLoading()"
+        />
+        {{ 'inventory.check_live_selected' | translate }}
+        ({{ selectedResourceIds().size }}/10)
+      </button>
+
+      <button
+        *ngIf="activeTab() === 'resources' && selectedResourcesForStatus('available').length > 0"
+        (click)="bulkUpdateResourceStatus('available')"
+        [disabled]="state.inventoryStore.hasPendingResourceIds(selectedResourceIds())"
+        class="px-4 py-2.5 text-sm font-extrabold text-emerald-700 dark:text-emerald-400 bg-emerald-50 dark:bg-emerald-950/30 border border-emerald-200 dark:border-emerald-800/80 rounded-xl hover:bg-emerald-100 dark:hover:bg-emerald-900/50 transition-all cursor-pointer disabled:opacity-60 disabled:cursor-wait flex items-center justify-center gap-1.5 whitespace-nowrap"
+      >
+        <app-icon name="check-circle" class="w-4 h-4" />
+        {{ 'inventory.bulk_mark_available' | translate }}
+        ({{ selectedResourcesForStatus('available').length }})
+      </button>
+
+      <button
+        *ngIf="activeTab() === 'resources' && selectedResourcesForStatus('sold').length > 0"
+        (click)="bulkUpdateResourceStatus('sold')"
+        [disabled]="state.inventoryStore.hasPendingResourceIds(selectedResourceIds())"
+        class="px-4 py-2.5 text-sm font-extrabold text-sky-700 dark:text-sky-400 bg-sky-50 dark:bg-sky-950/30 border border-sky-200 dark:border-sky-800/80 rounded-xl hover:bg-sky-100 dark:hover:bg-sky-900/50 transition-all cursor-pointer disabled:opacity-60 disabled:cursor-wait flex items-center justify-center gap-1.5 whitespace-nowrap"
+      >
+        <app-icon name="package" class="w-4 h-4" />
+        {{ 'inventory.bulk_mark_sold' | translate }}
+        ({{ selectedResourcesForStatus('sold').length }})
+      </button>
+
+      <button
+        *ngIf="activeTab() === 'resources' && selectedResourceIds().size > 0"
+        (click)="bulkDeleteResources()"
+        [disabled]="state.inventoryStore.hasPendingResourceIds(selectedResourceIds())"
+        class="px-4 py-2.5 text-sm font-extrabold text-rose-600 dark:text-rose-400 bg-rose-50 dark:bg-rose-950/30 border border-rose-200 dark:border-rose-800/80 rounded-xl hover:bg-rose-100 dark:hover:bg-rose-900/50 transition-all cursor-pointer disabled:opacity-60 disabled:cursor-wait flex items-center justify-center gap-1.5 whitespace-nowrap"
+      >
+        <app-icon name="trash" class="w-4 h-4" />
+        {{ 'inventory.bulk_delete' | translate }} ({{ selectedResourceIds().size }})
+      </button>
+
+      <button
         (click)="fetchData(activeTab() === 'batches' ? currentBatchPage() : currentResourcePage())"
-        class="px-4 py-2.5 text-sm font-extrabold text-slate-600 dark:text-slate-400 hover:text-primary bg-white dark:bg-slate-950 border border-slate-200/60 dark:border-slate-800/80 rounded-xl hover:bg-slate-50 dark:hover:bg-slate-900 transition-all cursor-pointer flex items-center gap-1.5 shadow-sm"
+        class="px-4 py-2.5 text-sm font-extrabold text-slate-600 dark:text-slate-400 hover:text-primary bg-white dark:bg-slate-950 border border-slate-200/60 dark:border-slate-800/80 rounded-xl hover:bg-slate-50 dark:hover:bg-slate-900 transition-all cursor-pointer flex items-center justify-center gap-1.5 shadow-sm whitespace-nowrap"
         [appTooltip]="'common.reload' | translate"
       >
         <app-icon name="sync" class="w-4 h-4" />
@@ -13,7 +70,7 @@
         app-button
         (click)="openImportDrawer()"
         variant="primary"
-        class="flex items-center gap-2 py-2.5 px-4 rounded-xl bg-gradient-to-r from-[var(--color-primary)] to-[var(--color-secondary)] text-white font-extrabold shadow-md shadow-[var(--color-primary)]/15 active:scale-95 transition-all text-sm cursor-pointer"
+        class="flex items-center justify-center gap-2 py-2.5 px-4 rounded-xl bg-gradient-to-r from-[var(--color-primary)] to-[var(--color-secondary)] text-white font-extrabold shadow-md shadow-[var(--color-primary)]/15 active:scale-95 transition-all text-sm cursor-pointer whitespace-nowrap"
         [appTooltip]="'action.import_stock' | translate"
       >
         <app-icon name="upload" class="w-5 h-5" />
@@ -257,6 +314,21 @@
         [loading]="state.inventoryStore.resourceLoading()"
         [emptyText]="'inventory.no_resources' | translate"
       >
+        <ng-template appTableCell="select_header">
+          <app-custom-checkbox
+            [checked]="isAllResourcesOnPageSelected()"
+            (checkedChange)="toggleSelectAllResources()"
+          />
+        </ng-template>
+
+        <ng-template appTableCell="select" let-row="row">
+          <app-custom-checkbox
+            [checked]="isResourceSelected(row.id)"
+            [disabled]="state.inventoryStore.isResourcePending(row.id)"
+            (checkedChange)="toggleResourceSelection(row.id)"
+          />
+        </ng-template>
+
         <ng-template appTableCell="id" let-row="row">
           <div class="flex items-center gap-1.5">
             <span
@@ -353,18 +425,28 @@
           <div class="flex items-center justify-end gap-2 whitespace-nowrap">
             <button
               (click)="openEditResourceModal(row)"
-              class="text-xs font-bold px-3 py-1.5 rounded-lg border border-[var(--color-primary)]/20 hover:bg-[var(--color-primary)]/10 text-[var(--color-primary)] bg-[var(--color-primary)]/5 dark:bg-[var(--color-primary)]/10 hover:scale-105 active:scale-95 transition-all cursor-pointer flex items-center gap-1"
+              [disabled]="state.inventoryStore.isResourcePending(row.id)"
+              class="text-xs font-bold px-3 py-1.5 rounded-lg border border-[var(--color-primary)]/20 hover:bg-[var(--color-primary)]/10 text-[var(--color-primary)] bg-[var(--color-primary)]/5 dark:bg-[var(--color-primary)]/10 hover:scale-105 active:scale-95 transition-all cursor-pointer disabled:opacity-60 disabled:cursor-wait disabled:hover:scale-100 flex items-center gap-1"
               [appTooltip]="'inventory.edit_resource_tooltip' | translate"
             >
-              <app-icon name="edit" class="w-3.5 h-3.5" />
+              @if (state.inventoryStore.resourcePendingOperation(row.id) === 'update') {
+                <app-icon name="sync" class="w-3.5 h-3.5 animate-spin" />
+              } @else {
+                <app-icon name="edit" class="w-3.5 h-3.5" />
+              }
               <span>{{ 'action.edit' | translate }}</span>
             </button>
             <button
               (click)="confirmDeleteResourceItem(row)"
-              class="text-xs font-bold px-3 py-1.5 rounded-lg border border-rose-500/20 hover:bg-rose-100 dark:hover:bg-rose-950/40 text-rose-600 dark:text-rose-400 bg-rose-50 dark:bg-rose-950/20 hover:scale-105 active:scale-95 transition-all cursor-pointer flex items-center gap-1"
+              [disabled]="state.inventoryStore.isResourcePending(row.id)"
+              class="text-xs font-bold px-3 py-1.5 rounded-lg border border-rose-500/20 hover:bg-rose-100 dark:hover:bg-rose-950/40 text-rose-600 dark:text-rose-400 bg-rose-50 dark:bg-rose-950/20 hover:scale-105 active:scale-95 transition-all cursor-pointer disabled:opacity-60 disabled:cursor-wait disabled:hover:scale-100 flex items-center gap-1"
               [appTooltip]="'inventory.delete_resource_tooltip' | translate"
             >
-              <app-icon name="trash" class="w-3.5 h-3.5" />
+              @if (state.inventoryStore.resourcePendingOperation(row.id) === 'delete') {
+                <app-icon name="sync" class="w-3.5 h-3.5 animate-spin" />
+              } @else {
+                <app-icon name="trash" class="w-3.5 h-3.5" />
+              }
               <span>{{ 'action.delete' | translate }}</span>
             </button>
           </div>
