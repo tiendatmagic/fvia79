@@ -729,6 +729,7 @@ export class StorefrontComponent implements OnInit, OnDestroy {
       this.state.showToast(this.lang.translate('storefront.out_of_stock'), 'warning');
       return;
     }
+    this.state.authStore.checkMe(true).subscribe();
     this.cart.setSingleProduct(product, 1);
     this.modalService
       .open(CartModalComponent, {

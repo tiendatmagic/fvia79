@@ -258,10 +258,14 @@ export class InventoryComponent implements OnInit {
   }
 
   public confirmDeleteResourceItem(item: any) {
+    const rawSecret = item?.secret_data || '';
+    const uid = rawSecret.split('|')[0]?.trim() || rawSecret;
+    const resourceDisplay = uid.length > 60 ? uid.substring(0, 60) + '...' : uid;
+
     this.modalService.confirm({
       title: this.lang.translate('inventory.delete_resource_title'),
       description: this.lang.translate('inventory.delete_resource_description', {
-        resource: item.secret_data,
+        resource: resourceDisplay,
       }),
       confirmText: this.lang.translate('action.delete'),
       cancelText: this.lang.translate('action.cancel'),

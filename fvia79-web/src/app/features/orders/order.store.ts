@@ -1,6 +1,7 @@
-import { Injectable, inject, signal } from '@angular/core';
+import { Injectable, inject, signal, Injector } from '@angular/core';
 import { HttpParams } from '@angular/common/http';
 import { ApiService } from '@core/services/api.service';
+import { AuthStore } from '@features/auth/auth.store';
 import { StorefrontActivityStore } from '@core/services/storefront-activity.store';
 import { ToastService } from '@core/services/toast.service';
 import { LanguageService } from '@core/services/language.service';
@@ -12,9 +13,14 @@ import { of, Subscription, Subject } from 'rxjs';
 })
 export class OrderStore {
   private readonly api = inject(ApiService);
+  private readonly injector = inject(Injector);
   private readonly storefrontActivityStore = inject(StorefrontActivityStore);
   private readonly toast = inject(ToastService);
   public readonly lang = inject(LanguageService);
+
+  private get authStore(): AuthStore {
+    return this.injector.get(AuthStore);
+  }
 
   private activeFetchOrdersSub?: Subscription;
 
@@ -145,6 +151,17 @@ export class OrderStore {
         this.fetchOrders().subscribe();
       }),
       catchError((err) => {
+        if (err.error?.user) {
+          this.authStore.currentUser.set(err.error.user);
+        } else if (err.error?.balance !== undefined) {
+          const curUser = this.authStore.currentUser();
+          if (curUser) {
+            this.authStore.currentUser.set({
+              ...curUser,
+              balance: Number(err.error.balance),
+            });
+          }
+        }
         const msg = err.error?.message || this.lang.translate('toast.order_failed');
         this.toast.showToast(msg, 'error');
         return of(null);

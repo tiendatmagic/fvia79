@@ -772,7 +772,7 @@ export const EN_TRANSLATIONS: Record<string, string> = {
   'error.active_deposit': 'You already have an active deposit order. Cancel it before creating a new one.',
   'error.email_taken': 'This email is already in use. Please choose another email!',
   'error.forbidden': 'Access denied!',
-  'error.insufficient_balance_detail': 'Your account balance ({{balance}}) is insufficient to pay for this order ({{total}}).',
+  'error.insufficient_balance_detail': 'Your account balance is insufficient to pay for this order.',
   'error.insufficient_stock': 'Insufficient inventory for this product!',
   'error.insufficient_stock_detail': 'Product "{{name}}" only has {{available}} items in stock (requested {{requested}}).',
   'error.invalid_credentials': 'Invalid email/username or password!',

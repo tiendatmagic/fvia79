@@ -290,10 +290,7 @@ export class ToastService {
       /^Insufficient balance to pay for the order \(Required: ([\d,.]+) USD, Current: ([\d,.]+) USD\)\.$/i
     );
     if (insufficientBalance) {
-      return this.languageService.translate('error.insufficient_balance_detail', {
-        required: insufficientBalance[1],
-        current: insufficientBalance[2]
-      });
+      return this.languageService.translate('error.insufficient_balance_detail');
     }
 
     const minimumCart = normalized.match(/^Cart total must be at least ([\d,.]+) USD\.$/i);

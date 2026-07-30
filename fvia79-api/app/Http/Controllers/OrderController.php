@@ -59,7 +59,12 @@ class OrderController extends Controller
                 ],
             ], $isPending ? 202 : 201);
         } catch (OrderException $e) {
-            return response()->json(['message' => $e->getMessage()], 400);
+            $freshUser = Auth::user() ? Auth::user()->fresh() : null;
+            $payload = ['message' => $e->getMessage()];
+            if ($freshUser) {
+                $payload['balance'] = (float) $freshUser->balance;
+            }
+            return response()->json($payload, 400);
         } catch (\Throwable $e) {
             return $this->serverError($e, 'Failed to create order.');
         }

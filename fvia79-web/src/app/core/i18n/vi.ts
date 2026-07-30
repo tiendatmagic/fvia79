@@ -772,7 +772,7 @@ export const VI_TRANSLATIONS: Record<string, string> = {
   'error.active_deposit': 'Bạn đang có một lệnh nạp tiền chưa hoàn tất. Vui lòng hủy lệnh trước khi tạo lệnh mới.',
   'error.email_taken': 'Email này đã được sử dụng. Vui lòng chọn email khác!',
   'error.forbidden': 'Bạn không có quyền truy cập!',
-  'error.insufficient_balance_detail': 'Số dư tài khoản của bạn ({{balance}}) không đủ để thanh toán đơn hàng ({{total}}).',
+  'error.insufficient_balance_detail': 'Số dư tài khoản của bạn không đủ để thanh toán đơn hàng.',
   'error.insufficient_stock': 'Không đủ hàng trong kho cho sản phẩm này!',
   'error.insufficient_stock_detail': 'Sản phẩm "{{name}}" chỉ còn {{available}} sản phẩm trong kho (bạn yêu cầu {{requested}}).',
   'error.invalid_credentials': 'Tài khoản hoặc mật khẩu không chính xác!',

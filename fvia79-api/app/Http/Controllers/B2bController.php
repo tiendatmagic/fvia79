@@ -155,7 +155,12 @@ class B2bController extends Controller
                 'accounts' => $accounts,
             ], $isPending ? 202 : 200);
         } catch (OrderException $e) {
-            return response()->json(['success' => false, 'message' => $e->getMessage()], 400);
+            $freshUser = Auth::user() ? Auth::user()->fresh() : null;
+            $payload = ['success' => false, 'message' => $e->getMessage()];
+            if ($freshUser) {
+                $payload['balance'] = (float) $freshUser->balance;
+            }
+            return response()->json($payload, 400);
         } catch (\Throwable $e) {
             return $this->serverError($e, 'Failed to create B2B order.');
         }

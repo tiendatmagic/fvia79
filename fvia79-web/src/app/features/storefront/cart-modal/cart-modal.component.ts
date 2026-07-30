@@ -163,7 +163,6 @@ export class CartModalComponent implements OnInit {
         if (res && res.user) {
           this.state.authStore.currentUser.set(res.user);
         }
-        this.state.authStore.checkMe(true).subscribe();
         this.cart.clearCart();
         this.checkoutIdempotencyKey = this.createIdempotencyKey();
         this.state.orderStore.clearCache();
@@ -176,6 +175,17 @@ export class CartModalComponent implements OnInit {
         this.modalRef.close('success');
       },
       error: (err) => {
+        if (err.error?.user) {
+          this.state.authStore.currentUser.set(err.error.user);
+        } else if (err.error?.balance !== undefined) {
+          const curUser = this.state.authStore.currentUser();
+          if (curUser) {
+            this.state.authStore.currentUser.set({
+              ...curUser,
+              balance: Number(err.error.balance),
+            });
+          }
+        }
         const rawMsg = err.error?.message;
         const msg = typeof rawMsg === 'string' ? rawMsg : this.lang.translate('toast.order_failed');
         this.state.showToast(msg, 'error');
