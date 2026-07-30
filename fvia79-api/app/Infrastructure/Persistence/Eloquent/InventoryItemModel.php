@@ -2,12 +2,12 @@
 
 namespace App\Infrastructure\Persistence\Eloquent;
 
-use Illuminate\Database\Eloquent\Model;
-use Illuminate\Database\Eloquent\Concerns\HasUuids;
 use Illuminate\Database\Eloquent\Attributes\Fillable;
+use Illuminate\Database\Eloquent\Concerns\HasUuids;
+use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
-use Illuminate\Support\Str;
 use Illuminate\Support\Facades\Crypt;
+use Illuminate\Support\Str;
 
 #[Fillable(['batch_id', 'product_id', 'secret_data', 'normalized_secret_data', 'status', 'order_id', 'sold_at'])]
 class InventoryItemModel extends Model
@@ -15,6 +15,13 @@ class InventoryItemModel extends Model
     use HasUuids, NormalizeTextTrait;
 
     protected $table = 'inventory_items';
+
+    protected function casts(): array
+    {
+        return [
+            'sold_at' => 'datetime',
+        ];
+    }
 
     protected static function booted()
     {
@@ -44,6 +51,7 @@ class InventoryItemModel extends Model
     {
         if (empty($value)) {
             $this->attributes['secret_data'] = '';
+
             return;
         }
 
