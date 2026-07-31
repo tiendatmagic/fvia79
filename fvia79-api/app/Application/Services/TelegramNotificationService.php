@@ -5,6 +5,7 @@ namespace App\Application\Services;
 use App\Domain\Entities\InventoryBatch;
 use App\Domain\Entities\Order;
 use App\Domain\Entities\Product;
+use App\Infrastructure\Persistence\Eloquent\ProductModel;
 use App\Infrastructure\Persistence\Eloquent\SystemSettingModel;
 use App\Infrastructure\Persistence\Eloquent\UserModel;
 use Illuminate\Support\Facades\Http;
@@ -158,9 +159,17 @@ class TelegramNotificationService
         $totalUsd = number_format($order->getTotalPrice(), 2);
         $orderCode = $order->getOrderCode();
 
+        $productIds = array_values(array_filter(array_map(fn ($item) => $item->getProductId(), $order->getItems())));
+        $products = !empty($productIds)
+            ? ProductModel::whereIn('id', $productIds)->get()->keyBy('id')
+            : collect();
+
         $itemsSummary = '';
         foreach ($order->getItems() as $item) {
-            $prodName = $item->getProductName();
+            $productModel = $products->get($item->getProductId());
+            $prodName = $productModel
+                ? ($productModel->getLocalizedName('en') ?: $item->getProductName())
+                : $item->getProductName();
             $qty = $item->getQuantity();
             $priceUsd = number_format($item->getPrice(), 2);
             $itemsSummary .= "• <b>{$prodName}</b> x {$qty} (<b>\${$priceUsd}</b>/item)\n";
