@@ -19,21 +19,33 @@
 > 1. Cronjob Scheduler (`schedule:run`) **CHỈ ĐƯỢC CHẠY DƯỚI USER `www-data`** (`crontab -u www-data -e`). **TUYỆT ĐỐI KHÔNG cài dưới `root`** vì sẽ gây ra lỗi `500 Permission denied` khi người dùng thực hiện thao tác Web/API.
 > 2. Luôn cấp quyền `chmod -R 777` và `chown -R www-data:www-data` cho `storage` & `bootstrap/cache`. Khi gõ lệnh CLI thủ công trên VPS, luôn chạy dưới quyền `www-data` (`su -s /bin/bash www-data -c "php artisan <cmd>"`).
 
-### [2026-07-31] Chuyển Giao Diện "Quên Mật Khẩu" Trực Tiếp Vào Auth Card Box (/forgot-password), Chuẩn Hóa Nút Copy Trống Lệch & Nút Telegram Support Size Medium Cho 3 Dự Án (FVIA79, ADSBM79, ISOCALMARKET)
+### [2026-07-31] Triển Khai (Deploy) Chỉ Frontend (FE) Giữ Nguyên CSDL Cho 3 Dự Án (FVIA79, ADSBM79, ISOCALMARKET)
 - **Mô tả yêu cầu**:
-  Chuyển đổi cách hiển thị thông tin "Quên mật khẩu" từ dạng trang riêng biệt sang dạng hiển thị trực tiếp **ngay trên form thuộc Auth Card Box** (`AuthLayoutComponent`) khi nhấp vào "Quên mật khẩu?", đồng thời đồng bộ URL `/forgot-password`. Cập nhật nút sao chép liên kết (Copy button) thành hình vuông chuẩn `w-9 h-9 flex items-center justify-center` và nâng kích thước nút hành động "Liên hệ Telegram Support" thành dạng `size="md"` (`py-3 text-sm rounded-xl`) tránh chiều cao bị nhỏ.
+  Triển khai (deploy) bản nâng cấp giao diện Frontend Angular mới nhất cho 3 dự án (**FVIA79**, **ADSBM79**, **ISOCALMARKET**) lên 3 VPS tương ứng theo thông tin tệp `deploy.md`. Chỉ cập nhật phần Frontend (FE), giữ nguyên 100% CSDL và tệp cấu hình `.env`, không đụng chạm đến phpMyAdmin.
+- **Thực hiện xử lý**:
+  - **Biên dịch Frontend (Local)**:
+    - `d:\git\fvia79\fvia79-web`: Biên dịch `npm run build` thành công, nén `frontend-dist.tar.gz`.
+    - `d:\git\adsbm79\adsbm79-web`: Biên dịch `npm run build` thành công, nén `frontend-dist.tar.gz`.
+    - `d:\git\isocalmarket\isocalmarket-web`: Biên dịch `npm run build` thành công, nén `frontend-dist.tar.gz`.
+  - **Triển khai VPS**:
+    - **FVIA79 (`38.180.150.246`)**: Upload và giải nén giao diện mới vào `/var/www/fvia79-web`, phân quyền `chown -R www-data:www-data` & `chmod -R 755`.
+    - **ADSBM79 (`103.68.109.73`)**: Upload và giải nén giao diện mới vào `/var/www/adsbm79-web`, phân quyền `chown -R www-data:www-data` & `chmod -R 755`.
+    - **ISOCALMARKET (`103.68.109.109`)**: Upload và giải nén giao diện mới vào `/var/www/isocalmarket-web` với quyền `sudo`, phân quyền `chown -R www-data:www-data` & `chmod -R 755`.
+- **Kiểm thử nghiệm thu Website & API (HTTP 200 OK)**:
+  - **FVIA79**: `https://fvia79.com/` (200 OK), `https://fvia79.com/api/v1/categories` (200 OK), `https://fvia79.com/api/v1/products/grouped` (200 OK).
+  - **ADSBM79**: `https://adsbm79.com/` (200 OK), `https://adsbm79.com/api/v1/categories` (200 OK), `https://adsbm79.com/api/v1/products/grouped` (200 OK).
+  - **ISOCALMARKET**: `https://isocalmarket.com/` (200 OK), `https://isocalmarket.com/api/v1/categories` (200 OK), `https://isocalmarket.com/api/v1/products/grouped` (200 OK).
+
+### [2026-07-31] Đồng Bộ Giao Diện & Màu Sắc "Quay Lại Đăng Nhập" Khớp 100% Với Footer Auth Card Box Cho 3 Dự Án (FVIA79, ADSBM79, ISOCALMARKET)
+- **Mô tả yêu cầu**:
+  Đồng bộ phong cách thiết kế, typography và cấu hình màu sắc CSS của phần chuyển hướng quay lại đăng nhập ở tab Quên mật khẩu khớp 100% với liên kết "Chưa có tài khoản? Đăng ký ngay" và "Đã có tài khoản? Đăng nhập".
 - **Thực hiện xử lý**:
   - **Frontend Web (`fvia79-web`, `adsbm79-web`, `isocalmarket-web`)**:
-    - `auth-layout.component.ts`: Mở rộng signal `activeTab = signal<'login' | 'register' | 'forgot-password'>('login')`, lắng nghe `NavigationEnd` tự chuyển tab `'forgot-password'` khi URL chứa `/forgot-password`, tự động gọi `PublicSettingStore.fetchPublicSettings()`.
-    - `auth-layout.component.html`:
-      - Thêm `@if (activeTab() === 'forgot-password')` hiển thị thông tin hướng dẫn, Telegram Support/Bot contact cards và nút "Quay lại Đăng nhập".
-      - Sửa liên kết "Quên mật khẩu?" tại form Login thành `(click)="switchTab('forgot-password'); $event.preventDefault()"`.
-      - Sửa nút sao chép liên kết từ `p-1.5` thành `w-9 h-9 rounded-xl flex items-center justify-center shrink-0 shadow-xs` vuông góc đồng đều với icon avatar bên trái.
-      - Sửa nút "Liên hệ Telegram Support" từ `size="sm"` (`py-2.5 text-xs`) sang `size="md"` (`py-3 text-sm font-extrabold shadow-md shadow-blue-500/15`).
-    - `app.routes.ts`: Cập nhật route `path: 'forgot-password'` trỏ về `AuthLayoutComponent`.
-    - Dọn dẹp folder component cũ `src/app/features/forgot-password`.
+    - `auth-layout.component.html`: Thay thế nút bấm đơn màu cũ bằng cấu trúc tiêu chuẩn:
+      - Đoạn văn tiền tố: `text-slate-600 dark:text-slate-300 font-medium` (`{{ 'auth.already_have_account' | translate }}`).
+      - Liên kết điều hướng: `text-primary hover:underline ml-1 font-bold cursor-pointer transition-colors` (`{{ 'auth.login_now' | translate }}`).
 - **Kiểm thử**:
-  - Biên dịch sản phẩm Angular production `npx ng build --configuration production` thành công 100% không phát sinh bất kỳ lỗi nào trên cả 3 dự án Web.
+  - Biên dịch Angular production `npx ng build --configuration production` thành công 100% không có lỗi trên cả 3 dự án Web.
 
     - `app.routes.ts`: Đăng ký route public `/forgot-password` (và redirect `/auth/forgot-password`).
     - `auth.interceptor.ts`: Bổ sung `currentUrl.startsWith('/forgot-password')` vào danh sách `isPublicRoute` cho phép truy cập không cần đăng nhập.
