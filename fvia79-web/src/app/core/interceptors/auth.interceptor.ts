@@ -120,7 +120,8 @@ function handle401Error(
                                 currentUrl.startsWith('/faq') ||
                                 currentUrl.startsWith('/contact') ||
                                 currentUrl.startsWith('/terms') ||
-                                currentUrl.startsWith('/privacy');
+                                currentUrl.startsWith('/privacy') ||
+                                currentUrl.startsWith('/forgot-password');
           if (!isPublicRoute) {
             router.navigate(['/login']);
           }

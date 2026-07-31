@@ -265,13 +265,13 @@
               type="button"
               (click)="switchTab('login')"
               class="flex-1 text-center pb-3 pt-4 text-sm font-bold border-b-2 transition-all cursor-pointer -mb-px"
-              [class.border-primary]="isLogin()"
-              [class.text-primary]="isLogin()"
-              [class.border-transparent]="!isLogin()"
-              [class.text-slate-600]="!isLogin()"
-              [class.dark:text-slate-400]="!isLogin()"
-              [class.hover:text-primary]="!isLogin()"
-              [class.hover:underline]="!isLogin()"
+              [class.border-primary]="activeTab() === 'login'"
+              [class.text-primary]="activeTab() === 'login'"
+              [class.border-transparent]="activeTab() !== 'login'"
+              [class.text-slate-600]="activeTab() !== 'login'"
+              [class.dark:text-slate-400]="activeTab() !== 'login'"
+              [class.hover:text-primary]="activeTab() !== 'login'"
+              [class.hover:underline]="activeTab() !== 'login'"
             >
               {{ 'nav.login' | translate }}
             </button>
@@ -279,20 +279,20 @@
               type="button"
               (click)="switchTab('register')"
               class="flex-1 text-center pb-3 pt-4 text-sm font-bold border-b-2 transition-all cursor-pointer -mb-px"
-              [class.border-primary]="!isLogin()"
-              [class.text-primary]="!isLogin()"
-              [class.border-transparent]="isLogin()"
-              [class.text-slate-600]="isLogin()"
-              [class.dark:text-slate-400]="isLogin()"
-              [class.hover:text-primary]="isLogin()"
-              [class.hover:underline]="isLogin()"
+              [class.border-primary]="activeTab() === 'register'"
+              [class.text-primary]="activeTab() === 'register'"
+              [class.border-transparent]="activeTab() !== 'register'"
+              [class.text-slate-600]="activeTab() !== 'register'"
+              [class.dark:text-slate-400]="activeTab() !== 'register'"
+              [class.hover:text-primary]="activeTab() !== 'register'"
+              [class.hover:underline]="activeTab() !== 'register'"
             >
               {{ 'nav.register' | translate }}
             </button>
           </div>
 
           <div class="p-6">
-            @if (isLogin()) {
+            @if (activeTab() === 'login') {
               <div class="mb-7">
                 <h2
                   class="text-2xl font-black text-slate-900 dark:text-white tracking-tight mb-1.5"
@@ -333,9 +333,18 @@
                   </div>
 
                   <div class="form-field">
-                    <label
-                      >{{ 'auth.password' | translate }} <span class="text-red-500">*</span></label
-                    >
+                    <div class="flex items-center justify-between mb-1.5">
+                      <label class="!mb-0"
+                        >{{ 'auth.password' | translate }} <span class="text-red-500">*</span></label
+                      >
+                      <a
+                        href="javascript:void(0)"
+                        (click)="switchTab('forgot-password'); $event.preventDefault()"
+                        class="text-xs font-bold text-primary hover:underline cursor-pointer transition-colors"
+                      >
+                        {{ 'auth.forgot_password' | translate }}
+                      </a>
+                    </div>
                     <app-custom-input
                       type="password"
                       [(ngModel)]="loginPassword"
@@ -435,7 +444,7 @@
               </form>
             }
 
-            @if (!isLogin()) {
+            @if (activeTab() === 'register') {
               <div class="mb-6">
                 <h2
                   class="text-2xl font-black text-slate-900 dark:text-white tracking-tight mb-1.5"
@@ -535,6 +544,135 @@
                   </a>
                 </div>
               </form>
+            }
+
+            @if (activeTab() === 'forgot-password') {
+              <div class="mb-6">
+                <h2
+                  class="text-2xl font-black text-slate-900 dark:text-white tracking-tight mb-1.5"
+                >
+                  {{ 'forgot_password.title' | translate }}
+                </h2>
+                <p class="text-sm font-medium text-slate-600 dark:text-slate-300 leading-relaxed">
+                  {{ 'forgot_password.notice_heading' | translate }}
+                </p>
+              </div>
+
+              <div class="space-y-4">
+                @if (showTelegramSupport) {
+                  <div
+                    class="p-4 rounded-2xl bg-blue-50/70 dark:bg-blue-950/40 border border-blue-200/80 dark:border-blue-900/60 space-y-3"
+                  >
+                    <div class="flex items-center justify-between gap-3">
+                      <div class="flex items-center gap-2.5 min-w-0">
+                        <div
+                          class="w-9 h-9 rounded-xl bg-blue-500/15 text-blue-600 dark:text-blue-400 flex items-center justify-center shrink-0 border border-blue-500/20"
+                        >
+                          <app-icon name="telegram" class="w-5 h-5" />
+                        </div>
+                        <div class="min-w-0">
+                          <h4 class="text-xs font-bold text-slate-900 dark:text-white truncate">
+                            {{ 'forgot_password.support_channel_title' | translate }}
+                          </h4>
+                          <span class="text-[11px] font-mono font-bold text-blue-600 dark:text-blue-400">
+                            {{ telegramSupportDisplay }}
+                          </span>
+                        </div>
+                      </div>
+
+                      <button
+                        type="button"
+                        (click)="copyLink(telegramSupportUrl)"
+                        class="w-9 h-9 rounded-xl bg-white dark:bg-slate-900 border border-slate-200/80 dark:border-slate-800 text-slate-500 hover:text-blue-600 dark:hover:text-blue-400 transition-colors cursor-pointer shrink-0 flex items-center justify-center shadow-xs"
+                        [title]="'contact.btn_copy_link' | translate"
+                      >
+                        <app-icon name="code" class="w-4 h-4" />
+                      </button>
+                    </div>
+
+                    <p class="text-xs text-slate-600 dark:text-slate-300 leading-relaxed font-medium">
+                      {{ 'forgot_password.support_channel_desc' | translate }}
+                    </p>
+
+                    <a
+                      app-button
+                      variant="primary"
+                      size="md"
+                      [href]="telegramSupportUrl"
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      class="w-full py-3 text-sm rounded-xl bg-gradient-to-r from-blue-600 to-sky-600 hover:opacity-95 text-white font-extrabold shadow-md shadow-blue-500/15 justify-center cursor-pointer flex items-center gap-2 active:scale-[0.98] transition-all"
+                    >
+                      <app-icon name="telegram" class="w-4.5 h-4.5 shrink-0" />
+                      <span>{{ 'contact.btn_open_support' | translate }}</span>
+                    </a>
+                  </div>
+                }
+
+                @if (showTelegramBot) {
+                  <div
+                    class="p-4 rounded-2xl bg-sky-50/70 dark:bg-sky-950/40 border border-sky-200/80 dark:border-sky-900/60 space-y-3"
+                  >
+                    <div class="flex items-center justify-between gap-3">
+                      <div class="flex items-center gap-2.5 min-w-0">
+                        <div
+                          class="w-9 h-9 rounded-xl bg-sky-500/15 text-sky-600 dark:text-sky-400 flex items-center justify-center shrink-0 border border-sky-500/20"
+                        >
+                          <app-icon name="telegram" class="w-5 h-5" />
+                        </div>
+                        <div class="min-w-0">
+                          <h4 class="text-xs font-bold text-slate-900 dark:text-white truncate">
+                            {{ 'contact.bot_channel_title' | translate }}
+                          </h4>
+                          <span class="text-[11px] font-mono font-bold text-sky-600 dark:text-sky-400">
+                            {{ telegramBotUsernameDisplay }}
+                          </span>
+                        </div>
+                      </div>
+
+                      <button
+                        type="button"
+                        (click)="copyLink(telegramBotUrl)"
+                        class="w-9 h-9 rounded-xl bg-white dark:bg-slate-900 border border-slate-200/80 dark:border-slate-800 text-slate-500 hover:text-sky-600 dark:hover:text-sky-400 transition-colors cursor-pointer shrink-0 flex items-center justify-center shadow-xs"
+                        [title]="'contact.btn_copy_link' | translate"
+                      >
+                        <app-icon name="code" class="w-4 h-4" />
+                      </button>
+                    </div>
+
+                    <a
+                      app-button
+                      variant="secondary"
+                      size="md"
+                      [href]="telegramBotUrl"
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      class="w-full py-3 text-sm rounded-xl font-bold justify-center cursor-pointer flex items-center gap-2"
+                    >
+                      <app-icon name="telegram" class="w-4.5 h-4.5 shrink-0" />
+                      <span>{{ 'contact.btn_open_bot' | translate }}</span>
+                    </a>
+                  </div>
+                }
+
+                <div class="p-3.5 rounded-xl bg-amber-500/10 border border-amber-500/20 text-amber-900 dark:text-amber-300 text-xs font-medium leading-relaxed flex items-start gap-2.5">
+                  <app-icon name="alert-triangle" class="w-4 h-4 text-amber-600 dark:text-amber-400 shrink-0 mt-0.5" />
+                  <span>{{ 'forgot_password.security_note' | translate }}</span>
+                </div>
+
+                <div
+                  class="text-center text-xs font-medium text-slate-600 dark:text-slate-300 pt-1"
+                >
+                  {{ 'auth.already_have_account' | translate }}
+                  <a
+                    href="javascript:void(0)"
+                    (click)="switchTab('login'); $event.preventDefault()"
+                    class="text-primary hover:underline ml-1 font-bold cursor-pointer transition-colors"
+                  >
+                    {{ 'auth.login_now' | translate }}
+                  </a>
+                </div>
+              </div>
             }
 
             <div class="mt-6 pt-5 border-t border-slate-100 dark:border-slate-800 space-y-3">

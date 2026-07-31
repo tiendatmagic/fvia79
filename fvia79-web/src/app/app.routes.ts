@@ -14,6 +14,12 @@ export const routes: Routes = [
   { path: 'auth', redirectTo: 'login', pathMatch: 'full' },
   { path: 'auth/login', redirectTo: 'login', pathMatch: 'full' },
   { path: 'auth/register', redirectTo: 'register', pathMatch: 'full' },
+  { path: 'auth/forgot-password', redirectTo: 'forgot-password', pathMatch: 'full' },
+  {
+    path: 'forgot-password',
+    canActivate: [NoAuthGuard],
+    loadComponent: () => import('@features/auth/auth-layout.component').then(m => m.AuthLayoutComponent)
+  },
   {
     path: 'login',
     canActivate: [NoAuthGuard],

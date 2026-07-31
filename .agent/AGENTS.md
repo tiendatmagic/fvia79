@@ -19,6 +19,28 @@
 > 1. Cronjob Scheduler (`schedule:run`) **CHỈ ĐƯỢC CHẠY DƯỚI USER `www-data`** (`crontab -u www-data -e`). **TUYỆT ĐỐI KHÔNG cài dưới `root`** vì sẽ gây ra lỗi `500 Permission denied` khi người dùng thực hiện thao tác Web/API.
 > 2. Luôn cấp quyền `chmod -R 777` và `chown -R www-data:www-data` cho `storage` & `bootstrap/cache`. Khi gõ lệnh CLI thủ công trên VPS, luôn chạy dưới quyền `www-data` (`su -s /bin/bash www-data -c "php artisan <cmd>"`).
 
+### [2026-07-31] Chuyển Giao Diện "Quên Mật Khẩu" Trực Tiếp Vào Auth Card Box (/forgot-password), Chuẩn Hóa Nút Copy Trống Lệch & Nút Telegram Support Size Medium Cho 3 Dự Án (FVIA79, ADSBM79, ISOCALMARKET)
+- **Mô tả yêu cầu**:
+  Chuyển đổi cách hiển thị thông tin "Quên mật khẩu" từ dạng trang riêng biệt sang dạng hiển thị trực tiếp **ngay trên form thuộc Auth Card Box** (`AuthLayoutComponent`) khi nhấp vào "Quên mật khẩu?", đồng thời đồng bộ URL `/forgot-password`. Cập nhật nút sao chép liên kết (Copy button) thành hình vuông chuẩn `w-9 h-9 flex items-center justify-center` và nâng kích thước nút hành động "Liên hệ Telegram Support" thành dạng `size="md"` (`py-3 text-sm rounded-xl`) tránh chiều cao bị nhỏ.
+- **Thực hiện xử lý**:
+  - **Frontend Web (`fvia79-web`, `adsbm79-web`, `isocalmarket-web`)**:
+    - `auth-layout.component.ts`: Mở rộng signal `activeTab = signal<'login' | 'register' | 'forgot-password'>('login')`, lắng nghe `NavigationEnd` tự chuyển tab `'forgot-password'` khi URL chứa `/forgot-password`, tự động gọi `PublicSettingStore.fetchPublicSettings()`.
+    - `auth-layout.component.html`:
+      - Thêm `@if (activeTab() === 'forgot-password')` hiển thị thông tin hướng dẫn, Telegram Support/Bot contact cards và nút "Quay lại Đăng nhập".
+      - Sửa liên kết "Quên mật khẩu?" tại form Login thành `(click)="switchTab('forgot-password'); $event.preventDefault()"`.
+      - Sửa nút sao chép liên kết từ `p-1.5` thành `w-9 h-9 rounded-xl flex items-center justify-center shrink-0 shadow-xs` vuông góc đồng đều với icon avatar bên trái.
+      - Sửa nút "Liên hệ Telegram Support" từ `size="sm"` (`py-2.5 text-xs`) sang `size="md"` (`py-3 text-sm font-extrabold shadow-md shadow-blue-500/15`).
+    - `app.routes.ts`: Cập nhật route `path: 'forgot-password'` trỏ về `AuthLayoutComponent`.
+    - Dọn dẹp folder component cũ `src/app/features/forgot-password`.
+- **Kiểm thử**:
+  - Biên dịch sản phẩm Angular production `npx ng build --configuration production` thành công 100% không phát sinh bất kỳ lỗi nào trên cả 3 dự án Web.
+
+    - `app.routes.ts`: Đăng ký route public `/forgot-password` (và redirect `/auth/forgot-password`).
+    - `auth.interceptor.ts`: Bổ sung `currentUrl.startsWith('/forgot-password')` vào danh sách `isPublicRoute` cho phép truy cập không cần đăng nhập.
+    - `vi.ts` & `en.ts`: Bổ sung đầy đủ 100% các từ khóa i18n đa ngôn ngữ cho mảng `forgot_password.*`.
+- **Kiểm thử**:
+  - Biên dịch sản phẩm Angular production `npx ng build --configuration production` thành công 100% không phát sinh lỗi trên cả 3 dự án Web.
+
 ### [2026-07-30] Chuyển Mặc Định Tắt Chế Độ "Đơn Hàng Vừa Mua" & "Lịch Sử Nạp Gần Đây", Chặn Polling Khi Disabled & Thêm SVG Icon Chuẩn Cho 3 Dự Án (FVIA79, ADSBM79, ISOCALMARKET)
 - **Mô tả yêu cầu**:
   Chuyển trạng thái mặc định của 2 tính năng "Đơn hàng vừa mua" (`recent-purchases`) và "Lịch sử nạp gần đây" (`recent-deposits`) từ bật (`enabled = true`) sang TẮT (`enabled = false`) khi chưa có cấu hình trong hệ thống. Nếu `enabled = false`, frontend dừng hoàn toàn các yêu cầu API refetch/polling tiếp theo. Đồng thời bổ sung/sửa đổi SVG icon chuẩn (`shopping-bag` và `credit-card`) cho cả 2 khối tính năng, khắc phục triệt để lỗi hiển thị icon nghi vấn/chấm hỏi `(?)` trên giao diện `ISOCALMARKET` và `ADSBM79`.

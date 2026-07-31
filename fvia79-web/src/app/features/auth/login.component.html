@@ -89,7 +89,15 @@
         </div>
 
         <div class="form-field">
-          <label> {{ 'auth.password' | translate }} <span class="text-red-500">*</span> </label>
+          <div class="flex items-center justify-between mb-1.5">
+            <label class="!mb-0"> {{ 'auth.password' | translate }} <span class="text-red-500">*</span> </label>
+            <a
+              [routerLink]="['/forgot-password']"
+              class="text-xs font-bold text-primary hover:underline cursor-pointer transition-colors"
+            >
+              {{ 'auth.forgot_password' | translate }}
+            </a>
+          </div>
           <app-custom-input
             type="password"
             [(ngModel)]="password"

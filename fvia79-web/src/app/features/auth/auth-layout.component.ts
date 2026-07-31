@@ -1,10 +1,10 @@
-
-import { Component, inject, signal, HostListener } from '@angular/core';
+import { Component, inject, signal, HostListener, OnInit } from '@angular/core';
 import { CommonModule, Location } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { RouterModule, Router, ActivatedRoute, NavigationEnd } from '@angular/router';
 import { filter } from 'rxjs/operators';
 import { StateService } from '@core/services/state.service';
+import { PublicSettingStore } from '@core/services/public-setting.store';
 import { ButtonComponent } from '@shared/components/button/button.component';
 import { LogoComponent } from '@shared/components/logo/logo.component';
 import { ThemeSwitcherComponent } from '@shared/components/theme-switcher/theme-switcher.component';
@@ -14,10 +14,23 @@ import { LanguageService, SupportedLanguage } from '@core/services/language.serv
 import { TranslatePipe } from '@shared/pipes/translate.pipe';
 import { IconComponent } from '@shared/components/icon/icon.component';
 
+export type AuthTab = 'login' | 'register' | 'forgot-password';
+
 @Component({
   selector: 'app-auth-layout',
   standalone: true,
-  imports: [CommonModule, FormsModule, RouterModule, ButtonComponent, LogoComponent, ThemeSwitcherComponent, CustomInputComponent, CustomCheckboxComponent, TranslatePipe, IconComponent],
+  imports: [
+    CommonModule,
+    FormsModule,
+    RouterModule,
+    ButtonComponent,
+    LogoComponent,
+    ThemeSwitcherComponent,
+    CustomInputComponent,
+    CustomCheckboxComponent,
+    TranslatePipe,
+    IconComponent
+  ],
   templateUrl: './auth-layout.component.html',
   styles: [`
     :host {
@@ -25,9 +38,10 @@ import { IconComponent } from '@shared/components/icon/icon.component';
     }
   `]
 })
-export class AuthLayoutComponent {
+export class AuthLayoutComponent implements OnInit {
   public readonly state = inject(StateService);
   public readonly lang = inject(LanguageService);
+  public readonly publicSettingStore = inject(PublicSettingStore);
   public readonly router = inject(Router);
   private readonly route = inject(ActivatedRoute);
   private readonly location = inject(Location);
@@ -48,7 +62,7 @@ export class AuthLayoutComponent {
     this.showLangDropdown.set(false);
   }
 
-  public readonly isLogin = signal(true);
+  public readonly activeTab = signal<AuthTab>('login');
   public loginEmail = '';
   public loginPassword = '';
   public rememberMe = true;
@@ -65,24 +79,43 @@ export class AuthLayoutComponent {
   public showRegConfirmPassword = signal(false);
 
   constructor() {
-    this.isLogin.set(!this.router.url.includes('register'));
+    const initialUrl = this.router.url;
+    if (initialUrl.includes('register')) {
+      this.activeTab.set('register');
+    } else if (initialUrl.includes('forgot-password')) {
+      this.activeTab.set('forgot-password');
+    } else {
+      this.activeTab.set('login');
+    }
+
     this.returnUrl = this.route.snapshot.queryParams['returnUrl'] || '/';
 
     this.router.events
       .pipe(filter(e => e instanceof NavigationEnd))
       .subscribe(e => {
-        this.isLogin.set(!(e as NavigationEnd).url.includes('register'));
+        const u = (e as NavigationEnd).url;
+        if (u.includes('register')) {
+          this.activeTab.set('register');
+        } else if (u.includes('forgot-password')) {
+          this.activeTab.set('forgot-password');
+        } else {
+          this.activeTab.set('login');
+        }
       });
   }
 
-  public switchTab(tab: 'login' | 'register') {
-    const url = tab === 'login' ? '/login' : '/register';
-    // Keep one mounted layout while reflecting the active tab in the URL.
+  ngOnInit(): void {
+    this.publicSettingStore.fetchPublicSettings().subscribe();
+  }
+
+  public switchTab(tab: AuthTab) {
+    const url = tab === 'login' ? '/login' : tab === 'register' ? '/register' : '/forgot-password';
     this.location.replaceState(url);
-    this.isLogin.set(tab === 'login');
+    this.activeTab.set(tab);
     this.state.authStore.loginError.set('');
     this.state.authStore.registerError.set('');
   }
+
   public toggleLoginPassword() {
     this.showLoginPassword.update(v => !v);
   }
@@ -131,6 +164,7 @@ export class AuthLayoutComponent {
       }
     });
   }
+
   public toggleRegPassword() {
     this.showRegPassword.update(v => !v);
   }
@@ -175,5 +209,86 @@ export class AuthLayoutComponent {
       password: this.regPassword,
       password_confirmation: this.regPasswordConfirmation
     }).subscribe();
+  }
+
+  public get showTelegramSupport(): boolean {
+    const val = this.publicSettingStore.settings().telegram_support_enabled;
+    return String(val) === 'true' || String(val) === '1';
+  }
+
+  public get showTelegramBot(): boolean {
+    const settings = this.publicSettingStore.settings();
+    const val = settings.telegram_bot_contact_enabled;
+    const isEnabled = String(val) === 'true' || String(val) === '1';
+    return isEnabled && !!this.telegramBotUrl;
+  }
+
+  public get telegramSupportUrl(): string {
+    const raw = this.publicSettingStore.settings().telegram_support_username;
+    const username = (raw && raw.trim()) ? raw.trim() : 'emmy203012';
+    if (username.startsWith('http://') || username.startsWith('https://')) {
+      return username;
+    }
+    const clean = username.replace(/^@/, '');
+    return `https://t.me/${clean}`;
+  }
+
+  public get telegramSupportDisplay(): string {
+    const raw = this.publicSettingStore.settings().telegram_support_username;
+    const username = (raw && raw.trim()) ? raw.trim() : 'emmy203012';
+    if (username.startsWith('http://') || username.startsWith('https://')) {
+      const parts = username.split('/');
+      const last = parts[parts.length - 1] || username;
+      return last.startsWith('@') ? last : `@${last}`;
+    }
+    return username.startsWith('@') ? username : `@${username}`;
+  }
+
+  public get telegramBotUrl(): string {
+    const bot = (this.publicSettingStore.settings().telegram_bot_username || '').trim();
+    if (!bot) return '';
+    if (bot.startsWith('http://') || bot.startsWith('https://')) {
+      return bot;
+    }
+    const clean = bot.replace(/^@/, '');
+    return `https://t.me/${clean}`;
+  }
+
+  public get telegramBotUsernameDisplay(): string {
+    const bot = (this.publicSettingStore.settings().telegram_bot_username || '').trim();
+    if (!bot) return '';
+    if (bot.startsWith('http://') || bot.startsWith('https://')) {
+      const parts = bot.split('/');
+      const last = parts[parts.length - 1] || bot;
+      return last.startsWith('@') ? last : `@${last}`;
+    }
+    return bot.startsWith('@') ? bot : `@${bot}`;
+  }
+
+  public copyLink(url: string): void {
+    if (!url) return;
+    if (navigator.clipboard) {
+      navigator.clipboard.writeText(url).then(() => {
+        this.state.showToast(this.lang.translate('contact.link_copied'), 'success');
+      }).catch(() => {
+        this.fallbackCopy(url);
+      });
+    } else {
+      this.fallbackCopy(url);
+    }
+  }
+
+  private fallbackCopy(url: string): void {
+    const textArea = document.createElement('textarea');
+    textArea.value = url;
+    document.body.appendChild(textArea);
+    textArea.select();
+    try {
+      document.execCommand('copy');
+      this.state.showToast(this.lang.translate('contact.link_copied'), 'success');
+    } catch {
+      this.state.showToast(url, 'warning');
+    }
+    document.body.removeChild(textArea);
   }
 }
