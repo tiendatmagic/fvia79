@@ -60,11 +60,17 @@ export class HeaderComponent {
   }
 
   public isAuthPage(): boolean {
-    return this.router.url.includes('/auth/');
+    const url = this.router.url;
+    return (
+      url.includes('/auth') ||
+      url.includes('/login') ||
+      url.includes('/register') ||
+      url.includes('/forgot-password')
+    );
   }
 
   public isStorefrontPage(): boolean {
-    return !this.router.url.includes('/admin') && !this.router.url.includes('/auth/');
+    return !this.router.url.includes('/admin') && !this.isAuthPage();
   }
 
   public toggleUserDropdown(event: Event) {

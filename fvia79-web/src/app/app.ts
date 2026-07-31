@@ -48,7 +48,10 @@ export class App implements OnInit, OnDestroy {
   public activeMenuState = signal<boolean>(false);
   public isAuthPage = signal<boolean>(
     typeof window !== 'undefined' &&
-    (window.location.pathname.includes('/login') || window.location.pathname.includes('/register'))
+    (window.location.pathname.includes('/login') ||
+     window.location.pathname.includes('/register') ||
+     window.location.pathname.includes('/forgot-password') ||
+     window.location.pathname.includes('/auth'))
   );
 
   public isBuyMenuOpen = signal<boolean>(false);
@@ -120,7 +123,7 @@ export class App implements OnInit, OnDestroy {
       filter(event => event instanceof NavigationEnd)
     ).subscribe((event: any) => {
       const url = event.urlAfterRedirects || event.url || '';
-      const authPage = url.includes('/login') || url.includes('/register');
+      const authPage = url.includes('/login') || url.includes('/register') || url.includes('/forgot-password') || url.includes('/auth');
       this.isAuthPage.set(authPage);
       if (!authPage && this.stateService.productStore.categories().length === 0) {
         this.stateService.productStore.fetchCategories().subscribe();

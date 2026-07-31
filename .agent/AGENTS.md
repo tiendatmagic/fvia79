@@ -19,6 +19,18 @@
 > 1. Cronjob Scheduler (`schedule:run`) **CHỈ ĐƯỢC CHẠY DƯỚI USER `www-data`** (`crontab -u www-data -e`). **TUYỆT ĐỐI KHÔNG cài dưới `root`** vì sẽ gây ra lỗi `500 Permission denied` khi người dùng thực hiện thao tác Web/API.
 > 2. Luôn cấp quyền `chmod -R 777` và `chown -R www-data:www-data` cho `storage` & `bootstrap/cache`. Khi gõ lệnh CLI thủ công trên VPS, luôn chạy dưới quyền `www-data` (`su -s /bin/bash www-data -c "php artisan <cmd>"`).
 
+### [2026-07-31] Khắc Phục Lỗi Hiển Thị Sidebar Ở Trang Auth (/forgot-password, /login, /register) & Đồng Bộ Màu Chủ Đạo Cho Nút Telegram Support Đồng Bộ 3 Dự Án (FVIA79, ADSBM79, ISOCALMARKET)
+- **Mô tả yêu cầu**:
+  1. Khi truy cập các đường dẫn Auth như `/forgot-password`, `/login`, `/register`, hoặc `/auth/*`, hệ thống bị lỗi hiển thị cả Sidebar bên trái. Cần ẩn 100% Sidebar và Header ngoài layout chính.
+  2. Nút bấm và khối "Liên hệ Telegram Support" tại giao diện Khôi phục mật khẩu đang dùng màu xanh cố định (`from-blue-600 to-sky-600`), cần chuyển sang dùng 100% Màu Chủ Đạo (`var(--color-primary)` & `var(--color-secondary)`) để khớp với theme từng dự án.
+- **Thực hiện xử lý**:
+  - **Frontend Web (`fvia79-web`, `adsbm79-web`, `isocalmarket-web`)**:
+    - `app.ts`: Bổ sung kiểm tra `url.includes('/forgot-password')` và `url.includes('/auth')` vào signal khởi tạo `isAuthPage` và handler sự kiện `router.events` `NavigationEnd`.
+    - `header.component.ts`: Cập nhật phương thức `isAuthPage()` kiểm tra thêm `/forgot-password` và `/auth` để ẩn Header đồng bộ với Sidebar.
+    - `auth-layout.component.html`: Thay đổi các class CSS màu xanh cố định (`bg-blue-50/70`, `text-blue-600`, `from-blue-600 to-sky-600`, `shadow-blue-500/15`) thành tokens màu chủ đạo dynamic (`bg-primary/5`, `text-primary`, `from-primary to-secondary`, `shadow-primary/15`).
+- **Kiểm thử**:
+  - Lệnh biên dịch Angular production `npm run build` thành công 100% không phát sinh lỗi trên cả 3 dự án Web (`fvia79-web`, `adsbm79-web`, `isocalmarket-web`).
+
 ### [2026-07-31] Triển Khai (Deploy) Chỉ Frontend (FE) Giữ Nguyên CSDL Cho 3 Dự Án (FVIA79, ADSBM79, ISOCALMARKET)
 - **Mô tả yêu cầu**:
   Triển khai (deploy) bản nâng cấp giao diện Frontend Angular mới nhất cho 3 dự án (**FVIA79**, **ADSBM79**, **ISOCALMARKET**) lên 3 VPS tương ứng theo thông tin tệp `deploy.md`. Chỉ cập nhật phần Frontend (FE), giữ nguyên 100% CSDL và tệp cấu hình `.env`, không đụng chạm đến phpMyAdmin.
