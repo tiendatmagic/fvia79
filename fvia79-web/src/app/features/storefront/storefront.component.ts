@@ -113,12 +113,12 @@ export class StorefrontComponent implements OnInit, OnDestroy {
   public readonly announcement = this.publicSettingStore.settings;
 
   public readonly recentPurchases = signal<any[]>([]);
-  public readonly recentPurchasesEnabled = signal<boolean>(true);
+  public readonly recentPurchasesEnabled = signal<boolean>(false);
   public readonly recentPurchasesMode = signal<'demo' | 'real'>('demo');
   public readonly recentPurchasesLoading = signal<boolean>(true);
 
   public readonly recentDeposits = signal<any[]>([]);
-  public readonly recentDepositsEnabled = signal<boolean>(true);
+  public readonly recentDepositsEnabled = signal<boolean>(false);
   public readonly recentDepositsMode = signal<'demo' | 'real'>('demo');
   public readonly recentDepositsLoading = signal<boolean>(true);
 
@@ -193,13 +193,13 @@ export class StorefrontComponent implements OnInit, OnDestroy {
           } else {
             this.recentPurchases.set([]);
           }
+        } else {
+          this.recentPurchasesEnabled.set(false);
         }
         this.recentPurchasesLoading.set(false);
       },
       error: () => {
-        if (this.recentPurchasesMode() === 'demo') {
-          this.seedInitialPurchases();
-        }
+        this.recentPurchasesEnabled.set(false);
         this.recentPurchasesLoading.set(false);
       }
     });
@@ -217,13 +217,13 @@ export class StorefrontComponent implements OnInit, OnDestroy {
           } else {
             this.recentDeposits.set([]);
           }
+        } else {
+          this.recentDepositsEnabled.set(false);
         }
         this.recentDepositsLoading.set(false);
       },
       error: () => {
-        if (this.recentDepositsMode() === 'demo') {
-          this.seedInitialDeposits();
-        }
+        this.recentDepositsEnabled.set(false);
         this.recentDepositsLoading.set(false);
       }
     });
