@@ -17,15 +17,17 @@
 >
 > **QUY TẮC BẮT BUỘC CRONJOB & PHÂN QUYỀN CACHE STORAGE**:
 > 1. Cronjob Scheduler (`schedule:run`) **CHỈ ĐƯỢC CHẠY DƯỚI USER `www-data`** (`crontab -u www-data -e`). **TUYỆT ĐỐI KHÔNG cài dưới `root`** vì sẽ gây ra lỗi `500 Permission denied` khi người dùng thực hiện thao tác Web/API.
-### [2026-08-01] Đồng Bộ 100% Giao Diện, Màu Sắc Chủ Đạo & Trạng Thái Active Cho Sidebar Navigation & Profile Sub-Menu Tab Cho 3 Dự Án (FVIA79, ADSBM79, ISOCALMARKET)
+### [2026-08-01] Đồng Bộ 100% Giao Diện, Căn Chỉnh Menu "Mua Hàng", Màu Sắc Chủ Đạo & Trạng Thái Active Cho Sidebar Navigation & Profile Sub-Menu Tab Cho 3 Dự Án (FVIA79, ADSBM79, ISOCALMARKET)
 - **Mô tả yêu cầu**:
-  Rà soát và đồng bộ 100% giao diện, màu sắc chủ đạo dynamic (`var(--color-primary)`), nền background active tint 12%, viền accent border 4px, font weight `font-semibold` và cơ chế khớp route chính xác cho 2 mảng menu chính: Sidebar Navigation (Desktop & Mobile drawer) và Profile Sub-Menu Tabs (Trang Cá Nhân) cho 3 dự án (**FVIA79**, **ADSBM79**, **ISOCALMARKET**).
+  Rà soát và đồng bộ 100% giao diện, căn chỉnh khớp chiều cao baseline cho nút "Mua hàng", màu sắc chủ đạo dynamic (`var(--color-primary)`), nền background active tint 12%, viền accent border 4px, font weight `font-semibold` và cơ chế khớp route chính xác cho 2 mảng menu chính: Sidebar Navigation (Desktop & Mobile drawer) và Profile Sub-Menu Tabs (Trang Cá Nhân) cho 3 dự án (**FVIA79**, **ADSBM79**, **ISOCALMARKET**).
 - **Thực hiện xử lý**:
   - **Frontend Web (`fvia79-web`, `adsbm79-web`, `isocalmarket-web`)**:
     - `sidebar.component.html` & `app.html` (Desktop & Mobile Sidebar):
-      1. Đổi `routerLink="/profile/information"` thành `routerLink="/profile"` để giữ trạng thái active cho Sidebar khi người dùng chuyển qua bất kỳ sub-tab nào trong trang cá nhân (`/profile/*`).
-      2. Chuẩn hóa `routerLinkActive="!bg-[var(--color-primary)]/12 !text-[var(--color-primary)] font-semibold"`.
-      3. Cập nhật màu văn bản mặc định `text-slate-700 dark:text-slate-300 font-semibold`.
+      1. Khắc phục lỗi căn chỉnh lệch chiều cao của nút accordion "Mua hàng": Loại bỏ class `leading-none` trên `<span>` chữ để khớp line-height 20px tiêu chuẩn với icon 20px và các menu liên kết khác (`<a>`), đồng thời xóa khai báo trùng lặp màu sắc cứng `text-slate-700` để icon thừa hưởng `currentColor` linh hoạt.
+      2. Bổ sung ràng buộc class active `[class.!bg-[var(--color-primary)]/12]="isBuyMenuOpen()"` và `[class.!text-[var(--color-primary)]]="isBuyMenuOpen()"` giúp nút "Mua hàng" nổi bật đồng bộ khi đang mở menu xổ xuống.
+      3. Đổi `routerLink="/profile/information"` thành `routerLink="/profile"` để giữ trạng thái active cho Sidebar khi người dùng chuyển qua bất kỳ sub-tab nào trong trang cá nhân (`/profile/*`).
+      4. Chuẩn hóa `routerLinkActive="!bg-[var(--color-primary)]/12 !text-[var(--color-primary)] font-semibold"`.
+      5. Cập nhật màu văn bản mặc định `text-slate-700 dark:text-slate-300 font-semibold`.
     - `profile.component.html` (Profile Sub-Menu Tabs):
       1. Standardize active tab: `routerLinkActive="!bg-[var(--color-primary)]/12 dark:!bg-[var(--color-primary)]/18 border-l-4 border-[var(--color-primary)] !text-[var(--color-primary)] font-semibold"`.
       2. Base class inactive hover: `class="flex items-center gap-3 px-4 py-3 text-sm font-semibold text-slate-700 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-800/50 hover:text-slate-900 dark:hover:text-white border-l-4 border-transparent rounded-xl transition-all cursor-pointer whitespace-nowrap"`.

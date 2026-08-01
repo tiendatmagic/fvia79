@@ -4,7 +4,9 @@ import {
   Output,
   EventEmitter,
   OnChanges,
-  SimpleChanges} from '@angular/core';
+  OnDestroy,
+  SimpleChanges
+} from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { IconComponent } from '@shared/components/icon/icon.component';
 import { TranslatePipe } from '@shared/pipes/translate.pipe';
@@ -20,21 +22,33 @@ import { TranslatePipe } from '@shared/pipes/translate.pipe';
     }
   `]
 })
-export class PaginationComponent implements OnChanges {
+export class PaginationComponent implements OnChanges, OnDestroy {
   @Input() currentPage: number = 1;
   @Input() totalPages: number = 1;
   @Input() totalItems: number = 0;
   @Input() itemsPerPage: number = 10;
   @Input() itemName: string = '';
+  @Input() isLoading: boolean = false;
+  @Input() disabled: boolean = false;
 
   @Output() pageChange = new EventEmitter<number>();
 
   public pagesArray: (number | string)[] = [];
+  public targetPage: number | null = null;
+  private unlockTimer: any = null;
 
   public ngOnChanges(changes: SimpleChanges): void {
     if (changes['currentPage'] || changes['totalPages']) {
+      this.clearLock();
       this.generatePagesArray();
     }
+    if (changes['isLoading'] && !changes['isLoading'].currentValue) {
+      this.clearLock();
+    }
+  }
+
+  public ngOnDestroy(): void {
+    this.clearTimer();
   }
 
   public getStartIndex(): number {
@@ -50,9 +64,40 @@ export class PaginationComponent implements OnChanges {
     return Number(val);
   }
 
+  public isButtonDisabled(page?: number): boolean {
+    if (this.disabled || this.isLoading || this.targetPage !== null) {
+      return true;
+    }
+    if (page !== undefined) {
+      return page < 1 || page > this.totalPages || page === this.currentPage;
+    }
+    return false;
+  }
+
   public goToPage(page: number): void {
+    if (this.disabled || this.isLoading || this.targetPage !== null) {
+      return;
+    }
     if (page >= 1 && page <= this.totalPages && page !== this.currentPage) {
+      this.targetPage = page;
       this.pageChange.emit(page);
+
+      this.clearTimer();
+      this.unlockTimer = setTimeout(() => {
+        this.targetPage = null;
+      }, 4000);
+    }
+  }
+
+  private clearLock(): void {
+    this.targetPage = null;
+    this.clearTimer();
+  }
+
+  private clearTimer(): void {
+    if (this.unlockTimer) {
+      clearTimeout(this.unlockTimer);
+      this.unlockTimer = null;
     }
   }
 
