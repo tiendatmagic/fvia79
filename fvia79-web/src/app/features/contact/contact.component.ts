@@ -1,5 +1,6 @@
 import { Component, inject, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
+import { RouterLink } from '@angular/router';
 import { PageHeaderComponent } from '@shared/components/page-header/page-header.component';
 import { CardComponent } from '@shared/components/card/card.component';
 import { ButtonComponent } from '@shared/components/button/button.component';
@@ -15,6 +16,7 @@ import { PublicSettingStore } from '@core/services/public-setting.store';
   standalone: true,
   imports: [
     CommonModule,
+    RouterLink,
     PageHeaderComponent,
     CardComponent,
     ButtonComponent,
