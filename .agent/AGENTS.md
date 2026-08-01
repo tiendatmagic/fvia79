@@ -17,6 +17,25 @@
 >
 > **QUY TẮC BẮT BUỘC CRONJOB & PHÂN QUYỀN CACHE STORAGE**:
 > 1. Cronjob Scheduler (`schedule:run`) **CHỈ ĐƯỢC CHẠY DƯỚI USER `www-data`** (`crontab -u www-data -e`). **TUYỆT ĐỐI KHÔNG cài dưới `root`** vì sẽ gây ra lỗi `500 Permission denied` khi người dùng thực hiện thao tác Web/API.
+### [2026-08-01] Triển Khai (Deploy) Đồng Bộ Frontend & Backend Giữ Nguyên CSDL & Cấu Hình Bảo Trì Cho 2 Dự Án (ADSBM79 & FVIA79)
+- **Mô tả yêu cầu**:
+  Triển khai (deploy) bản nâng cấp mã nguồn Frontend Angular và Backend Laravel mới nhất cho 2 dự án (**ADSBM79**, **FVIA79**) lên 2 máy chủ VPS tương ứng theo thông tin tệp `deploy.md`. Giữ nguyên 100% dữ liệu CSDL, bật chế độ bảo trì `php artisan down` trước khi upload, tái tạo cache đệm đặn sau khi upload, kiểm tra Cronjob tự động của `www-data`, tắt chế độ bảo trì `php artisan up` và tuyệt đối không tác động đến phpMyAdmin.
+- **Thực hiện xử lý**:
+  - **Biên dịch Frontend (Local)**:
+    - Build Angular production thành công cho `adsbm79-web` và `fvia79-web`.
+    - Nén các tệp biên dịch thành `frontend-dist.tar.gz` và mã nguồn BE thành `backend-source.tar.gz`.
+  - **Triển khai VPS ADSBM79 (`103.68.109.73`) & FVIA79 (`38.180.150.246`)**:
+    1. Đưa ứng dụng về chế độ bảo trì: `su -s /bin/bash www-data -c "php artisan down"`.
+    2. Upload và giải nén mã nguồn FE và BE vào `/var/www/`.
+    3. Thực thi `composer install --no-dev --optimize-autoloader --no-interaction` và migration an toàn `php artisan migrate --force`.
+    4. Xóa và tái tạo cache đệm tĩnh dưới user `www-data`: `config:clear`, `config:cache`, `route:cache`, `view:cache`.
+    5. Khởi tạo thư mục và phân quyền: `chown -R www-data:www-data` và `chmod -R 775` cho `storage` & `bootstrap/cache`.
+    6. Tắt chế độ bảo trì: `su -s /bin/bash www-data -c "php artisan up"`.
+    7. Đảm bảo Cronjob Scheduler (`schedule:run`) hoạt động tự động dưới user `www-data`.
+- **Kiểm thử nghiệm thu Website & API (HTTP 200 OK)**:
+  - **ADSBM79**: `https://adsbm79.com/` (200 OK), `https://adsbm79.com/api/v1/categories` (200 OK), `https://adsbm79.com/api/v1/products/grouped` (200 OK).
+  - **FVIA79**: `https://fvia79.com/` (200 OK), `https://fvia79.com/api/v1/categories` (200 OK), `https://fvia79.com/api/v1/products/grouped` (200 OK).
+
 ### [2026-08-01] Đồng Bộ 100% Giao Diện, Căn Chỉnh Menu "Mua Hàng", Màu Sắc Chủ Đạo & Trạng Thái Active Cho Sidebar Navigation & Profile Sub-Menu Tab Cho 3 Dự Án (FVIA79, ADSBM79, ISOCALMARKET)
 - **Mô tả yêu cầu**:
   Rà soát và đồng bộ 100% giao diện, căn chỉnh khớp chiều cao baseline cho nút "Mua hàng", màu sắc chủ đạo dynamic (`var(--color-primary)`), nền background active tint 12%, viền accent border 4px, font weight `font-semibold` và cơ chế khớp route chính xác cho 2 mảng menu chính: Sidebar Navigation (Desktop & Mobile drawer) và Profile Sub-Menu Tabs (Trang Cá Nhân) cho 3 dự án (**FVIA79**, **ADSBM79**, **ISOCALMARKET**).

@@ -308,7 +308,7 @@ class ProductRepository implements ProductRepositoryInterface
             $categoryQuery = (clone $productQuery)->where('category_id', $cat->id);
             $total = (clone $categoryQuery)->count('products.id');
 
-            if ($isSearching && $total === 0) {
+            if ($total === 0) {
                 continue;
             }
 
