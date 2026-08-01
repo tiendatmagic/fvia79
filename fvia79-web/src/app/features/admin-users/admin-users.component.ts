@@ -57,6 +57,7 @@ export class AdminUsersComponent implements OnInit {
   public readonly lang = inject(LanguageService);
 
   public readonly selectedUserIds = signal<Set<string>>(new Set<string>());
+  public readonly isRefreshing = signal<boolean>(false);
 
   public get currentAdminId(): string | null {
     return this.state.authStore.currentUser()?.id || null;
@@ -253,12 +254,15 @@ export class AdminUsersComponent implements OnInit {
   }
 
   public onRefresh() {
+    if (this.isRefreshing() || this.state.userStore.loading()) return;
+    this.isRefreshing.set(true);
     this.searchQuery = '';
     this._searchQuery.set('');
     this.selectedRoleFilter.set('');
     this.selectedDateRange.set({ startDate: '', endDate: '' });
     this.fetchUsers(1);
     this.state.showToast(this.lang.translate('toast.list_refreshed'), 'success');
+    setTimeout(() => this.isRefreshing.set(false), 800);
   }
 
   public openAddModal() {

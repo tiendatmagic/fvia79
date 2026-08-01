@@ -5,10 +5,12 @@
   >
     <ng-container actions>
       <button
+        appRipple
         (click)="onRefresh()"
-        class="px-4 py-2.5 text-sm font-extrabold text-slate-600 dark:text-slate-400 hover:text-primary bg-white dark:bg-slate-950 border border-slate-200/60 dark:border-slate-800/80 rounded-xl hover:bg-slate-50 dark:hover:bg-slate-900 transition-all cursor-pointer flex items-center gap-1.5"
+        [disabled]="isRefreshing() || state.productStore.loading()"
+        class="px-4 py-2.5 text-sm font-bold text-[var(--text-secondary)] hover:text-[var(--color-primary)] dark:hover:text-white bg-[var(--bg-elevated)] border border-[var(--border-color)] rounded-xl hover:bg-[var(--bg-hover)] transition-all cursor-pointer flex items-center gap-1.5 shadow-2xs active:scale-95 disabled:opacity-50 disabled:cursor-not-allowed"
       >
-        <app-icon name="sync" class="w-4 h-4" />
+        <app-icon name="sync" [class.animate-spin]="isRefreshing() || state.productStore.loading()" class="w-4 h-4" />
         {{ 'common.reload' | translate }}
       </button>
       <button

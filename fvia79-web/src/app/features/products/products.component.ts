@@ -52,6 +52,7 @@ export class ProductsComponent implements OnInit {
   public readonly state = inject(StateService);
   private readonly modalService = inject(ModalService);
   public readonly lang = inject(LanguageService);
+  public readonly isRefreshing = signal<boolean>(false);
 
   public readonly columns = computed<TableColumn[]>(() => {
     this.lang.currentLang();
@@ -128,8 +129,12 @@ export class ProductsComponent implements OnInit {
   }
 
   public onRefresh(): void {
+    if (this.isRefreshing() || this.state.productStore.loading()) return;
+    this.isRefreshing.set(true);
     this.state.productStore.clearCache();
     this.fetchFilteredProducts(this.currentPage());
+    this.state.showToast(this.lang.translate('toast.list_refreshed'), 'success');
+    setTimeout(() => this.isRefreshing.set(false), 800);
   }
 
   public fetchPage(page: number) {

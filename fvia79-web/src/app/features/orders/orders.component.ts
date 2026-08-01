@@ -49,6 +49,7 @@ export class OrdersComponent implements OnInit {
   public readonly state = inject(StateService);
   public readonly lang = inject(LanguageService);
   private readonly router = inject(Router);
+  public readonly isRefreshing = signal<boolean>(false);
 
   public readonly columns = computed<TableColumn[]>(() => {
     this.lang.currentLang();
@@ -96,8 +97,12 @@ export class OrdersComponent implements OnInit {
   }
 
   public onRefresh(): void {
+    if (this.isRefreshing() || this.state.orderStore.loading()) return;
+    this.isRefreshing.set(true);
     this.state.orderStore.clearCache();
     this.fetchPage(this.currentPage());
+    this.state.showToast(this.lang.translate('toast.list_refreshed'), 'success');
+    setTimeout(() => this.isRefreshing.set(false), 800);
   }
 
   public onSearch(query: string) {

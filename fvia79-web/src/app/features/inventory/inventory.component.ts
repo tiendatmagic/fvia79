@@ -56,6 +56,7 @@ export class InventoryComponent implements OnInit {
   private readonly route = inject(ActivatedRoute);
   private readonly router = inject(Router);
   public readonly lang = inject(LanguageService);
+  public readonly isRefreshing = signal<boolean>(false);
 
   public activeTab = signal<'batches' | 'resources'>('batches');
   public visibleSecrets = signal<Set<string>>(new Set());
@@ -208,11 +209,15 @@ export class InventoryComponent implements OnInit {
   }
 
   public onRefresh(): void {
+    if (this.isRefreshing() || this.state.inventoryStore.loading()) return;
+    this.isRefreshing.set(true);
     this.state.inventoryStore.clearCache();
     const currentPage = this.activeTab() === 'batches'
       ? this.currentBatchPage()
       : this.currentResourcePage();
     this.fetchData(currentPage);
+    this.state.showToast(this.lang.translate('toast.list_refreshed'), 'success');
+    setTimeout(() => this.isRefreshing.set(false), 800);
   }
 
   public onSearch(query: string) {
