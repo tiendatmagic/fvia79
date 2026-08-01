@@ -1,11 +1,11 @@
 <div class="flex flex-col" style="min-height: 420px">
   <div
-    class="flex items-center gap-2 border-b border-slate-200/60 dark:border-slate-800/60"
+    class="flex items-center gap-2 border-b border-slate-200/60 dark:border-slate-800/60 overflow-x-auto no-scrollbar scrollbar-none whitespace-nowrap flex-nowrap shrink-0"
   >
     <button
       type="button"
       (click)="setTab('info')"
-      class="px-4 pb-3 pt-2 border-b-2 text-xs sm:text-sm font-bold transition-all flex items-center gap-2 cursor-pointer -mb-px"
+      class="px-4 py-3 sm:py-3.5 border-b-2 text-xs sm:text-sm font-bold transition-all flex items-center gap-2 cursor-pointer -mb-px whitespace-nowrap shrink-0"
       [class.border-[var(--color-primary)]]="activeTab === 'info'"
       [class.text-[var(--color-primary)]]="activeTab === 'info'"
       [class.border-transparent]="activeTab !== 'info'"
@@ -14,14 +14,14 @@
       [class.hover:text-slate-900]="activeTab !== 'info'"
       [class.dark:hover:text-slate-100]="activeTab !== 'info'"
     >
-      <app-icon name="user" class="w-4 h-4" />
-      {{ 'user.tab_basic' | translate }}
+      <app-icon name="user" class="w-4 h-4 shrink-0" />
+      <span class="whitespace-nowrap">{{ 'user.tab_basic' | translate }}</span>
     </button>
 
     <button
       type="button"
       (click)="setTab('permissions')"
-      class="px-4 pb-3 pt-2 border-b-2 text-xs sm:text-sm font-bold transition-all flex items-center gap-2 cursor-pointer -mb-px"
+      class="px-4 py-3 sm:py-3.5 border-b-2 text-xs sm:text-sm font-bold transition-all flex items-center gap-2 cursor-pointer -mb-px whitespace-nowrap shrink-0"
       [class.border-[var(--color-primary)]]="activeTab === 'permissions'"
       [class.text-[var(--color-primary)]]="activeTab === 'permissions'"
       [class.border-transparent]="activeTab !== 'permissions'"
@@ -30,15 +30,15 @@
       [class.hover:text-slate-900]="activeTab !== 'permissions'"
       [class.dark:hover:text-slate-100]="activeTab !== 'permissions'"
     >
-      <app-icon name="key" class="w-4 h-4" />
-      {{ 'user.tab_permissions' | translate }}
+      <app-icon name="key" class="w-4 h-4 shrink-0" />
+      <span class="whitespace-nowrap">{{ 'user.tab_permissions' | translate }}</span>
     </button>
 
     @if (isEditMode) {
       <button
         type="button"
         (click)="setTab('security')"
-        class="px-4 pb-3 pt-2 border-b-2 text-xs sm:text-sm font-bold transition-all flex items-center gap-2 cursor-pointer -mb-px"
+        class="px-4 py-3 sm:py-3.5 border-b-2 text-xs sm:text-sm font-bold transition-all flex items-center gap-2 cursor-pointer -mb-px whitespace-nowrap shrink-0"
         [class.border-[var(--color-primary)]]="activeTab === 'security'"
         [class.text-[var(--color-primary)]]="activeTab === 'security'"
         [class.border-transparent]="activeTab !== 'security'"
@@ -47,8 +47,8 @@
         [class.hover:text-slate-900]="activeTab !== 'security'"
         [class.dark:hover:text-slate-100]="activeTab !== 'security'"
       >
-        <app-icon name="shield-check" class="w-4 h-4" />
-        {{ 'user.tab_security' | translate }}
+        <app-icon name="shield-check" class="w-4 h-4 shrink-0" />
+        <span class="whitespace-nowrap">{{ 'user.tab_security' | translate }}</span>
       </button>
     }
   </div>

@@ -46,12 +46,12 @@
   </app-page-header>
 
   <div
-    class="flex items-center gap-2 border-b border-slate-200/50 dark:border-slate-800/50 overflow-x-auto scrollbar-none whitespace-nowrap flex-nowrap"
+    class="flex items-center gap-2 border-b border-slate-200/50 dark:border-slate-800/50 overflow-x-auto no-scrollbar scrollbar-none whitespace-nowrap flex-nowrap shrink-0"
   >
     <button
       type="button"
       (click)="changeTab('categories')"
-      class="px-5 py-3 border-b-2 font-bold text-sm transition-colors flex items-center gap-2 cursor-pointer -mb-px whitespace-nowrap"
+      class="px-5 py-3.5 border-b-2 font-bold text-sm transition-colors flex items-center gap-2.5 cursor-pointer -mb-px whitespace-nowrap shrink-0"
       [class.border-primary]="activeTab() === 'categories'"
       [class.text-primary]="activeTab() === 'categories'"
       [class.border-transparent]="activeTab() !== 'categories'"
@@ -61,14 +61,14 @@
       [class.dark:hover:text-slate-100]="activeTab() !== 'categories'"
       [appTooltip]="'admin_faq.manage_categories_tooltip' | translate"
     >
-      <app-icon name="package" class="w-4 h-4" />
-      <span>{{ 'faq.field_category' | translate }}</span>
+      <app-icon name="package" class="w-4 h-4 shrink-0" />
+      <span class="whitespace-nowrap">{{ 'faq.field_category' | translate }}</span>
     </button>
 
     <button
       type="button"
       (click)="changeTab('policies')"
-      class="px-5 py-3 border-b-2 font-bold text-sm transition-colors flex items-center gap-2 cursor-pointer -mb-px whitespace-nowrap"
+      class="px-5 py-3.5 border-b-2 font-bold text-sm transition-colors flex items-center gap-2.5 cursor-pointer -mb-px whitespace-nowrap shrink-0"
       [class.border-primary]="activeTab() === 'policies'"
       [class.text-primary]="activeTab() === 'policies'"
       [class.border-transparent]="activeTab() !== 'policies'"
@@ -78,14 +78,14 @@
       [class.dark:hover:text-slate-100]="activeTab() !== 'policies'"
       [appTooltip]="'admin_faq.manage_policies_tooltip' | translate"
     >
-      <app-icon name="shield" class="w-4 h-4" />
-      <span>{{ 'faq.tab_policies' | translate }}</span>
+      <app-icon name="shield" class="w-4 h-4 shrink-0" />
+      <span class="whitespace-nowrap">{{ 'faq.tab_policies' | translate }}</span>
     </button>
 
     <button
       type="button"
       (click)="changeTab('faqs')"
-      class="px-5 py-3 border-b-2 font-bold text-sm transition-colors flex items-center gap-2 cursor-pointer -mb-px whitespace-nowrap"
+      class="px-5 py-3.5 border-b-2 font-bold text-sm transition-colors flex items-center gap-2.5 cursor-pointer -mb-px whitespace-nowrap shrink-0"
       [class.border-primary]="activeTab() === 'faqs'"
       [class.text-primary]="activeTab() === 'faqs'"
       [class.border-transparent]="activeTab() !== 'faqs'"
@@ -95,8 +95,8 @@
       [class.dark:hover:text-slate-100]="activeTab() !== 'faqs'"
       [appTooltip]="'admin_faq.manage_faqs_tooltip' | translate"
     >
-      <app-icon name="faq" class="w-4 h-4" />
-      <span>{{ 'admin_faq.tab_faqs' | translate }}</span>
+      <app-icon name="faq" class="w-4 h-4 shrink-0" />
+      <span class="whitespace-nowrap">{{ 'admin_faq.tab_faqs' | translate }}</span>
     </button>
   </div>
 

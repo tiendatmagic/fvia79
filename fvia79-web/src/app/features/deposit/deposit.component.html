@@ -46,7 +46,7 @@
             </div>
           </div>
         } @else {
-          <div class="flex border-b border-slate-200 dark:border-slate-800">
+          <div class="flex border-b border-slate-200 dark:border-slate-800 overflow-x-auto no-scrollbar scrollbar-none whitespace-nowrap flex-nowrap shrink-0">
             @if (state.publicSettingStore.settings().payment_binance_enabled) {
               <button
                 type="button"
@@ -58,7 +58,7 @@
                 [class.dark:text-slate-400]="paymentMethod !== 'binance'"
                 [class.hover:text-slate-900]="paymentMethod !== 'binance'"
                 [class.dark:hover:text-slate-200]="paymentMethod !== 'binance'"
-                class="flex-1 pb-3 text-sm sm:text-base font-black border-b-2 transition-all cursor-pointer -mb-px text-center"
+                class="flex-1 pb-3 text-sm sm:text-base font-black border-b-2 transition-all cursor-pointer -mb-px text-center shrink-0 whitespace-nowrap"
               >
                 Binance Pay (Binance ID)
               </button>
