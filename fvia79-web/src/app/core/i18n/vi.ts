@@ -683,6 +683,7 @@ export const VI_TRANSLATIONS: Record<string, string> = {
   'dep.description': 'Quản lý hóa đơn nạp USDT và xét duyệt nạp tiền thủ công.',
   'dep.no_deposits': 'Không tìm thấy lệnh nạp tiền',
   'dep.title': 'Quản Lý Nạp Tiền',
+  'deposit.subtitle': 'Tạo hóa đơn nạp USDT tự động với trình quét blockchain tốc độ cao.',
   'deposit.actual_amount': 'Số tiền thực tế (USDT)',
   'deposit.actual_amount_tooltip': 'Số tiền lẻ cần thanh toán thực tế',
   'deposit.actual_send': 'Thực gửi',

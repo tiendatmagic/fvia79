@@ -683,6 +683,7 @@ export const EN_TRANSLATIONS: Record<string, string> = {
   'dep.description': 'Review USDT deposit invoices and manual approvals.',
   'dep.no_deposits': 'No deposit invoices found',
   'dep.title': 'Deposit Management',
+  'deposit.subtitle': 'Create automatic USDT deposit invoice with fast blockchain scanner.',
   'deposit.actual_amount': 'Actual Amount (USDT)',
   'deposit.actual_amount_tooltip': 'Actual decimal amount that must be paid',
   'deposit.actual_send': 'Actual send',
