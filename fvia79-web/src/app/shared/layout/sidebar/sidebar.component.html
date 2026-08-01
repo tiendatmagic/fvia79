@@ -25,8 +25,8 @@
     <a
       routerLink="/storefront"
       [routerLinkActiveOptions]="{ exact: true }"
-      routerLinkActive="!bg-primary/10 !text-primary !font-extrabold"
-      class="flex items-center gap-3.5 px-4 py-3 rounded-xl hover:bg-slate-100 dark:hover:bg-slate-800/50 text-slate-600 dark:text-slate-400 font-semibold text-sm transition-colors duration-200 cursor-pointer"
+      routerLinkActive="!bg-[var(--color-primary)]/12 !text-[var(--color-primary)] font-semibold"
+      class="flex items-center gap-3.5 px-4 py-3 rounded-xl hover:bg-slate-100 dark:hover:bg-slate-800/50 text-slate-700 dark:text-slate-300 font-semibold text-sm transition-colors duration-200 cursor-pointer"
     >
       <app-icon name="home" class="w-5 h-5 flex-shrink-0" />
       <span>{{ 'nav.home' | translate }}</span>
@@ -36,15 +36,17 @@
       <button
         type="button"
         (click)="toggleBuyMenu()"
-        class="w-full flex items-center justify-between gap-3.5 px-4 py-3 rounded-xl hover:bg-slate-100 dark:hover:bg-slate-800/50 text-slate-600 dark:text-slate-400 font-semibold text-sm transition-colors duration-200 cursor-pointer select-none border-0 bg-transparent"
+        [class.!bg-[var(--color-primary)]/12]="isBuyMenuOpen()"
+        [class.!text-[var(--color-primary)]]="isBuyMenuOpen()"
+        class="w-full flex items-center justify-between gap-3.5 px-4 py-3 rounded-xl hover:bg-slate-100 dark:hover:bg-slate-800/50 text-slate-700 dark:text-slate-300 font-semibold text-sm transition-colors duration-200 cursor-pointer select-none border-0 bg-transparent"
       >
-        <div class="flex items-center gap-3.5 text-slate-600 dark:text-slate-400 font-semibold text-sm">
-          <app-icon name="pos" class="w-5 h-5 flex-shrink-0 text-slate-600 dark:text-slate-400" />
-          <span class="text-slate-600 dark:text-slate-400 font-semibold text-sm leading-none">{{ 'nav.buy' | translate }}</span>
+        <div class="flex items-center gap-3.5">
+          <app-icon name="pos" class="w-5 h-5 flex-shrink-0" />
+          <span>{{ 'nav.buy' | translate }}</span>
         </div>
         <app-icon
           name="chevron-down"
-          class="w-4 h-4 flex-shrink-0 text-slate-500 dark:text-slate-400 transition-transform duration-200"
+          class="w-4 h-4 flex-shrink-0 opacity-70 transition-transform duration-200"
           [class.rotate-180]="isBuyMenuOpen()"
         />
       </button>
@@ -55,8 +57,8 @@
             <a
               [routerLink]="['/storefront']"
               [queryParams]="{ category: cat.id }"
-              routerLinkActive="!bg-primary/10 !text-primary !font-extrabold"
-              class="flex items-center gap-2.5 px-3 py-2 rounded-lg hover:bg-slate-100 dark:hover:bg-slate-800/50 text-slate-600 dark:text-slate-400 font-medium text-xs transition-colors cursor-pointer"
+              routerLinkActive="!bg-[var(--color-primary)]/12 !text-[var(--color-primary)] font-semibold"
+              class="flex items-center gap-2.5 px-3 py-2 rounded-lg hover:bg-slate-100 dark:hover:bg-slate-800/50 text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-slate-200 font-semibold text-xs transition-colors cursor-pointer"
             >
               <app-icon name="tag" class="w-3.5 h-3.5 flex-shrink-0 opacity-60" />
               <span class="truncate">{{ getCategoryName(cat) }}</span>
@@ -73,8 +75,8 @@
 
     <a
       routerLink="/orders"
-      routerLinkActive="!bg-primary/10 !text-primary !font-extrabold"
-      class="flex items-center gap-3.5 px-4 py-3 rounded-xl hover:bg-slate-100 dark:hover:bg-slate-800/50 text-slate-600 dark:text-slate-400 font-semibold text-sm transition-colors duration-200 cursor-pointer"
+      routerLinkActive="!bg-[var(--color-primary)]/12 !text-[var(--color-primary)] font-semibold"
+      class="flex items-center gap-3.5 px-4 py-3 rounded-xl hover:bg-slate-100 dark:hover:bg-slate-800/50 text-slate-700 dark:text-slate-300 font-semibold text-sm transition-colors duration-200 cursor-pointer"
     >
       <app-icon name="orders" class="w-5 h-5 flex-shrink-0" />
       <span>{{ 'nav.order_history' | translate }}</span>
@@ -82,9 +84,9 @@
 
     <a
       routerLink="/deposit"
-      routerLinkActive="!bg-primary/10 !text-primary !font-extrabold"
+      routerLinkActive="!bg-[var(--color-primary)]/12 !text-[var(--color-primary)] font-semibold"
       [routerLinkActiveOptions]="{ exact: true }"
-      class="flex items-center gap-3.5 px-4 py-3 rounded-xl hover:bg-slate-100 dark:hover:bg-slate-800/50 text-slate-600 dark:text-slate-400 font-semibold text-sm transition-colors duration-200 cursor-pointer"
+      class="flex items-center gap-3.5 px-4 py-3 rounded-xl hover:bg-slate-100 dark:hover:bg-slate-800/50 text-slate-700 dark:text-slate-300 font-semibold text-sm transition-colors duration-200 cursor-pointer"
     >
       <app-icon name="wallet" class="w-5 h-5 flex-shrink-0" />
       <span>{{ 'nav.deposit' | translate }}</span>
@@ -92,17 +94,17 @@
 
     <a
       routerLink="/deposit/history"
-      routerLinkActive="!bg-primary/10 !text-primary !font-extrabold"
-      class="flex items-center gap-3.5 px-4 py-3 rounded-xl hover:bg-slate-100 dark:hover:bg-slate-800/50 text-slate-600 dark:text-slate-400 font-semibold text-sm transition-colors duration-200 cursor-pointer"
+      routerLinkActive="!bg-[var(--color-primary)]/12 !text-[var(--color-primary)] font-semibold"
+      class="flex items-center gap-3.5 px-4 py-3 rounded-xl hover:bg-slate-100 dark:hover:bg-slate-800/50 text-slate-700 dark:text-slate-300 font-semibold text-sm transition-colors duration-200 cursor-pointer"
     >
       <app-icon name="clock" class="w-5 h-5 flex-shrink-0" />
       <span>{{ 'nav.deposit_history' | translate }}</span>
     </a>
 
     <a
-      routerLink="/profile/information"
-      routerLinkActive="!bg-primary/10 !text-primary !font-extrabold"
-      class="flex items-center gap-3.5 px-4 py-3 rounded-xl hover:bg-slate-100 dark:hover:bg-slate-800/50 text-slate-600 dark:text-slate-400 font-semibold text-sm transition-colors duration-200 cursor-pointer"
+      routerLink="/profile"
+      routerLinkActive="!bg-[var(--color-primary)]/12 !text-[var(--color-primary)] font-semibold"
+      class="flex items-center gap-3.5 px-4 py-3 rounded-xl hover:bg-slate-100 dark:hover:bg-slate-800/50 text-slate-700 dark:text-slate-300 font-semibold text-sm transition-colors duration-200 cursor-pointer"
     >
       <app-icon name="user" class="w-5 h-5 flex-shrink-0" />
       <span>{{ 'nav.profile' | translate }}</span>
@@ -110,8 +112,8 @@
 
     <a
       routerLink="/user-api"
-      routerLinkActive="!bg-primary/10 !text-primary !font-extrabold"
-      class="flex items-center gap-3.5 px-4 py-3 rounded-xl hover:bg-slate-100 dark:hover:bg-slate-800/50 text-slate-600 dark:text-slate-400 font-semibold text-sm transition-colors duration-200 cursor-pointer"
+      routerLinkActive="!bg-[var(--color-primary)]/12 !text-[var(--color-primary)] font-semibold"
+      class="flex items-center gap-3.5 px-4 py-3 rounded-xl hover:bg-slate-100 dark:hover:bg-slate-800/50 text-slate-700 dark:text-slate-300 font-semibold text-sm transition-colors duration-200 cursor-pointer"
     >
       <app-icon name="code" class="w-5 h-5 flex-shrink-0" />
       <span>{{ 'nav.user_api' | translate }}</span>
@@ -119,8 +121,8 @@
 
     <a
       routerLink="/check-uid"
-      routerLinkActive="!bg-primary/10 !text-primary !font-extrabold"
-      class="flex items-center gap-3.5 px-4 py-3 rounded-xl hover:bg-slate-100 dark:hover:bg-slate-800/50 text-slate-600 dark:text-slate-400 font-semibold text-sm transition-colors duration-200 cursor-pointer"
+      routerLinkActive="!bg-[var(--color-primary)]/12 !text-[var(--color-primary)] font-semibold"
+      class="flex items-center gap-3.5 px-4 py-3 rounded-xl hover:bg-slate-100 dark:hover:bg-slate-800/50 text-slate-700 dark:text-slate-300 font-semibold text-sm transition-colors duration-200 cursor-pointer"
     >
       <app-icon name="check-uid" class="w-5 h-5 flex-shrink-0" />
       <span>{{ 'nav.check_uid' | translate }}</span>
@@ -128,8 +130,8 @@
 
     <a
       routerLink="/faq"
-      routerLinkActive="!bg-primary/10 !text-primary !font-extrabold"
-      class="flex items-center gap-3.5 px-4 py-3 rounded-xl hover:bg-slate-100 dark:hover:bg-slate-800/50 text-slate-600 dark:text-slate-400 font-semibold text-sm transition-colors duration-200 cursor-pointer"
+      routerLinkActive="!bg-[var(--color-primary)]/12 !text-[var(--color-primary)] font-semibold"
+      class="flex items-center gap-3.5 px-4 py-3 rounded-xl hover:bg-slate-100 dark:hover:bg-slate-800/50 text-slate-700 dark:text-slate-300 font-semibold text-sm transition-colors duration-200 cursor-pointer"
     >
       <app-icon name="shield-check" class="w-5 h-5 flex-shrink-0" />
       <span>{{ 'nav.faq' | translate }}</span>
@@ -137,8 +139,8 @@
 
     <a
       routerLink="/contact"
-      routerLinkActive="!bg-primary/10 !text-primary !font-extrabold"
-      class="flex items-center gap-3.5 px-4 py-3 rounded-xl hover:bg-slate-100 dark:hover:bg-slate-800/50 text-slate-600 dark:text-slate-400 font-semibold text-sm transition-colors duration-200 cursor-pointer"
+      routerLinkActive="!bg-[var(--color-primary)]/12 !text-[var(--color-primary)] font-semibold"
+      class="flex items-center gap-3.5 px-4 py-3 rounded-xl hover:bg-slate-100 dark:hover:bg-slate-800/50 text-slate-700 dark:text-slate-300 font-semibold text-sm transition-colors duration-200 cursor-pointer"
     >
       <app-icon name="telegram" class="w-5 h-5 flex-shrink-0" />
       <span>{{ 'nav.contact' | translate }}</span>
@@ -153,8 +155,8 @@
 
       <a
         routerLink="/admin/dashboard"
-        routerLinkActive="!bg-primary/10 !text-primary !font-extrabold"
-        class="flex items-center gap-3.5 px-4 py-3 rounded-xl hover:bg-slate-100 dark:hover:bg-slate-800/50 text-slate-600 dark:text-slate-400 font-semibold text-sm transition-colors duration-200 cursor-pointer mb-1"
+        routerLinkActive="!bg-[var(--color-primary)]/12 !text-[var(--color-primary)] font-semibold"
+        class="flex items-center gap-3.5 px-4 py-3 rounded-xl hover:bg-slate-100 dark:hover:bg-slate-800/50 text-slate-700 dark:text-slate-300 font-semibold text-sm transition-colors duration-200 cursor-pointer mb-1"
       >
         <app-icon name="dashboard" class="w-5 h-5 flex-shrink-0" />
         <span>{{ 'nav.dashboard' | translate }}</span>
@@ -162,8 +164,8 @@
 
       <a
         routerLink="/admin/orders"
-        routerLinkActive="!bg-primary/10 !text-primary !font-extrabold"
-        class="flex items-center gap-3.5 px-4 py-3 rounded-xl hover:bg-slate-100 dark:hover:bg-slate-800/50 text-slate-600 dark:text-slate-400 font-semibold text-sm transition-colors duration-200 cursor-pointer mb-1"
+        routerLinkActive="!bg-[var(--color-primary)]/12 !text-[var(--color-primary)] font-semibold"
+        class="flex items-center gap-3.5 px-4 py-3 rounded-xl hover:bg-slate-100 dark:hover:bg-slate-800/50 text-slate-700 dark:text-slate-300 font-semibold text-sm transition-colors duration-200 cursor-pointer mb-1"
       >
         <app-icon name="orders" class="w-5 h-5 flex-shrink-0" />
         <span>{{ 'admin.manage_orders' | translate }}</span>
@@ -171,8 +173,8 @@
 
       <a
         routerLink="/admin/products"
-        routerLinkActive="!bg-primary/10 !text-primary !font-extrabold"
-        class="flex items-center gap-3.5 px-4 py-3 rounded-xl hover:bg-slate-100 dark:hover:bg-slate-800/50 text-slate-600 dark:text-slate-400 font-semibold text-sm transition-colors duration-200 cursor-pointer mb-1"
+        routerLinkActive="!bg-[var(--color-primary)]/12 !text-[var(--color-primary)] font-semibold"
+        class="flex items-center gap-3.5 px-4 py-3 rounded-xl hover:bg-slate-100 dark:hover:bg-slate-800/50 text-slate-700 dark:text-slate-300 font-semibold text-sm transition-colors duration-200 cursor-pointer mb-1"
       >
         <app-icon name="list-bullet" class="w-5 h-5 flex-shrink-0" />
         <span>{{ 'admin.manage_products' | translate }}</span>
@@ -180,8 +182,8 @@
 
       <a
         routerLink="/admin/categories"
-        routerLinkActive="!bg-primary/10 !text-primary !font-extrabold"
-        class="flex items-center gap-3.5 px-4 py-3 rounded-xl hover:bg-slate-100 dark:hover:bg-slate-800/50 text-slate-600 dark:text-slate-400 font-semibold text-sm transition-colors duration-200 cursor-pointer mb-1"
+        routerLinkActive="!bg-[var(--color-primary)]/12 !text-[var(--color-primary)] font-semibold"
+        class="flex items-center gap-3.5 px-4 py-3 rounded-xl hover:bg-slate-100 dark:hover:bg-slate-800/50 text-slate-700 dark:text-slate-300 font-semibold text-sm transition-colors duration-200 cursor-pointer mb-1"
       >
         <app-icon name="tag" class="w-5 h-5 flex-shrink-0" />
         <span>{{ 'admin.manage_categories' | translate }}</span>
@@ -189,8 +191,8 @@
 
       <a
         routerLink="/admin/inventory"
-        routerLinkActive="!bg-primary/10 !text-primary !font-extrabold"
-        class="flex items-center gap-3.5 px-4 py-3 rounded-xl hover:bg-slate-100 dark:hover:bg-slate-800/50 text-slate-600 dark:text-slate-400 font-semibold text-sm transition-colors duration-200 cursor-pointer mb-1"
+        routerLinkActive="!bg-[var(--color-primary)]/12 !text-[var(--color-primary)] font-semibold"
+        class="flex items-center gap-3.5 px-4 py-3 rounded-xl hover:bg-slate-100 dark:hover:bg-slate-800/50 text-slate-700 dark:text-slate-300 font-semibold text-sm transition-colors duration-200 cursor-pointer mb-1"
       >
         <app-icon name="inventory" class="w-5 h-5 flex-shrink-0" />
         <span>{{ 'admin.manage_inventory' | translate }}</span>
@@ -199,8 +201,8 @@
       @if (publicSettingStore.settings().coupons_enabled) {
         <a
           routerLink="/admin/coupons"
-          routerLinkActive="!bg-primary/10 !text-primary !font-extrabold"
-          class="flex items-center gap-3.5 px-4 py-3 rounded-xl hover:bg-slate-100 dark:hover:bg-slate-800/50 text-slate-600 dark:text-slate-400 font-semibold text-sm transition-colors duration-200 cursor-pointer mb-1"
+          routerLinkActive="!bg-[var(--color-primary)]/12 !text-[var(--color-primary)] font-semibold"
+          class="flex items-center gap-3.5 px-4 py-3 rounded-xl hover:bg-slate-100 dark:hover:bg-slate-800/50 text-slate-700 dark:text-slate-300 font-semibold text-sm transition-colors duration-200 cursor-pointer mb-1"
         >
           <app-icon name="gift" class="w-5 h-5 flex-shrink-0" />
           <span>{{ 'nav.coupons' | translate }}</span>
@@ -209,8 +211,8 @@
 
       <a
         routerLink="/admin/faqs"
-        routerLinkActive="!bg-primary/10 !text-primary !font-extrabold"
-        class="flex items-center gap-3.5 px-4 py-3 rounded-xl hover:bg-slate-100 dark:hover:bg-slate-800/50 text-slate-600 dark:text-slate-400 font-semibold text-sm transition-colors duration-200 cursor-pointer mb-1"
+        routerLinkActive="!bg-[var(--color-primary)]/12 !text-[var(--color-primary)] font-semibold"
+        class="flex items-center gap-3.5 px-4 py-3 rounded-xl hover:bg-slate-100 dark:hover:bg-slate-800/50 text-slate-700 dark:text-slate-300 font-semibold text-sm transition-colors duration-200 cursor-pointer mb-1"
       >
         <app-icon name="shield" class="w-5 h-5 flex-shrink-0" />
         <span>{{ 'nav.admin_faqs' | translate }}</span>
@@ -218,8 +220,8 @@
 
       <a
         routerLink="/admin/users"
-        routerLinkActive="!bg-primary/10 !text-primary !font-extrabold"
-        class="flex items-center gap-3.5 px-4 py-3 rounded-xl hover:bg-slate-100 dark:hover:bg-slate-800/50 text-slate-600 dark:text-slate-400 font-semibold text-sm transition-colors duration-200 cursor-pointer mb-1"
+        routerLinkActive="!bg-[var(--color-primary)]/12 !text-[var(--color-primary)] font-semibold"
+        class="flex items-center gap-3.5 px-4 py-3 rounded-xl hover:bg-slate-100 dark:hover:bg-slate-800/50 text-slate-700 dark:text-slate-300 font-semibold text-sm transition-colors duration-200 cursor-pointer mb-1"
       >
         <app-icon name="customers" class="w-5 h-5 flex-shrink-0" />
         <span>{{ 'admin.manage_users' | translate }}</span>
@@ -228,8 +230,8 @@
       @if (publicSettingStore.settings().membership_tiers_feature_enabled) {
         <a
           routerLink="/admin/membership-tiers"
-          routerLinkActive="!bg-primary/10 !text-primary !font-extrabold"
-          class="flex items-center gap-3.5 px-4 py-3 rounded-xl hover:bg-slate-100 dark:hover:bg-slate-800/50 text-slate-600 dark:text-slate-400 font-semibold text-sm transition-colors duration-200 cursor-pointer mb-1"
+          routerLinkActive="!bg-[var(--color-primary)]/12 !text-[var(--color-primary)] font-semibold"
+          class="flex items-center gap-3.5 px-4 py-3 rounded-xl hover:bg-slate-100 dark:hover:bg-slate-800/50 text-slate-700 dark:text-slate-300 font-semibold text-sm transition-colors duration-200 cursor-pointer mb-1"
         >
           <app-icon name="sparkles" class="w-5 h-5 flex-shrink-0" />
           <span>{{ 'admin.manage_membership_tiers' | translate }}</span>
@@ -238,8 +240,8 @@
 
       <a
         routerLink="/admin/deposits"
-        routerLinkActive="!bg-primary/10 !text-primary !font-extrabold"
-        class="flex items-center gap-3.5 px-4 py-3 rounded-xl hover:bg-slate-100 dark:hover:bg-slate-800/50 text-slate-600 dark:text-slate-400 font-semibold text-sm transition-colors duration-200 cursor-pointer mb-1"
+        routerLinkActive="!bg-[var(--color-primary)]/12 !text-[var(--color-primary)] font-semibold"
+        class="flex items-center gap-3.5 px-4 py-3 rounded-xl hover:bg-slate-100 dark:hover:bg-slate-800/50 text-slate-700 dark:text-slate-300 font-semibold text-sm transition-colors duration-200 cursor-pointer mb-1"
       >
         <app-icon name="wallet" class="w-5 h-5 flex-shrink-0" />
         <span>{{ 'admin.manage_deposits' | translate }}</span>
@@ -247,8 +249,8 @@
 
       <a
         routerLink="/admin/suppliers"
-        routerLinkActive="!bg-primary/10 !text-primary !font-extrabold"
-        class="flex items-center gap-3.5 px-4 py-3 rounded-xl hover:bg-slate-100 dark:hover:bg-slate-800/50 text-slate-600 dark:text-slate-400 font-semibold text-sm transition-colors duration-200 cursor-pointer mb-1"
+        routerLinkActive="!bg-[var(--color-primary)]/12 !text-[var(--color-primary)] font-semibold"
+        class="flex items-center gap-3.5 px-4 py-3 rounded-xl hover:bg-slate-100 dark:hover:bg-slate-800/50 text-slate-700 dark:text-slate-300 font-semibold text-sm transition-colors duration-200 cursor-pointer mb-1"
       >
         <app-icon name="truck" class="w-5 h-5 flex-shrink-0" />
         <span>{{ 'nav.suppliers' | translate }}</span>
@@ -256,8 +258,8 @@
 
       <a
         routerLink="/admin/settings"
-        routerLinkActive="!bg-primary/10 !text-primary !font-extrabold"
-        class="flex items-center gap-3.5 px-4 py-3 rounded-xl hover:bg-slate-100 dark:hover:bg-slate-800/50 text-slate-600 dark:text-slate-400 font-semibold text-sm transition-colors duration-200 cursor-pointer mb-1"
+        routerLinkActive="!bg-[var(--color-primary)]/12 !text-[var(--color-primary)] font-semibold"
+        class="flex items-center gap-3.5 px-4 py-3 rounded-xl hover:bg-slate-100 dark:hover:bg-slate-800/50 text-slate-700 dark:text-slate-300 font-semibold text-sm transition-colors duration-200 cursor-pointer mb-1"
       >
         <app-icon name="settings" class="w-5 h-5 flex-shrink-0" />
         <span>{{ 'nav.settings' | translate }}</span>
@@ -265,8 +267,8 @@
 
       <a
         routerLink="/admin/api"
-        routerLinkActive="!bg-primary/10 !text-primary !font-extrabold"
-        class="flex items-center gap-3.5 px-4 py-3 rounded-xl hover:bg-slate-100 dark:hover:bg-slate-800/50 text-slate-600 dark:text-slate-400 font-semibold text-sm transition-colors duration-200 cursor-pointer mb-1"
+        routerLinkActive="!bg-[var(--color-primary)]/12 !text-[var(--color-primary)] font-semibold"
+        class="flex items-center gap-3.5 px-4 py-3 rounded-xl hover:bg-slate-100 dark:hover:bg-slate-800/50 text-slate-700 dark:text-slate-300 font-semibold text-sm transition-colors duration-200 cursor-pointer mb-1"
       >
         <app-icon name="code" class="w-5 h-5 flex-shrink-0" />
         <span>{{ 'nav.admin_api' | translate }}</span>

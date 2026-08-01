@@ -17,7 +17,20 @@
 >
 > **QUY TẮC BẮT BUỘC CRONJOB & PHÂN QUYỀN CACHE STORAGE**:
 > 1. Cronjob Scheduler (`schedule:run`) **CHỈ ĐƯỢC CHẠY DƯỚI USER `www-data`** (`crontab -u www-data -e`). **TUYỆT ĐỐI KHÔNG cài dưới `root`** vì sẽ gây ra lỗi `500 Permission denied` khi người dùng thực hiện thao tác Web/API.
-> 2. Luôn cấp quyền `chmod -R 777` và `chown -R www-data:www-data` cho `storage` & `bootstrap/cache`. Khi gõ lệnh CLI thủ công trên VPS, luôn chạy dưới quyền `www-data` (`su -s /bin/bash www-data -c "php artisan <cmd>"`).
+### [2026-08-01] Đồng Bộ 100% Giao Diện, Màu Sắc Chủ Đạo & Trạng Thái Active Cho Sidebar Navigation & Profile Sub-Menu Tab Cho 3 Dự Án (FVIA79, ADSBM79, ISOCALMARKET)
+- **Mô tả yêu cầu**:
+  Rà soát và đồng bộ 100% giao diện, màu sắc chủ đạo dynamic (`var(--color-primary)`), nền background active tint 12%, viền accent border 4px, font weight `font-semibold` và cơ chế khớp route chính xác cho 2 mảng menu chính: Sidebar Navigation (Desktop & Mobile drawer) và Profile Sub-Menu Tabs (Trang Cá Nhân) cho 3 dự án (**FVIA79**, **ADSBM79**, **ISOCALMARKET**).
+- **Thực hiện xử lý**:
+  - **Frontend Web (`fvia79-web`, `adsbm79-web`, `isocalmarket-web`)**:
+    - `sidebar.component.html` & `app.html` (Desktop & Mobile Sidebar):
+      1. Đổi `routerLink="/profile/information"` thành `routerLink="/profile"` để giữ trạng thái active cho Sidebar khi người dùng chuyển qua bất kỳ sub-tab nào trong trang cá nhân (`/profile/*`).
+      2. Chuẩn hóa `routerLinkActive="!bg-[var(--color-primary)]/12 !text-[var(--color-primary)] font-semibold"`.
+      3. Cập nhật màu văn bản mặc định `text-slate-700 dark:text-slate-300 font-semibold`.
+    - `profile.component.html` (Profile Sub-Menu Tabs):
+      1. Standardize active tab: `routerLinkActive="!bg-[var(--color-primary)]/12 dark:!bg-[var(--color-primary)]/18 border-l-4 border-[var(--color-primary)] !text-[var(--color-primary)] font-semibold"`.
+      2. Base class inactive hover: `class="flex items-center gap-3 px-4 py-3 text-sm font-semibold text-slate-700 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-800/50 hover:text-slate-900 dark:hover:text-white border-l-4 border-transparent rounded-xl transition-all cursor-pointer whitespace-nowrap"`.
+- **Kiểm thử**:
+  - Biên dịch Angular production `npx ng build --configuration production` thành công 100% không phát sinh bất kỳ lỗi syntax hay logic nào trên cả 3 dự án (`fvia79-web`, `adsbm79-web`, `isocalmarket-web`).
 
 ### [2026-07-31] Khắc Phục Lỗi Hiển Thị Sidebar Ở Trang Auth (/forgot-password, /login, /register) & Đồng Bộ Màu Chủ Đạo Cho Nút Telegram Support Đồng Bộ 3 Dự Án (FVIA79, ADSBM79, ISOCALMARKET)
 - **Mô tả yêu cầu**:
