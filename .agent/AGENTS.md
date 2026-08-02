@@ -20,16 +20,17 @@
 
 ### [2026-08-03] Chuẩn Hóa Icon Ngôi Sao Nổi (Floating Star SVG) Góc Trên Bên Phải Thẻ Cấp Bậc Trang Profile Đồng Bộ 3 Dự Án (FVIA79, ADSBM79, ISOCALMARKET)
 - **Mô tả yêu cầu**:
-  - Đặt biểu tượng SVG ngôi sao nổi (`star`) hình tròn sắc nét tại vị trí góc trên bên phải (`absolute -top-1.5 -right-1.5`) của thẻ cấp bậc hiện tại.
+  - Đặt biểu tượng SVG ngôi sao nổi (`star`) hình tròn sắc nét tại vị trí góc trên bên phải (`absolute -top-2 right-2.5`) của thẻ cấp bậc hiện tại.
   - Khắc phục lỗi hiển thị icon hình dấu chấm hỏi `?` trên các thẻ cấp bậc (Bạch kim, Kim cương) bằng cách bổ sung đầy đủ các icon SVG còn thiếu (`star`, `gem`, `diamond`, `crown`, `trophy`) vào bộ component dùng chung `icon.component.html` trên cả 3 dự án (**FVIA79**, **ADSBM79**, **ISOCALMARKET**).
 - **Thực hiện xử lý**:
   - **Bổ Sung SVG Icon Cases (`icon.component.html`)**:
     - Bổ sung `@case ('star')`, `@case ('gem')`, `@case ('diamond')`, `@case ('crown')`, `@case ('trophy')` chuẩn hóa vector paths với `[solid]="true"` render ngôi sao trắng ★ nguyên khối.
   - **Tối Ưu Vị Trí Badge Thẻ Active (`profile-information.component.html`)**:
-    - Neo icon ngôi sao nổi dạng hình tròn `absolute -top-1.5 -right-1.5 w-6 h-6 rounded-full flex items-center justify-center text-white shadow-md z-30` ở góc trên bên phải nổi ra ngoài viền thẻ active.
+    - Neo icon ngôi sao nổi dạng hình tròn `absolute -top-2 right-2.5 w-6 h-6 rounded-full flex items-center justify-center text-white shadow-xs z-30 pointer-events-none` ở góc trên bên phải nổi chuẩn mực trên viền thẻ active.
+    - Đặt class `relative` cố định trực tiếp ở thẻ cha `div` card để làm mốc neo tuyệt đối chuẩn xác cho icon ngôi sao nổi.
     - Sử dụng `@if (isCurrentTier(tier))` thay vì opacity toggle để chỉ render star cho tier hiện tại.
-    - Thêm `[class.overflow-visible]="isCurrentTier(tier)"` trên card để star badge không bị clip bởi overflow.
-    - Sử dụng `<app-icon name="star" [solid]="true">` thay vì inline SVG, với `style="width: 14px; height: 14px;"` đảm bảo kích thước chính xác.
+    - Thêm `overflow-visible` trong `[ngClass]` của thẻ active để star badge không bị clip bởi overflow.
+    - Sử dụng `<app-icon name="star" [solid]="true">` gọn gàng thay vì inline SVG, với `style="width: 14px; height: 14px;"` đảm bảo kích thước chính xác.
     - Giữ nguyên màu sắc thẻ tươi sáng 100% (loại bỏ opacity mờ/hover dimming), viền 1px (`border-width: 1px`) chuẩn màu cấp bậc, không vỡ khung hay clipping.
 - **Kiểm thử**:
   - Biên dịch sản phẩm Angular production `npx ng build --configuration production` thành công 100% (0 errors) trên cả 3 dự án Web.
