@@ -1,5 +1,6 @@
 import { Component, OnInit, inject, signal, ChangeDetectorRef } from '@angular/core';
 import { CommonModule } from '@angular/common';
+import { finalize } from 'rxjs';
 import { ApiService } from '@core/services/api.service';
 import { ToastService } from '@core/services/toast.service';
 import { LanguageService } from '@core/services/language.service';
@@ -95,16 +96,23 @@ export class ProfileNotificationsComponent implements OnInit {
   }
 
   public toggleNotifications(val: boolean): void {
+    if (this.saving()) return;
+    this.saving.set(true);
     this.notificationsEnabled = val;
+
     this.api.post<any>('v1/user/telegram', {
       telegram_notifications_enabled: val
-    }).subscribe({
+    }).pipe(
+      finalize(() => {
+        this.saving.set(false);
+        this.cdr.markForCheck();
+      })
+    ).subscribe({
       next: () => {
         this.toast.showToast(this.lang.translate('toast.profile_updated'), 'success');
-        this.cdr.markForCheck();
       },
       error: () => {
-        this.cdr.markForCheck();
+        this.notificationsEnabled = !val;
       }
     });
   }
