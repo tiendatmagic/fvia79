@@ -41,7 +41,7 @@
       [variant]="'primary'"
       [loading]="isSubmitting()"
       (click)="startEnable2Fa()"
-      class="px-6 py-2.5 rounded-xl font-bold bg-[var(--color-primary)] text-white shadow-md shadow-[var(--color-primary)]/10"
+      class="w-full sm:w-auto px-6 py-2.5 rounded-xl font-bold bg-[var(--color-primary)] text-white shadow-md shadow-[var(--color-primary)]/10"
     >
       {{ 'security.enable' | translate }}
     </button>
@@ -55,7 +55,7 @@
       app-button
       [variant]="'secondary'"
       (click)="startDisable2Fa()"
-      class="px-6 py-2.5 rounded-xl font-bold border-rose-500/20 text-rose-600 bg-rose-50 dark:bg-rose-950/20"
+      class="w-full sm:w-auto px-6 py-2.5 rounded-xl font-bold border-rose-500/20 text-rose-600 bg-rose-50 dark:bg-rose-950/20"
     >
       {{ 'security.disable' | translate }}
     </button>

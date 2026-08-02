@@ -18,6 +18,19 @@
 > **QUY TẮC BẮT BUỘC CRONJOB & PHÂN QUYỀN CACHE STORAGE**:
 > 1. Cronjob Scheduler (`schedule:run`) **CHỈ ĐƯỢC CHẠY DƯỚI USER `www-data`** (`crontab -u www-data -e`). **TUYỆT ĐỐI KHÔNG cài dưới `root`** vì sẽ gây ra lỗi `500 Permission denied` khi người dùng thực hiện thao tác Web/API.
 
+### [2026-08-02] Tối Ưu Giao Diện Responsive Trang Profile Trên Mobile Đồng Bộ 2 Dự Án (FVIA79 & ADSBM79)
+- **Mô tả yêu cầu**:
+  Rà soát và khắc phục triệt để lỗi giao diện thanh chuyển tab sub-menu trang Cá Nhân (`/profile`) trên giao diện thiết bị di động (mobile) cho 2 dự án (**FVIA79**, **ADSBM79**). Tham khảo giải pháp cuộn ngang mượt mà từ dự án `isocalmarket`.
+- **Thực hiện xử lý**:
+  - **Khắc phục lỗi nén/co chữ quá mức trên Mobile (`profile.component.html`)**:
+    - Thêm `flex-nowrap md:flex-wrap shrink-0` vào thẻ `div` container của các tab navigation.
+    - Thêm `shrink-0 md:shrink whitespace-nowrap` vào các thẻ liên kết `<a>` chuyển tab và `whitespace-nowrap md:whitespace-normal` cho thẻ `<span>` tiêu đề tab.
+    - Giúp thanh điều hướng tab trên mobile cuộn ngang mượt mà (`overflow-x-auto no-scrollbar scrollbar-none`), giữ nguyên 100% kích thước tiêu đề chữ không bị cắt xé hay nén thành các dấu ba chấm ("Thông...", "Đổi...", "Bả...").
+  - **Đồng bộ tính responsive cho nút hành động sub-page profile**:
+    - Cập nhật class `w-full sm:w-auto` cho các nút Submit/Hành động trên mobile trong `profile-information.component.html`, `profile-password.component.html`, `profile-security.component.html`, và `profile-devices.component.html`.
+- **Kiểm thử**:
+  - Biên dịch Angular production `npx ng build --configuration production` thành công 100% (0 errors) trên cả 2 dự án `fvia79-web` và `adsbm79-web`.
+
 ### [2026-08-02] Thêm Viền Highlight & Badge "Hiện Tại" Cho Thẻ Cấp Bậc Trong Bảng Quyền Lợi Đại Lý (`fvia79-web`)
 - **Mô tả yêu cầu**:
   - Đồng bộ tính năng hiển thị viền nổi bật (border highlight), hiệu ứng glowing ring và badge "Hiện tại" (Current Tier) trên thẻ cấp bậc đại lý tương ứng với tài khoản hiện tại trong Bảng Cấp Bậc & Quyền Lợi Chiết Khấu Đại Lý (`/profile`).
