@@ -43,7 +43,9 @@ export class ButtonComponent {
     | 'danger'
     | 'danger-light'
     | 'cancel'
-    | 'info' = 'primary';
+    | 'info'
+    | 'reload'
+    | 'outline' = 'primary';
   @Input() size: 'sm' | 'md' | 'lg' = 'md';
   @Input() loading = false;
   @Input() disabled = false;

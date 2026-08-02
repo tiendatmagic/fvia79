@@ -17,6 +17,41 @@
 >
 > **QUY TẮC BẮT BUỘC CRONJOB & PHÂN QUYỀN CACHE STORAGE**:
 > 1. Cronjob Scheduler (`schedule:run`) **CHỈ ĐƯỢC CHẠY DƯỚI USER `www-data`** (`crontab -u www-data -e`). **TUYỆT ĐỐI KHÔNG cài dưới `root`** vì sẽ gây ra lỗi `500 Permission denied` khi người dùng thực hiện thao tác Web/API.
+
+### [2026-08-02] Chuẩn Hóa & Thiết Kế Lại Đường Viền Cho Nút "Tải Lại" (Reload Button) Đồng Bộ 2 Dự Án (FVIA79 & ADSBM79)
+- **Mô tả yêu cầu**:
+  Rà soát và thiết kế lại đường viền, màu sắc nền và hiệu ứng hover cho tất cả nút "Tải lại" trên giao diện ở cả Light Mode và Dark Mode cho 2 dự án (**FVIA79**, **ADSBM79**). Khắc phục triệt để lỗi viền trắng nổi cộm gây thô giao diện ở Dark Mode do biến `--border-color` chưa được khai báo.
+- **Thực hiện xử lý**:
+  - **Styles System (`styles.scss`)**:
+    - Khai báo class chuẩn `.btn-reload` và `.btn-outline`:
+      - **Light Mode**: Nền `bg-white`, viền `border border-slate-200/80`, chữ `text-slate-700`, hover sang `hover:bg-slate-50 hover:text-primary hover:border-slate-300`.
+      - **Dark Mode**: Nền `dark:bg-slate-950`, viền `dark:border border-slate-800/80`, chữ `dark:text-slate-300`, hover sang `dark:hover:bg-slate-900 dark:hover:text-white dark:hover:border-slate-700`.
+  - **Shared Button Component (`button.component.ts`)**:
+    - Bổ sung `variant: 'reload' | 'outline'`.
+  - **Frontend Templates (`fvia79-web`, `adsbm79-web`)**:
+    - Đồng bộ 100% class nút Tải lại trên tất cả các trang (`orders`, `products`, `inventory`, `deposit-history`, `admin-users`, `admin-orders`, `admin-deposits`, `admin-dashboard`, `admin-categories`, `admin-coupons`, `admin-membership-tiers`).
+    - Khắc phục sự kiện click `(click)="fetchCoupons()"` tại `admin-coupons`.
+- **Kiểm thử**:
+  - Lệnh biên dịch sản phẩm `npx ng build --configuration production` thành công 100% không phát sinh lỗi trên cả 2 dự án Web (`fvia79-web`, `adsbm79-web`).
+
+### [2026-08-02] Triển Khai (Deploy) Chỉ Frontend (FE) Giữ Nguyên CSDL & Cấu Hình Bảo Trì Cho 2 Dự Án (FVIA79 & ADSBM79)
+- **Mô tả yêu cầu**:
+  Triển khai (deploy) bản nâng cấp mã nguồn Frontend (FE) Angular mới nhất cho 2 dự án (**FVIA79**, **ADSBM79**) lên 2 máy chủ VPS tương ứng theo thông tin tệp `deploy.md`. Bật chế độ bảo trì `php artisan down` trước khi upload, giữ nguyên 100% dữ liệu CSDL và tệp `.env`, giải nén và phân quyền FE `/var/www/*-web`, tái tạo toàn bộ cache Backend, kiểm tra Cronjob tự động của `www-data`, tắt chế độ bảo trì `php artisan up`, không tác động đến phpMyAdmin.
+- **Thực hiện xử lý**:
+  - **Biên dịch & Đóng gói Frontend (Local)**:
+    - Build Angular production thành công cho `fvia79-web` và `adsbm79-web`.
+    - Nén các tệp biên dịch thành `frontend-dist.tar.gz`.
+  - **Triển khai VPS FVIA79 (`38.180.150.246`) & ADSBM79 (`103.68.109.73`)**:
+    1. Đưa ứng dụng về chế độ bảo trì: `su -s /bin/bash www-data -c "php artisan down"`.
+    2. Upload gói FE và giải nén vào `/var/www/fvia79-web` và `/var/www/adsbm79-web`.
+    3. Cập nhật phân quyền: `chown -R www-data:www-data` và `chmod -R 755`.
+    4. Xóa và tái tạo cache Backend dưới user `www-data`: `config:clear`, `config:cache`, `route:cache`, `view:cache`.
+    5. Kiểm tra Cronjob Scheduler (`schedule:run`) hoạt động tự động dưới user `www-data`.
+    6. Tắt chế độ bảo trì: `su -s /bin/bash www-data -c "php artisan up"`.
+- **Kiểm thử nghiệm thu Website & API (HTTP 200 OK)**:
+  - **FVIA79**: `https://fvia79.com/` (200 OK), `https://fvia79.com/api/v1/categories` (200 OK).
+  - **ADSBM79**: `https://adsbm79.com/` (200 OK), `https://adsbm79.com/api/v1/categories` (200 OK).
+
 ### [2026-08-02] Khôi Phục & Chuẩn Hóa 100% Giao Diện Đa Ngôn Ngữ & Dropdown Thông Tin Cá Nhân Cho 2 Dự Án (FVIA79 & ADSBM79)
 - **Mô tả yêu cầu**:
   Khôi phục lại chính xác 100% giao diện gốc sạch sẻ của Header, Dropdown Đa ngôn ngữ và Dropdown Thông tin cá nhân từ commit nguyên bản cho 2 dự án (**FVIA79**, **ADSBM79**). Loại bỏ hoàn toàn các lớp style kính đệm `glass-popover`, viền ring mờ bóng bẩy không cần thiết và giữ vững thiết kế card phẳng, viền xám mỏng sắc nét chuẩn xác ban đầu.

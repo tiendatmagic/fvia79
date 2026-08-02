@@ -5,9 +5,10 @@
   >
     <ng-container actions *ngIf="publicSettingStore.settings().membership_tiers_feature_enabled">
       <button
+        appRipple
         (click)="loadTiers()"
         [appTooltip]="'common.reload' | translate"
-        class="px-4 py-2.5 text-sm font-extrabold text-slate-600 dark:text-slate-400 hover:text-primary bg-white dark:bg-slate-950 border border-slate-200/60 dark:border-slate-800/80 rounded-xl hover:bg-slate-50 dark:hover:bg-slate-900 transition-all cursor-pointer flex items-center gap-1.5"
+        class="btn-reload"
       >
         <app-icon name="sync" class="w-4 h-4" />
         {{ 'common.reload' | translate }}
