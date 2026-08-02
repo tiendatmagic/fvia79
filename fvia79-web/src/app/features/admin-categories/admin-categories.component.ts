@@ -172,6 +172,8 @@ export class AdminCategoriesComponent implements OnInit {
       data: null
     }).afterClosed$.subscribe((success) => {
       if (success) {
+        this.state.productStore.clearCache();
+        this.state.productStore.invalidateCategories();
         this.fetchCategories();
       }
     });
@@ -183,6 +185,8 @@ export class AdminCategoriesComponent implements OnInit {
       size: 'lg'
     }).afterClosed$.subscribe((success) => {
       if (success) {
+        this.state.productStore.clearCache();
+        this.state.productStore.invalidateCategories();
         this.fetchCategories();
       }
     });
@@ -195,6 +199,8 @@ export class AdminCategoriesComponent implements OnInit {
       data: category
     }).afterClosed$.subscribe((success) => {
       if (success) {
+        this.state.productStore.clearCache();
+        this.state.productStore.invalidateCategories();
         this.fetchCategories();
       }
     });
@@ -211,6 +217,8 @@ export class AdminCategoriesComponent implements OnInit {
       if (confirmed) {
         this.state.productStore.deleteCategory(category.id).subscribe((res) => {
           if (res !== null) {
+            this.state.productStore.clearCache();
+            this.state.productStore.invalidateCategories();
             this.fetchCategories();
           }
         });
@@ -235,6 +243,8 @@ export class AdminCategoriesComponent implements OnInit {
         this.updatingCategoryId.set(null);
         if (res !== null) {
           this.state.showToast(this.lang.translate('toast.category_status_updated'), 'success');
+          this.state.productStore.clearCache();
+          this.state.productStore.invalidateCategories();
           this.fetchCategories();
         }
       },
@@ -257,18 +267,24 @@ export class AdminCategoriesComponent implements OnInit {
   public confirmDeactivateOutOfStock() {
     if (this.isDeactivating()) return;
     this.isDeactivating.set(true);
+    this.isDeactivateModalOpen.set(false);
+
+    this.state.productStore.clearCache();
+    this.state.productStore.invalidateCategories();
+    this.state.productStore.loading.set(true);
 
     this.api.post<{ message: string; count: number }>('v1/categories/deactivate-out-of-stock', {}).subscribe({
       next: (res) => {
         this.isDeactivating.set(false);
-        this.isDeactivateModalOpen.set(false);
         if (res.count > 0) {
           const msg = this.lang.translate('cat.deactivate_success').replace('{{count}}', String(res.count));
           this.state.showToast(msg, 'success');
-          this.fetchCategories();
         } else {
           this.state.showToast(this.lang.translate('cat.deactivate_none'), 'warning');
         }
+        this.state.productStore.clearCache();
+        this.state.productStore.invalidateCategories();
+        this.fetchCategories();
       },
       error: (err) => {
         this.isDeactivating.set(false);
@@ -276,6 +292,9 @@ export class AdminCategoriesComponent implements OnInit {
           err?.error?.message || this.lang.translate('cat.deactivate_failed'),
           'error',
         );
+        this.state.productStore.clearCache();
+        this.state.productStore.invalidateCategories();
+        this.fetchCategories();
       },
     });
   }

@@ -16,7 +16,8 @@
         app-button
         (click)="openDeactivateOutOfStockModal()"
         variant="danger"
-        class="flex items-center gap-1.5 py-2.5 px-4 rounded-xl bg-amber-600 hover:bg-amber-700 text-white font-extrabold shadow-sm active:scale-95 transition-all text-sm cursor-pointer"
+        [disabled]="isDeactivating() || state.productStore.loading()"
+        class="flex items-center gap-1.5 py-2.5 px-4 rounded-xl bg-amber-600 hover:bg-amber-700 text-white font-extrabold shadow-sm active:scale-95 transition-all text-sm cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed"
       >
         <app-icon name="eye-slash" class="w-4 h-4" />
         {{ 'cat.deactivate_out_of_stock' | translate }}

@@ -38,11 +38,14 @@ export class ProductStore {
   public clearCache() {
     this.productsCache.clear();
     this.categoriesPaginatedCache.clear();
+    this.categoriesFetched = false;
+    this.categoriesInFlight$ = null;
   }
 
   public invalidateCategories() {
     this.categoriesFetched = false;
     this.categoriesInFlight$ = null;
+    this.categoriesPaginatedCache.clear();
   }
 
   private localizeItems(items: any[], language = this.lang.currentLang()): any[] {
