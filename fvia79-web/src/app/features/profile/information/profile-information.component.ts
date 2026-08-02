@@ -100,6 +100,20 @@ export class ProfileInformationComponent implements OnInit {
     return this.state.authStore.currentUser()?.membership_tier || null;
   }
 
+  public get effectiveUserTier(): MembershipTier | null {
+    if (this.currentUserTier) return this.currentUserTier;
+    if (this.tiers().length === 0) return null;
+    const totalDeposited = this.currentTotalDeposited;
+    const sortedTiers = [...this.tiers()].sort((a, b) => b.min_deposit - a.min_deposit);
+    return sortedTiers.find((t) => totalDeposited >= t.min_deposit) || this.tiers()[0] || null;
+  }
+
+  public isCurrentTier(tier: MembershipTier): boolean {
+    const current = this.effectiveUserTier;
+    if (!current || !tier) return false;
+    return current.id === tier.id || current.level === tier.level;
+  }
+
   public getTierName(tier: any): string {
     if (!tier) return '';
     const currentLang = this.lang.currentLang();

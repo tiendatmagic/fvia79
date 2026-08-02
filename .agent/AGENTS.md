@@ -18,6 +18,18 @@
 > **QUY TẮC BẮT BUỘC CRONJOB & PHÂN QUYỀN CACHE STORAGE**:
 > 1. Cronjob Scheduler (`schedule:run`) **CHỈ ĐƯỢC CHẠY DƯỚI USER `www-data`** (`crontab -u www-data -e`). **TUYỆT ĐỐI KHÔNG cài dưới `root`** vì sẽ gây ra lỗi `500 Permission denied` khi người dùng thực hiện thao tác Web/API.
 
+### [2026-08-02] Thêm Viền Highlight & Badge "Hiện Tại" Cho Thẻ Cấp Bậc Trong Bảng Quyền Lợi Đại Lý (`fvia79-web`)
+- **Mô tả yêu cầu**:
+  - Đồng bộ tính năng hiển thị viền nổi bật (border highlight), hiệu ứng glowing ring và badge "Hiện tại" (Current Tier) trên thẻ cấp bậc đại lý tương ứng với tài khoản hiện tại trong Bảng Cấp Bậc & Quyền Lợi Chiết Khấu Đại Lý (`/profile`).
+- **Thực hiện xử lý**:
+  - **Bổ sung getter `effectiveUserTier` & phương thức `isCurrentTier` (`profile-information.component.ts`)**:
+    - Xử lý trường hợp người dùng mới hoặc tài khoản chưa gán `membership_tier` trực tiếp từ backend -> tự động tính toán cấp bậc tương ứng (`Bronze/Đồng` đối với nạp tích lũy $0) dựa trên tổng nạp `total_deposited` và danh sách public tiers.
+  - **Cập nhật Giao diện Component (`profile-information.component.html`)**:
+    - Áp dụng `isCurrentTier(tier)` để xác định chính xác 100% thẻ cấp bậc của người dùng hiện tại.
+    - Thêm viền màu highlight dynamic `border-[var(--dynamic-primary)]` kết hợp `ring-2`, dải đổ bóng dịu `shadow-md`, hiệu ứng `scale-[1.02]` và badge góc trên bên phải floating badge `"HIỆN TẠI"` / `"CURRENT"` có biểu tượng check mark `<app-icon name="check">`.
+- **Kiểm thử**:
+  - Biên dịch Angular production `npx ng build --configuration production` thành công 100% (0 errors).
+
 ### [2026-08-02] Chuẩn Hóa & Thiết Kế Lại Đường Viền Cho Nút "Tải Lại" (Reload Button) Đồng Bộ 2 Dự Án (FVIA79 & ADSBM79)
 - **Mô tả yêu cầu**:
   Rà soát và thiết kế lại đường viền, màu sắc nền và hiệu ứng hover cho tất cả nút "Tải lại" trên giao diện ở cả Light Mode và Dark Mode cho 2 dự án (**FVIA79**, **ADSBM79**). Khắc phục triệt để lỗi viền trắng nổi cộm gây thô giao diện ở Dark Mode do biến `--border-color` chưa được khai báo.
