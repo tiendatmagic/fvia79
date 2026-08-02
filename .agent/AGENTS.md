@@ -18,6 +18,26 @@
 > **QUY TẮC BẮT BUỘC CRONJOB & PHÂN QUYỀN CACHE STORAGE**:
 > 1. Cronjob Scheduler (`schedule:run`) **CHỈ ĐƯỢC CHẠY DƯỚI USER `www-data`** (`crontab -u www-data -e`). **TUYỆT ĐỐI KHÔNG cài dưới `root`** vì sẽ gây ra lỗi `500 Permission denied` khi người dùng thực hiện thao tác Web/API.
 
+### [2026-08-02] Triển Khai (Deploy) Đồng Bộ Frontend & Backend Giữ Nguyên CSDL Cho 3 Dự Án (ADSBM79, FVIA79, ISOCALMARKET)
+- **Mô tả yêu cầu**:
+  Triển khai (deploy) bản nâng cấp mã nguồn Frontend Angular và Backend Laravel mới nhất cho cả 3 dự án (**ADSBM79**, **FVIA79**, **ISOCALMARKET**) lên 3 VPS tương ứng theo thông tin tệp `deploy.md`. Bật chế độ bảo trì `php artisan down` trước khi upload, giữ nguyên 100% CSDL và tệp `.env`, giải nén và phân quyền `www-data`, tái tạo bộ nhớ đệm Laravel, kiểm tra Cronjob tự động của `www-data`, tắt chế độ bảo trì `php artisan up`, tuyệt đối không tác động đến phpMyAdmin.
+- **Thực hiện xử lý**:
+  - **Biên dịch & Đóng gói (Local)**:
+    - Biên dịch Angular production `npx ng build --configuration production` và nén `frontend-<project>.tar.gz` cho cả 3 dự án Web.
+    - Đóng gói Backend bằng `git archive` thành `backend-<project>.zip` cho cả 3 dự án API.
+  - **Triển khai VPS ADSBM79 (`103.68.109.73`), FVIA79 (`38.180.150.246`) & ISOCALMARKET (`103.68.109.109`)**:
+    1. Đưa ứng dụng về chế độ bảo trì: `su -s /bin/bash www-data -c "php artisan down"`.
+    2. Upload gói FE & BE lên `/tmp/` và giải nén vào `/var/www/<project>-web` và `/var/www/<project>-api`.
+    3. Thực thi `composer install --no-dev --optimize-autoloader --no-interaction` và migration an toàn `php artisan migrate --force`.
+    4. Xóa và tái tạo cache dưới user `www-data`: `config:clear`, `config:cache`, `route:cache`, `view:cache`.
+    5. Khởi tạo phân quyền: `chown -R www-data:www-data` và `chmod -R 775` cho `storage` & `bootstrap/cache`.
+    6. Kiểm tra Cronjob Scheduler (`schedule:run`) hoạt động tự động dưới user `www-data`.
+    7. Tắt chế độ bảo trì: `su -s /bin/bash www-data -c "php artisan up"`.
+- **Kiểm thử nghiệm thu Website & API (HTTP 200 OK)**:
+  - **ADSBM79**: `https://adsbm79.com/` (200 OK), `https://adsbm79.com/api/v1/categories` (200 OK).
+  - **FVIA79**: `https://fvia79.com/` (200 OK), `https://fvia79.com/api/v1/categories` (200 OK).
+  - **ISOCALMARKET**: `https://isocalmarket.com/` (200 OK), `https://isocalmarket.com/api/v1/categories` (200 OK).
+
 ### [2026-08-02] Tối Ưu Giao Diện Cuộn Ngang (Horizontal Scroll) Cho Thẻ Cấp Bậc Đại Lý Trên Mobile Đồng Bộ 3 Dự Án (FVIA79, ADSBM79, ISOCALMARKET)
 - **Mô tả yêu cầu**:
   Chuyển đổi giao diện khối "Bảng Cấp Bậc & Quyền Lợi Chiết Khấu Đại Lý" (`/profile`) từ dạng Grid xếp dọc dài tràn màn hình sang dạng Cuộn Ngang (Horizontal Carousel Touch Scroll) trên thiết bị di động (mobile) để tiết kiệm 80% chiều cao màn hình, áp dụng đồng bộ cho cả 3 dự án (**FVIA79**, **ADSBM79**, **ISOCALMARKET**).

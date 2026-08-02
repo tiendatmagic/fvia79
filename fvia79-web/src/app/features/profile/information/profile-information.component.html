@@ -89,34 +89,32 @@
         >
           <div
             *ngFor="let tier of tiers()"
-            class="p-4 rounded-2xl border transition-all duration-200 flex flex-col justify-between space-y-3 relative shrink-0 w-[170px] sm:w-auto snap-start"
+            class="p-4 rounded-2xl transition-all duration-200 flex flex-col justify-between space-y-3 relative shrink-0 w-[170px] sm:w-auto snap-start"
             [ngClass]="{
-              'bg-slate-50 dark:bg-[#212b36] shadow-md ring-2 scale-[1.02]':
+              'bg-slate-50 dark:bg-[#212b36] shadow-lg border-2 ring-2 ring-[var(--dynamic-primary)]/25 z-10 relative':
                 isCurrentTier(tier),
-              'bg-slate-50/60 dark:bg-[#18222c] border-slate-200/80 dark:border-slate-700/60 opacity-85 hover:opacity-100 hover:bg-slate-100 dark:hover:bg-[#212b36]':
+              'bg-slate-50/60 dark:bg-[#18222c] border border-slate-200/80 dark:border-slate-700/60 opacity-85 hover:opacity-100 hover:bg-slate-100 dark:hover:bg-[#212b36] z-0 relative':
                 !isCurrentTier(tier),
             }"
             [style.borderColor]="isCurrentTier(tier) ? (tier.color || 'var(--dynamic-primary)') : null"
-            [style.boxShadow]="isCurrentTier(tier) ? '0 0 0 2px ' + (tier.color || 'var(--dynamic-primary)') + '35, 0 4px 6px -1px rgba(0,0,0,0.08)' : null"
           >
-            <div *ngIf="isCurrentTier(tier)" class="absolute -top-3 right-3 z-10">
-              <span
-                class="text-[10px] font-extrabold uppercase tracking-wider text-white px-2.5 py-0.5 rounded-full shadow-md whitespace-nowrap flex items-center gap-1"
-                [style.backgroundColor]="tier.color || 'var(--dynamic-primary)'"
-              >
-                <app-icon name="check" class="w-3 h-3 stroke-[3]" />
-                <span>{{ 'profile.current_tier' | translate }}</span>
-              </span>
-            </div>
-
             <div class="space-y-2.5">
-              <div class="flex items-center gap-1.5">
+              <div class="flex items-center justify-between gap-1.5 min-h-[26px]">
                 <span
                   class="px-2.5 py-1 rounded-full text-[11px] font-black text-white inline-flex items-center gap-1 shrink-0 whitespace-nowrap shadow-sm"
                   [style.backgroundColor]="tier.color || '#94a3b8'"
                 >
                   <app-icon [name]="tier.icon || 'shield'" class="w-3 h-3 shrink-0" />
                   <span class="whitespace-nowrap">{{ getTierName(tier) }}</span>
+                </span>
+
+                <span
+                  *ngIf="isCurrentTier(tier)"
+                  class="text-[10px] font-extrabold uppercase tracking-wider text-white px-2 py-0.5 rounded-full shadow-xs whitespace-nowrap inline-flex items-center gap-1 shrink-0"
+                  [style.backgroundColor]="tier.color || 'var(--dynamic-primary)'"
+                >
+                  <app-icon name="check" class="w-3 h-3 stroke-[3]" />
+                  <span>{{ 'profile.current_tier' | translate }}</span>
                 </span>
               </div>
 
