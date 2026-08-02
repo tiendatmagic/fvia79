@@ -109,9 +109,24 @@ export class ProfileInformationComponent implements OnInit {
   }
 
   public isCurrentTier(tier: MembershipTier): boolean {
+    if (!tier) return false;
     const current = this.effectiveUserTier;
-    if (!current || !tier) return false;
-    return current.id === tier.id || current.level === tier.level;
+    if (!current) return false;
+
+    if (current.id && tier.id && String(current.id) === String(tier.id)) return true;
+    if (current.level !== undefined && tier.level !== undefined && Number(current.level) === Number(tier.level)) return true;
+
+    const curNameVi = current.name_vi?.trim().toLowerCase();
+    const tierNameVi = tier.name_vi?.trim().toLowerCase();
+    if (curNameVi && tierNameVi && curNameVi === tierNameVi) return true;
+
+    const curNameEn = current.name_en?.trim().toLowerCase();
+    const tierNameEn = tier.name_en?.trim().toLowerCase();
+    if (curNameEn && tierNameEn && curNameEn === tierNameEn) return true;
+
+    if (current.min_deposit !== undefined && tier.min_deposit !== undefined && Number(current.min_deposit) === Number(tier.min_deposit)) return true;
+
+    return false;
   }
 
   public getTierName(tier: any): string {

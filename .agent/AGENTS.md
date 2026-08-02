@@ -18,6 +18,22 @@
 > **QUY TẮC BẮT BUỘC CRONJOB & PHÂN QUYỀN CACHE STORAGE**:
 > 1. Cronjob Scheduler (`schedule:run`) **CHỈ ĐƯỢC CHẠY DƯỚI USER `www-data`** (`crontab -u www-data -e`). **TUYỆT ĐỐI KHÔNG cài dưới `root`** vì sẽ gây ra lỗi `500 Permission denied` khi người dùng thực hiện thao tác Web/API.
 
+### [2026-08-03] Chuẩn Hóa Icon Ngôi Sao Nổi (Floating Star SVG) Góc Trên Bên Phải Thẻ Cấp Bậc Trang Profile Đồng Bộ 3 Dự Án (FVIA79, ADSBM79, ISOCALMARKET)
+- **Mô tả yêu cầu**:
+  - Đặt biểu tượng SVG ngôi sao nổi (`star`) hình tròn sắc nét tại vị trí góc trên bên phải (`absolute -top-1.5 -right-1.5`) của thẻ cấp bậc hiện tại.
+  - Khắc phục lỗi hiển thị icon hình dấu chấm hỏi `?` trên các thẻ cấp bậc (Bạch kim, Kim cương) bằng cách bổ sung đầy đủ các icon SVG còn thiếu (`star`, `gem`, `diamond`, `crown`, `trophy`) vào bộ component dùng chung `icon.component.html` trên cả 3 dự án (**FVIA79**, **ADSBM79**, **ISOCALMARKET**).
+- **Thực hiện xử lý**:
+  - **Bổ Sung SVG Icon Cases (`icon.component.html`)**:
+    - Bổ sung `@case ('star')`, `@case ('gem')`, `@case ('diamond')`, `@case ('crown')`, `@case ('trophy')` chuẩn hóa vector paths với `[solid]="true"` render ngôi sao trắng ★ nguyên khối.
+  - **Tối Ưu Vị Trí Badge Thẻ Active (`profile-information.component.html`)**:
+    - Neo icon ngôi sao nổi dạng hình tròn `absolute -top-1.5 -right-1.5 w-6 h-6 rounded-full flex items-center justify-center text-white shadow-md z-30` ở góc trên bên phải nổi ra ngoài viền thẻ active.
+    - Sử dụng `@if (isCurrentTier(tier))` thay vì opacity toggle để chỉ render star cho tier hiện tại.
+    - Thêm `[class.overflow-visible]="isCurrentTier(tier)"` trên card để star badge không bị clip bởi overflow.
+    - Sử dụng `<app-icon name="star" [solid]="true">` thay vì inline SVG, với `style="width: 14px; height: 14px;"` đảm bảo kích thước chính xác.
+    - Giữ nguyên màu sắc thẻ tươi sáng 100% (loại bỏ opacity mờ/hover dimming), viền 1px (`border-width: 1px`) chuẩn màu cấp bậc, không vỡ khung hay clipping.
+- **Kiểm thử**:
+  - Biên dịch sản phẩm Angular production `npx ng build --configuration production` thành công 100% (0 errors) trên cả 3 dự án Web.
+
 ### [2026-08-02] Triển Khai (Deploy) Đồng Bộ Frontend & Backend Giữ Nguyên CSDL Cho 3 Dự Án (ADSBM79, FVIA79, ISOCALMARKET)
 - **Mô tả yêu cầu**:
   Triển khai (deploy) bản nâng cấp mã nguồn Frontend Angular và Backend Laravel mới nhất cho cả 3 dự án (**ADSBM79**, **FVIA79**, **ISOCALMARKET**) lên 3 VPS tương ứng theo thông tin tệp `deploy.md`. Bật chế độ bảo trì `php artisan down` trước khi upload, giữ nguyên 100% CSDL và tệp `.env`, giải nén và phân quyền `www-data`, tái tạo bộ nhớ đệm Laravel, kiểm tra Cronjob tự động của `www-data`, tắt chế độ bảo trì `php artisan up`, tuyệt đối không tác động đến phpMyAdmin.
