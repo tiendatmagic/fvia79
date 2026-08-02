@@ -17,6 +17,16 @@
 >
 > **QUY TẮC BẮT BUỘC CRONJOB & PHÂN QUYỀN CACHE STORAGE**:
 > 1. Cronjob Scheduler (`schedule:run`) **CHỈ ĐƯỢC CHẠY DƯỚI USER `www-data`** (`crontab -u www-data -e`). **TUYỆT ĐỐI KHÔNG cài dưới `root`** vì sẽ gây ra lỗi `500 Permission denied` khi người dùng thực hiện thao tác Web/API.
+### [2026-08-02] Khôi Phục & Chuẩn Hóa 100% Giao Diện Đa Ngôn Ngữ & Dropdown Thông Tin Cá Nhân Cho 2 Dự Án (FVIA79 & ADSBM79)
+- **Mô tả yêu cầu**:
+  Khôi phục lại chính xác 100% giao diện gốc sạch sẻ của Header, Dropdown Đa ngôn ngữ và Dropdown Thông tin cá nhân từ commit nguyên bản cho 2 dự án (**FVIA79**, **ADSBM79**). Loại bỏ hoàn toàn các lớp style kính đệm `glass-popover`, viền ring mờ bóng bẩy không cần thiết và giữ vững thiết kế card phẳng, viền xám mỏng sắc nét chuẩn xác ban đầu.
+- **Thực hiện xử lý**:
+  - **Frontend Web (`fvia79-web`, `adsbm79-web`)**:
+    - Khôi phục nguyên bản tệp `header.component.html` và `styles.scss` từ commit gốc sạch.
+    - Đảm bảo thiết kế Header, Language Selector và User Profile Dropdown phẳng, mỏng, tinh tế ở cả Light Mode và Dark Mode.
+- **Kiểm thử**:
+  - Thực thi biên dịch `npx ng build --configuration production` thành công 100% không phát sinh lỗi trên cả 2 dự án Web (`fvia79-web`, `adsbm79-web`).
+
 ### [2026-08-01] Triển Khai (Deploy) Đồng Bộ Frontend & Backend Giữ Nguyên CSDL & Cấu Hình Bảo Trì Cho 2 Dự Án (ADSBM79 & FVIA79)
 - **Mô tả yêu cầu**:
   Triển khai (deploy) bản nâng cấp mã nguồn Frontend Angular và Backend Laravel mới nhất cho 2 dự án (**ADSBM79**, **FVIA79**) lên 2 máy chủ VPS tương ứng theo thông tin tệp `deploy.md`. Giữ nguyên 100% dữ liệu CSDL, bật chế độ bảo trì `php artisan down` trước khi upload, tái tạo cache đệm đặn sau khi upload, kiểm tra Cronjob tự động của `www-data`, tắt chế độ bảo trì `php artisan up` và tuyệt đối không tác động đến phpMyAdmin.
