@@ -48,6 +48,49 @@
         ({{ selectedResourcesForStatus('sold').length }})
       </button>
 
+      <div
+        class="relative inline-block text-left export-dropdown-container"
+        *ngIf="activeTab() === 'resources' && selectedResourceIds().size > 0"
+      >
+        <button
+          appRipple
+          (click)="toggleExportDropdown()"
+          [disabled]="state.inventoryStore.hasPendingResourceIds(selectedResourceIds())"
+          class="px-4 py-2.5 text-sm font-extrabold text-blue-700 dark:text-blue-300 bg-blue-50 dark:bg-blue-950/40 border border-blue-200 dark:border-blue-800/80 rounded-xl hover:bg-blue-100 dark:hover:bg-blue-900/60 transition-all duration-150 cursor-pointer disabled:opacity-60 disabled:cursor-wait flex items-center justify-center gap-1.5 whitespace-nowrap shadow-xs active:scale-95"
+        >
+          <app-icon name="download" class="w-4 h-4 text-blue-600 dark:text-blue-400" />
+          <span>{{ 'inventory.export_data' | translate }}</span>
+          <span class="text-xs opacity-75">({{ selectedResourceIds().size }})</span>
+          <app-icon
+            name="chevron-down"
+            class="w-3.5 h-3.5 transition-transform duration-200"
+            [class.rotate-180]="showExportDropdown()"
+          />
+        </button>
+
+        <div
+          *ngIf="showExportDropdown()"
+          class="glass-popover absolute right-0 top-full mt-2 w-52 border border-slate-200/80 dark:border-slate-700/60 rounded-2xl shadow-2xl p-2 z-[100] flex flex-col gap-1 overflow-hidden animate-in fade-in zoom-in-95 duration-150"
+        >
+          <button
+            appRipple
+            (click)="exportSelectedResourcesTxt(); closeExportDropdown()"
+            class="w-full flex items-center gap-2.5 rounded-xl px-3.5 py-2.5 text-sm font-bold cursor-pointer text-slate-700 dark:text-slate-200 hover:bg-slate-100 dark:hover:bg-[#212b36] transition-all duration-150"
+          >
+            <app-icon name="download" class="w-4 h-4 text-blue-500 shrink-0" />
+            <span>{{ 'inventory.export_txt' | translate }}</span>
+          </button>
+          <button
+            appRipple
+            (click)="copySelectedResources(); closeExportDropdown()"
+            class="w-full flex items-center gap-2.5 rounded-xl px-3.5 py-2.5 text-sm font-bold cursor-pointer text-slate-700 dark:text-slate-200 hover:bg-slate-100 dark:hover:bg-[#212b36] transition-all duration-150"
+          >
+            <app-icon name="copy" class="w-4 h-4 text-emerald-500 shrink-0" />
+            <span>{{ 'inventory.copy_data' | translate }}</span>
+          </button>
+        </div>
+      </div>
+
       <button
         *ngIf="activeTab() === 'resources' && selectedResourceIds().size > 0"
         (click)="bulkDeleteResources()"

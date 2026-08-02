@@ -7,55 +7,55 @@
   <div class="grid grid-cols-1 md:grid-cols-12 gap-6">
         <div
       app-card
-      class="col-span-12 lg:col-span-4 xl:col-span-3 p-5 sm:p-6"
+      class="col-span-12 lg:col-span-4 xl:col-span-3 p-3.5 sm:p-4.5 overflow-hidden"
     >
-            <div
-        class="flex overflow-x-auto gap-1.5 md:flex-col pb-2 md:pb-0 border-b border-slate-100 dark:border-slate-800/60 md:border-b-0 whitespace-nowrap scrollbar-none"
+      <div
+        class="flex overflow-x-auto gap-1 md:flex-col pb-2 md:pb-0 border-b border-slate-100 dark:border-slate-800/60 md:border-b-0 no-scrollbar scrollbar-none"
       >
-                <a
+        <a
           routerLink="information"
           routerLinkActive="!bg-[var(--color-primary)]/12 dark:!bg-[var(--color-primary)]/18 border-l-4 border-[var(--color-primary)] !text-[var(--color-primary)] font-semibold"
           [routerLinkActiveOptions]="{ exact: true }"
-          class="flex items-center gap-3 px-4 py-3 text-sm font-semibold text-slate-700 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-800/50 hover:text-slate-900 dark:hover:text-white border-l-4 border-transparent rounded-xl transition-all cursor-pointer whitespace-nowrap"
+          class="flex items-center gap-2.5 px-3 py-2.5 text-sm font-semibold text-slate-700 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-800/50 hover:text-slate-900 dark:hover:text-white border-l-4 border-transparent rounded-xl transition-all cursor-pointer overflow-hidden max-w-full"
         >
           <app-icon name="user" class="w-[18px] h-[18px] shrink-0" />
-          <span class="whitespace-nowrap">{{ 'profile.basic_info' | translate }}</span>
+          <span class="truncate min-w-0 flex-1">{{ 'profile.basic_info' | translate }}</span>
         </a>
 
-                <a
+        <a
           routerLink="password"
           routerLinkActive="!bg-[var(--color-primary)]/12 dark:!bg-[var(--color-primary)]/18 border-l-4 border-[var(--color-primary)] !text-[var(--color-primary)] font-semibold"
-          class="flex items-center gap-3 px-4 py-3 text-sm font-semibold text-slate-700 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-800/50 hover:text-slate-900 dark:hover:text-white border-l-4 border-transparent rounded-xl transition-all cursor-pointer whitespace-nowrap"
+          class="flex items-center gap-2.5 px-3 py-2.5 text-sm font-semibold text-slate-700 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-800/50 hover:text-slate-900 dark:hover:text-white border-l-4 border-transparent rounded-xl transition-all cursor-pointer overflow-hidden max-w-full"
         >
           <app-icon name="key" class="w-[18px] h-[18px] shrink-0" />
-          <span class="whitespace-nowrap">{{ 'profile.change_password' | translate }}</span>
+          <span class="truncate min-w-0 flex-1">{{ 'profile.change_password' | translate }}</span>
         </a>
 
-                <a
+        <a
           routerLink="security"
           routerLinkActive="!bg-[var(--color-primary)]/12 dark:!bg-[var(--color-primary)]/18 border-l-4 border-[var(--color-primary)] !text-[var(--color-primary)] font-semibold"
-          class="flex items-center gap-3 px-4 py-3 text-sm font-semibold text-slate-700 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-800/50 hover:text-slate-900 dark:hover:text-white border-l-4 border-transparent rounded-xl transition-all cursor-pointer whitespace-nowrap"
+          class="flex items-center gap-2.5 px-3 py-2.5 text-sm font-semibold text-slate-700 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-800/50 hover:text-slate-900 dark:hover:text-white border-l-4 border-transparent rounded-xl transition-all cursor-pointer overflow-hidden max-w-full"
         >
           <app-icon name="shield-check" class="w-[18px] h-[18px] shrink-0" />
-          <span class="whitespace-nowrap">{{ 'profile.security_2fa' | translate }}</span>
+          <span class="truncate min-w-0 flex-1">{{ 'profile.security_2fa' | translate }}</span>
         </a>
 
         <a
           routerLink="devices"
           routerLinkActive="!bg-[var(--color-primary)]/12 dark:!bg-[var(--color-primary)]/18 border-l-4 border-[var(--color-primary)] !text-[var(--color-primary)] font-semibold"
-          class="flex items-center gap-3 px-4 py-3 text-sm font-semibold text-slate-700 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-800/50 hover:text-slate-900 dark:hover:text-white border-l-4 border-transparent rounded-xl transition-all cursor-pointer whitespace-nowrap"
+          class="flex items-center gap-2.5 px-3 py-2.5 text-sm font-semibold text-slate-700 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-800/50 hover:text-slate-900 dark:hover:text-white border-l-4 border-transparent rounded-xl transition-all cursor-pointer overflow-hidden max-w-full"
         >
           <app-icon name="devices" class="w-[18px] h-[18px] shrink-0" />
-          <span class="whitespace-nowrap">{{ 'profile.devices' | translate }}</span>
+          <span class="truncate min-w-0 flex-1">{{ 'profile.devices' | translate }}</span>
         </a>
 
         <a
           routerLink="notifications"
           routerLinkActive="!bg-[var(--color-primary)]/12 dark:!bg-[var(--color-primary)]/18 border-l-4 border-[var(--color-primary)] !text-[var(--color-primary)] font-semibold"
-          class="flex items-center gap-3 px-4 py-3 text-sm font-semibold text-slate-700 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-800/50 hover:text-slate-900 dark:hover:text-white border-l-4 border-transparent rounded-xl transition-all cursor-pointer whitespace-nowrap"
+          class="flex items-center gap-2.5 px-3 py-2.5 text-sm font-semibold text-slate-700 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-800/50 hover:text-slate-900 dark:hover:text-white border-l-4 border-transparent rounded-xl transition-all cursor-pointer overflow-hidden max-w-full"
         >
           <app-icon name="telegram" class="w-[18px] h-[18px] shrink-0" />
-          <span class="whitespace-nowrap">{{ 'profile.telegram_notifications' | translate }}</span>
+          <span class="truncate min-w-0 flex-1">{{ 'profile.telegram_notifications' | translate }}</span>
         </a>
       </div>
     </div>

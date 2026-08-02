@@ -1,4 +1,4 @@
-import { Component, OnInit, inject, signal, computed, ChangeDetectionStrategy } from '@angular/core';
+import { Component, OnInit, inject, signal, computed, ChangeDetectionStrategy, HostListener } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { StateService } from '@core/services/state.service';
@@ -61,6 +61,7 @@ export class InventoryComponent implements OnInit {
   public activeTab = signal<'batches' | 'resources'>('batches');
   public visibleSecrets = signal<Set<string>>(new Set());
   public readonly selectedResourceIds = signal<Set<string>>(new Set<string>());
+  public showExportDropdown = signal<boolean>(false);
 
   public readonly resourceColumns = computed<TableColumn[]>(() => {
     this.lang.currentLang();
@@ -492,6 +493,109 @@ export class InventoryComponent implements OnInit {
     navigator.clipboard.writeText(text).then(
       () => this.state.showToast(successMsg, 'success'),
       () => this.state.showToast(this.lang.translate('toast.copy_error'), 'error')
+    );
+  }
+
+  @HostListener('document:click', ['$event'])
+  public onDocumentClick(event: MouseEvent): void {
+    const target = event?.target as HTMLElement;
+    if (!target || !target.closest('.export-dropdown-container')) {
+      this.showExportDropdown.set(false);
+    }
+  }
+
+  public toggleExportDropdown(): void {
+    this.showExportDropdown.update(v => !v);
+  }
+
+  public closeExportDropdown(): void {
+    this.showExportDropdown.set(false);
+  }
+
+  public exportSelectedResourcesTxt(): void {
+    const resources = this.selectedResources;
+    if (resources.length === 0) {
+      this.state.showToast(this.lang.translate('inventory.no_data_to_export'), 'warning');
+      return;
+    }
+
+    const textContent = resources
+      .map(item => item.secret_data || '')
+      .filter(line => line.trim().length > 0)
+      .join('\n');
+
+    if (!textContent) {
+      this.state.showToast(this.lang.translate('inventory.no_data_to_export'), 'warning');
+      return;
+    }
+
+    const blob = new Blob([textContent], { type: 'text/plain;charset=utf-8' });
+    const url = URL.createObjectURL(blob);
+    const link = document.createElement('a');
+    const now = new Date();
+    const timestamp = now.getFullYear().toString() +
+      String(now.getMonth() + 1).padStart(2, '0') +
+      String(now.getDate()).padStart(2, '0') + '_' +
+      String(now.getHours()).padStart(2, '0') +
+      String(now.getMinutes()).padStart(2, '0') +
+      String(now.getSeconds()).padStart(2, '0');
+
+    link.href = url;
+    link.download = `resources_export_${timestamp}.txt`;
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+    URL.revokeObjectURL(url);
+
+    this.state.showToast(
+      this.lang.translate('inventory.export_success', { count: resources.length }),
+      'success'
+    );
+  }
+
+  public copySelectedResources(): void {
+    const resources = this.selectedResources;
+    if (resources.length === 0) {
+      this.state.showToast(this.lang.translate('inventory.no_data_to_export'), 'warning');
+      return;
+    }
+
+    const textContent = resources
+      .map(item => item.secret_data || '')
+      .filter(line => line.trim().length > 0)
+      .join('\n');
+
+    if (!textContent) {
+      this.state.showToast(this.lang.translate('inventory.no_data_to_export'), 'warning');
+      return;
+    }
+
+    navigator.clipboard.writeText(textContent).then(
+      () => {
+        this.state.showToast(
+          this.lang.translate('inventory.copy_success', { count: resources.length }),
+          'success'
+        );
+      },
+      () => {
+        const textarea = document.createElement('textarea');
+        textarea.value = textContent;
+        textarea.style.position = 'fixed';
+        textarea.style.opacity = '0';
+        document.body.appendChild(textarea);
+        textarea.focus();
+        textarea.select();
+        try {
+          document.execCommand('copy');
+          this.state.showToast(
+            this.lang.translate('inventory.copy_success', { count: resources.length }),
+            'success'
+          );
+        } catch (err) {
+          this.state.showToast(this.lang.translate('toast.copy_error'), 'error');
+        }
+        document.body.removeChild(textarea);
+      }
     );
   }
 }

@@ -73,22 +73,19 @@ export class HeaderComponent {
     return !this.router.url.includes('/admin') && !this.isAuthPage();
   }
 
-  public toggleUserDropdown(event: Event) {
-    event.stopPropagation();
+  public toggleUserDropdown() {
     this.showLangDropdown.set(false);
     this.showCurrencyDropdown.set(false);
     this.showUserDropdown.update(v => !v);
   }
 
-  public toggleLangDropdown(event: Event) {
-    event.stopPropagation();
+  public toggleLangDropdown() {
     this.showUserDropdown.set(false);
     this.showCurrencyDropdown.set(false);
     this.showLangDropdown.update(v => !v);
   }
 
-  public toggleCurrencyDropdown(event: Event) {
-    event.stopPropagation();
+  public toggleCurrencyDropdown() {
     this.showUserDropdown.set(false);
     this.showLangDropdown.set(false);
     this.showCurrencyDropdown.update(v => !v);
@@ -104,11 +101,18 @@ export class HeaderComponent {
     this.showCurrencyDropdown.set(false);
   }
 
-  @HostListener('document:click')
-  public closeDropdowns() {
-    this.showUserDropdown.set(false);
-    this.showLangDropdown.set(false);
-    this.showCurrencyDropdown.set(false);
+  @HostListener('document:click', ['$event'])
+  public closeDropdowns(event?: MouseEvent) {
+    const target = event?.target as HTMLElement;
+    if (!target || !target.closest('.header-user-dropdown')) {
+      this.showUserDropdown.set(false);
+    }
+    if (!target || !target.closest('.header-lang-dropdown')) {
+      this.showLangDropdown.set(false);
+    }
+    if (!target || !target.closest('.header-currency-dropdown')) {
+      this.showCurrencyDropdown.set(false);
+    }
   }
 
   public getUserInitial(): string {
