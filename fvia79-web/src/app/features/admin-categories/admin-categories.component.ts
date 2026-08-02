@@ -238,14 +238,12 @@ export class AdminCategoriesComponent implements OnInit {
       description: category.description,
       is_active: !category.is_active
     };
-    this.state.productStore.updateCategory(category.id, data).subscribe({
+    this.state.productStore.updateCategory(category.id, data, false).subscribe({
       next: (res) => {
         this.updatingCategoryId.set(null);
         if (res !== null) {
+          category.is_active = data.is_active;
           this.state.showToast(this.lang.translate('toast.category_status_updated'), 'success');
-          this.state.productStore.clearCache();
-          this.state.productStore.invalidateCategories();
-          this.fetchCategories();
         }
       },
       error: () => {

@@ -191,14 +191,21 @@
             {{ 'common.deleted' | translate }}
           </app-badge>
         } @else {
-          <app-badge
-            [variant]="row.status === 'active' ? 'success' : 'neutral'"
-            size="sm"
-            rounded="md"
-            [appTooltip]="row.status === 'active' ? ('common.active' | translate) : ('common.inactive' | translate)"
-          >
-            {{ row.status === 'active' ? ('common.active' | translate) : ('common.inactive' | translate) }}
-          </app-badge>
+          <div class="flex items-center justify-center gap-2">
+            <app-badge
+              [variant]="row.status === 'active' ? 'success' : 'neutral'"
+              size="sm"
+              rounded="md"
+              [appTooltip]="row.status === 'active' ? ('common.active' | translate) : ('common.inactive' | translate)"
+            >
+              {{ row.status === 'active' ? ('common.active' | translate) : ('common.inactive' | translate) }}
+            </app-badge>
+            <app-custom-switch
+              [ngModel]="row.status === 'active'"
+              [disabled]="updatingStatusProductId() === row.id"
+              (ngModelChange)="toggleProductStatus(row)"
+            />
+          </div>
         }
       </ng-template>
 

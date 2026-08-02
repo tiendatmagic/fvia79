@@ -340,12 +340,24 @@ export class ProductStore {
     );
   }
 
-  public updateProduct(id: string, data: any) {
-    this.loading.set(true);
+  public updateProduct(id: string, data: any, setGlobalLoading: boolean = true) {
+    if (setGlobalLoading) {
+      this.loading.set(true);
+    }
     return this.api.put<any>(`v1/products/${id}`, data).pipe(
       tap((res) => {
-        this.clearCache();
-        this.toast.showToast(this.lang.translate('toast.product_updated'), 'success');
+        if (setGlobalLoading) {
+          this.clearCache();
+          this.toast.showToast(this.lang.translate('toast.product_updated'), 'success');
+        } else {
+          const updatedItem = res?.data || res;
+          const status = data.status !== undefined ? data.status : updatedItem?.status;
+          if (status) {
+            this.products.update(list =>
+              list.map(p => p.id === id ? { ...p, ...updatedItem, status } : p)
+            );
+          }
+        }
       }),
       catchError((err) => {
         const errorDetails = err.error?.errors ? Object.values(err.error.errors).flat().join(', ') : null;
@@ -353,7 +365,11 @@ export class ProductStore {
         this.toast.showToast(msg, 'error');
         return of(null);
       }),
-      finalize(() => this.loading.set(false))
+      finalize(() => {
+        if (setGlobalLoading) {
+          this.loading.set(false);
+        }
+      })
     );
   }
 
@@ -405,19 +421,37 @@ export class ProductStore {
     );
   }
 
-  public updateCategory(id: string, data: any) {
-    this.loading.set(true);
+  public updateCategory(id: string, data: any, showLoading: boolean = true) {
+    if (showLoading) {
+      this.loading.set(true);
+    }
     return this.api.put<any>(`v1/categories/${id}`, data).pipe(
-      tap(() => {
-        this.clearCache();
-        this.toast.showToast(this.lang.translate('toast.category_updated'), 'success');
+      tap((res) => {
+        if (showLoading) {
+          this.clearCache();
+          this.toast.showToast(this.lang.translate('toast.category_updated'), 'success');
+        } else {
+          const updatedItem = res?.data || res;
+          const isActive = data.is_active !== undefined ? data.is_active : updatedItem?.is_active;
+
+          this.paginatedCategories.update(list =>
+            list.map(c => c.id === id ? { ...c, ...updatedItem, is_active: isActive } : c)
+          );
+          this.categories.update(list =>
+            list.map(c => c.id === id ? { ...c, ...updatedItem, is_active: isActive } : c)
+          );
+        }
       }),
       catchError((err) => {
         const msg = err.error?.message || this.lang.translate('toast.category_update_failed');
         this.toast.showToast(msg, 'error');
         return of(null);
       }),
-      finalize(() => this.loading.set(false))
+      finalize(() => {
+        if (showLoading) {
+          this.loading.set(false);
+        }
+      })
     );
   }
 

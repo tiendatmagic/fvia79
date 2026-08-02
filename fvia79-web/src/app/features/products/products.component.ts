@@ -19,6 +19,8 @@ import { TableComponent, TableCellDirective, TableColumn } from '@shared/compone
 import { TranslatePipe } from '@shared/pipes/translate.pipe';
 import { CurrencyPipe } from '@shared/pipes/currency.pipe';
 
+import { CustomSwitchComponent } from '@shared/components/custom-switch/custom-switch.component';
+
 @Component({
   selector: 'app-products',
   standalone: true,
@@ -36,6 +38,7 @@ import { CurrencyPipe } from '@shared/pipes/currency.pipe';
     TooltipDirective,
     CustomSelectComponent,
     PaginationComponent,
+    CustomSwitchComponent,
     TableComponent,
     TableCellDirective,
     TranslatePipe,
@@ -225,5 +228,28 @@ export class ProductsComponent implements OnInit {
       () => this.state.showToast(message, 'success'),
       () => this.state.showToast(this.lang.translate('toast.copy_error'), 'error')
     );
+  }
+
+  public updatingStatusProductId = signal<string | null>(null);
+
+  public toggleProductStatus(product: any) {
+    if (!product || product.is_deleted || this.updatingStatusProductId() === product.id) return;
+    this.updatingStatusProductId.set(product.id);
+
+    const newStatus = product.status === 'active' ? 'inactive' : 'active';
+    const payload = { status: newStatus };
+
+    this.state.productStore.updateProduct(product.id, payload, false).subscribe({
+      next: (res) => {
+        this.updatingStatusProductId.set(null);
+        if (res !== null) {
+          product.status = newStatus;
+          this.state.showToast(this.lang.translate('toast.product_updated'), 'success');
+        }
+      },
+      error: () => {
+        this.updatingStatusProductId.set(null);
+      }
+    });
   }
 }

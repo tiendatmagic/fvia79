@@ -217,7 +217,7 @@ export class AdminMembershipTiersComponent implements OnInit {
       next: () => {
         const statusText = this.lang.translate(newStatus ? 'toast.tier_status_activated' : 'toast.tier_status_deactivated');
         this.toast.showToast(this.lang.translate('toast.tier_status_changed', { status: statusText, name: this.getTierName(tier) }), 'success');
-        this.loadTiers();
+        this.tiers.update(list => list.map(item => item.id === tier.id ? { ...item, is_active: newStatus } : item));
         this.updatingTierId.set(null);
       },
       error: (err) => {

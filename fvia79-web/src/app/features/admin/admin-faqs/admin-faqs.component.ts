@@ -334,11 +334,12 @@ export class AdminFaqsComponent implements OnInit {
     if (!cat || this.updatingCategoryId() === cat.id) return;
     this.updatingCategoryId.set(cat.id);
 
-    this.faqService.updatePolicyCategory(cat.id, { is_active: !cat.is_active }).subscribe({
+    const nextActive = !cat.is_active;
+    this.faqService.updatePolicyCategory(cat.id, { is_active: nextActive }).subscribe({
       next: () => {
         this.toast.showSuccess(this.lang.translate('toast.policy_cat_updated'));
+        this.categories.update(list => list.map(item => item.id === cat.id ? { ...item, is_active: nextActive } : item));
         this.updatingCategoryId.set(null);
-        this.loadData();
       },
       error: () => {
         this.toast.showError(this.lang.translate('admin_faq.toast_status_update_failed'));
@@ -428,11 +429,12 @@ export class AdminFaqsComponent implements OnInit {
     if (!policy || this.updatingPolicyId() === policy.id) return;
     this.updatingPolicyId.set(policy.id);
 
-    this.faqService.updatePolicy(policy.id, { is_active: !policy.is_active }).subscribe({
+    const nextActive = !policy.is_active;
+    this.faqService.updatePolicy(policy.id, { is_active: nextActive }).subscribe({
       next: () => {
         this.toast.showSuccess(this.lang.translate('toast.policy_updated'));
+        this.policies.update(list => list.map(item => item.id === policy.id ? { ...item, is_active: nextActive } : item));
         this.updatingPolicyId.set(null);
-        this.loadData();
       },
       error: () => {
         this.toast.showError(this.lang.translate('admin_faq.toast_status_update_failed'));
@@ -511,11 +513,12 @@ export class AdminFaqsComponent implements OnInit {
     if (!faq || this.updatingFaqId() === faq.id) return;
     this.updatingFaqId.set(faq.id);
 
-    this.faqService.updateFaq(faq.id, { is_active: !faq.is_active }).subscribe({
+    const nextActive = !faq.is_active;
+    this.faqService.updateFaq(faq.id, { is_active: nextActive }).subscribe({
       next: () => {
         this.toast.showSuccess(this.lang.translate('toast.faq_updated'));
+        this.faqs.update(list => list.map(item => item.id === faq.id ? { ...item, is_active: nextActive } : item));
         this.updatingFaqId.set(null);
-        this.loadData();
       },
       error: () => {
         this.toast.showError(this.lang.translate('admin_faq.toast_status_update_failed'));
