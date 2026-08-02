@@ -18,6 +18,17 @@
 > **QUY TẮC BẮT BUỘC CRONJOB & PHÂN QUYỀN CACHE STORAGE**:
 > 1. Cronjob Scheduler (`schedule:run`) **CHỈ ĐƯỢC CHẠY DƯỚI USER `www-data`** (`crontab -u www-data -e`). **TUYỆT ĐỐI KHÔNG cài dưới `root`** vì sẽ gây ra lỗi `500 Permission denied` khi người dùng thực hiện thao tác Web/API.
 
+### [2026-08-02] Tối Ưu Giao Diện Cuộn Ngang (Horizontal Scroll) Cho Thẻ Cấp Bậc Đại Lý Trên Mobile Đồng Bộ 3 Dự Án (FVIA79, ADSBM79, ISOCALMARKET)
+- **Mô tả yêu cầu**:
+  Chuyển đổi giao diện khối "Bảng Cấp Bậc & Quyền Lợi Chiết Khấu Đại Lý" (`/profile`) từ dạng Grid xếp dọc dài tràn màn hình sang dạng Cuộn Ngang (Horizontal Carousel Touch Scroll) trên thiết bị di động (mobile) để tiết kiệm 80% chiều cao màn hình, áp dụng đồng bộ cho cả 3 dự án (**FVIA79**, **ADSBM79**, **ISOCALMARKET**).
+- **Thực hiện xử lý**:
+  - **Tối ưu Container & Items Card (`profile-information.component.html`)**:
+    - Thay thế class grid dọc cũ bằng `flex overflow-x-auto no-scrollbar scrollbar-none snap-x snap-mandatory gap-3 pt-3 pb-2 -mx-1 px-1 sm:mx-0 sm:px-0 sm:grid sm:grid-cols-2 lg:grid-cols-2 xl:grid-cols-3 2xl:grid-cols-5 sm:gap-4`.
+    - Thêm `shrink-0 w-[170px] sm:w-auto snap-start` vào các ô thẻ cấp bậc `div`.
+    - Giúp người dùng vuốt cuộn ngang mượt mà trên mobile, kích thước thẻ vừa vặn, không bị ẩn hay co méo chữ, hiển thị full badge "HIỆN TẠI" và trả về dạng Grid chia cột đẹp mắt trên màn hình Tablet/Desktop.
+- **Kiểm thử**:
+  - Biên dịch sản phẩm Angular production `npx ng build --configuration production` thành công 100% (0 errors) trên cả 3 dự án Web.
+
 ### [2026-08-02] Tối Ưu Giao Diện Responsive Trang Profile Trên Mobile Đồng Bộ 2 Dự Án (FVIA79 & ADSBM79)
 - **Mô tả yêu cầu**:
   Rà soát và khắc phục triệt để lỗi giao diện thanh chuyển tab sub-menu trang Cá Nhân (`/profile`) trên giao diện thiết bị di động (mobile) cho 2 dự án (**FVIA79**, **ADSBM79**). Tham khảo giải pháp cuộn ngang mượt mà từ dự án `isocalmarket`.
