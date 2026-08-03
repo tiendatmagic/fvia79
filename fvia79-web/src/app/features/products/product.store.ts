@@ -202,7 +202,7 @@ export class ProductStore {
     return this.api.get<any>('v1/products', params);
   }
 
-  public fetchGroupedProducts(limit?: number, search?: string, includeOutOfStock?: boolean) {
+  public fetchGroupedProducts(limit?: number, search?: string, includeOutOfStock?: boolean, refresh?: boolean) {
     let params = new HttpParams();
     if (limit !== undefined) {
       params = params.set('limit', limit.toString());
@@ -212,6 +212,9 @@ export class ProductStore {
     }
     if (includeOutOfStock !== undefined) {
       params = params.set('include_out_of_stock', includeOutOfStock ? '1' : '0');
+    }
+    if (refresh) {
+      params = params.set('refresh', '1');
     }
     return this.api.get<any>('v1/products/grouped', params);
   }

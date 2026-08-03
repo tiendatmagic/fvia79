@@ -150,6 +150,8 @@ class SupplierController extends Controller
         if ($mustDetectDriver) {
             try {
                 $supplier->catalog_driver = $this->connectorFactory->detectDriver($supplier);
+                $supplier->last_sync_error = null;
+                $supplier->last_sync_status = null;
             } catch (RuntimeException $exception) {
                 return response()->json(['message' => $exception->getMessage()], 422);
             }

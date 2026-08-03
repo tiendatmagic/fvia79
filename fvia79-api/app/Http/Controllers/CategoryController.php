@@ -51,6 +51,13 @@ class CategoryController extends Controller
             }
 
             $cacheKey = "categories_active_storefront_{$lang}";
+            if ($request->boolean('refresh') || $request->boolean('clear_cache')) {
+                Cache::forget($cacheKey);
+                Cache::forget('categories_active_storefront');
+                Cache::forget('categories_active_storefront_vi');
+                Cache::forget('categories_active_storefront_en');
+                Cache::forget('products_active_storefront');
+            }
             if (empty($search)) {
                 $data = Cache::remember($cacheKey, 600, function () use ($search, $lang) {
                     $categories = $this->categoryRepo->findAll($search);

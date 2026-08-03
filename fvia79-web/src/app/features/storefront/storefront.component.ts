@@ -497,6 +497,7 @@ export class StorefrontComponent implements OnInit, OnDestroy {
 
   public readonly includeOutOfStock = signal<boolean>(false);
   public readonly isUpdatingOutOfStock = signal<boolean>(false);
+  public readonly isReloading = signal<boolean>(false);
 
   public toggleIncludeOutOfStock(enabled: boolean) {
     if (this.isUpdatingOutOfStock() || this.state.productStore.loading()) return;
@@ -640,6 +641,35 @@ export class StorefrontComponent implements OnInit, OnDestroy {
 
     return sorted;
   });
+
+  public reloadStorefront(): void {
+    if (this.isReloading() || this.state.productStore.loading()) return;
+    this.isReloading.set(true);
+    this.state.productStore.clearCache();
+    this.state.productStore
+      .fetchGroupedProducts(this.limit, this.searchQuery.trim() || undefined, this.includeOutOfStock(), true)
+      .subscribe({
+        next: (res: any[]) => {
+          const initialPages: { [catId: string]: number } = {};
+          const list = (res || []).map((group) => {
+            initialPages[group.id] = 1;
+            return {
+              ...group,
+              loading: false,
+            };
+          });
+          this.groupedProductsState.set(list);
+          this.categoryPages.set(initialPages);
+          this.state.productStore.loading.set(false);
+          this.isReloading.set(false);
+          this.state.showToast(this.lang.translate('storefront.reloaded_success'), 'success');
+        },
+        error: () => {
+          this.state.productStore.loading.set(false);
+          this.isReloading.set(false);
+        },
+      });
+  }
 
   public loadAllGroupedProducts() {
     this.state.productStore.loading.set(true);

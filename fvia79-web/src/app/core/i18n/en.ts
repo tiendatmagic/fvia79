@@ -1503,6 +1503,7 @@ export const EN_TRANSLATIONS: Record<string, string> = {
   'storefront.please_login_to_buy': 'Please log in to purchase products.',
   'storefront.please_login_to_use_cart': 'Please log in to use the cart.',
   'storefront.quantity': 'Quantity',
+  'storefront.reloaded_success': 'Refreshed latest product list',
   'storefront.search_placeholder': 'Search accounts or categories...',
   'storefront.sort_az': 'Category Name (A - Z)',
   'storefront.sort_by': 'Sort by',

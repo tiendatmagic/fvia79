@@ -8,6 +8,7 @@ use App\Http\Requests\CreateProductRequest;
 use App\Infrastructure\Persistence\Eloquent\UserModel;
 use App\Infrastructure\Security\JwtService;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Cache;
 
 class ProductController extends Controller
 {
@@ -75,7 +76,14 @@ class ProductController extends Controller
     public function indexGrouped(Request $request)
     {
         try {
-            $limit = min(100, max(1, (int) $request->query('limit', 100)));
+            if ($request->boolean('refresh') || $request->boolean('clear_cache')) {
+                Cache::forget('products_active_storefront');
+                Cache::forget('categories_active_storefront');
+                Cache::forget('categories_active_storefront_vi');
+                Cache::forget('categories_active_storefront_en');
+            }
+
+            $limit = min(12, max(1, (int) $request->query('limit', 12)));
             $search = $request->query('search');
             $includeOutOfStock = $request->boolean('include_out_of_stock', false);
             $lang = $this->resolveLanguage($request);

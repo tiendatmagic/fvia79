@@ -1503,6 +1503,7 @@ export const VI_TRANSLATIONS: Record<string, string> = {
   'storefront.please_login_to_buy': 'Vui lòng đăng nhập để mua hàng.',
   'storefront.please_login_to_use_cart': 'Vui lòng đăng nhập để sử dụng giỏ hàng.',
   'storefront.quantity': 'Số lượng',
+  'storefront.reloaded_success': 'Đã làm mới danh sách sản phẩm mới nhất',
   'storefront.search_placeholder': 'Tìm kiếm sản phẩm hoặc danh mục...',
   'storefront.sort_az': 'Tên danh mục (A - Z)',
   'storefront.sort_by': 'Sắp xếp theo',
