@@ -4,11 +4,20 @@ import { catchError, finalize, forkJoin, map, Observable, of, shareReplay, tap }
 
 export type PriceAdjustmentType = 'fixed' | 'percent';
 
+export interface SupplierTemplate {
+  code: string;
+  name: string;
+  base_url: string;
+  catalog_driver: string;
+  enabled: boolean;
+}
+
 export interface SupplierSettings {
   code: string;
   name: string;
   base_url: string;
-  catalog_driver: 'clone_store_v1' | 'clone_store_v2';
+  catalog_driver: string;
+  template_enabled?: boolean;
   has_api_key: boolean;
   enabled: boolean;
   products_enabled: boolean;
@@ -50,12 +59,20 @@ export class SupplierStore {
   private loaded = false;
 
   public readonly suppliers = signal<SupplierSettings[]>([]);
+  public readonly templates = signal<SupplierTemplate[]>([]);
   public readonly loading = signal(false);
   public readonly saving = signal(false);
   public readonly syncing = signal(false);
   public readonly balanceLoading = signal(false);
   public readonly balance = signal<SupplierBalance | null>(null);
   public readonly exchangeRate = signal(0);
+
+  public fetchTemplates(): Observable<SupplierTemplate[]> {
+    return this.api.get<SupplierTemplate[]>('v1/admin/suppliers/templates').pipe(
+      tap((templates) => this.templates.set(templates)),
+      catchError(() => of([])),
+    );
+  }
 
   public fetchSuppliers(force = false): Observable<SupplierSettings[]> {
     if (this.loaded && !force) {

@@ -89,6 +89,7 @@ Route::prefix('v1')->group(function () {
                 ->middleware('throttle:database-backup-export');
             Route::post('/admin/database-backup/restore', ['App\Http\Controllers\DatabaseBackupController', 'restore'])
                 ->middleware('throttle:database-backup-restore');
+            Route::get('/admin/suppliers/templates', ['App\Http\Controllers\SupplierController', 'templates']);
             Route::get('/admin/suppliers', ['App\Http\Controllers\SupplierController', 'index']);
             Route::post('/admin/suppliers', ['App\Http\Controllers\SupplierController', 'store']);
             Route::put('/admin/suppliers/{code}', ['App\Http\Controllers\SupplierController', 'update']);

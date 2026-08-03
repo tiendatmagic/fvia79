@@ -142,7 +142,12 @@
               ? (supplierForm.last_synced_at | date: 'short')
               : ('supplier.never' | translate)
           }}
-        </p>
+        @if (supplierForm.template_enabled === false) {
+          <div class="mt-4 rounded-xl border border-amber-500/30 bg-amber-500/10 p-3.5 text-amber-700 dark:text-amber-400 text-xs font-semibold flex items-center gap-2.5 shadow-sm">
+            <app-icon name="alert-triangle" class="w-4 h-4 flex-shrink-0 text-amber-500" />
+            <span>{{ 'supplier.template_disabled_notice' | translate }}</span>
+          </div>
+        }
         @if (!isCreatingSupplier()) {
           <div
             class="mt-4 grid w-full max-w-2xl grid-cols-[1fr_auto] items-center gap-3 rounded-xl border border-emerald-200/70 bg-emerald-50 px-4 py-3 dark:border-emerald-900/50 dark:bg-emerald-950/20 min-w-0"
@@ -380,6 +385,25 @@
 
     <form (ngSubmit)="saveSupplier()" class="space-y-6">
       <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+        @if (isCreatingSupplier()) {
+          <div class="form-field md:col-span-2">
+            <label class="block text-sm font-bold text-slate-700 dark:text-slate-200 mb-1">
+              {{ 'supplier.template_api' | translate }} <span class="text-rose-500">*</span>
+            </label>
+            <app-custom-select
+              class="w-full"
+              [options]="templateOptions"
+              valueKey="value"
+              labelKey="label"
+              [ngModel]="selectedTemplateCode()"
+              (ngModelChange)="onTemplateChange($event)"
+              [disabled]="isLocked()"
+              name="template_api"
+            />
+            <p class="mt-1.5 text-xs text-slate-400">{{ 'supplier.template_api_hint' | translate }}</p>
+          </div>
+        }
+
         <div class="form-field">
           <label for="supplier_name">{{ 'supplier.name' | translate }}</label>
           <input
@@ -440,7 +464,7 @@
           @if (supplierForm.catalog_driver) {
             <p class="mt-1 text-xs font-semibold text-emerald-600">
               {{ 'supplier.detected_standard' | translate }}:
-              {{ supplierForm.catalog_driver === 'clone_store_v2' ? 'API V2' : 'API V1' }}
+              {{ supplierForm.catalog_driver === 'clone_store_v2' ? 'API V2' : (supplierForm.catalog_driver === 'muabm365' ? 'MUABM365 API' : 'API V1') }}
             </p>
           }
         </div>

@@ -41,6 +41,30 @@ export class AdminSuppliersComponent implements OnInit {
   public readonly isDeactivating = signal(false);
   public readonly isLocked = signal<boolean>(true);
 
+  public readonly selectedTemplateCode = signal<string>('');
+
+  public get templateOptions() {
+    return [
+      { label: this.lang.translate('supplier.select_template_placeholder'), value: '' },
+      ...this.supplierStore.templates().map((t) => ({
+        label: `${t.name} (${t.base_url})`,
+        value: t.code,
+      })),
+    ];
+  }
+
+  public onTemplateChange(code: string): void {
+    this.selectedTemplateCode.set(code);
+    if (!code) return;
+
+    const template = this.supplierStore.templates().find((t) => t.code === code);
+    if (template) {
+      this.supplierForm.name = template.name;
+      this.supplierForm.base_url = template.base_url;
+      this.supplierForm.catalog_driver = template.catalog_driver;
+    }
+  }
+
   public get adjustmentTypeOptions() {
     return [
       { label: this.lang.translate('supplier.fixed_vnd'), value: 'fixed' },
@@ -74,8 +98,8 @@ export class AdminSuppliersComponent implements OnInit {
     enabled: true,
     products_enabled: true,
     import_out_of_stock: true,
-    auto_sync: false,
-    auto_translate: false,
+    auto_sync: true,
+    auto_translate: true,
     target_language: 'vi',
     sync_interval_minutes: 30,
     price_adjustment_type: 'fixed',
@@ -84,6 +108,7 @@ export class AdminSuppliersComponent implements OnInit {
   };
 
   ngOnInit(): void {
+    this.supplierStore.fetchTemplates().subscribe();
     this.supplierStore.fetchSuppliers().subscribe({
       next: (suppliers) => {
         const supplier = suppliers.find((item) => item.code === 'ads7979') || suppliers[0];
@@ -103,6 +128,11 @@ export class AdminSuppliersComponent implements OnInit {
 
   public saveSupplier(): void {
     if (this.supplierStore.saving() || this.isLocked()) return;
+
+    if (this.isCreatingSupplier() && !this.selectedTemplateCode()) {
+      this.toast.showToast(this.lang.translate('supplier.template_required'), 'warning');
+      return;
+    }
 
     const payload = { ...this.supplierForm };
     if (!payload.api_key?.trim()) delete payload.api_key;
@@ -293,6 +323,7 @@ export class AdminSuppliersComponent implements OnInit {
 
   public startCreatingSupplier(): void {
     this.selectedSupplierCode.set(null);
+    this.selectedTemplateCode.set('');
     this.isCreatingSupplier.set(true);
     this.showSupplierApiKey.set(false);
     this.balanceLoadFailed.set(false);
@@ -305,8 +336,8 @@ export class AdminSuppliersComponent implements OnInit {
       enabled: true,
       products_enabled: true,
       import_out_of_stock: true,
-      auto_sync: false,
-      auto_translate: false,
+      auto_sync: true,
+      auto_translate: true,
       target_language: 'vi',
       sync_interval_minutes: 30,
       price_adjustment_type: 'fixed',

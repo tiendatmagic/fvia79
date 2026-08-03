@@ -1525,6 +1525,7 @@ export const VI_TRANSLATIONS: Record<string, string> = {
   'supplier.api_key': 'API key nhà cung cấp',
   'supplier.api_key_missing': 'API key của nhà cung cấp chưa được cấu hình.',
   'supplier.api_key_rejected': 'Nhà cung cấp đã từ chối API key.',
+  'supplier.template_disabled_notice': 'Mẫu nhà cung cấp này hiện đang bị tắt',
   'supplier.auto_sync': 'Bật tự động đồng bộ theo lịch',
   'supplier.auto_translate': 'Tự động dịch sản phẩm',
   'supplier.auto_translate_desc': 'Tự động dịch tên và mô tả sản phẩm bằng Google Translate khi đồng bộ từ nhà cung cấp.',

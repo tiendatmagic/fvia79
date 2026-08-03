@@ -7,6 +7,8 @@ use App\Infrastructure\Persistence\Eloquent\CategoryModel;
 use App\Infrastructure\Persistence\Eloquent\ProductModel;
 use App\Infrastructure\Persistence\Eloquent\SupplierModel;
 use App\Integrations\Suppliers\CloneStoreConnector;
+use App\Integrations\Suppliers\Muabm365Connector;
+use App\Integrations\Suppliers\SupplierConnectorFactory;
 use App\Integrations\Suppliers\SupplierOperationInProgressException;
 use App\Integrations\Suppliers\SupplierOperationLock;
 use App\Integrations\Suppliers\SupplierUrlGuard;
@@ -27,13 +29,44 @@ class SupplierController extends Controller
         private readonly CloneStoreConnector $connector,
         private readonly SupplierUrlGuard $urlGuard,
         private readonly SupplierOperationLock $operationLock,
+        private readonly SupplierConnectorFactory $connectorFactory,
     ) {}
 
     public function index()
     {
-        return response()->json(SupplierModel::orderBy('name')->get()->map(
+        $query = SupplierModel::orderBy('name');
+        if (! config('services.muabm365.enabled')) {
+            $query->where('catalog_driver', '!=', 'muabm365')->where('code', '!=', 'muabm365');
+        }
+
+        return response()->json($query->get()->map(
             fn (SupplierModel $supplier) => $this->serialize($supplier),
         ));
+    }
+
+    public function templates()
+    {
+        $templates = [
+            [
+                'code' => 'ads7979',
+                'name' => 'ADS7979',
+                'base_url' => 'https://ads7979.com',
+                'catalog_driver' => 'clone_store_v2',
+                'enabled' => true,
+            ],
+        ];
+
+        if (config('services.muabm365.enabled')) {
+            $templates[] = [
+                'code' => 'muabm365',
+                'name' => 'MUABM365',
+                'base_url' => 'https://muabm365.top',
+                'catalog_driver' => 'muabm365',
+                'enabled' => true,
+            ];
+        }
+
+        return response()->json($templates);
     }
 
     public function store(Request $request)
@@ -42,6 +75,7 @@ class SupplierController extends Controller
             'name' => ['required', 'string', 'max:100'],
             'base_url' => ['required', 'url:https', 'max:255'],
             'api_key' => ['required', 'string', 'max:2000'],
+            'catalog_driver' => ['sometimes', 'nullable', 'string', Rule::in(['clone_store_v1', 'clone_store_v2', 'muabm365'])],
             'enabled' => ['sometimes', 'boolean'],
             'products_enabled' => ['sometimes', 'boolean'],
             'import_out_of_stock' => ['sometimes', 'boolean'],
@@ -63,7 +97,9 @@ class SupplierController extends Controller
         $supplier = new SupplierModel($validated);
         $supplier->code = $this->uniqueCode($validated['name'], $validated['base_url']);
         try {
-            $supplier->catalog_driver = $this->connector->detectDriver($supplier);
+            if (empty($supplier->catalog_driver)) {
+                $supplier->catalog_driver = $this->connectorFactory->detectDriver($supplier);
+            }
         } catch (RuntimeException $exception) {
             return response()->json(['message' => $exception->getMessage()], 422);
         }
@@ -113,7 +149,7 @@ class SupplierController extends Controller
         $supplier->fill($validated);
         if ($mustDetectDriver) {
             try {
-                $supplier->catalog_driver = $this->connector->detectDriver($supplier);
+                $supplier->catalog_driver = $this->connectorFactory->detectDriver($supplier);
             } catch (RuntimeException $exception) {
                 return response()->json(['message' => $exception->getMessage()], 422);
             }
@@ -219,7 +255,7 @@ class SupplierController extends Controller
                 ], 422);
             }
 
-            $account = $this->connector->fetchAccount($supplier);
+            $account = $this->connectorFactory->makeOrderConnector($supplier)->fetchAccount($supplier);
 
             return response()->json([
                 'balance' => $account['balance'],
@@ -390,6 +426,7 @@ class SupplierController extends Controller
             'name' => $supplier->name,
             'base_url' => $supplier->base_url,
             'catalog_driver' => $supplier->catalog_driver,
+            'template_enabled' => $supplier->catalog_driver === 'muabm365' ? (bool) config('services.muabm365.enabled') : true,
             'has_api_key' => (bool) ($supplier->api_key ?: config("services.{$supplier->code}.api_key")),
             'enabled' => $supplier->enabled,
             'products_enabled' => $supplier->products_enabled,
