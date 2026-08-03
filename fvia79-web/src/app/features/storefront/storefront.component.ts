@@ -231,6 +231,12 @@ export class StorefrontComponent implements OnInit, OnDestroy {
     this.startDemoActivitiesTimer();
   }
 
+  private getCurrentlyUsedDemoUsernames(): string[] {
+    const purchases = (this.recentPurchases() || []).map((p: any) => p.username).filter(Boolean);
+    const deposits = (this.recentDeposits() || []).map((d: any) => d.username).filter(Boolean);
+    return [...purchases, ...deposits];
+  }
+
   private getRandomDemoUsername(excludeList: string[] = []): string {
     const sampleUsernames = [
       'minhtran99', 'tuandat_ads', 'crypto_king', 'trieu_phu_via', 'nguyen_van_a',
@@ -240,7 +246,18 @@ export class StorefrontComponent implements OnInit, OnDestroy {
       'toetkool_99', 'quoc_viet_ads', 'lam_via_co', 'phong_clone_bm', 'charlie_trx',
       'tony_bep20', 'quang_huy_mmo', 'nam_ads_fb', 'hung_bm50', 'trinh_le_98',
       'xuan_bach', 'truong_giang', 'bao_long_via', 'dang_khoa_ads', 'gaooblu88',
-      'havy_mmo', 'le_van_thanh', 'bui_cong_minh', 'vo_dinh_phong'
+      'havy_mmo', 'le_van_thanh', 'bui_cong_minh', 'vo_dinh_phong', 'thanh_tung_mmo',
+      'mai_huong_ads', 'viet_anh_via', 'kieu_trang_bm', 'duc_thanh_fb', 'ha_my_ads',
+      'quynh_anh_v1', 'chi_bao_mmo', 'tan_fat_ads', 'ngoc_hai_via', 'cong_tu_mmo',
+      'tuan_anh_ads', 'bich_phuong', 'hoang_nam_fb', 'kim_yen_via', 'van_tai_mmo',
+      'minh_nhut_ads', 'the_vinh_via', 'phuoc_loc_88', 'nhat_truong', 'hong_anh_ads',
+      'thien_phuc_v2', 'gia_huy_mmo', 'chi_thien_fb', 'ngoc_tram_ads', 'tan_loc_via',
+      'minh_khang_bm', 'quoc_bao_mmo', 'duc_huy_fb', 'hoang_yen_ads', 'phuong_nam_v3',
+      'ha_phuong_ads', 'manh_cuong_mmo', 'huu_phuc_via', 'cam_tu_bm', 'dinh_trong_fb',
+      'xuan_thanh_ads', 'nguyen_hieu_v5', 'viet_cuong_mmo', 'le_duy_ads', 'thai_son_bm',
+      'huyen_trang_via', 'bao_an_mmo', 'dinh_khoi_fb', 'kim_long_ads', 'danh_nhan_v7',
+      'phong_ba_mmo', 'my_duyen_ads', 'khanh_ly_bm', 'nhat_minh_via', 'van_hung_fb',
+      'ngoc_long_mmo', 'hoang_duc_ads', 'xuan_hoa_via', 'phuong_thao_bm', 'thanh_long_fb'
     ];
 
     let candidate = '';
@@ -252,7 +269,7 @@ export class StorefrontComponent implements OnInit, OnDestroy {
       const prefixLen = len <= 4 ? 2 : Math.min(Math.max(2, len - 4), 6);
       candidate = clean.substring(0, prefixLen) + '****';
       attempts++;
-    } while (excludeList.includes(candidate) && attempts < 20);
+    } while (excludeList.includes(candidate) && attempts < 40);
 
     return candidate;
   }
@@ -277,7 +294,7 @@ export class StorefrontComponent implements OnInit, OnDestroy {
   }
 
   private seedInitialPurchases(): void {
-    const used: string[] = [];
+    const used: string[] = this.getCurrentlyUsedDemoUsernames();
     const getUniqueName = () => {
       const name = this.getRandomDemoUsername(used);
       used.push(name);
@@ -295,11 +312,11 @@ export class StorefrontComponent implements OnInit, OnDestroy {
       { id: 'seed_p8', username: getUniqueName(), quantity: 2, product_name_vi: 'Via Congo New (No2FA)', product_name_en: 'Via Congo New (No2FA)', total_price: 5.70, total_usd: 5.70 }
     ];
 
-    this.recentPurchases.set(this.rescaleDemoTimestamps(initial, 5, 15));
+    this.recentPurchases.set(this.rescaleDemoTimestamps(initial, 1, 8));
   }
 
   private seedInitialDeposits(): void {
-    const used: string[] = [];
+    const used: string[] = this.getCurrentlyUsedDemoUsernames();
     const getUniqueName = () => {
       const name = this.getRandomDemoUsername(used);
       used.push(name);
@@ -317,7 +334,7 @@ export class StorefrontComponent implements OnInit, OnDestroy {
       { id: 'seed_d8', username: getUniqueName(), amount_usdt: 2.5, method: 'binance_pay' }
     ];
 
-    this.recentDeposits.set(this.rescaleDemoTimestamps(initial, 20, 40));
+    this.recentDeposits.set(this.rescaleDemoTimestamps(initial, 10, 40));
   }
 
   private startDemoActivitiesTimer(): void {
@@ -341,7 +358,8 @@ export class StorefrontComponent implements OnInit, OnDestroy {
           }
         });
 
-        const randomName = this.getRandomDemoUsername();
+        const used = this.getCurrentlyUsedDemoUsernames();
+        const randomName = this.getRandomDemoUsername(used);
         const qty = Math.floor(Math.random() * 5) + 1;
         const prod = availableProds.length > 0
           ? availableProds[Math.floor(Math.random() * availableProds.length)]
@@ -364,11 +382,12 @@ export class StorefrontComponent implements OnInit, OnDestroy {
           total_usd: totalUsd
         };
 
-        this.recentPurchases.update(list => this.rescaleDemoTimestamps([newItem, ...list].slice(0, 10), 5, 15));
+        this.recentPurchases.update(list => this.rescaleDemoTimestamps([newItem, ...list].slice(0, 10), 1, 8));
       }
 
       if (isDepositsDemo && Math.random() > 0.3) {
-        const randomName = this.getRandomDemoUsername();
+        const used = this.getCurrentlyUsedDemoUsernames();
+        const randomName = this.getRandomDemoUsername(used);
         const demoUsdtAmounts = [0.1, 0.5, 1.2, 2.5, 5, 8.5, 10, 15, 25.5, 35, 45, 50, 65, 75, 80, 85.5, 95, 100];
         const randomUsdt = demoUsdtAmounts[Math.floor(Math.random() * demoUsdtAmounts.length)];
         const randomMethod = Math.random() < 0.8 ? 'usdt_bep20' : 'binance_pay';
@@ -381,7 +400,7 @@ export class StorefrontComponent implements OnInit, OnDestroy {
           method: randomMethod
         };
 
-        this.recentDeposits.update(list => this.rescaleDemoTimestamps([newItem, ...list].slice(0, 10), 20, 40));
+        this.recentDeposits.update(list => this.rescaleDemoTimestamps([newItem, ...list].slice(0, 10), 10, 40));
       }
     }, 12000);
   }

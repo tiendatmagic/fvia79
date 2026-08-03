@@ -18,6 +18,21 @@
 > **QUY TẮC BẮT BUỘC CRONJOB & PHÂN QUYỀN CACHE STORAGE**:
 > 1. Cronjob Scheduler (`schedule:run`) **CHỈ ĐƯỢC CHẠY DƯỚI USER `www-data`** (`crontab -u www-data -e`). **TUYỆT ĐỐI KHÔNG cài dưới `root`** vì sẽ gây ra lỗi `500 Permission denied` khi người dùng thực hiện thao tác Web/API.
 
+### [2026-08-04] Tối Ưu & Giảm Thời Gian Hiển Thị Chế Độ Demo Cho 2 Bảng "Đơn Hàng Vừa Mua" & "Lịch Sử Nạp Gần Đây" (`fvia79-web`)
+- **Mô tả yêu cầu**:
+  - Sửa đổi khoảng thời gian hiển thị tương đối ("x phút trước") cho 2 bảng hoạt động trên Storefront khi đang ở Chế độ Demo (Demo Mode).
+  - Giảm thời gian hiển thị để giao diện tạo cảm giác giao dịch sôi nổi, mới mẻ hơn mà vẫn đảm bảo tính chân thực.
+  - Đảm bảo chỉ áp dụng riêng cho Chế độ Demo (`mode === 'demo'`), không ảnh hưởng đến Chế độ Thực (`mode === 'real'`) vốn sử dụng mốc thời gian thực tế `created_at` từ cơ sở dữ liệu.
+- **Thực hiện xử lý**:
+  - **Frontend (`fvia79-web`)**:
+    - Cập nhật `storefront.component.ts`:
+      - Bảng **Đơn hàng vừa mua** (`recentPurchases`): Giảm mốc thời gian demo từ `(5, 15)` phút xuống `(1, 8)` phút trước (hiển thị 1 phút trước, 2 phút trước... đến 8 phút trước).
+      - Bảng **Lịch sử nạp gần đây** (`recentDeposits`): Đặt mốc thời gian demo từ `(10, 40)` phút trước (hiển thị 10 phút trước, 12 phút trước... đến 40 phút trước).
+      - Động cơ tạo giao dịch demo tự động `startDemoActivitiesTimer()` cũng cập nhật tham số tương ứng `(1, 8)` và `(10, 40)`.
+      - Bổ sung kho tên demo phong phú (>90 tên đa dạng chuẩn MMO/Ads) và triển khai cơ chế `getCurrentlyUsedDemoUsernames()` nhằm thu thập toàn bộ tên đang xuất hiện ở cả 2 bảng + giao dịch live tự động, đảm bảo tuyệt đối không bị trùng lặp tên người dùng trên màn hình.
+- **Kiểm thử**:
+  - Biên dịch Angular production (`npx ng build --configuration production`) thành công 100% (0 errors).
+
 ### [2026-08-04] Khắc Phục Lỗi Thứ Tự Danh Mục Menu "Mua Hàng" Ở Sidebar Không Đồng Bộ Với Vị Trí Sắp Xếp Trang Chủ (`fvia79-web`)
 - **Mô tả yêu cầu**:
   - Nguyên nhân: Trước đó trong `sidebar.component.ts` và `app.ts` (Mobile Drawer), hàm computed `sortedCategories` sắp xếp danh mục theo bảng chữ cái A-Z (`localeCompare`), dẫn đến danh mục ở sub-menu "Mua hàng" trên Sidebar không tuân theo thứ tự `sort_order` đã thiết lập tại modal "Sắp xếp vị trí danh mục trang chủ".
