@@ -123,7 +123,8 @@ class GoogleTranslateService
     public function translateMany(array $texts, string $targetLang = 'vi'): array
     {
         $targetLang = $this->normalizeTargetLanguage($targetLang);
-        $uniqueTexts = [];
+        $toFetch = [];
+        $results = [];
 
         foreach ($texts as $text) {
             if (! is_string($text)) {
@@ -131,14 +132,78 @@ class GoogleTranslateService
             }
 
             $cleanText = trim($text);
-            if ($cleanText !== '') {
-                $uniqueTexts[$cleanText] = $cleanText;
+            if ($cleanText === '') {
+                continue;
             }
+
+            $memKey = $this->memoryKey($cleanText, $targetLang);
+            if (array_key_exists($memKey, $this->memoryCache)) {
+                $results[$cleanText] = $this->memoryCache[$memKey];
+                continue;
+            }
+
+            $cacheKey = $this->cacheKey($cleanText, $targetLang);
+            $cached = Cache::get($cacheKey);
+            if (is_string($cached)) {
+                $this->memoryCache[$memKey] = $cached;
+                $results[$cleanText] = $cached;
+                continue;
+            }
+
+            $toFetch[$cleanText] = $cleanText;
         }
 
-        $results = [];
-        foreach ($uniqueTexts as $cleanText) {
-            $results[$cleanText] = $this->translate($cleanText, $targetLang) ?? $cleanText;
+        if ($toFetch === []) {
+            return $results;
+        }
+
+        $chunks = array_chunk(array_values($toFetch), self::BATCH_CONCURRENCY);
+        foreach ($chunks as $chunk) {
+            try {
+                $responses = Http::pool(function ($pool) use ($chunk, $targetLang) {
+                    $requests = [];
+                    foreach ($chunk as $index => $text) {
+                        $requests[] = $pool->as((string) $index)
+                            ->timeout(5)
+                            ->withHeaders($this->headers())
+                            ->get('https://translate.googleapis.com/translate_a/single', [
+                                'client' => 'gtx',
+                                'sl' => 'auto',
+                                'tl' => $targetLang,
+                                'dt' => 't',
+                                'q' => $text,
+                            ]);
+                    }
+
+                    return $requests;
+                });
+
+                foreach ($chunk as $index => $text) {
+                    $response = $responses[(string) $index] ?? null;
+                    $translated = null;
+                    if ($response instanceof Response && $response->successful()) {
+                        $translated = $this->parseResponse($response, $text);
+                    }
+
+                    if ($translated === null) {
+                        $translated = $targetLang === 'en' ? $this->applyMmoDictionaryEn($text) : $text;
+                    } elseif ($targetLang === 'en') {
+                        $translated = $this->applyMmoDictionaryEn($translated);
+                    }
+
+                    $cacheKey = $this->cacheKey($text, $targetLang);
+                    $memKey = $this->memoryKey($text, $targetLang);
+                    Cache::put($cacheKey, $translated, now()->addDays(self::CACHE_DAYS));
+                    $this->memoryCache[$memKey] = $translated;
+                    $results[$text] = $translated;
+                }
+            } catch (Throwable $e) {
+                Log::warning('GoogleTranslateService pool failed: '.$e->getMessage());
+                foreach ($chunk as $text) {
+                    $translated = $targetLang === 'en' ? $this->applyMmoDictionaryEn($text) : $text;
+                    $results[$text] = $translated;
+                }
+            }
         }
 
         return $results;

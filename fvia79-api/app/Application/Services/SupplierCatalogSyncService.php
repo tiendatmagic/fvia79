@@ -107,6 +107,10 @@ class SupplierCatalogSyncService
 
         $this->deactivateMissingProducts($supplier, $externalProductIds);
 
+        CategoryModel::where('supplier_id', $supplier->id)
+            ->doesntHave('products')
+            ->delete();
+
         return ['categories' => $categoryCount, 'products' => $productCount];
     }
 

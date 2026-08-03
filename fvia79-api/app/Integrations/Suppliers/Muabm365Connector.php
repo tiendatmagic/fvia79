@@ -7,6 +7,7 @@ use App\Integrations\Suppliers\Contracts\SupplierCatalogConnector;
 use App\Integrations\Suppliers\Contracts\SupplierOrderConnector;
 use Illuminate\Http\Client\PendingRequest;
 use Illuminate\Support\Facades\Http;
+use Illuminate\Support\Str;
 use RuntimeException;
 use Throwable;
 
@@ -34,24 +35,77 @@ class Muabm365Connector implements SupplierCatalogConnector, SupplierOrderConnec
         }
 
         $services = $payload['data'];
+        $grouped = [];
 
-        $children = array_map(static fn (array $product): array => [
-            'id' => (string) ($product['service_id'] ?? ''),
-            'name' => (string) ($product['service_name'] ?? "Service {$product['service_id']}"),
-            'price' => (float) ($product['price'] ?? 0),
-            'quantity' => max(0, (int) ($product['quantity'] ?? 0)),
-            'data' => [
-                'description' => isset($product['description']) ? (string) $product['description'] : null,
-            ],
-        ], $services);
+        foreach ($services as $product) {
+            $serviceName = (string) ($product['service_name'] ?? "Service {$product['service_id']}");
+            $categoryName = $this->detectCategoryName($serviceName);
+            $categoryId = 'muabm365-cat-'.Str::slug($categoryName);
 
-        return [
-            [
-                'id' => 'muabm365-services',
-                'name' => 'MUABM365 Services',
-                'children' => $children,
-            ],
-        ];
+            if (! isset($grouped[$categoryId])) {
+                $grouped[$categoryId] = [
+                    'id' => $categoryId,
+                    'name' => $categoryName,
+                    'children' => [],
+                ];
+            }
+
+            $desc = isset($product['description']) ? trim((string) $product['description']) : '';
+            $warranty = isset($product['warranty_policy']) ? trim((string) $product['warranty_policy']) : '';
+            $fullDescription = $desc;
+            if ($warranty !== '') {
+                $fullDescription = $fullDescription !== '' ? "{$fullDescription}\n\n{$warranty}" : $warranty;
+            }
+
+            $grouped[$categoryId]['children'][] = [
+                'id' => (string) ($product['service_id'] ?? ''),
+                'name' => $serviceName,
+                'price' => (float) ($product['price'] ?? 0),
+                'quantity' => max(0, (int) ($product['quantity'] ?? 0)),
+                'data' => [
+                    'description' => $fullDescription !== '' ? $fullDescription : null,
+                ],
+            ];
+        }
+
+        return array_values($grouped);
+    }
+
+    private function detectCategoryName(string $name): string
+    {
+        $upper = mb_strtoupper(trim($name));
+
+        if (str_starts_with($upper, 'BM50')) {
+            return 'BM50';
+        }
+        if (str_starts_with($upper, 'BM350')) {
+            return 'BM350';
+        }
+        if (str_starts_with($upper, 'BM5') || str_starts_with($upper, 'XÁC BM5')) {
+            return 'BM5';
+        }
+        if (str_starts_with($upper, 'BM3')) {
+            return 'BM3';
+        }
+        if (str_starts_with($upper, 'BM1')) {
+            return 'BM1';
+        }
+        if (str_starts_with($upper, 'BM NGÂM') || str_starts_with($upper, 'BM FULL')) {
+            return 'BM NGÂM';
+        }
+        if (str_starts_with($upper, 'COMBO 1 ACCOUNT') || str_starts_with($upper, 'ACCOUNT')) {
+            return 'ACCOUNT FB';
+        }
+        if (str_starts_with($upper, 'CLONE IG')) {
+            return 'CLONE IG';
+        }
+        if (str_starts_with($upper, 'HOTMAIL')) {
+            return 'HOTMAIL';
+        }
+
+        $parts = explode(' ', trim($name));
+
+        return count($parts) > 1 ? implode(' ', array_slice($parts, 0, 2)) : $name;
     }
 
     public function fetchBalance(SupplierModel $supplier): float

@@ -169,6 +169,7 @@ export class ProductIconComponent implements OnChanges {
   @Input() productName: string = '';
   @Input() productId: string | number = '';
   @Input() size: 'sm' | 'md' | 'lg' = 'md';
+  @Input() disableFlag: boolean = false;
 
   public countryMatch: CountryMatch | null = null;
   public genericIcon: GenericIconSpec = GENERIC_ICONS[0];
@@ -184,7 +185,7 @@ export class ProductIconComponent implements OnChanges {
   }
 
   ngOnChanges(changes: SimpleChanges): void {
-    if (changes['productName'] || changes['productId']) {
+    if (changes['productName'] || changes['productId'] || changes['disableFlag']) {
       this.imageError = false;
       this.evaluateIcon();
     }
@@ -203,7 +204,12 @@ export class ProductIconComponent implements OnChanges {
   }
 
   private findCountryMatch(title: string): CountryMatch | null {
-    if (!title) return null;
+    if (!title || this.disableFlag) return null;
+
+    const nonCountryRegex = /\b(bm\d*|muabm\d*|clone\s*ig|hotmail|account\s*fb)\b/i;
+    if (nonCountryRegex.test(title)) {
+      return null;
+    }
 
     const bracketMatch = title.match(/(?:\[|\()([a-zA-Z]{2})(?:\]|\))/);
     if (bracketMatch) {
@@ -218,13 +224,6 @@ export class ProductIconComponent implements OnChanges {
       if (rule.keywords && (rule.keywords.test(title) || rule.keywords.test(normalized))) {
         return { code: rule.code, name: rule.name };
       }
-    }
-
-    const rawTokens = title.split(/[^a-zA-Z]/).filter(t => t.length === 2 && t === t.toUpperCase());
-    for (const token of rawTokens) {
-      const code = token.toLowerCase();
-      const rule = COUNTRY_RULES.find(r => r.code === code);
-      if (rule) return { code: rule.code, name: rule.name };
     }
 
     return null;
