@@ -161,10 +161,17 @@
       </ng-template>
 
       <ng-template appTableCell="price" let-row="row">
-        <span
-          [ngClass]="{ 'line-through opacity-40 text-slate-400 dark:text-slate-500': row.is_deleted }"
-          >{{ row.price | appCurrency: true }}</span
-        >
+        <div class="flex flex-col items-start gap-1">
+          <span
+            [ngClass]="{ 'line-through opacity-40 text-slate-400 dark:text-slate-500': row.is_deleted }"
+            >{{ row.price | appCurrency: true }}</span
+          >
+          @if (row.is_manual_price) {
+            <app-badge variant="warning" size="sm" rounded="md" [appTooltip]="'product.manual_price_hint' | translate">
+              {{ 'product.manual_price_badge' | translate }}{{ row.manual_price ? ': ' + (row.manual_price | number) + ' ' + (row.manual_price_currency || 'VND') : '' }}
+            </app-badge>
+          }
+        </div>
       </ng-template>
 
       <ng-template appTableCell="available_count" let-row="row">

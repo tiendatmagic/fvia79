@@ -144,6 +144,10 @@ class ProductController extends Controller
     public function store(CreateProductRequest $request)
     {
         try {
+            $isManualPrice = $request->boolean('is_manual_price', false);
+            $manualPrice = $request->has('manual_price') && $request->input('manual_price') !== null ? (float) $request->input('manual_price') : null;
+            $manualPriceCurrency = $request->input('manual_price_currency', 'VND');
+
             $product = $this->productService->createProduct(
                 $request->name,
                 $request->slug,
@@ -156,6 +160,9 @@ class ProductController extends Controller
                 $request->name_en,
                 $request->description_vi,
                 $request->description_en,
+                $isManualPrice,
+                $manualPrice,
+                $manualPriceCurrency,
             );
 
             return response()->json([
@@ -189,6 +196,9 @@ class ProductController extends Controller
             $status = $request->input('status', $product->getStatus());
             $categoryId = $request->has('category_id') ? $request->input('category_id') : $product->getCategoryId();
             $attributes = $request->has('attributes') ? $request->input('attributes') : $product->getAttributes();
+            $isManualPrice = $request->has('is_manual_price') ? $request->boolean('is_manual_price') : $product->getIsManualPrice();
+            $manualPrice = $request->has('manual_price') && $request->input('manual_price') !== null ? (float) $request->input('manual_price') : $product->getManualPrice();
+            $manualPriceCurrency = $request->input('manual_price_currency', $product->getManualPriceCurrency() ?: 'VND');
 
             $updatedProduct = $this->productService->updateProduct(
                 $id,
@@ -203,6 +213,9 @@ class ProductController extends Controller
                 $nameEn,
                 $descVi,
                 $descEn,
+                $isManualPrice,
+                $manualPrice,
+                $manualPriceCurrency,
             );
 
             return response()->json([
@@ -293,6 +306,9 @@ class ProductController extends Controller
             'description_vi' => $product->getDescriptionVi(),
             'description_en' => $product->getDescriptionEn(),
             'price' => $product->getPrice(),
+            'is_manual_price' => $product->getIsManualPrice(),
+            'manual_price' => $product->getManualPrice(),
+            'manual_price_currency' => $product->getManualPriceCurrency(),
             'status' => $product->getStatus(),
             'available_count' => $product->getAvailableCount(),
             'attributes' => $product->getAttributes(),

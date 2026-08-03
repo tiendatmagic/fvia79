@@ -267,6 +267,19 @@ class SupplierCatalogSyncService
         $attributes['raw_name'] = $rawName;
         $attributes['raw_desc'] = $rawDesc;
 
+        if ($product->is_manual_price && $product->manual_price !== null) {
+            $currency = strtoupper($product->manual_price_currency ?? 'VND');
+            if ($currency === 'USDT' || $currency === 'USD') {
+                $calculatedPrice = (float) $product->manual_price;
+            } else {
+                $depositService = app(DepositService::class);
+                $rate = $depositService->getUsdtToVndRate();
+                $calculatedPrice = $rate > 0 ? round((float) $product->manual_price / $rate, 8) : (float) $product->manual_price;
+            }
+        } else {
+            $calculatedPrice = $this->priceService->calculateUsd($priceVnd, $supplier);
+        }
+
         $product->fill([
             'category_id' => $category->id,
             'name' => $rawName,
@@ -276,7 +289,7 @@ class SupplierCatalogSyncService
             'description' => $rawDesc,
             'description_en' => $descEn,
             'description_vi' => $descVi,
-            'price' => $this->priceService->calculateUsd($priceVnd, $supplier),
+            'price' => $calculatedPrice,
             'supplier_price_vnd' => $priceVnd,
             'supplier_stock' => $stock,
             'supplier_synced_at' => now(),

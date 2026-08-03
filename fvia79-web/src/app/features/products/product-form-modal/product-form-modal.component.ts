@@ -5,6 +5,7 @@ import { ModalRef, MODAL_DATA } from '@core/services/modal-ref';
 import { StateService } from '@core/services/state.service';
 import { CustomInputComponent } from '@shared/components/custom-input/custom-input.component';
 import { CustomSelectComponent } from '@shared/components/custom-select/custom-select.component';
+import { CustomSwitchComponent } from '@shared/components/custom-switch/custom-switch.component';
 import { ButtonComponent } from '@shared/components/button/button.component';
 import { IconComponent } from '@shared/components/icon/icon.component';
 import { TranslatePipe } from '@shared/pipes/translate.pipe';
@@ -19,6 +20,7 @@ import { finalize } from 'rxjs/operators';
     FormsModule,
     CustomInputComponent,
     CustomSelectComponent,
+    CustomSwitchComponent,
     ButtonComponent,
     IconComponent,
     TranslatePipe
@@ -47,9 +49,19 @@ export class ProductFormModalComponent implements OnInit {
   public descriptionVi = '';
   public descriptionEn = '';
   public price = 0;
+  public isManualPrice = false;
+  public manualPrice: number | null = null;
+  public manualPriceCurrency = 'VND';
   public status = 'active';
   public readonly isSubmitting = signal(false);
   public attributes: { label: string, value: string }[] = [];
+
+  public get currencyUnitOptions() {
+    return [
+      { label: 'VND (Đồng)', value: 'VND' },
+      { label: 'USDT ($)', value: 'USDT' }
+    ];
+  }
 
   public get statusOptions() {
     return [
@@ -85,6 +97,11 @@ export class ProductFormModalComponent implements OnInit {
       this.descriptionVi = this.modalData.description_vi || this.modalData.description || '';
       this.descriptionEn = this.modalData.description_en || this.modalData.description || '';
       this.price = this.modalData.price || 0;
+      this.isManualPrice = !!this.modalData.is_manual_price;
+      this.manualPrice = this.modalData.manual_price !== null && this.modalData.manual_price !== undefined
+        ? Number(this.modalData.manual_price)
+        : (this.isManualPrice ? Number(this.modalData.price || 0) : null);
+      this.manualPriceCurrency = this.modalData.manual_price_currency || 'VND';
       this.status = this.modalData.status || 'active';
       if (Array.isArray(this.modalData.attributes)) {
         this.attributes = [...this.modalData.attributes];
@@ -130,8 +147,24 @@ export class ProductFormModalComponent implements OnInit {
   public onSubmit() {
     if (this.isSubmitting()) return;
     const finalNameEn = this.nameEn.trim() || this.nameVi.trim() || this.name.trim();
-    const numPrice = Number(this.price);
-    if (!finalNameEn || this.price === null || this.price === undefined || isNaN(numPrice) || numPrice < 0) {
+    let numPrice = Number(this.price);
+    let numManualPrice: number | null = null;
+
+    if (this.isManualPrice) {
+      numManualPrice = Number(this.manualPrice);
+      if (this.manualPrice === null || this.manualPrice === undefined || isNaN(numManualPrice) || numManualPrice < 0) {
+        this.state.showToast(this.lang.translate('toast.invalid_info'), 'error');
+        return;
+      }
+      numPrice = numManualPrice;
+    } else {
+      if (this.price === null || this.price === undefined || isNaN(numPrice) || numPrice < 0) {
+        this.state.showToast(this.lang.translate('toast.invalid_info'), 'error');
+        return;
+      }
+    }
+
+    if (!finalNameEn) {
       this.state.showToast(this.lang.translate('toast.invalid_info'), 'error');
       return;
     }
@@ -149,6 +182,9 @@ export class ProductFormModalComponent implements OnInit {
       description_en: finalDescEn,
       description_vi: finalDescVi,
       price: numPrice,
+      is_manual_price: this.isManualPrice,
+      manual_price: this.isManualPrice ? numManualPrice : null,
+      manual_price_currency: this.isManualPrice ? this.manualPriceCurrency : 'VND',
       status: this.status,
       category_id: this.categoryId || null,
       attributes: this.attributes.filter(attr => attr.label.trim() !== '' && attr.value.trim() !== '')

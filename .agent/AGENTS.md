@@ -18,6 +18,26 @@
 > **QUY TẮC BẮT BUỘC CRONJOB & PHÂN QUYỀN CACHE STORAGE**:
 > 1. Cronjob Scheduler (`schedule:run`) **CHỈ ĐƯỢC CHẠY DƯỚI USER `www-data`** (`crontab -u www-data -e`). **TUYỆT ĐỐI KHÔNG cài dưới `root`** vì sẽ gây ra lỗi `500 Permission denied` khi người dùng thực hiện thao tác Web/API.
 
+### [2026-08-04] Triển Khai Tính Năng Bật/Tắt Giá Thủ Công Sản Phẩm kèm Chọn Đơn Vị (VND / USDT) & Fix Lỗi 500 Server (`fvia79`)
+- **Mô tả yêu cầu**:
+  - Thêm switch "Bật/Tắt giá thủ công" (mặc định Tắt) trong Modal Thêm/Sửa sản phẩm (`/admin/products`).
+  - Khi bật switch Giá thủ công: Hiển thị thêm ô nhập Giá thủ công và ô chọn Đơn vị tiền tệ (**VND** hoặc **USDT**, mặc định là **VND**).
+  - Tự động quy đổi giá từ đơn vị người dùng nhập (ví dụ: `26,000 VND` hay `1 USDT`) sang đơn vị USD/USDT hệ thống dựa trên tỷ giá thực tế từ `DepositService::getUsdtToVndRate()`.
+  - Khắc phục triệt để lỗi 500 Server (`SQLSTATE[42S22]: Column not found: 1054 Unknown column 'is_manual_price'`) khi cập nhật sản phẩm do chưa chạy lệnh migration trên CSDL local.
+- **Thực hiện xử lý**:
+  - **Backend (`fvia79-api`)**:
+    - Chạy `php artisan migrate` áp dụng migration `2026_08_04_000000_add_manual_price_fields_to_products_table.php` bổ sung cột `is_manual_price` (`boolean`), `manual_price` (`decimal`), và `manual_price_currency` (`string`, default `'VND'`).
+    - Cập nhật `ProductModel`, Domain Entity `Product`, `ProductMapper`, `CreateProductRequest`.
+    - Cập nhật `ProductService` và `ProductController`: Tiếp nhận `manual_price_currency`, quy đổi giá bán sang USD (`price = round(manual_price / exchangeRate, 8)`) nếu chọn đơn vị VND, hoặc giữ nguyên giá USDT nếu chọn USDT.
+    - Cập nhật `SupplierCatalogSyncService::upsertProduct`: Kiểm tra nếu `is_manual_price == true` thì duy trì quy đổi giá bán cố định theo đơn vị VND/USDT đã lưu, tuyệt đối không bị tự động ghi đè bởi giá nhà cung cấp.
+  - **Frontend (`fvia79-web`)**:
+    - Bổ sung từ khóa ngôn ngữ `product.currency_unit` trong `vi.ts` & `en.ts`.
+    - Cập nhật `ProductFormModalComponent` (`.ts` & `.html`): Thêm `CustomSelectComponent` chọn đơn vị `VND` hoặc `USDT`.
+    - Cập nhật `ProductsComponent` (`.html`): Hiển thị badge "Thủ công: 26,000 VND" hoặc "Thủ công: 1.0 USDT" tương ứng tại cột Giá.
+- **Kiểm thử**:
+  - Kiểm tra 7 file PHP backend bằng `php -l` thành công 100% (0 errors).
+  - Biên dịch Angular production (`npx ng build --configuration production`) thành công 100% (0 errors).
+
 ### [2026-08-03] Chuẩn Hóa Icon Ngôi Sao Nổi (Floating Star SVG) Góc Trên Bên Phải Thẻ Cấp Bậc Trang Profile Đồng Bộ 3 Dự Án (FVIA79, ADSBM79, ISOCALMARKET)
 - **Mô tả yêu cầu**:
   - Đặt biểu tượng SVG ngôi sao nổi (`star`) hình tròn sắc nét tại vị trí góc trên bên phải (`absolute -top-2 right-2.5`) của thẻ cấp bậc hiện tại.

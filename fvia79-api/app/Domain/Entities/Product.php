@@ -46,6 +46,12 @@ class Product
 
     private ?string $descriptionEn;
 
+    private bool $isManualPrice;
+
+    private ?float $manualPrice;
+
+    private string $manualPriceCurrency;
+
     public function __construct(
         ?string $id,
         string $name,
@@ -67,7 +73,10 @@ class Product
         ?string $nameVi = null,
         ?string $nameEn = null,
         ?string $descriptionVi = null,
-        ?string $descriptionEn = null
+        ?string $descriptionEn = null,
+        bool $isManualPrice = false,
+        ?float $manualPrice = null,
+        ?string $manualPriceCurrency = 'VND'
     ) {
         $this->id = $id;
         $this->categoryId = $categoryId;
@@ -90,6 +99,9 @@ class Product
         $this->supplierPriceVnd = $supplierPriceVnd;
         $this->supplierStock = $supplierStock;
         $this->supplierSyncedAt = $supplierSyncedAt;
+        $this->isManualPrice = $isManualPrice;
+        $this->manualPrice = $manualPrice;
+        $this->manualPriceCurrency = strtoupper($manualPriceCurrency ?: 'VND');
     }
 
     public function getNameVi(): ?string
@@ -225,5 +237,20 @@ class Product
     public function getSupplierSyncedAt(): ?\DateTimeInterface
     {
         return $this->supplierSyncedAt;
+    }
+
+    public function getIsManualPrice(): bool
+    {
+        return $this->isManualPrice;
+    }
+
+    public function getManualPrice(): ?float
+    {
+        return $this->manualPrice;
+    }
+
+    public function getManualPriceCurrency(): string
+    {
+        return $this->manualPriceCurrency ?: 'VND';
     }
 }

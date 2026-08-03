@@ -34,6 +34,9 @@ class ProductService
                     'descriptionVi' => $p->getDescriptionVi(),
                     'descriptionEn' => $p->getDescriptionEn(),
                     'price' => $p->getPrice(),
+                    'isManualPrice' => $p->getIsManualPrice(),
+                    'manualPrice' => $p->getManualPrice(),
+                    'manualPriceCurrency' => $p->getManualPriceCurrency(),
                     'status' => $p->getStatus(),
                     'available_count' => $p->getAvailableCount(),
                     'attributes' => $p->getAttributes(),
@@ -70,7 +73,10 @@ class ProductService
                 $p['nameVi'] ?? null,
                 $p['nameEn'] ?? null,
                 $p['descriptionVi'] ?? null,
-                $p['descriptionEn'] ?? null
+                $p['descriptionEn'] ?? null,
+                $p['isManualPrice'] ?? false,
+                $p['manualPrice'] ?? null,
+                $p['manualPriceCurrency'] ?? 'VND'
             ), $cached);
         }
 
@@ -104,14 +110,32 @@ class ProductService
         ?string $nameEn = null,
         ?string $descriptionVi = null,
         ?string $descriptionEn = null,
+        bool $isManualPrice = false,
+        ?float $manualPrice = null,
+        ?string $manualPriceCurrency = 'VND',
     ): Product {
         $baseSlug = $slug ?: Str::slug($name);
         $finalSlug = $this->generateUniqueSlug($baseSlug);
+        $currency = strtoupper($manualPriceCurrency ?: 'VND');
+
+        if ($isManualPrice && $manualPrice !== null) {
+            if ($currency === 'USDT' || $currency === 'USD') {
+                $finalPrice = (float) $manualPrice;
+            } else {
+                $depositService = app(DepositService::class);
+                $rate = $depositService->getUsdtToVndRate();
+                $finalPrice = $rate > 0 ? round((float) $manualPrice / $rate, 8) : (float) $manualPrice;
+            }
+        } else {
+            $finalPrice = $price;
+        }
 
         $product = new Product(
-            null, $name, $finalSlug, $description, $price, $status, 0, $attributes, $categoryId,
+            null, $name, $finalSlug, $description, $finalPrice, $status, 0, $attributes, $categoryId,
             null, null, null, null, null, null, null, null,
-            $nameVi, $nameEn, $descriptionVi, $descriptionEn
+            $nameVi, $nameEn, $descriptionVi, $descriptionEn,
+            $isManualPrice, $isManualPrice ? $manualPrice : null,
+            $isManualPrice ? $currency : 'VND'
         );
         $saved = $this->productRepository->save($product);
         $this->forgetCatalogCaches();
@@ -132,6 +156,9 @@ class ProductService
         ?string $nameEn = null,
         ?string $descriptionVi = null,
         ?string $descriptionEn = null,
+        bool $isManualPrice = false,
+        ?float $manualPrice = null,
+        ?string $manualPriceCurrency = 'VND',
     ): Product {
         $product = $this->productRepository->findById($id);
         if (! $product) {
@@ -144,13 +171,39 @@ class ProductService
 
         $baseSlug = $slug ?: Str::slug($name);
         $finalSlug = $this->generateUniqueSlug($baseSlug, $id);
+        $currency = strtoupper($manualPriceCurrency ?: 'VND');
+
+        if ($isManualPrice && $manualPrice !== null) {
+            if ($currency === 'USDT' || $currency === 'USD') {
+                $finalPrice = (float) $manualPrice;
+            } else {
+                $depositService = app(DepositService::class);
+                $rate = $depositService->getUsdtToVndRate();
+                $finalPrice = $rate > 0 ? round((float) $manualPrice / $rate, 8) : (float) $manualPrice;
+            }
+        } else {
+            $finalPrice = $price;
+        }
+
+        if (! $isManualPrice && $product->getIsManualPrice() && $product->getSupplierId() && $product->getSupplierPriceVnd() > 0) {
+            try {
+                $supplierModel = \App\Infrastructure\Persistence\Eloquent\SupplierModel::find($product->getSupplierId());
+                if ($supplierModel) {
+                    $priceService = app(SupplierPriceService::class);
+                    $finalPrice = $priceService->calculateUsd($product->getSupplierPriceVnd(), $supplierModel);
+                }
+            } catch (\Throwable) {
+            }
+        }
 
         $updatedProduct = new Product(
-            $id, $name, $finalSlug, $description, $price, $status, $product->getAvailableCount(),
+            $id, $name, $finalSlug, $description, $finalPrice, $status, $product->getAvailableCount(),
             $attributes, $categoryId, $product->getDeletedAt(), $product->getSupplierId(),
             $product->getSupplierCode(), $product->getSupplierName(), $product->getExternalId(),
             $product->getSupplierPriceVnd(), $product->getSupplierStock(), $product->getSupplierSyncedAt(),
-            $nameVi, $nameEn, $descriptionVi, $descriptionEn
+            $nameVi, $nameEn, $descriptionVi, $descriptionEn,
+            $isManualPrice, $isManualPrice ? $manualPrice : null,
+            $isManualPrice ? $currency : 'VND'
         );
         $saved = $this->productRepository->save($updatedProduct);
         $this->forgetCatalogCaches();

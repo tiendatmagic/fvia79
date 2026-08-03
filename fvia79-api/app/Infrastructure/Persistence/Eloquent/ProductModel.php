@@ -12,7 +12,7 @@ use Illuminate\Support\Str;
 
 #[Fillable([
     'supplier_id', 'external_id', 'category_id', 'name', 'name_vi', 'name_en', 'slug', 'description', 'description_vi', 'description_en',
-    'price', 'supplier_price_vnd', 'supplier_stock', 'supplier_out_of_stock_hidden',
+    'price', 'is_manual_price', 'manual_price', 'manual_price_currency', 'supplier_price_vnd', 'supplier_stock', 'supplier_out_of_stock_hidden',
     'supplier_synced_at', 'status',
     'supplier_previous_status', 'attributes',
 ])]
@@ -23,6 +23,9 @@ class ProductModel extends Model
     protected $table = 'products';
 
     protected $casts = [
+        'is_manual_price' => 'boolean',
+        'manual_price' => 'float',
+        'manual_price_currency' => 'string',
         'attributes' => 'array',
         'supplier_out_of_stock_hidden' => 'boolean',
         'supplier_synced_at' => 'datetime',
@@ -66,6 +69,9 @@ class ProductModel extends Model
     {
         return [
             'price' => 'float',
+            'is_manual_price' => 'boolean',
+            'manual_price' => 'float',
+            'manual_price_currency' => 'string',
             'supplier_price_vnd' => 'float',
             'supplier_stock' => 'integer',
             'supplier_out_of_stock_hidden' => 'boolean',

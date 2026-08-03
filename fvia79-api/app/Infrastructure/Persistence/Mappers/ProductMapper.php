@@ -30,7 +30,10 @@ class ProductMapper
             $model->name_vi,
             $model->name_en,
             $model->description_vi,
-            $model->description_en
+            $model->description_en,
+            (bool) ($model->is_manual_price ?? false),
+            $model->manual_price !== null ? (float) $model->manual_price : null,
+            $model->manual_price_currency ?? 'VND'
         );
     }
 
@@ -50,6 +53,9 @@ class ProductMapper
         $model->description_vi = $entity->getDescriptionVi();
         $model->description_en = $entity->getDescriptionEn();
         $model->price = $entity->getPrice();
+        $model->is_manual_price = $entity->getIsManualPrice();
+        $model->manual_price = $entity->getManualPrice();
+        $model->manual_price_currency = $entity->getManualPriceCurrency();
         $model->status = $entity->getStatus();
         $model->attributes = $entity->getAttributes();
         $model->supplier_id = $entity->getSupplierId();
