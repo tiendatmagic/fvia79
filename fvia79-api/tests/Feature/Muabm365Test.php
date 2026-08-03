@@ -176,4 +176,30 @@ class Muabm365Test extends TestCase
         $this->assertSame('999', $result['order_id']);
         $this->assertEquals(['account_line_1|pass1|key1'], $result['resources']);
     }
+
+    public function test_can_update_muabm365_supplier_without_api_key(): void
+    {
+        $token = $this->adminToken('admin_update_no_key');
+
+        $supplier = SupplierModel::where('code', 'muabm365')->first() ?: SupplierModel::create([
+            'code' => 'muabm365',
+            'name' => 'MUABM365',
+            'base_url' => 'https://muabm365.top',
+            'catalog_driver' => 'muabm365',
+            'api_key' => null,
+            'enabled' => true,
+        ]);
+        $supplier->update(['api_key' => null]);
+
+        $response = $this->withToken($token)
+            ->putJson('/api/v1/admin/suppliers/muabm365', [
+                'name' => 'MUABM365 Updated',
+                'base_url' => 'https://muabm365.top',
+                'price_adjustment_type' => 'fixed',
+                'price_adjustment_value' => 500,
+            ]);
+
+        $response->assertOk()
+            ->assertJsonPath('name', 'MUABM365 Updated');
+    }
 }
