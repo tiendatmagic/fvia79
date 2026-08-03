@@ -18,6 +18,15 @@
 > **QUY TẮC BẮT BUỘC CRONJOB & PHÂN QUYỀN CACHE STORAGE**:
 > 1. Cronjob Scheduler (`schedule:run`) **CHỈ ĐƯỢC CHẠY DƯỚI USER `www-data`** (`crontab -u www-data -e`). **TUYỆT ĐỐI KHÔNG cài dưới `root`** vì sẽ gây ra lỗi `500 Permission denied` khi người dùng thực hiện thao tác Web/API.
 
+### [2026-08-04] Khắc Phục Lỗi Thứ Tự Danh Mục Menu "Mua Hàng" Ở Sidebar Không Đồng Bộ Với Vị Trí Sắp Xếp Trang Chủ (`fvia79-web`)
+- **Mô tả yêu cầu**:
+  - Nguyên nhân: Trước đó trong `sidebar.component.ts` và `app.ts` (Mobile Drawer), hàm computed `sortedCategories` sắp xếp danh mục theo bảng chữ cái A-Z (`localeCompare`), dẫn đến danh mục ở sub-menu "Mua hàng" trên Sidebar không tuân theo thứ tự `sort_order` đã thiết lập tại modal "Sắp xếp vị trí danh mục trang chủ".
+- **Thực hiện xử lý**:
+  - **Frontend (`fvia79-web`)**:
+    - Cập nhật `sortedCategories` trong `sidebar.component.ts` và `app.ts`: Ưu tiên so sánh thứ tự `sort_order` trước (`orderA - orderB`). Nếu hai danh mục có cùng `sort_order`, mới sắp xếp theo thứ tự tên A-Z.
+- **Kiểm thử**:
+  - Biên dịch Angular production (`npx ng build --configuration production`) thành công 100% (0 errors).
+
 ### [2026-08-04] Triển Khai Tính Năng Bật/Tắt Giá Thủ Công Sản Phẩm kèm Chọn Đơn Vị (VND / USDT) & Fix Lỗi 500 Server (`fvia79`)
 - **Mô tả yêu cầu**:
   - Thêm switch "Bật/Tắt giá thủ công" (mặc định Tắt) trong Modal Thêm/Sửa sản phẩm (`/admin/products`).

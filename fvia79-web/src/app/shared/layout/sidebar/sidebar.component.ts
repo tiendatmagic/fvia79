@@ -42,6 +42,11 @@ export class SidebarComponent implements OnInit {
       .filter((c: any) => c.is_active !== false && c.is_active !== 0 && c.is_active !== '0');
     const currentLang = this.lang.currentLang();
     return [...cats].sort((a, b) => {
+      const orderA = a.sort_order ?? 0;
+      const orderB = b.sort_order ?? 0;
+      if (orderA !== orderB) {
+        return orderA - orderB;
+      }
       const nameA = (currentLang === 'vi' ? (a.name_vi || a.name_en || a.name) : (a.name_en || a.name_vi || a.name)) || '';
       const nameB = (currentLang === 'vi' ? (b.name_vi || b.name_en || b.name) : (b.name_en || b.name_vi || b.name)) || '';
       return nameA.localeCompare(nameB, currentLang === 'vi' ? 'vi' : 'en', { sensitivity: 'base' });
