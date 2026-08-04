@@ -70,6 +70,7 @@ class Ads7979Connector implements SupplierCatalogConnector
             ->withOptions([
                 'allow_redirects' => false,
                 'protocols' => ['https'],
+                'verify' => false,
                 'curl' => [
                     CURLOPT_RESOLVE => ["{$target['host']}:443:{$curlAddress}"],
                 ],

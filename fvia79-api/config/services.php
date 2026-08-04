@@ -31,6 +31,10 @@ return [
         'enabled' => (bool) env('MUABM365_ENABLED', false),
     ],
 
+    'clonetut' => [
+        'enabled' => (bool) env('CLONETUT_ENABLED', false),
+    ],
+
     'binance' => [
         'proxy' => env('BINANCE_PROXY'),
         'api_host' => env('BINANCE_API_HOST'),

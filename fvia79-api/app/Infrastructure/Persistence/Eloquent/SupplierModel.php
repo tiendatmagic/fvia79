@@ -22,6 +22,18 @@ class SupplierModel extends Model
 
     protected $hidden = ['api_key'];
 
+    protected $attributes = [
+        'enabled' => true,
+        'products_enabled' => true,
+        'import_out_of_stock' => true,
+        'auto_sync' => true,
+        'auto_translate' => true,
+        'sync_interval_minutes' => 30,
+        'target_language' => 'vi',
+        'price_adjustment_type' => 'fixed',
+        'price_adjustment_value' => 0,
+    ];
+
     public function newUniqueId(): string
     {
         return (string) Str::uuid7();

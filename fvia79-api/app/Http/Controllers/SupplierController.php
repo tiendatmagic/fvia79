@@ -38,6 +38,9 @@ class SupplierController extends Controller
         if (! config('services.muabm365.enabled')) {
             $query->where('catalog_driver', '!=', 'muabm365')->where('code', '!=', 'muabm365');
         }
+        if (! config('services.clonetut.enabled')) {
+            $query->where('catalog_driver', '!=', 'clonetut')->where('code', '!=', 'clonetut');
+        }
 
         return response()->json($query->get()->map(
             fn (SupplierModel $supplier) => $this->serialize($supplier),
@@ -66,6 +69,16 @@ class SupplierController extends Controller
             ];
         }
 
+        if (config('services.clonetut.enabled')) {
+            $templates[] = [
+                'code' => 'clonetut',
+                'name' => 'CLONETUT',
+                'base_url' => 'https://clonetut.net',
+                'catalog_driver' => 'clonetut',
+                'enabled' => true,
+            ];
+        }
+
         return response()->json($templates);
     }
 
@@ -75,7 +88,7 @@ class SupplierController extends Controller
             'name' => ['required', 'string', 'max:100'],
             'base_url' => ['required', 'url:https', 'max:255'],
             'api_key' => ['required', 'string', 'max:2000'],
-            'catalog_driver' => ['sometimes', 'nullable', 'string', Rule::in(['clone_store_v1', 'clone_store_v2', 'muabm365'])],
+            'catalog_driver' => ['sometimes', 'nullable', 'string', Rule::in(['clone_store_v1', 'clone_store_v2', 'muabm365', 'clonetut'])],
             'enabled' => ['sometimes', 'boolean'],
             'products_enabled' => ['sometimes', 'boolean'],
             'import_out_of_stock' => ['sometimes', 'boolean'],

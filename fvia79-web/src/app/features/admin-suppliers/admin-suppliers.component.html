@@ -202,44 +202,50 @@
                 <div
                   class="col-span-2 mt-1 grid grid-cols-1 gap-x-6 gap-y-2 border-t border-emerald-200/70 pt-3 text-sm sm:grid-cols-2 dark:border-emerald-900/50 min-w-0 w-full"
                 >
-                  <p class="min-w-0 break-words">
-                    <span class="text-slate-500"
-                      >{{ 'supplier.account_username' | translate }}:</span
-                    >
-                    <strong class="ml-1 text-slate-800 dark:text-slate-200 break-all">{{
-                      accountBalance.account.username || '—'
-                    }}</strong>
-                  </p>
-                  <p class="min-w-0 break-words">
-                    <span class="text-slate-500">{{ 'supplier.account_email' | translate }}:</span>
-                    <strong class="ml-1 text-slate-800 dark:text-slate-200 break-all">{{
-                      accountBalance.account.email || '—'
-                    }}</strong>
-                  </p>
-                  <p class="min-w-0 break-words">
-                    <span class="text-slate-500">{{ 'supplier.account_id' | translate }}:</span>
-                    <strong class="ml-1 text-slate-800 dark:text-slate-200 break-all"
-                      >#{{ accountBalance.account.id ?? '—' }}</strong
-                    >
-                  </p>
-                  <p class="min-w-0 break-words">
-                    <span class="text-slate-500">{{ 'supplier.account_level' | translate }}:</span>
-                    <strong class="ml-1 text-slate-800 dark:text-slate-200 break-all">{{
-                      accountBalance.account.level ?? '—'
-                    }}</strong>
-                  </p>
-                  <p class="min-w-0 break-words">
-                    <span class="text-slate-500"
-                      >{{ 'supplier.account_discount' | translate }}:</span
-                    >
-                    <strong class="ml-1 text-slate-800 dark:text-slate-200 break-all">
-                      {{
-                        accountBalance.account.percent !== null
-                          ? (accountBalance.account.percent | number: '1.0-2') + '%'
-                          : '—'
-                      }}
-                    </strong>
-                  </p>
+                  @if (accountBalance.account.username) {
+                    <p class="min-w-0 break-words">
+                      <span class="text-slate-500"
+                        >{{ 'supplier.account_username' | translate }}:</span
+                      >
+                      <strong class="ml-1 text-slate-800 dark:text-slate-200 break-all">{{
+                        accountBalance.account.username
+                      }}</strong>
+                    </p>
+                  }
+                  @if (accountBalance.account.email) {
+                    <p class="min-w-0 break-words">
+                      <span class="text-slate-500">{{ 'supplier.account_email' | translate }}:</span>
+                      <strong class="ml-1 text-slate-800 dark:text-slate-200 break-all">{{
+                        accountBalance.account.email
+                      }}</strong>
+                    </p>
+                  }
+                  @if (accountBalance.account.id !== null) {
+                    <p class="min-w-0 break-words">
+                      <span class="text-slate-500">{{ 'supplier.account_id' | translate }}:</span>
+                      <strong class="ml-1 text-slate-800 dark:text-slate-200 break-all"
+                        >#{{ accountBalance.account.id }}</strong
+                      >
+                    </p>
+                  }
+                  @if (accountBalance.account.level !== null) {
+                    <p class="min-w-0 break-words">
+                      <span class="text-slate-500">{{ 'supplier.account_level' | translate }}:</span>
+                      <strong class="ml-1 text-slate-800 dark:text-slate-200 break-all">{{
+                        accountBalance.account.level
+                      }}</strong>
+                    </p>
+                  }
+                  @if (accountBalance.account.percent !== null) {
+                    <p class="min-w-0 break-words">
+                      <span class="text-slate-500"
+                        >{{ 'supplier.account_discount' | translate }}:</span
+                      >
+                      <strong class="ml-1 text-slate-800 dark:text-slate-200 break-all">
+                        {{ accountBalance.account.percent | number: '1.0-2' }}%
+                      </strong>
+                    </p>
+                  }
                 </div>
               }
             }

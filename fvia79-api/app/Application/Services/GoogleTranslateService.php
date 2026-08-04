@@ -10,7 +10,7 @@ use Throwable;
 
 class GoogleTranslateService
 {
-    private const BATCH_CONCURRENCY = 10;
+    private const BATCH_CONCURRENCY = 30;
 
     private const CACHE_DAYS = 30;
 
@@ -164,7 +164,8 @@ class GoogleTranslateService
                     $requests = [];
                     foreach ($chunk as $index => $text) {
                         $requests[] = $pool->as((string) $index)
-                            ->timeout(5)
+                            ->withoutVerifying()
+                            ->timeout(4)
                             ->withHeaders($this->headers())
                             ->get('https://translate.googleapis.com/translate_a/single', [
                                 'client' => 'gtx',
@@ -212,7 +213,8 @@ class GoogleTranslateService
     private function fetchFromGoogle(string $text, string $targetLang): ?string
     {
         try {
-            $response = Http::timeout(5)
+            $response = Http::withoutVerifying()
+                ->timeout(4)
                 ->withHeaders($this->headers())
                 ->get('https://translate.googleapis.com/translate_a/single', [
                     'client' => 'gtx',
