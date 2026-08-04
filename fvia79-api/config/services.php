@@ -35,6 +35,10 @@ return [
         'enabled' => (bool) env('CLONETUT_ENABLED', false),
     ],
 
+    'mediahub' => [
+        'enabled' => (bool) env('MEDIAHUB_ENABLED', false),
+    ],
+
     'binance' => [
         'proxy' => env('BINANCE_PROXY'),
         'api_host' => env('BINANCE_API_HOST'),

@@ -41,6 +41,9 @@ class SupplierController extends Controller
         if (! config('services.clonetut.enabled')) {
             $query->where('catalog_driver', '!=', 'clonetut')->where('code', '!=', 'clonetut');
         }
+        if (! config('services.mediahub.enabled')) {
+            $query->where('catalog_driver', '!=', 'mediahub')->where('code', '!=', 'mediahub');
+        }
 
         return response()->json($query->get()->map(
             fn (SupplierModel $supplier) => $this->serialize($supplier),
@@ -79,6 +82,16 @@ class SupplierController extends Controller
             ];
         }
 
+        if (config('services.mediahub.enabled')) {
+            $templates[] = [
+                'code' => 'mediahub',
+                'name' => 'MEDIAHUB',
+                'base_url' => 'https://canboso.com',
+                'catalog_driver' => 'mediahub',
+                'enabled' => true,
+            ];
+        }
+
         return response()->json($templates);
     }
 
@@ -88,7 +101,7 @@ class SupplierController extends Controller
             'name' => ['required', 'string', 'max:100'],
             'base_url' => ['required', 'url:https', 'max:255'],
             'api_key' => ['required', 'string', 'max:2000'],
-            'catalog_driver' => ['sometimes', 'nullable', 'string', Rule::in(['clone_store_v1', 'clone_store_v2', 'muabm365', 'clonetut'])],
+            'catalog_driver' => ['sometimes', 'nullable', 'string', Rule::in(['clone_store_v1', 'clone_store_v2', 'muabm365', 'clonetut', 'mediahub'])],
             'enabled' => ['sometimes', 'boolean'],
             'products_enabled' => ['sometimes', 'boolean'],
             'import_out_of_stock' => ['sometimes', 'boolean'],
