@@ -83,7 +83,7 @@ class ProductController extends Controller
                 Cache::forget('categories_active_storefront_en');
             }
 
-            $limit = min(12, max(1, (int) $request->query('limit', 12)));
+            $limit = min(100, max(1, (int) $request->query('limit', 100)));
             $search = $request->query('search');
             $includeOutOfStock = $request->boolean('include_out_of_stock', false);
             $lang = $this->resolveLanguage($request);
