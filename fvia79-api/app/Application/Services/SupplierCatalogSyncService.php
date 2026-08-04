@@ -395,7 +395,7 @@ class SupplierCatalogSyncService
             return false;
         }
 
-        return (bool) preg_match('/\b(Cổ|Ngoại|Ngoai|Kháng|Siêu|XMDT|Xác minh|Chưa gắn|Chống back|Bè)\b/u', $text);
+        return (bool) preg_match('/\b(Cổ|Ngoại|Ngoai|Kháng|Khang|Siêu|Sieu|XMDT|Xác minh|Xac minh|Chưa gắn|Chua gan|Chống back|Bè|Be|Bảo hành|Bao hanh|Bao hành|Bảo hanh|Tháng|Thang|TKQC|Tài khoản|Tai khoan|Chính chủ|Chinh chu|Kèm|Kem|Hệ|He|Thấp|Thap|Tỉ lệ|Tỷ lệ|Ti le|Ty le|Chất|Chat|Phân phối|Phan phoi|Kho hàng|Kho hang)\b/ui', $text);
     }
 
     private function clearStorefrontCache(): void
