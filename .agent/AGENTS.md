@@ -18,6 +18,27 @@
 > **QUY TẮC BẮT BUỘC CRONJOB & PHÂN QUYỀN CACHE STORAGE**:
 > 1. Cronjob Scheduler (`schedule:run`) **CHỈ ĐƯỢC CHẠY DƯỚI USER `www-data`** (`crontab -u www-data -e`). **TUYỆT ĐỐI KHÔNG cài dưới `root`** vì sẽ gây ra lỗi `500 Permission denied` khi người dùng thực hiện thao tác Web/API.
 
+### [2026-08-04] Triển Khai (Deploy) Đồng Bộ Frontend & Backend Giữ Nguyên CSDL Cho Dự Án FVIA79
+- **Mô tả yêu cầu**:
+  Triển khai (deploy) bản nâng cấp mã nguồn Frontend Angular và Backend Laravel mới nhất cho dự án **FVIA79** lên máy chủ VPS `38.180.150.246` theo tài liệu `deploy.md`. Bật chế độ bảo trì `php artisan down` trước khi upload, giữ nguyên 100% dữ liệu CSDL và tệp `.env`, giải nén và phân quyền FE `/var/www/fvia79-web` & BE `/var/www/fvia79-api`, chạy migration an toàn `php artisan migrate --force`, tái tạo toàn bộ cache Backend, kiểm tra Cronjob tự động của `www-data`, tắt chế độ bảo trì `php artisan up`, không tác động đến phpMyAdmin.
+- **Thực hiện xử lý**:
+  - **Biên dịch & Đóng gói (Local)**:
+    - Build Angular production `npx ng build --configuration production` thành công cho `fvia79-web`.
+    - Nén các tệp biên dịch FE thành `frontend-fvia79.tar.gz` và mã nguồn BE thành `backend-fvia79.zip`.
+  - **Triển khai VPS FVIA79 (`38.180.150.246`)**:
+    1. Bật bảo trì: `su -s /bin/bash www-data -c "php artisan down"`.
+    2. Upload gói FE & BE lên `/tmp/` và giải nén vào `/var/www/fvia79-web` và `/var/www/fvia79-api`.
+    3. Thực thi `composer install --no-dev --optimize-autoloader --no-interaction` và migration an toàn `php artisan migrate --force` (áp dụng migration `2026_08_04_000000_add_manual_price_fields_to_products_table`).
+    4. Xóa và tái tạo cache đệm tĩnh dưới user `www-data`: `config:clear`, `config:cache`, `route:cache`, `view:cache`.
+    5. Khởi tạo phân quyền: `chown -R www-data:www-data` cho `/var/www/fvia79-web` & `/var/www/fvia79-api`, `chmod -R 775` cho `storage` & `bootstrap/cache`.
+    6. Kiểm tra Cronjob Scheduler (`schedule:run`) hoạt động tự động dưới user `www-data`.
+    7. Tắt chế độ bảo trì: `su -s /bin/bash www-data -c "php artisan up"`.
+- **Kiểm thử nghiệm thu Website & API (HTTP 200 OK)**:
+  - **FVIA79 Website**: `https://fvia79.com/` (200 OK).
+  - **FVIA79 API Categories**: `https://fvia79.com/api/v1/categories` (200 OK).
+  - **FVIA79 API Products Grouped**: `https://fvia79.com/api/v1/products/grouped` (200 OK).
+  - **phpMyAdmin**: `https://fvia79.com/phpmyadmin/` (200 OK).
+
 ### [2026-08-04] Tối Ưu & Giảm Thời Gian Hiển Thị Chế Độ Demo Cho 2 Bảng "Đơn Hàng Vừa Mua" & "Lịch Sử Nạp Gần Đây" (`fvia79-web`)
 - **Mô tả yêu cầu**:
   - Sửa đổi khoảng thời gian hiển thị tương đối ("x phút trước") cho 2 bảng hoạt động trên Storefront khi đang ở Chế độ Demo (Demo Mode).
