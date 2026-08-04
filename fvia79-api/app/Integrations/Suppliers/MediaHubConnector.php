@@ -2,6 +2,7 @@
 
 namespace App\Integrations\Suppliers;
 
+use App\Application\Services\DepositService;
 use App\Infrastructure\Persistence\Eloquent\SupplierModel;
 use App\Integrations\Suppliers\Contracts\SupplierCatalogConnector;
 use App\Integrations\Suppliers\Contracts\SupplierOrderConnector;
@@ -42,6 +43,9 @@ class MediaHubConnector implements SupplierCatalogConnector, SupplierOrderConnec
             throw new RuntimeException('MediaHub returned an invalid products structure.');
         }
 
+        $globalWalletCurrency = mb_strtoupper((string) ($payload['walletCurrency'] ?? 'VND'));
+        $exchangeRate = app(DepositService::class)->getUsdtToVndRate();
+
         $groupedMap = [];
 
         foreach ($products as $prod) {
@@ -58,7 +62,15 @@ class MediaHubConnector implements SupplierCatalogConnector, SupplierOrderConnec
             $categoryName = (string) ($prod['categoryName'] ?? $prod['category_name'] ?? $prod['category'] ?? $this->detectCategoryName($productName));
             $categoryId = 'mediahub-cat-'.Str::slug($categoryName);
 
-            $price = (float) ($prod['priceVnd'] ?? $prod['walletPricing'] ?? $prod['pricing'] ?? $prod['price'] ?? 0);
+            $prodCurrency = mb_strtoupper((string) ($prod['walletCurrency'] ?? $globalWalletCurrency));
+            $rawPrice = (float) ($prod['priceVnd'] ?? $prod['walletPricing'] ?? $prod['pricing'] ?? $prod['usdPricing'] ?? $prod['price'] ?? 0);
+
+            if ($prodCurrency === 'USD' || ($rawPrice > 0 && $rawPrice < 500)) {
+                $priceVnd = $rawPrice * $exchangeRate;
+            } else {
+                $priceVnd = $rawPrice;
+            }
+
             $quantity = max(0, (int) ($prod['availableQuantity'] ?? $prod['stats']['available'] ?? $prod['quantity'] ?? $prod['amount'] ?? 0));
             $desc = isset($prod['description']) ? trim(html_entity_decode(strip_tags((string) $prod['description']))) : null;
 
@@ -73,7 +85,7 @@ class MediaHubConnector implements SupplierCatalogConnector, SupplierOrderConnec
             $groupedMap[$categoryId]['children'][] = [
                 'id' => $productId,
                 'name' => $productName,
-                'price' => $price,
+                'price' => $priceVnd,
                 'quantity' => $quantity,
                 'data' => [
                     'description' => $desc,
@@ -88,6 +100,9 @@ class MediaHubConnector implements SupplierCatalogConnector, SupplierOrderConnec
     {
         $upper = mb_strtoupper(trim($name));
 
+        if (str_contains($upper, 'VEO')) {
+            return 'GOOGLE VEO / VIDEO AI';
+        }
         if (str_contains($upper, 'CHATGPT') || str_contains($upper, 'GPT')) {
             return 'CHATGPT / OPENAI';
         }
@@ -135,7 +150,21 @@ class MediaHubConnector implements SupplierCatalogConnector, SupplierOrderConnec
             throw new RuntimeException("MediaHub error: {$msg}");
         }
 
-        $balance = $payload['balanceVnd'] ?? $payload['balance'] ?? $payload['balanceUsd'] ?? null;
+        $walletCurrency = mb_strtoupper((string) ($payload['walletCurrency'] ?? 'VND'));
+        $balance = $payload['balanceVnd'] ?? null;
+
+        if (! is_numeric($balance) || (float) $balance <= 0) {
+            $rawBalance = $payload['balanceUsd'] ?? $payload['balance'] ?? null;
+            if (is_numeric($rawBalance)) {
+                if ($walletCurrency === 'USD' || (float) $rawBalance < 500) {
+                    $exchangeRate = app(DepositService::class)->getUsdtToVndRate();
+                    $balance = (float) $rawBalance * $exchangeRate;
+                } else {
+                    $balance = (float) $rawBalance;
+                }
+            }
+        }
+
         if (! is_numeric($balance)) {
             $msg = is_string($payload['message'] ?? null) ? $payload['message'] : 'Không thể lấy số dư tài khoản MediaHub';
             throw new RuntimeException("MediaHub profile error: {$msg}");
