@@ -87,8 +87,8 @@ class CreateProductRequest extends FormRequest
             'category_id' => 'nullable|uuid|exists:categories,id',
             'status' => "{$req}|in:active,inactive",
             'attributes' => 'nullable|array',
-            'attributes.*.label' => 'required|string|max:100',
-            'attributes.*.value' => 'required|string|max:255',
+            'attributes.*.label' => 'required|string|max:255',
+            'attributes.*.value' => 'required|string|max:65535',
         ];
     }
 }
