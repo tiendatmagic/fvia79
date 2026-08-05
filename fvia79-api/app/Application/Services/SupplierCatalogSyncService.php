@@ -151,8 +151,8 @@ class SupplierCatalogSyncService
                     $rawName = (string) ($productData['name'] ?? "Product {$productId}");
                     $rawDescription = $this->normalizeDescription($productData['data']['description'] ?? null);
                     $existing = $existingProducts->get($productId);
-                    $savedRawName = data_get($existing?->attributes, 'raw_name');
-                    $savedRawDescription = data_get($existing?->attributes, 'raw_desc');
+                    $savedRawName = $this->getRawAttribute($existing?->attributes, 'raw_name');
+                    $savedRawDescription = $this->getRawAttribute($existing?->attributes, 'raw_desc');
 
                     if (! $existing || $savedRawName !== $rawName || empty($existing->name_en) || $existing->name_en === $rawName || $this->hasUntranslatedVietnamese($existing->name_en)) {
                         $textsEn[] = $rawName;
@@ -184,7 +184,7 @@ class SupplierCatalogSyncService
         ]);
 
         $attributes = $category->attributes ?? [];
-        $savedRawName = $attributes['raw_name'] ?? null;
+        $savedRawName = $this->getRawAttribute($attributes, 'raw_name');
 
         $nameEn = $rawName;
         $nameVi = $rawName;
@@ -196,7 +196,7 @@ class SupplierCatalogSyncService
             }
         }
 
-        $attributes['raw_name'] = $rawName;
+        $attributes = $this->setRawAttribute($attributes, 'raw_name', $rawName);
 
         if (! $category->exists && (! isset($category->sort_order) || $category->sort_order === 0)) {
             $maxOrder = (int) CategoryModel::max('sort_order');
@@ -237,8 +237,8 @@ class SupplierCatalogSyncService
         $rawDesc = $this->normalizeDescription($data['data']['description'] ?? null);
 
         $attributes = $product->attributes ?? [];
-        $savedRawName = $attributes['raw_name'] ?? null;
-        $savedRawDesc = $attributes['raw_desc'] ?? null;
+        $savedRawName = $this->getRawAttribute($attributes, 'raw_name');
+        $savedRawDesc = $this->getRawAttribute($attributes, 'raw_desc');
 
         $nameEn = $rawName;
         $nameVi = $rawName;
@@ -264,8 +264,8 @@ class SupplierCatalogSyncService
             }
         }
 
-        $attributes['raw_name'] = $rawName;
-        $attributes['raw_desc'] = $rawDesc;
+        $attributes = $this->setRawAttribute($attributes, 'raw_name', $rawName);
+        $attributes = $this->setRawAttribute($attributes, 'raw_desc', $rawDesc);
 
         if ($product->is_manual_price && $product->manual_price !== null) {
             $currency = strtoupper($product->manual_price_currency ?? 'VND');
@@ -404,5 +404,69 @@ class SupplierCatalogSyncService
         Cache::forget('categories_active_storefront');
         Cache::forget('categories_active_storefront_en');
         Cache::forget('categories_active_storefront_vi');
+    }
+
+    private function getRawAttribute(?array $attributes, string $key): ?string
+    {
+        if (! $attributes) {
+            return null;
+        }
+
+        if (array_key_exists($key, $attributes) && is_scalar($attributes[$key])) {
+            return (string) $attributes[$key];
+        }
+
+        foreach ($attributes as $item) {
+            if (is_array($item) && ($item['label'] ?? null) === $key) {
+                return (string) ($item['value'] ?? '');
+            }
+        }
+
+        return null;
+    }
+
+    private function setRawAttribute(array $attributes, string $key, ?string $value): array
+    {
+        $isAssoc = array_keys($attributes) !== range(0, count($attributes) - 1);
+        if ($isAssoc) {
+            $hasNumeric = false;
+            foreach (array_keys($attributes) as $k) {
+                if (is_int($k) || ctype_digit((string) $k)) {
+                    $hasNumeric = true;
+                    break;
+                }
+            }
+            if (! $hasNumeric) {
+                if ($value !== null) {
+                    $attributes[$key] = $value;
+                } else {
+                    unset($attributes[$key]);
+                }
+                return $attributes;
+            }
+        }
+
+        $found = false;
+        foreach ($attributes as $i => $item) {
+            if (is_array($item) && ($item['label'] ?? null) === $key) {
+                if ($value !== null) {
+                    $attributes[$i]['value'] = (string) $value;
+                } else {
+                    unset($attributes[$i]);
+                    $attributes = array_values($attributes);
+                }
+                $found = true;
+                break;
+            }
+        }
+
+        if (! $found && $value !== null) {
+            $attributes[] = [
+                'label' => $key,
+                'value' => (string) $value,
+            ];
+        }
+
+        return $attributes;
     }
 }

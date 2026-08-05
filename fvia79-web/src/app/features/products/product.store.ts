@@ -6,6 +6,8 @@ import { LanguageService } from '@core/services/language.service';
 import { tap, catchError, finalize, shareReplay } from 'rxjs/operators';
 import { of, Subscription, Subject, Observable } from 'rxjs';
 
+import { formatAttributes } from '@core/utils/attribute.utils';
+
 @Injectable({
   providedIn: 'root'
 })
@@ -57,6 +59,7 @@ export class ProductStore {
       description: language === 'vi'
         ? (item.description_vi ?? item.description_en ?? item.description)
         : (item.description_en ?? item.description_vi ?? item.description),
+      attributes: item.attributes ? formatAttributes(item.attributes, false) : [],
     }));
   }
 
