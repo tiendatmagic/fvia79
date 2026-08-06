@@ -308,17 +308,34 @@ class OrderService
         $hasSupplierSuccess = false;
 
         try {
-            foreach ($order->getItems() as $item) {
-                $product = ProductModel::with('supplier')->findOrFail($item->getProductId());
+            $orderItems = $order->getItems();
+            $products = ProductModel::with('supplier')
+                ->whereKey(array_values(array_unique(array_map(
+                    fn (OrderItem $item) => $item->getProductId(),
+                    $orderItems,
+                ))))
+                ->get()
+                ->keyBy('id');
+            $purchases = SupplierPurchaseModel::query()
+                ->whereIn('order_item_id', array_values(array_filter(array_map(
+                    fn (OrderItem $item) => $item->getId(),
+                    $orderItems,
+                ))))
+                ->whereIn('status', ['succeeded', 'unknown'])
+                ->orderByDesc('created_at')
+                ->get()
+                ->unique('order_item_id')
+                ->keyBy('order_item_id');
+
+            foreach ($orderItems as $item) {
+                $product = $products->get($item->getProductId())
+                    ?? ProductModel::with('supplier')->findOrFail($item->getProductId());
                 $supplierQuantity = 0;
                 $supplierOrderId = null;
                 $supplierCode = null;
                 $resources = [];
                 $supplierCost = 0.0;
-                $purchase = SupplierPurchaseModel::where('order_item_id', $item->getId())
-                    ->whereIn('status', ['succeeded', 'unknown'])
-                    ->latest()
-                    ->first();
+                $purchase = $purchases->get($item->getId());
                 $wantedFromSupplier = $purchase
                     ? $purchase->quantity
                     : (($product->supplier_id

@@ -13,7 +13,7 @@ class InventoryBatchMapper
             $model->id,
             $model->product_id,
             $model->batch_name,
-            $model->keys_pool,
+            $model->relationLoaded('items') ? $model->keys_pool : null,
             $model->initial_count,
             $model->sold_count,
             $model->status,
@@ -25,7 +25,7 @@ class InventoryBatchMapper
 
     public static function toPersistence(InventoryBatch $entity): InventoryBatchModel
     {
-        $model = new InventoryBatchModel();
+        $model = new InventoryBatchModel;
         if ($entity->getId()) {
             $model = InventoryBatchModel::find($entity->getId()) ?: $model;
         }

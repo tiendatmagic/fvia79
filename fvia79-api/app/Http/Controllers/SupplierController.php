@@ -7,7 +7,6 @@ use App\Infrastructure\Persistence\Eloquent\CategoryModel;
 use App\Infrastructure\Persistence\Eloquent\ProductModel;
 use App\Infrastructure\Persistence\Eloquent\SupplierModel;
 use App\Integrations\Suppliers\CloneStoreConnector;
-use App\Integrations\Suppliers\Muabm365Connector;
 use App\Integrations\Suppliers\SupplierConnectorFactory;
 use App\Integrations\Suppliers\SupplierOperationInProgressException;
 use App\Integrations\Suppliers\SupplierOperationLock;
@@ -34,7 +33,7 @@ class SupplierController extends Controller
 
     public function index()
     {
-        $query = SupplierModel::orderBy('name');
+        $query = SupplierModel::withCount('products')->orderBy('name');
         if (! config('services.muabm365.enabled')) {
             $query->where('catalog_driver', '!=', 'muabm365')->where('code', '!=', 'muabm365');
         }
@@ -277,7 +276,7 @@ class SupplierController extends Controller
         try {
             $supplier = SupplierModel::where('code', $code)->firstOrFail();
 
-            if (!$supplier->enabled) {
+            if (! $supplier->enabled) {
                 return response()->json([
                     'message' => 'Supplier is disabled.',
                 ], 422);
@@ -321,20 +320,19 @@ class SupplierController extends Controller
 
         $activeProducts = ProductModel::where('supplier_id', $supplier->id)
             ->where('status', 'active')
+            ->withCount(['inventoryItems as local_available_count' => fn ($query) => $query->where('status', 'available')])
             ->get();
 
-        $deactivatedCount = 0;
-        foreach ($activeProducts as $product) {
+        $productIds = $activeProducts->filter(function ($product) {
             $supplierStock = max(0, (int) ($product->supplier_stock ?? 0));
-            $localStock = (int) $product->inventoryItems()->where('status', 'available')->count();
 
-            if (($supplierStock + $localStock) <= 0) {
-                $product->status = 'inactive';
-                $product->supplier_out_of_stock_hidden = true;
-                $product->save();
-                $deactivatedCount++;
-            }
-        }
+            return ($supplierStock + (int) $product->local_available_count) <= 0;
+        })->pluck('id');
+
+        $deactivatedCount = ProductModel::whereKey($productIds)->update([
+            'status' => 'inactive',
+            'supplier_out_of_stock_hidden' => true,
+        ]);
 
         if ($deactivatedCount > 0) {
             Cache::forget('products_active_storefront');
@@ -356,27 +354,25 @@ class SupplierController extends Controller
 
         $inactiveProducts = ProductModel::where('supplier_id', $supplier->id)
             ->where('status', 'inactive')
+            ->with('category:id,is_active')
+            ->withCount(['inventoryItems as local_available_count' => fn ($query) => $query->where('status', 'available')])
             ->get();
 
-        $activatedCount = 0;
-        foreach ($inactiveProducts as $product) {
+        $productsToActivate = $inactiveProducts->filter(function ($product) {
             $supplierStock = max(0, (int) ($product->supplier_stock ?? 0));
-            $localStock = (int) $product->inventoryItems()->where('status', 'available')->count();
 
-            if (($supplierStock + $localStock) > 0) {
-                $product->status = 'active';
-                $product->supplier_out_of_stock_hidden = false;
-                $product->supplier_previous_status = null;
-                $product->save();
+            return ($supplierStock + (int) $product->local_available_count) > 0;
+        });
 
-                if ($product->category && ! $product->category->is_active) {
-                    $product->category->is_active = true;
-                    $product->category->save();
-                }
+        $activatedCount = ProductModel::whereKey($productsToActivate->pluck('id'))->update([
+            'status' => 'active',
+            'supplier_out_of_stock_hidden' => false,
+            'supplier_previous_status' => null,
+        ]);
 
-                $activatedCount++;
-            }
-        }
+        CategoryModel::whereKey($productsToActivate->pluck('category_id')->filter()->unique())
+            ->where('is_active', false)
+            ->update(['is_active' => true]);
 
         if ($activatedCount > 0) {
             Cache::forget('products_active_storefront');
@@ -405,33 +401,25 @@ class SupplierController extends Controller
 
         $categoryIds = $categoryIdsFromProducts->concat($categoryIdsFromCategories)->unique();
 
-        $deactivatedCount = 0;
-        foreach ($categoryIds as $catId) {
-            $category = CategoryModel::find($catId);
-            if (! $category || ! $category->is_active) {
-                continue;
-            }
+        $stockByCategory = ProductModel::query()
+            ->where('supplier_id', $supplier->id)
+            ->where('status', 'active')
+            ->whereIn('category_id', $categoryIds)
+            ->withCount(['inventoryItems as local_available_count' => fn ($query) => $query->where('status', 'available')])
+            ->get()
+            ->groupBy('category_id')
+            ->map(fn ($products) => $products->sum(
+                fn ($product) => max(0, (int) ($product->supplier_stock ?? 0)) + (int) $product->local_available_count
+            ));
 
-            $products = ProductModel::where('category_id', $catId)
-                ->where('supplier_id', $supplier->id)
-                ->get();
+        $categoriesToDeactivate = CategoryModel::whereIn('id', $categoryIds)
+            ->where('is_active', true)
+            ->get(['id'])
+            ->filter(fn ($category) => (int) $stockByCategory->get($category->id, 0) <= 0)
+            ->pluck('id');
 
-            $totalStock = 0;
-            foreach ($products as $product) {
-                if ($product->status !== 'active') {
-                    continue;
-                }
-                $supplierStock = max(0, (int) ($product->supplier_stock ?? 0));
-                $localStock = (int) $product->inventoryItems()->where('status', 'available')->count();
-                $totalStock += ($supplierStock + $localStock);
-            }
-
-            if ($totalStock <= 0) {
-                $category->is_active = false;
-                $category->save();
-                $deactivatedCount++;
-            }
-        }
+        $deactivatedCount = CategoryModel::whereKey($categoriesToDeactivate)
+            ->update(['is_active' => false]);
 
         if ($deactivatedCount > 0) {
             Cache::forget('categories_active_storefront');
@@ -469,7 +457,9 @@ class SupplierController extends Controller
             'last_synced_at' => $supplier->last_synced_at?->toIso8601String(),
             'last_sync_status' => $supplier->last_sync_status,
             'last_sync_error' => $supplier->last_sync_error,
-            'products_count' => $supplier->products()->count(),
+            'products_count' => array_key_exists('products_count', $supplier->getAttributes())
+                ? (int) $supplier->products_count
+                : $supplier->products()->count(),
         ];
     }
 

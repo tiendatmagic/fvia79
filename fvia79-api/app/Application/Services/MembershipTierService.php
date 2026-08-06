@@ -8,7 +8,6 @@ use Illuminate\Support\Str;
 
 class MembershipTierService
 {
-
     public function recalculateUserTier(UserModel $user): ?MembershipTierModel
     {
         $enabled = filter_var(config('app.feature_membership_tiers_enabled', false), FILTER_VALIDATE_BOOLEAN);
@@ -62,6 +61,7 @@ class MembershipTierService
     {
         return MembershipTierModel::orderBy('min_deposit', 'asc')
             ->orderBy('level', 'asc')
+            ->withCount('users')
             ->get()
             ->map(fn ($tier) => [
                 'id' => $tier->id,
@@ -73,7 +73,7 @@ class MembershipTierService
                 'icon' => $tier->icon,
                 'color' => $tier->color,
                 'is_active' => (bool) $tier->is_active,
-                'users_count' => $tier->users()->count(),
+                'users_count' => (int) $tier->users_count,
                 'created_at' => $tier->created_at?->format('Y-m-d H:i:s'),
                 'updated_at' => $tier->updated_at?->format('Y-m-d H:i:s'),
             ])
@@ -82,7 +82,7 @@ class MembershipTierService
 
     public function createTier(array $data): MembershipTierModel
     {
-        $tier = new MembershipTierModel();
+        $tier = new MembershipTierModel;
         $tier->id = (string) Str::uuid7();
         $tier->level = (int) ($data['level'] ?? 1);
         $tier->name_vi = trim($data['name_vi']);
@@ -147,9 +147,25 @@ class MembershipTierService
 
     public function syncAllUserTiers(): void
     {
-        UserModel::chunk(100, function ($users) {
+        $enabled = filter_var(config('app.feature_membership_tiers_enabled', false), FILTER_VALIDATE_BOOLEAN);
+        $tiers = $enabled
+            ? MembershipTierModel::where('is_active', true)
+                ->orderByDesc('min_deposit')
+                ->orderByDesc('level')
+                ->get(['id', 'min_deposit'])
+            : collect();
+
+        UserModel::chunk(100, function ($users) use ($tiers) {
             foreach ($users as $user) {
-                $this->recalculateUserTier($user);
+                $totalDeposited = (float) ($user->total_deposited ?? 0);
+                $newTierId = $tiers->first(
+                    fn ($tier) => (float) $tier->min_deposit <= $totalDeposited
+                )?->id;
+
+                if ($user->membership_tier_id !== $newTierId) {
+                    $user->membership_tier_id = $newTierId;
+                    $user->save();
+                }
             }
         });
     }

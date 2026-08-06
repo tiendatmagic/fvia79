@@ -13,18 +13,22 @@ class DepositRepository implements DepositRepositoryInterface
     {
         $model = DepositMapper::toPersistence($deposit);
         $model->save();
+        $model->load('user');
+
         return DepositMapper::toDomain($model);
     }
 
     public function find(string $id): ?Deposit
     {
-        $model = DepositModel::find($id);
+        $model = DepositModel::with('user')->find($id);
+
         return $model ? DepositMapper::toDomain($model) : null;
     }
 
     public function findByCode(string $code): ?Deposit
     {
-        $model = DepositModel::where('code', $code)->first();
+        $model = DepositModel::with('user')->where('code', $code)->first();
+
         return $model ? DepositMapper::toDomain($model) : null;
     }
 
@@ -32,22 +36,23 @@ class DepositRepository implements DepositRepositoryInterface
     {
         $page = max(1, $page);
         $limit = max(1, $limit);
-        $paginator = DepositModel::where('user_id', $userId)
+        $paginator = DepositModel::with('user:id,email,name,username,uid')
+            ->where('user_id', $userId)
             ->orderBy('created_at', 'desc')
             ->paginate($limit, ['*'], 'page', $page);
 
         return [
-            'items' => array_map(fn($m) => DepositMapper::toDomain($m), $paginator->items()),
+            'items' => array_map(fn ($m) => DepositMapper::toDomain($m), $paginator->items()),
             'total' => $paginator->total(),
             'current_page' => $paginator->currentPage(),
             'last_page' => $paginator->lastPage(),
-            'limit' => $limit
+            'limit' => $limit,
         ];
     }
 
     public function findPendingByAmountToPay(float $amountToPay): ?Deposit
     {
-        $model = DepositModel::where('status', 'pending_payment')
+        $model = DepositModel::with('user')->where('status', 'pending_payment')
             ->where('amount_to_pay', $amountToPay)
             ->first();
 
@@ -83,10 +88,10 @@ class DepositRepository implements DepositRepositoryInterface
         }
 
         if ($startDate) {
-            $query->where('created_at', '>=', $startDate . ' 00:00:00');
+            $query->where('created_at', '>=', $startDate.' 00:00:00');
         }
         if ($endDate) {
-            $query->where('created_at', '<=', $endDate . ' 23:59:59');
+            $query->where('created_at', '<=', $endDate.' 23:59:59');
         }
 
         if ($search) {
@@ -107,11 +112,11 @@ class DepositRepository implements DepositRepositoryInterface
             ->paginate($limit, ['*'], 'page', $page);
 
         return [
-            'items' => array_map(fn($m) => DepositMapper::toDomain($m), $paginator->items()),
+            'items' => array_map(fn ($m) => DepositMapper::toDomain($m), $paginator->items()),
             'total' => $paginator->total(),
             'current_page' => $paginator->currentPage(),
             'last_page' => $paginator->lastPage(),
-            'limit' => $limit
+            'limit' => $limit,
         ];
     }
 }

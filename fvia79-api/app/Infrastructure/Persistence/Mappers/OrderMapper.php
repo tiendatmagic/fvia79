@@ -5,7 +5,6 @@ namespace App\Infrastructure\Persistence\Mappers;
 use App\Domain\Entities\Order;
 use App\Domain\Entities\OrderItem;
 use App\Infrastructure\Persistence\Eloquent\OrderModel;
-use App\Infrastructure\Persistence\Eloquent\OrderItemModel;
 
 class OrderMapper
 {
@@ -23,7 +22,11 @@ class OrderMapper
                     $itemModel->price,
                     $itemModel->quantity,
                     $itemModel->delivered_keys,
-                    $itemModel->cost_price
+                    $itemModel->cost_price,
+                    (int) ($itemModel->supplier_quantity ?? 0),
+                    $itemModel->local_quantity !== null ? (int) $itemModel->local_quantity : null,
+                    $itemModel->supplier_order_id,
+                    $itemModel->supplier_code
                 );
             }
         }
@@ -53,7 +56,7 @@ class OrderMapper
 
     public static function toPersistence(Order $entity): OrderModel
     {
-        $model = new OrderModel();
+        $model = new OrderModel;
         if ($entity->getId()) {
             $model = OrderModel::find($entity->getId()) ?: $model;
         }

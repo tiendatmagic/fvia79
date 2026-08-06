@@ -7,16 +7,20 @@ use App\Domain\Entities\InventoryItem;
 use App\Domain\Repositories\InventoryBatchRepositoryInterface;
 use App\Domain\Repositories\InventoryItemRepositoryInterface;
 use App\Domain\Repositories\ProductRepositoryInterface;
-use Illuminate\Support\Facades\Cache;
-use Illuminate\Support\Facades\DB;
 use App\Infrastructure\Persistence\Eloquent\InventoryBatchModel;
 use App\Infrastructure\Persistence\Eloquent\InventoryItemModel;
+use Illuminate\Support\Facades\Cache;
+use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Log;
 
 class InventoryService
 {
     private InventoryBatchRepositoryInterface $inventoryRepository;
+
     private InventoryItemRepositoryInterface $inventoryItemRepository;
+
     private ProductRepositoryInterface $productRepository;
+
     private TelegramNotificationService $telegramService;
 
     public function __construct(
@@ -34,7 +38,7 @@ class InventoryService
     public function importBatch(string $productId, string $batchName, string $rawData, ?float $costPrice = null): InventoryBatch
     {
         $product = $this->productRepository->findById($productId);
-        if (!$product) {
+        if (! $product) {
             throw new \Exception('Product not found.');
         }
 
@@ -42,7 +46,7 @@ class InventoryService
         $cleanKeys = [];
         foreach ($lines as $line) {
             $trimmed = trim($line);
-            if (!empty($trimmed)) {
+            if (! empty($trimmed)) {
                 $cleanKeys[] = $trimmed;
             }
         }
@@ -72,7 +76,7 @@ class InventoryService
             $this->telegramService->notifyNewInventoryBatch($product, $saved);
         } catch (\Throwable $e) {
             // Log & ignore notification failures to prevent blocking inventory import
-            \Illuminate\Support\Facades\Log::error('Telegram inventory notification error: ' . $e->getMessage());
+            Log::error('Telegram inventory notification error: '.$e->getMessage());
         }
 
         return $saved;
@@ -81,7 +85,7 @@ class InventoryService
     public function updateBatch(string $id, array $data): ?InventoryBatch
     {
         $batch = $this->inventoryRepository->findById($id);
-        if (!$batch) {
+        if (! $batch) {
             return null;
         }
 
@@ -100,7 +104,7 @@ class InventoryService
         $costPrice = array_key_exists('cost_price', $data) ? ($data['cost_price'] !== null ? (float) $data['cost_price'] : null) : $batch->getCostPrice();
 
         $lines = preg_split('/\r\n|\r|\n/', $keysPool);
-        $cleanKeys = array_filter(array_map('trim', $lines), fn($k) => !empty($k));
+        $cleanKeys = array_filter(array_map('trim', $lines), fn ($k) => ! empty($k));
         $currentAvailableCount = count($cleanKeys);
 
         $soldCount = $batch->getSoldCount();
@@ -121,12 +125,13 @@ class InventoryService
             $soldCount,
             $status,
             $batch->getCreatedAt(),
-            new \DateTime(),
+            new \DateTime,
             $costPrice
         );
 
         $saved = $this->inventoryRepository->save($updatedBatch);
         Cache::forget('products_active_storefront');
+
         return $saved;
     }
 
@@ -151,6 +156,7 @@ class InventoryService
         if ($deleted) {
             Cache::forget('products_active_storefront');
         }
+
         return $deleted;
     }
 
@@ -167,7 +173,7 @@ class InventoryService
     public function updateResourceItem(string $id, array $data): ?InventoryItem
     {
         $item = $this->inventoryItemRepository->findById($id);
-        if (!$item) {
+        if (! $item) {
             return null;
         }
 
@@ -182,7 +188,7 @@ class InventoryService
 
         $batch = $this->inventoryRepository->findById($item->getBatchId());
         if ($batch) {
-            $availableCount = \App\Infrastructure\Persistence\Eloquent\InventoryItemModel::where('batch_id', $batch->getId())
+            $availableCount = InventoryItemModel::where('batch_id', $batch->getId())
                 ->where('status', 'available')
                 ->count();
 
@@ -191,21 +197,22 @@ class InventoryService
             $status = $availableCount > 0 ? 'active' : 'completed';
 
             // Update directly to avoid recursively synchronizing the batch.
-            \App\Infrastructure\Persistence\Eloquent\InventoryBatchModel::where('id', $batch->getId())->update([
+            InventoryBatchModel::where('id', $batch->getId())->update([
                 'initial_count' => $initialCount,
                 'sold_count' => $soldCount,
-                'status' => $status
+                'status' => $status,
             ]);
         }
 
         Cache::forget('products_active_storefront');
+
         return $saved;
     }
 
     public function deleteResourceItem(string $id): bool
     {
         $item = $this->inventoryItemRepository->findById($id);
-        if (!$item) {
+        if (! $item) {
             return false;
         }
 
@@ -213,7 +220,7 @@ class InventoryService
         $deleted = $this->inventoryItemRepository->delete($id);
 
         if ($deleted && $batchId) {
-            $availableCount = \App\Infrastructure\Persistence\Eloquent\InventoryItemModel::where('batch_id', $batchId)
+            $availableCount = InventoryItemModel::where('batch_id', $batchId)
                 ->where('status', 'available')
                 ->count();
 
@@ -221,10 +228,10 @@ class InventoryService
             $initialCount = $availableCount + $soldCount;
             $status = $availableCount > 0 ? 'active' : 'completed';
 
-            \App\Infrastructure\Persistence\Eloquent\InventoryBatchModel::where('id', $batchId)->update([
+            InventoryBatchModel::where('id', $batchId)->update([
                 'initial_count' => $initialCount,
                 'sold_count' => $soldCount,
-                'status' => $status
+                'status' => $status,
             ]);
 
             Cache::forget('products_active_storefront');
@@ -280,26 +287,51 @@ class InventoryService
 
     private function syncBatchCounters(array $batchIds): void
     {
-        foreach (array_unique(array_filter($batchIds)) as $batchId) {
-            $batch = InventoryBatchModel::whereKey($batchId)->lockForUpdate()->first();
-            if (! $batch) {
-                continue;
-            }
-
-            $items = InventoryItemModel::where('batch_id', $batchId);
-            $initialCount = (clone $items)->count();
-            $availableCount = (clone $items)->where('status', 'available')->count();
-            $soldCount = (clone $items)->where('status', 'sold')->count();
-
-            $updates = [
-                'initial_count' => $initialCount,
-                'sold_count' => $soldCount,
-            ];
-            if ($batch->status !== 'inactive') {
-                $updates['status'] = $availableCount > 0 ? 'active' : 'completed';
-            }
-
-            $batch->update($updates);
+        $batchIds = array_values(array_unique(array_filter($batchIds)));
+        if ($batchIds === []) {
+            return;
         }
+
+        $batches = InventoryBatchModel::whereKey($batchIds)
+            ->lockForUpdate()
+            ->get(['id', 'product_id', 'batch_name', 'status', 'created_at']);
+        if ($batches->isEmpty()) {
+            return;
+        }
+
+        $countsByBatch = InventoryItemModel::query()
+            ->whereIn('batch_id', $batches->pluck('id'))
+            ->select('batch_id')
+            ->selectRaw('COUNT(*) AS initial_count')
+            ->selectRaw("SUM(CASE WHEN status = 'available' THEN 1 ELSE 0 END) AS available_count")
+            ->selectRaw("SUM(CASE WHEN status = 'sold' THEN 1 ELSE 0 END) AS sold_count")
+            ->groupBy('batch_id')
+            ->get()
+            ->keyBy('batch_id');
+
+        $now = now();
+        $updates = $batches->map(function ($batch) use ($countsByBatch, $now) {
+            $counts = $countsByBatch->get($batch->id);
+            $availableCount = (int) ($counts?->available_count ?? 0);
+
+            return [
+                'id' => $batch->id,
+                'product_id' => $batch->product_id,
+                'batch_name' => $batch->batch_name,
+                'initial_count' => (int) ($counts?->initial_count ?? 0),
+                'sold_count' => (int) ($counts?->sold_count ?? 0),
+                'status' => $batch->status === 'inactive'
+                    ? 'inactive'
+                    : ($availableCount > 0 ? 'active' : 'completed'),
+                'updated_at' => $now,
+                'created_at' => $batch->created_at,
+            ];
+        })->all();
+
+        DB::table('inventory_batches')->upsert(
+            $updates,
+            ['id'],
+            ['initial_count', 'sold_count', 'status', 'updated_at'],
+        );
     }
 }

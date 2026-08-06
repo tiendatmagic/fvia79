@@ -5,7 +5,6 @@ namespace App\Http\Controllers;
 use App\Application\Services\OrderService;
 use App\Domain\Exceptions\OrderException;
 use App\Http\Requests\CreateOrderRequest;
-use App\Infrastructure\Persistence\Eloquent\OrderItemModel;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 
@@ -64,6 +63,7 @@ class OrderController extends Controller
             if ($freshUser) {
                 $payload['balance'] = (float) $freshUser->balance;
             }
+
             return response()->json($payload, 400);
         } catch (\Throwable $e) {
             return $this->serverError($e, 'Failed to create order.');
@@ -169,18 +169,16 @@ class OrderController extends Controller
             $isAdmin = $user->role === 'admin';
 
             $itemsData = array_map(function ($item) {
-                $model = OrderItemModel::find($item->getId());
-
                 return [
                     'id' => $item->getId(),
                     'product_id' => $item->getProductId(),
                     'product_name' => $item->getProductName(),
                     'price' => $item->getPrice(),
                     'quantity' => $item->getQuantity(),
-                    'supplier_quantity' => $model?->supplier_quantity ?? 0,
-                    'local_quantity' => $model?->local_quantity ?? $item->getQuantity(),
-                    'supplier_order_id' => $model?->supplier_order_id,
-                    'supplier_code' => $model?->supplier_code,
+                    'supplier_quantity' => $item->getSupplierQuantity(),
+                    'local_quantity' => $item->getLocalQuantity(),
+                    'supplier_order_id' => $item->getSupplierOrderId(),
+                    'supplier_code' => $item->getSupplierCode(),
                 ];
             }, $order->getItems());
 

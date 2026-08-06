@@ -157,27 +157,22 @@ class CategoryController extends Controller
     {
         try {
             $categories = CategoryModel::where('is_active', true)->get();
-            $deactivatedCount = 0;
+            $stockByCategory = ProductModel::query()
+                ->whereIn('category_id', $categories->pluck('id'))
+                ->where('status', 'active')
+                ->withCount(['inventoryItems as local_available_count' => fn ($query) => $query->where('status', 'available')])
+                ->get()
+                ->groupBy('category_id')
+                ->map(fn ($products) => $products->sum(
+                    fn ($product) => max(0, (int) ($product->supplier_stock ?? 0)) + (int) $product->local_available_count
+                ));
 
-            foreach ($categories as $category) {
-                $products = ProductModel::where('category_id', $category->id)->get();
+            $categoryIds = $categories
+                ->filter(fn ($category) => (int) $stockByCategory->get($category->id, 0) <= 0)
+                ->pluck('id');
 
-                $totalStock = 0;
-                foreach ($products as $product) {
-                    if ($product->status !== 'active') {
-                        continue;
-                    }
-                    $supplierStock = max(0, (int) ($product->supplier_stock ?? 0));
-                    $localStock = (int) $product->inventoryItems()->where('status', 'available')->count();
-                    $totalStock += ($supplierStock + $localStock);
-                }
-
-                if ($totalStock <= 0) {
-                    $category->is_active = false;
-                    $category->save();
-                    $deactivatedCount++;
-                }
-            }
+            $deactivatedCount = CategoryModel::whereKey($categoryIds)
+                ->update(['is_active' => false]);
 
             if ($deactivatedCount > 0) {
                 $this->forgetCategoryCaches();

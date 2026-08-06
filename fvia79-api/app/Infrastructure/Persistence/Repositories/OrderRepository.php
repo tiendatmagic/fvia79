@@ -4,8 +4,8 @@ namespace App\Infrastructure\Persistence\Repositories;
 
 use App\Domain\Entities\Order;
 use App\Domain\Repositories\OrderRepositoryInterface;
-use App\Infrastructure\Persistence\Eloquent\OrderModel;
 use App\Infrastructure\Persistence\Eloquent\OrderItemModel;
+use App\Infrastructure\Persistence\Eloquent\OrderModel;
 use App\Infrastructure\Persistence\Mappers\OrderMapper;
 use Illuminate\Support\Facades\DB;
 
@@ -23,18 +23,23 @@ class OrderRepository implements OrderRepositoryInterface
                 OrderItemModel::where('order_id', $model->id)->delete();
             }
             foreach ($order->getItems() as $item) {
-                $itemModel = new OrderItemModel();
+                $itemModel = new OrderItemModel;
                 $itemModel->order_id = $model->id;
                 $itemModel->product_id = $item->getProductId();
                 $itemModel->product_name = $item->getProductName();
                 $itemModel->price = $item->getPrice();
                 $itemModel->cost_price = $item->getCostPrice();
                 $itemModel->quantity = $item->getQuantity();
+                $itemModel->supplier_quantity = $item->getSupplierQuantity();
+                $itemModel->local_quantity = $item->getLocalQuantity();
+                $itemModel->supplier_order_id = $item->getSupplierOrderId();
+                $itemModel->supplier_code = $item->getSupplierCode();
                 $itemModel->delivered_keys = $item->getDeliveredKeys();
                 $itemModel->save();
             }
 
             $model->load(['items.product']);
+
             return OrderMapper::toDomain($model);
         });
     }
@@ -42,6 +47,7 @@ class OrderRepository implements OrderRepositoryInterface
     public function findById(string $id): ?Order
     {
         $model = OrderModel::with(['items.product'])->find($id);
+
         return $model ? OrderMapper::toDomain($model) : null;
     }
 
@@ -52,7 +58,7 @@ class OrderRepository implements OrderRepositoryInterface
             ->orderBy('created_at', 'desc')
             ->get();
 
-        return $models->map(fn($m) => OrderMapper::toDomain($m))->toArray();
+        return $models->map(fn ($m) => OrderMapper::toDomain($m))->toArray();
     }
 
     public function findByUserIdPaginated(string $userId, int $page, int $limit, ?string $status = null, ?string $search = null, ?string $startDate = null, ?string $endDate = null): array
@@ -69,11 +75,11 @@ class OrderRepository implements OrderRepositoryInterface
             });
         }
         if ($startDate) {
-            $start = strlen($startDate) === 10 ? $startDate . ' 00:00:00' : $startDate;
+            $start = strlen($startDate) === 10 ? $startDate.' 00:00:00' : $startDate;
             $query->where('created_at', '>=', $start);
         }
         if ($endDate) {
-            $end = strlen($endDate) === 10 ? $endDate . ' 23:59:59' : $endDate;
+            $end = strlen($endDate) === 10 ? $endDate.' 23:59:59' : $endDate;
             $query->where('created_at', '<=', $end);
         }
         $total = $query->count();
@@ -84,8 +90,8 @@ class OrderRepository implements OrderRepositoryInterface
             ->get();
 
         return [
-            'items' => $models->map(fn($m) => OrderMapper::toDomain($m))->toArray(),
-            'total' => $total
+            'items' => $models->map(fn ($m) => OrderMapper::toDomain($m))->toArray(),
+            'total' => $total,
         ];
     }
 
@@ -95,7 +101,7 @@ class OrderRepository implements OrderRepositoryInterface
             ->orderBy('created_at', 'desc')
             ->get();
 
-        return $models->map(fn($m) => OrderMapper::toDomain($m))->toArray();
+        return $models->map(fn ($m) => OrderMapper::toDomain($m))->toArray();
     }
 
     public function findAllPaginated(int $page, int $limit, ?string $status = null, ?string $search = null, ?string $startDate = null, ?string $endDate = null): array
@@ -114,18 +120,18 @@ class OrderRepository implements OrderRepositoryInterface
                     $qu->orWhere(function ($qu2) use ($search) {
                         $this->applyAccentInsensitiveSearch($qu2, 'name', $search);
                     })
-                    ->orWhere('username', 'like', "%{$search}%")
-                    ->orWhere('uid', 'like', "%{$search}%")
-                    ->orWhere('id', 'like', "%{$search}%");
+                        ->orWhere('username', 'like', "%{$search}%")
+                        ->orWhere('uid', 'like', "%{$search}%")
+                        ->orWhere('id', 'like', "%{$search}%");
                 });
             });
         }
         if ($startDate) {
-            $start = strlen($startDate) === 10 ? $startDate . ' 00:00:00' : $startDate;
+            $start = strlen($startDate) === 10 ? $startDate.' 00:00:00' : $startDate;
             $query->where('created_at', '>=', $start);
         }
         if ($endDate) {
-            $end = strlen($endDate) === 10 ? $endDate . ' 23:59:59' : $endDate;
+            $end = strlen($endDate) === 10 ? $endDate.' 23:59:59' : $endDate;
             $query->where('created_at', '<=', $end);
         }
         $total = $query->count();
@@ -136,8 +142,8 @@ class OrderRepository implements OrderRepositoryInterface
             ->get();
 
         return [
-            'items' => $models->map(fn($m) => OrderMapper::toDomain($m))->toArray(),
-            'total' => $total
+            'items' => $models->map(fn ($m) => OrderMapper::toDomain($m))->toArray(),
+            'total' => $total,
         ];
     }
 }

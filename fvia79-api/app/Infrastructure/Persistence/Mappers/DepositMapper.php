@@ -9,7 +9,8 @@ class DepositMapper
 {
     public static function toDomain(DepositModel $model): Deposit
     {
-        $user = $model->relationLoaded('user') && $model->user ? $model->user : $model->user;
+        // Mapping must stay query-free. Callers that need user metadata eager-load it.
+        $user = $model->relationLoaded('user') ? $model->getRelation('user') : null;
         $userEmail = $user ? $user->email : null;
         $userName = $user ? ($user->name ?: $user->username) : null;
         $userUid = $user ? $user->uid : null;
@@ -37,7 +38,7 @@ class DepositMapper
 
     public static function toPersistence(Deposit $entity): DepositModel
     {
-        $model = new DepositModel();
+        $model = new DepositModel;
         if ($entity->getId()) {
             $model = DepositModel::find($entity->getId()) ?: $model;
         }

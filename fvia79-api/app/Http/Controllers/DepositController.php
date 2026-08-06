@@ -4,6 +4,8 @@ namespace App\Http\Controllers;
 
 use App\Application\Services\DepositService;
 use App\Http\Requests\CreateDepositRequest;
+use App\Infrastructure\Persistence\Eloquent\DepositModel;
+use App\Infrastructure\Persistence\Mappers\DepositMapper;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
@@ -21,8 +23,9 @@ class DepositController extends Controller
     public function getRate(): JsonResponse
     {
         $rate = $this->depositService->getUsdtToVndRate();
+
         return response()->json([
-            'rate' => $rate
+            'rate' => $rate,
         ]);
     }
 
@@ -36,7 +39,7 @@ class DepositController extends Controller
         try {
             $deposit = $this->depositService->createDeposit($userId, $amountUsdt, $paymentMethod, $payerBinanceId);
         } catch (\RuntimeException $e) {
-            $activeInvoice = \App\Infrastructure\Persistence\Eloquent\DepositModel::where('user_id', $userId)
+            $activeInvoice = DepositModel::where('user_id', $userId)
                 ->where('status', 'pending_payment')
                 ->first();
 
@@ -47,13 +50,13 @@ class DepositController extends Controller
 
             return response()->json([
                 'message' => $msg,
-                'active_invoice_id' => $activeInvoice ? $activeInvoice->id : null
+                'active_invoice_id' => $activeInvoice ? $activeInvoice->id : null,
             ], 400);
         }
 
         return response()->json([
             'message' => 'Created deposit invoice successfully.',
-            'invoice' => $this->formatDeposit($deposit)
+            'invoice' => $this->formatDeposit($deposit),
         ], 201);
     }
 
@@ -64,25 +67,26 @@ class DepositController extends Controller
 
         $isAdmin = $user && $user->role === 'admin';
 
-        if (!$deposit || (!$isAdmin && $deposit->getUserId() !== $user->id)) {
+        if (! $deposit || (! $isAdmin && $deposit->getUserId() !== $user->id)) {
             return response()->json([
-                'message' => 'Deposit invoice not found.'
+                'message' => 'Deposit invoice not found.',
             ], 404);
         }
 
         if ($deposit->getStatus() === 'completed' && $deposit->getUserId() === $user->id) {
-            \App\Infrastructure\Persistence\Eloquent\DepositModel::where('id', $id)->update(['user_notified' => true]);
+            DepositModel::where('id', $id)->update(['user_notified' => true]);
         }
 
         return response()->json([
-            'invoice' => $this->formatDeposit($deposit)
+            'invoice' => $this->formatDeposit($deposit),
         ]);
     }
 
     public function getUnseenSuccessDeposit(): JsonResponse
     {
         $userId = Auth::id();
-        $depositModel = \App\Infrastructure\Persistence\Eloquent\DepositModel::where('user_id', $userId)
+        $depositModel = DepositModel::with('user')
+            ->where('user_id', $userId)
             ->where('status', 'completed')
             ->where(function ($q) {
                 $q->where('user_notified', false)->orWhereNull('user_notified');
@@ -94,29 +98,29 @@ class DepositController extends Controller
             return response()->json(['deposit' => null]);
         }
 
-        \App\Infrastructure\Persistence\Eloquent\DepositModel::where('user_id', $userId)
+        DepositModel::where('user_id', $userId)
             ->where('status', 'completed')
             ->where(function ($q) {
                 $q->where('user_notified', false)->orWhereNull('user_notified');
             })
             ->update(['user_notified' => true]);
 
-        $deposit = \App\Infrastructure\Persistence\Mappers\DepositMapper::toDomain($depositModel);
+        $deposit = DepositMapper::toDomain($depositModel);
 
         return response()->json([
-            'deposit' => $this->formatDeposit($deposit)
+            'deposit' => $this->formatDeposit($deposit),
         ]);
     }
 
     public function markDepositSeen(string $id): JsonResponse
     {
         $userId = Auth::id();
-        $updated = \App\Infrastructure\Persistence\Eloquent\DepositModel::where('id', $id)
+        $updated = DepositModel::where('id', $id)
             ->where('user_id', $userId)
             ->update(['user_notified' => true]);
 
         return response()->json([
-            'success' => $updated > 0
+            'success' => $updated > 0,
         ]);
     }
 
@@ -128,18 +132,18 @@ class DepositController extends Controller
 
             if (! $success) {
                 return response()->json([
-                    'message' => 'Failed to cancel invoice. Invalid invoice state or unauthorized.'
+                    'message' => 'Failed to cancel invoice. Invalid invoice state or unauthorized.',
                 ], 400);
             }
 
             return response()->json([
-                'message' => 'Cancelled deposit invoice successfully.'
+                'message' => 'Cancelled deposit invoice successfully.',
             ]);
         } catch (\Throwable $e) {
             Log::error("Error in cancelInvoice controller for invoice ID {$id}: {$e->getMessage()}");
 
             return response()->json([
-                'message' => $e->getMessage() ?: 'Failed to cancel invoice.'
+                'message' => $e->getMessage() ?: 'Failed to cancel invoice.',
             ], 400);
         }
     }
@@ -174,7 +178,7 @@ class DepositController extends Controller
         );
 
         $historyData['items'] = array_map(
-            fn($d) => $this->formatDeposit($d),
+            fn ($d) => $this->formatDeposit($d),
             $historyData['items']
         );
 
@@ -195,21 +199,22 @@ class DepositController extends Controller
 
             return response()->json([
                 'success' => false,
-                'message' => $msg
+                'message' => $msg,
             ], 400);
         }
 
         if ($matched) {
-            \App\Infrastructure\Persistence\Eloquent\DepositModel::where('id', $id)->update(['user_notified' => true]);
+            DepositModel::where('id', $id)->update(['user_notified' => true]);
+
             return response()->json([
                 'success' => true,
-                'message' => 'Matched transaction on BSC block chain. Balance updated.'
+                'message' => 'Matched transaction on BSC block chain. Balance updated.',
             ]);
         }
 
         return response()->json([
             'success' => false,
-            'message' => 'We could not detect your USDT payment on BSC blockchain yet. Please make sure you transferred the exact amount (with the fractional suffix) to the correct wallet address within 15 minutes.'
+            'message' => 'We could not detect your USDT payment on BSC blockchain yet. Please make sure you transferred the exact amount (with the fractional suffix) to the correct wallet address within 15 minutes.',
         ], 400);
     }
 

@@ -291,7 +291,8 @@ class DepositService
         ?string $startDate = null,
         ?string $endDate = null
     ): array {
-        $query = DepositModel::where('user_id', $userId);
+        $query = DepositModel::with('user:id,email,name,username,uid')
+            ->where('user_id', $userId);
 
         if ($status) {
             $query->where('status', $status);

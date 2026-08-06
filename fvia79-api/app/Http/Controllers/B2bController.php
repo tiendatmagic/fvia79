@@ -36,8 +36,16 @@ class B2bController extends Controller
             $products = $result['items'];
             $total = $result['total'];
 
-            $data = array_map(function ($product) use ($lang) {
-                $category = $product->getCategoryId() ? CategoryModel::find($product->getCategoryId()) : null;
+            $categories = CategoryModel::query()
+                ->whereIn('id', array_values(array_unique(array_filter(array_map(
+                    fn ($product) => $product->getCategoryId(),
+                    $products,
+                )))))
+                ->get()
+                ->keyBy('id');
+
+            $data = array_map(function ($product) use ($lang, $categories) {
+                $category = $product->getCategoryId() ? $categories->get($product->getCategoryId()) : null;
 
                 return [
                     'id' => $product->getId(),
@@ -160,6 +168,7 @@ class B2bController extends Controller
             if ($freshUser) {
                 $payload['balance'] = (float) $freshUser->balance;
             }
+
             return response()->json($payload, 400);
         } catch (\Throwable $e) {
             return $this->serverError($e, 'Failed to create B2B order.');
@@ -218,7 +227,7 @@ class B2bController extends Controller
             if (! $orderModel && str_starts_with($orderCode, 'API-')) {
                 $hex = strtolower(substr($orderCode, 4));
                 $orderModel = OrderModel::where('user_id', $userId)
-                    ->where('id', 'like', $hex . '-%')
+                    ->where('id', 'like', $hex.'-%')
                     ->first();
             }
 

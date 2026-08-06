@@ -301,25 +301,9 @@ class ProductRepository implements ProductRepositoryInterface
             $this->requireAvailableStock($productQuery);
         }
 
-        $grouped = [];
-
+        $groupDefinitions = [];
         foreach ($categories as $cat) {
-            $catId = (string) $cat->id;
-            $categoryQuery = (clone $productQuery)->where('category_id', $cat->id);
-            $total = (clone $categoryQuery)->count('products.id');
-
-            if ($total === 0) {
-                continue;
-            }
-
-            $products = $this->addCalculatedStock($categoryQuery)
-                ->orderBy('created_at', 'desc')
-                ->limit($limit)
-                ->get()
-                ->map(fn (ProductModel $model) => ProductMapper::toDomain($model, $this->getAvailableCount($model)))
-                ->all();
-
-            $grouped[] = [
+            $groupDefinitions[$cat->id] = [
                 'id' => $cat->id,
                 'name' => $cat->name,
                 'name_vi' => $cat->name_vi,
@@ -327,21 +311,46 @@ class ProductRepository implements ProductRepositoryInterface
                 'description' => $cat->description,
                 'description_vi' => $cat->description_vi,
                 'description_en' => $cat->description_en,
-                'products' => $products,
-                'total' => $total,
             ];
         }
 
-        $otherQuery = (clone $productQuery)->whereNull('category_id');
-        $totalOther = (clone $otherQuery)->count('products.id');
-        if ($totalOther > 0) {
-            $productsOther = $this->addCalculatedStock($otherQuery)
-                ->orderBy('created_at', 'desc')
-                ->limit($limit)
-                ->get()
-                ->map(fn (ProductModel $model) => ProductMapper::toDomain($model, $this->getAvailableCount($model)))
-                ->all();
+        // Rank products inside every category in one query instead of issuing
+        // a count and a select for each category.
+        $rankedQuery = (clone $productQuery)
+            ->select('products.*')
+            ->selectRaw('products.category_id AS catalog_group_id')
+            ->selectRaw('COUNT(*) OVER (PARTITION BY products.category_id) AS catalog_group_total')
+            ->selectRaw('ROW_NUMBER() OVER (PARTITION BY products.category_id ORDER BY products.created_at DESC) AS catalog_group_rank');
 
+        $models = $this->addCalculatedStock(
+            ProductModel::query()->fromSub($rankedQuery->toBase(), 'products')
+        )
+            ->where('products.catalog_group_rank', '<=', $limit)
+            ->orderBy('products.catalog_group_id')
+            ->orderBy('products.catalog_group_rank')
+            ->get();
+
+        $productsByGroup = [];
+        $totalsByGroup = [];
+        foreach ($models as $model) {
+            $groupId = $model->getAttribute('catalog_group_id') ?: '__other__';
+            $productsByGroup[$groupId][] = ProductMapper::toDomain($model, $this->getAvailableCount($model));
+            $totalsByGroup[$groupId] = (int) $model->getAttribute('catalog_group_total');
+        }
+
+        $grouped = [];
+        foreach ($groupDefinitions as $groupId => $definition) {
+            if (! isset($productsByGroup[$groupId])) {
+                continue;
+            }
+
+            $grouped[] = $definition + [
+                'products' => $productsByGroup[$groupId],
+                'total' => $totalsByGroup[$groupId],
+            ];
+        }
+
+        if (isset($productsByGroup['__other__'])) {
             $grouped[] = [
                 'id' => 'other',
                 'name' => 'Other Products',
@@ -350,8 +359,8 @@ class ProductRepository implements ProductRepositoryInterface
                 'description' => 'Products that have not been assigned to a specific category.',
                 'description_vi' => null,
                 'description_en' => null,
-                'products' => $productsOther,
-                'total' => $totalOther,
+                'products' => $productsByGroup['__other__'],
+                'total' => $totalsByGroup['__other__'],
             ];
         }
 
