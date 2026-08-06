@@ -18,6 +18,13 @@
 > **QUY TẮC BẮT BUỘC CRONJOB & PHÂN QUYỀN CACHE STORAGE**:
 > 1. Cronjob Scheduler (`schedule:run`) **CHỈ ĐƯỢC CHẠY DƯỚI USER `www-data`** (`crontab -u www-data -e`). **TUYỆT ĐỐI KHÔNG cài dưới `root`** vì sẽ gây ra lỗi `500 Permission denied` khi người dùng thực hiện thao tác Web/API.
 
+### [2026-08-06] Sửa Lỗi Không Hiển Thị Quốc Kỳ Khi Tên Sản Phẩm Chứa Từ Khóa Loại Trừ (Hotmail, BM, Account FB...)
+- **Mô tả yêu cầu**:
+  - Loại bỏ bộ lọc `nonCountryRegex` trong `ProductIconComponent` (`product-icon.component.ts`) gây ẩn quốc kỳ khi tên sản phẩm chứa từ `Hotmail`, `BM`, `Account FB`... mặc dù có chứa tên quốc gia (như `Switzerland`, `Vietnam`, `US`...).
+- **Thực hiện xử lý**:
+  - Đã cập nhật `product-icon.component.ts` trong `fvia79-web`.
+  - Biên dịch Angular production thành công 100%.
+
 ### [2026-08-04] Triển Khai (Deploy) Đồng Bộ Frontend & Backend Giữ Nguyên CSDL Cho Dự Án FVIA79 (VPS 38.180.150.246)
 - **Mô tả yêu cầu**:
   Triển khai (deploy) bản nâng cấp mã nguồn Frontend Angular và Backend Laravel mới nhất cho dự án **FVIA79** lên máy chủ VPS `38.180.150.246` theo hướng dẫn `deploy.md`. Bật chế độ bảo trì `php artisan down` trước khi upload, giữ nguyên 100% dữ liệu CSDL và tệp `.env`, giải nén và phân quyền FE `/var/www/fvia79-web` & BE `/var/www/fvia79-api`, chạy migration an toàn `php artisan migrate --force` dưới `www-data`, tái tạo toàn bộ cache Backend, kiểm tra Cronjob tự động của `www-data`, tắt chế độ bảo trì `php artisan up`, không tác động đến phpMyAdmin.

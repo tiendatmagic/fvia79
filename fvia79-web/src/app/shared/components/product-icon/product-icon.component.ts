@@ -206,11 +206,6 @@ export class ProductIconComponent implements OnChanges {
   private findCountryMatch(title: string): CountryMatch | null {
     if (!title || this.disableFlag) return null;
 
-    const nonCountryRegex = /\b(bm\d*|muabm\d*|clone\s*ig|hotmail|account\s*fb)\b/i;
-    if (nonCountryRegex.test(title)) {
-      return null;
-    }
-
     const bracketMatch = title.match(/(?:\[|\()([a-zA-Z]{2})(?:\]|\))/);
     if (bracketMatch) {
       const code = bracketMatch[1].toLowerCase();
