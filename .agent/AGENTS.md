@@ -18,6 +18,17 @@
 > **QUY TẮC BẮT BUỘC CRONJOB & PHÂN QUYỀN CACHE STORAGE**:
 > 1. Cronjob Scheduler (`schedule:run`) **CHỈ ĐƯỢC CHẠY DƯỚI USER `www-data`** (`crontab -u www-data -e`). **TUYỆT ĐỐI KHÔNG cài dưới `root`** vì sẽ gây ra lỗi `500 Permission denied` khi người dùng thực hiện thao tác Web/API.
 
+### [2026-08-12] Khắc Phục Lỗi 404 Font Quicksand gstatic Khi Build Production Trực Tiếp Lên Netlify (`fvia79-web`)
+- **Mô tả yêu cầu**:
+  - Khi build ứng dụng Frontend Angular lên Netlify (`fvia7.netlify.app`), trình duyệt báo lỗi `GET https://fonts.gstatic.com/s/quicksand/v37/... net::ERR_ABORTED 404 (Not Found)`.
+  - Nguyên nhân: Tính năng `optimization.fonts = true` của Angular CLI khi xử lý `@import url('https://fonts.googleapis.com...')` trong tệp `styles.scss` làm biến đổi đường dẫn file font WOFF2 của Google Fonts gstatic thành đường dẫn lỗi dẫn đến HTTP 404.
+- **Thực hiện xử lý**:
+  - Tải 3 tệp font `Quicksand` WOFF2 (`quicksand-vietnamese.woff2`, `quicksand-latin-ext.woff2`, `quicksand-latin.woff2`) lưu trực tiếp vào thư mục local `public/fonts/quicksand/`.
+  - Cập nhật `styles.scss`: Loại bỏ `@import` từ Google Fonts, thay bằng các khai báo `@font-face` local load từ `/fonts/quicksand/quicksand-*.woff2`.
+  - Cập nhật `index.html`: Bổ sung `<link rel="preload">` cho các tệp font WOFF2 local để tối ưu hóa tốc độ hiển thị giao diện.
+- **Kiểm thử**:
+  - Biên dịch Angular production `npx ng build --configuration production` thành công 100% (0 errors).
+
 ### [2026-08-07] Triển Khai (Deploy) Đồng Bộ Frontend & Backend Giữ Nguyên CSDL Cho 2 Dự Án (ADSBM79 & FVIA79)
 - **Mô tả yêu cầu**:
   Triển khai (deploy) bản nâng cấp mã nguồn Frontend Angular và Backend Laravel mới nhất cho 2 dự án (**ADSBM79** & **FVIA79**) lên 2 máy chủ VPS tương ứng (`103.68.109.73` và `38.180.150.246`) theo hướng dẫn `deploy.md`. Bật chế độ bảo trì `php artisan down` trước khi upload, giữ nguyên 100% dữ liệu CSDL và tệp `.env`, giải nén và phân quyền FE `/var/www/*-web` & BE `/var/www/*-api`, chạy migration an toàn `php artisan migrate --force`, tái tạo toàn bộ cache Backend dưới user `www-data`, kiểm tra Cronjob tự động của `www-data`, tắt chế độ bảo trì `php artisan up`, tuyệt đối không tác động đến phpMyAdmin.
