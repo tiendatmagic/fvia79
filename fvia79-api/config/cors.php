@@ -9,6 +9,7 @@ $defaultOrigins = [
     'https://fvia79.com',
     'https://www.fvia79.com',
     'https://fvia79.netlify.app',
+    'https://fvia7.netlify.app',
     rtrim($appUrl, '/')
 ];
 
