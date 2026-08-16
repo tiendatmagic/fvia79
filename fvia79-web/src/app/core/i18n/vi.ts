@@ -1580,6 +1580,8 @@ export const VI_TRANSLATIONS: Record<string, string> = {
   'supplier.fixed_vnd': 'Số tiền cố định (VND)',
   'supplier.hide_key': 'Ẩn API key nhà cung cấp',
   'supplier.hostname_unresolved': 'Không thể phân giải tên miền của nhà cung cấp.',
+  'supplier.auto_hide_out_of_stock': 'Tự động ẩn sản phẩm hết hàng',
+  'supplier.auto_hide_out_of_stock_hint': 'Khi bật, sản phẩm có tồn kho = 0 từ nhà cung cấp sẽ tự động bị ẩn khỏi cửa hàng. Khi có hàng trở lại, sản phẩm sẽ tự động được bật lại.',
   'supplier.import_out_of_stock': 'Cho phép import sản phẩm hết hàng',
   'supplier.import_out_of_stock_hint': 'Tự động cho phép nhập kho với sản phẩm hết hàng.',
   'supplier.interval': 'Chu kỳ tự động đồng bộ',

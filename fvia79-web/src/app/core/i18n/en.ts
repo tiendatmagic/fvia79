@@ -1580,6 +1580,8 @@ export const EN_TRANSLATIONS: Record<string, string> = {
   'supplier.fixed_vnd': 'Fixed amount (VND)',
   'supplier.hide_key': 'Hide supplier API key',
   'supplier.hostname_unresolved': 'The supplier hostname could not be resolved.',
+  'supplier.auto_hide_out_of_stock': 'Auto-hide out-of-stock products',
+  'supplier.auto_hide_out_of_stock_hint': 'When enabled, products with 0 stock from this supplier will be automatically hidden from the storefront. They will be re-enabled automatically when stock is available again.',
   'supplier.import_out_of_stock': 'Import out-of-stock products',
   'supplier.import_out_of_stock_hint': 'Automatically allow stock import for out-of-stock items.',
   'supplier.interval': 'Automatic sync interval',

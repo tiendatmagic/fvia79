@@ -111,6 +111,7 @@ class SupplierController extends Controller
             'price_adjustment_type' => ['sometimes', Rule::in(['fixed', 'percent'])],
             'price_adjustment_value' => ['sometimes', 'numeric', 'min:-1000000000', 'max:1000000000'],
             'round_vnd_prices' => ['sometimes', 'boolean'],
+            'auto_hide_out_of_stock' => ['sometimes', 'boolean'],
         ]);
 
         try {
@@ -150,6 +151,7 @@ class SupplierController extends Controller
             'price_adjustment_type' => ['sometimes', Rule::in(['fixed', 'percent'])],
             'price_adjustment_value' => ['sometimes', 'numeric', 'min:-1000000000', 'max:1000000000'],
             'round_vnd_prices' => ['sometimes', 'boolean'],
+            'auto_hide_out_of_stock' => ['sometimes', 'boolean'],
         ]);
 
         if (($validated['api_key'] ?? null) === '') {
@@ -454,6 +456,7 @@ class SupplierController extends Controller
             'price_adjustment_type' => $supplier->price_adjustment_type,
             'price_adjustment_value' => $supplier->price_adjustment_value,
             'round_vnd_prices' => (bool) $supplier->round_vnd_prices,
+            'auto_hide_out_of_stock' => (bool) $supplier->auto_hide_out_of_stock,
             'last_synced_at' => $supplier->last_synced_at?->toIso8601String(),
             'last_sync_status' => $supplier->last_sync_status,
             'last_sync_error' => $supplier->last_sync_error,

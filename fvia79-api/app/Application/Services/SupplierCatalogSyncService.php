@@ -303,6 +303,11 @@ class SupplierCatalogSyncService
             }
         }
 
+        if ($stock <= 0 && ! empty($supplier->auto_hide_out_of_stock) && $product->status === 'active') {
+            $product->status = 'inactive';
+            $product->supplier_out_of_stock_hidden = true;
+        }
+
         if (! $supplier->products_enabled) {
             if ($product->supplier_previous_status === null) {
                 $product->supplier_previous_status = 'active';

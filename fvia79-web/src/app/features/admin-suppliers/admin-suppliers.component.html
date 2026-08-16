@@ -307,6 +307,17 @@
       />
     </div>
 
+    <div class="mb-5">
+      <app-custom-switch
+        type="full"
+        [checked]="supplierForm.auto_hide_out_of_stock ?? false"
+        (checkedChange)="supplierForm.auto_hide_out_of_stock = $event"
+        [disabled]="isLocked()"
+        [label]="'supplier.auto_hide_out_of_stock' | translate"
+        [description]="'supplier.auto_hide_out_of_stock_hint' | translate"
+      />
+    </div>
+
     @if (!isCreatingSupplier()) {
       <div
         class="mb-3 flex flex-col gap-3 rounded-xl border border-emerald-200/80 bg-emerald-50/50 p-4 sm:flex-row sm:items-center sm:justify-between dark:border-emerald-900/50 dark:bg-emerald-950/20"

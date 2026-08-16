@@ -18,6 +18,31 @@
 > **QUY TẮC BẮT BUỘC CRONJOB & PHÂN QUYỀN CACHE STORAGE**:
 > 1. Cronjob Scheduler (`schedule:run`) **CHỈ ĐƯỢC CHẠY DƯỚI USER `www-data`** (`crontab -u www-data -e`). **TUYỆT ĐỐI KHÔNG cài dưới `root`** vì sẽ gây ra lỗi `500 Permission denied` khi người dùng thực hiện thao tác Web/API.
 
+### [2026-08-16] Triển Khai Tính Năng Tự Động Ẩn Sản Phẩm Hết Hàng & Sửa Lỗi Kẹt Idempotency Key Đồng Bộ 3 Dự Án (FVIA79, ADSBM79, ISOCALMARKET)
+- **Mô tả yêu cầu**:
+  1. **Sửa lỗi không mua được hàng**: Frontend kẹt `idempotency_key` khi đơn hàng trước bị hủy, Backend không giải phóng key khi hoàn tiền, API Token nhà cung cấp ADS7979 hết hạn trên `fvia79`.
+  2. **Tính năng mới**: Thêm tùy chọn switch **"Tự động ẩn sản phẩm hết hàng"** (`auto_hide_out_of_stock`) tại trang Quản lý nhà cung cấp (`/admin/suppliers`). Mặc định **TẮT**. Khi bật, sản phẩm có `supplier_stock = 0` từ NCC sẽ tự động bị ẩn khỏi cửa hàng. Khi NCC nhập hàng lại (stock > 0), sản phẩm tự động bật lại nhờ cơ chế có sẵn.
+- **Thực hiện xử lý**:
+  - **Backend (cả 3 API)**:
+    - Migration `2026_08_16_200000_add_auto_hide_out_of_stock_to_suppliers.php`: Thêm cột `auto_hide_out_of_stock` (boolean, default false) vào bảng `suppliers`.
+    - Cập nhật `SupplierModel.php`: Thêm field vào Fillable và casts.
+    - Cập nhật `SupplierController.php`: Thêm validation `'auto_hide_out_of_stock' => ['sometimes', 'boolean']` và serialize.
+    - Cập nhật `SupplierCatalogSyncService.php::upsertProduct()`: Khi `$stock <= 0 && $supplier->auto_hide_out_of_stock && $product->status === 'active'` thì tự ẩn (`status = inactive`, `supplier_out_of_stock_hidden = true`).
+    - Sửa `OrderService.php`: Giải phóng `idempotency_key = null` khi hủy đơn hoàn tiền; lọc bỏ đơn `cancelled` khi kiểm tra chống trùng lặp.
+  - **Frontend (cả 3 Web)**:
+    - Thêm switch `auto_hide_out_of_stock` vào `admin-suppliers.component.html` (nằm sau switch cuối cùng, trước các nút action).
+    - Cập nhật `supplier.store.ts`, `admin-suppliers.component.ts` với default `false`.
+    - Bổ sung i18n `vi.ts` / `en.ts` cho `supplier.auto_hide_out_of_stock` và `supplier.auto_hide_out_of_stock_hint`.
+    - Sửa `cart-modal.component.ts`: Tự tạo mới `checkoutIdempotencyKey` khi gặp lỗi; dịch thông báo lỗi thân thiện.
+- **Kiểm thử**:
+  - PHP lint (`php -l`) 12 file backend: 100% không lỗi.
+  - Build Angular production (`npx ng build --configuration production`) cả 3 web: 100% thành công (0 errors).
+- **Triển khai (Deploy)**:
+  - Upload Backend files + migration lên 3 VPS, chạy `php artisan migrate --force` thành công.
+  - Upload Frontend dist lên `/var/www/*-web`.
+  - Phân quyền `www-data:www-data`, tái tạo cache Laravel (`config:cache`, `route:cache`, `view:cache`).
+  - Kiểm thử HTTP 200 OK: `fvia79.com`, `adsbm79.com`, `isocalmarket.com` tất cả hoạt động bình thường.
+
 ### [2026-08-07] Triển Khai (Deploy) Đồng Bộ Frontend & Backend Giữ Nguyên CSDL Cho 2 Dự Án (ADSBM79 & FVIA79)
 - **Mô tả yêu cầu**:
   Triển khai (deploy) bản nâng cấp mã nguồn Frontend Angular và Backend Laravel mới nhất cho 2 dự án (**ADSBM79** & **FVIA79**) lên 2 máy chủ VPS tương ứng (`103.68.109.73` và `38.180.150.246`) theo hướng dẫn `deploy.md`. Bật chế độ bảo trì `php artisan down` trước khi upload, giữ nguyên 100% dữ liệu CSDL và tệp `.env`, giải nén và phân quyền FE `/var/www/*-web` & BE `/var/www/*-api`, chạy migration an toàn `php artisan migrate --force`, tái tạo toàn bộ cache Backend dưới user `www-data`, kiểm tra Cronjob tự động của `www-data`, tắt chế độ bảo trì `php artisan up`, tuyệt đối không tác động đến phpMyAdmin.

@@ -29,6 +29,7 @@ export interface SupplierSettings {
   price_adjustment_type: PriceAdjustmentType;
   price_adjustment_value: number;
   round_vnd_prices?: boolean;
+  auto_hide_out_of_stock?: boolean;
   last_synced_at: string | null;
   last_sync_status: 'success' | 'failed' | null;
   last_sync_error: string | null;

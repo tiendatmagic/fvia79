@@ -105,6 +105,7 @@ export class AdminSuppliersComponent implements OnInit {
     price_adjustment_type: 'fixed',
     price_adjustment_value: 0,
     round_vnd_prices: false,
+    auto_hide_out_of_stock: false,
   };
 
   ngOnInit(): void {
@@ -343,6 +344,7 @@ export class AdminSuppliersComponent implements OnInit {
       price_adjustment_type: 'fixed',
       price_adjustment_value: 0,
       round_vnd_prices: false,
+      auto_hide_out_of_stock: false,
     };
   }
 
