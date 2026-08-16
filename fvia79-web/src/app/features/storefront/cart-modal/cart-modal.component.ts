@@ -175,6 +175,7 @@ export class CartModalComponent implements OnInit {
         this.modalRef.close('success');
       },
       error: (err) => {
+        this.checkoutIdempotencyKey = this.createIdempotencyKey();
         if (err.error?.user) {
           this.state.authStore.currentUser.set(err.error.user);
         } else if (err.error?.balance !== undefined) {
@@ -187,7 +188,18 @@ export class CartModalComponent implements OnInit {
           }
         }
         const rawMsg = err.error?.message;
-        const msg = typeof rawMsg === 'string' ? rawMsg : this.lang.translate('toast.order_failed');
+        let msg = typeof rawMsg === 'string' ? rawMsg : this.lang.translate('toast.order_failed');
+        if (typeof rawMsg === 'string') {
+          if (rawMsg.includes('Insufficient balance')) {
+            msg = this.lang.translate('cart.insufficient_balance') || 'Số dư tài khoản không đủ để thanh toán đơn hàng. Vui lòng nạp thêm tiền.';
+          } else if (rawMsg.includes('supplier rejected') || rawMsg.includes('Token không hợp lệ')) {
+            msg = this.lang.translate('cart.supplier_purchase_failed') || 'Nhà cung cấp tạm thời gián đoạn hoặc hết tài nguyên. Đơn hàng đã được hủy và hoàn tiền về ví.';
+          } else if (rawMsg.includes('does not have enough') || rawMsg.includes('enough stock')) {
+            msg = this.lang.translate('cart.out_of_stock') || 'Sản phẩm không đủ số lượng tồn kho khả dụng.';
+          } else if (rawMsg.includes('idempotency key was cancelled')) {
+            msg = 'Giao dịch trước đã được hủy và hoàn tiền. Vui lòng thử bấm thanh toán lại.';
+          }
+        }
         this.state.showToast(msg, 'error');
         this.isSubmitting.set(false);
       },
