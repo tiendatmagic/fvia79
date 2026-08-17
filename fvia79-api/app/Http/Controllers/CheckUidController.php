@@ -2,12 +2,18 @@
 
 namespace App\Http\Controllers;
 
+use App\Application\Services\AccountCheckLiveService;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Http;
-use Illuminate\Http\Client\Pool;
 
 class CheckUidController extends Controller
 {
+    private AccountCheckLiveService $checkLiveService;
+
+    public function __construct(AccountCheckLiveService $checkLiveService)
+    {
+        $this->checkLiveService = $checkLiveService;
+    }
+
     public function check(Request $request)
     {
         $rawInput = $request->input('uids');
@@ -43,51 +49,15 @@ class CheckUidController extends Controller
             ], 422);
         }
 
-        $parsedList = [];
-        foreach ($items as $rawLine) {
-            $parts = preg_split('/[|:\s]+/', $rawLine);
-            $cleanUid = trim($parts[0] ?? '');
-
-            $parsedList[] = [
-                'raw' => $rawLine,
-                'uid' => $cleanUid,
-            ];
-        }
-
-        $responses = Http::pool(function (Pool $pool) use ($parsedList) {
-            $requests = [];
-            foreach ($parsedList as $index => $item) {
-                $uid = $item['uid'];
-                if (! empty($uid)) {
-                    $requests[$index] = $pool->timeout(5)
-                        ->get("https://graph.facebook.com/{$uid}/picture", [
-                            'redirect' => 'false',
-                        ]);
-                }
-            }
-            return $requests;
-        });
+        $checkResults = $this->checkLiveService->checkBatch($items);
 
         $liveList = [];
         $dieList = [];
         $details = [];
 
-        foreach ($parsedList as $index => $item) {
-            $rawLine = $item['raw'];
-            $uid = $item['uid'];
-            $status = 'die';
-            $avatarUrl = null;
-
-            if (! empty($uid) && isset($responses[$index])) {
-                $res = $responses[$index];
-                if ($res->successful()) {
-                    $data = $res->json();
-                    if (isset($data['data']['height']) && $data['data']['height'] > 0) {
-                        $status = 'live';
-                        $avatarUrl = $data['data']['url'] ?? null;
-                    }
-                }
-            }
+        foreach ($items as $index => $rawLine) {
+            $res = $checkResults[$index] ?? ['status' => 'die', 'uid' => null, 'reason' => 'unknown'];
+            $status = $res['status'] ?? 'die';
 
             if ($status === 'live') {
                 $liveList[] = $rawLine;
@@ -97,16 +67,16 @@ class CheckUidController extends Controller
 
             $details[] = [
                 'raw' => $rawLine,
-                'uid' => $uid,
+                'uid' => $res['uid'] ?? null,
                 'status' => $status,
-                'avatar' => $avatarUrl,
+                'reason' => $res['reason'] ?? null,
             ];
         }
 
         return response()->json([
             'success' => true,
             'data' => [
-                'total' => count($parsedList),
+                'total' => count($items),
                 'live_count' => count($liveList),
                 'die_count' => count($dieList),
                 'live_uids' => $liveList,

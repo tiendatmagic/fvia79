@@ -1,4 +1,4 @@
-import { Component, inject, signal } from '@angular/core';
+﻿import { Component, inject, signal } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { PageHeaderComponent } from '@shared/components/page-header/page-header.component';
@@ -8,6 +8,8 @@ import { IconComponent } from '@shared/components/icon/icon.component';
 import { LanguageService } from '@core/services/language.service';
 import { TranslatePipe } from '@shared/pipes/translate.pipe';
 import { ToastService } from '@core/services/toast.service';
+import { ApiService } from '@core/services/api.service';
+import { firstValueFrom } from 'rxjs';
 
 @Component({
   selector: 'app-check-uid',
@@ -27,6 +29,7 @@ import { ToastService } from '@core/services/toast.service';
 export class CheckUidComponent {
   public readonly lang = inject(LanguageService);
   private readonly toast = inject(ToastService);
+  private readonly apiService = inject(ApiService);
 
   public rawInput = '';
   public isChecking = signal<boolean>(false);
@@ -69,8 +72,10 @@ export class CheckUidComponent {
     }
 
     const lines = this.rawInput
+      .replace(/\r\n/g, '\n')
+      .replace(/\r/g, '\n')
       .split('\n')
-      .map(line => line.trim())
+      .map(line => this.normalizeLine(line))
       .filter(line => line.length > 0);
 
     if (lines.length === 0) {
@@ -82,7 +87,7 @@ export class CheckUidComponent {
     this.resetResults();
     this.totalCount.set(lines.length);
 
-    const batchSize = 30;
+    const batchSize = 100;
     const liveList: string[] = [];
     const dieList: string[] = [];
 
@@ -90,6 +95,33 @@ export class CheckUidComponent {
 
     for (let i = 0; i < lines.length; i += batchSize) {
       const batch = lines.slice(i, i + batchSize);
+
+      try {
+        const response: any = await firstValueFrom(
+          this.apiService.post<any>('v1/tools/check-uid', { uids: batch })
+        );
+        if (response?.success && response.data) {
+          const details = response.data.details || [];
+          for (const d of details) {
+            if (d.status === 'live') {
+              liveList.push(d.raw);
+            } else {
+              dieList.push(d.raw);
+            }
+          }
+          this.liveCount.set(liveList.length);
+          this.dieCount.set(dieList.length);
+          this.liveUIDsText.set(liveList.join('\n'));
+          this.dieUIDsText.set(dieList.join('\n'));
+
+          processed += batch.length;
+          this.processedCount.set(processed);
+          this.progressPercent.set(Math.round((processed / lines.length) * 100));
+          continue;
+        }
+      } catch {
+        // Fallback to client-side check if backend API fails
+      }
 
       await Promise.all(
         batch.map(async rawLine => {
@@ -118,13 +150,36 @@ export class CheckUidComponent {
     this.isChecking.set(false);
   }
 
-  private extractUid(rawLine: string): string {
-    const parts = rawLine.split(/[|:\s]+/);
-    return parts[0] ? parts[0].trim() : rawLine.trim();
+  private normalizeLine(s: string | null): string {
+    if (!s) return '';
+    return s
+      .replace(/\uFEFF/g, '')
+      .replace(/[\u200B-\u200D]/g, '')
+      .replace(/\u00A0/g, ' ')
+      .trim();
   }
 
-  private async checkSingleUid(uid: string): Promise<boolean> {
-    if (!uid) {
+  private extractUid(t: string): string | null {
+    if (!t) return null;
+    const clean = this.normalizeLine(t);
+
+    const mCookie = clean.match(/c_user\s*=\s*(\d{4,20})/);
+    if (mCookie) return mCookie[1];
+
+    const mStart = clean.match(/^(\d{1,20})\b/);
+    if (mStart) return mStart[1];
+
+    const parts = clean.split(/[|:\s]+/);
+    if (parts[0] && /^\d{1,20}$/.test(parts[0].trim())) {
+      return parts[0].trim();
+    }
+
+    const mAny = clean.match(/\b(\d{4,20})\b/);
+    return mAny ? mAny[1] : null;
+  }
+
+  private async checkSingleUid(uid: string | null): Promise<boolean> {
+    if (!uid || !/^\d+$/.test(uid)) {
       return false;
     }
 
@@ -132,8 +187,9 @@ export class CheckUidComponent {
       const controller = new AbortController();
       const timeoutId = setTimeout(() => controller.abort(), 6000);
 
-      const response = await fetch(`https://graph.facebook.com/${uid}/picture?redirect=false`, {
-        signal: controller.signal
+      const response = await fetch(`https://graph2.facebook.com/v3.3/${uid}/picture?redirect=0`, {
+        signal: controller.signal,
+        cache: 'no-store'
       });
 
       clearTimeout(timeoutId);
@@ -142,8 +198,10 @@ export class CheckUidComponent {
         return false;
       }
 
-      const data = await response.json();
-      return !!(data?.data && data.data.height > 0);
+      const text = await response.text();
+      const hMatch = text.match(/"height"\s*:\s*(\d+)/);
+      const wMatch = text.match(/"width"\s*:\s*(\d+)/);
+      return !!(hMatch && wMatch && Number(hMatch[1]) > 0 && Number(wMatch[1]) > 0);
     } catch {
       return false;
     }

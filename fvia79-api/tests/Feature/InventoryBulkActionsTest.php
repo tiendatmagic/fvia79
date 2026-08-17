@@ -46,10 +46,10 @@ class InventoryBulkActionsTest extends TestCase
     public function test_bulk_resource_actions_and_manual_live_check_keep_batch_counts_in_sync(): void
     {
         Http::fake([
-            'https://graph.facebook.com/100000000000001/picture*' => Http::response([
-                'data' => ['height' => 50, 'is_silhouette' => false],
+            'https://graph2.facebook.com/v3.3/100000000000001/picture*' => Http::response([
+                'data' => ['height' => 50, 'width' => 50, 'is_silhouette' => false],
             ]),
-            'https://graph.facebook.com/100000000000002/picture*' => Http::response([
+            'https://graph2.facebook.com/v3.3/100000000000002/picture*' => Http::response([
                 'error' => ['message' => 'Unsupported get request.'],
             ], 400),
         ]);

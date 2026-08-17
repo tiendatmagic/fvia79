@@ -66,7 +66,6 @@ class OrderService
             $existing = OrderModel::with('items')
                 ->where('user_id', $userId)
                 ->where('idempotency_key', $idempotencyKey)
-                ->where('status', '!=', 'cancelled')
                 ->first();
             if ($existing) {
                 $this->assertIdempotentRequestMatches($existing, $itemsInput, $couponCode);
@@ -214,8 +213,7 @@ class OrderService
                 : OrderModel::with('items')
                     ->where('user_id', $userId)
                     ->where('idempotency_key', $idempotencyKey)
-                    ->where('status', '!=', 'cancelled')
-                    ->first();
+                        ->first();
             if (! $existing) {
                 throw $exception;
             }
@@ -580,7 +578,6 @@ class OrderService
                     ->where('used_count', '>', 0)
                     ->decrement('used_count');
             }
-            $order->idempotency_key = null;
             $order->status = 'cancelled';
             $order->save();
         });
