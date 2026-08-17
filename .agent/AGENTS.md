@@ -18,6 +18,21 @@
 > **QUY TẮC BẮT BUỘC CRONJOB & PHÂN QUYỀN CACHE STORAGE**:
 > 1. Cronjob Scheduler (`schedule:run`) **CHỈ ĐƯỢC CHẠY DƯỚI USER `www-data`** (`crontab -u www-data -e`). **TUYỆT ĐỐI KHÔNG cài dưới `root`** vì sẽ gây ra lỗi `500 Permission denied` khi người dùng thực hiện thao tác Web/API.
 
+### [2026-08-17] Cập Nhật Cơ Chế Check UID Facebook Theo Chuẩn fbchecker.html & Chuẩn Hóa Idempotency Key (Fvia79)
+- **Mô tả yêu cầu**:
+  - Cập nhật trang công cụ `/check-uid` theo chuẩn `fbchecker.html`: sử dụng endpoint `https://graph2.facebook.com/v3.3/{uid}/picture?redirect=0` và kiểm tra phản hồi có kích thước `height > 0 && width > 0`.
+  - Trích xuất UID chuẩn hóa: hỗ trợ cookie `c_user=...`, chuỗi bắt đầu bằng UID `1000123...|pass...`, UID ngắn, loại bỏ sạch BOM/NBSP.
+  - Chuẩn hóa Idempotency Key trong `OrderService.php`: bảo toàn `idempotency_key` cho đơn hàng đã hủy và kiểm tra chặn retry an toàn theo đúng đặc tả.
+- **Thực hiện xử lý**:
+  - `AccountCheckLiveService.php`: Cập nhật `extractUid` và `checkBatch` dùng `graph2.facebook.com/v3.3/` kiểm tra `height > 0 && width > 0`.
+  - `CheckUidController.php`: Đồng bộ sử dụng `AccountCheckLiveService`.
+  - `check-uid.component.ts`: Cập nhật batch 100 và fallback client-side `graph2.facebook.com/v3.3/`.
+  - `OrderService.php`: Bỏ `where('status', '!=', 'cancelled')` và giữ nguyên `idempotency_key` khi hủy đơn.
+  - `CheckUidTest.php` & `InventoryBulkActionsTest.php`: Cập nhật mock endpoints tương ứng.
+- **Nghiệm Thu**:
+  - Chạy `php artisan test`: 29/29 test suites passed 100% (106 assertions).
+  - Biên dịch Angular production `npx ng build --configuration production` thành công 100%.
+
 ### [2026-08-16] Triển Khai Tính Năng Tự Động Ẩn Sản Phẩm Hết Hàng & Sửa Lỗi Kẹt Idempotency Key Đồng Bộ 3 Dự Án (FVIA79, ADSBM79, ISOCALMARKET)
 - **Mô tả yêu cầu**:
   1. **Sửa lỗi không mua được hàng**: Frontend kẹt `idempotency_key` khi đơn hàng trước bị hủy, Backend không giải phóng key khi hoàn tiền, API Token nhà cung cấp ADS7979 hết hạn trên `fvia79`.
