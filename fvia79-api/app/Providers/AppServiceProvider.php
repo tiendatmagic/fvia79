@@ -23,6 +23,7 @@ use App\Infrastructure\Persistence\Repositories\SystemSettingRepository;
 use App\Infrastructure\Persistence\Repositories\UserRepository;
 use Illuminate\Cache\RateLimiting\Limit;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\RateLimiter;
 use Illuminate\Support\ServiceProvider;
 
@@ -71,6 +72,8 @@ class AppServiceProvider extends ServiceProvider
 
     public function boot(): void
     {
+        DB::prohibitDestructiveCommands(! $this->app->environment('testing'));
+
         RateLimiter::for('api', function (Request $request) {
             return Limit::perMinute(60)->by($request->ip());
         });

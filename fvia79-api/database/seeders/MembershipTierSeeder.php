@@ -4,15 +4,14 @@ namespace Database\Seeders;
 
 use App\Infrastructure\Persistence\Eloquent\MembershipTierModel;
 use Illuminate\Database\Seeder;
-use Illuminate\Support\Str;
 
 class MembershipTierSeeder extends Seeder
 {
-
     public function run(): void
     {
         $tiers = [
             [
+                'id' => '019f9b90-78bc-706f-acbd-743b5db68000',
                 'level' => 1,
                 'name_vi' => 'Đồng',
                 'name_en' => 'Bronze',
@@ -23,6 +22,7 @@ class MembershipTierSeeder extends Seeder
                 'is_active' => true,
             ],
             [
+                'id' => '019f9b90-78da-7194-9258-d634808f3c0a',
                 'level' => 2,
                 'name_vi' => 'Bạc',
                 'name_en' => 'Silver',
@@ -33,6 +33,7 @@ class MembershipTierSeeder extends Seeder
                 'is_active' => true,
             ],
             [
+                'id' => '019f9b90-78df-72f9-86d0-6e25b2e566a2',
                 'level' => 3,
                 'name_vi' => 'Vàng',
                 'name_en' => 'Gold',
@@ -43,6 +44,7 @@ class MembershipTierSeeder extends Seeder
                 'is_active' => true,
             ],
             [
+                'id' => '019f9b90-78e5-70e1-b1ed-75f6c4be7dff',
                 'level' => 4,
                 'name_vi' => 'Bạch kim',
                 'name_en' => 'Platinum',
@@ -53,6 +55,7 @@ class MembershipTierSeeder extends Seeder
                 'is_active' => true,
             ],
             [
+                'id' => '019f9b90-78ea-70d1-bf87-aa18adce9666',
                 'level' => 5,
                 'name_vi' => 'Kim cương',
                 'name_en' => 'Diamond',
@@ -68,7 +71,7 @@ class MembershipTierSeeder extends Seeder
             MembershipTierModel::updateOrCreate(
                 ['level' => $tier['level']],
                 [
-                    'id' => (string) Str::uuid7(),
+                    'id' => $tier['id'],
                     'name_vi' => $tier['name_vi'],
                     'name_en' => $tier['name_en'],
                     'min_deposit' => $tier['min_deposit'],

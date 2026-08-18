@@ -8,7 +8,7 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 
-#[Fillable(['level', 'name_vi', 'name_en', 'min_deposit', 'discount_percent', 'icon', 'color', 'is_active'])]
+#[Fillable(['id', 'level', 'name_vi', 'name_en', 'min_deposit', 'discount_percent', 'icon', 'color', 'is_active'])]
 class MembershipTierModel extends Model
 {
     use HasFactory, HasUuids;

@@ -177,7 +177,10 @@ body.dark ::-webkit-scrollbar-thumb {
   width: 100% !important;
 }
 
-.form-field > label {
+.form-field > label,
+.form-field label.form-label,
+.form-field > div > label:not(.group):not(.cursor-pointer),
+.form-field > div > div > label:not(.group):not(.cursor-pointer) {
   display: block !important;
   font-size: 0.75rem !important;
   font-weight: 600 !important;
@@ -188,7 +191,13 @@ body.dark ::-webkit-scrollbar-thumb {
 }
 
 .dark .form-field > label,
-body.dark .form-field > label {
+body.dark .form-field > label,
+.dark .form-field label.form-label,
+body.dark .form-field label.form-label,
+.dark .form-field > div > label:not(.group):not(.cursor-pointer),
+body.dark .form-field > div > label:not(.group):not(.cursor-pointer),
+.dark .form-field > div > div > label:not(.group):not(.cursor-pointer),
+body.dark .form-field > div > div > label:not(.group):not(.cursor-pointer) {
   color: #cbd5e1 !important;
 }
 

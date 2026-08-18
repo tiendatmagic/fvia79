@@ -1,6 +1,23 @@
 # AGENTS.md - Lịch sử Thay Đổi & Ghi Nhớ Công Việc (Fvia79)
 
-## ⛔ QUY TẮC BẮT BUỘC (MANDATORY RULES)
+## ⛔ QUY TẮC BẮT BUỘC BẢO VỆ DỮ LIỆU (DATABASE SAFETY RULES)
+
+> 🚨 **TUYỆT ĐỐI CẤM MỌI LỆNH PHÁ HỦY / XÓA DỮ LIỆU DATABASE**:
+> 1. **TUYỆT ĐỐI KHÔNG ĐƯỢC CHẠY CÁC LỆNH SAU DƯỚI MỌI HÌNH THỨC**:
+>    - php artisan migrate:fresh
+>    - php artisan migrate:fresh --seed
+>    - php artisan db:wipe
+>    - php artisan migrate:reset
+>    - php artisan migrate:refresh
+>    *(Hệ thống đã kích hoạt DB::prohibitDestructiveCommands() trong AppServiceProvider để tự động chặn đứng hoàn toàn các lệnh này ở tầng framework Laravel).*
+>
+> 2. **KHI CẦN CẬP NHẬT DATABASE, CHỈ ĐƯỢC PHÉP DÙNG**:
+>    - php artisan migrate — Áp dụng các migration mới an toàn mà không xóa dữ liệu hiện có.
+>    - php artisan db:seed --class=TenSeederClass — Nạp dữ liệu bổ sung có chọn lọc cho đúng 1 seeder.
+>
+> 3. **BẢO VỆ MÔI TRƯỜNG TEST (PHPUnit / Pest)**:
+>    - Toàn bộ test suites phải luôn được cô lập 100% trên sqlite :memory: thông qua TestCase::createApplication().
+>    - Tuyệt đối không để test suite trỏ nhầm vào cơ sở dữ liệu MySQL thực tế.
 
 > **TUYỆT ĐỐI KHÔNG được chạy lệnh `php artisan migrate:fresh --seed`** vì lệnh này sẽ **XÓA TOÀN BỘ DỮ LIỆU** hiện có trong database. Chỉ được dùng trong môi trường dev sạch hoàn toàn.
 >
@@ -1269,20 +1286,20 @@
 
 
 
-### [2026-08-18] S?a L?i Luu C?u H�nh Nh� Cung C?p & �?ng B? C? 4 D? �n (ads79, adsbm79, fvia79, isocalmarket)
-- **V?n d? ph�t hi?n**:
-  1. SupplierController@update thi?u tru?ng catalog_driver trong validation rules khi?n driver kh�ng luu du?c khi g?i t? frontend.
-  2. update() lu�n �p ch?y detectDriver() v� $validated['base_url'] lu�n t?n t?i trong request payload. N?u API nh� cung c?p ngo�i ch?p ch?n, rate limit ho?c chua c� API key th� b? vang l?i 422 The supplier does not support... ch?n vi?c luu c?u h�nh th�ng thu?ng (nhu d?i t? l? gi�, kho?ng th?i gian d?ng b?, l�m tr�n gi�, auto translate).
-  3. MediaHubConnector::detectDriver, ClonetutConnector::detectDriver, Muabm365Connector::detectDriver c� do?n code t? return self::DRIVER khi api_key tr?ng, l�m sai l?ch ph�n lo?i nh� cung c?p sang mediahub khi m?i t?o chua k?p nh?p key.
-  4. SupplierUrlGuard d�ng @dns_get_record tr�n Windows / local / VPS d? tr? v? r?ng g�y l?i gi? Supplier hostname could not be resolved..
-  5. Frontend admin-suppliers.component.html thi?u mapping t�n driver cho clonetut v� mediahub.
-- **Gi?i ph�p x? l�**:
-  - B? sung catalog_driver v�o validation rules c?a SupplierController@update.
-  - T?i uu logic update(): ch? t? d?ng detectDriver() khi catalog_driver dang tr?ng. Gi? nguy�n driver d� c� n?u ch? c?p nh?t c?u h�nh th�ng thu?ng.
-  - S?a SupplierConnectorFactory: uu ti�n CloneStore (V2/V1), sau d� d?n Muabm365, Clonetut, MediaHub. X�a b? logic t? nh?n driver khi api_key r?ng ? 3 connector.
-  - B? sung fallback gethostbynamel($host) trong SupplierUrlGuard d? ph�n gi?i DNS d? ph�ng tin c?y.
-  - C?p nh?t hi?n th? d?y d? t�n chu?n API V2, API V1, MUABM365 API, CLONETUT API, MEDIAHUB API tr�n giao di?n Frontend.
-  - �?ng b? v� ki?m tra c� ph�p to�n b? c�c t?p tr�n c? 4 d? �n (ads79, adsbm79, fvia79, isocalmarket).
+### [2026-08-18] S?a L?i Luu C?u H�nh Nh� Cung C?p & �?ng B? C? 4 D? �n (ads79, adsbm79, fvia79, isocalmarket)
+- **V?n d? ph�t hi?n**:
+  1. SupplierController@update thi?u tru?ng catalog_driver trong validation rules khi?n driver kh�ng luu du?c khi g?i t? frontend.
+  2. update() lu�n �p ch?y detectDriver() v� $validated['base_url'] lu�n t?n t?i trong request payload. N?u API nh� cung c?p ngo�i ch?p ch?n, rate limit ho?c chua c� API key th� b? vang l?i 422 The supplier does not support... ch?n vi?c luu c?u h�nh th�ng thu?ng (nhu d?i t? l? gi�, kho?ng th?i gian d?ng b?, l�m tr�n gi�, auto translate).
+  3. MediaHubConnector::detectDriver, ClonetutConnector::detectDriver, Muabm365Connector::detectDriver c� do?n code t? return self::DRIVER khi api_key tr?ng, l�m sai l?ch ph�n lo?i nh� cung c?p sang mediahub khi m?i t?o chua k?p nh?p key.
+  4. SupplierUrlGuard d�ng @dns_get_record tr�n Windows / local / VPS d? tr? v? r?ng g�y l?i gi? Supplier hostname could not be resolved..
+  5. Frontend admin-suppliers.component.html thi?u mapping t�n driver cho clonetut v� mediahub.
+- **Gi?i ph�p x? l�**:
+  - B? sung catalog_driver v�o validation rules c?a SupplierController@update.
+  - T?i uu logic update(): ch? t? d?ng detectDriver() khi catalog_driver dang tr?ng. Gi? nguy�n driver d� c� n?u ch? c?p nh?t c?u h�nh th�ng thu?ng.
+  - S?a SupplierConnectorFactory: uu ti�n CloneStore (V2/V1), sau d� d?n Muabm365, Clonetut, MediaHub. X�a b? logic t? nh?n driver khi api_key r?ng ? 3 connector.
+  - B? sung fallback gethostbynamel($host) trong SupplierUrlGuard d? ph�n gi?i DNS d? ph�ng tin c?y.
+  - C?p nh?t hi?n th? d?y d? t�n chu?n API V2, API V1, MUABM365 API, CLONETUT API, MEDIAHUB API tr�n giao di?n Frontend.
+  - �?ng b? v� ki?m tra c� ph�p to�n b? c�c t?p tr�n c? 4 d? �n (ads79, adsbm79, fvia79, isocalmarket).
 - **B? sung kh?c ph?c l?i Database Migration**:
-  - Ph�t hi?n migration 2026_08_16_200000_add_auto_hide_out_of_stock_to_suppliers v� 2026_07_26_010000_add_round_vnd_prices_to_suppliers_table dang ? tr?ng th�i Pending tr�n database MySQL th?c t? g�y ra l?i 1054 Unknown column 'auto_hide_out_of_stock'.
-  - �� chu?n h�a migration an to�n v?i Schema::hasColumn(), ch?y php artisan migrate (tu�n th? tuy?t d?i quy t?c kh�ng d�ng migrate:fresh/seed), c?p nh?t $fillable & casts trong SupplierModel, v� t�i t?o l?i config cache tr�n c? 4 d? �n (ds79, dsbm79, via79, isocalmarket).
+  - Ph�t hi?n migration 2026_08_16_200000_add_auto_hide_out_of_stock_to_suppliers v� 2026_07_26_010000_add_round_vnd_prices_to_suppliers_table dang ? tr?ng th�i Pending tr�n database MySQL th?c t? g�y ra l?i 1054 Unknown column 'auto_hide_out_of_stock'.
+  - �� chu?n h�a migration an to�n v?i Schema::hasColumn(), ch?y php artisan migrate (tu�n th? tuy?t d?i quy t?c kh�ng d�ng migrate:fresh/seed), c?p nh?t $fillable & casts trong SupplierModel, v� t�i t?o l?i config cache tr�n c? 4 d? �n (ds79, dsbm79, via79, isocalmarket).
