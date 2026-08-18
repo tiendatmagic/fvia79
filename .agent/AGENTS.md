@@ -1268,3 +1268,21 @@
     - Bá»• sung lá»‡nh fix tiáº¿ng Viá»‡t `php artisan supplier:fix-vi-names` vÃ  Cronjob tá»± Ä‘á»™ng `schedule:run`.
 
 
+
+### [2026-08-18] S?a L?i Luu C?u Hình Nhà Cung C?p & Ð?ng B? C? 4 D? Án (ads79, adsbm79, fvia79, isocalmarket)
+- **V?n d? phát hi?n**:
+  1. SupplierController@update thi?u tru?ng catalog_driver trong validation rules khi?n driver không luu du?c khi g?i t? frontend.
+  2. update() luôn ép ch?y detectDriver() vì $validated['base_url'] luôn t?n t?i trong request payload. N?u API nhà cung c?p ngoài ch?p ch?n, rate limit ho?c chua có API key thì b? vang l?i 422 The supplier does not support... ch?n vi?c luu c?u hình thông thu?ng (nhu d?i t? l? giá, kho?ng th?i gian d?ng b?, làm tròn giá, auto translate).
+  3. MediaHubConnector::detectDriver, ClonetutConnector::detectDriver, Muabm365Connector::detectDriver có do?n code t? return self::DRIVER khi api_key tr?ng, làm sai l?ch phân lo?i nhà cung c?p sang mediahub khi m?i t?o chua k?p nh?p key.
+  4. SupplierUrlGuard dùng @dns_get_record trên Windows / local / VPS d? tr? v? r?ng gây l?i gi? Supplier hostname could not be resolved..
+  5. Frontend admin-suppliers.component.html thi?u mapping tên driver cho clonetut và mediahub.
+- **Gi?i pháp x? lý**:
+  - B? sung catalog_driver vào validation rules c?a SupplierController@update.
+  - T?i uu logic update(): ch? t? d?ng detectDriver() khi catalog_driver dang tr?ng. Gi? nguyên driver dã có n?u ch? c?p nh?t c?u hình thông thu?ng.
+  - S?a SupplierConnectorFactory: uu tiên CloneStore (V2/V1), sau dó d?n Muabm365, Clonetut, MediaHub. Xóa b? logic t? nh?n driver khi api_key r?ng ? 3 connector.
+  - B? sung fallback gethostbynamel($host) trong SupplierUrlGuard d? phân gi?i DNS d? phòng tin c?y.
+  - C?p nh?t hi?n th? d?y d? tên chu?n API V2, API V1, MUABM365 API, CLONETUT API, MEDIAHUB API trên giao di?n Frontend.
+  - Ð?ng b? và ki?m tra cú pháp toàn b? các t?p trên c? 4 d? án (ads79, adsbm79, fvia79, isocalmarket).
+- **B? sung kh?c ph?c l?i Database Migration**:
+  - Phát hi?n migration 2026_08_16_200000_add_auto_hide_out_of_stock_to_suppliers và 2026_07_26_010000_add_round_vnd_prices_to_suppliers_table dang ? tr?ng thái Pending trên database MySQL th?c t? gây ra l?i 1054 Unknown column 'auto_hide_out_of_stock'.
+  - Ðã chu?n hóa migration an toàn v?i Schema::hasColumn(), ch?y php artisan migrate (tuân th? tuy?t d?i quy t?c không dùng migrate:fresh/seed), c?p nh?t $fillable & casts trong SupplierModel, và tái t?o l?i config cache trên c? 4 d? án (ds79, dsbm79, via79, isocalmarket).

@@ -9,14 +9,18 @@ return new class extends Migration
     public function up(): void
     {
         Schema::table('suppliers', function (Blueprint $table) {
-            $table->boolean('auto_hide_out_of_stock')->default(false)->after('round_vnd_prices');
+            if (! Schema::hasColumn('suppliers', 'auto_hide_out_of_stock')) {
+                $table->boolean('auto_hide_out_of_stock')->default(false);
+            }
         });
     }
 
     public function down(): void
     {
         Schema::table('suppliers', function (Blueprint $table) {
-            $table->dropColumn('auto_hide_out_of_stock');
+            if (Schema::hasColumn('suppliers', 'auto_hide_out_of_stock')) {
+                $table->dropColumn('auto_hide_out_of_stock');
+            }
         });
     }
 };

@@ -236,10 +236,6 @@ class MediaHubConnector implements SupplierCatalogConnector, SupplierOrderConnec
     {
         $this->urlGuard->normalizeAndValidate($supplier->base_url);
 
-        if (trim((string) $supplier->api_key) === '') {
-            return self::DRIVER;
-        }
-
         try {
             $this->fetchAccount($supplier);
 

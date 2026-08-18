@@ -32,20 +32,24 @@ class SupplierConnectorFactory
 
     public function detectDriver(SupplierModel $supplier): string
     {
-        if (in_array($supplier->catalog_driver, [MediaHubConnector::DRIVER, ClonetutConnector::DRIVER, Muabm365Connector::DRIVER, CloneStoreConnector::V1, CloneStoreConnector::V2], true)) {
+        if (! empty($supplier->catalog_driver) && in_array($supplier->catalog_driver, [MediaHubConnector::DRIVER, ClonetutConnector::DRIVER, Muabm365Connector::DRIVER, CloneStoreConnector::V1, CloneStoreConnector::V2], true)) {
             return $supplier->catalog_driver;
         }
 
         try {
-            return app(MediaHubConnector::class)->detectDriver($supplier);
+            return app(CloneStoreConnector::class)->detectDriver($supplier);
         } catch (\Throwable) {
             try {
-                return app(ClonetutConnector::class)->detectDriver($supplier);
+                return app(Muabm365Connector::class)->detectDriver($supplier);
             } catch (\Throwable) {
                 try {
-                    return app(Muabm365Connector::class)->detectDriver($supplier);
+                    return app(ClonetutConnector::class)->detectDriver($supplier);
                 } catch (\Throwable) {
-                    return app(CloneStoreConnector::class)->detectDriver($supplier);
+                    try {
+                        return app(MediaHubConnector::class)->detectDriver($supplier);
+                    } catch (\Throwable) {
+                        throw new \RuntimeException('Cannot detect compatible supplier driver. Please verify the base URL and API key or select a template.');
+                    }
                 }
             }
         }

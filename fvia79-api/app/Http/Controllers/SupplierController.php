@@ -154,8 +154,13 @@ class SupplierController extends Controller
             'auto_hide_out_of_stock' => ['sometimes', 'boolean'],
         ]);
 
-        if (($validated['api_key'] ?? null) === '') {
-            unset($validated['api_key']);
+        if (array_key_exists('api_key', $validated)) {
+            $trimmedKey = trim((string) $validated['api_key']);
+            if ($trimmedKey === '') {
+                unset($validated['api_key']);
+            } else {
+                $validated['api_key'] = $trimmedKey;
+            }
         }
         if (isset($validated['base_url'])) {
             try {
@@ -170,11 +175,10 @@ class SupplierController extends Controller
             return response()->json(['message' => 'Percentage adjustment cannot be below -100%.'], 422);
         }
 
-        $mustDetectDriver = array_key_exists('base_url', $validated) || array_key_exists('api_key', $validated);
         $productsEnabledChanged = array_key_exists('products_enabled', $validated)
             && (bool) $validated['products_enabled'] !== $supplier->products_enabled;
         $supplier->fill($validated);
-        if ($mustDetectDriver) {
+        if (empty($supplier->catalog_driver)) {
             try {
                 $supplier->catalog_driver = $this->connectorFactory->detectDriver($supplier);
                 $supplier->last_sync_error = null;

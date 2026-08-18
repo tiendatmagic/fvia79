@@ -481,7 +481,14 @@
           @if (supplierForm.catalog_driver) {
             <p class="mt-1 text-xs font-semibold text-emerald-600">
               {{ 'supplier.detected_standard' | translate }}:
-              {{ supplierForm.catalog_driver === 'clone_store_v2' ? 'API V2' : (supplierForm.catalog_driver === 'muabm365' ? 'MUABM365 API' : 'API V1') }}
+              {{
+                supplierForm.catalog_driver === 'clone_store_v2' ? 'API V2' :
+                supplierForm.catalog_driver === 'clone_store_v1' ? 'API V1' :
+                supplierForm.catalog_driver === 'muabm365' ? 'MUABM365 API' :
+                supplierForm.catalog_driver === 'clonetut' ? 'CLONETUT API' :
+                supplierForm.catalog_driver === 'mediahub' ? 'MEDIAHUB API' :
+                supplierForm.catalog_driver
+              }}
             </p>
           }
         </div>
