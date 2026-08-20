@@ -19,10 +19,10 @@ class TelegramNotificationService
         return $setting ? $setting->value : null;
     }
 
-    public function getBotUsername(): string
+    public function getBotUsername(): ?string
     {
         $setting = SystemSettingModel::where('key', 'telegram_bot_username')->first();
-        return $setting && !empty($setting->value) ? ltrim($setting->value, '@') : 'fvia79noti_bot';
+        return $setting && !empty($setting->value) ? ltrim($setting->value, '@') : null;
     }
 
     public function isEnabled(): bool
@@ -31,6 +31,59 @@ class TelegramNotificationService
         $token = $this->getBotToken();
 
         return !empty($token) && ($enabledSetting === null || in_array((string) $enabledSetting->value, ['1', 'true', 'active'], true));
+    }
+
+    public function registerWebhook(?string $overrideToken = null): array
+    {
+        $token = $overrideToken ?: $this->getBotToken();
+
+        if (empty($token)) {
+            return [
+                'success' => false,
+                'message' => 'Telegram Bot Token is not configured.',
+            ];
+        }
+
+        $appUrl = rtrim(config('app.url', ''), '/');
+        if (empty($appUrl) || str_contains($appUrl, 'localhost')) {
+            try {
+                $appUrl = request()?->schemeAndHttpHost() ?: (config('app.url') ?: 'https://fvia79.com');
+            } catch (\Throwable) {
+                $appUrl = config('app.url') ?: 'https://fvia79.com';
+            }
+        }
+        $webhookUrl = rtrim($appUrl, '/') . '/api/v1/telegram/webhook';
+        $secret = (string) config('services.telegram.webhook_secret', '');
+
+        try {
+            $payload = [
+                'url' => $webhookUrl,
+                'allowed_updates' => ['message'],
+            ];
+            if (!empty($secret)) {
+                $payload['secret_token'] = $secret;
+            }
+
+            $response = Http::timeout(10)->post("https://api.telegram.org/bot{$token}/setWebhook", $payload);
+
+            if ($response->successful() && $response->json('ok') === true) {
+                return [
+                    'success' => true,
+                    'message' => 'Webhook registered successfully with Telegram.',
+                    'url' => $webhookUrl,
+                ];
+            }
+
+            return [
+                'success' => false,
+                'message' => 'Failed to set Telegram webhook: ' . ($response->json('description') ?? 'Unknown error'),
+            ];
+        } catch (\Throwable $e) {
+            return [
+                'success' => false,
+                'message' => 'Exception when setting Telegram webhook: ' . $e->getMessage(),
+            ];
+        }
     }
 
     public function testBotConnection(?string $overrideToken = null): array
@@ -49,14 +102,19 @@ class TelegramNotificationService
 
             if ($response->successful() && $response->json('ok') === true) {
                 $result = $response->json('result');
+                
+                // Automatically ensure webhook is registered
+                $webhookRes = $this->registerWebhook($token);
+
                 return [
                     'success' => true,
-                    'message' => 'Connected to Telegram Bot successfully.',
+                    'message' => 'Connected to Telegram Bot and registered Webhook successfully.',
                     'bot' => [
                         'id' => $result['id'] ?? null,
                         'first_name' => $result['first_name'] ?? '',
                         'username' => $result['username'] ?? '',
                     ],
+                    'webhook' => $webhookRes,
                 ];
             }
 

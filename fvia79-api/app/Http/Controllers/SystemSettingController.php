@@ -179,6 +179,14 @@ class SystemSettingController extends Controller
         if (! empty($settingsToSave)) {
             $this->settingService->saveSettings($settingsToSave);
             StorefrontActivityCache::clear();
+
+            if (isset($settingsToSave['telegram_bot_token']) || isset($settingsToSave['telegram_bot_enabled'])) {
+                try {
+                    app(TelegramNotificationService::class)->registerWebhook();
+                } catch (\Throwable $e) {
+                    Log::warning('Auto-register Telegram webhook error: ' . $e->getMessage());
+                }
+            }
         }
 
         return response()->json([
@@ -199,10 +207,10 @@ class SystemSettingController extends Controller
         } else {
             $usdtRate = app(DepositService::class)->getUsdtToVndRate();
         }
-        $telegramBotUsername = $this->settingService->getSetting('telegram_bot_username', 'fvia79noti_bot');
-        $telegramSupportUsername = $this->settingService->getSetting('telegram_support_username', 'emmy203012');
-        $telegramSupportEnabled = filter_var($this->settingService->getSetting('telegram_support_enabled', '1'), FILTER_VALIDATE_BOOLEAN);
-        $telegramBotContactEnabled = filter_var($this->settingService->getSetting('telegram_bot_contact_enabled', '1'), FILTER_VALIDATE_BOOLEAN);
+        $telegramBotUsername = $this->settingService->getSetting('telegram_bot_username', '');
+        $telegramSupportUsername = $this->settingService->getSetting('telegram_support_username', '');
+        $telegramSupportEnabled = filter_var($this->settingService->getSetting('telegram_support_enabled', '0'), FILTER_VALIDATE_BOOLEAN);
+        $telegramBotContactEnabled = filter_var($this->settingService->getSetting('telegram_bot_contact_enabled', '0'), FILTER_VALIDATE_BOOLEAN);
 
         $envFeatureEnabled = filter_var(config('app.feature_membership_tiers_enabled', false), FILTER_VALIDATE_BOOLEAN);
         $membershipTiersFeatureEnabled = filter_var($envFeatureEnabled, FILTER_VALIDATE_BOOLEAN);
@@ -230,8 +238,8 @@ class SystemSettingController extends Controller
             'usdt_exchange_rate' => (float) $usdtRate,
             'telegram_bot_username' => (string) $telegramBotUsername,
             'telegram_support_username' => (string) $telegramSupportUsername,
-            'telegram_support_enabled' => $telegramSupportEnabled,
-            'telegram_bot_contact_enabled' => $telegramBotContactEnabled,
+            'telegram_support_enabled' => $telegramSupportEnabled && !empty($telegramSupportUsername),
+            'telegram_bot_contact_enabled' => $telegramBotContactEnabled && !empty($telegramBotUsername),
             'membership_tiers_feature_enabled' => $membershipTiersFeatureEnabled,
             'membership_tiers_enabled' => $membershipTiersEnabled,
             'coupons_feature_enabled' => $couponsFeatureEnabled,

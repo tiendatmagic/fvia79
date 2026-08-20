@@ -48,6 +48,12 @@ class UserTelegramController extends Controller
         }
 
         $botUsername = $this->telegramService->getBotUsername();
+        if (empty($botUsername)) {
+            return response()->json([
+                'status' => 'error',
+                'message' => 'Telegram Bot is not configured yet.',
+            ], 400);
+        }
 
         return response()->json([
             'status' => 'success',
