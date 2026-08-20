@@ -106,6 +106,7 @@ export class CustomSelectComponent implements ControlValueAccessor, AfterViewChe
   public readonly valueSignal = signal<any>(null);
 
   @ViewChild('triggerBtn', { static: false }) triggerBtn!: ElementRef<HTMLButtonElement>;
+  @ViewChild('dropdownPanel', { static: false }) dropdownPanel?: ElementRef<HTMLDivElement>;
 
   public readonly isOpen = signal<boolean>(false);
   public readonly searchQuery = signal<string>('');
@@ -115,9 +116,21 @@ export class CustomSelectComponent implements ControlValueAccessor, AfterViewChe
   public resolvedPlacement: 'top' | 'bottom' = 'bottom';
 
   public onClickOutside(event: MouseEvent): void {
-    if (!this.elementRef.nativeElement.contains(event.target)) {
-      this.isOpen.set(false);
+    if (!this.isOpen()) return;
+    const target = event.target as Node;
+    if (!target) return;
+    const isInsideTrigger = this.elementRef.nativeElement?.contains(target);
+    const isInsideDropdown = this.dropdownPanel?.nativeElement?.contains(target);
+    if (!isInsideTrigger && !isInsideDropdown) {
+      this.closeDropdown();
     }
+  }
+
+  public closeDropdown(): void {
+    if (this.dropdownPanel?.nativeElement && this.dropdownPanel.nativeElement.parentElement === document.body) {
+      this.dropdownPanel.nativeElement.remove();
+    }
+    this.isOpen.set(false);
   }
 
   public toggleOpen(): void {
@@ -127,8 +140,10 @@ export class CustomSelectComponent implements ControlValueAccessor, AfterViewChe
       this.searchQuery.set('');
       this.displayLimit.set(this.maxDisplay || 50);
       this.updateDropdownPosition();
+      this.isOpen.set(true);
+    } else {
+      this.closeDropdown();
     }
-    this.isOpen.set(nextState);
   }
 
   public onSearchInput(query: string): void {
@@ -146,7 +161,7 @@ export class CustomSelectComponent implements ControlValueAccessor, AfterViewChe
     }
   }
 
-    private updateDropdownPosition(): void {
+  private updateDropdownPosition(): void {
     const triggerEl = this.triggerBtn?.nativeElement;
     if (!triggerEl) return;
 
@@ -172,32 +187,59 @@ export class CustomSelectComponent implements ControlValueAccessor, AfterViewChe
       }
     }
 
+    const dropWidth = Math.max(rect.width, 180);
+    let left = rect.left;
+    if (left + dropWidth > window.innerWidth - 12) {
+      left = Math.max(12, window.innerWidth - dropWidth - 12);
+    }
+    if (left < 12) left = 12;
+
     this.resolvedPlacement = placeFinal;
 
-    if (placeFinal === 'bottom') {
-      this.dropdownStyle = {
-        position: 'fixed',
-        top: `${rect.bottom + gap}px`,
-        left: `${rect.left}px`,
-        width: `${rect.width}px`,
-        maxHeight: `${Math.min(dropdownMaxHeight, spaceBelow)}px`,
-        zIndex: '9999',
-      };
-    } else {
-      this.dropdownStyle = {
-        position: 'fixed',
-        top: `${rect.top - gap}px`,
-        left: `${rect.left}px`,
-        width: `${rect.width}px`,
-        maxHeight: `${Math.min(dropdownMaxHeight, spaceAbove)}px`,
-        transform: 'translateY(-100%)',
-        zIndex: '9999',
-      };
+    const newStyle: { [key: string]: string } =
+      placeFinal === 'bottom'
+        ? {
+            position: 'fixed',
+            top: `${rect.bottom + gap}px`,
+            left: `${left}px`,
+            width: `${dropWidth}px`,
+            minWidth: `${dropWidth}px`,
+            maxWidth: `calc(100vw - 24px)`,
+            maxHeight: `${Math.min(dropdownMaxHeight, Math.max(150, spaceBelow))}px`,
+            transform: 'none',
+            zIndex: '99999',
+          }
+        : {
+            position: 'fixed',
+            top: `${rect.top - gap}px`,
+            left: `${left}px`,
+            width: `${dropWidth}px`,
+            minWidth: `${dropWidth}px`,
+            maxWidth: `calc(100vw - 24px)`,
+            maxHeight: `${Math.min(dropdownMaxHeight, Math.max(150, spaceAbove))}px`,
+            transform: 'translateY(-100%)',
+            zIndex: '99999',
+          };
+
+    this.dropdownStyle = newStyle;
+
+    const panelEl = this.dropdownPanel?.nativeElement;
+    if (panelEl) {
+      Object.assign(panelEl.style, newStyle);
     }
   }
+
   ngAfterViewChecked(): void {
     if (this.isOpen() && this.triggerBtn) {
+      let isFirstAppend = false;
+      if (this.dropdownPanel?.nativeElement && this.dropdownPanel.nativeElement.parentElement !== document.body) {
+        document.body.appendChild(this.dropdownPanel.nativeElement);
+        isFirstAppend = true;
+      }
       this.updateDropdownPosition();
+      if (isFirstAppend) {
+        this.cdr.detectChanges();
+      }
     }
   }
 
@@ -215,7 +257,7 @@ export class CustomSelectComponent implements ControlValueAccessor, AfterViewChe
     this.valueChange.emit(val);
     this.onChange(val);
     this.onTouched();
-    this.isOpen.set(false);
+    this.closeDropdown();
   }
 
   public readonly selectedLabel = computed(() => {
