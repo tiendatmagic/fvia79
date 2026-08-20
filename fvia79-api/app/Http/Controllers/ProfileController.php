@@ -210,6 +210,22 @@ class ProfileController extends Controller
         ]);
     }
 
+    public function revokeApiKey(Request $request)
+    {
+        $userModel = Auth::user();
+        if (!$userModel) {
+            return response()->json(['message' => 'Unauthorized.'], 401);
+        }
+
+        $userModel->api_key = null;
+        $userModel->save();
+
+        return response()->json([
+            'message' => 'API Key revoked successfully.',
+            'user' => $this->serializeUser($userModel),
+        ]);
+    }
+
     private function serializeUser(UserModel $userModel): array
     {
         $userModel->load('membershipTier');

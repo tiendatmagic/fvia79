@@ -47,6 +47,21 @@ export class AdminApiComponent {
     this.state.authStore.regenerateApiKey().subscribe();
   }
 
+  public revokeKey() {
+    if (!this.apiKey() || this.state.authStore.authLoading()) return;
+    this.modalService.confirm({
+      title: this.lang.translate('api.revoke_confirm_title'),
+      description: this.lang.translate('api.revoke_confirm_message'),
+      confirmText: this.lang.translate('api.revoke_key'),
+      cancelText: this.lang.translate('action.cancel'),
+      variant: 'danger'
+    }).afterClosed$.subscribe((confirmed) => {
+      if (confirmed) {
+        this.state.authStore.revokeApiKey().subscribe();
+      }
+    });
+  }
+
   public readonly siteUrl = computed(() => {
     const baseUrl = environment.apiBaseUrl;
     if (baseUrl.endsWith('/api')) {

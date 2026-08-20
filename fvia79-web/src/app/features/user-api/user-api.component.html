@@ -99,6 +99,20 @@
             apiKey() ? ('api.regen_key' | translate) : ('api.create_key' | translate)
           }}</span>
         </button>
+
+        @if (apiKey()) {
+          <button
+            app-button
+            [size]="'lg'"
+            [variant]="'danger-light'"
+            [loading]="state.authStore.authLoading()"
+            (click)="revokeKey()"
+            class="!h-11 sm:!h-12 px-4 sm:px-5 rounded-xl flex items-center justify-center gap-2 active:scale-98 transition duration-150 cursor-pointer font-bold shrink-0"
+          >
+            <app-icon name="trash" class="w-4.5 h-4.5" />
+            <span>{{ 'api.revoke_key' | translate }}</span>
+          </button>
+        }
       </div>
     </div>
   </div>

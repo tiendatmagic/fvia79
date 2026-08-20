@@ -234,6 +234,24 @@ export class AuthStore {
     );
   }
 
+  public revokeApiKey(): Observable<any> {
+    this.authLoading.set(true);
+    return this.api.delete<any>('v1/profile/api-key').pipe(
+      tap((res) => {
+        if (res && res.user) {
+          this.currentUser.set(res.user);
+          this.toast.showToast(this.lang.translate('toast.apikey_revoked'), 'success');
+        }
+      }),
+      catchError((err) => {
+        const msg = err.error?.message || this.lang.translate('toast.apikey_revoke_failed');
+        this.toast.showToast(msg, 'error');
+        return of(null);
+      }),
+      finalize(() => this.authLoading.set(false))
+    );
+  }
+
   public changePassword(data: any) {
     this.authLoading.set(true);
     return this.api.put<any>('v1/profile/password', data).pipe(

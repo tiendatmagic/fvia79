@@ -1,6 +1,7 @@
 import { Component, inject, computed, signal } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { StateService } from '@core/services/state.service';
+import { ModalService } from '@core/services/modal.service';
 import { PageHeaderComponent } from '@shared/components/page-header/page-header.component';
 import { CardComponent } from '@shared/components/card/card.component';
 import { ButtonComponent } from '@shared/components/button/button.component';
@@ -31,6 +32,7 @@ import { RouterModule } from '@angular/router';
 })
 export class UserApiComponent {
   public readonly state = inject(StateService);
+  public readonly modalService = inject(ModalService);
   public readonly activeTab = signal<'bash' | 'cmd'>('bash');
   public readonly showApiKey = signal<boolean>(false);
 
@@ -136,5 +138,20 @@ export class UserApiComponent {
   public regenerateKey() {
     if (this.state.authStore.authLoading()) return;
     this.state.authStore.regenerateApiKey().subscribe();
+  }
+
+  public revokeKey() {
+    if (!this.apiKey() || this.state.authStore.authLoading()) return;
+    this.modalService.confirm({
+      title: this.lang.translate('api.revoke_confirm_title'),
+      description: this.lang.translate('api.revoke_confirm_message'),
+      confirmText: this.lang.translate('api.revoke_key'),
+      cancelText: this.lang.translate('action.cancel'),
+      variant: 'danger'
+    }).afterClosed$.subscribe((confirmed) => {
+      if (confirmed) {
+        this.state.authStore.revokeApiKey().subscribe();
+      }
+    });
   }
 }

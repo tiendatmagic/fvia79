@@ -91,9 +91,9 @@
           <div class="h-3.5 w-80 bg-slate-100 dark:bg-slate-800/50 rounded-md"></div>
         </div>
 
-        <div class="flex justify-end items-center gap-3 pt-4 mt-6 border-t border-slate-200/50 dark:border-slate-800/50">
-          <div class="h-10 w-28 bg-slate-200 dark:bg-slate-800 rounded-xl"></div>
-          <div class="h-10 w-24 bg-slate-300 dark:bg-slate-700 rounded-xl"></div>
+        <div class="flex flex-col sm:flex-row sm:justify-end items-stretch sm:items-center gap-3 pt-4 mt-6 border-t border-slate-200/50 dark:border-slate-800/50">
+          <div class="h-10 w-full sm:w-28 bg-slate-200 dark:bg-slate-800 rounded-xl"></div>
+          <div class="h-10 w-full sm:w-24 bg-slate-300 dark:bg-slate-700 rounded-xl"></div>
         </div>
       </app-card>
     </div>
@@ -111,7 +111,7 @@
         {{ supplier.name }}
       </button>
     }
-    <button app-button variant="secondary" type="button" (click)="startCreatingSupplier()">
+    <button app-button variant="secondary" type="button" class="shrink-0" (click)="startCreatingSupplier()">
       + {{ 'supplier.add' | translate }}
     </button>
   </div>
@@ -267,6 +267,7 @@
             (click)="syncSupplier()"
             [loading]="supplierStore.syncing()"
             [disabled]="supplierStore.syncing() || !supplierForm.enabled"
+            class="w-full sm:w-auto flex items-center justify-center"
           >
             {{ 'supplier.sync_now' | translate }}
           </button>
@@ -334,7 +335,7 @@
           app-button
           variant="primary"
           type="button"
-          class="shrink-0"
+          class="w-full sm:w-auto shrink-0 flex items-center justify-center"
           [disabled]="isLocked()"
           (click)="openActivateInStockModal()"
         >
@@ -358,7 +359,7 @@
           app-button
           variant="danger"
           type="button"
-          class="shrink-0"
+          class="w-full sm:w-auto shrink-0 flex items-center justify-center"
           [disabled]="isLocked()"
           (click)="openDeactivateModal()"
         >
@@ -382,7 +383,7 @@
           app-button
           variant="danger"
           type="button"
-          class="shrink-0"
+          class="w-full sm:w-auto shrink-0 flex items-center justify-center"
           [disabled]="isLocked()"
           (click)="openDeactivateCatModal()"
         >
@@ -583,16 +584,16 @@
         </p>
       </div>
 
-      <div class="flex justify-end items-center gap-3 pt-4 border-t border-slate-200/50 dark:border-slate-800/50">
+      <div class="flex flex-col sm:flex-row sm:justify-end items-stretch sm:items-center gap-3 pt-4 border-t border-slate-200/50 dark:border-slate-800/50">
         <button
           type="button"
           app-button
           variant="secondary"
           (click)="toggleLock()"
-          class="px-4 py-2.5 rounded-xl font-semibold flex items-center gap-2 hover:scale-[1.01] active:scale-[0.98] transition-all duration-300"
+          class="w-full sm:w-auto px-4 py-2.5 rounded-xl font-semibold flex items-center justify-center gap-2 hover:scale-[1.01] active:scale-[0.98] transition duration-300 cursor-pointer"
         >
-          <app-icon [name]="isLocked() ? 'lock' : 'lock-open'" class="w-4 h-4" />
-          <span>{{ isLocked() ? ('settings.unlock' | translate) : ('settings.lock' | translate) }}</span>
+          <app-icon [name]="isLocked() ? 'lock' : 'lock-open'" class="w-4 h-4 shrink-0" />
+          <span class="whitespace-nowrap">{{ isLocked() ? ('settings.unlock' | translate) : ('settings.lock' | translate) }}</span>
         </button>
 
         @if (!isLocked()) {
@@ -602,7 +603,7 @@
             type="submit"
             [loading]="supplierStore.saving()"
             [disabled]="supplierStore.saving()"
-            class="px-6 py-2.5 rounded-xl font-bold bg-gradient-to-r from-[var(--color-primary)] to-[var(--color-secondary)] text-white hover:scale-[1.01] active:scale-[0.98] transition-all duration-300 shadow-md shadow-[var(--color-primary)]/20"
+            class="w-full sm:w-auto px-6 py-2.5 rounded-xl font-bold bg-gradient-to-r from-[var(--color-primary)] to-[var(--color-secondary)] text-white hover:scale-[1.01] active:scale-[0.98] transition duration-300 shadow-md shadow-[var(--color-primary)]/20 cursor-pointer flex items-center justify-center"
           >
             {{ 'supplier.save' | translate }}
           </button>
@@ -646,11 +647,12 @@
         </div>
       </div>
 
-      <div class="flex justify-end gap-3 pt-2">
+      <div class="flex flex-col-reverse sm:flex-row sm:justify-end gap-2.5 sm:gap-3 pt-2">
         <button
           app-button
           variant="cancel"
           type="button"
+          class="w-full sm:w-auto"
           [disabled]="isDeactivating()"
           (click)="closeDeactivateModal()"
         >
@@ -660,6 +662,7 @@
           app-button
           variant="danger"
           type="button"
+          class="w-full sm:w-auto"
           [loading]="isDeactivating()"
           [disabled]="isDeactivating()"
           (click)="confirmDeactivateOutOfStock()"
@@ -702,11 +705,12 @@
         </div>
       </div>
 
-      <div class="flex justify-end gap-3 pt-2">
+      <div class="flex flex-col-reverse sm:flex-row sm:justify-end gap-2.5 sm:gap-3 pt-2">
         <button
           app-button
           variant="cancel"
           type="button"
+          class="w-full sm:w-auto"
           [disabled]="isDeactivatingCat()"
           (click)="closeDeactivateCatModal()"
         >
@@ -716,6 +720,7 @@
           app-button
           variant="danger"
           type="button"
+          class="w-full sm:w-auto"
           [loading]="isDeactivatingCat()"
           [disabled]="isDeactivatingCat()"
           (click)="confirmDeactivateOutOfStockCategories()"
@@ -758,11 +763,12 @@
         </div>
       </div>
 
-      <div class="flex justify-end gap-3 pt-2">
+      <div class="flex flex-col-reverse sm:flex-row sm:justify-end gap-2.5 sm:gap-3 pt-2">
         <button
           app-button
           variant="cancel"
           type="button"
+          class="w-full sm:w-auto"
           [disabled]="isActivatingInStock()"
           (click)="closeActivateInStockModal()"
         >
@@ -772,6 +778,7 @@
           app-button
           variant="primary"
           type="button"
+          class="w-full sm:w-auto"
           [loading]="isActivatingInStock()"
           [disabled]="isActivatingInStock()"
           (click)="confirmActivateInStock()"
