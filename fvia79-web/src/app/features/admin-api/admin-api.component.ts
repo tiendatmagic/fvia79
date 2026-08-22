@@ -31,6 +31,7 @@ import { TranslatePipe } from '@shared/pipes/translate.pipe';
   `]
 })
 export class AdminApiComponent {
+  public readonly isSubmitting = signal<boolean>(false);
   public readonly state = inject(StateService);
   public readonly modalService = inject(ModalService);
   public readonly lang = inject(LanguageService);
@@ -43,12 +44,16 @@ export class AdminApiComponent {
   }
 
   public regenerateKey() {
-    if (this.state.authStore.authLoading()) return;
-    this.state.authStore.regenerateApiKey().subscribe();
+    if (this.isSubmitting() || this.state.authStore.authLoading()) return;
+    this.isSubmitting.set(true);
+    this.state.authStore.regenerateApiKey().subscribe({
+      next: () => this.isSubmitting.set(false),
+      error: () => this.isSubmitting.set(false)
+    });
   }
 
   public revokeKey() {
-    if (!this.apiKey() || this.state.authStore.authLoading()) return;
+    if (!this.apiKey() || this.isSubmitting() || this.state.authStore.authLoading()) return;
     this.modalService.confirm({
       title: this.lang.translate('api.revoke_confirm_title'),
       description: this.lang.translate('api.revoke_confirm_message'),
@@ -57,7 +62,12 @@ export class AdminApiComponent {
       variant: 'danger'
     }).afterClosed$.subscribe((confirmed) => {
       if (confirmed) {
-        this.state.authStore.revokeApiKey().subscribe();
+        if (this.isSubmitting() || this.state.authStore.authLoading()) return;
+        this.isSubmitting.set(true);
+        this.state.authStore.revokeApiKey().subscribe({
+          next: () => this.isSubmitting.set(false),
+          error: () => this.isSubmitting.set(false)
+        });
       }
     });
   }

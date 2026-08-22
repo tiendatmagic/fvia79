@@ -68,7 +68,7 @@
         </label>
 
         <div
-          class="flex items-center bg-white dark:bg-[#161e25] border border-slate-200/80 dark:border-slate-700/60 shadow-2xs h-12 px-4 rounded-xl gap-3 min-w-0"
+          class="flex items-center bg-white dark:bg-[#161e25] border border-slate-200/80 dark:border-slate-700/60 shadow-2xs h-10 px-3.5 rounded-xl gap-3 min-w-0"
         >
           <div class="flex-1 min-w-0 flex items-center">
             @if (apiKey()) {
@@ -130,13 +130,16 @@
         @if (apiKey()) {
           <button
             app-button
-            [size]="'lg'"
+            [size]="'md'"
             [variant]="'danger-light'"
-            [loading]="state.authStore.authLoading()"
+            [disabled]="isSubmitting() || state.authStore.authLoading()"
+            [loading]="isSubmitting() || state.authStore.authLoading()"
             (click)="revokeKey()"
-            class="!h-11 sm:!h-12 px-4 sm:px-5 rounded-xl flex items-center justify-center gap-2 active:scale-98 transition duration-150 cursor-pointer font-bold shrink-0"
+            class="shrink-0 flex items-center gap-2"
           >
-            <app-icon name="trash" class="w-4.5 h-4.5" />
+            @if (!isSubmitting() && !state.authStore.authLoading()) {
+              <app-icon name="trash" class="w-4 h-4 shrink-0" />
+            }
             <span>{{ 'api.revoke_key' | translate }}</span>
           </button>
         }
