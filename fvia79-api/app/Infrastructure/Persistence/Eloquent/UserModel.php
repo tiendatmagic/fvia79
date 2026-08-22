@@ -10,10 +10,10 @@ use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
 use Illuminate\Support\Str;
-
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Support\Facades\Schema;
 
-#[Fillable(['uid', 'username', 'name', 'email', 'phone', 'telegram_chat_id', 'telegram_notifications_enabled', 'password', 'role', 'balance', 'total_deposited', 'membership_tier_id', 'refresh_token_hash', 'refresh_token_expired_at', 'google2fa_secret', 'google2fa_enabled', 'api_key', 'api_key_hash', 'status', 'token_version'])]
+#[Fillable(['uid', 'username', 'name', 'email', 'email_verified_at', 'phone', 'telegram_chat_id', 'telegram_notifications_enabled', 'password', 'role', 'balance', 'total_deposited', 'membership_tier_id', 'refresh_token_hash', 'refresh_token_expired_at', 'google2fa_secret', 'google2fa_enabled', 'api_key', 'api_key_hash', 'status', 'token_version'])]
 #[Hidden(['password', 'remember_token'])]
 class UserModel extends Authenticatable
 {
@@ -35,6 +35,23 @@ class UserModel extends Authenticatable
             }
             if ($model->isDirty('api_key')) {
                 $model->api_key_hash = $model->api_key ? hash('sha256', $model->api_key) : null;
+            }
+
+            // Tự động tính toán & gán membership_tier_id chính xác theo total_deposited ngay khi lưu
+            if (($model->isDirty('total_deposited') || empty($model->membership_tier_id)) && Schema::hasTable('membership_tiers')) {
+                $featureEnabled = filter_var(config('app.feature_membership_tiers_enabled', true), FILTER_VALIDATE_BOOLEAN);
+                $dbEnabled = filter_var(app(\App\Application\Services\SystemSettingService::class)->getSetting('membership_tiers_enabled', '1'), FILTER_VALIDATE_BOOLEAN);
+                if ($featureEnabled && $dbEnabled) {
+                    $totalDeposited = (float) ($model->total_deposited ?? 0);
+                    $matchingTier = MembershipTierModel::where('is_active', true)
+                        ->where('min_deposit', '<=', $totalDeposited)
+                        ->orderByDesc('min_deposit')
+                        ->orderByDesc('level')
+                        ->first();
+                    if ($matchingTier) {
+                        $model->membership_tier_id = $matchingTier->id;
+                    }
+                }
             }
         });
     }
@@ -100,5 +117,10 @@ class UserModel extends Authenticatable
     public function membershipTier(): BelongsTo
     {
         return $this->belongsTo(MembershipTierModel::class, 'membership_tier_id');
+    }
+
+    public function sessions(): HasMany
+    {
+        return $this->hasMany(UserSessionModel::class, 'user_id');
     }
 }

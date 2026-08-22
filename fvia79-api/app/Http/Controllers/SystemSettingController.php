@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Application\Services\DepositService;
+use MembershipTierService;
 use App\Application\Services\StorefrontActivityCache;
 use App\Application\Services\SystemSettingService;
 use App\Application\Services\TelegramNotificationService;
@@ -179,6 +180,14 @@ class SystemSettingController extends Controller
         if (! empty($settingsToSave)) {
             $this->settingService->saveSettings($settingsToSave);
             StorefrontActivityCache::clear();
+
+            if (isset($settingsToSave['membership_tiers_enabled'])) {
+                try {
+                    app(MembershipTierService::class)->syncAllUserTiers();
+                } catch (\Throwable $e) {
+                    Log::warning('Auto sync membership tiers error: ' . $e->getMessage());
+                }
+            }
 
             if (isset($settingsToSave['telegram_bot_token']) || isset($settingsToSave['telegram_bot_enabled'])) {
                 try {

@@ -4,17 +4,28 @@ namespace App\Application\Services;
 
 use App\Infrastructure\Persistence\Eloquent\MembershipTierModel;
 use App\Infrastructure\Persistence\Eloquent\UserModel;
+use Illuminate\Support\Facades\Schema;
 use Illuminate\Support\Str;
 
 class MembershipTierService
 {
+    public function isEnabled(): bool
+    {
+        $envEnabled = filter_var(config('app.feature_membership_tiers_enabled', true), FILTER_VALIDATE_BOOLEAN);
+        if (! $envEnabled) {
+            return false;
+        }
+
+        $dbSetting = app(SystemSettingService::class)->getSetting('membership_tiers_enabled', '1');
+        return filter_var($dbSetting, FILTER_VALIDATE_BOOLEAN);
+    }
+
     public function recalculateUserTier(UserModel $user): ?MembershipTierModel
     {
-        $enabled = filter_var(config('app.feature_membership_tiers_enabled', false), FILTER_VALIDATE_BOOLEAN);
-        if (! $enabled) {
+        if (! $this->isEnabled()) {
             if ($user->membership_tier_id !== null) {
                 $user->membership_tier_id = null;
-                $user->save();
+                $user->saveQuietly();
             }
 
             return null;
@@ -24,15 +35,15 @@ class MembershipTierService
 
         $matchingTier = MembershipTierModel::where('is_active', true)
             ->where('min_deposit', '<=', $totalDeposited)
-            ->orderBy('min_deposit', 'desc')
-            ->orderBy('level', 'desc')
+            ->orderByDesc('min_deposit')
+            ->orderByDesc('level')
             ->first();
 
         $newTierId = $matchingTier?->id;
 
         if ($user->membership_tier_id !== $newTierId) {
             $user->membership_tier_id = $newTierId;
-            $user->save();
+            $user->saveQuietly();
         }
 
         return $matchingTier;
@@ -147,24 +158,38 @@ class MembershipTierService
 
     public function syncAllUserTiers(): void
     {
-        $enabled = filter_var(config('app.feature_membership_tiers_enabled', false), FILTER_VALIDATE_BOOLEAN);
-        $tiers = $enabled
-            ? MembershipTierModel::where('is_active', true)
-                ->orderByDesc('min_deposit')
-                ->orderByDesc('level')
-                ->get(['id', 'min_deposit'])
-            : collect();
+        $enabled = $this->isEnabled();
+        if (! $enabled) {
+            if (Schema::hasTable('users')) {
+                UserModel::whereNotNull('membership_tier_id')->update(['membership_tier_id' => null]);
+            }
+            return;
+        }
+
+        if (! Schema::hasTable('membership_tiers') || ! Schema::hasTable('users')) {
+            return;
+        }
+
+        $tiers = MembershipTierModel::where('is_active', true)
+            ->orderByDesc('min_deposit')
+            ->orderByDesc('level')
+            ->get(['id', 'min_deposit']);
+
+        if ($tiers->isEmpty()) {
+            return;
+        }
 
         UserModel::chunk(100, function ($users) use ($tiers) {
             foreach ($users as $user) {
                 $totalDeposited = (float) ($user->total_deposited ?? 0);
-                $newTierId = $tiers->first(
+                $matchingTier = $tiers->first(
                     fn ($tier) => (float) $tier->min_deposit <= $totalDeposited
-                )?->id;
+                );
 
+                $newTierId = $matchingTier?->id;
                 if ($user->membership_tier_id !== $newTierId) {
                     $user->membership_tier_id = $newTierId;
-                    $user->save();
+                    $user->saveQuietly();
                 }
             }
         });

@@ -9,7 +9,7 @@ class UserMapper
 {
     public static function toDomain(UserModel $model): User
     {
-        $featureTiersEnabled = filter_var(config('app.feature_membership_tiers_enabled', false), FILTER_VALIDATE_BOOLEAN);
+        $featureTiersEnabled = filter_var(config('app.feature_membership_tiers_enabled', true), FILTER_VALIDATE_BOOLEAN);
 
         $tierArray = null;
         $tierId = $featureTiersEnabled ? $model->membership_tier_id : null;
