@@ -5,7 +5,6 @@ import { PageHeaderComponent } from '@shared/components/page-header/page-header.
 import { CardComponent } from '@shared/components/card/card.component';
 import { ButtonComponent } from '@shared/components/button/button.component';
 import { IconComponent } from '@shared/components/icon/icon.component';
-import { SkeletonLoaderComponent } from '@shared/components/skeleton-loader/skeleton-loader.component';
 import { LanguageService } from '@core/services/language.service';
 import { TranslatePipe } from '@shared/pipes/translate.pipe';
 import { ToastService } from '@core/services/toast.service';
@@ -21,7 +20,6 @@ import { PublicSettingStore } from '@core/services/public-setting.store';
     CardComponent,
     ButtonComponent,
     IconComponent,
-    SkeletonLoaderComponent,
     TranslatePipe
   ],
   templateUrl: './contact.component.html',
