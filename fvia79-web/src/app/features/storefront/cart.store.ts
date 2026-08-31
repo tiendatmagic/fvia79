@@ -47,9 +47,12 @@ export class CartStore {
   public updateQuantity(productId: string, quantity: number) {
     const current = this.items();
     const index = current.findIndex(item => item.id === productId);
-    if (index > -1 && quantity > 0) {
+    if (index > -1) {
       const updated = [...current];
-      updated[index].quantity = Math.min(quantity, updated[index].available_count);
+      const maxCount = Math.max(1, updated[index].available_count || 1);
+      const parsedQty = Math.floor(Number(quantity)) || 1;
+      const safeQty = Math.min(Math.max(1, parsedQty), maxCount);
+      updated[index].quantity = safeQty;
       this.items.set(updated);
     }
   }

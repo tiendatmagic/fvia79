@@ -111,6 +111,48 @@ export class CartModalComponent implements OnInit {
     this.couponSubject.next(code);
   }
 
+  public onQuantityInput(item: any, event: Event): void {
+    const target = event.target as HTMLInputElement;
+    const rawVal = target.value.replace(/\D/g, '');
+    if (!rawVal) {
+      return;
+    }
+    let numVal = parseInt(rawVal, 10);
+    if (numVal < 1) numVal = 1;
+    if (numVal > item.available_count) {
+      numVal = item.available_count;
+      target.value = String(numVal);
+      this.state.showToast(this.lang.translate('cart.out_of_stock') || 'Sản phẩm không đủ số lượng tồn kho khả dụng.', 'warning');
+    }
+    this.cart.updateQuantity(item.id, numVal);
+  }
+
+  public onQuantityBlur(item: any, event: Event): void {
+    const target = event.target as HTMLInputElement;
+    const rawVal = target.value.replace(/\D/g, '');
+    let numVal = parseInt(rawVal, 10);
+    if (isNaN(numVal) || numVal < 1) {
+      numVal = 1;
+    } else if (numVal > item.available_count) {
+      numVal = item.available_count;
+    }
+    target.value = String(numVal);
+    this.cart.updateQuantity(item.id, numVal);
+  }
+
+  public onQuantityKeyDown(event: KeyboardEvent): void {
+    const allowedKeys = ['Backspace', 'Delete', 'Tab', 'Escape', 'Enter', 'ArrowLeft', 'ArrowRight', 'ArrowUp', 'ArrowDown', 'Home', 'End'];
+    if (allowedKeys.includes(event.key) || event.ctrlKey || event.metaKey) {
+      if (event.key === 'Enter') {
+        (event.target as HTMLInputElement)?.blur();
+      }
+      return;
+    }
+    if (!/^\d$/.test(event.key)) {
+      event.preventDefault();
+    }
+  }
+
   public get tierDiscountAmount(): number {
     if (!this.publicSettingStore.settings().membership_tiers_enabled) {
       return 0;
