@@ -48,13 +48,14 @@ class AccountCheckLiveService
     }
 
     /**
-     * Check live status for a list of secret data lines concurrently using Http::pool.
+     * Check live status for a list of secret data lines concurrently using Http::pool chunked safely.
      * Dựa trên chuẩn API https://graph2.facebook.com/v3.3/{uid}/picture?redirect=0
      *
      * @param array<int, string> $secretLines
+     * @param int $concurrency
      * @return array<int, array{status: 'live'|'die', uid: ?string, reason: string}>
      */
-    public function checkBatch(array $secretLines): array
+    public function checkBatch(array $secretLines, int $concurrency = 10): array
     {
         if (empty($secretLines)) {
             return [];
@@ -69,71 +70,76 @@ class AccountCheckLiveService
             ];
         }
 
-        // Gửi request song song đến graph2.facebook.com v3.3
-        $responses = Http::pool(function (Pool $pool) use ($parsed): void {
-            foreach ($parsed as $index => $item) {
-                $uid = $item['uid'];
-                if ($uid !== null && preg_match('/^\d+$/', $uid)) {
-                    $pool->as((string) $index)
-                        ->timeout(6)
-                        ->retry(1, 100, null, false)
-                        ->get("https://graph2.facebook.com/v3.3/{$uid}/picture", [
-                            'redirect' => '0',
-                        ]);
-                }
-            }
-        });
-
         $results = [];
-        foreach ($parsed as $index => $item) {
-            $uid = $item['uid'];
+        $chunks = array_chunk($parsed, max(1, $concurrency), true);
 
-            if ($uid === null) {
-                $results[$index] = [
-                    'status' => 'die',
-                    'uid' => null,
-                    'reason' => 'invalid_uid',
-                ];
-                continue;
-            }
+        foreach ($chunks as $chunk) {
+            $responses = Http::pool(function (Pool $pool) use ($chunk): void {
+                foreach ($chunk as $index => $item) {
+                    $uid = $item['uid'];
+                    if ($uid !== null && preg_match('/^\d+$/', $uid)) {
+                        $pool->as((string) $index)
+                            ->timeout(6)
+                            ->retry(1, 100, null, false)
+                            ->get("https://graph2.facebook.com/v3.3/{$uid}/picture", [
+                                'redirect' => '0',
+                            ]);
+                    }
+                }
+            });
 
-            $status = 'die';
-            $reason = 'unresolved';
+            foreach ($chunk as $index => $item) {
+                $uid = $item['uid'];
 
-            if (isset($responses[$index])) {
-                try {
-                    $res = $responses[$index];
-                    if ($res->successful()) {
-                        $bodyText = $res->body();
-                        $hasHeight = preg_match('/"height"\s*:\s*(\d+)/', $bodyText, $hMatch) && ((int) $hMatch[1]) > 0;
-                        $hasWidth = preg_match('/"width"\s*:\s*(\d+)/', $bodyText, $wMatch) && ((int) $wMatch[1]) > 0;
+                if ($uid === null) {
+                    $results[$index] = [
+                        'status' => 'die',
+                        'uid' => null,
+                        'reason' => 'invalid_uid',
+                    ];
+                    continue;
+                }
 
-                        if ($hasHeight && $hasWidth) {
-                            $status = 'live';
-                            $reason = 'positive_custom_avatar';
+                $status = 'die';
+                $reason = 'unresolved';
+
+                if (isset($responses[$index])) {
+                    try {
+                        $res = $responses[$index];
+                        if ($res->successful()) {
+                            $bodyText = $res->body();
+                            $hasHeight = preg_match('/"height"\s*:\s*(\d+)/', $bodyText, $hMatch) && ((int) $hMatch[1]) > 0;
+                            $hasWidth = preg_match('/"width"\s*:\s*(\d+)/', $bodyText, $wMatch) && ((int) $wMatch[1]) > 0;
+
+                            if ($hasHeight && $hasWidth) {
+                                $status = 'live';
+                                $reason = 'positive_custom_avatar';
+                            } else {
+                                $status = 'die';
+                                $reason = 'locked_or_inaccessible_profile';
+                            }
                         } else {
                             $status = 'die';
-                            $reason = 'locked_or_inaccessible_profile';
+                            $reason = 'graph_api_error';
                         }
-                    } else {
+                    } catch (\Throwable) {
                         $status = 'die';
                         $reason = 'graph_api_error';
                     }
-                } catch (\Throwable) {
+                } else {
                     $status = 'die';
                     $reason = 'graph_api_error';
                 }
-            } else {
-                $status = 'die';
-                $reason = 'graph_api_error';
-            }
 
-            $results[$index] = [
-                'status' => $status,
-                'uid' => $uid,
-                'reason' => $reason,
-            ];
+                $results[$index] = [
+                    'status' => $status,
+                    'uid' => $uid,
+                    'reason' => $reason,
+                ];
+            }
         }
+
+        ksort($results);
 
         return $results;
     }

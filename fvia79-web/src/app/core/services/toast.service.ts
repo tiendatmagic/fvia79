@@ -144,7 +144,7 @@ const API_MESSAGE_KEYS: Record<string, string> = {
   'Resource item updated successfully.': 'toast.stock_updated',
   'Successfully revoked all active tokens. All users logged out.': 'maintenance.tokens_cleared',
   'Supplier API key has not been configured.': 'supplier.api_key_missing',
-  'ADS7979 API key has not been configured.': 'supplier.api_key_missing',
+  'ADS6868 API key has not been configured.': 'supplier.api_key_missing',
   'Supplier URL must be a plain HTTPS origin without credentials, query, fragment, or custom port.': 'supplier.url_invalid',
   'Supplier URL must resolve only to public internet addresses.': 'supplier.url_public_required',
   'Supplier hostname could not be resolved.': 'supplier.hostname_unresolved',
@@ -156,7 +156,7 @@ const API_MESSAGE_KEYS: Record<string, string> = {
   'Supplier returned an incompatible V2 catalog schema.': 'supplier.schema_incompatible',
   'Supplier returned an invalid V1 catalog response.': 'supplier.catalog_invalid',
   'Supplier returned an invalid V2 catalog response.': 'supplier.catalog_invalid',
-  'ADS7979 returned an invalid catalog response.': 'supplier.catalog_invalid',
+  'ADS6868 returned an invalid catalog response.': 'supplier.catalog_invalid',
   'The supplier does not support the compatible Clone Store API V1/V2, or its API key is invalid.': 'supplier.unsupported_api',
   'The administrator has not configured the Binance API Key/Secret yet.': 'invoice.reconcile_binance_error',
   'The administrator has not configured the receiving Binance ID yet.': 'invoice.binance_support',
@@ -250,6 +250,12 @@ export class ToastService {
       if (status === 429) return this.languageService.translate('error.too_many_attempts');
       if (status >= 500) return this.languageService.translate('error.server');
       return fallback || (status === 0 ? this.languageService.translate('error.network') : '');
+    }
+
+    if (normalized.includes('Http failure during parsing') || normalized.includes('OnePanel') || normalized.includes('waf_challenge') || normalized.includes('<!DOCTYPE html>') || normalized.includes('Just a moment')) {
+      return this.languageService.currentLang() === 'vi'
+        ? 'Tường lửa OnePanel WAF (Anti-Bot / JS Challenge) trên VPS đang chặn API. Vui lòng tắt JS Challenge/WAF trong OnePanel cho domain ads6868.ddns.net.'
+        : 'OnePanel WAF / Anti-Bot on VPS is blocking API requests. Please disable JS Challenge/WAF for ads6868.ddns.net in OnePanel.';
     }
 
     const key = API_MESSAGE_KEYS[normalized];
@@ -394,6 +400,10 @@ export class ToastService {
 
   public showSuccess(message: string, duration?: number): void {
     this.showToast(message, 'success', duration);
+  }
+
+  public showWarning(message: string, duration?: number): void {
+    this.showToast(message, 'warning', duration);
   }
 
   public showError(message: string, duration?: number): void {

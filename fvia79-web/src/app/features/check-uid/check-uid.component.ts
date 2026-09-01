@@ -1,4 +1,4 @@
-﻿import { Component, inject, signal } from '@angular/core';
+import { Component, inject, signal } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { PageHeaderComponent } from '@shared/components/page-header/page-header.component';
@@ -8,8 +8,6 @@ import { IconComponent } from '@shared/components/icon/icon.component';
 import { LanguageService } from '@core/services/language.service';
 import { TranslatePipe } from '@shared/pipes/translate.pipe';
 import { ToastService } from '@core/services/toast.service';
-import { ApiService } from '@core/services/api.service';
-import { firstValueFrom } from 'rxjs';
 
 @Component({
   selector: 'app-check-uid',
@@ -29,31 +27,69 @@ import { firstValueFrom } from 'rxjs';
 export class CheckUidComponent {
   public readonly lang = inject(LanguageService);
   private readonly toast = inject(ToastService);
-  private readonly apiService = inject(ApiService);
 
   public rawInput = '';
-  public isChecking = signal<boolean>(false);
-  public progressPercent = signal<number>(0);
-  public processedCount = signal<number>(0);
-  public totalCount = signal<number>(0);
+  public readonly isChecking = signal<boolean>(false);
+  public readonly progressPercent = signal<number>(0);
+  public readonly processedCount = signal<number>(0);
+  public readonly totalCount = signal<number>(0);
 
-  public liveCount = signal<number>(0);
-  public dieCount = signal<number>(0);
-  public liveUIDsText = signal<string>('');
-  public dieUIDsText = signal<string>('');
+  public readonly liveCount = signal<number>(0);
+  public readonly dieCount = signal<number>(0);
+  public readonly livePercent = signal<string>('0.00%');
+  public readonly diePercent = signal<string>('0.00%');
+  public readonly liveUIDsText = signal<string>('');
+  public readonly dieUIDsText = signal<string>('');
+
+  private readonly CONCURRENCY = 10;
+  private readonly UI_TICK_MS = 150;
+  private readonly FLUSH_EVERY = 20;
+
+  private stopToken = 0;
+  private liveBuf: string[] = [];
+  private dieBuf: string[] = [];
+  private lastUiTick = 0;
 
   public loadSampleUIDs(): void {
     this.rawInput = [
+      '61589802000745',
+      '100089457032122',
+      '1424214503',
+      '100008676886775',
+      '100006714784899',
+      '61551782038772',
+      '100010474179930',
+      '100000075372394',
       '4|Mark_Zuckerberg',
-      '100000000000000|Sample_Live_Account',
-      '9999999999999999999999|Sample_Die_Account',
-      '100000000000001|Demo_UID_2'
+      '100000000000000|Sample_Live_Account'
     ].join('\n');
+  }
+
+  public async pasteFromClipboard(): Promise<void> {
+    try {
+      const text = await navigator.clipboard.readText();
+      if (!text) {
+        this.toast.showError('toast.clipboard_empty');
+        return;
+      }
+      this.rawInput = this.rawInput ? this.rawInput + '\n' + text : text;
+      this.toast.showSuccess('toast.paste_success');
+    } catch {
+      this.toast.showError('toast.clipboard_error');
+    }
   }
 
   public clearInput(): void {
     this.rawInput = '';
     this.resetResults();
+  }
+
+  public clearOutputOnly(): void {
+    this.liveUIDsText.set('');
+    this.dieUIDsText.set('');
+    this.liveBuf = [];
+    this.dieBuf = [];
+    this.toast.showSuccess('toast.clear_output_success');
   }
 
   private resetResults(): void {
@@ -62,92 +98,91 @@ export class CheckUidComponent {
     this.totalCount.set(0);
     this.liveCount.set(0);
     this.dieCount.set(0);
+    this.livePercent.set('0.00%');
+    this.diePercent.set('0.00%');
     this.liveUIDsText.set('');
     this.dieUIDsText.set('');
+    this.liveBuf = [];
+    this.dieBuf = [];
+    this.lastUiTick = 0;
+  }
+
+  public stopCheck(): void {
+    if (!this.isChecking()) return;
+    this.stopToken++;
+    this.isChecking.set(false);
+    this.flushBuffers();
+    this.toast.showWarning('check_uid.stopped');
   }
 
   public async startCheck(): Promise<void> {
-    if (this.isChecking()) {
-      return;
-    }
+    if (this.isChecking()) return;
 
-    const lines = this.rawInput
-      .replace(/\r\n/g, '\n')
-      .replace(/\r/g, '\n')
-      .split('\n')
-      .map(line => this.normalizeLine(line))
-      .filter(line => line.length > 0);
-
+    const lines = this.parseLines(this.rawInput);
     if (lines.length === 0) {
       this.toast.showError('toast.no_uids');
       return;
     }
 
-    this.isChecking.set(true);
     this.resetResults();
     this.totalCount.set(lines.length);
+    this.isChecking.set(true);
 
-    const batchSize = 100;
-    const liveList: string[] = [];
-    const dieList: string[] = [];
+    this.stopToken++;
+    const currentToken = this.stopToken;
 
-    let processed = 0;
+    const total = lines.length;
+    const state = { checked: 0, live: 0, die: 0 };
+    let currentIndex = 0;
 
-    for (let i = 0; i < lines.length; i += batchSize) {
-      const batch = lines.slice(i, i + batchSize);
+    const worker = async (): Promise<void> => {
+      while (true) {
+        if (!this.isChecking() || currentToken !== this.stopToken) return;
 
-      try {
-        const response: any = await firstValueFrom(
-          this.apiService.post<any>('v1/tools/check-uid', { uids: batch })
-        );
-        if (response?.success && response.data) {
-          const details = response.data.details || [];
-          for (const d of details) {
-            if (d.status === 'live') {
-              liveList.push(d.raw);
-            } else {
-              dieList.push(d.raw);
-            }
-          }
-          this.liveCount.set(liveList.length);
-          this.dieCount.set(dieList.length);
-          this.liveUIDsText.set(liveList.join('\n'));
-          this.dieUIDsText.set(dieList.join('\n'));
+        const i = currentIndex++;
+        if (i >= total) return;
 
-          processed += batch.length;
-          this.processedCount.set(processed);
-          this.progressPercent.set(Math.round((processed / lines.length) * 100));
-          continue;
+        const line = lines[i];
+        const uid = this.extractUid(line);
+        const isLive = uid ? await this.checkSingleUid(uid) : false;
+
+        if (currentToken !== this.stopToken) return;
+
+        state.checked++;
+        if (isLive) {
+          state.live++;
+          this.liveBuf.push(line);
+        } else {
+          state.die++;
+          this.dieBuf.push(line);
         }
-      } catch {
-        // Fallback to client-side check if backend API fails
+
+        if (state.checked % this.FLUSH_EVERY === 0) {
+          this.flushBuffers();
+        }
+        this.updateUI(state, total);
       }
+    };
 
-      await Promise.all(
-        batch.map(async rawLine => {
-          const uidClean = this.extractUid(rawLine);
-          const isLive = await this.checkSingleUid(uidClean);
+    const workers = Array.from({ length: this.CONCURRENCY }, () => worker());
+    await Promise.all(workers);
 
-          if (isLive) {
-            liveList.push(rawLine);
-            this.liveCount.set(liveList.length);
-            this.liveUIDsText.set(liveList.join('\n'));
-          } else {
-            dieList.push(rawLine);
-            this.dieCount.set(dieList.length);
-            this.dieUIDsText.set(dieList.join('\n'));
-          }
-
-          processed++;
-          this.processedCount.set(processed);
-          const percent = Math.round((processed / lines.length) * 100);
-          this.progressPercent.set(percent);
-        })
-      );
+    if (currentToken === this.stopToken) {
+      this.flushBuffers();
+      this.setFinalUI(state, total);
+      this.isChecking.set(false);
+      this.toast.showSuccess('check_uid.completed');
     }
+  }
 
-    this.progressPercent.set(100);
-    this.isChecking.set(false);
+  private parseLines(text: string): string[] {
+    if (!text) return [];
+    return text
+      .replace(/\r\n/g, '\n')
+      .replace(/\r/g, '\n')
+      .split('\n')
+      .map(s => this.normalizeLine(s))
+      .filter(s => s.length > 0);
   }
 
   private normalizeLine(s: string | null): string {
@@ -178,10 +213,8 @@ export class CheckUidComponent {
     return mAny ? mAny[1] : null;
   }
 
-  private async checkSingleUid(uid: string | null): Promise<boolean> {
-    if (!uid || !/^\d+$/.test(uid)) {
-      return false;
-    }
+  private async checkSingleUid(uid: string): Promise<boolean> {
+    if (!uid || !/^\d+$/.test(uid)) return false;
 
     try {
       const controller = new AbortController();
@@ -194,9 +227,7 @@ export class CheckUidComponent {
 
       clearTimeout(timeoutId);
 
-      if (!response.ok) {
-        return false;
-      }
+      if (!response.ok) return false;
 
       const text = await response.text();
       const hMatch = text.match(/"height"\s*:\s*(\d+)/);
@@ -207,11 +238,65 @@ export class CheckUidComponent {
     }
   }
 
+  private flushBuffers(): void {
+    if (this.liveBuf.length > 0) {
+      const current = this.liveUIDsText();
+      const added = this.liveBuf.join('\n');
+      this.liveUIDsText.set(current ? current + '\n' + added : added);
+      this.liveBuf = [];
+    }
+
+    if (this.dieBuf.length > 0) {
+      const current = this.dieUIDsText();
+      const added = this.dieBuf.join('\n');
+      this.dieUIDsText.set(current ? current + '\n' + added : added);
+      this.dieBuf = [];
+    }
+  }
+
+  private fmtPct(val: number): string {
+    return (Math.round(val * 100) / 100).toFixed(2) + '%';
+  }
+
+  private updateUI(state: { checked: number; live: number; die: number }, total: number): void {
+    const now = performance.now();
+    if (now - this.lastUiTick < this.UI_TICK_MS) return;
+    this.lastUiTick = now;
+
+    this.processedCount.set(state.checked);
+    this.liveCount.set(state.live);
+    this.dieCount.set(state.die);
+
+    const checked = state.checked || 0;
+    const livePct = checked ? (state.live / checked) * 100 : 0;
+    const diePct = checked ? (state.die / checked) * 100 : 0;
+
+    this.livePercent.set(this.fmtPct(livePct));
+    this.diePercent.set(this.fmtPct(diePct));
+
+    const p = total ? Math.round((state.checked / total) * 100) : 0;
+    this.progressPercent.set(p);
+  }
+
+  private setFinalUI(state: { checked: number; live: number; die: number }, total: number): void {
+    this.processedCount.set(state.checked);
+    this.liveCount.set(state.live);
+    this.dieCount.set(state.die);
+
+    const checked = state.checked || 0;
+    const livePct = checked ? (state.live / checked) * 100 : 0;
+    const diePct = checked ? (state.die / checked) * 100 : 0;
+
+    this.livePercent.set(this.fmtPct(livePct));
+    this.diePercent.set(this.fmtPct(diePct));
+
+    const p = total ? Math.round((state.checked / total) * 100) : 0;
+    this.progressPercent.set(p);
+  }
+
   public copyLiveUIDs(): void {
     const text = this.liveUIDsText();
-    if (!text) {
-      return;
-    }
+    if (!text) return;
     navigator.clipboard.writeText(text).then(() => {
       this.toast.showSuccess('toast.copy_success');
     });
@@ -219,9 +304,7 @@ export class CheckUidComponent {
 
   public copyDieUIDs(): void {
     const text = this.dieUIDsText();
-    if (!text) {
-      return;
-    }
+    if (!text) return;
     navigator.clipboard.writeText(text).then(() => {
       this.toast.showSuccess('toast.copy_success');
     });
@@ -229,17 +312,13 @@ export class CheckUidComponent {
 
   public downloadLiveTxt(): void {
     const text = this.liveUIDsText();
-    if (!text) {
-      return;
-    }
+    if (!text) return;
     this.downloadBlob(text, 'live_uids.txt');
   }
 
   public downloadDieTxt(): void {
     const text = this.dieUIDsText();
-    if (!text) {
-      return;
-    }
+    if (!text) return;
     this.downloadBlob(text, 'die_uids.txt');
   }
 
