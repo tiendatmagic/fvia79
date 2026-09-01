@@ -27,6 +27,11 @@ import { IconComponent } from '@shared/components/icon/icon.component';
       :host {
         display: block;
       }
+      label:hover .custom-checkbox-box,
+      .group:hover .custom-checkbox-box,
+      tr:hover .custom-checkbox-box {
+        border-color: var(--color-primary, var(--dynamic-primary, #006dd0)) !important;
+      }
     `,
   ]})
 export class CustomCheckboxComponent implements ControlValueAccessor {

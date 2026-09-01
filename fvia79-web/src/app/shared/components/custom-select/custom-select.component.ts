@@ -17,6 +17,7 @@ import {
 import { CommonModule } from '@angular/common';
 import { FormsModule, NG_VALUE_ACCESSOR, ControlValueAccessor } from '@angular/forms';
 import { IconComponent } from '../icon/icon.component';
+import { RippleDirective } from '../ripple/ripple.directive';
 import { TranslatePipe } from '@shared/pipes/translate.pipe';
 
 export interface SelectOption {
@@ -30,7 +31,7 @@ export interface SelectOption {
     '(document:click)': 'onClickOutside($event)'
   },
 
-  imports: [CommonModule, FormsModule, IconComponent, TranslatePipe],
+  imports: [CommonModule, FormsModule, IconComponent, RippleDirective, TranslatePipe],
   templateUrl: './custom-select.component.html',
 
   providers: [
@@ -64,6 +65,9 @@ export class CustomSelectComponent implements ControlValueAccessor, AfterViewChe
   ngOnDestroy(): void {
     if (this.scrollListener) {
       window.removeEventListener('scroll', this.scrollListener, true);
+    }
+    if (this.dropdownPanel?.nativeElement && this.dropdownPanel.nativeElement.parentElement === document.body) {
+      this.dropdownPanel.nativeElement.remove();
     }
   }
 
@@ -101,6 +105,10 @@ export class CustomSelectComponent implements ControlValueAccessor, AfterViewChe
   @Input() showSearch: boolean = false;
   @Input() containerClass: string = 'w-full';
   @Input() triggerClass: string = 'w-full form-input';
+  @Input() panelClass: string = '';
+  @Input() panelWidth: string = '';
+  @Input() panelMaxWidth: string = '';
+  @Input() panelMinWidth: string = '';
   @Input() maxDisplay: number = 50;
 
   public readonly valueSignal = signal<any>(null);
@@ -188,37 +196,46 @@ export class CustomSelectComponent implements ControlValueAccessor, AfterViewChe
     }
 
     const dropWidth = Math.max(rect.width, 180);
+    const maxAvailableWidth = window.innerWidth - 24;
+    const computedWidth = this.panelWidth || `${Math.min(dropWidth, maxAvailableWidth)}px`;
+    const computedMinWidth = this.panelMinWidth || `${Math.min(Math.max(rect.width, 180), maxAvailableWidth)}px`;
+    const computedMaxWidth = this.panelMaxWidth || `calc(100vw - 24px)`;
+
+    const targetWidth = this.panelWidth
+      ? (parseFloat(this.panelWidth) || dropWidth)
+      : Math.min(dropWidth, maxAvailableWidth);
+
     let left = rect.left;
-    if (left + dropWidth > window.innerWidth - 12) {
-      left = Math.max(12, window.innerWidth - dropWidth - 12);
+    if (left + targetWidth > window.innerWidth - 12) {
+      left = Math.max(12, window.innerWidth - targetWidth - 12);
     }
     if (left < 12) left = 12;
 
     this.resolvedPlacement = placeFinal;
 
+    const baseStyle: { [key: string]: string } = {
+      position: 'fixed',
+      left: `${left}px`,
+      width: computedWidth,
+      minWidth: computedMinWidth,
+      maxWidth: computedMaxWidth,
+      boxSizing: 'border-box',
+      zIndex: '99999',
+    };
+
     const newStyle: { [key: string]: string } =
       placeFinal === 'bottom'
         ? {
-            position: 'fixed',
+            ...baseStyle,
             top: `${rect.bottom + gap}px`,
-            left: `${left}px`,
-            width: `${dropWidth}px`,
-            minWidth: `${dropWidth}px`,
-            maxWidth: `calc(100vw - 24px)`,
             maxHeight: `${Math.min(dropdownMaxHeight, Math.max(150, spaceBelow))}px`,
             transform: 'none',
-            zIndex: '99999',
           }
         : {
-            position: 'fixed',
+            ...baseStyle,
             top: `${rect.top - gap}px`,
-            left: `${left}px`,
-            width: `${dropWidth}px`,
-            minWidth: `${dropWidth}px`,
-            maxWidth: `calc(100vw - 24px)`,
             maxHeight: `${Math.min(dropdownMaxHeight, Math.max(150, spaceAbove))}px`,
             transform: 'translateY(-100%)',
-            zIndex: '99999',
           };
 
     this.dropdownStyle = newStyle;

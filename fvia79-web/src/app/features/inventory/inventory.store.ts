@@ -48,6 +48,7 @@ export class InventoryStore {
   public readonly totalItems = signal<number>(0);
   public readonly currentPage = signal<number>(1);
   public readonly lastPage = signal<number>(1);
+  public readonly checkLiveLoading = signal<boolean>(false);
 
   public fetchItems(filters: { product_id?: string; status?: string; search?: string } = {}, page?: number, limit?: number) {
     const cacheKey = JSON.stringify({ filters, page, limit });
@@ -189,7 +190,6 @@ export class InventoryStore {
   public readonly resourceTotalItems = signal<number>(0);
   public readonly resourceCurrentPage = signal<number>(1);
   public readonly resourceLastPage = signal<number>(1);
-  public readonly checkLiveLoading = signal<boolean>(false);
   public readonly resourceSyncLoading = signal<boolean>(false);
   public readonly pendingResourceOperations = signal<ReadonlyMap<string, ResourceMutationOperation>>(new Map());
   private resourceSyncRequestCount = 0;
@@ -318,7 +318,7 @@ export class InventoryStore {
     );
   }
 
-  public bulkUpdateResourceStatus(resourceIds: string[], status: 'available' | 'sold') {
+  public bulkUpdateResourceStatus(resourceIds: string[], status: string) {
     const operation: ResourceMutationOperation = 'bulk-update';
     if (!this.beginResourceMutation(resourceIds, operation)) return of(null);
 

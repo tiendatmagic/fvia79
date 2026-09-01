@@ -1,20 +1,23 @@
 <label
-  class="group flex items-start gap-3 cursor-pointer select-none"
+  class="group inline-flex items-center gap-2.5 cursor-pointer select-none"
+  [class.items-start]="description"
+  [class.items-center]="!description"
   [class.opacity-50]="disabled"
   [class.pointer-events-none]="disabled"
 >
   <div
-    class="relative shrink-0 h-5 w-5 mt-0.5 rounded-[6px] border-2 transition-all duration-200 flex items-center justify-center"
+    class="custom-checkbox-box relative shrink-0 h-5 w-5 rounded-[6px] border-[1.8px] transition-colors duration-200 flex items-center justify-center"
+    [class.mt-0.5]="description"
     [ngClass]="
       checked()
-        ? 'border-[var(--color-primary)] bg-[var(--color-primary)] shadow-sm shadow-[var(--color-primary)]/15'
-        : 'bg-white dark:bg-slate-950 border-slate-200 dark:border-slate-800/80 group-hover:border-slate-300 dark:group-hover:border-slate-700'
+        ? 'border-primary bg-primary text-white'
+        : 'bg-white dark:bg-[#161e25] border-slate-400 dark:border-slate-500/90'
     "
   >
     <app-icon
       name="check"
       strokeWidth="3.5"
-      class="w-3 h-3 text-white transition-all duration-150 ease-out"
+      class="w-3.5 h-3.5 text-white transition-[transform,opacity] duration-150 ease-out"
       [class.scale-0]="!checked()"
       [class.scale-100]="checked()"
       [class.opacity-0]="!checked()"
@@ -42,8 +45,10 @@
       }
     </div>
   } @else {
-    <div class="text-sm font-semibold text-slate-700 dark:text-slate-300 leading-snug min-w-0 flex-1">
+    <span
+      class="text-sm font-semibold text-slate-700 dark:text-slate-300 leading-snug empty:hidden"
+    >
       <ng-content></ng-content>
-    </div>
+    </span>
   }
 </label>

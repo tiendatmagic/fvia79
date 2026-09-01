@@ -21,6 +21,12 @@ import { ActivatedRoute, Router } from '@angular/router';
 import { TableComponent, TableCellDirective, TableColumn } from '@shared/components/table/table.component';
 import { TranslatePipe } from '@shared/pipes/translate.pipe';
 import { CustomCheckboxComponent } from '@shared/components/custom-checkbox/custom-checkbox.component';
+import { RippleDirective } from '@shared/components/ripple/ripple.directive';
+import { TabGroupComponent } from '@shared/components/tab-group/tab-group.component';
+import {
+  InventoryLiveCheckResult,
+  InventoryLiveCheckSummary,
+} from './inventory.store';
 
 @Component({
   selector: 'app-inventory',
@@ -41,7 +47,9 @@ import { CustomCheckboxComponent } from '@shared/components/custom-checkbox/cust
     TableComponent,
     TableCellDirective,
     CustomCheckboxComponent,
-    TranslatePipe
+    TranslatePipe,
+    RippleDirective,
+    TabGroupComponent
   ],
   templateUrl: './inventory.component.html',
   styles: [`
@@ -59,6 +67,11 @@ export class InventoryComponent implements OnInit {
   public readonly isRefreshing = signal<boolean>(false);
 
   public activeTab = signal<'batches' | 'resources'>('batches');
+
+  public inventoryTabOptions = computed(() => [
+    { value: 'batches', label: this.lang.translate('inventory.batch_tab'), icon: 'package' },
+    { value: 'resources', label: this.lang.translate('inventory.resource_tab'), icon: 'key', badge: this.state.inventoryStore.resourceTotalItems() > 0 ? this.state.inventoryStore.resourceTotalItems() : undefined }
+  ]);
   public visibleSecrets = signal<Set<string>>(new Set());
   public readonly selectedResourceIds = signal<Set<string>>(new Set<string>());
   public showExportDropdown = signal<boolean>(false);
@@ -120,6 +133,7 @@ export class InventoryComponent implements OnInit {
       { label: this.lang.translate('common.all_status'), value: '' },
       { label: this.lang.translate('inventory.resource_available'), value: 'available' },
       { label: this.lang.translate('inventory.resource_sold'), value: 'sold' },
+      { label: this.lang.translate('inventory.resource_die'), value: 'die' },
     ];
   }
 
@@ -159,6 +173,11 @@ export class InventoryComponent implements OnInit {
 
     const productId = queryParams['product_id'] || queryParams['productId'];
 
+    const statusParam = queryParams['status'];
+    if (statusParam) {
+      this.selectedStatusFilter = statusParam;
+    }
+
     this.fetchData(1);
 
     this.state.productStore.fetchProducts().subscribe({
@@ -172,8 +191,19 @@ export class InventoryComponent implements OnInit {
     this.route.queryParams.subscribe(params => {
       const currentTab =
         params['tab'] === 'resources' || params['tab'] === 'resource' ? 'resources' : 'batches';
+      const currentStatus = params['status'] || '';
+      let shouldFetch = false;
+
       if (currentTab !== this.activeTab()) {
         this.activeTab.set(currentTab);
+        shouldFetch = true;
+      }
+      if (currentStatus !== this.selectedStatusFilter) {
+        this.selectedStatusFilter = currentStatus;
+        shouldFetch = true;
+      }
+
+      if (shouldFetch) {
         this.fetchData(1);
       }
     });
@@ -184,7 +214,18 @@ export class InventoryComponent implements OnInit {
     this.selectedStatusFilter = '';
     this.router.navigate([], {
       relativeTo: this.route,
-      queryParams: { tab: tab },
+      queryParams: { tab: tab, status: null },
+      queryParamsHandling: 'merge'
+    });
+    this.fetchData(1);
+  }
+
+  public viewDieAccounts() {
+    this.activeTab.set('resources');
+    this.selectedStatusFilter = 'die';
+    this.router.navigate([], {
+      relativeTo: this.route,
+      queryParams: { tab: 'resources', status: 'die' },
       queryParamsHandling: 'merge'
     });
     this.fetchData(1);
@@ -246,7 +287,11 @@ export class InventoryComponent implements OnInit {
 
   public toggleResourceSelection(id: string): void {
     const selected = new Set(this.selectedResourceIds());
-    selected.has(id) ? selected.delete(id) : selected.add(id);
+    if (selected.has(id)) {
+      selected.delete(id);
+    } else {
+      selected.add(id);
+    }
     this.selectedResourceIds.set(selected);
   }
 
@@ -277,39 +322,139 @@ export class InventoryComponent implements OnInit {
     return this.state.inventoryStore.resourceItems().filter(item => selectedIds.has(item.id));
   }
 
-  public selectedResourcesForStatus(status: 'available' | 'sold'): any[] {
+  public selectedResourcesForStatus(status: string): any[] {
     return this.selectedResources.filter(item => item.status !== status);
   }
 
-  public checkSelectedResourcesLive(): void {
-    const ids = Array.from(this.selectedResourceIds());
-    if (ids.length === 0) return;
+  private normalizeSecret(s: string | null): string {
+    if (!s) return '';
+    return s
+      .replace(/\uFEFF/g, '')
+      .replace(/[\u200B-\u200D]/g, '')
+      .replace(/\u00A0/g, ' ')
+      .trim();
+  }
 
-    if (ids.length > 10) {
+  private extractUid(secret: string): string | null {
+    if (!secret) return null;
+    const clean = this.normalizeSecret(secret);
+
+    const mCookie = clean.match(/c_user\s*=\s*(\d{4,20})/);
+    if (mCookie) return mCookie[1];
+
+    const mStart = clean.match(/^(\d{1,20})\b/);
+    if (mStart) return mStart[1];
+
+    const parts = clean.split(/[|:\s]+/);
+    if (parts[0] && /^\d{1,20}$/.test(parts[0].trim())) {
+      return parts[0].trim();
+    }
+
+    const mAny = clean.match(/\b(\d{4,20})\b/);
+    return mAny ? mAny[1] : null;
+  }
+
+  private async checkSingleUid(uid: string): Promise<{ status: 'live' | 'die'; reason: string }> {
+    if (!uid || !/^\d+$/.test(uid)) {
+      return { status: 'die', reason: 'invalid_uid' };
+    }
+
+    try {
+      const controller = new AbortController();
+      const timeoutId = setTimeout(() => controller.abort(), 6000);
+
+      const response = await fetch(`https://graph2.facebook.com/v3.3/${uid}/picture?redirect=0`, {
+        signal: controller.signal,
+        cache: 'no-store'
+      });
+
+      clearTimeout(timeoutId);
+
+      if (!response.ok) {
+        return { status: 'die', reason: 'locked_or_inaccessible_profile' };
+      }
+
+      const text = await response.text();
+      const hMatch = text.match(/"height"\s*:\s*(\d+)/);
+      const wMatch = text.match(/"width"\s*:\s*(\d+)/);
+      const isLive = !!(hMatch && wMatch && Number(hMatch[1]) > 0 && Number(wMatch[1]) > 0);
+
+      return {
+        status: isLive ? 'live' : 'die',
+        reason: isLive ? 'positive_custom_avatar' : 'locked_or_inaccessible_profile',
+      };
+    } catch {
+      return { status: 'die', reason: 'graph_api_error' };
+    }
+  }
+
+  public async checkSelectedResourcesLive(): Promise<void> {
+    const resources = this.selectedResources;
+    if (resources.length === 0) return;
+
+    if (resources.length > 10) {
       this.state.showToast(this.lang.translate('inventory.check_live_max_error'), 'warning');
       return;
     }
 
-    this.state.inventoryStore.checkResourcesLive(ids).subscribe(response => {
-      if (!response?.data) return;
+    this.state.inventoryStore.checkLiveLoading.set(true);
+
+    try {
+      const results: InventoryLiveCheckResult[] = await Promise.all(
+        resources.map(async (item) => {
+          const rawSecret = item?.secret_data || '';
+          const uid = this.extractUid(rawSecret);
+
+          if (!uid) {
+            return {
+              resource_id: item.id,
+              uid: null,
+              status: 'die' as const,
+              reason: 'invalid_uid',
+              inventory_status: item.status,
+            };
+          }
+
+          const checkResult = await this.checkSingleUid(uid);
+          return {
+            resource_id: item.id,
+            uid: uid,
+            status: checkResult.status,
+            reason: checkResult.reason,
+            inventory_status: item.status,
+          };
+        })
+      );
+
+      const summary: InventoryLiveCheckSummary = {
+        total: results.length,
+        live_count: results.filter(r => r.status === 'live').length,
+        die_count: results.filter(r => r.status === 'die').length,
+        results,
+      };
 
       this.modalService.open(CheckLiveResultsModalComponent, {
         title: this.lang.translate('inventory.check_live_results_title'),
         size: '2xl',
-        data: response.data,
+        data: summary,
       });
-    });
+    } catch {
+      this.state.showToast(this.lang.translate('inventory.check_live_failed'), 'error');
+    } finally {
+      this.state.inventoryStore.checkLiveLoading.set(false);
+    }
   }
 
-  public bulkUpdateResourceStatus(status: 'available' | 'sold'): void {
+  public bulkUpdateResourceStatus(status: 'available' | 'sold' | 'die'): void {
     const resources = this.selectedResourcesForStatus(status);
     if (resources.length === 0) return;
 
     const ids = resources.map(item => item.id);
     if (this.state.inventoryStore.hasPendingResourceIds(ids)) return;
 
-    const statusLabel =
-      this.resourceStatusOptions.find(option => option.value === status)?.label || status;
+    const statusLabel = this.resourceStatusOptions.find(
+      option => option.value === status
+    )?.label || status;
 
     this.modalService.confirm({
       title: this.lang.translate('inventory.bulk_update_title'),
