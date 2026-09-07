@@ -35,6 +35,31 @@
 > **QUY TẮC BẮT BUỘC CRONJOB & PHÂN QUYỀN CACHE STORAGE**:
 > 1. Cronjob Scheduler (`schedule:run`) **CHỈ ĐƯỢC CHẠY DƯỚI USER `www-data`** (`crontab -u www-data -e`). **TUYỆT ĐỐI KHÔNG cài dưới `root`** vì sẽ gây ra lỗi `500 Permission denied` khi người dùng thực hiện thao tác Web/API.
 
+### [2026-09-07] Triển Khai (Deploy) Đồng Bộ Toàn Diện Frontend & Backend Giữ Nguyên CSDL Cho FVIA79 (VPS 38.180.150.246)
+- **Mô tả yêu cầu**:
+  - Triển khai toàn bộ bản nâng cấp Frontend Angular và Backend Laravel mới nhất lên VPS production `38.180.150.246` theo hướng dẫn `deploy.md`.
+  - Tuân thủ nghiêm ngặt quy tắc an toàn CSDL: không làm mất dữ liệu, áp dụng migration an toàn nếu có, giữ nguyên file `.env` và phpMyAdmin.
+  - Bật chế độ bảo trì `php artisan down` trước khi cập nhật, xóa và tái tạo toàn bộ cache backend sau khi cập nhật xong và đưa website hoạt động trở lại (`php artisan up`).
+- **Thực hiện xử lý**:
+  - **Biên dịch & Đóng gói Cục Bộ**:
+    - Build Angular production: `npx ng build --configuration production` thành công 100% (0 lỗi).
+    - Đóng gói Frontend thành `frontend-fvia79.tar.gz` và Backend bằng `git archive` thành `backend-fvia79.zip`.
+  - **Triển khai VPS FVIA79 (`38.180.150.246`)**:
+    1. Bật chế độ bảo trì: `su -s /bin/bash www-data -c "php artisan down"`.
+    2. Upload gói mã nguồn lên `/tmp/` và giải nén an toàn vào `/var/www/fvia79-web` và `/var/www/fvia79-api` (bảo toàn 100% tệp `.env`).
+    3. Chạy `composer install --no-dev --optimize-autoloader --no-interaction`.
+    4. Chạy migration an toàn `php artisan migrate --force` dưới quyền `www-data` (Nothing to migrate - CSDL an toàn 100%).
+    5. Xóa sạch cache bootstrap cũ và tái tạo đầy đủ cache đệm: `config:clear`, `cache:clear`, `config:cache`, `route:cache`, `view:cache`.
+    6. Phân quyền chuẩn xác: `chown -R www-data:www-data` cho `/var/www/fvia79-web` & `/var/www/fvia79-api`, `chmod -R 775` cho `storage` & `bootstrap/cache`.
+    7. Tắt bảo trì và khởi động lại dịch vụ: `php artisan up`, reload `php8.3-fpm` & `nginx`.
+    8. Dọn dẹp tệp tạm trên VPS và local.
+- **Kiểm thử nghiệm thu Website & API (HTTP 200 OK)**:
+  - **FVIA79 Frontend**: `https://fvia79.com/` (200 OK).
+  - **API Categories**: `https://fvia79.com/api/v1/categories` (200 OK).
+  - **API Grouped Products**: `https://fvia79.com/api/v1/products/grouped` (200 OK).
+  - **phpMyAdmin**: `https://fvia79.com/phpmyadmin/` (200 OK).
+  - **Cronjob Scheduler**: `* * * * * cd /var/www/fvia79-api && /usr/bin/php artisan schedule:run >> /dev/null 2>&1` hoạt động bình thường dưới `www-data`.
+
 ### [2026-08-17] Cập Nhật Cơ Chế Check UID Facebook Theo Chuẩn fbchecker.html & Chuẩn Hóa Idempotency Key (Fvia79)
 - **Mô tả yêu cầu**:
   - Cập nhật trang công cụ `/check-uid` theo chuẩn `fbchecker.html`: sử dụng endpoint `https://graph2.facebook.com/v3.3/{uid}/picture?redirect=0` và kiểm tra phản hồi có kích thước `height > 0 && width > 0`.
